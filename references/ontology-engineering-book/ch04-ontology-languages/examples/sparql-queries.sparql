@@ -1,0 +1,122 @@
+# SPARQL 查询示例集 - 制造领域本体
+# SPARQL Query Examples - Manufacturing Domain Ontology
+#
+# SPARQL 是 RDF 数据的标准查询语言，语法类似 SQL
+
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX :     <http://example.org/manufacturing#>
+
+# ==============================
+# CQ1: 哪些设备可以加工铝合金？
+# Which equipment can process aluminum alloy?
+# ==============================
+SELECT ?equipment ?name ?power
+WHERE {
+    ?equipment a :Equipment ;
+               :canProcess :Aluminum ;
+               rdfs:label ?name .
+    OPTIONAL { ?equipment :power ?power }
+    FILTER(lang(?name) = "zh")
+}
+ORDER BY ASC(?name)
+
+# ==============================
+# CQ2: 查询某工单的所有工序及所需设备
+# Find all operations and required equipment for a work order
+# ==============================
+SELECT ?operation ?opLabel ?equipment ?eqLabel
+WHERE {
+    :WorkOrder_001 :hasProcess ?process .
+    ?process :hasOperation ?operation .
+    ?operation rdfs:label ?opLabel ;
+               :requires ?equipment .
+    ?equipment rdfs:label ?eqLabel .
+    FILTER(lang(?opLabel) = "zh")
+    FILTER(lang(?eqLabel) = "zh")
+}
+ORDER BY ?operation
+
+# ==============================
+# CQ3: 查找所有可用（Idle状态）的加工设备
+# Find all available (Idle) processing equipment
+# ==============================
+SELECT ?equipment ?name ?location
+WHERE {
+    ?equipment a :ProcessingEquipment ;
+               :hasStatus :Idle ;
+               rdfs:label ?name ;
+               :locatedIn ?workCell .
+    ?workCell rdfs:label ?location .
+    FILTER(lang(?name) = "zh")
+}
+
+# ==============================
+# CQ4: 统计各工作单元的设备数量
+# Count equipment per work cell
+# ==============================
+SELECT ?workCell ?cellLabel (COUNT(?equipment) AS ?equipmentCount)
+WHERE {
+    ?equipment a :Equipment ;
+               :locatedIn ?workCell .
+    ?workCell rdfs:label ?cellLabel .
+    FILTER(lang(?cellLabel) = "zh")
+}
+GROUP BY ?workCell ?cellLabel
+ORDER BY DESC(?equipmentCount)
+
+# ==============================
+# CQ5: SPARQL UPDATE - 插入数据
+# INSERT DATA - Add new equipment instance
+# ==============================
+INSERT DATA {
+    :Lathe_003 a :Lathe ;
+               rdfs:label "3号数控车床"@zh ;
+               :serialNumber "CNC-LATHE-2024-003" ;
+               :power "25.0"^^xsd:decimal ;
+               :hasStatus :Idle ;
+               :locatedIn :WorkCell_C .
+}
+
+# ==============================
+# CQ6: SPARQL UPDATE - 条件更新设备状态
+# UPDATE equipment status conditionally
+# ==============================
+DELETE { ?equipment :hasStatus :Idle }
+INSERT { ?equipment :hasStatus :Running }
+WHERE {
+    ?equipment a :Equipment ;
+               :hasStatus :Idle ;
+               :assignedTo ?task .
+    ?task :hasStartTime ?start .
+    FILTER(?start <= NOW())
+}
+
+# ==============================
+# CQ7: 联邦查询 - 跨端点查询
+# Federated Query - across multiple SPARQL endpoints
+# ==============================
+SELECT ?equipment ?externalInfo
+WHERE {
+    ?equipment a :Equipment .
+    SERVICE <http://external-endpoint.example.org/sparql> {
+        ?equipment :externalID ?externalInfo .
+    }
+}
+
+# ==============================
+# CQ8: 查询故障设备及其维修历史
+# ==============================
+SELECT ?equipment ?faultTime ?maintenanceRecord
+WHERE {
+    ?equipment a :Equipment ;
+               :hasStatus :Faulty ;
+               :hasFaultTime ?faultTime .
+    OPTIONAL {
+        ?maintenanceRecord :relatedTo ?equipment ;
+                           a :MaintenanceRecord .
+    }
+}
+ORDER BY DESC(?faultTime)

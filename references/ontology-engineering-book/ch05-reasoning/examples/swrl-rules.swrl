@@ -1,0 +1,129 @@
+# SWRL 规则示例 - 工程领域推理规则
+# SWRL Rules - Engineering Domain Inference Rules
+#
+# SWRL (Semantic Web Rule Language) 结合了OWL的类定义和规则推理
+# 语法：前件(Antecedent) → 后件(Consequent)
+# 多个原子之间用 ∧ (AND) 连接
+#
+# 注意：标准SWRL不支持规则体中的否定（¬）。
+# 能力冲突规则中的"设备无法加工"需借助外部DL-Safe规则扩展实现，
+# 或在应用层通过SPARQL查询辅助判断。
+# Note: Standard SWRL does not support negation-as-failure in rule bodies.
+# Capability conflict rules requiring "equipment cannot process" must be handled
+# via DL-Safe rule extensions or supplementary SPARQL queries at the application layer.
+
+# ==============================
+# 1. 基础推理规则
+# ==============================
+
+# 规则：高功率设备需要冷却
+# Rule: High-power equipment requires cooling
+设备(?x) ∧ 功率(?x, ?p) ∧ swrlb:greaterThan(?p, 10)
+    → 高功率设备(?x)
+
+高功率设备(?x) → 需要冷却(?x)
+
+# 验证推理链（前向推理示例）：
+# 事实: 设备(Lathe_003)，功率(Lathe_003, 15)
+# 步骤1: 功率(Lathe_003, 15) ∧ 15>10 → 高功率设备(Lathe_003)
+# 步骤2: 高功率设备(Lathe_003) → 需要冷却(Lathe_003)
+# 结论: Lathe_003 需要冷却
+
+# ==============================
+# 2. 设备调度规则
+# ==============================
+
+# 规则：状态冲突检查 - 正在运行的设备不能分配新任务
+# Rule: Status conflict - running equipment cannot be assigned new tasks
+Equipment(?e) ∧ hasStatus(?e, Running) ∧
+Task(?t) ∧ assignedTo(?t, ?e)
+    → StatusConflict(?t)
+
+# 规则：时间冲突检查
+# Rule: Time conflict detection
+# 注：后件使用单变量类断言 TimeConflict(?t1)，SWRL类原子只接受单个参数
+# Note: The consequent uses a unary class assertion TimeConflict(?t1);
+#       SWRL class atoms take exactly one argument.
+Task(?t1) ∧ Task(?t2) ∧
+assignedTo(?t1, ?e) ∧ assignedTo(?t2, ?e) ∧
+hasStartTime(?t1, ?s1) ∧ hasEndTime(?t1, ?e1) ∧
+hasStartTime(?t2, ?s2) ∧ hasEndTime(?t2, ?e2) ∧
+swrlb:lessThan(?s1, ?e2) ∧
+swrlb:greaterThan(?e1, ?s2)
+    → TimeConflict(?t1)
+
+# 规则：长时间维护预警（超过24小时）
+# Rule: Long maintenance warning (over 24 hours)
+# 注：swrlb:add(?now, 86400, ?tomorrow) 中 ?now 需由外部提供或使用swrlb:currentTimeMillis等内置函数
+# Note: The built-in swrlb:add requires ?now to be bound. Use a dedicated temporal built-in
+#       or inject the current timestamp as an ABox fact before reasoning.
+Equipment(?e) ∧ hasStatus(?e, Maintenance) ∧
+hasMaintenanceStart(?e, ?start) ∧
+hasMaintenanceEnd(?e, ?end) ∧
+swrlb:subtract(?end, ?start, ?duration) ∧
+swrlb:greaterThan(?duration, 86400)
+    → LongMaintenanceWarning(?e)
+
+# ==============================
+# 3. 工艺推荐规则
+# ==============================
+
+# 规则：基于材料相似性推荐工艺
+# Rule: Process recommendation based on material similarity
+Product(?p1) ∧ Product(?p2) ∧
+hasMaterial(?p1, ?m) ∧ hasMaterial(?p2, ?m) ∧
+hasFeature(?p1, ?f) ∧ hasFeature(?p2, ?f) ∧
+hasProcess(?p2, ?proc)
+    → recommendedProcess(?p1, ?proc)
+
+# 规则：基于设备能力推荐操作设备
+# Rule: Equipment recommendation based on capability
+Product(?p) ∧ requiresOperation(?p, ?op) ∧
+Turning(?op) ∧ Equipment(?e) ∧
+Lathe(?e) ∧ hasCapability(?e, ?cap) ∧
+suitableFor(?cap, ?op)
+    → recommendedEquipment(?op, ?e)
+
+# ==============================
+# 4. 工序顺序推理规则
+# ==============================
+
+# 规则：工序必须按顺序执行（前序完成才能开始后序）
+# Rule: Operations must follow order (predecessor must complete before successor starts)
+Operation(?op1) ∧ Operation(?op2) ∧
+precedes(?op1, ?op2) ∧ hasStatus(?op1, Completed)
+    → canStart(?op2, true)
+
+# 规则：热处理必须在焊接之后进行（领域约束）
+# Rule: Heat treatment must follow welding (domain constraint)
+Operation(?op1) ∧ Operation(?op2) ∧
+hasType(?op1, HeatTreatment) ∧ hasType(?op2, Welding) ∧
+isPartOfSameProcess(?op1, ?op2)
+    → precedes(?op2, ?op1)
+
+# 规则：工艺参数超范围预警
+# Rule: Process parameter out-of-range warning
+CuttingOperation(?op) ∧ hasSpeed(?op, ?s) ∧
+swrlb:greaterThan(?s, 5000)
+    → ParameterWarning(?op)
+
+# ==============================
+# 5. 资源冲突规则
+# ==============================
+
+# 规则：资源可用性不足时冲突预警
+# Rule: Resource availability conflict
+Task(?t) ∧ requiresResource(?t, ?r) ∧
+Resource(?r) ∧ hasAvailability(?r, ?a) ∧
+swrlb:lessThan(?a, 1)
+    → ResourceConflict(?t)
+
+# ==============================
+# SWRL 语法备注
+# ==============================
+# Antecedent → Consequent（前提 → 结论）
+# 多个原子之间用"∧"（AND）连接，表示"同时满足所有原子条件"
+# 变量用 ?variableName 格式表示
+# swrlb:* 是内置函数库（比较、计算、字符串操作等）
+# 类原子（Class atoms）只接受一个变量参数，如 ClassName(?x)
+# 属性原子（Property atoms）接受两个参数，如 propertyName(?x, ?y)

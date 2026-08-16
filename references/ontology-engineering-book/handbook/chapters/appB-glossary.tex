@@ -1,0 +1,343 @@
+% 附录B 中英术语对照表（按主题分组，组内拼音/字母混排）
+\chapter{中英术语对照表}
+
+这张表为「对照查阅」而设：读英文文献或标准文档时碰到生词、给类与属性起英文名时拿不准译法、
+与同行讨论时需要确认一个术语的准确含义——都可以回到这里，用一句话先把概念「定位」住。
+全表按七个主题分组：基础概念、描述逻辑与推理、语言与标准、方法论、知识图谱工程、
+本体与大语言模型、工具与生态；组内按中文拼音排序，便于顺手翻查。
+表中释义只负责给出最关键的区分点，不替代正文——深入的动机、例子与陷阱，请回到对应章节。
+
+收词遵循两条原则：一是\textbf{全书正文出现的核心术语}，凡是章节里加粗讲解过的概念都应当能在此查到；
+二是\textbf{语义网标准与主流工具文档的高频词}，即读者在 W3C 规范、Protégé 界面、
+推理器与三元组库文档中大概率会遇到的词汇，即使正文只是带过，也一并收入。
+两条原则合计收词三百条左右；释义控制在一两句之内，准确优先、精炼次之。
+
+体例说明：没有通行中文译名的缩写与专名（如 RDF、SPARQL、Protégé），
+直接以原文列于「中文」栏，并按其字母序混入拼音序参与排序；
+一词多译时采用本书用法（如 Individual 译「个体」，Instance 译「实例」，两词分立词条）；
+英文栏给出标准文档中的规范拼写，必要时附缩写或全称。
+
+\begin{longtable}{@{}p{0.16\linewidth}p{0.26\linewidth}p{0.5\linewidth}@{}}
+\toprule \textbf{中文} & \textbf{英文} & \textbf{一句话释义} \\ \midrule \endfirsthead
+\toprule \textbf{中文} & \textbf{英文} & \textbf{一句话释义} \\ \midrule \endhead
+\bottomrule \endlastfoot
+\multicolumn{3}{@{}l}{\textbf{——基础概念——}} \\*
+\addlinespace[3pt]
+ABox（断言层） & ABox (Assertion Box) & 知识库中关于具体个体的事实断言集合，随业务数据高频变化。 \\
+本体 & Ontology & 共享概念化的显式形式化规范说明，是机器可读的领域知识模型。 \\
+部分整体关系 & Part-whole Relation & 「是……的一部分」，如主轴之于车床；切不可与「是一种」混用。 \\
+不相交 & Class Disjointness & 声明两类没有公共实例，如设备与材料；是推理器查错的重要依据。 \\
+等价类 & Equivalent Classes & 声明两类外延必然相同的公理；常用于以充要条件定义一个类。 \\
+顶层本体 & Upper / Top-level Ontology & 提供跨领域最抽象范畴（物体、过程、性质等）的本体，如 BFO、DOLCE。 \\
+定义域 & Domain & 属性主语所属的类；推理器据此推断主语类型，而非做录入拦截。 \\
+断言 & Assertion & 关于个体的原子事实陈述，分类断言与属性断言两种。 \\
+对象属性 & Object Property & 把个体连到另一个体的属性，如 locatedIn；可声明传递、对称等特性。 \\
+分类法 & Taxonomy & 只含上下位层次的概念体系；本体在其上再加关系与公理。 \\
+父类 & Superclass & 层次中更一般的类，其属性与约束被全部子类继承。 \\
+概念化 & Conceptualization & 对目标领域中对象、概念及其关系的抽象「世界观」，是本体的源头。 \\
+个体 & Individual & 世界中具体或抽象的单个对象，如编号 EQ-2023-0117 的那台车床。 \\
+公理 & Axiom & 本体中规定必然成立的逻辑陈述，是机器查错与推导新知识的依据。 \\
+互操作性 & Interoperability & 不同系统正确交换并使用信息的能力；本体解决其中的语义层。 \\
+类 & Class & 满足同一资格判据的对象集合的抽象，如「数控车床」；回答「是什么」。 \\
+领域本体 & Domain Ontology & 刻画某一特定领域（制造、医疗等）概念与关系的本体。 \\
+模式 & Schema & 数据的结构定义；数据库模式面向存取效率，本体面向共识与推理。 \\
+内涵 & Intension & 类的资格判据——满足什么条件才算成员；与外延相对。 \\
+轻量级本体 & Lightweight Ontology & 以层次和少量关系为主、公理稀少的本体，如多数 SKOS 词表。 \\
+RBox（角色层） & RBox (Role Box) & 描述逻辑中关于属性（角色）的公理集合，如属性链、互逆声明。 \\
+任务本体 & Task Ontology & 刻画某类任务及其求解方法（诊断、排产等）所用概念的本体。 \\
+实例 & Instance & 类的成员个体；「某个体是某类的实例」即类断言。 \\
+「是一种」关系 & is-a Relation & 子类对父类的隶属判断，沿层次向上每一步都必须为真。 \\
+受控词表 & Controlled Vocabulary & 限定可用术语的封闭列表，语义资源谱系中最轻的一级。 \\
+数据属性 & Data / Datatype Property & 把个体连到字面值的属性，如 hasPower 连到数值 15.5。 \\
+属性 & Property & 描述个体特征或个体间联系的二元关系，分对象、数据、注释三种。 \\
+TBox（术语层） & TBox (Terminology Box) & 类与公理构成的术语层，由工程师精心设计，演化以月计。 \\
+外延 & Extension & 类在某一解释下的全部成员之集合；与内涵相对。 \\
+显性知识 & Explicit Knowledge & 已被言说、记录、可直接传递的知识，是形式化的起点。 \\
+形式化 & Formalization & 用具有精确语义的形式语言表达知识，使之可被机器推理。 \\
+叙词表 & Thesaurus & 在词表上增加广义词、狭义词、相关词关系的语义资源。 \\
+隐性知识 & Tacit Knowledge & 难以言传的经验知识；其中规则型部分可被逼问成显式条件。 \\
+应用本体 & Application Ontology & 面向单一应用、组合领域与任务概念的本体，复用性最低。 \\
+元数据 & Metadata & 描述数据的数据，如作者、日期、来源；常用 Dublin Core 表达。 \\
+语义 & Semantics & 符号与其所指含义的对应；形式语义可被机器无歧义地解释。 \\
+语义异构 & Semantic Heterogeneity & 同义异名、同名异义等含义层面的不一致，是数据集成的主要障碍。 \\
+哲学本体论 & Ontology (Philosophy) & 研究「存在之为存在」的哲学分支，是工程本体论的思想源头。 \\
+知识表示 & Knowledge Representation & 用形式结构刻画知识，使机器可存储、查询、推理的研究领域。 \\
+知识工程 & Knowledge Engineering & 获取、建模、维护知识系统的工程学科；本体工程是其核心分支。 \\
+知识库 & Knowledge Base & 形式化知识的集合；描述逻辑中常指 TBox 与 ABox 之并。 \\
+知识熵减 & Knowledge Entropy Reduction & 本书统一视角：把分散、含糊、私有的知识变得集中、精确、共享。 \\
+值域 & Range & 属性宾语所属的类或数据类型；同样用于推断而非拦截。 \\
+重量级本体 & Heavyweight Ontology & 富含公理约束、支持强推理的本体，构建与维护成本高。 \\
+注释属性 & Annotation Property & 承载标签、定义、出处等说明信息的属性，不参与逻辑推理。 \\
+子类关系 & SubClassOf & 类间包含关系：子类的每个实例必然也是父类的实例。 \\
+\addlinespace[10pt]
+\multicolumn{3}{@{}l}{\textbf{——描述逻辑与推理——}} \\*
+\addlinespace[3pt]
+ALC & Attributive Language with Complements & 描述逻辑的基准家族：含交、并、补与存在、全称限制。 \\
+包含检查 & Subsumption Checking & 判定一个类是否必然为另一类的子类，分类服务的基本单元。 \\
+不可满足类 & Unsatisfiable Class & 因公理冲突而必为空的类；Protégé 中标红，提示建模错误。 \\
+传递属性 & Transitive Property & 由 R(a,b) 与 R(b,c) 可推出 R(a,c) 的属性，如 partOf。 \\
+存在限制 & Existential Restriction & \(\exists R.C\)：至少沿 R 连到一个 C 的实例；对应 someValuesFrom。 \\
+单调推理 & Monotonic Reasoning & 新增公理只会增加结论、不推翻旧结论；OWL 推理的基本性质。 \\
+底概念 & Bottom Concept & \(\bot\)（owl:Nothing）：必然为空的类，用于表达矛盾与不相交。 \\
+顶概念 & Top Concept & \(\top\)（owl:Thing）：包含一切个体的类，层次树之根。 \\
+对称属性 & Symmetric Property & R(a,b) 成立则 R(b,a) 必成立，如「与……相邻」。 \\
+非单调推理 & Non-monotonic Reasoning & 允许新信息推翻旧结论的推理，如默认推理；OWL 不直接支持。 \\
+非对称属性 & Asymmetric Property & R(a,b) 成立则 R(b,a) 必不成立，如工序间的「先于」。 \\
+非自反属性 & Irreflexive Property & 任何个体与自身都不成立的属性，如「不同于」「先于」。 \\
+封闭世界假设 & Closed World Assumption & 未记录的事实视为假；数据库与 SQL 的默认语义。 \\
+分类 & Classification & 推理服务：算出所有类对之间的包含关系，得到推断后的层次树。 \\
+否定 & Negation / Complement & \(\lnot C\)：不属于 C 的全部个体构成的类；对应 complementOf。 \\
+否定即失败 & Negation as Failure & 「查不到即为假」的程序性否定，属封闭世界，区别于逻辑否定。 \\
+概念 & Concept & 描述逻辑对「类」的称呼；OWL 的 Class 与之对应。 \\
+规则 & Rule & 「若条件则结论」形式的知识，如 SWRL 规则；补足公理的表达盲区。 \\
+函数性属性 & Functional Property & 每个主语至多一个值；两值并存会被推为同一对象或报矛盾。 \\
+合取 & Conjunction / Intersection & \(C \sqcap D\)：同时属于两类的个体构成的类；对应 intersectionOf。 \\
+后向链接 & Backward Chaining & 从查询目标出发反向寻找支持事实的推理策略，按需计算。 \\
+解释 & Interpretation & 给符号指派论域对象的数学结构；满足全部公理者称为模型。 \\
+基数约束 & Cardinality Restriction & 限定属性取值个数的限制：至少 n 个、至多 n 个、恰好 n 个。 \\
+计算复杂度 & Computational Complexity & 推理代价随规模增长的程度；表达力与复杂度此消彼长。 \\
+角色 & Role & 描述逻辑对「属性」的称呼，大体对应 OWL 的对象属性。 \\
+开放世界假设 & Open World Assumption & 未记录的事实只算「未知」而非假；OWL 推理的默认立场。 \\
+可满足性 & Satisfiability & 类或知识库能否拥有至少一个模型，核心推理问题之一。 \\
+可判定性 & Decidability & 推理问题是否存在必然终止的算法；OWL DL 为此限制表达力。 \\
+描述逻辑 & Description Logic & 一阶逻辑的可判定子集家族，OWL 的逻辑地基。 \\
+默认逻辑 & Default Logic & 形式化「通常如此、容许例外」推理的非单调逻辑（Reiter）。 \\
+模型 & Model & 使知识库全部公理为真的解释；蕴涵即「在所有模型中为真」。 \\
+逆函数性属性 & Inverse Functional Property & 取值能唯一确定主语的属性，如序列号；常用于实体合并。 \\
+逆属性 & Inverse Property & 互为反方向的属性对，如「位于」与「容纳」。 \\
+前向链接 & Forward Chaining & 由事实出发反复应用规则推出全部结论的策略，常配合物化。 \\
+全称限制 & Universal Restriction & \(\forall R.C\)：沿 R 的所有值都属于 C；没有值也算满足（易错）。 \\
+实例化（实现） & Realization & 推理服务：求出每个个体所属的最具体的类。 \\
+属性链 & Property Chain & 复合两个属性推出第三个的公理，如「祖父 = 父亲接父亲」。 \\
+SROIQ & SROIQ & OWL 2 DL 底层的高表达力描述逻辑，名称由构件字母拼成。 \\
+Tableau 算法 & Tableau Algorithm & 主流推理算法：尝试构造模型，构造必然失败即证不可满足。 \\
+推理 & Reasoning / Inference & 由显式知识按逻辑规则导出隐含结论的过程。 \\
+推理器 & Reasoner & 实现一致性检查、分类等推理服务的引擎，如 HermiT、ELK。 \\
+唯一名假设 & Unique Name Assumption & 假定不同名字必指不同个体；OWL 不采用，需显式声明互异。 \\
+物化 & Materialization & 预先算出并存储全部推断三元组，以空间换查询速度。 \\
+限定基数约束 & Qualified Cardinality Restriction & 在计数上再限定值的类别，如「恰有 2 个『车轮』类部件」。 \\
+析取 & Disjunction / Union & \(C \sqcup D\)：属于任一类即可的并类；对应 unionOf。 \\
+一阶逻辑 & First-order Logic & 含量词与谓词的经典逻辑，表达力强但推理不可判定。 \\
+一致性检查 & Consistency Checking & 判定知识库是否存在模型，即整体上有无逻辑矛盾。 \\
+蕴涵 & Entailment & 公理集在其所有模型中必然导出某结论的关系，记作 \(\models\)。 \\
+值限制 & Value Restriction (hasValue) & 限定属性必须连到某个特定个体或字面值；对应 hasValue。 \\
+自反属性 & Reflexive Property & 每个个体对自身都成立的属性，如广义的 partOf。 \\
+阻塞 & Blocking & Tableau 中止环路展开的技术，保证算法在有限步内终止。 \\
+\addlinespace[10pt]
+\multicolumn{3}{@{}l}{\textbf{——语言与标准（RDF/RDFS/OWL/SPARQL/SHACL）——}} \\*
+\addlinespace[3pt]
+ASK 查询 & SPARQL ASK & 只回答真假的查询形式：图中是否存在匹配该模式的数据。 \\
+绑定 & Binding & 求解时变量与具体 RDF 项的一次配对；结果集就是绑定表。 \\
+变量 & Variable & SPARQL 中以 ? 开头的占位符，可匹配任意 RDF 项。 \\
+CONSTRUCT 查询 & SPARQL CONSTRUCT & 按模板把查询结果织成新 RDF 图，常用于转换与抽取视图。 \\
+导入声明 & owl:imports & 把另一本体整体引入当前本体的声明，模块化复用的基础。 \\
+DESCRIBE 查询 & SPARQL DESCRIBE & 返回与目标资源相关的描述子图，边界由端点实现决定。 \\
+DL-Safe 规则 & DL-Safe Rules & 只对具名个体生效的 SWRL 规则限制，以此换取可判定性。 \\
+FILTER & SPARQL FILTER & 对候选解施加布尔条件（比较、正则等），不满足者剔除。 \\
+函数式语法 & OWL Functional Syntax & OWL 规范采用的官方抽象语法，一行一条公理，便于机读。 \\
+IRI & Internationalized Resource Identifier & 国际化资源标识符：本体中万物的全球唯一「身份证号」。 \\
+校验报告 & Validation Report & SHACL 校验输出的 RDF 报告：整体是否合规及各违规详情。 \\
+基本图模式 & Basic Graph Pattern & 一组带变量的三元组模式，SPARQL 查询的最小匹配单元。 \\
+节点形状 & Node Shape & 约束目标节点本身的 SHACL 形状，可挂载多条属性形状。 \\
+JSON-LD & JSON for Linked Data & 以 JSON 承载 RDF 的语法，经 @context 把键名映射到 IRI。 \\
+聚合函数 & Aggregate Function & COUNT、SUM、AVG 等把一组解汇总为单值，配合 GROUP BY。 \\
+具名图 & Named Graph & 用 IRI 命名的三元组集合，用于分库、溯源与权限管理。 \\
+空节点 & Blank Node & 无全局标识的匿名节点，仅文档内部可引用；发布数据时慎用。 \\
+链接数据 & Linked Data & 用 IRI 命名、HTTP 可解引用、相互链接的数据发布原则。 \\
+Manchester 语法 & Manchester Syntax & 面向人类阅读的 OWL 语法，Protégé 类表达式编辑器采用。 \\
+命名空间 & Namespace & 一组相关 IRI 的公共前段，经前缀缩写后免写整串。 \\
+默认图 & Default Graph & RDF 数据集中不属于任何具名图的那张「无名」图。 \\
+目标声明 & SHACL Target & 指定形状管辖哪些节点，如 sh:targetClass 锁定某类全部实例。 \\
+内建函数 & SWRL Built-ins & SWRL 规则里的比较与运算谓词，如 swrlb:greaterThan。 \\
+N-Triples & N-Triples & 一行一条三元组、全部写完整 IRI 的行式语法，适合批处理。 \\
+OPTIONAL & SPARQL OPTIONAL & 可选匹配：缺失部分不淘汰整条解，相当于 SQL 左外连接。 \\
+OWL & Web Ontology Language & W3C 网络本体语言，以描述逻辑为语义基础；现行版本 OWL 2。 \\
+OWL 2 EL & OWL 2 EL Profile & 面向超大类层次的子语言，多项式时间完成分类，如 SNOMED CT。 \\
+OWL 2 QL & OWL 2 QL Profile & 面向海量数据查询的子语言，推理可改写为标准 SQL 执行。 \\
+OWL 2 RL & OWL 2 RL Profile & 可用规则引擎完整实现的子语言，适合三元组库做物化推理。 \\
+OWL DL & OWL DL & 表达力与可判定性兼顾的 OWL 子集，推理器支持的主战场。 \\
+OWL Full & OWL Full & 不设语法限制的 OWL 全集，表达自由但推理不可判定。 \\
+前缀 & Prefix & 命名空间的本地简称，如 rdfs:；声明一次，处处缩写。 \\
+RDF & Resource Description Framework & W3C 资源描述框架：用「主谓宾」三元组陈述一切的数据模型。 \\
+RDFS & RDF Schema & 在 RDF 上增加类、子类、定义域、值域等建模词汇的模式层。 \\
+RDF-star & RDF-star & 允许把三元组本身作主语或宾语的扩展，便于陈述「关于陈述」。 \\
+RDF/XML & RDF/XML & RDF 最早的标准交换语法，机读为主，人类可读性差。 \\
+三元组 & Triple & RDF 的原子陈述「主语—谓语—宾语」，知识图谱的最小单元。 \\
+SHACL & Shapes Constraint Language & W3C 形状约束语言，按封闭世界口径校验 RDF 数据质量。 \\
+双关 & Punning & OWL 2 允许同一 IRI 兼作类与个体等多重身份，逻辑上分别看待。 \\
+数据类型 & Datatype & 字面量的取值空间声明，如 xsd:decimal、xsd:date。 \\
+属性路径 & Property Path & SPARQL 中用 /、*、+ 等把谓词组成路径，一步写出多跳查询。 \\
+属性形状 & Property Shape & 沿某条路径约束取值的 SHACL 形状，如个数、类型、区间。 \\
+四元组 & Quad & 三元组加上所在图名，带具名图数据集的存储单元。 \\
+SKOS & Simple Knowledge Organization System & W3C 简单知识组织系统：表达词表与叙词表的轻量词汇。 \\
+SPARQL & SPARQL Protocol and RDF Query Language & RDF 的标准查询语言与协议，地位相当于关系数据库的 SQL。 \\
+SPARQL 端点 & SPARQL Endpoint & 经 HTTP 接收 SPARQL 查询并返回结果的服务地址。 \\
+SPARQL UPDATE & SPARQL Update & 插入、删除、装载 RDF 数据的更新语言，与查询语言同族。 \\
+SWRL & Semantic Web Rule Language & 在 OWL 上叠加 Horn 规则的语言，表达公理写不出的条件结论。 \\
+Turtle & Terse RDF Triple Language & 最常手写的 RDF 语法：前缀、分号、逗号缩写，紧凑易读。 \\
+W3C & World Wide Web Consortium & 万维网联盟：RDF、OWL、SPARQL、SHACL 等标准的制定组织。 \\
+五星开放数据 & Five-star Open Data & 评价数据开放程度的五级阶梯，顶级是「链接到他人的数据」。 \\
+形状 & Shape & SHACL 中一组约束的载体，描述「合格的数据长什么样」。 \\
+XSD & XML Schema Datatypes & RDF 字面量沿用的数据类型体系：string、decimal、dateTime 等。 \\
+严重级别 & Severity & SHACL 违规的分级：Violation、Warning、Info，便于分流处理。 \\
+约束组件 & Constraint Component & SHACL 的可复用约束单元，如 minCount、datatype、pattern。 \\
+语言标签 & Language Tag & 字面量的语种标注，如 \texttt{"车床"@zh}；同一概念可挂多语标签。 \\
+语义网 & Semantic Web & 让数据带着机器可理解的语义在 Web 上互联的愿景与技术栈。 \\
+主语、谓语、宾语 & Subject / Predicate / Object & 三元组三要素：被陈述者、关系、关系所指（资源或字面量）。 \\
+字面量 & Literal & 字符串、数值、日期等具体数据值，只能出现在宾语位置。 \\
+\addlinespace[10pt]
+\multicolumn{3}{@{}l}{\textbf{——方法论——}} \\*
+\addlinespace[3pt]
+版本管理 & Ontology Versioning & 跟踪本体修订、标注版本 IRI、管理兼容性的工程实践。 \\
+本体承诺 & Ontological Commitment & 使用某本体即承诺接受它对世界的划分方式与公理约束。 \\
+本体对齐 & Ontology Alignment & 寻找两个本体间实体对应关系的过程及其结果集合。 \\
+本体复用 & Ontology Reuse & 优先引用既有本体而非从零新建，省成本且利于互通。 \\
+本体工程师 & Ontology Engineer & 主持概念化与形式化、衔接领域专家与信息系统的建模者。 \\
+本体合并 & Ontology Merging & 把多个同领域本体融为一个新本体，消解重叠与冲突。 \\
+本体集成 & Ontology Integration & 保留各源本体、经映射组合使用的集成方式。 \\
+本体模块化 & Ontology Modularization & 把大本体拆成可独立加载的模块，控制复杂度与复用粒度。 \\
+本体评估 & Ontology Evaluation & 从一致性、完整性、能力问题覆盖度等维度检验本体质量。 \\
+本体设计模式 & Ontology Design Pattern & 反复出现的建模问题的标准解法，如 n 元关系、角色模式。 \\
+本体学习 & Ontology Learning & 从文本等数据半自动抽取术语、层次与关系以辅助建模。 \\
+本体需求规格说明 & Ontology Requirements Specification (ORSD) & 记录目的、范围、用户与能力问题清单的需求文档。 \\
+本体演化 & Ontology Evolution & 需求与领域变化驱动的本体持续修订及其影响管理。 \\
+本体映射 & Ontology Mapping & 用公理或规则显式写下两本体实体间对应关系的产物。 \\
+反模式 & Anti-pattern & 常见的错误建模套路，如把部分整体关系写成「是一种」。 \\
+刚性 & Rigidity & OntoClean 元属性：实例是否在一切可能情形下都属于该类。 \\
+领域专家 & Domain Expert & 掌握领域知识、负责提供并验收建模内容的业务专家。 \\
+METHONTOLOGY & METHONTOLOGY & 马德里理工提出的经典方法论：从规范说明到维护的全流程。 \\
+命名约定 & Naming Convention & 类、属性、个体的统一命名规则，如类名大驼峰、属性小驼峰。 \\
+MIREOT & Minimum Information to Reference an External Ontology Term & 只抽取外部术语最小必要信息的轻量复用策略。 \\
+能力问题 & Competency Question & 本体建成后必须能回答的问题清单，驱动范围界定与验收。 \\
+NeOn 方法论 & NeOn Methodology & 面向本体网络的场景化方法论，提供九种工程场景与指南。 \\
+OntoClean & OntoClean & 用刚性、同一性等元属性审查类层次合法性的评估方法。 \\
+On-To-Knowledge & On-To-Knowledge & 面向企业知识管理的早期方法论，强调应用驱动与迭代。 \\
+七步法 & Ontology Development 101 & Noy 与 McGuinness 的入门流程：定范围、列术语直到填实例。 \\
+生命周期 & Ontology Lifecycle & 本体从需求、构建、评估、发布到维护演化的全过程。 \\
+术语抽取 & Term Extraction & 从语料中识别候选领域术语的步骤，概念化的原料。 \\
+同一性 & Identity & OntoClean 元属性：判断两个实例是否同一的判据从何而来。 \\
+统一性 & Unity & OntoClean 元属性：实例是否构成边界清晰的整体。 \\
+依赖性 & Dependence & OntoClean 元属性：该类实例是否必须依赖他物而存在。 \\
+元属性 & Meta-property & OntoClean 给类打的二阶标签：刚性、同一性、统一性、依赖性。 \\
+正交性 & Orthogonality & 各本体分工明确、不重复定义同一概念的生态原则（OBO）。 \\
+治理 & Governance & 规定谁能改什么、如何评审与发布的组织流程与职责体系。 \\
+知识获取 & Knowledge Acquisition & 把专家经验与文档内容转化为形式化表示的过程。 \\
+知识获取瓶颈 & Knowledge Acquisition Bottleneck & 专家时间昂贵、隐性知识难提取造成的经典工程瓶颈。 \\
+中间扩展法 & Middle-out Approach & 从最稳定的核心概念出发、向上抽象向下细化的建层策略。 \\
+自底向上 & Bottom-up Approach & 从具体术语归纳出上层概念的建层策略，易陷入细节。 \\
+自顶向下 & Top-down Approach & 从最抽象概念逐层细分的建层策略，易脱离数据实际。 \\
+最小本体承诺 & Minimal Ontological Commitment & Gruber 设计原则：只约束必要之事，给复用者留余地。 \\
+\addlinespace[10pt]
+\multicolumn{3}{@{}l}{\textbf{——知识图谱工程——}} \\*
+\addlinespace[3pt]
+本体填充 & Ontology Population & 向既有 TBox 批量注入实例与断言、生成 ABox 的过程。 \\
+变更数据捕获 & Change Data Capture (CDC) & 监听源库的增删改并增量同步到图谱，保持两端一致。 \\
+closeMatch & skos:closeMatch & SKOS 弱对应：两概念高度相近，但不保证处处可互换。 \\
+differentFrom & owl:differentFrom & 显式声明两个体互不相同，弥补「无唯一名假设」的缺口。 \\
+多跳查询 & Multi-hop Query & 沿多条边连续行走的查询，如「设备—工作单元—车间」两跳。 \\
+ETL & Extract-Transform-Load & 抽取、转换、装载：把源数据批量搬进图谱的经典流水线。 \\
+exactMatch & skos:exactMatch & SKOS 强对应：两概念可在绝大多数场景下互换使用。 \\
+关系抽取 & Relation Extraction & 从文本中识别实体对之间语义关系的信息抽取任务。 \\
+联邦查询 & Federated Query & 用 SERVICE 子句把一条 SPARQL 分发到多个端点联合求解。 \\
+链接预测 & Link Prediction & 基于已有图结构或嵌入预测缺失的边，辅助图谱补全。 \\
+命名实体识别 & Named Entity Recognition & 从文本中定位人名、设备号等实体提及并标注其类型。 \\
+批量装载 & Bulk Loading & 绕过事务接口、离线构建索引的大规模三元组导入方式。 \\
+PROV & W3C PROV / PROV-O & W3C 溯源标准：用实体、活动、代理三要素记录数据来历。 \\
+R2RML & RDB to RDF Mapping Language & W3C 关系库到 RDF 的映射语言，把表行翻译成三元组。 \\
+RML & RDF Mapping Language & R2RML 的泛化扩展，支持 CSV、JSON、XML 等异构数据源。 \\
+sameAs & owl:sameAs & 断言两个 IRI 指同一实体，推理后属性互通；滥用易污染图谱。 \\
+三元组存储 & Triple Store & 面向 RDF 优化的数据库，提供 SPARQL 查询与推理支持。 \\
+事件抽取 & Event Extraction & 从文本识别事件触发词及其参与者、时间、地点等论元。 \\
+实体 & Entity & 图谱中可独立标识的对象节点，如某台设备、某张工单。 \\
+实体对齐 & Entity Alignment & 发现不同图谱或数据源中指称同一对象的节点对。 \\
+实体链接 & Entity Linking & 把文本中的实体提及挂接到知识库中对应条目的任务。 \\
+实体消歧 & Entity Disambiguation & 在多个同名候选里确定提及真正指称的那一个实体。 \\
+数据集成 & Data Integration & 让多源异构数据在统一语义下汇通；本体充当全局模式。 \\
+属性图 & Property Graph & 点与边都可带键值属性的图模型，Neo4j 等采用；有别于 RDF。 \\
+溯源 & Provenance & 记录数据由谁、何时、经何过程产生，可信图谱的基石。 \\
+图数据库 & Graph Database & 以图为一等公民的数据库统称，含三元组库与属性图库两族。 \\
+增量更新 & Incremental Update & 只把变化部分写入图谱并维护推断一致性的更新策略。 \\
+指代消解 & Coreference Resolution & 判定「它」「该设备」等指代语与先行词的同指关系。 \\
+直接映射 & Direct Mapping & W3C 默认规则：不写映射文件，按表名列名机械转 RDF。 \\
+知识抽取 & Knowledge Extraction & 从非结构化、半结构化数据获取实体、关系、事件的总称。 \\
+知识融合 & Knowledge Fusion & 对多源抽取结果做消歧、对齐、合并并裁决冲突的过程。 \\
+知识图谱 & Knowledge Graph & 以图组织实体及其关系的大规模知识库；本质是本体加海量实例。 \\
+知识图谱嵌入 & Knowledge Graph Embedding & 把实体与关系映射为低维向量以便计算与预测，如 TransE。 \\
+知识图谱问答 & Question Answering over KG & 把自然语言问题解析为图谱查询并返回答案的应用（KBQA）。 \\
+子图 & Subgraph & 围绕目标实体截取的局部图；GraphRAG 把它送进提示词。 \\
+\addlinespace[10pt]
+\multicolumn{3}{@{}l}{\textbf{——本体与大语言模型——}} \\*
+\addlinespace[3pt]
+词元 & Token & 大模型处理文本的最小单位；上下文长度按词元计数。 \\
+大模型辅助本体工程 & LLM-assisted Ontology Engineering & 用大模型起草术语、层次与公理草稿，由专家审定后采纳。 \\
+大语言模型 & Large Language Model & 在海量语料上预训练的生成式模型，长于语言、弱于事实保证。 \\
+多智能体系统 & Multi-agent System & 多个分工智能体协作完成任务的架构；本体可充当共享语义。 \\
+工具调用 & Tool Use / Function Calling & 模型按声明的接口模式生成调用参数，由外部程序实际执行。 \\
+GraphRAG & Graph-based RAG & 以知识图谱为检索源的 RAG：取出子图作为生成的事实依据。 \\
+幻觉 & Hallucination & 模型生成流畅但与事实或所给依据不符内容的现象。 \\
+护栏 & Guardrail & 对模型输入输出的强制校验层；本体与 SHACL 可充当语义护栏。 \\
+混合架构 & Neuro-symbolic Architecture & 神经网络管理解与生成、符号系统管事实与约束的组合架构。 \\
+检索增强生成 & Retrieval-Augmented Generation & 先检索相关材料再让模型据此作答，降低幻觉、可溯出处。 \\
+接地 & Grounding & 把模型的语言输出锚定到可验证的外部知识源上。 \\
+MCP & Model Context Protocol & 把外部数据与工具以统一协议接入大模型应用的开放标准。 \\
+嵌入 & Embedding & 把文本或图元素映射为稠密向量，语义相近则向量相近。 \\
+上下文窗口 & Context Window & 模型单次能处理的词元上限，决定可注入多少图谱内容。 \\
+少样本提示 & Few-shot Prompting & 在提示词中给少量示例、引导模型照样模仿的技巧。 \\
+神经符号 AI & Neuro-symbolic AI & 融合神经学习与符号推理两条路线的研究方向。 \\
+事实性 & Factuality & 生成内容与客观事实的一致程度，可用图谱加以核验。 \\
+思维链 & Chain-of-Thought & 让模型先写出推理步骤再给答案的提示技巧。 \\
+Text2SPARQL & Text-to-SPARQL & 把自然语言问题翻译成 SPARQL 的任务；本体提供词汇约束。 \\
+提示词 & Prompt & 喂给模型的输入文本，包含指令、上下文与示例。 \\
+提示工程 & Prompt Engineering & 系统化设计与迭代提示词、以稳定获得目标输出的实践。 \\
+微调 & Fine-tuning & 用领域数据继续训练基座模型；知识易过时，常与 RAG 互补。 \\
+温度 & Temperature & 采样随机度参数：调低则稳定保守，调高则发散多样。 \\
+向量检索 & Vector Search & 按嵌入相似度找近邻内容，弥补关键词检索的语义盲区。 \\
+向量数据库 & Vector Database & 存储嵌入并支持高效近邻检索的数据库，如 Milvus。 \\
+语义解析 & Semantic Parsing & 把自然语言映射为形式化查询或逻辑表示的任务总称。 \\
+语义相似度 & Semantic Similarity & 度量两段内容含义接近程度的指标，常用向量余弦。 \\
+智能体 & Agent & 能感知、规划并调用工具自主行动的大模型应用形态。 \\
+知识权威源 & Authoritative Knowledge Source & 系统中裁决事实对错的唯一可信来源；本书主张由本体担任。 \\
+知识注入 & Knowledge Injection & 把图谱事实经提示、检索或训练送入模型的各种手段。 \\
+\addlinespace[10pt]
+\multicolumn{3}{@{}l}{\textbf{——工具与生态——}} \\*
+\addlinespace[3pt]
+BFO & Basic Formal Ontology & 严格实在论取向的小型顶层本体，ISO 标准；OBO 与 IOF 之基。 \\
+Blazegraph & Blazegraph & 开源三元组库，曾长期支撑 Wikidata 的公共查询服务。 \\
+DBpedia & DBpedia & 从维基百科信息框抽取的多语言知识图谱，链接数据的枢纽。 \\
+DOLCE & Descriptive Ontology for Linguistic and Cognitive Engineering & 强调认知与语言范畴的顶层本体，区分持续体与发生体。 \\
+Dublin Core & Dublin Core (dcterms) & 题名、创建者、日期等十五项起步的通用元数据词汇。 \\
+ELK & ELK Reasoner & 面向 OWL 2 EL 的高速推理器，秒级分类百万级类层次。 \\
+FaCT++ & FaCT++ & C++ 实现的经典 Tableau 推理器，支持 OWL DL。 \\
+FOAF & Friend of a Friend & 描述人、组织及其社会关系的早期经典词汇。 \\
+Fuseki & Apache Jena Fuseki & Jena 配套的 SPARQL 服务器，HTTP 端点开箱即用。 \\
+GraphDB & Ontotext GraphDB & 商用 RDF 库，以规则物化推理与全文检索见长，有免费版。 \\
+HermiT & HermiT & 基于 hypertableau 演算的 OWL 2 DL 推理器，Protégé 常用选项。 \\
+IOF & Industrial Ontologies Foundry & 工业本体铸造厂：基于 BFO 的制造业参考本体体系。 \\
+ISO 15926 & ISO 15926 & 流程工业全生命周期数据集成与交换的本体化标准。 \\
+Jena & Apache Jena & Java 语义网框架：RDF 模型、SPARQL、规则推理与 TDB 存储。 \\
+LOV & Linked Open Vocabularies & 词汇表检索门户：找前人词汇、看复用情况的第一站。 \\
+Neo4j & Neo4j & 主流属性图数据库，用 Cypher 查询；可经插件与 RDF 互转。 \\
+OBO Foundry & Open Biological and Biomedical Ontologies Foundry & 生物医学本体协作生态，以正交性等共同原则著称。 \\
+OOPS! & OntOlogy Pitfall Scanner & 在线本体「找茬」工具，自动检测数十种常见建模缺陷。 \\
+OWL API & OWL API & Java 的 OWL 标准编程接口，Protégé 与多数推理器的底座。 \\
+owlready2 & Owlready2 & 把 OWL 类映射成 Python 类的库，可一行代码调用推理器。 \\
+OWL-Time & W3C Time Ontology & W3C 时间本体：时刻、时段及先后关系的标准词汇。 \\
+Pellet & Pellet / Openllet & 开源 OWL DL 推理器，支持 SWRL 与解释服务；今由 Openllet 延续。 \\
+Protégé & Protégé & 斯坦福出品的本体编辑器，事实标准，插件生态丰富。 \\
+pySHACL & pySHACL & Python 的 SHACL 校验器，命令行一键产出校验报告。 \\
+QUDT & Quantities, Units, Dimensions and Types & 量、单位、量纲本体：工程数据单位语义化的权威词汇。 \\
+RDF4J & Eclipse RDF4J & Java 的 RDF 工具箱与存储框架，GraphDB 等产品的接口基础。 \\
+rdflib & RDFLib & Python 最常用的 RDF 库：解析、序列化与内存 SPARQL。 \\
+ROBOT & ROBOT (ROBOT is an OBO Tool) & OBO 社区的本体流水线命令行：抽取、合并、推理、发布。 \\
+Schema.org & Schema.org & 主流搜索引擎共建的网页结构化数据词汇，SEO 事实标准。 \\
+SOSA/SSN & Sensor, Observation, Sample, and Actuator / Semantic Sensor Network & W3C 传感器与观测本体，物联网数据语义化的标准词汇。 \\
+SPARQLWrapper & SPARQLWrapper & Python 访问远程 SPARQL 端点的轻量客户端库。 \\
+SUMO & Suggested Upper Merged Ontology & 大型开源上层本体，词条与 WordNet 全面对齐。 \\
+TDB & Apache Jena TDB & Jena 原生持久化三元组存储（现为 TDB2），单机部署常见选择。 \\
+TopBraid & TopBraid EDG & 基于 SHACL 的商用语义数据治理平台，出自 SHACL 主笔团队。 \\
+Virtuoso & OpenLink Virtuoso & 老牌多模型数据库，DBpedia 公共端点的承载者。 \\
+WebProtégé & WebProtégé & Protégé 的网页协作版：多人同时编辑、变更讨论与历史。 \\
+WIDOCO & Wizard for Documenting Ontologies & 一键生成本体 HTML 文档站点的工具，含图示与多语言。 \\
+Wikidata & Wikidata & 维基媒体的协作知识库，上亿条目，公共 SPARQL 端点开放。 \\
+YAGO & YAGO (Yet Another Great Ontology) & 以高精度著称的开源知识库，新版把维基数据对齐到 Schema.org。 \\
+\end{longtable}

@@ -1,0 +1,213 @@
+<?xml version="1.0"?>
+<!--
+  manufacturing.owl
+  《工程本体论》4.5.3节 Protégé 实操示例本体
+  IRI: http://example.org/manufacturing
+
+  本文件对应以下 Protégé 操作步骤：
+    步骤1  新建本体，设置 IRI，保存为 manufacturing.owl
+    步骤2  搭建类层次（Equipment 及其子类）
+    步骤3  添加多语言 rdfs:label / rdfs:comment 注释
+    步骤4  创建对象属性 produces / producedBy（传递性 + 逆属性）
+    步骤5  创建数据属性 serialNumber / power / manufacturer
+    步骤6  添加 Equipment SubClassOf (serialNumber some xsd:string) 约束
+    步骤7  创建个例 Lathe_003 并赋值属性断言
+    步骤8  运行 HermiT/Pellet 推理器验证一致性
+-->
+<rdf:RDF
+    xmlns      = "http://example.org/manufacturing#"
+    xml:base   = "http://example.org/manufacturing"
+    xmlns:mfg  = "http://example.org/manufacturing#"
+    xmlns:owl  = "http://www.w3.org/2002/07/owl#"
+    xmlns:rdf  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs = "http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd  = "http://www.w3.org/2001/XMLSchema#">
+
+  <!-- ============================================================
+       步骤1：本体声明
+       ============================================================ -->
+  <owl:Ontology rdf:about="http://example.org/manufacturing">
+    <rdfs:label xml:lang="zh">制造设备本体</rdfs:label>
+    <rdfs:label xml:lang="en">Manufacturing Equipment Ontology</rdfs:label>
+    <rdfs:comment xml:lang="zh">
+      《工程本体论》4.5.3节 Protégé 实操示例。
+      以制造设备为领域，演示类层次、属性、约束与个例的完整建模流程。
+    </rdfs:comment>
+    <owl:versionInfo>1.0.0</owl:versionInfo>
+  </owl:Ontology>
+
+
+  <!-- ============================================================
+       步骤2 + 步骤3：类层次 与 多语言注释
+       ============================================================ -->
+
+  <!-- ── 根类：Equipment（设备）──────────────────────────────── -->
+  <owl:Class rdf:about="mfg:Equipment">
+    <rdfs:label xml:lang="zh">设备</rdfs:label>
+    <rdfs:label xml:lang="en">Equipment</rdfs:label>
+    <rdfs:comment xml:lang="zh">
+      制造系统中使用的各类生产、检测、运输设备的顶层基类。
+    </rdfs:comment>
+    <rdfs:comment xml:lang="en">
+      Top-level base class for all equipment used in a manufacturing system,
+      including processing, inspection, and transport equipment.
+    </rdfs:comment>
+    <!-- 步骤6：SubClassOf 约束 —— 每台设备至少有一个序列号 -->
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="mfg:serialNumber"/>
+        <owl:someValuesFrom rdf:resource="xsd:string"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+
+  <!-- ── ProcessingEquipment（加工设备）──────────────────────── -->
+  <owl:Class rdf:about="mfg:ProcessingEquipment">
+    <rdfs:label xml:lang="zh">加工设备</rdfs:label>
+    <rdfs:label xml:lang="en">Processing Equipment</rdfs:label>
+    <rdfs:comment xml:lang="zh">对工件进行形状、尺寸或表面加工的设备。</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="mfg:Equipment"/>
+  </owl:Class>
+
+  <!-- ── InspectionEquipment（检测设备）──────────────────────── -->
+  <owl:Class rdf:about="mfg:InspectionEquipment">
+    <rdfs:label xml:lang="zh">检测设备</rdfs:label>
+    <rdfs:label xml:lang="en">Inspection Equipment</rdfs:label>
+    <rdfs:comment xml:lang="zh">用于质量检验与尺寸测量的设备。</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="mfg:Equipment"/>
+  </owl:Class>
+
+  <!-- ── TransportEquipment（运输设备）──────────────────────── -->
+  <owl:Class rdf:about="mfg:TransportEquipment">
+    <rdfs:label xml:lang="zh">运输设备</rdfs:label>
+    <rdfs:label xml:lang="en">Transport Equipment</rdfs:label>
+    <rdfs:comment xml:lang="zh">负责物料或工件在生产线内搬运的设备。</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="mfg:Equipment"/>
+  </owl:Class>
+
+  <!-- ── Lathe（车床）── ProcessingEquipment 子类 ────────────── -->
+  <owl:Class rdf:about="mfg:Lathe">
+    <rdfs:label xml:lang="zh">车床</rdfs:label>
+    <rdfs:label xml:lang="en">Lathe</rdfs:label>
+    <rdfs:comment xml:lang="zh">通过旋转工件进行切削加工的机床。</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="mfg:ProcessingEquipment"/>
+  </owl:Class>
+
+  <!-- ── MillingMachine（铣床）── ProcessingEquipment 子类 ───── -->
+  <owl:Class rdf:about="mfg:MillingMachine">
+    <rdfs:label xml:lang="zh">铣床</rdfs:label>
+    <rdfs:label xml:lang="en">Milling Machine</rdfs:label>
+    <rdfs:comment xml:lang="zh">利用旋转铣刀对工件进行平面、曲面加工的机床。</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="mfg:ProcessingEquipment"/>
+  </owl:Class>
+
+  <!-- ── Product（产品）── produces 属性的值域 ────────────────── -->
+  <owl:Class rdf:about="mfg:Product">
+    <rdfs:label xml:lang="zh">产品</rdfs:label>
+    <rdfs:label xml:lang="en">Product</rdfs:label>
+    <rdfs:comment xml:lang="zh">由设备加工生产的零部件或成品。</rdfs:comment>
+  </owl:Class>
+
+  <!-- ── WorkCell（工作单元）── locatedIn 属性的值域 ─────────── -->
+  <owl:Class rdf:about="mfg:WorkCell">
+    <rdfs:label xml:lang="zh">工作单元</rdfs:label>
+    <rdfs:label xml:lang="en">Work Cell</rdfs:label>
+    <rdfs:comment xml:lang="zh">车间内由一组设备构成的生产单元。</rdfs:comment>
+  </owl:Class>
+
+
+  <!-- ============================================================
+       步骤4：对象属性
+       ============================================================ -->
+
+  <!-- produces（生产）—— 传递性属性 -->
+  <owl:ObjectProperty rdf:about="mfg:produces">
+    <rdfs:label xml:lang="zh">生产</rdfs:label>
+    <rdfs:label xml:lang="en">produces</rdfs:label>
+    <rdfs:comment xml:lang="zh">设备与其所加工产品之间的生产关系；勾选传递性。</rdfs:comment>
+    <rdfs:domain rdf:resource="mfg:Equipment"/>
+    <rdfs:range  rdf:resource="mfg:Product"/>
+    <!-- Characteristics: Transitive -->
+    <rdf:type rdf:resource="owl:TransitiveProperty"/>
+    <!-- 逆属性 -->
+    <owl:inverseOf rdf:resource="mfg:producedBy"/>
+  </owl:ObjectProperty>
+
+  <!-- producedBy（被生产）—— produces 的逆属性 -->
+  <owl:ObjectProperty rdf:about="mfg:producedBy">
+    <rdfs:label xml:lang="zh">被生产</rdfs:label>
+    <rdfs:label xml:lang="en">produced by</rdfs:label>
+    <rdfs:comment xml:lang="zh">产品到其生产设备的逆向关系。</rdfs:comment>
+    <rdfs:domain rdf:resource="mfg:Product"/>
+    <rdfs:range  rdf:resource="mfg:Equipment"/>
+    <owl:inverseOf rdf:resource="mfg:produces"/>
+  </owl:ObjectProperty>
+
+  <!-- locatedIn（位于）—— 设备所在工作单元 -->
+  <owl:ObjectProperty rdf:about="mfg:locatedIn">
+    <rdfs:label xml:lang="zh">位于</rdfs:label>
+    <rdfs:label xml:lang="en">located in</rdfs:label>
+    <rdfs:comment xml:lang="zh">设备物理上所在的工作单元。</rdfs:comment>
+    <rdfs:domain rdf:resource="mfg:Equipment"/>
+    <rdfs:range  rdf:resource="mfg:WorkCell"/>
+  </owl:ObjectProperty>
+
+
+  <!-- ============================================================
+       步骤5：数据属性
+       ============================================================ -->
+
+  <!-- serialNumber（序列号）—— Functional -->
+  <owl:DatatypeProperty rdf:about="mfg:serialNumber">
+    <rdfs:label xml:lang="zh">序列号</rdfs:label>
+    <rdfs:label xml:lang="en">serial number</rdfs:label>
+    <rdfs:comment xml:lang="zh">设备唯一序列号；Functional：每台设备仅有一个序列号。</rdfs:comment>
+    <rdfs:domain rdf:resource="mfg:Equipment"/>
+    <rdfs:range  rdf:resource="xsd:string"/>
+    <!-- Characteristics: Functional -->
+    <rdf:type rdf:resource="owl:FunctionalProperty"/>
+  </owl:DatatypeProperty>
+
+  <!-- power（功率，kW）-->
+  <owl:DatatypeProperty rdf:about="mfg:power">
+    <rdfs:label xml:lang="zh">功率</rdfs:label>
+    <rdfs:label xml:lang="en">power</rdfs:label>
+    <rdfs:comment xml:lang="zh">设备额定功率，单位 kW，类型 xsd:float。</rdfs:comment>
+    <rdfs:domain rdf:resource="mfg:Equipment"/>
+    <rdfs:range  rdf:resource="xsd:float"/>
+  </owl:DatatypeProperty>
+
+  <!-- manufacturer（制造商）-->
+  <owl:DatatypeProperty rdf:about="mfg:manufacturer">
+    <rdfs:label xml:lang="zh">制造商</rdfs:label>
+    <rdfs:label xml:lang="en">manufacturer</rdfs:label>
+    <rdfs:comment xml:lang="zh">生产该设备的厂商名称，类型 xsd:string。</rdfs:comment>
+    <rdfs:domain rdf:resource="mfg:Equipment"/>
+    <rdfs:range  rdf:resource="xsd:string"/>
+  </owl:DatatypeProperty>
+
+
+  <!-- ============================================================
+       步骤7：个例（Individuals）
+       ============================================================ -->
+
+  <!-- Lathe_003：车床实例 -->
+  <owl:NamedIndividual rdf:about="mfg:Lathe_003">
+    <rdf:type rdf:resource="mfg:Lathe"/>
+    <rdfs:label xml:lang="zh">三号车床</rdfs:label>
+    <!-- 数据属性断言 -->
+    <mfg:serialNumber rdf:datatype="xsd:string">LT-003-2024</mfg:serialNumber>
+    <mfg:manufacturer rdf:datatype="xsd:string">沈阳机床集团</mfg:manufacturer>
+    <mfg:power        rdf:datatype="xsd:float">7.5</mfg:power>
+    <!-- 对象属性断言 -->
+    <mfg:locatedIn rdf:resource="mfg:WorkCell_A"/>
+  </owl:NamedIndividual>
+
+  <!-- WorkCell_A：A 号工作单元 -->
+  <owl:NamedIndividual rdf:about="mfg:WorkCell_A">
+    <rdf:type rdf:resource="mfg:WorkCell"/>
+    <rdfs:label xml:lang="zh">A号工作单元</rdfs:label>
+    <rdfs:label xml:lang="en">Work Cell A</rdfs:label>
+  </owl:NamedIndividual>
+
+</rdf:RDF>

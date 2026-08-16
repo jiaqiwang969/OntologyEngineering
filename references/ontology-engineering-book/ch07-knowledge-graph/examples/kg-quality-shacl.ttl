@@ -1,0 +1,108 @@
+# SHACL 数据质量校验形状 - 制造知识图谱
+# SHACL Shapes for Manufacturing KG Quality Validation
+#
+# 运行方式（pySHACL）：
+#   pip install pyshacl
+#   pyshacl -s kg-quality-shacl.ttl -d instance-data.ttl
+#
+# OWL公理面向"推理"（开放世界），SHACL面向"校验"（封闭检查）：
+# 缺序列号在OWL下只是"未知"，在SHACL下就是一条违规报告
+
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mfg:  <http://example.org/manufacturing#> .
+@prefix mfgsh: <http://example.org/manufacturing/shapes#> .
+
+# ==============================
+# 1. 设备完整性形状
+# ==============================
+mfgsh:EquipmentShape
+    a sh:NodeShape ;
+    sh:targetClass mfg:Equipment ;
+
+    # 序列号：必填、唯一格式 EQ-YYYY-NNNN
+    sh:property [
+        sh:path mfg:hasSerialNumber ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^EQ-[0-9]{4}-[0-9]{4}$" ;
+        sh:message "设备必须有且仅有一个格式为 EQ-YYYY-NNNN 的序列号" ;
+    ] ;
+
+    # 功率：0 < power <= 10000 kW
+    sh:property [
+        sh:path mfg:hasPower ;
+        sh:minCount 1 ;
+        sh:datatype xsd:float ;
+        sh:minExclusive 0.0 ;
+        sh:maxInclusive 10000.0 ;
+        sh:message "设备功率必须为 (0, 10000] kW 内的浮点数" ;
+    ] ;
+
+    # 状态：受控词表
+    sh:property [
+        sh:path mfg:hasStatus ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( mfg:Running mfg:Idle mfg:Maintenance mfg:Fault ) ;
+        sh:message "设备状态只能是 Running/Idle/Maintenance/Fault 之一" ;
+    ] ;
+
+    # 位置：必须关联到一个工作单元
+    sh:property [
+        sh:path mfg:locatedIn ;
+        sh:minCount 1 ;
+        sh:class mfg:WorkCell ;
+        sh:message "设备必须位于某个 WorkCell" ;
+    ] .
+
+# ==============================
+# 2. 维护时效性形状
+# ==============================
+mfgsh:MaintenanceRecordShape
+    a sh:NodeShape ;
+    sh:targetClass mfg:MaintenanceRecord ;
+    sh:property [
+        sh:path mfg:maintenanceDate ;
+        sh:minCount 1 ;
+        sh:datatype xsd:date ;
+        sh:message "维护记录必须有 xsd:date 类型的日期" ;
+    ] ;
+    # 维护日期不能晚于记录创建日期（字段间约束）
+    sh:property [
+        sh:path mfg:maintenanceDate ;
+        sh:lessThanOrEquals mfg:recordCreatedDate ;
+        sh:message "维护日期不能晚于记录创建日期" ;
+    ] .
+
+# ==============================
+# 3. 任务排产一致性形状（SPARQL约束）
+# ==============================
+# 复杂业务规则用 sh:sparql 表达：任务结束时间必须晚于开始时间
+mfgsh:TaskIntervalShape
+    a sh:NodeShape ;
+    sh:targetClass mfg:Task ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "任务结束时间必须晚于开始时间" ;
+        sh:prefixes mfg: ;
+        sh:select """
+            SELECT $this WHERE {
+                $this mfg:startTime ?s .
+                $this mfg:endTime   ?e .
+                FILTER (?e <= ?s)
+            }
+        """ ;
+    ] .
+
+# ==============================
+# 4. 入库闸门的使用约定
+# ==============================
+# 校验级别约定（在流水线中区分处理，见 kg-construction-pipeline.txt）：
+#   sh:Violation  —— 拒绝入库，进隔离区
+#   sh:Warning    —— 允许入库，生成数据质量工单
+# 本文件形状默认 sh:Violation；
+# 如需降级为警告，在对应 PropertyShape 中加：
+#   sh:severity sh:Warning ;

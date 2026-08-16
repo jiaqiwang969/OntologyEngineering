@@ -1,0 +1,167 @@
+# RDF Turtle 格式示例 - 制造领域本体
+# RDF Turtle Examples for Manufacturing Domain Ontology
+#
+# Turtle是RDF最常用的序列化格式，语法简洁，可读性强
+# Turtle is the most popular RDF serialization format
+
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix :     <http://example.org/manufacturing#> .
+@prefix mfg:  <http://example.org/manufacturing#> .
+
+# ==============================
+# 本体声明 (Ontology Declaration)
+# ==============================
+<http://example.org/manufacturing>
+    a owl:Ontology ;
+    rdfs:label "制造领域本体"@zh ;
+    rdfs:label "Manufacturing Domain Ontology"@en ;
+    rdfs:comment "用于描述制造领域的设备、工艺、产品和工单知识"@zh .
+
+# ==============================
+# 类定义 (Class Definitions) - TBox
+# ==============================
+
+# 设备类层次
+mfg:Equipment a owl:Class ;
+    rdfs:label "设备"@zh ;
+    rdfs:label "Equipment"@en ;
+    rdfs:comment "制造系统中所有物理设备的基类"@zh .
+
+mfg:ProcessingEquipment a owl:Class ;
+    rdfs:subClassOf mfg:Equipment ;
+    rdfs:label "加工设备"@zh .
+
+mfg:CNCMachine a owl:Class ;
+    rdfs:subClassOf mfg:ProcessingEquipment ;
+    rdfs:label "数控机床"@zh .
+
+mfg:Lathe a owl:Class ;
+    rdfs:subClassOf mfg:CNCMachine ;
+    rdfs:label "车床"@zh .
+
+mfg:MeasurementEquipment a owl:Class ;
+    rdfs:subClassOf mfg:Equipment ;
+    rdfs:label "测量设备"@zh .
+
+# 产品与物料
+mfg:Product a owl:Class ;
+    rdfs:label "产品"@zh .
+
+mfg:Material a owl:Class ;
+    rdfs:label "材料"@zh .
+
+mfg:Aluminum a owl:Class ;
+    rdfs:subClassOf mfg:Material ;
+    rdfs:label "铝合金"@zh .
+
+# 工艺与工序
+mfg:Process a owl:Class ;
+    rdfs:label "加工工艺"@zh .
+
+mfg:Operation a owl:Class ;
+    rdfs:label "工序"@zh .
+
+mfg:Turning a owl:Class ;
+    rdfs:subClassOf mfg:Operation ;
+    rdfs:label "车削工序"@zh .
+
+# 工作单元
+mfg:WorkCell a owl:Class ;
+    rdfs:label "工作单元"@zh .
+
+# ==============================
+# 属性定义 (Property Definitions) - RBox
+# ==============================
+
+# 对象属性
+mfg:canProcess a owl:ObjectProperty ;
+    rdfs:domain mfg:Equipment ;
+    rdfs:range mfg:Material ;
+    rdfs:label "能加工"@zh .
+
+mfg:locatedIn a owl:ObjectProperty ;
+    rdfs:domain mfg:Equipment ;
+    rdfs:range mfg:WorkCell ;
+    rdfs:label "位于"@zh .
+
+mfg:producedBy a owl:ObjectProperty ;
+    rdfs:domain mfg:Product ;
+    rdfs:range mfg:Equipment ;
+    rdfs:label "由...生产"@zh .
+
+mfg:requires a owl:ObjectProperty ;
+    rdfs:domain mfg:Operation ;
+    rdfs:range mfg:Equipment ;
+    rdfs:label "需要"@zh .
+
+mfg:precedes a owl:ObjectProperty ;
+    a owl:TransitiveProperty ;
+    rdfs:domain mfg:Operation ;
+    rdfs:range mfg:Operation ;
+    rdfs:label "先于"@zh ;
+    rdfs:comment "工序之间的先后顺序，具有传递性"@zh .
+
+# 数据属性
+mfg:serialNumber a owl:DatatypeProperty ;
+    rdfs:domain mfg:Equipment ;
+    rdfs:range xsd:string ;
+    rdfs:label "序列号"@zh .
+
+mfg:weight a owl:DatatypeProperty ;
+    rdfs:domain mfg:Equipment ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "单位：kg"@zh .
+
+mfg:power a owl:DatatypeProperty ;
+    rdfs:domain mfg:Equipment ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "单位：kW"@zh .
+
+mfg:maxDiameter a owl:DatatypeProperty ;
+    rdfs:domain mfg:Lathe ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "车床最大加工直径，单位：mm"@zh .
+
+mfg:price a owl:DatatypeProperty ;
+    rdfs:domain mfg:Product ;
+    rdfs:range xsd:decimal ;
+    rdfs:comment "单位：元"@zh .
+
+mfg:duration a owl:DatatypeProperty ;
+    rdfs:domain mfg:Operation ;
+    rdfs:range xsd:integer ;
+    rdfs:comment "单位：分钟"@zh .
+
+# ==============================
+# 实例数据 (Instance Data) - ABox
+# ==============================
+
+# 设备实例
+mfg:Lathe_001 a mfg:Lathe ;
+    rdfs:label "1号数控车床"@zh ;
+    mfg:serialNumber "CNC-LATHE-2024-001" ;
+    mfg:power "22.0"^^xsd:decimal ;
+    mfg:maxDiameter "500.0"^^xsd:decimal ;
+    mfg:canProcess mfg:Aluminum_6061 ;
+    mfg:locatedIn mfg:WorkCell_A .
+
+mfg:Lathe_002 a mfg:Lathe ;
+    rdfs:label "2号数控车床"@zh ;
+    mfg:serialNumber "CNC-LATHE-2024-002" ;
+    mfg:power "18.5"^^xsd:decimal ;
+    mfg:maxDiameter "400.0"^^xsd:decimal ;
+    mfg:locatedIn mfg:WorkCell_B .
+
+# 工作单元实例
+mfg:WorkCell_A a mfg:WorkCell ;
+    rdfs:label "A区加工单元"@zh .
+
+mfg:WorkCell_B a mfg:WorkCell ;
+    rdfs:label "B区加工单元"@zh .
+
+# 材料实例
+mfg:Aluminum_6061 a mfg:Aluminum ;
+    rdfs:label "铝合金6061"@zh .

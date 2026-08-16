@@ -1,0 +1,73 @@
+# BIM本体与IFC语义互操作
+# BIM Ontology and IFC Semantic Interoperability
+#
+# 建筑信息模型（BIM）与语义网技术的结合应用
+
+# ==============================
+# 核心挑战
+# ==============================
+# 跨阶段断层：设计→施工→运维模型信息不连贯
+# 规范检查耗时：人工需要2天，且存在遗漏风险
+
+# ==============================
+# 解决方案：本体驱动的BIM互操作
+# ==============================
+# 1. 将BIM模型转换为 IfcOWL（IFC标准的OWL表示）
+# 2. 建立BIM本体，定义建筑构件的语义关系
+# 3. 使用SWRL规则实现规范自动检查
+# 4. 通过SPARQL查询提取合规性报告
+
+# ==============================
+# BIM本体核心类（Manchester语法）
+# ==============================
+
+# Class: BuildingElement
+#     SubClassOf: owl:Thing
+#     Annotations: rdfs:label "建筑构件"@zh
+#
+# Class: Wall
+#     SubClassOf: BuildingElement
+#     Annotations: rdfs:label "墙体"@zh
+#
+# Class: FireCompartment
+#     SubClassOf: BuildingElement
+#     Annotations: rdfs:label "防火分区"@zh
+#
+# Class: ComplianceRule
+#     Annotations: rdfs:label "规范条款"@zh
+
+# ==============================
+# 规范自动检查规则（示例）
+# ==============================
+
+# 防火规范：防火分区面积不超过2500平方米
+FireCompartment(?fc) ∧ hasArea(?fc, ?a) ∧
+swrlb:greaterThan(?a, 2500)
+    → ViolatesFireCode(?fc)
+
+# 节能规范：外墙传热系数不超过限值
+ExteriorWall(?w) ∧ hasThermalTransmittance(?w, ?k) ∧
+ClimateZone(?zone) ∧ maxTransmittance(?zone, ?limit) ∧
+swrlb:greaterThan(?k, ?limit)
+    → ViolatesEnergyCode(?w)
+
+# ==============================
+# 应用效果
+# ==============================
+# 规范检查自动化：人工2天 → 自动30分钟（效率提升96倍）
+# 检查无遗漏：覆盖100%规范条款，避免人工疏忽
+# IfcOWL映射：书中核心类直接映射IfcOWL，支持多规范扩展
+# 互操作性：实现设计→施工→运维全阶段知识连贯
+
+# ==============================
+# SPARQL合规性查询
+# ==============================
+
+# PREFIX bim: <http://example.org/bim#>
+# SELECT ?element ?violation ?description
+# WHERE {
+#     ?element bim:violates ?rule .
+#     ?rule bim:description ?description .
+#     BIND(CONCAT(STR(?element), " violates ", STR(?rule)) AS ?violation)
+# }
+# ORDER BY ?element

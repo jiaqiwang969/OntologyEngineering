@@ -1,0 +1,107 @@
+# Ontology Development 101 七步法走查 - 制造本体
+# The Seven Steps of Ontology Development 101 (Noy & McGuinness, 2001)
+#
+# 以"车间设备本体"为例，完整走一遍七步法
+
+# ==============================
+# Step 1. 确定领域与范围
+# ==============================
+# 用四个问题界定：
+#   本体覆盖什么领域？        —— 离散制造车间的设备与加工能力
+#   本体用来做什么？          —— 设备调度、能力匹配、冲突检测
+#   本体要回答哪些问题？      —— 能力问题清单（见 competency-questions.txt）
+#   谁使用和维护本体？        —— 工艺工程师建模，调度系统消费
+
+# 范围控制原则：CQ覆盖不到的概念不建模
+# （例：本体不需要覆盖财务折旧，除非有对应CQ）
+
+# ==============================
+# Step 2. 考虑复用已有本体
+# ==============================
+# 检索顺序（资源详见附录A）：
+#   顶层本体：BFO（ISO/IEC 21838-2）—— 物理对象/过程/质量的顶层区分
+#   领域本体：IOF（工业本体基础）   —— 工业过程、设备、能力等核心概念
+#   计量本体：QUDT                  —— 单位与量纲（功率kW、长度mm）
+#   时间本体：W3C Time Ontology     —— 时间区间与先后关系
+
+# 复用策略：
+#   直接导入（owl:imports）         —— 适合稳定的小型本体
+#   概念映射（rdfs:subClassOf 对齐）—— 适合只需对齐顶层的场景
+
+# ==============================
+# Step 3. 枚举重要术语
+# ==============================
+# 不分类、不纠结，先穷举（来自访谈记录与工艺文件）：
+#   设备、车床、数控车床、铣床、加工中心、机器人、AGV、
+#   材料、铝合金、钛合金、45号钢、
+#   工序、车削、铣削、钻孔、热处理、检验、
+#   工作单元、产线、车间、
+#   功率、转速、精度、利用率、状态、
+#   加工、位于、需要、先于、操作……
+
+# ==============================
+# Step 4. 定义类与类层次
+# ==============================
+# 三种策略：
+#   自顶向下：Equipment → ProcessingEquipment → CNCMachine → CNCLathe
+#   自底向上：先有 CNCLathe/CNCMill，再归纳出 CNCMachine
+#   混合法（推荐）：先定中层骨干概念，向上挂顶层、向下细化
+
+# 本例类层次（节选）：
+# Equipment ⊑ PhysicalObject
+#   ProcessingEquipment ⊑ Equipment
+#     CNCMachine ⊑ ProcessingEquipment
+#       CNCLathe ⊑ CNCMachine
+#       CNCMillingMachine ⊑ CNCMachine
+#   MeasurementEquipment ⊑ Equipment
+# Material ⊑ PhysicalObject
+#   MetalMaterial ⊑ Material
+#     AluminumAlloy ⊑ MetalMaterial
+
+# 常见错误自查：
+#   单一子类（某类只有一个子类）→ 层次可能多余
+#   类名用复数 → 统一用单数（CNCLathe 而非 CNCLathes）
+#   把实例当类（"3号车床"是个体，不是类）
+
+# ==============================
+# Step 5. 定义属性
+# ==============================
+# 对象属性（连接两个个体）：
+#   canProcess   : Equipment → Material
+#   locatedIn    : Equipment → WorkCell
+#   precedes     : Process → Process（传递属性）
+#   operates     : Worker → Equipment
+
+# 数据属性（连接个体与字面量）：
+#   hasPower        : Equipment → xsd:float（单位kW）
+#   hasSerialNumber : Equipment → xsd:string
+#   hasStatus       : Equipment → {Running, Idle, Maintenance}
+
+# ==============================
+# Step 6. 定义属性约束（Facets）
+# ==============================
+# 基数约束：每台设备恰有一个序列号
+#   Equipment ⊑ =1 hasSerialNumber
+# 值域约束：功率非负
+#   hasPower 的取值 ≥ 0
+# 全称约束：数控机床的控制器都是数控系统
+#   CNCMachine ⊑ ∀hasControl.CNCControl
+# 不相交：Equipment ⊓ Material ⊑ ⊥
+
+# ==============================
+# Step 7. 创建实例
+# ==============================
+# Lathe_003 : CNCLathe
+#   hasSerialNumber "EQ-2023-0117"
+#   hasPower 15.5
+#   locatedIn WorkCell_A
+#   canProcess AluminumAlloy_6061
+
+# 实例数据通常批量来自台账/MES（导入管道见第7章）
+
+# ==============================
+# 迭代提醒
+# ==============================
+# 七步不是瀑布而是循环：创建实例时发现缺属性 → 回到Step 5；
+# CQ验收不通过 → 回到Step 4 调整层次。
+# 每轮迭代后运行推理器做一致性检查（工具见第4章Protégé）

@@ -77,6 +77,12 @@ Optional concrete CAD Agent case:
 
 ## Answer Workflow
 
+Teaching-style answering (benchmark-driven rule): when answering ISO/术语/
+概念 questions, do not stop at the definition card — also cite the book's
+case/scene that teaches it (e.g., FTTI → 第 2 章"四个一百毫秒"; SPFM →
+第 6 章吴工的 400 FIT 底账; 独立性 → 第 8 章梁工的电源树). 千题评测显示
+事实正确率 99.8% 而讲例率 75%——差距全在"只查卡、不讲例"，此规则即为补齐。
+
 For concept questions:
 
 1. Search the concept and likely synonyms in Chinese and English.

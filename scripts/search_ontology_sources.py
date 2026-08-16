@@ -125,6 +125,7 @@ def scoped_roots(workspace: Path, scope: str) -> list[Path]:
     if scope in ("all", "book"):
         roots.append(workspace / "ontology-engineering-book")
         roots.append(workspace / "product-trustworthiness-book")
+        roots.append(workspace / "iso-normative-ontology")
     if scope in ("all", "pde"):
         roots.append(workspace / "cauchyx-ai")
     if scope in ("all", "cad"):

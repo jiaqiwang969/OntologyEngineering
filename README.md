@@ -22,8 +22,10 @@ references/
 ├── source-map.md                           # 第一卷章节地图
 ├── product-trustworthiness-source-map.md   # 第二卷章节地图（含人物与事故索引）
 └── eval-cases.json                         # 20 条能力问题式检索评测（成书质量门禁）
+├── iso-normative-ontology/                 # ISO 26262 本体化刻录层（条款 TTL + 卡片视图）
 scripts/
-├── search_ontology_sources.py              # 双卷全文检索
+├── search_ontology_sources.py              # 双卷 + 刻录层全文检索
+├── engrave_iso.py                          # 标准刻录器（需本地受控提取件）
 └── eval_ontology_skill.py                  # 评测门禁运行器
 ```
 

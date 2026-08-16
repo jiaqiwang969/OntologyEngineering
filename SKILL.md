@@ -54,7 +54,12 @@ Bundled source roots:
 
 - `~/.codex/skills/ontology-engineering/references/ontology-engineering-book`（第一卷）
 - `~/.codex/skills/ontology-engineering/references/product-trustworthiness-book`（第二卷，
-  含 321 页成书 PDF 与全书图谱计划）
+  含成书 PDF 与全书图谱计划）
+- `~/.codex/skills/ontology-engineering/references/iso-normative-ontology`（ISO 26262
+  本体化刻录层：条款个体 TTL + 卡片视图。回答条款级问题时优先查此层的
+  `partN-cards.md` / `partN-*.ttl`；卡片给出模态与中文转述，锚点指向本地
+  受控提取件。设 `ISO_SOURCE_ROOT` 可用 `scripts/engrave_iso.py` 重刻/扩刻。
+  转述非原文；引用时报"条款号+转述"，原文核对回本地提取件。）
 
 Optional external example root:
 

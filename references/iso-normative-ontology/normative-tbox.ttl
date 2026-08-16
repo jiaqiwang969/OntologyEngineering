@@ -1,0 +1,40 @@
+@prefix isoN: <https://ontology-engineering.local/iso26262/normative#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# ISO 26262 规范刻录 TBox（形式 B：本体化刻录）
+# 刻录纪律：
+#   1) 个体只承载 条款坐标/模态/中文转述/关键词/书章映射/提取件锚点，
+#      不含标准原文；转述为本书作者综合，模态（shall/should/may/NOTE）必须保真。
+#   2) 锚点坐标（pageIndex/blockIndex，0 基）指向本地受控提取件
+#      （ISO_SOURCE_ROOT，默认 143-工程规范/structured/mineru/ISO-26262-2018），
+#      提取件不随本仓库分发。
+#   3) 未刻转述的条款保持骨架态（isoN:glossStatus "pending"），慢慢刻。
+
+isoN:NormativeUnit a owl:Class ;
+    rdfs:label "规范单元"@zh ;
+    rdfs:comment "标准中的一个可引用单元：要求、建议、许可、注释、示例或术语定义。"@zh .
+
+isoN:TermDefinition a owl:Class ; rdfs:subClassOf isoN:NormativeUnit ;
+    rdfs:label "术语定义"@zh .
+
+isoN:Modality a owl:Class ; rdfs:label "规范模态"@zh .
+isoN:Shall a isoN:Modality ; rdfs:label "要求（shall）"@zh .
+isoN:Should a isoN:Modality ; rdfs:label "建议（should）"@zh .
+isoN:May a isoN:Modality ; rdfs:label "许可（may/can）"@zh .
+isoN:Note a isoN:Modality ; rdfs:label "注释（NOTE，资料性）"@zh .
+isoN:Example a isoN:Modality ; rdfs:label "示例（EXAMPLE，资料性）"@zh .
+isoN:Definition a isoN:Modality ; rdfs:label "定义条目"@zh .
+isoN:Structural a isoN:Modality ; rdfs:label "结构性条目（标题/引导）"@zh .
+
+isoN:clauseId a owl:DatatypeProperty ; rdfs:label "条款号（Part-节号）"@zh ; rdfs:range xsd:string .
+isoN:partNumber a owl:DatatypeProperty ; rdfs:range xsd:integer .
+isoN:modality a owl:ObjectProperty ; rdfs:range isoN:Modality .
+isoN:zhGloss a owl:DatatypeProperty ; rdfs:label "中文转述（作者综合，非原文）"@zh .
+isoN:enLabel a owl:DatatypeProperty .
+isoN:keywords a owl:DatatypeProperty .
+isoN:servesChapter a owl:DatatypeProperty ; rdfs:label "书章映射"@zh .
+isoN:pageIndex a owl:DatatypeProperty ; rdfs:comment "提取件页索引，0 基"@zh ; rdfs:range xsd:integer .
+isoN:blockIndex a owl:DatatypeProperty ; rdfs:range xsd:integer .
+isoN:glossStatus a owl:DatatypeProperty ; rdfs:comment "glossed | pending"@zh .

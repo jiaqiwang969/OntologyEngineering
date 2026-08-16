@@ -1,0 +1,79 @@
+# RDFS (RDF Schema) 示例 - 制造领域
+# RDFS Examples - Manufacturing Domain
+#
+# RDFS 在 RDF 基础上增加了类定义、属性定义和基本的推理能力
+# 是 OWL 的基础
+
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix mfg:  <http://example.org/manufacturing#> .
+
+# ==============================
+# 类定义 (rdfs:Class)
+# ==============================
+
+mfg:Resource a rdfs:Class ;
+    rdfs:label "资源"@zh ;
+    rdfs:comment "制造系统中可分配的所有资源"@zh .
+
+mfg:Equipment a rdfs:Class ;
+    rdfs:subClassOf mfg:Resource ;
+    rdfs:label "设备"@zh ;
+    rdfs:comment "物理设备"@zh .
+
+mfg:Tool a rdfs:Class ;
+    rdfs:subClassOf mfg:Resource ;
+    rdfs:label "刀具"@zh .
+
+mfg:Material a rdfs:Class ;
+    rdfs:label "材料"@zh .
+
+mfg:Process a rdfs:Class ;
+    rdfs:label "工艺"@zh .
+
+mfg:WorkCell a rdfs:Class ;
+    rdfs:label "工作单元"@zh .
+
+# ==============================
+# 属性定义 (rdf:Property)
+# ==============================
+
+# rdfs:domain 指定属性的主语类型
+# rdfs:range  指定属性的宾语类型
+
+mfg:canProcess a rdf:Property ;
+    rdfs:label "能加工"@zh ;
+    rdfs:domain mfg:Equipment ;
+    rdfs:range mfg:Material .
+
+mfg:locatedIn a rdf:Property ;
+    rdfs:label "位于"@zh ;
+    rdfs:domain mfg:Equipment ;
+    rdfs:range mfg:WorkCell .
+
+mfg:uses a rdf:Property ;
+    rdfs:label "使用"@zh ;
+    rdfs:domain mfg:Process ;
+    rdfs:range mfg:Tool .
+
+# ==============================
+# RDFS推理示例
+# ==============================
+# 基于以下事实：
+#   mfg:Lathe rdfs:subClassOf mfg:Equipment
+#   mfg:Lathe_001 rdf:type mfg:Lathe
+# RDFS推理器可以推出：
+#   mfg:Lathe_001 rdf:type mfg:Equipment  (类继承推理)
+
+mfg:Lathe a rdfs:Class ;
+    rdfs:subClassOf mfg:Equipment ;
+    rdfs:label "车床"@zh .
+
+mfg:Lathe_001 a mfg:Lathe ;
+    rdfs:label "1号车床"@zh ;
+    mfg:locatedIn mfg:WorkCell_A .
+# → 通过 rdfs:subClassOf 推理，可得 mfg:Lathe_001 a mfg:Equipment
+
+mfg:WorkCell_A a mfg:WorkCell ;
+    rdfs:label "A区工作单元"@zh .

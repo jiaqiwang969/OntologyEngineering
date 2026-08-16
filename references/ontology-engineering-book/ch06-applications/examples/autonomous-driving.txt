@@ -1,0 +1,58 @@
+# 自动驾驶场景本体
+# Autonomous Driving Scene Ontology
+#
+# 基于本体论的交通场景语义理解，支持自动驾驶决策
+
+# ==============================
+# 场景图更新流程（每100ms）
+# ==============================
+# 完成对象检测跟踪
+#   → 映射为本体实例（ABox更新）
+#   → 推理空间/时序关系（RBox推理）
+#   → 场景分类（TBox匹配）
+#   → 输出RDF场景图与元数据
+
+# ==============================
+# 核心本体类
+# ==============================
+
+# Class: TrafficScene          # 交通场景
+# Class: Actor                 # 场景参与者
+#   SubClassOf: Vehicle        # 车辆
+#     SubClassOf: Car, Truck, Bus, Motorcycle
+#   SubClassOf: Pedestrian     # 行人
+#   SubClassOf: Cyclist        # 骑行者
+# Class: RoadElement           # 道路元素
+#   SubClassOf: Lane, Intersection, Crosswalk
+# Class: TrafficSign           # 交通标志
+# Class: TrafficLight          # 交通信号灯
+
+# ==============================
+# 空间关系属性
+# ==============================
+# isInFrontOf, isBehind, isLeftOf, isRightOf  # 相对位置
+# hasDistance                                  # 距离（米）
+# isInSameLane                                 # 同车道
+# isApproaching                                # 接近中
+
+# ==============================
+# 时序关系推理规则
+# ==============================
+
+# 规则：计算碰撞时间（TTC - Time to Collision）
+Vehicle(?ego) ∧ Vehicle(?other) ∧
+isInFrontOf(?other, ?ego) ∧
+hasSpeed(?ego, ?v_ego) ∧ hasSpeed(?other, ?v_other) ∧
+hasDistance(?ego, ?other, ?d) ∧
+swrlb:greaterThan(?v_ego, ?v_other) ∧
+swrlb:subtract(?v_ego, ?v_other, ?delta_v) ∧
+swrlb:divide(?d, ?delta_v, ?ttc) ∧
+swrlb:lessThan(?ttc, 3.0)
+    → CollisionRisk(?ego, ?other)
+
+# 规则：识别行人过街危险场景
+Pedestrian(?p) ∧ isCrossingRoad(?p, true) ∧
+Vehicle(?v) ∧ isApproaching(?v, ?p) ∧
+hasDistance(?v, ?p, ?d) ∧
+swrlb:lessThan(?d, 30.0)
+    → PedestrianDangerZone(?p, ?v)

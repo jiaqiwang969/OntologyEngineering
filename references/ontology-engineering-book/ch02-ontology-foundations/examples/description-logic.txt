@@ -1,0 +1,67 @@
+# 描述逻辑公理与约束示例
+# Description Logic Axioms and Constraints
+#
+# 描述逻辑（Description Logic, DL）是OWL的理论基础
+# 提供严格的形式化语义和可判定的推理能力
+
+# ==============================
+# 1. 等价类定义 (Equivalent Class)
+# ==============================
+# 用于定义类的充分必要条件，明确类的本质特征
+
+# 定义"合格产品"：
+QualifiedProduct ≡ Product AND (∀ inspection.hasResult(inspection, "Pass"))
+# 即：合格产品是"属于Product类"且"所有检验的结果均为通过"的产品
+
+# ==============================
+# 2. 全称限制与存在限制
+# ==============================
+
+# 全称限制（Universal Restriction，∀）：
+# ∀R.C 表示与该对象存在R关系的所有对象，都属于C类
+∀R.C
+
+# 存在限制（Existential Restriction，∃）：
+# ∃R.C 表示该对象至少存在一个R关系的对象属于C类
+∃R.C
+
+# 使用构造器定义"高端设备"：
+HighEndEquipment ≡ Equipment ⊓ (price ≥ 1000000) ⊓ (∀hasFeature.AdvancedFeature)
+# 即：高端设备是"属于设备类"、"价格大于等于100万"且"所有特征都是高级特征"的设备
+
+# ==============================
+# 3. 公理示例 (Axiom Examples)
+# ==============================
+
+# 一致性公理示例（此两条公理相互矛盾）：
+# 公理1：所有设备都必须位于某个工作单元
+∀x: Equipment(x) → locatedIn(x, WorkCell)
+# 公理2：存在不位于任何工作单元的设备
+∃x: Equipment(x) ∧ ¬(∃w: locatedIn(x, w))
+
+# ==============================
+# 4. 工程约束示例
+# ==============================
+
+# 推理优化：优先使用子类关系（⊑）而非等价类（≡）
+# 减少等价类带来的推理负担
+
+# 只使用类层次和简单的存在约束
+∃R.C
+
+# 添加全称约束（推理复杂度增加）
+∀R.C
+
+# ==============================
+# 5. 概率本体（Probabilistic Ontology）
+# ==============================
+
+# 高功率设备需要维护的概率为85%
+P(HighPowerEquipment ⊑ NeedsMaintenance) = 85
+# 含义：100台高功率设备中，约85台需要定期维护
+
+# 贝叶斯网络条件概率：
+P(Fault | HighTemp ∧ LongRunning) = 0.9   # 高温且长时间运行，故障概率90%
+P(Fault | HighTemp ∧ ¬LongRunning) = 0.3  # 高温但未长时间运行，故障概率30%
+P(Fault | ¬HighTemp ∧ LongRunning) = 0.1  # 未高温但长时间运行，故障概率10%
+P(Fault | ¬HighTemp ∧ ¬LongRunning) = 0.01 # 既未高温也未长时间运行，故障概率1%

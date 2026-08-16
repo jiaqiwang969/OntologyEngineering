@@ -1,0 +1,82 @@
+# 智能制造调度本体应用
+# Manufacturing Scheduling Ontology Application
+#
+# 展示如何使用本体论解决制造领域的调度问题
+
+# ==============================
+# 系统架构（知识流）
+# ==============================
+#
+# 需求分析 & CQ 能力问题 → 定义 TBox/RBox/ABox 范围
+# 本体概念建模 & 类层次设计 → 构建 TBox
+# 属性、关系、约束、SWRL 规则 → 构建 RBox
+# 设备、工艺、工单、任务实例 → 填充 ABox
+# 推理、查询、冲突检测 → TBox+RBox 推导 ABox
+#
+# 核心模式：TBox概念 + RBox规则 → 推导ABox隐含知识
+
+# ==============================
+# 关键能力问题（Competency Questions）
+# ==============================
+# CQ1: 哪些设备可以加工铝合金？
+# CQ2: 当前有哪些设备空闲可以接受任务？
+# CQ3: 哪些任务存在能力冲突？
+# CQ4: 给定产品，推荐最佳工艺路线？
+# CQ5: 某工单中工序的正确执行顺序？
+
+# ==============================
+# 类层次（TBox）
+# ==============================
+#
+# Thing
+#   → 设备(Equipment) → 加工设备/测量设备/辅助设备/工装设备
+#                      → 数控机床/手动机床等细分
+#   → 工艺(Process)   → 工序(Operation) → 车削/铣削/钻孔等
+#   → 产品(Product)
+#   → 材料(Material)
+#   → 任务(Task)
+#   → 工单(WorkOrder)
+
+# ==============================
+# 核心属性（RBox）
+# ==============================
+#
+# 对象属性：
+#   canProcess：设备→材料（多对多）
+#   hasCapability：设备→能力（一对多）
+#   requires：工序→设备（多对多）
+#   uses：工序→刀具（多对多）
+#   hasOperation：工艺→工序（一对多、有序）
+#   precedes：工序→工序（传递性属性）
+#   assignedTo：任务→设备（多对一）
+
+# ==============================
+# SWRL调度规则
+# ==============================
+
+# 能力匹配：任务需要的材料，设备必须能加工
+Task(?t) ∧ requiresMaterial(?t, ?m) ∧
+assignedTo(?t, ?e) ∧ Equipment(?e) ∧
+¬canProcess(?e, ?m)
+    → CapabilityConflict(?t)
+
+# 状态检查：正在运行的设备不能分配新任务
+Equipment(?e) ∧ hasStatus(?e, Running) ∧
+Task(?t) ∧ assignedTo(?t, ?e)
+    → StatusConflict(?t)
+
+# 时间冲突：同一设备同一时段不能执行两个任务
+Task(?t1) ∧ Task(?t2) ∧
+assignedTo(?t1, ?e) ∧ assignedTo(?t2, ?e) ∧
+hasStartTime(?t1, ?s1) ∧ hasEndTime(?t1, ?e1) ∧
+hasStartTime(?t2, ?s2) ∧ hasEndTime(?t2, ?e2) ∧
+swrlb:lessThan(?s1, ?e2) ∧
+swrlb:greaterThan(?e1, ?s2)
+    → TimeConflict(?t1, ?t2)
+
+# ==============================
+# 应用价值量化
+# ==============================
+# 工艺推荐命中率：0 → 87%（6个月后）
+# 调度冲突检测：实时自动化，响应时间 < 100ms
+# 知识复用率：跨产品工艺推荐，减少重复设计

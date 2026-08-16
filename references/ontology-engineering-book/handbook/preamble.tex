@@ -1,0 +1,88 @@
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{array,tabularx,booktabs}
+\usepackage[most]{tcolorbox}
+
+\setmonofont[Scale=0.88]{Menlo}
+\setCJKmonofont{PingFang SC}
+\xeCJKDeclareCharClass{CJK}{"201C, "201D, "2018, "2019}
+
+\usepackage{enumitem}
+\setlist{itemsep=2pt, topsep=4pt, parsep=0pt}
+
+\definecolor{cmtgray}{RGB}{100,118,135}
+\definecolor{rulegray}{RGB}{180,186,192}
+\definecolor{introbg}{RGB}{252,248,238}
+\definecolor{introline}{RGB}{206,162,90}
+\definecolor{wechatgreen}{RGB}{7,193,96}
+
+\newlength\ttcw
+\AtBeginDocument{\settowidth\ttcw{{\footnotesize\ttfamily x}}}
+
+\newtcolorbox{codebox}{
+  breakable,enhanced,
+  colback=black!3!white,frame hidden,
+  borderline west={2.5pt}{0pt}{black!25},
+  left=9pt,right=6pt,top=7pt,bottom=7pt,
+  before skip=10pt,after skip=12pt,
+  before upper={\setlength{\parskip}{0pt}\setlength{\parindent}{0pt}},
+  fontupper=\footnotesize\ttfamily\frenchspacing\raggedright
+}
+\newcommand\codeline[1]{\par\noindent\hangindent=2.4em\hangafter=1 #1}
+\newcommand\codeblank{\par\vspace{0.5\baselineskip}}
+
+\newtcolorbox{noteblock}{
+  breakable,enhanced,
+  colback=blue!4!white,frame hidden,
+  borderline west={2.5pt}{0pt}{blue!30!black!30},
+  left=8pt,right=6pt,top=5pt,bottom=5pt,
+  before skip=8pt,after skip=10pt,
+  fontupper=\small
+}
+
+\newtcolorbox{introbox}{
+  breakable,enhanced,
+  colback=introbg,frame hidden,
+  borderline west={2.5pt}{0pt}{introline},
+  left=10pt,right=9pt,top=8pt,bottom=8pt,
+  before skip=12pt,after skip=14pt,
+  fontupper=\small\linespread{1.3}\selectfont
+}
+
+% 片段出处行：紧跟在代码框后，注明完整文件位置
+\newcommand{\snipsource}[1]{%
+  \par\vspace{-6pt}\noindent{\scriptsize\color{black!45}\(\triangleright\) 节选自仓库 \texttt{#1}，完整文件含更多小节与注释。}\par\vspace{4pt}}
+
+% 章首插图
+\newcommand{\chapterart}[2]{%
+  \begin{center}
+    \IfFileExists{figures/#1.png}{%
+      \includegraphics[width=0.62\linewidth]{figures/#1.png}\par\vspace{0.4em}%
+    }{%
+      \begin{tcolorbox}[width=0.82\linewidth,height=4.2cm,colback=black!2,
+        frame hidden,borderline={0.7pt}{0pt}{black!35,dashed},
+        halign=center,valign=center]
+        {\color{black!50}\small 〔插图位预留：运行 \texttt{gen\_figures.py} 生成〕}
+      \end{tcolorbox}\par\vspace{0.4em}%
+    }%
+    {\small\color{black!60}\textbf{#2}}\par\vspace{0.5em}
+    \begin{minipage}{0.82\linewidth}
+      \scriptsize\color{black!45}\raggedright
+      本图由 \texttt{gpt-image-2} 生成 · 提示词：\textit{\input{fragments/prompt-#1}}
+    \end{minipage}
+  \end{center}
+  \vspace{0.4em}}
+
+\usepackage[colorlinks,linkcolor=blue!35!black,urlcolor=blue!55!black]{hyperref}
+\hypersetup{
+  pdftitle={《工程本体论》配套手册·图文导读版},
+  pdfauthor={ontology-engineering-book},
+  bookmarksnumbered=true,
+  unicode=true
+}
+
+\setlength{\parskip}{0.35em}
+\usepackage{longtable}

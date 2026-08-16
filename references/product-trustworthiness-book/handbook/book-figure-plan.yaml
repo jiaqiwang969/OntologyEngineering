@@ -1,0 +1,247 @@
+# 全书图谱计划（《产品可信工程》20 章版）
+# 对标《工程本体论》deck_plan.json：每章一张章首导读图（视觉隐喻，不编号）
+# + 正文编号图（图 N-M，章内递增）。本文件是批量生成的机器正本；
+# 各章 chapter.md 中的“【待生成】”占位块与本文件一一对应。
+# 生成后：图片替换占位块，占位块中的提示词回收进本文件的 generated 记录。
+
+style: >-
+  Consistent flat vector textbook illustration system across all pages:
+  muted slate blue and teal palette with one warm amber accent, clean white
+  background, thin precise line work, generous negative space, calm
+  professional academic mood. Absolutely no text or lettering of any kind,
+  no watermark. 统一风格串，拼接在每条提示词之后使用。
+
+numbering:
+  chapter_art: 不编号（章首导读图，置于章标题与导读框之间）
+  in_text: 图 N-M（N=章号，M=章内递增；当前每章规划 1 张，即 图 N-1）
+  labels_policy: 图内默认无文字；确需受控中文标签的图逐条列出 labels，
+    生成后由确定性叠加层校对（沿用 ch01-fig01 先例）
+
+chapter_art:
+  - id: art-preface
+    file: front-matter/preface.md
+    metaphor: 黑板闭环——部门箭头围成一圈，中心空白，一只手正在补画中心
+    prompt: 一块深色黑板，粉笔画出六个方框围成一个环，箭头首尾相连；环的中心是一块醒目的空白，一只手持粉笔正要在中心落笔，粉笔灰微扬。琥珀色点缀在中心位置。
+  - id: art-ch01
+    file: ch01-introduction/chapter.md
+    metaphor: 六盏绿灯照着一张没人签字的放行单
+    prompt: 六盏悬挂的绿色指示灯从上方照亮一张摊开的文件，文件末尾的签名线空着，一支钢笔搁在旁边未动。灯光是冷绿色，签名线区域用琥珀色微光强调。
+  - id: art-ch02
+    file: ch02-concepts-terminology/chapter.md
+    metaphor: 纷乱的话语汇入一卷立起的词典，词典成为承重柱
+    prompt: 画面左侧许多大小不一、相互重叠的空白对话气泡，向右逐渐排列整齐，汇入一卷竖立的厚书；厚书像建筑立柱一样撑住上方的一道横梁。柱身一处琥珀色书签。
+  - id: art-ch03
+    file: ch03-safety-management/chapter.md
+    metaphor: 一张桌子六把椅子各归其位，一支笔悬在签字线上方
+    prompt: 俯视一张长桌，六把椅子分列，每个座位前有一块空白名牌；桌面尽头一份文件与一支悬停的钢笔，笔尖下的签名线以琥珀色强调。
+  - id: art-ch04
+    file: ch04-concept-hara/chapter.md
+    metaphor: 画满装置的白板上，唯一空着的是一个问号形的留白
+    prompt: 一块画满机械装置草图与连线的白板，密而有序；白板中央留出一块问号形状的空白区域，以琥珀色描边，一只手指向这块空白。
+  - id: art-ch05
+    file: ch05-system-development/chapter.md
+    metaphor: 目标如水从高塔沿渠道分流，沿途有闸门与量杯
+    prompt: 一座高处的水塔沿两条渠道向下分流到两个水池，渠道沿途设有小闸门和量杯；每个闸门处水流清晰可见。其中一个量杯以琥珀色强调。
+  - id: art-ch06
+    file: ch06-hardware-development/chapter.md
+    metaphor: 放大镜下的一个数字长出根系，扎进一摞文件
+    prompt: 一枚大号放大镜悬在画面中央，镜片下一个抽象的数字符号向下长出树根般的细线，扎入下方一摞整齐的纸页；一条根须以琥珀色发光。
+  - id: art-ch07
+    file: ch07-software-development/chapter.md
+    metaphor: V 形山谷两侧的阶梯对望，中间一座挂着沙漏的桥
+    prompt: 一道 V 字形山谷，两侧各有一列下行与上行的阶梯彼此相对；谷顶两侧由一座轻巧的绳桥相连，桥中央挂着一只小沙漏，沙漏为琥珀色。
+  - id: art-ch08
+    file: ch08-asil-decomposition-dfa/chapter.md
+    metaphor: 两条并行管道在地下汇入同一根总管
+    prompt: 地面上两条整齐平行的管道各自独立延伸；剖面视角显示地面之下两条管道悄然汇入同一根粗总管。汇合点以琥珀色标示。
+  - id: art-ch09
+    file: ch09-production-operation/chapter.md
+    metaphor: 一张图纸走进厂门，投影成一排各有差异的零件
+    prompt: 左侧一张竖立的蓝图纸样剪影，穿过一道工厂大门形状的门框，右侧投影出一排相似但细节各异的零件轮廓，每个零件脚下拖着一条短短的时间线。其中一个零件以琥珀色描边。
+  - id: art-ch10
+    file: ch10-supporting-processes/chapter.md
+    metaphor: 长桌上的文件塔，塔顶一页悬空未连接
+    prompt: 一张长会议桌上，纸页层层叠成一座稳固的塔；塔顶上方悬浮着一页纸，与塔身之间留有一段明显的空隙，空隙处以琥珀色虚线示意未连接。
+  - id: art-ch11
+    file: ch11-claim-ontology/chapter.md
+    metaphor: 一句话被拆成七块积木，逐一放进卡槽
+    prompt: 一条长横幅般的纸带正在被拆解成七块形状各异的积木，右侧一块底板上有七个对应形状的卡槽，部分积木已入槽，一块悬在半空。空槽之一以琥珀色强调。
+  - id: art-ch12
+    file: ch12-identity-ontology/chapter.md
+    metaphor: 三张吊牌对着一台天平，链环逐节相扣
+    prompt: 三张系着细绳的空白吊牌悬在上方，下方一台精致的天平；连接吊牌与天平的是一条逐节相扣的锁链，其中一节以琥珀色发光，另有一节尚未闭合。
+  - id: art-ch13
+    file: ch13-governance-ontology/chapter.md
+    metaphor: 组织关系图上，一条过短的边亮了红灯
+    prompt: 一张由圆点与连线构成的组织关系图，结构清晰；其中两点之间一条明显过短的连线以琥珀色高亮，旁边一只小圆形指示灯亮起。
+  - id: art-ch14
+    file: ch14-context-hazard-ontology/chapter.md
+    metaphor: 表格纸飞散，重组成一张星座图
+    prompt: 左下角一张表格纸的一角正在碎裂，格子化作点点纸片向右上方飞散，逐渐连成一张点线相连的星座图；星座中一颗星为琥珀色。
+  - id: art-ch15
+    file: ch15-requirements-ontology/chapter.md
+    metaphor: 一条河从源头分汊，每个分汊口都立着闸门与铭牌
+    prompt: 俯视一条从上方源头流下的河，向下多级分汊；每个分汊口都有一座小闸门与一块空白铭牌立在岸边。一条支流末端以琥珀色微光收尾。
+  - id: art-ch16
+    file: ch16-measurement-ontology/chapter.md
+    metaphor: 一枚数字佩戴六边形徽章出行
+    prompt: 一个抽象数字符号位于中央，胸前佩戴一枚六边形徽章，徽章六条边各自延伸出一条细线连向周围六个小图标形状（圆、方、三角等抽象形）；徽章为琥珀色。
+  - id: art-ch17
+    file: ch17-change-ontology/chapter.md
+    metaphor: 两座快照岛之间一座具名的桥，桥上挂着标签灯
+    prompt: 两座平顶小岛各承载一组整齐的方块（一组略有差异），两岛之间一座清晰的桥；桥中央挂一盏小灯与一块空白名牌，灯为琥珀色。
+  - id: art-ch18
+    file: ch18-dependency-ontology/chapter.md
+    metaphor: X 光下，两条独立通道显出共享的骨骼
+    prompt: 画面上半部分是两条完全平行、彼此独立的通道外观；下半部分同一场景的透视版本，显出两条通道内部共享同一根脊柱状结构。共享结构以琥珀色显示。
+  - id: art-ch19
+    file: ch19-field-ontology/chapter.md
+    metaphor: 一颗零件拖着自己的时间线尾迹走过工厂
+    prompt: 一颗六角螺栓般的零件在画面中前行，身后拖着一条由小节点串成的发光尾迹，尾迹节点形状各异（方、圆、菱形），背景是简约的厂房轮廓。尾迹为琥珀色渐隐。
+  - id: art-ch20
+    file: ch20-assurance-ontology/chapter.md
+    metaphor: 有脉搏的案卷，最后一页留给一只手签名
+    prompt: 一册摊开的厚案卷，页面上一条心电图般的脉搏线贯穿始终仍在延伸；最末页空白处，一只手持笔正要落笔。脉搏线为琥珀色。
+
+in_text_figures:
+  - id: fig-01-1
+    number: 图 1-1
+    title: 六张绿卡与一句没有合拢的主张
+    file: ch01-introduction/chapter.md
+    anchor_before: "## 1.2 "
+    existing_asset_candidate: handbook/figures-imagegen/ch01-fig01-green-without-claim-v04.png
+    prompt: 上方一辆完整乘用车底盘，仅转向路径高亮；同一套转向机构从前桥位置抽出放大。六张结果卡由左右两条无箭头母线整理，两条母线都在中央主张边界前停止，数段括片没有闭合成环。
+    labels: [概念边界, 硬件分析, 软件回归, 系统台架, 冲击振动, 生产写入]
+  - id: fig-02-1
+    number: 图 2-1
+    title: 一条链上的三个位置，每个箭头都站着“可能”
+    file: ch02-concepts-terminology/chapter.md
+    anchor_before: "## 2.4 "
+    prompt: 三个串联的站点由两段箭头相连，箭头中段各有一个可开合的小闸门（示意“可能，而非必然”）；第一站内一道细小裂纹图形，第二站一个偏离刻度的表盘，第三站一个熄灭的输出灯。每站下方分出一条旁路（被拦截/被修正/未激活）。闸门为琥珀色。
+    labels: [故障, 错误, 失效]
+  - id: fig-03-1
+    number: 图 3-1
+    title: 六个位置一张桌，距离是一道算术题
+    file: ch03-safety-management/chapter.md
+    anchor_before: "## 3.6 "
+    prompt: 俯视圆桌分成六个扇区，每个扇区一把椅子；桌外一条五档刻度尺环绕，从紧贴到远离；其中两把椅子间距过近，被琥珀色弧线标出。
+    labels: [执行, 产证, 挑战, 评审, 担险, 授权]
+  - id: fig-04-1
+    number: 图 4-1
+    title: 同一失常，两个情境
+    file: ch04-concept-hara/chapter.md
+    anchor: 恢复至 §4.2 原图槽位置（替换现存注释块）
+    prompt: 左右对开两幅同构画面：同一辆车、同一处转向机构发出同样的波纹符号。左幅在高速道路上，车辆轨迹偏出车道并指向后续碰撞链；右幅在维修工位，车辆静止架起，只有方向盘旁一个旋转符号，无道路链。中缝一条竖直分隔线，两侧不变元素完全一致。波纹符号为琥珀色。
+    labels: [高速行驶, 维修工位]
+  - id: fig-05-1
+    number: 图 5-1
+    title: 一笔限时的预算账
+    file: ch05-system-development/chapter.md
+    anchor_before: "## 5.6 "
+    prompt: 一条水平长条代表总时间窗口，内部分成三段（检测、反应、余量），段间有刻度门；下方第二条相同窗口里第一段被拉长、挤压末段越出窗口右缘，越界部分以琥珀色警示。
+    labels: [窗口, 检测, 反应, 余量]
+  - id: fig-06-1
+    number: 图 6-1
+    title: 四百个单位的去向
+    file: ch06-hardware-development/chapter.md
+    anchor_before: "## 6.6 "
+    prompt: 一条粗流从左侧进入，向右分成四条宽窄悬殊的支流，各自流入四个容器；最细的一条支流通向的容器被放大镜聚焦，以琥珀色描边。类似桑基图的极简形态。
+    labels: [安全侧, 已盯住, 残余, 潜伏]
+  - id: fig-07-1
+    number: 图 7-1
+    title: 左边每一层承诺，右边一层证据对质
+    file: ch07-software-development/chapter.md
+    anchor_before: "## 7.2 "
+    prompt: 一个 V 字形结构，左臂四级台阶下行，右臂四级台阶上行，同高度的左右台阶之间由水平细线两两相连；每条水平线中点一枚小徽章。最下方谷底一块基石。其中一条水平线的徽章为琥珀色。
+    labels: 无文字
+  - id: fig-08-1
+    number: 图 8-1
+    title: 两条通道，一棵电源树
+    file: ch08-asil-decomposition-dfa/chapter.md
+    anchor_before: "## 8.4 "
+    prompt: 上方两条并行的功能通道各成一列模块；向下延伸的供电线逐级汇聚，最终汇于同一个电源模块；该模块另有一条细控制线回连到左侧通道，形成不对称。汇聚点与控制线为琥珀色。
+    labels: [主通道, 监控通道, 同一上游]
+  - id: fig-09-1
+    number: 图 9-1
+    title: 三层身份，一件一账
+    file: ch09-production-operation/chapter.md
+    anchor_before: "## 9.3 "
+    prompt: 纵向三层：顶层一张图纸（单一）、中层三只料箱（批次）、底层多颗零件（单件），层间由细线扇形展开；底层其中一颗零件下方展开一条带节点的时间线。该零件与其时间线为琥珀色。
+    labels: [设计定义, 批次, 单件]
+  - id: fig-10-1
+    number: 图 10-1
+    title: 主张在上，证据在下，中间的论证没人写
+    file: ch10-supporting-processes/chapter.md
+    anchor_before: "## 10.3 "
+    prompt: 三层金字塔式结构：顶层一块横幅（主张），底层一排整齐卡片（证据），中间层是一片明显的空缺，只有几条虚线试图连接上下。空缺层以琥珀色虚线框标出。
+    labels: [主张, 论证, 证据]
+  - id: fig-11-1
+    number: 图 11-1
+    title: 从一句话到三元组
+    file: ch11-claim-ontology/chapter.md
+    anchor_before: "## 11.3 "
+    prompt: 左侧一张分成七格的卡片；右侧同样内容化作七条“点—线—点”的哑铃形结构，纵向排列整齐；一条从卡片格到哑铃的过渡箭头。其中一格与其对应哑铃为琥珀色。
+    labels: 无文字
+  - id: fig-12-1
+    number: 图 12-1
+    title: 三族对象，三种判据
+    file: ch12-identity-ontology/chapter.md
+    anchor_before: "## 12.3 "
+    prompt: 三个并排的展台：左台一颗零件下方接一条环环相扣的履历链；中台一份文件下方接一枚指纹状纹样；右台一个组合方块下方接一组卡合的拼图。三种判据图形各不相同，互不通用。中台指纹为琥珀色。
+    labels: [物理单件, 软件工件, 产品候选]
+  - id: fig-13-1
+    number: 图 13-1
+    title: 距离量出来，授权带日期
+    file: ch13-governance-ontology/chapter.md
+    anchor_before: "## 13.5 "
+    prompt: 左半部分：两个人形圆点之间的路径上叠着一把刻度尺；右半部分：一条连接人与印章的边上挂着一枚日历小牌。刻度尺短档与日历牌为琥珀色。
+    labels: 无文字
+  - id: fig-14-1
+    number: 图 14-1
+    title: 事件由两样东西组成，三把尺子各要各的证据
+    file: ch14-context-hazard-ontology/chapter.md
+    anchor_before: "## 14.3 "
+    prompt: 中央一个菱形节点由左右两个圆节点合成（失常×情境）；菱形向下分出三条边，各自连着一把小尺子，每把尺子下再挂一种不同形状的证据图形（十字、曲线图、人形）。三把尺子中一把为琥珀色。
+    labels: [失常, 情境, 事件]
+  - id: fig-15-1
+    number: 图 15-1
+    title: 连线要带理由，分配要等确认
+    file: ch15-requirements-ontology/chapter.md
+    anchor_before: "## 15.4 "
+    prompt: 两列节点之间的多条连线，每条连线中点都嵌着一枚小圆牌（理由对象）；其中一条连线的圆牌空缺，线呈虚线且下垂；另一条线末端有一枚未合上的搭扣（待确认）。空缺与搭扣为琥珀色。
+    labels: 无文字
+  - id: fig-16-1
+    number: 图 16-1
+    title: 分母不是一个数，是一份名单
+    file: ch16-measurement-ontology/chapter.md
+    anchor_before: "## 16.3 "
+    prompt: 一条分数横线上方一个小方块（分子），下方不是数字而是一张展开的清单卷轴，卷轴上一排小图形逐项排列，末项旁有一枚核对印章。卷轴边缘为琥珀色。
+    labels: 无文字
+  - id: fig-17-1
+    number: 图 17-1
+    title: 每张“通过”交代自己的世界
+    file: ch17-change-ontology/chapter.md
+    anchor_before: "## 17.4 "
+    prompt: 两组六边形蜂窝各代表一个快照（其中一格颜色不同），两组之间一条具名的桥形边；下方三张卡片各由细线锚定到某一组蜂窝，其中一张卡片的锚线断开并挂出一面小旗（过期待判）。小旗为琥珀色。
+    labels: 无文字
+  - id: fig-18-1
+    number: 图 18-1
+    title: 查过的缝是分母，排除押着事实
+    file: ch18-dependency-ontology/chapter.md
+    anchor_before: "## 18.4 "
+    prompt: 一张由两列模块与多类连线构成的依赖图；图右侧一栏竖排六个小格代表“查过的缝”，其中几格盖了章、一格空白；一枚盖章格由细线拴着下方一块基石（押着的事实），基石出现裂纹。空白格与裂纹为琥珀色。
+    labels: 无文字
+  - id: fig-19-1
+    number: 图 19-1
+    title: 八行查询走过的路
+    file: ch19-field-ontology/chapter.md
+    anchor_before: "## 19.5 "
+    prompt: 一条从左到右的追查路径：料箱→批次群→其中部分零件→装车→发运码头，路径上每一跳是一段实线箭头；起点料箱被聚光，未能接通的一跳以虚线加问号示意（未知批次）。聚光与问号为琥珀色。
+    labels: 无文字
+  - id: fig-20-1
+    number: 图 20-1
+    title: 活的案例：过期自己举手，签名仍然是人
+    file: ch20-assurance-ontology/chapter.md
+    anchor_before: "## 20.5 "
+    prompt: 一册摊开案卷的示意结构：顶层主张条、中层论证结、底层证据卡阵列；其中两张证据卡上翘并亮起小旗（自动标过期），一条重开条件丝带绕到页边；页面右下角一个空白签名框，一支笔悬停其上。小旗与签名框为琥珀色。
+    labels: 无文字

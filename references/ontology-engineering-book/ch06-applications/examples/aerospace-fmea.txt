@@ -1,0 +1,67 @@
+# 航空航天FMEA本体应用
+# Aerospace FMEA (Failure Mode and Effect Analysis) Ontology
+#
+# 本体论驱动的故障模式与影响分析，实现自动推理与可追溯性
+
+# ==============================
+# FMEA本体核心概念
+# ==============================
+
+# Class: System               # 系统（如液压系统）
+# Class: Component            # 组件（如泵、阀门、管路）
+# Class: FailureMode          # 故障模式（如泄漏、堵塞、断裂）
+# Class: Effect               # 影响（局部影响→系统影响→飞行影响）
+# Class: Cause                # 故障原因
+# Class: Detection            # 探测方法
+# Class: MitigationAction     # 缓解措施
+
+# ==============================
+# 关键关系
+# ==============================
+#
+# hasFailureMode：组件 → 故障模式（一对多）
+# causes：故障模式 → 影响（一对多，可传递）
+# hasCause：故障模式 → 原因
+# detectedBy：故障模式 → 探测方法
+# mitigatedBy：影响 → 缓解措施
+# propagatesTo：局部影响 → 系统影响 → 飞行影响
+
+# ==============================
+# SWRL推理规则（自动影响推导）
+# ==============================
+
+# 规则：液压泵故障 → 液压系统压力丧失
+Component(?c) ∧ hasFailureMode(?c, ?fm) ∧
+HydraulicPump(?c) ∧ FailureMode_Blockage(?fm)
+    → SystemEffect_PressureLoss(?fm)
+
+# 规则：液压系统压力丧失 → 飞行控制面失效
+SystemEffect_PressureLoss(?se) ∧ affects(?se, ?cs) ∧
+ControlSurface(?cs)
+    → FlightEffect_ControlLoss(?se)
+
+# 规则：设计变更影响分析（可追溯性）
+DesignChange(?dc) ∧ affects(?dc, ?component) ∧
+hasFailureMode(?component, ?fm)
+    → requiresFMEAUpdate(?dc, ?fm)
+
+# ==============================
+# 应用效果
+# ==============================
+# FMEA分析周期：6个月 → 6周（缩短75%）
+# 故障模式识别量：提升40%
+# 设计变更FMEA更新：2周 → 2天
+# 可追溯性：设计变更→影响分析→FMEA更新全链路追踪
+# 自动推理：局部故障 → 系统影响 → 最终飞行影响
+
+# ==============================
+# 飞机液压系统FMEA示例
+# ==============================
+# 组件：液压泵(HydraulicPump_01)
+# 故障模式：堵塞(Blockage)
+# 原因：液压油污染
+# 局部影响：泵输出流量减少
+# 系统影响：液压系统压力丧失
+# 飞行影响：飞行控制面响应迟滞，严重时失控
+# 探测方法：压力传感器、流量监测
+# 缓解措施：冗余液压系统、定期液压油更换

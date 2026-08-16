@@ -1,0 +1,53 @@
+# 时态推理与具名图示例
+# Temporal Reasoning and Named Graph Examples
+#
+# 时态本体（Temporal Ontology）用于描述随时间变化的知识状态
+
+# ==============================
+# 具名图（Named Graph）示例
+# ==============================
+# Named Graph 允许对 RDF 三元组进行分组和命名
+# 常用于表达时间快照或来源元数据
+
+# TriG 格式（Turtle的扩展，支持具名图）：
+# 具名图的图名必须是URI（用尖括号括起来），不能是裸名
+# Named graph names must be URIs enclosed in angle brackets, not bare identifiers.
+
+@prefix : <http://example.org/manufacturing#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# 2024年3月21日的状态快照
+<http://example.org/graph/20240321> {
+    :Lathe_003 :status "Idle" ;           # 车床状态为闲置
+               :locatedIn :WorkCell_B .   # 位于工作单元B
+}
+
+# 2024年3月22日的状态快照（设备已被移动）
+<http://example.org/graph/20240322> {
+    :Lathe_003 :status "Running" ;
+               :locatedIn :WorkCell_A .   # 已移动到A区
+}
+
+# ==============================
+# 时态推理规则
+# ==============================
+
+# 推理规则：在某时间段内运行的设备，该时段内不可用于其他任务
+# 注：以下为概念性SWRL表示，?t1/?t2 为时间段端点，需以xsd:dateTime数据值绑定
+Device(?d) ∧ hasStatus(?d, Running, ?t1, ?t2) ∧
+Task(?task) ∧ hasTimeInterval(?task, ?s, ?e) ∧
+swrlb:greaterThan(?e, ?t1) ∧ swrlb:lessThan(?s, ?t2) ∧
+swrlb:notEqual(?task, ?currentTask)
+    → unavailable(?d, ?task)
+
+# 推理规则：设备历史故障会影响维护计划
+# 注：SWRL没有内置NOW()函数；实际应用中需在规则执行前将当前时间注入ABox，
+#     或使用支持时态推理的规则引擎扩展。
+# Note: SWRL has no NOW() built-in. Inject the current timestamp as an ABox fact
+#       (e.g., :currentTime :value "2024-03-22T08:00:00"^^xsd:dateTime) before reasoning.
+Device(?d) ∧ hasFaultRecord(?d, ?fault) ∧
+hasFaultTime(?fault, ?t) ∧
+currentTime(:system, ?now) ∧
+swrlb:subtract(?now, ?t, ?elapsed) ∧
+swrlb:lessThan(?elapsed, 2592000)
+    → requiresInspection(?d, true)

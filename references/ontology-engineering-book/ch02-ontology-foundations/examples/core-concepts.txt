@@ -1,0 +1,61 @@
+# 本体核心组成要素示例
+# Core Ontology Concepts: Classes, Properties, Axioms
+#
+# 符号说明：
+#   ⊑ 表示子类关系
+#   ⊏ 表示部分关系
+#   → 表示蕴含
+#   ∀ 表示全称量词
+#   ∧ 表示逻辑与
+#   ≡ 表示等价
+
+# ==============================
+# 1. 类层次结构 (Class Hierarchy)
+# ==============================
+# 类是本体的基础单元，代表领域内的一类事物
+# 子类会继承父类的全部属性与关系
+
+# 设备分类层次：
+# 设备 (Equipment)
+#   ├── 加工设备 (ProcessingEquipment)
+#   │   ├── 数控机床 (CNCMachine)
+#   │   │   ├── 数控车床 (CNCLathe)
+#   │   │   └── 数控铣床 (CNCMillingMachine)
+#   │   └── 手动机床 (ManualMachine)
+#   ├── 测量设备 (MeasurementEquipment)
+#   ├── 辅助设备 (AuxiliaryEquipment)
+#   └── 工装设备 (ToolingEquipment)
+
+# 设备(Equipment) → 加工设备 / 测量设备 / 辅助设备 / 工装设备
+# → 数控机床 / 手动机床等细分
+
+# ==============================
+# 2. 数据属性 (Data Properties)
+# ==============================
+# 描述实体的具体属性值（字面量）
+
+Equipment.serialNumber → 字符串
+Equipment.weight → 浮点数（单位：kg）
+Equipment.installDate → 日期
+Product.price → 浮点数（单位：元）
+Process.duration → 整数（单位：分钟）
+
+# ==============================
+# 3. 对象属性 (Object Properties)
+# ==============================
+# 描述实体之间的关系
+
+Product.producedBy → Equipment（产品由哪个设备生产）
+Equipment.locatedIn → WorkCell（设备位于哪个工作单元）
+Process.requires → Material（工序需要哪些材料）
+Process.precedes → Process（工序之间的先后顺序）
+Worker.operates → Equipment（工人操作哪些设备）
+
+# ==============================
+# 4. 本体的分类与层次关系
+# ==============================
+# 领域本体与上层本体的对应关系
+
+制造领域本体的Equipment类 → 顶层本体的PhysicalObject类
+调度任务本体的Resource概念 → 制造领域本体的Equipment概念
+不同领域本体的Time概念 → 顶层本体的Time概念

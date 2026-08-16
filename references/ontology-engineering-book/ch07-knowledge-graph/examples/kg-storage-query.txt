@@ -1,0 +1,86 @@
+# 知识图谱存储选型与查询对照
+# KG Storage Selection: Triple Stores vs Property Graphs
+#
+# 两大技术路线：RDF三元组库（W3C标准栈）与属性图数据库
+
+# ==============================
+# 1. 两种数据模型
+# ==============================
+# RDF三元组模型：
+#   (mfg:Lathe_003, mfg:locatedIn, mfg:WorkCell_A)
+#   一切皆三元组；边本身不带属性
+#   （边属性需具名图或RDF-star：<<:s :p :o>> :since "2026-01" ）
+
+# 属性图模型（Labeled Property Graph）：
+#   节点 (:Equipment {name:'Lathe_003', power:15.5})
+#   边   [:LOCATED_IN {since:'2026-01'}]
+#   节点和边都可携带属性
+
+# ==============================
+# 2. 同一查询的两种写法
+# ==============================
+# 需求：找出A区所有空闲设备的名称与功率
+
+# SPARQL（三元组库）：
+#   PREFIX mfg: <http://example.org/manufacturing#>
+#   SELECT ?name ?power WHERE {
+#       ?e  rdf:type/rdfs:subClassOf* mfg:Equipment ;
+#           mfg:hasStatus  mfg:Idle ;
+#           mfg:locatedIn  mfg:WorkCell_A ;
+#           mfg:hasName    ?name ;
+#           mfg:hasPower   ?power .
+#   }
+
+# Cypher（Neo4j）：
+#   MATCH (e:Equipment {status:'Idle'})-[:LOCATED_IN]->(w:WorkCell {name:'A'})
+#   RETURN e.name, e.power
+
+# 多跳查询对照（产品P001延期影响哪些订单）：
+#   SPARQL:  ?o mfg:contains ?w . ?w mfg:produces mfg:P001 .  （写明每跳）
+#   Cypher:  MATCH (p:Product {id:'P001'})<-[:PRODUCES]-(:WorkOrder)
+#            <-[:CONTAINS]-(o:Order) RETURN o
+#   变长路径：SPARQL用属性路径 mfg:precedes+ ；Cypher用 [:PRECEDES*1..5]
+
+# ==============================
+# 3. 选型决策表
+# ==============================
+# 维度              三元组库(Jena/GraphDB)      属性图(Neo4j等)
+# ----------------  --------------------------  --------------------------
+# 本体/推理支持      原生（RDFS/OWL/SHACL）      无原生推理，需应用层实现
+# 标准化            W3C标准，厂商可替换          各家方言（Cypher/GQL在统一）
+# 边属性            繁琐（具名图/RDF-star）      原生支持
+# 图算法            较弱                        强（路径/社区/中心性）
+# 联邦查询          SERVICE关键字原生支持        需插件
+# 团队上手          需RDF知识                   开发者友好
+
+# 选型经验：
+#   推理与标准合规优先（本书主线场景）→ 三元组库
+#   路径分析/图算法密集（如供应链追溯）→ 属性图
+#   混合架构：三元组库做权威知识层，按需投影到属性图做分析
+
+# ==============================
+# 4. 三元组库部署示例（Jena Fuseki）
+# ==============================
+# 下载 apache-jena-fuseki 后：
+#   ./fuseki-server --loc=./tdb2-data /mfg     # TDB2持久化，端点 /mfg
+# 加载本体与数据：
+#   curl -X POST --data-binary @manufacturing.owl \
+#        -H 'Content-Type: application/rdf+xml' \
+#        http://localhost:3030/mfg/data
+# SPARQL端点：
+#   查询 http://localhost:3030/mfg/query
+#   更新 http://localhost:3030/mfg/update   （生产环境应关闭或鉴权）
+
+# 开启OWL推理（assembler配置片段）：
+#   :dataset a ja:RDFDataset ;
+#       ja:defaultGraph [ ja:reasoner
+#           [ ja:reasonerURL <http://jena.hpl.hp.com/2003/OWLFBRuleReasoner> ] ] .
+
+# ==============================
+# 5. 具名图组织策略
+# ==============================
+# 按来源分图：graph <http://example.org/graph/ledger>   台账
+#             graph <http://example.org/graph/mes>      MES
+#             graph <http://example.org/graph/extracted> 文本抽取（低可信）
+# 按时间分图：graph <http://example.org/graph/20260321>  快照（见第5章时态）
+# 价值：来源可信度查询、按图回滚、抽取数据隔离审计

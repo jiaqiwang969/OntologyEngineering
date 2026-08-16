@@ -1,0 +1,1450 @@
+\chapter{本体描述语言与工具}
+\chapterart{ch04}{语义网技术栈：RDF \(\rightarrow\) RDFS \(\rightarrow\) OWL \(\rightarrow\) SPARQL}
+
+\begin{introbox}
+\textbf{【导读】}
+前两章回答了「本体由什么构成」与「如何从零构建」，本章解决最后一公里：
+把概念与方法落到\textbf{机器能读、推理器能算、查询引擎能答}的标准语言上。
+我们自底向上走一遍语义网技术栈：RDF 负责陈述事实，RDFS 给事实加上模式，
+OWL~2 提供完整的逻辑表达力，SPARQL 负责把知识问出来；
+随后盘点高级建模模式与工具链——Protégé、四个编程库与四个主流推理器。
+本章所有代码都可操作：\texttt{.ttl}/\texttt{.owl} 文件可在 Protégé 中打开，
+\texttt{.sparql} 文件可对 Jena Fuseki 端点直接执行——语言类知识，写过查过才算掌握。
+\end{introbox}
+
+\section{语义网技术栈总览}
+
+学习一门语言之前，先看清它所在的「语言家族」。
+本体描述语言不是某个实验室的私有发明，而是一组由万维网联盟
+（World Wide Web Consortium, W3C）维护了二十多年的开放标准。
+理解这组标准各自的定位与相互关系，是本章一切细节的地基。
+
+\subsection{为什么需要标准语言}
+
+回顾历史能看清动机。二十世纪八九十年代，知识表示领域百花齐放：
+KL-ONE 家族的框架语言、KIF 交换格式、Ontolingua 本体库……
+每套系统自带语法、语义与工具，知识写进去就被锁在里面，
+跨系统交换知识的成本高到几乎等于重写。
+那段历史沉淀为一条行业共识：知识表示的价值与「能被多少系统读懂」成正比——
+语言不统一，知识就只是另一种形式的孤岛数据。
+这与关系数据库标准化之前的处境如出一辙：在 SQL 统一江湖之前，
+每家厂商的查询语言互不相认，换数据库约等于换全套应用。
+
+语义网（Semantic Web）运动的核心贡献，是把知识表示推上了
+\textbf{Web 规模的标准化轨道}：用全球统一的标识符命名万物，
+用极简的图模型陈述事实，再分层叠加模式、逻辑与查询能力。
+每一层都是公开标准，任何人都可以实现解析器、存储库与推理器——
+这正是今天我们能在 Protégé 里编辑、用 HermiT 推理、
+拿 Fuseki 提供查询服务而三者来自三个不同团队的原因。
+
+值得一提的是 W3C「推荐标准」（Recommendation）一词的分量。
+一份规范要走完工作草案、候选推荐、建议推荐的全流程，
+必须拿出多个相互独立的实现并通过公开测试套件互证，才能盖上推荐标准的章。
+这套流程速度不快，换来的是罕见的稳定性：2004 年写下的 RDF 文件，
+今天的任何合规解析器仍能一字不差地读出——
+对生命周期以十年计的知识工程而言，这种「慢」恰恰是美德。
+
+\subsection{W3C 标准族谱}
+
+本章涉及的标准可以排成一张族谱，每个成员管一摊事：
+
+\begin{itemize}
+  \item \textbf{RDF}（Resource Description Framework，资源描述框架）——
+        \textbf{数据模型}标准：规定知识的原子是三元组、知识的整体是图。
+        1999 年发布首个推荐标准，2004 年形成完整的 RDF 1.0 标准族，
+        2014 年升级为 RDF 1.1（全面转向 IRI、Turtle 转正为标准语法）；
+        引入「可引用三元组」的 RDF 1.2（即社区熟知的 RDF-star 方向）
+        在本书写作时仍处于标准化进程中。
+  \item \textbf{RDFS}（RDF Schema）——\textbf{轻量模式}标准：
+        在 RDF 之上提供类、类层次、属性层次与定义域/值域词汇，
+        2004 年随 RDF 1.0 发布，2014 年同步更新为 RDF Schema 1.1。
+  \item \textbf{OWL}（Web Ontology Language，Web 本体语言）——
+        \textbf{本体逻辑}标准：提供等价、不相交、枚举、基数约束、
+        属性特性等完整描述逻辑表达力。OWL 1 于 2004 年发布，
+        OWL 2 于 2009 年发布（2012 年出第二版勘误），
+        并带来三个面向不同计算需求的子语言（Profile），见 4.5 节。
+  \item \textbf{SPARQL}（SPARQL Protocol and RDF Query Language）——
+        \textbf{查询与更新}标准：2008 年的 SPARQL 1.0 奠定图模式匹配查询，
+        2013 年的 SPARQL 1.1 补齐聚合、子查询、属性路径、联邦查询与更新语言，
+        同时规定了 HTTP 协议层——「SPARQL 端点」因此成为跨厂商的服务接口。
+  \item \textbf{SHACL}（Shapes Constraint Language，形状约束语言）——
+        \textbf{数据校验}标准：2017 年发布，用「形状」描述数据应满足的结构约束，
+        以封闭世界的方式产出违规报告。它与 OWL 的推断定位互补，
+        本章 4.4 节讨论二者分工，完整用法见第 7 章。
+\end{itemize}
+
+这张族谱有清晰的分工逻辑：RDF 管「怎么说事实」，RDFS/OWL 管「怎么定义词汇与概念」，
+SPARQL 管「怎么问」，SHACL 管「怎么验」。
+五者共享同一个数据模型，因此可以自由组合——这是技术栈而非单一语言的含义。
+查任何细节请认准一手来源：每份标准在 W3C 技术报告页都有带版本日期的正式文本，
+搜索引擎给出的二手教程可能停留在旧版本（例如还在教 2004 年的 RDF 1.0 写法），
+拿不准时回标准原文核对，是这一行的基本功。
+
+\subsection{「分层蛋糕」：技术栈的结构比喻}
+
+语义网社区习惯用一张「分层蛋糕」（layer cake）图描绘这套体系，
+自底向上大致是：最底层是 \textbf{IRI 与 Unicode}——保证万物可命名、全球无歧义；
+其上是\textbf{语法层}——Turtle、RDF/XML、JSON-LD 等序列化格式；
+再上是 \textbf{RDF 数据层}——三元组与图模型；
+然后是\textbf{模式与本体层}——RDFS 提供基础词汇、OWL 提供完整逻辑；
+\textbf{规则层}（SWRL 等，见第 5 章）与本体层并肩；
+\textbf{SPARQL} 作为查询服务横切各层；
+顶部的逻辑、证明与信任层至今仍更多是研究愿景。
+
+这个比喻的工程价值在于两点。
+第一，\textbf{每一层只依赖下层的语义}：换一种序列化格式不影响图的内容，
+换一个三元组库不影响本体公理，各层可以独立选型、独立演化。
+第二，\textbf{项目可以「吃到第几层就停」}：
+不少知识图谱项目只用到 RDF + RDFS + SPARQL 就已产生业务价值，
+OWL 推理按需引入——分层架构允许渐进采纳，而不是全有或全无。
+
+一条常见的渐进路线是三步走。第一步只做「实体目录」：
+把设备、物料、工单的台账数据转成 RDF，配上 SPARQL 端点，
+先解决「数出多门」的标识统一问题；
+第二步补上 RDFS 类层次与 domain/range，让查询能沿层次泛化；
+第三步在痛点明确的子领域引入 OWL 公理与推理器——
+例如设备能力匹配、工艺约束检查。每一步都独立交付价值，也都为下一步铺路。
+比起「先建大而全的本体、再谈应用」的瀑布式路线，
+这种爬楼梯的走法在真实组织里存活率高得多。
+
+\subsection{标准化对企业意味着什么}
+
+在企业语境下，「用 W3C 标准」不是情怀，而是实打实的风险控制：
+
+\begin{itemize}
+  \item \textbf{厂商可替换}。所有合规的三元组库——开源的 Jena TDB2、RDF4J，
+        商用的 GraphDB、Stardog、Amazon Neptune 等——讲同一种数据语言与查询语言。
+        迁移路径是机械的：旧库导出 N-Triples，新库导入，SPARQL 查询原样可用。
+        对比之下，属性图阵营长期依赖各家私有查询语言，
+        直到 2024 年才迎来 ISO 的 GQL 标准；
+        而私有知识库产品一旦停服，知识资产的迁移成本可能是毁灭性的。
+  \item \textbf{数据寿命长于软件寿命}。企业知识库的生命周期以十年计，
+        远超任何一代存储产品。把知识沉淀在开放标准格式中，
+        相当于给资产上了「格式保险」。
+  \item \textbf{生态与人才}。标准化带来可互换的工具链与可积累的技能：
+        Protégé 编辑、HermiT 推理、Fuseki 服务、rdflib 脚本可以自由组合，
+        教材与社区答案也都围绕同一套语言展开。
+\end{itemize}
+
+顺带回答一个高频疑问：「知识图谱用属性图数据库（如 Neo4j）不行吗？」
+行，而且各有所长——属性图的边可以直接携带属性，图算法生态成熟；
+但其数据模型与查询语言长期缺乏跨厂商标准，
+模式层也没有 RDFS/OWL 这样自带推理语义的标准词汇。
+第 7 章会给出两条技术路线的详细对照与选型决策；本章的立场很简单：
+当「标准化、推理、跨系统集成」排在需求清单前列时，W3C 技术栈是更稳的底座。
+
+\begin{noteblock}
+\textbf{与第 2 章的衔接}：第 2 章介绍的描述逻辑（DL）是这套标准的理论内核——
+OWL 的每个构造器都对应一个 DL 构造器，OWL 2 DL 整体对应
+\(\mathcal{SROIQ}(D)\)。本章读到 4.5 节时，
+你会看到那些抽象符号如何一一变成可敲进编辑器的关键字。
+\end{noteblock}
+
+本章行文按技术栈自底向上推进：4.2 与 4.3 节讲数据层（模型与序列化），
+4.4 与 4.5 节讲模式与逻辑层（RDFS 与 OWL），4.6 节讲建模惯用法，
+4.7 节讲查询层（SPARQL），4.8 节讲工具链，4.9 节小结并给出练习。
+
+\section{RDF 数据模型}
+
+\subsection{三元组与图}
+
+RDF 的设计思想极简：\textbf{一切知识都拆成「主语--谓语--宾语」三元组}
+（subject--predicate--object triple）。
+「3 号车床位于 A 工作单元」写成
+\texttt{(mfg:Lathe\_003, mfg:locatedIn, mfg:WorkCell\_A)}；
+「1 号车床功率 22 千瓦」写成
+\texttt{(mfg:Lathe\_001, mfg:power, "22.0"\^{}\^{}xsd:decimal)}。
+主语和宾语是节点，谓语是连接两个节点的\textbf{带标签有向边}——
+一组三元组叠在一起，自然构成一张有向标记图，这就是 \textbf{RDF 图}（RDF graph）。
+形式上，RDF 图就是三元组的\textbf{集合}：无序、无重复，
+同一主语谓语天然允许多个宾语（多值不需要任何特殊设计）。
+
+三元组还有第二种读法：把谓语看作\textbf{二元谓词}，
+\texttt{(Lathe\_003, locatedIn, WorkCell\_A)} 即逻辑断言
+「locatedIn(Lathe\_003, WorkCell\_A)」。
+这正是第 2 章 ABox 断言的标准形态——RDF 图就是一组用 Web
+标识符写成的逻辑事实。「图」与「逻辑」两副眼镜随时切换：
+谈存储与查询时用图的眼镜，谈推理与语义时用逻辑的眼镜，
+4.4 节讨论 RDFS 衍推时你会体会到双视角的便利。
+
+与关系模型对比能看出图模型的脾气。关系表先定列再填行，
+模式变更（加列）是伤筋动骨的操作；RDF 图没有「表结构」，
+任何人随时可以对任何资源追加新谓语的三元组，模式演化近乎零成本。
+更重要的是\textbf{合并自由}：两张 RDF 图的并集仍是合法的 RDF 图，
+来自不同系统、不同厂商的数据只要谈论同一批标识符，倒在一起就完成了初步集成——
+这是用图做数据集成的根本优势，第 7 章构建知识图谱时将充分兑现。
+一个具体画面帮助记忆：制造执行系统导出设备台账的三元组，
+质检系统导出检验记录的三元组，
+两边都用 \texttt{mfg:Lathe\_001} 指称同一台车床——
+两个文件先后装进同一个库，这台车床的全部知识就自动「长」在同一个节点上，
+一行对账代码都不用写。标识符的全局性，
+把集成成本从「N 平方个点对点接口」降到「N 份数据各自对齐标准」。
+
+\subsection{节点的三种身份：IRI、字面量、空节点}
+
+RDF 图中的节点只有三种身份，规则简单却必须烂熟：
+
+\begin{itemize}
+  \item \textbf{IRI}（Internationalized Resource Identifier，国际化资源标识符）——
+        资源的全球唯一名字，如 \nolinkurl{http://example.org/manufacturing#Lathe_001}。
+        IRI 是 URI 的国际化版本（允许直接使用 Unicode 字符）；
+        而日常说的 URL 是「可解引用」的特例。
+        RDF 不要求 IRI 必须能在浏览器里打开，但好的实践（Linked Data 惯例）
+        鼓励解引用后返回机器可读的描述。
+  \item \textbf{字面量}（Literal）——具体数据值：字符串、数字、日期等，
+        可带语言标签或数据类型（下一小节展开）。
+  \item \textbf{空节点}（Blank Node）——「存在但未命名」的节点，
+        相当于自然语言里的「某个东西」（4.2.4 小节专门讨论它的用途与坑）。
+\end{itemize}
+
+三种身份在三元组中的合法位置各不相同：
+\textbf{主语}可以是 IRI 或空节点；\textbf{谓语}必须是 IRI；
+\textbf{宾语}三者皆可。字面量永远只能当宾语——
+「22.0 位于 A 单元」这种话在 RDF 里根本写不出来，语法层面就挡住了一类错误。
+
+IRI 的设计值得在项目第一天就定下规矩，因为它一旦发布就近乎不可更改。
+三条久经考验的惯例：第一，\textbf{命名空间用稳定域名加版本无关路径}，
+版本号放进本体的注解属性而不是每个词项的名字里；
+第二，\textbf{井号与斜杠二选一}——小词表用井号命名空间
+（整个文件一次取回），大数据集用斜杠命名空间（每个资源可单独解引用）；
+第三，\textbf{标识与含义分离}——IRI 是名字不是说明书，
+把部门、产线、型号之类的业务含义编码进 IRI，
+将来组织调整时会追悔莫及；人读的信息交给 \texttt{rdfs:label} 承载。
+
+完整 IRI 冗长难读，实践中用\textbf{前缀声明}（prefix declaration）缩写：
+声明 \texttt{mfg:} 代表 \nolinkurl{http://example.org/manufacturing#} 之后，
+\texttt{mfg:Lathe\_001} 就是完整 IRI 的缩写（称为 CURIE 风格写法）。
+下面这段开篇代码展示了仓库示例文件的前缀区与本体声明：
+
+\input{fragments/snip-ch04-turtle}
+\snipsource{ch04-ontology-languages/examples/rdf-turtle-examples.ttl}
+
+注意两个细节。其一，\texttt{rdf:}、\texttt{rdfs:}、\texttt{owl:}、\texttt{xsd:}
+四个前缀几乎出现在每份 RDF 文件头部，分别指向四个 W3C 标准命名空间——
+它们的展开形式值得记住，读旧文件、调试解析错误时都用得上。
+其二，\texttt{:} 与 \texttt{mfg:} 被声明为同一个命名空间，
+空前缀让本地名字更紧凑，具名前缀让跨文件引用更清晰，示例文件两者并存以便对照。
+最后提醒一句：前缀只是\textbf{文档内}的缩写约定，不进图本身——
+同一文件换一套前缀名重写，得到的图分毫不差；
+跨团队统一前缀用法（比如固定 \texttt{mfg:} 指向企业命名空间）纯属人类间的便利，
+公共词表的惯用前缀则早已约定俗成，社区站点 prefix.cc 收录了这些映射。
+
+\subsection{字面量：语言标签与数据类型}
+
+字面量看似平凡，细节却直接影响查询与集成质量。RDF 1.1 把字面量分成三类：
+
+\textbf{语言标签字面量}：\texttt{"制造领域本体"@zh} 与
+\texttt{"Manufacturing Domain Ontology"@en}。
+标签采用 BCP~47 规范（\texttt{zh}、\texttt{en}、也可细化为 \texttt{zh-Hans} 等），
+类型固定为 \texttt{rdf:langString}。
+上面代码里同一个本体挂了中英两条 \texttt{rdfs:label}——
+这是\textbf{两条不同的三元组}，互不覆盖。
+多语言标注从第一天就做，国际化项目会感谢这个习惯；
+查询时用 \texttt{FILTER(lang(?name) = "zh")} 取所需语言（4.7 节示范），
+若数据里混有 \texttt{zh-Hans} 这类带子标签的写法，
+改用 \texttt{langMatches()} 函数做前缀式匹配更稳妥。
+
+\textbf{类型字面量}：\texttt{"22.0"\^{}\^{}xsd:decimal}、
+\texttt{"2024-03-01T10:00:00"\^{}\^{}xsd:dateTime}。
+双插符后面的 IRI 指明数据类型，常用的有
+\texttt{xsd:string}、\texttt{xsd:integer}、\texttt{xsd:decimal}、
+\texttt{xsd:double}、\texttt{xsd:boolean}、\texttt{xsd:date}、
+\texttt{xsd:dateTime}、\texttt{xsd:anyURI}。
+没写类型的裸字符串，在 RDF 1.1 中默认就是 \texttt{xsd:string}。
+
+两个工程提醒。第一，\textbf{词项相等不同于值相等}：
+\texttt{"22"\^{}\^{}xsd:integer} 与 \texttt{"22.0"\^{}\^{}xsd:decimal}
+是不同词项但数值相等，SPARQL 的 \texttt{=} 按值比较、
+\texttt{sameTerm()} 按词项比较，混淆两者是查询结果「莫名缺行」的常见原因。
+第二，\textbf{单位不要塞进数值}：\texttt{"22kW"} 这种字符串既不能比较也不能聚合；
+仓库示例的做法是数值入库、单位写进属性的 \texttt{rdfs:comment}（如「单位：kW」），
+更严格的方案是引入 QUDT 之类的单位本体显式建模量纲。
+
+数值类型的选择也有讲究：工程量优先用 \texttt{xsd:decimal}
+（十进制精确表示，适合尺寸、功率、金额），
+\texttt{xsd:double} 留给确属浮点语义的科学计算值——
+二进制浮点的舍入误差若出现在「最大加工直径」这类字段上，排查起来格外伤神。
+日期一律走 \texttt{xsd:date} 或 \texttt{xsd:dateTime} 而不是自由字符串，
+否则区间过滤与排序都要仰仗不可靠的字典序。
+
+\subsection{空节点：用途与坑}
+
+空节点表达「存在某个东西，它有如下性质，但我不给它全局名字」。
+合法用途有三类：描述不值得命名的辅助结构
+（例如一个地址、一段配置）；承载 RDF 列表的中间节点——
+Turtle 里一对圆括号背后，其实是一串以 \texttt{rdf:first}、\texttt{rdf:rest}
+串起、以 \texttt{rdf:nil} 收尾的空节点链；
+以及 OWL 公理的 Turtle 形态——4.5 节会看到，
+\texttt{owl:Restriction} 匿名类在 Turtle 里就是用空节点 \texttt{[ ... ]} 写的。
+
+但空节点的代价常被低估，三处坑必须心中有数：
+
+\begin{itemize}
+  \item \textbf{不可全局引用}。空节点标签（如 \texttt{\_:b1}）只在\textbf{本文档内}有效，
+        换个文件、换次解析就失效。两份都含空节点的数据合并后，
+        无法判断两个空节点是否「同一个东西」，
+        增量更新与数据对账因此变得棘手。
+  \item \textbf{SPARQL 行为反直觉}。同一查询内，图模式里的空节点相当于
+        不进入结果的临时变量；而\textbf{查询结果中出现的空节点标签只是当次结果集的代号}，
+        拿它拼第二条查询去「定位同一个节点」是徒劳的——这是新手高频踩坑点。
+  \item \textbf{运维成本}。含空节点的图做差异比较（diff）需要图同构判定，
+        版本管理、变更审计都因此复杂化。
+\end{itemize}
+
+\begin{noteblock}
+\textbf{工程建议}：能起名就起名。确实需要消除空节点时，
+可用\textbf{斯科伦化}（Skolemization）——把空节点系统性替换为
+\texttt{.well-known/genid/} 路径下的内部 IRI，
+RDF 1.1 标准为此专门预留了机制。本书第 9 章的实战数据全部使用具名 IRI，
+空节点只保留在 OWL 公理的语法内部。
+\end{noteblock}
+
+\section{序列化格式巡礼}
+
+RDF 图是抽象数学对象，落到文件里需要\textbf{序列化格式}（serialization format）。
+同一张图可以写成多种文本，格式之间无损互转——
+本节边讲语法边强调这个「同图异文」的事实。
+
+\subsection{Turtle 语法精讲}
+
+Turtle（Terse RDF Triple Language）是手写与阅读 RDF 的事实标准，
+2014 年随 RDF 1.1 转正为 W3C 推荐标准。它的全部语法要点可以一页讲完：
+
+\begin{itemize}
+  \item \textbf{前缀与基地址}：\texttt{@prefix mfg: <...> .} 声明缩写；
+        与 SPARQL 同源的大写写法 \texttt{PREFIX}（不带句点）同样合法。
+  \item \textbf{句点、分号、逗号}：句点结束一条陈述；
+        \textbf{分号}复用主语——「同一个东西的下一条属性」；
+        \textbf{逗号}复用主语加谓语——「同一属性的下一个值」。
+  \item \textbf{关键字 a}：\texttt{rdf:type} 的语法糖，
+        \texttt{mfg:Lathe\_001 a mfg:Lathe} 读作「是一台」。
+  \item \textbf{方括号}：\texttt{[ ... ]} 内联一个空节点及其属性；
+        \textbf{圆括号}：\texttt{( e1 e2 e3 )} 构造 RDF 列表；
+        三引号 \texttt{"""..."""} 写多行字符串。
+\end{itemize}
+
+两条锦上添花的简写：数字与布尔字面量可以裸写——
+\texttt{mfg:power 22.0} 等价于带 \texttt{xsd:decimal} 类型的完整写法，
+\texttt{true} 与 \texttt{false} 对应 \texttt{xsd:boolean}；
+\texttt{@base} 声明基地址后，相对 IRI（如 \texttt{<\#Lathe\_001>}）按其展开。
+注释从井号到行尾——仓库示例文件里的分节横线全是纯注释，
+解析后不留痕迹。
+
+语法虽小，组织风格决定可读性。看仓库示例文件的类定义段——
+这是一段值得逐行品味的「标准笔迹」：
+
+\input{fragments/sec-ch04-rdf-turtle-examples-ttl-2}
+\snipsource{ch04-ontology-languages/examples/rdf-turtle-examples.ttl}
+
+读这段代码的正确姿势是把分号读成「并且它还……」：
+\texttt{mfg:Lathe} 是一个类，\textbf{并且它还}是 \texttt{mfg:CNCMachine} 的子类，
+\textbf{并且它还}有中文标签「车床」。五个设备类通过 \texttt{rdfs:subClassOf}
+串成四层层次（设备 \(\rightarrow\) 加工设备 \(\rightarrow\) 数控机床 \(\rightarrow\) 车床），
+每个类一段、段间空行、注释分节——这套排版习惯让 Turtle 文件像文章一样可读。
+团队协作时值得把它写进代码规范：固定前缀顺序、固定缩进宽度、
+类按层次分组、属性按对象/数据分区——
+风格统一之后，评审者的注意力才能留给真正要紧的语义变化。
+另一个值得注意的工程细节：\textbf{Turtle 对行敏感的排版方式对版本管理极友好}，
+每条公理的增删在 \texttt{git diff} 里清清楚楚，
+这是团队协作维护本体时选择 Turtle 的重要理由。
+
+\subsection{RDF/XML：同图异文的历史样本}
+
+RDF/XML 是 1999 年随 RDF 诞生的\textbf{第一个}标准序列化格式，
+在 Turtle 转正之前的十几年里是唯一选择，因此存量本体大量使用它——
+很多扩展名为 \texttt{.owl} 的文件，揭开盖子其实是 RDF/XML。
+仓库提供了与 Turtle 文件内容对应的 XML 版本，节选对照如下：
+
+\input{fragments/sec-ch04-rdf-xml-examples-rdf-0}
+\snipsource{ch04-ontology-languages/examples/rdf-xml-examples.rdf}
+
+把它与上一小节的 Turtle 并排看，关键是认出\textbf{同一批三元组的另一副面孔}：
+\texttt{owl:Class} 元素（其 \texttt{rdf:about} 属性指明主语）对应
+\texttt{mfg:Equipment a owl:Class}；
+嵌套其中的 \texttt{rdfs:subClassOf} 元素（\texttt{rdf:resource} 指明宾语）
+对应一条 \texttt{rdfs:subClassOf} 三元组；
+结尾的 \texttt{mfg:Lathe} 元素是「类型化节点元素」写法，
+一个标签同时完成「声明资源」与「断言 \texttt{rdf:type}」两件事。
+\textbf{解析之后，两个文件得到的三元组集合完全一致}——格式只是外衣，图才是本体。
+
+RDF/XML 的口碑不佳有其原因：同一张图存在多种合法 XML 写法
+（属性形式与元素形式可互换、嵌套深浅随意），
+嵌套结构诱导「树状思维」而 RDF 本质是图；
+更要命的是通用 XML 工具几乎帮不上忙——
+用 XML Schema 校验 RDF/XML 内容基本不可行，
+因为「合法变体太多」恰恰是 Schema 这种逐字面校验最怕的局面。
+还有一个冷知识级缺陷：RDF/XML 要求谓语 IRI 能拆成
+「命名空间 + 合法 XML 元素名」，本地名以数字开头之类的 IRI
+根本写不出来——同一图在 Turtle 里合法、在 RDF/XML 里无法序列化。
+工程建议因此是\textbf{只读不写}：理解它以便对接遗留系统，
+新文件一律用 Turtle，需要转换时交给命令行工具——
+Jena 的 \texttt{riot} 一条命令即可在各格式间互转，
+顺手还能当语法校验器用（解析不过就是文件有错）。
+
+\subsection{N-Triples 与 JSON-LD}
+
+另外两种格式各有专属生态位，一笔带过但场景要记牢。
+
+\textbf{N-Triples} 是 Turtle 的「全展开」子集：不准用前缀、不准用分号逗号，
+每行一条三元组、所有 IRI 写全。人读起来痛苦，机器处理却极舒服——
+按行切分即可并行加载、流式处理，是大规模数据交换（dump 文件）的标准选择。
+其四列扩展 \textbf{N-Quads} 在每行末尾追加命名图（named graph）标识，
+用于传输多图数据集（4.6 节谈元数据管理时还会遇到命名图）。
+感受一下同一条知识在 N-Triples 里的样子——一行就是一条完整三元组，
+此处仅因排版折行：
+
+\begin{codebox}
+\codeline{<http://example.org/manufacturing\#Lathe\_001>}
+\codeline{\hspace*{2\ttcw}<http://www.w3.org/1999/02/22-rdf-syntax-ns\#type>}
+\codeline{\hspace*{2\ttcw}<http://example.org/manufacturing\#Lathe>\ .}
+\codeline{<http://example.org/manufacturing\#Lathe\_001>}
+\codeline{\hspace*{2\ttcw}<http://example.org/manufacturing\#power>}
+\codeline{\hspace*{2\ttcw}"22.0"\^{}\^{}<http://www.w3.org/2001/XMLSchema\#decimal>\ .}
+\end{codebox}
+
+\textbf{JSON-LD} 则面向 Web 开发者：它是合法的 JSON，
+靠一个 \texttt{@context} 块把普通 JSON 字段名映射到 IRI，
+前端工程师无需理解 RDF 也能产出标准三元组。
+搜索引擎的结构化数据标注（schema.org 生态）正是其最大用武之地，
+JSON-LD 1.1 于 2020 年成为 W3C 推荐标准。
+同样两条知识的 JSON-LD 形态，对前端工程师几乎零门槛：
+
+\begin{codebox}
+\codeline{\{}
+\codeline{\hspace*{2\ttcw}"@context":\ \{\ "mfg":\ "http://example.org/manufacturing\#",}
+\codeline{\hspace*{16\ttcw}"power":\ \{\ "@id":\ "mfg:power"\ \}\ \},}
+\codeline{\hspace*{2\ttcw}"@id":\ \ \ "mfg:Lathe\_001",}
+\codeline{\hspace*{2\ttcw}"@type":\ "mfg:Lathe",}
+\codeline{\hspace*{2\ttcw}"power":\ 22.0}
+\codeline{\}}
+\end{codebox}
+
+四种格式的取舍可以浓缩成一张表：
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\ttfamily}p{0.14\linewidth}p{0.26\linewidth}X@{}}
+\toprule
+\normalfont\textbf{格式} & \textbf{一句话定位} & \textbf{适用场景} \\
+\midrule
+Turtle & 人读人写的事实标准 & 手写本体、教学示例、代码评审与 git 版本管理 \\
+RDF/XML & 最早的标准格式 & 对接遗留系统与老工具；OWL 时代存量文件的主要形态 \\
+N-Triples & 一行一条、全部展开 & 大规模数据交换与备份、流式与并行加载、命令行处理 \\
+JSON-LD & JSON 的 RDF 化身 & Web API 与前端集成、搜索引擎结构化数据（schema.org） \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+选择口诀：\textbf{手写用 Turtle，交换用 N-Triples，上 Web 用 JSON-LD，
+遇到遗留系统再谈 RDF/XML}。无论选哪种，记住它们承载的是同一张图——
+任何合格的 RDF 工具都能在格式之间无损往返。
+「同图异文」甚至延伸到了 HTTP 层：Linked Data 实践中，
+同一个资源 IRI 可以按请求头的内容协商（content negotiation）
+分别返回 Turtle、JSON-LD 或人读的 HTML 页面——
+名字只有一个，表现形式随消费者而变，这正是整套设计哲学的缩影。
+
+\section{RDFS：给事实加上第一层模式}
+
+裸 RDF 只有事实没有词汇表：谁都可以发明谓语，机器却不知道这些谓语意味着什么。
+RDFS（RDF Schema）补上第一层模式能力——它本身也用三元组书写，
+核心词汇一只手数得过来，但每一个都自带\textbf{推理语义}。
+
+\subsection{类与类层次：subClassOf}
+
+\texttt{rdfs:Class} 声明一个资源是类，\texttt{rdfs:subClassOf} 声明类间的包含关系——
+「所有车床都是数控机床」写作：
+\texttt{mfg:Lathe rdfs:subClassOf mfg:CNCMachine}。两条性质要点：
+\textbf{传递性}——子类的子类还是子类，层次因此可以任意深；
+\textbf{多重继承合法}——一个类可以同时是多个类的子类
+（「数控车床」既在「车床」之下又在「数控设备」之下），
+RDFS 对此毫无限制，是否使用多继承是建模风格问题（第 3 章的方法论已有讨论）。
+
+\texttt{rdfs:subPropertyOf} 的推理行为与类层次一致：
+断言「\texttt{Spindle\_01} 直接部件于 \texttt{Lathe\_001}」，
+若「直接部件于」是「部件于」的子属性，
+推理器自动补出「\texttt{Spindle\_01} 部件于 \texttt{Lathe\_001}」——
+数据只写最具体的关系，泛化层面交给推理，这个分工后文模式一节大量使用。
+
+随手可得的还有注释词汇 \texttt{rdfs:label} 与 \texttt{rdfs:comment}：
+它们对推理没有任何影响，对\textbf{人}却是头等重要——
+标签是界面与查询结果里的展示名，注释是建模意图的随身文档。
+第 3 章强调的命名规范与文档化要求，落到语言层就是坚持给每个类写这两条。
+
+\begin{noteblock}
+\textbf{rdfs:Class 还是 owl:Class？}仓库的 RDFS 示例文件用前者，
+OWL 文件用后者。在工程实践里可以这样把握：
+读到 \texttt{rdfs:Class}，通常意味着文件停留在纯 RDFS 表达力层；
+新建本体时直接写 \texttt{owl:Class}——Protégé 等工具也只会产出后者。
+理解前者是为了读懂旧文件与轻量词表，不是为了在新项目里使用它。
+\end{noteblock}
+
+\subsection{属性与 domain/range}
+
+RDFS 把属性当一等公民：\texttt{rdf:Property} 声明属性，
+\texttt{rdfs:subPropertyOf} 构造属性层次
+（「直接部件于」是「部件于」的子属性，4.6 节的部分-整体模式会用到），
+\texttt{rdfs:domain} 与 \texttt{rdfs:range} 则声明属性两端的类型：
+
+\begin{itemize}
+  \item \texttt{mfg:canProcess rdfs:domain mfg:Equipment}——
+        凡是\textbf{作主语}用了 \texttt{canProcess} 的资源，都是设备；
+  \item \texttt{mfg:canProcess rdfs:range mfg:Material}——
+        凡是\textbf{作宾语}出现在 \texttt{canProcess} 之后的资源，都是材料。
+\end{itemize}
+
+请反复读上面两句话的措辞：是「都是」，不是「必须是」。
+这一字之差是 RDFS 被误解最深的地方，下一小节专门掰开揉碎。
+
+还有一个少有人知却时常致祸的细节：同一属性声明\textbf{多个} domain
+（或 range），语义是\textbf{交集}而非并集——
+给 \texttt{canProcess} 同时声明 domain 为设备和刀具，
+意思是每个使用者「既是设备又是刀具」，而不是「设备或刀具皆可」；
+想表达「或」，要把并类（OWL 的 \texttt{or} 表达式）作成一个 domain。
+许多公开本体里的诡异推理结论，源头就是无意间叠出来的多重 domain。
+
+\subsection{RDFS 推理语义：domain 是推断，不是校验}
+
+RDFS 的标准语义由一组\textbf{衍推规则}（entailment rules）定义——
+给定一张图，规则不断推出新三元组，直到没有新结论为止。核心四条：
+
+\begin{itemize}
+  \item \textbf{类继承}（rdfs9）：\(x\) 属于类 \(A\)，且 \(A \sqsubseteq B\)
+        \(\Rightarrow\) \(x\) 属于 \(B\)；类层次传递（rdfs11）与之配套。
+  \item \textbf{属性继承}（rdfs7）：\(x\) 与 \(y\) 有子属性关系
+        \(\Rightarrow\) 它们也有父属性关系。
+  \item \textbf{定义域}（rdfs2）：三元组 \((x, p, y)\) 存在且 \(p\) 的
+        domain 是 \(C\) \(\Rightarrow\) \(x\) 属于 \(C\)。
+  \item \textbf{值域}（rdfs3）：三元组 \((x, p, y)\) 存在且 \(p\) 的
+        range 是 \(C\) \(\Rightarrow\) \(y\) 属于 \(C\)。
+\end{itemize}
+
+规则编号出自 RDF 语义规范，记号不必背，行为必须懂——
+尤其要注意每条规则都只会\textbf{产生}三元组，没有任何一条会报错或拒绝数据。
+
+仓库示例文件把最常用的类继承推理写成了可操作的最小案例：
+
+\input{fragments/sec-ch04-rdfs-examples-ttl-3}
+\snipsource{ch04-ontology-languages/examples/rdfs-examples.ttl}
+
+文件里\textbf{从未写过}「\texttt{Lathe\_001} 是设备」这条三元组，
+但任何 RDFS 推理器都会把它补出来——把这份文件装进 Jena 的 RDFS 推理模型，
+查询「所有 \texttt{mfg:Equipment} 的实例」就能看到 \texttt{Lathe\_001} 在列。
+这是本书反复出现的主题「显式知识之外的增值」最朴素的形态。
+
+domain/range 的推断同样如此。给定
+\texttt{mfg:producedBy rdfs:range mfg:Equipment} 与事实
+「某产品 \texttt{producedBy} 某资源 X」，推理器会推出「X 是设备」——
+即便 X 从未被显式声明过任何类型。这在数据干净时是便利
+（半结构化来源的数据自动获得类型），在数据脏时是放大器
+（错误断言长出错误类型）。全部推理结果的集合称为图的
+\textbf{衍推闭包}（entailment closure），工程上有两种取用方式：
+装载时\textbf{物化}——算好落库，查询零开销、数据更新需重算；
+或查询时\textbf{动态推理}——结论永远新鲜、每次查询都付推理成本。
+4.5.2 小节的 RL Profile 与 4.7.4 小节的属性路径，分别是两条路线的代表。
+
+现在看那个高频误解。某团队给 \texttt{canProcess} 声明了
+domain 为 \texttt{Equipment}，本意是「拦住把订单当设备用的脏数据」。
+某天数据管道误产出 \texttt{mfg:Order\_007 mfg:canProcess mfg:Aluminum\_6061}，
+他们期待推理器报错——实际发生的是：推理器\textbf{安静地推出}
+\texttt{mfg:Order\_007 a mfg:Equipment}。
+订单从此「是」一台设备，下游所有按设备类检索的查询都会带出这张订单。
+没有报警、没有不一致，错误数据反而长出了错误分类。
+更糟的是发现时点：这类污染往往潜伏到几周后的某张报表数字对不上才暴露，
+回溯时还得先理解「订单怎么会被算成设备」的推理链——
+事故复盘的时间成本远超当初少写一层校验省下的功夫。
+
+\begin{noteblock}
+\textbf{为什么会这样}：RDFS（以及 OWL）的语义是\textbf{开放世界}下的\textbf{推断}逻辑——
+公理描述世界「是什么样」，新信息只会触发新结论，不会触发「违规」。
+RDFS 甚至没有任何表达「不」的手段，连不一致都制造不出来。
+想要\textbf{校验}语义（缺了报错、类型不符报错），用第 7 章的 SHACL，
+它在封闭检查的立场上产出违规报告；在 OWL 中声明类不相交（如订单与设备
+\texttt{owl:disjointWith}）也能让上述数据触发不一致——但那已是 OWL 的能力。
+「拿 domain 当校验」是新手在生产事故里学会的第一课，希望你在这里提前学会。
+\end{noteblock}
+
+\subsection{RDFS 的表达力边界}
+
+RDFS 能干的事到此为止。盘点它\textbf{说不出口}的话：
+不能说「设备与材料不相交」（无否定与不相交），
+不能说「每台设备至多有一个序列号」（无基数约束），
+不能说「合格产品\textbf{当且仅当}通过检验的产品」（无等价定义，只有单向包含），
+不能说「先于关系可传递」「位于关系是函数性的」（无属性特性），
+也不能把状态值限定在四个枚举个体之内（无枚举类），
+甚至不能断言「这两个名字指同一台设备」或「这两个名字一定不同」——
+个体同一性词汇（\texttt{owl:sameAs}、\texttt{owl:differentFrom}）也属于 OWL。
+一句话总结：\textbf{RDFS 只能往上走（沿层次泛化），不能说「不」，也不能数数}。
+工程约束恰恰大量需要后两者——这正是 OWL 登场的理由。
+
+顺带划清一条容易混淆的界线：\texttt{rdfs:label}、\texttt{rdfs:comment}
+以及 SKOS 的各类标注词汇都属于\textbf{注释性词汇}，
+在 OWL 中归为注解属性（annotation property），对逻辑推理完全透明——
+删光所有标签，推理结论一条不变。
+区分「进逻辑的公理」与「给人看的注解」，
+是阅读任何本体文件时要戴上的第一副眼镜；
+也因此，4.4.1 小节才敢说「标签注释对人头等重要」而不担心它干扰语义。
+
+\section{OWL 2 全景}
+
+OWL（Web Ontology Language）把第 2 章的描述逻辑装进了 Web 标准的外壳。
+本节按「全貌--子语言--语法--构造器--属性公理--经典陷阱」的顺序展开，
+它是全章篇幅最重的一节，因为这里的每个决定都直接进入生产系统。
+
+\subsection{OWL 与描述逻辑的对应}
+
+OWL 2 有两种读法。\textbf{OWL 2 DL} 读法把本体看作描述逻辑
+\(\mathcal{SROIQ}(D)\) 的公理集（呼应第 2 章的 DL 家族命名法：
+\(\mathcal{S}\) 是带传递属性的 \(\mathcal{ALC}\)，
+\(\mathcal{R}\) 加属性链与属性层次，\(\mathcal{O}\) 加枚举（nominal），
+\(\mathcal{I}\) 加逆属性，\(\mathcal{Q}\) 加限定基数，\((D)\) 加数据类型）——
+表达力强且推理\textbf{可判定}，是工程默认选择；
+\textbf{OWL 2 Full} 读法保持与 RDF 完全兼容、不设任何语法限制
+（类可以同时是个体，元建模随意），代价是推理不可判定，只在特殊场合使用。
+本书此后说 OWL 均指 OWL 2 DL。
+
+OWL 2 DL 为可判定性付出的语法代价里，有两条新手常撞上：
+其一，类、属性、个体的名字默认分属不同空间，
+同名复用要走受控的「双关」机制（punning）且有限制——
+对象属性与数据属性之间则绝对不许同名；
+其二，传递属性这类「非简单属性」不能再参与基数约束。
+Protégé 会在你越界时直接报错，背后的理由可回看第 2 章的可判定性讨论。
+
+还有一件「同图异文」的升级版事实：OWL 本体的抽象结构与具体语法分离，
+同一本体可写成函数式语法（Functional Syntax，规范用）、
+RDF 序列化（Turtle/RDF/XML，交换用）与 Manchester 语法（人读人写，编辑器用）。
+4.5.3 小节精讲 Manchester，因为它是 Protégé 界面的语言。
+
+工程上还有两件常被忽略的语言设施值得点名。
+\textbf{模块化导入}：\texttt{owl:imports} 让一个本体声明式地引入另一个本体，
+团队据此把大本体拆成「核心概念 + 各领域扩展」的模块结构，
+Protégé 的本体导入面板管理这条机制（仓库 README 的导入步骤即为此）。
+\textbf{版本标识}：\texttt{owl:versionIRI} 给本体的每个发布版本一个独立 IRI，
+配合变更日志注解，下游系统才能明确声明「我兼容哪一版」。
+
+\subsection{三个 Profile：工程化的表达力裁剪}
+
+完整 OWL 2 DL 的推理复杂度极高（一致性检验为 N2ExpTime 完全），
+本体一大或数据一多就可能算不动。「指数级」不是修辞——
+它意味着推理时间可能随公理规模发生雪崩式增长，
+同一推理器面对规模相近、结构略异的两个本体，耗时可以相差几个数量级。
+标准无法让最坏情况消失，但可以圈出「保证算得快」的安全区，
+这就是 Profile 的全部哲学：\textbf{把表达力关进笼子，换取复杂度的承诺}。
+OWL 2 标准据此预制了三个
+\textbf{子语言}（Profile）：各自砍掉一部分表达力，换取可规模化的推理算法。
+\textbf{选 Profile 是本体项目最重要的工程决策之一}，
+它决定了你能写哪些公理、能用哪些推理器、能扛多大数据。
+
+\begin{itemize}
+  \item \textbf{OWL 2 EL}——为「概念巨多」的场景设计，
+        源自 \(\mathcal{EL}^{++}\) 逻辑家族。保留存在限制（\(\exists\)）与交（\(\sqcap\)），
+        放弃全称限制、否定、析取与逆属性，换来\textbf{多项式时间}的本体分类。
+        生物医学大本体是它的主场：数十万概念的 SNOMED~CT 临床术语系统、
+        Gene Ontology 都按 EL 设计，ELK 推理器可在秒级完成分类。
+  \item \textbf{OWL 2 QL}——为「数据躺在关系库」的场景设计，源自 DL-Lite 家族。
+        表达力剪裁到恰好能把概念查询\textbf{重写成 SQL}
+        （查询回答的数据复杂度落在 \(\mathrm{AC}^0\)），
+        于是本体可以作为语义视图直接架在现有关系数据库之上，数据不动、语义加层——
+        这套架构有个专名：\textbf{本体数据访问}（Ontology-Based Data Access, OBDA）。
+  \item \textbf{OWL 2 RL}——为「实例巨多」的场景设计，
+        是能用\textbf{前向规则}完整实现的最大子集。
+        三元组库把它实现为装载时物化（GraphDB、Jena 规则引擎等都走这条路），
+        推理结果直接落库，查询时零额外开销，适合知识图谱量级的 ABox。
+\end{itemize}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.09\linewidth}p{0.15\linewidth}p{0.22\linewidth}p{0.21\linewidth}X@{}}
+\toprule
+\textbf{Profile} & \textbf{理论渊源} & \textbf{换来的计算性质} & \textbf{放弃的表达力（举要）} & \textbf{典型场景} \\
+\midrule
+EL & \(\mathcal{EL}^{++}\) 家族 & 多项式时间分类 & 全称限制、否定、析取、逆属性 & 超大概念层次（SNOMED CT、基因本体） \\
+QL & DL-Lite 家族 & 查询重写为 SQL，数据复杂度 \(\mathrm{AC}^0\) & 传递属性、较强基数约束 & 关系库上的语义访问（OBDA） \\
+RL & 规则可实现子集 & 前向物化、装载时算完 & 推出「新个体」的存在推断等 & 大规模实例数据的图谱推理 \\
+完整 DL & \(\mathcal{SROIQ}(D)\) & 可判定但最坏指数级以上 & —— & 概念与数据规模都可控的精细建模 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+选型口诀：\textbf{TBox 巨大选 EL，ABox 巨大选 RL，数据在关系库里选 QL，
+两头都不大才放心用完整 DL}。三点补充。
+其一，Profile 是\textbf{上限承诺}而非强制——
+按 EL 设计的本体放进完整 DL 推理器毫无问题，反向则要删公理，
+所以宁可一开始保守。
+其二，「落在某 Profile 内」是可以\textbf{机器判定}的：
+W3C 在线校验器与各类工具都能检查一份本体违反了哪条 Profile 限制，
+把这一检查挂进持续集成，能防止某次提交无意间把全队拖出安全区——
+比如某位同事顺手加了一条 \texttt{only} 公理，EL 资格即刻作废。
+其三，制造业知识系统常见的形态是
+「中等 TBox + 大 ABox + 关系库共存」，实践中往往 RL 物化与 QL 风格的
+数据库映射并用，第 9 章的实战架构会看到这种混搭。
+
+\subsection{Manchester 语法精讲}
+
+机器交换本体用 RDF 序列化即可，\textbf{人}写公理需要更友好的皮肤。
+Manchester 语法用英语关键字替代逻辑符号，是 Protégé 类表达式编辑器的语言，
+也是团队评审公理时投影在大屏上的语言。先看仓库的类定义骨架：
+
+\input{fragments/snip-ch04-manchester}
+\snipsource{ch04-ontology-languages/examples/owl-classes.owl}
+
+语法骨架一目了然：\texttt{Class:} 开块，缩进的小节各管一类公理——
+\texttt{Annotations:} 挂标签注释，\texttt{SubClassOf:} 声明父类或必要条件，
+\texttt{DisjointWith:} 声明不相交，（后文还会见到）\texttt{EquivalentTo:} 声明等价定义。
+对应的属性侧关键字是 \texttt{ObjectProperty:} 与 \texttt{DataProperty:} 开块，
+\texttt{Domain:}、\texttt{Range:}、\texttt{Characteristics:} 分述两端类型与特性。
+类表达式内部则用小写连接词：\texttt{and}、\texttt{or}、\texttt{not}、
+\texttt{some}、\texttt{only}、\texttt{value}、\texttt{min}、\texttt{max}、
+\texttt{exactly}。同一本体若导出为函数式语法或 Turtle，
+这些关键字会变成 \texttt{ObjectSomeValuesFrom} 或
+\texttt{owl:someValuesFrom} 之类的形态——名字更长，结构相同，
+评审公理认 Manchester、交换文件认 RDF 序列化，是团队里合理的分工。
+
+三处值得驻足。第一，\texttt{Equipment} 上的
+\texttt{DisjointWith: :Material, :Tool} 正是 RDFS 给不出的「说不」能力——
+有了它，任何把设备同时断言为材料的数据都会让推理器报\textbf{不一致}，
+第 1 章所说的「公理即约束」落到代码就是这一行。
+第二，\texttt{CNCMachine} 的
+\texttt{SubClassOf: :hasControl value :CNCControl} 是\textbf{值限制}：
+每台数控机床都带着指向特定个体 \texttt{:CNCControl} 的关系。
+第三，\texttt{Lathe} 的 \texttt{SubClassOf: :canProcess some :RotationalPart}
+是\textbf{存在限制}：是车床就必然能加工某种回转体零件。
+
+还有一个贯穿建模生涯的区分：\textbf{SubClassOf 给必要条件，
+EquivalentTo 给充要条件}。「车床 \texttt{SubClassOf} 能加工回转体」
+只说车床都如此，推理器\textbf{不会}把能加工回转体的东西自动归为车床；
+而后文 \texttt{QualifiedProduct} 用 \texttt{EquivalentTo} 定义，
+推理器才会把满足条件的个体\textbf{自动分类}进来。
+想让推理器替你「认出」成员，必须用等价定义——这是 OWL 自动分类的开关。
+Manchester 语法的应用场景也不止编辑器：
+Protégé 的 DL Query 即席查询、推理解释面板展示肇事公理，
+用的都是这套语法——它是工程师与本体之间的「工作语言」，
+值得练到能脱稿读写常见公理的程度。
+
+\subsection{类表达式构造器一览}
+
+OWL 的类表达式像乐高：原子类是基本砖块，构造器把它们拼成任意复杂的匿名类。
+下表把 Manchester 写法、描述逻辑记号与读法对齐（\(C, D\) 为类表达式，
+\(R\) 为对象属性，\(a_i\) 为个体，\(n\) 为非负整数）：
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\ttfamily}p{0.24\linewidth}p{0.13\linewidth}X@{}}
+\toprule
+\normalfont\textbf{Manchester 写法} & \textbf{DL 记号} & \textbf{读法与示例} \\
+\midrule
+C and D & \(C \sqcap D\) & 交：既是设备又是高功率的东西 \\
+C or D & \(C \sqcup D\) & 并：车床或铣床 \\
+not C & \(\lnot C\) & 补：不是测量设备的东西 \\
+R some C & \(\exists R.C\) & 存在限制：至少加工一种铝合金材料 \\
+R only C & \(\forall R.C\) & 全称限制：所加工的只能是金属材料 \\
+R value a & \(\exists R.\{a\}\) & 值限制：控制系统是那一台 \texttt{CNCControl} \\
+R min n C & \(\ge n\,R.C\) & 至少 \(n\) 个：至少配两把刀具 \\
+R max n C & \(\le n\,R.C\) & 至多 \(n\) 个：至多占一个工位 \\
+R exactly n C & \(= n\,R.C\) & 恰好 \(n\) 个：恰好一个序列号 \\
+\{a1, a2, ...\} & \(\{a_1, a_2, \dots\}\) & 枚举类：状态只能取那几个个体 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+构造器可以任意嵌套，工程上却要克制：嵌套越深，公理越难评审、推理越慢。
+经验法则是\textbf{给复杂表达式起名}——把嵌套子表达式提成具名类再引用，
+本体因此长出更多「中间概念」，这通常是好事而非坏事。
+另一个进阶事实顺带知晓：公理两侧其实都允许放\textbf{类表达式}
+（所谓一般概念包含，GCI），
+「凡是能加工钛合金的设备都得有冷却系统」可以直接写成
+「(\texttt{Equipment and canProcess some Titanium})
+\texttt{SubClassOf} (\texttt{hasCooling some CoolingSystem})」——
+左边是匿名类，无须先起名。Protégé 在类视图外提供了
+「General class axioms」入口承载这类公理。
+
+关于\textbf{枚举类}（enumeration）多说一句，它是受控值集的逻辑化身：
+仓库 \texttt{owl-classes.owl} 用
+\texttt{EquivalentTo: \{ :Idle, :Running, :Maintenance, :Faulty \}}
+把设备状态封死在四个个体之内。但要记住 OWL \textbf{没有唯一名称假设}
+（Unique Name Assumption, UNA）：不同 IRI 默认\textbf{可能}指同一个体，
+所以枚举类务必配合 \texttt{owl:AllDifferent} 声明个体两两互异，
+否则「至多一种状态」之类的基数推理会得出离谱结论。4.6.4 小节回到这个模式。
+
+\subsection{属性公理：特性即推理行为}
+
+类表达式之外，OWL 的另一半力量在属性公理上。仓库的属性文件值得整段精读：
+
+\input{fragments/sec-ch04-owl-properties-owl-1}
+\snipsource{ch04-ontology-languages/examples/owl-properties.owl}
+
+\texttt{Characteristics:} 一行字，改变的是推理器的行为方式：
+
+\begin{itemize}
+  \item \textbf{函数性}（Functional）：每个主语至多一个值。
+        \texttt{hasStatus} 声明为函数性后，若数据里出现
+        「\texttt{Lathe\_001} 状态为 \texttt{Idle}」与「状态为 \texttt{Running}」两条，
+        推理器\textbf{不是报错}，而是先推出 \texttt{Idle owl:sameAs Running}
+        ——又是无 UNA 在起作用；只有当二者已被声明互异（如枚举类配套的
+        \texttt{AllDifferent}）时才报不一致。理解这个两段式行为，
+        许多「推理器怎么不报错」的困惑会瞬间消解。
+  \item \textbf{传递性}（Transitive）：\texttt{precedes} 声明传递后，
+        工序 A 先于 B、B 先于 C，推理器自动补出 A 先于 C——
+        工艺路线的先后约束因此只需维护相邻工序对。
+  \item \textbf{对称性}（Symmetric）与\textbf{逆属性}（InverseOf）：
+        「相邻」声明对称则一条数据顶两条；
+        把 \texttt{producedBy} 声明为 \texttt{produces} 的逆，
+        两个方向的查询就共享同一份数据。
+  \item \textbf{属性链}（OWL 2 新增）：
+        \texttt{locatedIn o isPartOf SubPropertyOf: locatedIn} 式的公理表达
+        「位于某单元、单元属于某车间，则位于该车间」——
+        跨一跳的常识从此不必靠应用代码拼接。
+  \item \textbf{其余特性一笔}：自反（Reflexive）、非自反（Irreflexive）、
+        非对称（Asymmetric）补全了 OWL 2 的特性清单；
+        注意\textbf{数据属性只能声明函数性}——
+        其余特性都以「个体对个体」的关系为前提。
+  \item \textbf{键与逆函数性}：逆函数性（InverseFunctional）声明
+        「值唯一确定主语」，相当于对象属性版的全局键；
+        数据属性想充当键（设备按序列号全局唯一），
+        用 OWL 2 的 \texttt{owl:hasKey} 公理表达——
+        两台序列号相同的「设备」会被推理器合并成同一个体。
+\end{itemize}
+
+\begin{noteblock}
+\textbf{特性选错是一类隐蔽缺陷}。把 \texttt{locatedIn} 误声明为函数性，
+设备搬迁后保留的历史位置记录会触发「两个工作单元是同一个」的荒谬推理；
+把本不传递的「直接部件」声明为传递，BOM 的层级语义即刻被冲垮（见 4.6.3）。
+公理不是文档注释，\textbf{每一条特性声明都会被推理器当真}——
+上线前用推理器跑一遍一致性，再用第 3 章的 CQ 回归验证行为，缺一不可。
+\end{noteblock}
+
+\subsection{存在与全称：辨析与「全称陷阱」}
+
+\(\exists\)（some）与 \(\forall\)（only）是新手最易混用的一对构造器，
+也是仓库专门准备了对照说明文件的地方。先看两个真实定义：
+
+\input{fragments/sec-ch04-owl-classes-owl-3}
+\snipsource{ch04-ontology-languages/examples/owl-classes.owl}
+
+\texttt{QualifiedProduct} 展示了\textbf{嵌套的存在限制}——
+合格产品就是：产品，且\textbf{存在}一次检验，
+该检验又\textbf{存在}一个取值为 Pass 的结果。
+写成第 2 章的 DL 模板是 \(\exists R.(C \sqcap \exists S.\{v\})\)，
+其中 \(R\)＝hasInspection、\(C\)＝Inspection、\(S\)＝hasResult、\(v\)＝Pass。
+\texttt{HighEndEquipment} 则把存在与全称合用：
+价格条款用 \texttt{some}（存在一个不低于百万的价格），
+特性条款用 \texttt{only}（所有特性都得是高级特性）。
+价格条款里还藏着一个值得学会的写法：
+\texttt{xsd:decimal[>= "1000000"\^{}\^{}xsd:decimal]} 是\textbf{数据范围刻面}
+（facet）——直接在公理里限定数值区间，
+「功率不低于 15 千瓦」「利用率介于 0 与 1 之间」都靠它表达。
+存在与全称两者的语义差异，仓库文件总结得很精准：
+
+\input{fragments/sec-ch04-property-restrictions-txt-3}
+\snipsource{ch04-ontology-languages/examples/property-restrictions.txt}
+
+重点盯住全称限制的第二行注释：\textbf{如果没有关系，全称限制自动满足}——
+逻辑上称为\textbf{空满足}（vacuous satisfaction）。
+这就是著名的\textbf{全称陷阱}：假如 \texttt{HighEndEquipment}
+的定义里只有 \texttt{hasFeature only :AdvancedFeature} 一个条款，
+那么一台\textbf{没有任何特性记录}的破旧设备会被推理器堂堂正正地分类为高端设备——
+它的「所有」特性（零个）确实都是高级特性。
+仓库定义靠 \texttt{price some ...} 条款挡住了这个漏洞：
+\texttt{some} 强制存在性，\texttt{only} 才有的放矢。
+\textbf{「only 不蕴含 some」}，要表达「有且仅有」，两者必须同时写——
+这个组合在建模里常见到有个昵称叫「闭合公理」（closure axiom）。
+
+闭合公理的具体写法值得见一次真容。「车床只加工回转体与盘类零件」写作：
+\texttt{canProcess some RotationalPart} \textbf{and}
+\texttt{canProcess only (RotationalPart or DiscPart)}——
+\texttt{some} 保证有活可干，\texttt{only} 圈定能干的范围，
+括号里的析取列出全部许可项。漏写 \texttt{some} 是空满足漏洞，
+漏写 \texttt{only} 则范围形同虚设，成对出现才是完整语义。
+
+开放世界假设让 \texttt{only} 的杀伤力进一步放大：
+推理器永远假设「你没说的事可能存在」，
+因此 \texttt{only} 很难被「证实」，却很容易在与其它公理互动时制造意外不一致。
+仓库 \texttt{property-restrictions.txt} 第 4 节给出的工程建议值得抄在手边：
+\textbf{优先用 \(\exists\)，谨慎用 \(\forall\)，复杂表达式拆开写，少嵌套}。
+
+\section{高级建模模式}
+
+语言给了砖头，但承重墙怎么砌是另一门手艺。
+本节收录四个生产系统里出镜率最高的建模模式，
+每个都按「问题--方案--Turtle 示意」展开。
+它们大多源自 W3C 工作组备忘录与本体设计模式（Ontology Design Patterns, ODP）社区，
+属于经过千锤百炼的公共财产——遇到对应问题时请直接复用，不要重新发明。
+读模式时建议带着第 3 章的眼光：每个模式本质上都是
+「某类能力问题反复出现」沉淀下来的标准答案，
+识别出「我的问题属于哪个模式」往往比写公理本身更见功力。
+
+\subsection{n 元关系：用中介节点拆高维事实}
+
+\textbf{问题}：三元组天生只能表达\textbf{二元}关系，
+而真实业务满地都是高维事实——
+「\texttt{Lathe\_001} 在 2024 年 3 月 1 日 10 点测得主轴温度 41.5 摄氏度」
+牵涉设备、时间、测点、数值四个参与者，硬塞进一条三元组无处下脚。
+
+\textbf{方案}：把这件\textbf{事}本身提升为一个节点（W3C 备忘录称为中介节点，
+实践中常按「事件/观测/记录」命名），让每个参与者用一条二元关系挂上去：
+
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 「设备--时间--测点--数值」四元事实\ \(\rightarrow\)\ 一个观测节点\ +\ 四条二元边}}
+\codeline{mfg:Reading\_20240301\_0001\ a\ mfg:SensorReading\ ;}
+\codeline{\hspace*{4\ttcw}mfg:ofEquipment\ \ \ \ \ \ \ mfg:Lathe\_001\ ;}
+\codeline{\hspace*{4\ttcw}mfg:measuredProperty\ \ mfg:SpindleTemperature\ ;}
+\codeline{\hspace*{4\ttcw}mfg:hasValue\ \ \ \ \ \ \ \ \ \ "41.5"\^{}\^{}xsd:decimal\ ;}
+\codeline{\hspace*{4\ttcw}mfg:atTime\ \ \ \ \ \ \ \ \ \ \ \ "2024-03-01T10:00:00"\^{}\^{}xsd:dateTime\ .}
+\end{codebox}
+
+代价是查询多绕一跳（先找观测节点再取值），换来的是任意维度可扩展——
+明天要加「操作员」「量具」字段，再挂两条边即可。
+中介节点模式还有个隐形好处：观测自身成了一等公民，
+质量元数据（量具编号、校准状态、置信度）从此都有安放之处——
+在追溯审计严格的行业，这不是锦上添花，而是合规刚需。
+给中介节点起\textbf{具名 IRI}（如带日期流水号）而不是用空节点，
+理由见 4.2.4 小节。传感器领域已有现成本体走这条路线
+（W3C 的 SOSA/SSN 观测本体），自研之前值得先看看。
+顺带的反模式预警：有人试图把时间塞进属性名
+（\texttt{hasTemperature\_20240301}）、或把多个值拼进一个字符串
+（\texttt{"41.5@2024-03-01"}）——前者让属性无限增殖、模式失控，
+后者杀死全部数值查询能力，两者都会在第一个统计需求面前原形毕露。
+
+\subsection{物化：对断言本身做断言}
+
+\textbf{问题}：有时需要谈论\textbf{三元组本身}——
+「\texttt{Lathe\_001} 位于 \texttt{WorkCell\_A}」这条记录是谁录入的？何时？置信度多少？
+三元组没法直接当另一条三元组的主语。
+
+\textbf{方案一}是 RDF 标准自带的\textbf{物化}（reification）四件套：
+
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 把一条三元组「实体化」成\ rdf:Statement\ 节点，再挂元数据}}
+\codeline{mfg:stmt\_042\ a\ rdf:Statement\ ;}
+\codeline{\hspace*{4\ttcw}rdf:subject\ \ \ mfg:Lathe\_001\ ;}
+\codeline{\hspace*{4\ttcw}rdf:predicate\ mfg:locatedIn\ ;}
+\codeline{\hspace*{4\ttcw}rdf:object\ \ \ \ mfg:WorkCell\_A\ ;}
+\codeline{\hspace*{4\ttcw}mfg:assertedBy\ mfg:Engineer\_Zhang\ ;}
+\codeline{\hspace*{4\ttcw}mfg:assertedAt\ "2024-02-18"\^{}\^{}xsd:date\ .}
+\end{codebox}
+
+它能用，但两个缺点出了名：每条断言膨胀成四条三元组起步；
+更隐蔽的是 \texttt{rdf:Statement} 节点\textbf{并不自动断言原三元组}——
+上面这段写完，「\texttt{Lathe\_001} 位于 \texttt{WorkCell\_A}」本身仍需另写一条，
+两者在语义上是脱钩的。
+
+\textbf{方案二}是\textbf{命名图}（named graph）：把一批三元组装进一个带 IRI 的图，
+元数据（来源、批次、入库时间）挂在图 IRI 上，
+N-Quads/TriG 格式与所有主流三元组库都原生支持——
+按「数据源」「批次」粒度管理出处时，这是首选。
+\textbf{方案三}是标准化进行中的 RDF-star（RDF 1.2 方向）：
+用 \texttt{<<\ s\ p\ o\ >>} 语法直接引用三元组，单条断言级的注记最优雅，
+主流库已陆续支持，采用前确认你的存储与工具链版本。
+经验法则：\textbf{批量出处用命名图，单条注记用 RDF-star（或退回 n 元事件建模），
+经典物化只在对接老系统时使用}。
+还要分清两个同名概念：本小节的「物化」（reification）是\textbf{建模}动作——
+把断言变成可谈论的节点；4.4.3 小节的「物化」（materialization）
+是\textbf{推理}动作——把衍推结论算出来存盘。
+中文恰好撞名，英文与语境能把它们分开。
+
+\subsection{部分--整体：partOf 的传递性设计}
+
+\textbf{问题}：制造业的物料清单（BOM）是天然的部分--整体层级：
+轴承装在主轴里，主轴装在车床上。业务要双向问：
+「\texttt{Bearing\_07} 最终属于哪台设备？」（穿透查询）
+与「主轴的\textbf{直接}子件有哪些？」（单层清单）。
+只建一个传递属性，穿透有了、单层没了；只建非传递属性则相反。
+
+\textbf{方案}：双属性模式——非传递的「直接部件」作子属性，
+传递的「部件」作父属性，断言只写直接层，穿透交给推理：
+
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 双属性模式：直接部件（不传递）\ \(\sqsubseteq\)\ 部件（传递）}}
+\codeline{mfg:isPartOf\ a\ owl:ObjectProperty,\ owl:TransitiveProperty\ .}
+\codeline{mfg:isDirectPartOf\ a\ owl:ObjectProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:subPropertyOf\ mfg:isPartOf\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 数据只维护直接层级}}
+\codeline{mfg:Bearing\_07\ mfg:isDirectPartOf\ mfg:Spindle\_01\ .}
+\codeline{mfg:Spindle\_01\ mfg:isDirectPartOf\ mfg:Lathe\_001\ .}
+\codeline{\textcolor{cmtgray}{\#\ 推理自动补出：mfg:Bearing\_07\ mfg:isPartOf\ mfg:Lathe\_001}}
+\end{codebox}
+
+两个配套提醒。第一，\textbf{partOf 不是 subClassOf}：
+「主轴是车床的部件」（个体组成关系）与「车床是机床的子类」（概念包含关系）
+是两种完全不同的语义，混用是第 3 章 OntoClean 体检常抓的典型病——
+判别口诀是看「实例会不会跟着走」：车床的实例都是机床的实例，
+但主轴的实例绝不是车床的实例。
+第二，部分--整体其实有多种细分（组件/成员/材料构成等），
+W3C 的简单部分--整体关系备忘录给出了细致分类，建复杂产品结构前值得一读。
+查询侧的配合见 4.7.4 小节：若存储未开传递推理，
+\texttt{mfg:isPartOf+} 属性路径同样能完成穿透——
+模式设计与查询习语是一对，建模时就该想好查询会怎么写。
+
+\subsection{受控词表与枚举值集}
+
+\textbf{问题}：状态、等级、类别这类「取值有限」的字段若放任为自由字符串，
+\texttt{"idle"}、\texttt{"IDLE"}、\texttt{"空闲"} 三个写法很快各自为政，
+统计与过滤全部失真。
+
+\textbf{方案 A}：取值封闭且很小（个位数）时，用 4.5.4 小节的\textbf{枚举类}
+把值集写进逻辑，让推理器替你守门：
+
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 枚举值集：状态类的外延被\ owl:oneOf\ 封死为四个个体}}
+\codeline{mfg:EquipmentStatus\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}owl:oneOf\ (\ mfg:Idle\ mfg:Running\ mfg:Maintenance\ mfg:Faulty\ )\ .}
+\codeblank{}
+\codeline{mfg:Idle\ a\ mfg:EquipmentStatus\ ;\ rdfs:label\ "待机"@zh\ .}
+\codeline{\textcolor{cmtgray}{\#\ 别忘了\ owl:AllDifferent\ 声明四个个体两两互异（无\ UNA！）}}
+\end{codebox}
+
+\textbf{方案 B}：词表大、会演化、还有层次（材料牌号上千、工艺分类逐年修订）时，
+不要把它压进类层次，改用 \textbf{SKOS}（Simple Knowledge
+Organization System）受控词表：每个值是一个 \texttt{skos:Concept}，
+\texttt{skos:prefLabel} 与 \texttt{skos:altLabel} 管首选名与别名，
+\texttt{skos:broader} 组织宽窄层次，
+整表归入一个 \texttt{skos:ConceptScheme}。
+SKOS 概念是\textbf{个体}而非类，增删值不动 TBox、不触发重新分类，
+治理成本低得多。选择标准一句话：\textbf{进逻辑用 oneOf，进治理用 SKOS}——
+判断的试金石是问自己：「推理器需要拿这些值参与公理运算吗？」
+需要（如基数约束、不相交推理）就走枚举类；
+只是分类、检索、对齐用，SKOS 的轻量与灵活完胜。
+
+\section{SPARQL 深入}
+
+SPARQL 之于 RDF，就像 SQL 之于关系表；但它的心智模型不是表连接，
+而是\textbf{图模式匹配}：写一个带变量的「图模板」，
+引擎在数据图中找出所有能让模板成立的变量绑定。
+本节从基本形态一路推进到优化与安全，所有查询都可对第 9 章的 Fuseki 端点实跑。
+
+\subsection{基本图模式与 SELECT}
+
+一条 SELECT 查询四段式：前缀声明、\texttt{SELECT} 投影变量、
+\texttt{WHERE} 图模式、尾部修饰（排序分页）。
+\texttt{WHERE} 里的三元组模式与 Turtle 语法几乎一致（分号逗号照用），
+只是任何位置都可以放 \texttt{?变量}；
+多条模式以\textbf{合取}组成\textbf{基本图模式}（Basic Graph Pattern, BGP），
+共享变量就是天然的连接条件。第 3 章说「每条能力问题翻译成一条 SPARQL 即验收标准」，
+现在看 CQ1 的标准答案：
+
+\input{fragments/snip-ch04-sparql}
+\snipsource{ch04-ontology-languages/examples/sparql-queries.sparql}
+
+逐行拆解：\texttt{?equipment a :Equipment} 限定类型；
+\texttt{:canProcess :Aluminum} 用\textbf{常量}收紧候选集；
+\texttt{rdfs:label ?name} 取展示名。三条模式共享 \texttt{?equipment}，
+引擎对每个候选设备同时满足三条才放行——这就是图模式的合取语义。
+查询的产出是一张\textbf{绑定表}：每行是一组「变量到值」的映射，
+\texttt{SELECT} 挑选要投影的列；
+尾部修饰符与 SQL 同款——\texttt{ORDER BY} 排序、
+\texttt{LIMIT} 与 \texttt{OFFSET} 分页，
+\texttt{DISTINCT} 去重在多路径可达同一答案时尤其常用。
+
+\begin{noteblock}
+\textbf{为什么不直接用 SQL？}关系库里这条 CQ 至少要在设备表、能力表、
+标签表之间写两三个 JOIN，而且「沿类层次找所有子类设备」在 SQL
+里要么递归公用表表达式、要么应用层循环。
+图模式把「沿边导航」做成语言原语，层次穿透交给属性路径（4.7.4），
+这是查询语言与数据模型匹配带来的红利。
+\end{noteblock}
+
+\subsection{OPTIONAL、UNION 与 FILTER}
+
+\texttt{OPTIONAL} 是 SPARQL 版的左外连接：花括号内的模式\textbf{匹配则绑定、
+不匹配不淘汰整行}。CQ1 里功率字段就是这样处理的——
+没有功率记录的设备也要出现在结果里，只是 \texttt{?power} 列空着。
+若写成普通模式，缺数据的设备会整行消失，
+报表「莫名少了几台设备」的事故多半源于此。仓库 CQ8 是更立体的示范：
+
+\input{fragments/sec-ch04-sparql-queries-sparql-1}
+\snipsource{ch04-ontology-languages/examples/sparql-queries.sparql}
+
+故障设备必须有故障时间（必选模式），维修记录则可有可无（OPTIONAL 块）——
+新设备首次故障时还没有维修历史，但它必须出现在排查清单上。
+这种「核心字段必选、外围字段可选」的分层写法是生产查询的基本素养；
+顺带留意 OPTIONAL 块内部可以是\textbf{多条}模式（此处两条），
+它们作为整体要么全部匹配、要么整块落空，
+拆成两个 OPTIONAL 与合在一个里语义并不相同。
+
+\texttt{UNION} 表达\textbf{或}：两个花括号块各自匹配，结果取并集，
+常用于「同义异构」的数据——例如同时兼容新旧两版属性命名的过渡期查询。
+\texttt{FILTER} 则对已绑定的变量施加布尔条件：
+数值比较（\texttt{?power > 20}）、语言筛选（\texttt{lang(?name) = "zh"}）、
+正则匹配（\texttt{regex(?sn, "\^{}CNC-")}）。
+还有一个常用否定习语：\texttt{FILTER NOT EXISTS \{ ... \}}
+——「不存在某模式」，下文 ASK 一节用它写约束校验。
+否定还有一位近亲 \texttt{MINUS}：从左侧结果中减去与右侧匹配的行。
+它与 \texttt{FILTER NOT EXISTS} 在多数场景结果一致，
+但当两侧不共享任何变量时行为大相径庭（此时 \texttt{MINUS} 什么都不减）——
+团队里最好约定只用其中一个，省下排查诡异差异的整个下午。
+
+\subsection{聚合与子查询}
+
+SPARQL 1.1 把 SQL 的统计能力搬了过来：
+\texttt{GROUP BY} 分组；\texttt{COUNT}、\texttt{SUM}、\texttt{AVG}、
+\texttt{MIN}、\texttt{MAX}、\texttt{GROUP\_CONCAT} 聚合；
+\texttt{HAVING} 对聚合值过滤：
+
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 各工作单元的设备数与平均功率，只看设备数\ >=\ 2\ 的单元}}
+\codeline{SELECT\ ?workCell\ (COUNT(?eq)\ AS\ ?cnt)\ (AVG(?p)\ AS\ ?avgPower)}
+\codeline{WHERE\ \{}
+\codeline{\hspace*{4\ttcw}?eq\ a\ :Equipment\ ;}
+\codeline{\hspace*{8\ttcw}:locatedIn\ ?workCell\ ;}
+\codeline{\hspace*{8\ttcw}:power\ ?p\ .}
+\codeline{\}}
+\codeline{GROUP\ BY\ ?workCell}
+\codeline{HAVING\ (COUNT(?eq)\ >=\ 2)}
+\codeline{ORDER\ BY\ DESC(?cnt)}
+\end{codebox}
+
+规则与 SQL 同源：\texttt{SELECT} 里出现的非聚合变量必须进 \texttt{GROUP BY}；
+想「先算后比」就用\textbf{子查询}——内层 \texttt{SELECT} 先求出
+每个单元的平均功率，外层再挑出功率高于本单元平均值的设备。
+子查询自内向外执行、只通过投影变量与外层连接，
+是把复杂统计拆成可读分层的主要工具。
+仓库 CQ4（统计各单元设备数）是练习聚合的现成起点。
+
+再记一个小而常用的子句 \texttt{VALUES}：把一组常量内联成绑定表。
+例如 \texttt{VALUES ?st \{ :Maintenance :Faulty \}}
+一行就把查询限定在「维护中或故障」两种状态上——
+比一长串 \texttt{FILTER} 的或条件清爽得多，
+也是参数化查询模板的天然挂点（第 8 章自动生成查询时会再见到它）。
+
+\subsection{属性路径：subClassOf* 详讲}
+
+\textbf{属性路径}（property path）让谓语位置可以写正则风格的表达式：
+\texttt{/} 串接，\texttt{|} 择一，\texttt{\^{}} 反向，
+\texttt{*}（零或多步）、\texttt{+}（一或多步）、\texttt{?}（零或一步）。
+其中最重要的习语，怎么强调都不过分：
+
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 标准习语：取某类「连同其全部子类」的实例}}
+\codeline{SELECT\ ?eq\ WHERE\ \{}
+\codeline{\hspace*{4\ttcw}?eq\ rdf:type/rdfs:subClassOf*\ :Equipment\ .}
+\codeline{\}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 传递可达：工序\ Op\_10\ 之后（直接或间接）的全部工序}}
+\codeline{SELECT\ ?later\ WHERE\ \{}
+\codeline{\hspace*{4\ttcw}:Op\_10\ :precedes+\ ?later\ .}
+\codeline{\}}
+\end{codebox}
+
+第一条要会默写：\texttt{?eq} 的类型沿 \texttt{rdfs:subClassOf}
+走\textbf{零步或多步}到达 \texttt{:Equipment}——
+于是车床、数控机床的实例统统命中，哪怕端点\textbf{没开任何推理}。
+这招常被称为「穷人版推理」：用路径在查询时现场爬类层次。
+但要清醒：它只补了类层次这一种衍推，
+domain/range、属性层次、传递属性带来的结论一概不补；
+\texttt{*}/\texttt{+} 在深层次大图上也可能代价高昂。
+\textbf{图谱够大、衍推种类多时，正道是 RL 物化（4.5.2）；
+轻量场景与即席查询，属性路径足矣}。
+
+反向符 \texttt{\^{}} 的妙用值得单独一提：
+\texttt{:Aluminum\_6061 \^{}:canProcess ?eq} 从材料出发反查设备，
+与 \texttt{?eq :canProcess :Aluminum\_6061} 完全等价——
+当导航需要在长路径中间「掉头」时（例如沿部件层级向上、再沿位置关系向下），
+反向符能省掉一串中间变量，让一条路径写完整个导航语义。
+
+\subsection{CONSTRUCT 与 ASK}
+
+\texttt{SELECT} 之外还有三个查询形态。\texttt{CONSTRUCT} 做\textbf{图到图}变换：
+\texttt{WHERE} 匹配出的每组绑定按模板生成新三元组，
+常用于抽取子图、做轻量 ETL、把高频推理结论物化成显式数据。
+\texttt{ASK} 只回答真假，是把约束类 CQ 变成\textbf{自动回归测试}的利器
+（第 3 章说过：这类检查期望结果为空，非空即告警）：
+
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ CONSTRUCT：把「设备\ \(\rightarrow\)\ 所在单元中文名」固化为新图}}
+\codeline{CONSTRUCT\ \{\ ?eq\ :inCellNamed\ ?label\ \}}
+\codeline{WHERE\ \{\ ?eq\ :locatedIn\ ?c\ .\ ?c\ rdfs:label\ ?label\ .}
+\codeline{\hspace*{8\ttcw}FILTER(lang(?label)\ =\ "zh")\ \}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ASK：还有没有位置的设备吗？期望\ false，true\ 即数据告警}}
+\codeline{ASK\ \{\ ?eq\ a\ :Equipment\ .}
+\codeline{\hspace*{6\ttcw}FILTER\ NOT\ EXISTS\ \{\ ?eq\ :locatedIn\ ?cell\ \}\ \}}
+\end{codebox}
+
+第四个形态 \texttt{DESCRIBE} 返回某资源的「相关描述」，
+内容由端点自行决定，探索陌生数据集时顺手，正式接口里少用。
+把 \texttt{ASK} 与 \texttt{SELECT} 组合进持续集成是成熟团队的标配：
+CQ 清单存成 \texttt{.sparql} 文件、与本体一起进版本库，
+每次提交自动全量回放、比对期望结果——
+第 3 章倡导的「CQ 即验收」从口号变成流水线，靠的正是这套机制。
+
+\subsection{查询优化直觉}
+
+执行计划是引擎的事，但写查询的人有三条朴素直觉能避免大多数性能事故：
+
+\begin{itemize}
+  \item \textbf{高选择性模式往前放}：带常量（具体 IRI、具体值）的模式先把
+        候选集打小，纯变量模式（\texttt{?s ?p ?o} 之流）千万别打头阵。
+  \item \textbf{先收窄再外延}：\texttt{OPTIONAL} 与代价高的 \texttt{FILTER}
+        放在核心模式之后；现代引擎会自动下推过滤，但清晰的书写顺序
+        同时服务于人与机器。
+  \item \textbf{警惕笛卡尔积与无界路径}：不共享变量的模式组合会产生
+        绑定爆炸；深层 \texttt{*} 路径在大图上同样危险。
+        调试期养成 \texttt{LIMIT} 护身的习惯。
+\end{itemize}
+
+拿 CQ1 体会第一条：先匹配 \texttt{:canProcess :Aluminum}
+（能加工铝合金的设备屈指可数），还是先匹配 \texttt{?equipment a :Equipment}
+（全厂设备成百上千），中间结果规模差着量级；
+现代优化器多半会替你重排，但在解释计划、排查慢查询时，
+这套「选择性」直觉就是你的地图。
+一句话总纲：\textbf{让引擎尽早拿到小集合}。复杂报表查询拆成子查询分层聚合，
+比一口气写两屏的「巨无霸」更快也更可维护。
+
+\subsection{SPARQL UPDATE 与端点安全}
+
+SPARQL 1.1 的更新语言把端点从只读升级为可写：
+\texttt{INSERT DATA} 插入既定三元组（仓库 CQ5 新增 3 号车床即此形态），
+\texttt{DELETE ... INSERT ... WHERE} 按模式批量改写
+（仓库 CQ6 把已派工的空闲设备批量置为运行中），
+\texttt{LOAD}/\texttt{CLEAR}/\texttt{DROP} 管理整图。
+更新能力意味着\textbf{端点即数据库管理入口}，安全约束必须同步到位：
+
+\begin{itemize}
+  \item \textbf{读写分离}：对外只暴露只读端点，更新端点留在内网并强制认证——
+        Fuseki 等服务器允许按数据集分别配置查询与更新服务。
+  \item \textbf{操作白名单}：面向应用（尤其是由大语言模型生成查询）的通道
+        只放行 \texttt{SELECT}/\texttt{ASK}；一条恶意 \texttt{DROP ALL}
+        足以清空整库。第 8 章的 Text2SPARQL 闸门设计中，
+        「操作白名单」正是四道校验之一，此处算是预告。
+  \item \textbf{资源限额}：为公开端点配置超时与结果行数上限，
+        防止深路径或笛卡尔积查询拖垮服务。
+\end{itemize}
+
+两件相邻话题顺带交代。其一，\textbf{联邦查询}（federated query）：
+\texttt{SERVICE <端点>} 子句可以把局部模式发到远端端点执行
+（仓库 CQ7 演示了跨端点取设备的外部编号），
+跨组织协作不必先把数据搬到一处——但远端的延迟与可用性从此进入你的故障域，
+生产使用务必配超时与降级路径。其二，\textbf{注入防护}：
+用字符串拼接把用户输入嵌进查询文本，与 SQL 时代的注入漏洞一模一样；
+一律走参数化接口（Jena 的 \texttt{ParameterizedSparqlString}、
+rdflib 的 \texttt{initBindings} 等）或用 \texttt{VALUES} 传入绑定。
+
+\section{工具链：从编辑器到推理器}
+
+语言之后是兵器谱。本节按真实工作流介绍三层工具：
+交互式编辑器（Protégé）、编程库（四选一）、推理器（四选一）——
+它们通过标准格式与标准接口互通，正应了 4.1 节「组件可替换」的承诺。
+
+\subsection{Protégé 完整工作流}
+
+Protégé（斯坦福大学出品，免费开源）是本体开发的事实标准 IDE。
+拿仓库的 \texttt{manufacturing.owl} 走一遍完整工作流，
+每一步都对应前文的某个概念落地：
+
+\begin{enumerate}
+  \item \textbf{建本体}：File \(\rightarrow\) New，在 Active Ontology
+        视图设置本体 IRI（对应 4.2 节的命名问题——IRI 起好就别再改）；
+        或直接 File \(\rightarrow\) Open 打开 \texttt{manufacturing.owl}。
+  \item \textbf{建类层次}：Entities 标签的 Classes 面板里逐级 Add subclass，
+        每建一个类立即补 \texttt{rdfs:label}（中英双语）与 \texttt{comment}——
+        界面上的 Annotations 区就是 4.4.1 小节那两个词汇。
+  \item \textbf{建属性}：Object properties 面板创建对象属性，
+        设 Domain/Range，在 Characteristics 区勾选函数性、传递性等——
+        勾选框背后正是 4.5.5 小节的属性公理，勾之前想清楚推理后果。
+  \item \textbf{写类表达式}：选中类，在类表达式编辑器里用
+        Manchester 语法添加 \texttt{SubClassOf} 或 \texttt{EquivalentTo} 公理，
+        编辑器带自动补全与语法检查（4.5.3 小节的语法在这里日常使用）。
+  \item \textbf{跑推理器}：Reasoner 菜单选择 HermiT，Start reasoner。
+        推断出的层次以高亮底色显示——对照 4.4.3 小节，
+        你能在界面上直接看到 \texttt{Lathe\_001} 被「搬进」\texttt{Equipment}；
+        若本体不一致，问题类标红，Explain 按钮给出肇事公理集
+        （称为 justification，第 5 章细讲其原理）。
+  \item \textbf{DL Query 即席验证}：DL Query 标签里输入 Manchester 表达式
+        （如 \texttt{Equipment and canProcess some Aluminum}），
+        勾选 Instances 与 Subclasses 立即看结果——
+        这是验证公理是否「按你想的那样工作」的最快途径。
+  \item \textbf{插件扩展}：按仓库 README 的步骤安装 OntoGraf（图形化浏览层次）、
+        SWRLTab（第 5 章的规则编辑）、SPARQL Query（库内直接跑查询）。
+        团队协作场景另有 WebProtégé 提供多人在线编辑与变更讨论。
+\end{enumerate}
+
+给初学者的节奏建议：\textbf{每加三五条公理就跑一次推理器}。
+不一致越早暴露越好定位，攒一大堆公理再跑，排错难度指数上升。
+
+两个工程习惯也值得从第一天养成。\textbf{保存格式选 Turtle}：
+另存时 Protégé 默认可能给出 RDF/XML，
+改成 Turtle 后文件才适合进 git 做差异评审（理由见 4.3.1 小节）。
+\textbf{分清断言层与推断层}：推理器开启时，
+界面把手写公理与推理结论混排展示（后者有高亮标记），
+导出时务必想清楚要哪一层——「导出推断公理」向导专门负责把
+衍推闭包固化成显式文件，用于交付给不跑推理器的下游系统。
+
+\subsection{编程生态：四个库怎么选}
+
+界面适合建模，集成进系统要靠代码。四个主流库覆盖了绝大多数场景：
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.15\linewidth}p{0.09\linewidth}p{0.30\linewidth}X@{}}
+\toprule
+\textbf{库} & \textbf{语言} & \textbf{推理支持} & \textbf{定位与适用} \\
+\midrule
+Apache Jena & Java & 内置 RDFS 与通用规则引擎，可挂接外部 OWL 推理器 & 全家桶：ARQ 查询引擎、TDB2 存储、Fuseki 端点，服务端首选 \\
+Eclipse RDF4J & Java & RDFS 级推理，第三方扩展接入 & 仓库抽象层与 SDK，GraphDB 等商用库的开放接口 \\
+rdflib & Python & 自身不带推理，配合 \texttt{owlrl} 包做 RDFS/OWL RL 物化 & 脚本、数据管道、快速原型，Python 数据生态的黏合剂 \\
+owlready2 & Python & 捆绑调用 HermiT/Pellet & 「本体当对象」编程：类即 Python 类，改完同步回 OWL \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+选型逻辑很直白：\textbf{Java 服务端选 Jena 或 RDF4J}
+（要自带端点与存储选 Jena，要对接 GraphDB 这类商用库选 RDF4J）；
+\textbf{Python 数据处理选 rdflib}；
+\textbf{需要在 Python 里驱动 OWL 推理选 owlready2}。
+跨语言协作不必纠结统一技术栈——第 9 章实战系统就是
+Java/Jena 查询服务与 Python/owlready2 推理引擎并存，
+靠标准序列化与 SPARQL 端点解耦，这正是标准化红利的现身说法。
+
+表格之外还有两个名字会经常遇到：\textbf{OWL API} 是 Java
+世界操作 OWL 公理级结构的底层库，Protégé 与多数推理器都建在它之上，
+直接使用它的场景多为开发本体工具而非业务应用；
+Python 侧的 \textbf{SPARQLWrapper} 则是访问远程 SPARQL 端点的轻量客户端，
+与 rdflib 搭配即可覆盖「远端查询、本地加工」的脚本需求。
+
+一套常见的最小组合拳供参考：本体设计在 Protégé 完成；
+数据管道用 rdflib 把业务系统的导出物转成 Turtle；
+批量推理交给 owlready2 驱动的 Pellet，或干脆交给三元组库内建的 RL 规则；
+服务端用 Fuseki 暴露只读端点，所有应用一律走 SPARQL 取数。
+五个环节、四种工具、两种语言，黏合剂只有标准格式与标准协议——
+没有任何一个环节被锁死在某家供应商手里。
+
+\subsection{推理器对比}
+
+推理器是把公理变成结论的引擎，核心任务四件，名字值得记准：
+\textbf{一致性检验}（本体整体有没有矛盾）、
+\textbf{可满足性检验}（某个类是否注定为空——空类多半是建模事故）、
+\textbf{分类}（算出完整的蕴含类层次，即推断版的 subClassOf 全图）、
+\textbf{实例化}（判定个体属于哪些类）；
+外加一项体验型服务\textbf{解释}（给出某条结论的最小肇事公理集）。
+四个主流选手各有性格：
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.13\linewidth}p{0.30\linewidth}p{0.21\linewidth}X@{}}
+\toprule
+\textbf{推理器} & \textbf{核心算法} & \textbf{覆盖范围} & \textbf{许可} \\
+\midrule
+HermiT & 超表（hypertableau）演算，削减经典 Tableau 的分支爆炸 & OWL 2 DL & LGPL \\
+Pellet & 经典 Tableau，支持 SWRL 规则 & OWL 2 DL & AGPL，另提供商业授权 \\
+ELK & 基于结论的饱和推理，多核并行 & OWL 2 EL（子集） & Apache 2.0 \\
+Konclude & 并行 Tableau 与饱和技术结合 & OWL 2 DL & LGPL v3 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+怎么读这张表：\textbf{先对 Profile}——按 EL 设计的大本体直接上 ELK，
+分类速度与完整 DL 推理器是数量级差距；完整 DL 表达力则在
+HermiT/Pellet/Konclude 之间选。\textbf{再看周边需求}——
+要 SWRL 规则（第 5 章）选 Pellet；嵌入商业产品时注意 AGPL 的传染条款；
+追求极限性能的大本体可试 C++ 实现的 Konclude，
+它在历届 OWL 推理器评测中名列前茅。
+\textbf{最后用自己的本体实测}——推理性能对公理「形状」极其敏感，
+任何榜单都替代不了在自家 TBox 上跑一轮基准。
+还有两点实战经验：大本体的迭代开发善用\textbf{增量推理}——
+ELK 支持增量分类，改几条公理不必从头重算，
+完整 DL 推理器大多没这份福气，这也是 4.5.2 小节劝你
+「能落在 EL 就别越界」的又一理由；
+\textbf{读得懂解释比跑得快更重要}——不一致发生时，
+解释服务列出的最小肇事公理集是唯一靠谱的排错地图，
+选型时应把解释质量纳入评测。
+接入方式都很成熟：Protégé 插件、OWL API（Java）、owlready2（Python）皆可驱动。
+推理器内部的 Tableau 算法如何工作、何时终止，是第 5 章的主线。
+
+\section{本章小结与练习}
+
+\subsection{要点回顾}
+
+本章信息密度不小，收尾把骨架重新拎一遍——
+下列每一条，都值得在合上书后自问能否用自己的话复述：
+
+\begin{itemize}
+  \item 语义网技术栈是\textbf{分层的开放标准族}：RDF 管事实、RDFS/OWL 管模式与逻辑、
+        SPARQL 管查询、SHACL 管校验；分层意味着可渐进采纳，标准化意味着厂商可替换。
+  \item RDF 把知识拆成\textbf{三元组}，节点只有 IRI、字面量、空节点三种身份；
+        语言标签与数据类型是字面量的质量关键，空节点「能不用就不用」。
+  \item 序列化格式只是外衣：\textbf{同一张图可写成 Turtle、RDF/XML、
+        N-Triples、JSON-LD}，按场景选择，随时无损互转。
+  \item RDFS 的 domain/range 是\textbf{推断}而非校验——「拿 domain 当校验」
+        是必须提前接种的疫苗；校验语义属于 SHACL（第 7 章）。
+  \item OWL 2 提供完整描述逻辑表达力，三个 Profile（EL/QL/RL）
+        是\textbf{表达力换规模}的工程套餐；SubClassOf 给必要条件，
+        EquivalentTo 才触发自动分类；only 有空满足陷阱，记得闭合公理。
+  \item n 元关系、物化、部分--整体、受控词表四个\textbf{建模模式}
+        覆盖了高维事实、断言元数据、层级穿透、值集治理四类高频需求。
+  \item SPARQL 的心智模型是\textbf{图模式匹配}；OPTIONAL 防缺字段丢行，
+        「类型沿子类层次上溯」的属性路径习语要会默写，
+        ASK 把约束 CQ 变成回归测试；更新端点必须读写分离加白名单。
+  \item 工具链各层都有成熟开源选项：Protégé 编辑、
+        Jena/RDF4J/rdflib/owlready2 编程、HermiT/Pellet/ELK/Konclude 推理，
+        靠标准接口自由组合。
+\end{itemize}
+
+\subsection{思考题}
+
+\begin{enumerate}
+  \item 把「2 号车床能加工钛合金 TC4」写成三元组并给出 Turtle 文本
+        （自拟 IRI，注意前缀声明）；再为钛合金补充英文标签。
+        追问：中文标签与英文标签是一条三元组还是两条？为什么互不覆盖？
+  \item 「同图异文」实证：解析仓库的 RDF/XML 示例文件
+        （\texttt{rdf-xml-examples.rdf}），数一数共得到多少条三元组，
+        再到 Turtle 示例文件中找出对应的每一条。
+        两个文件的三元组集合为什么可以直接比较？
+        空节点（若有）会给这种比较带来什么麻烦？
+  \item 给 \texttt{mfg:canProcess} 声明了 \texttt{rdfs:domain mfg:Equipment}
+        之后，数据里混入 \texttt{mfg:Order\_007 mfg:canProcess mfg:Aluminum\_6061}。
+        RDFS 推理器会报错吗？会发生什么？若想让这类数据被「拦下」，
+        给出两种不同机制的方案并比较其立场差异。
+  \item 设计题：为「设备维护事件」建模——涉及设备、维护人员、日期、
+        更换的备件、费用五个参与者。用 4.6.1 小节的中介节点模式
+        给出类与属性设计及一条示例数据的 Turtle 草案。
+  \item 全称陷阱：若把 \texttt{HighEndEquipment} 的定义削减为仅剩
+        \texttt{:hasFeature only :AdvancedFeature}，
+        一台没有任何 \texttt{hasFeature} 断言的设备会被分类为高端设备吗？
+        解释原因，并写出修复后的完整定义。
+  \item Profile 选型：为三个场景各选一个 OWL 2 Profile 并说明理由——
+        (a) 数十万概念的医疗术语层次需要每日重新分类；
+        (b) 制造执行系统的数据都在 Oracle 里，业务要语义化查询但数据不许搬家；
+        (c) 三元组库里有上亿条设备运行记录，需要按本体规则批量打标签。
+  \item SPARQL 实战：写一条查询，统计每个工作单元中「数控机床及其全部子类」
+        的实例数量，要求用属性路径而不开推理；再写一条 ASK 查询，
+        校验「是否存在没有序列号的设备」。分别说明期望结果。
+  \item 工具链动手题：用 Protégé 打开 \texttt{manufacturing.owl}，
+        启动 HermiT，记录推理前后类层次的差异与新增的实例归类；
+        再用 owlready2 加载同一文件跑推理，对比两边结论是否一致。
+        如果你的本体恰好落在 EL 内，换 ELK 再测一次分类耗时。
+\end{enumerate}
+
+提示：第 3 题回看 4.4.3 小节的衍推规则与第 7 章的 SHACL 定位；
+第 5 题的关键词是「空满足」（4.5.6 小节）；
+第 7 题的属性路径习语在 4.7.4 小节，注意统计题要配 \texttt{GROUP BY}；
+第 8 题的操作步骤完整对应 4.8.1 小节的工作流清单。
+所有动手题都建议把产物（Turtle 草案、查询文本、推理截图）
+存进自己的练习仓库——第 9 章实战时这些片段大多能直接复用。
+
+\subsection{本章文件指引}
+
+八个示例文件按「数据--模式--逻辑--查询」的顺序排布，
+与本章行文一一对应。建议的用法不是通读，而是\textbf{随章翻阅、动手改坏再改好}：
+改一条公理看推理结论怎么变、改一个模式看查询结果怎么变，
+语言的语义只有在这种反馈循环里才能长进肌肉记忆。
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.36\linewidth}X@{}}
+\toprule
+\normalfont\textbf{文件（ch04-.../examples/）} & \textbf{内容与阅读建议} \\
+\midrule
+rdf-turtle-examples.ttl & Turtle 全集：前缀、类层次、属性、实例，配合 4.2/4.3 节逐段读 \\
+rdf-xml-examples.rdf & 同一内容的 XML 序列化，与 Turtle 对照体会「同图异文」 \\
+rdfs-examples.ttl & 类层次与 domain/range；含可手算的推理小案例（4.4 节） \\
+owl-classes.owl & Manchester 类定义：不相交、枚举、存在/全称约束（4.5 节） \\
+owl-properties.owl & 属性特性全谱系：函数/传递/对称/逆（4.5.5 小节） \\
+property-restrictions.txt & \(\exists\)/\(\forall\) 三种语法对照与使用建议（4.5.6 小节） \\
+sparql-queries.sparql & 八条查询：基本模式到聚合、更新、联邦（4.7 节全程伴读） \\
+manufacturing.owl & 完整小本体，4.8.1 小节 Protégé 工作流的演练对象 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+下一章我们钻进推理器内部：Tableau 算法如何从公理推出结论、
+SWRL 规则如何表达业务逻辑——本章按下的每一次「Start reasoner」，
+第 5 章都会告诉你按钮背后发生了什么。

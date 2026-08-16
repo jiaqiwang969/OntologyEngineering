@@ -1,0 +1,48 @@
+# 一阶逻辑表达式示例
+# First-Order Logic Expressions in Ontology Engineering
+#
+# 一阶逻辑（First-Order Logic, FOL）是本体表达的重要基础
+
+# ==============================
+# 量词与逻辑联结词
+# ==============================
+
+# 量词（Quantifiers）：
+#   全称量词 ∀（对于所有）
+#   存在量词 ∃（存在）
+
+# 逻辑联结词：
+#   与 (∧)、或 (∨)、非 (¬)、蕴含 (→)
+
+# ==============================
+# 工程约束的一阶逻辑表达
+# ==============================
+
+# 规则：所有设备都需要定期维护
+∀x: Equipment(x) → ∃m: Maintenance(m) ∧ requires(x, m) ∧ isPeriodic(m)
+
+# 规则：容量大的故障设备优先维修
+∀a,b: (Equipment(a) ∧ Equipment(b) ∧ capacity(a) > capacity(b) ∧ hasFault(a))
+    → priority(repair(a)) > priority(repair(b))
+
+# 规则：同一时刻设备只能执行一个任务
+∀ e, t, task1, task2: (executes(e, task1, t) AND executes(e, task2, t))
+    → (task1 = task2)
+
+# 规则：热处理必须在焊接之后进行
+∀ p1, p2: (p1.type = "HeatTreatment" AND p2.type = "Welding")
+    → precedes(p2, p1)
+
+# ==============================
+# 非单调推理 (Non-monotonic Reasoning)
+# ==============================
+# 默认规则：设备一般是可用的，除非明确知道其发生故障
+
+Equipment(x) : available(x) / available(x)
+# 规则解读：如果x是设备，且"x可用"这一假设是一致的
+# （即知识库中没有x故障的信息），则默认假设x可用。
+
+# 当知识库中添加 hasFault(Lathe_001) 后：
+# → "Lathe_001可用" 的假设不再成立
+# → 之前的推论被推翻（撤销推理）
+# → 对于没有故障记录的设备，仍然默认其可用

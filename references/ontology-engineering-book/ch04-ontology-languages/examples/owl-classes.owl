@@ -1,0 +1,112 @@
+# OWL 类定义示例（Manchester Syntax）
+# OWL Class Definitions in Manchester Syntax
+#
+# Manchester语法是OWL的一种人类可读格式，常用于Protégé
+# Manchester Syntax is a human-readable OWL format, used in Protégé
+
+Prefix: owl:  <http://www.w3.org/2002/07/owl#>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+Prefix: xsd:  <http://www.w3.org/2001/XMLSchema#>
+Prefix: :     <http://example.org/manufacturing#>
+
+Ontology: <http://example.org/manufacturing>
+
+# ==============================
+# 基础类定义
+# ==============================
+
+Class: :Equipment
+    Annotations:
+        rdfs:label "设备"@zh,
+        rdfs:label "Equipment"@en,
+        rdfs:comment "制造系统中所有物理设备的基类"@zh
+    SubClassOf: owl:Thing
+    DisjointWith: :Material, :Tool
+
+Class: :ProcessingEquipment
+    Annotations:
+        rdfs:label "加工设备"@zh
+    SubClassOf: :Equipment
+
+Class: :CNCMachine
+    Annotations:
+        rdfs:label "数控机床"@zh
+    SubClassOf: :ProcessingEquipment
+    SubClassOf: :hasControl value :CNCControl
+
+Class: :Lathe
+    Annotations:
+        rdfs:label "车床"@zh
+    SubClassOf: :CNCMachine
+    SubClassOf: :canProcess some :RotationalPart
+
+Class: :MeasurementEquipment
+    SubClassOf: :Equipment
+
+Class: :Material
+    Annotations:
+        rdfs:label "材料"@zh
+    SubClassOf: owl:Thing
+
+Class: :Tool
+    Annotations:
+        rdfs:label "刀具"@zh
+    SubClassOf: owl:Thing
+
+Class: :Product
+    Annotations:
+        rdfs:label "产品"@zh
+    SubClassOf: owl:Thing
+
+Class: :Inspection
+    Annotations:
+        rdfs:label "检验"@zh
+    SubClassOf: owl:Thing
+
+# ==============================
+# 枚举类（设备状态）
+# ==============================
+
+Individual: :Idle
+Individual: :Running
+Individual: :Maintenance
+Individual: :Faulty
+
+Class: :EquipmentStatus
+    Annotations:
+        rdfs:label "设备状态"@zh
+    EquivalentTo:
+        { :Idle, :Running, :Maintenance, :Faulty }
+    # 四种状态两两不相交
+
+Class: :WorkCell
+    Annotations:
+        rdfs:label "工作单元"@zh
+
+# ==============================
+# OWL约束（属性限制）
+# ==============================
+# OWL Property Restrictions
+
+# 存在限制（∃）：每个产品至少经过一次检验
+# ExistentialRestriction: hasInspection some Inspection
+
+Class: :QualifiedProduct
+    Annotations:
+        rdfs:label "合格产品"@zh
+    EquivalentTo:
+        :Product
+        and (:hasInspection some
+            (:Inspection
+             and (:hasResult value "Pass")))
+
+# 全称限制（∀）：高端设备的所有特性都是高级特性
+# UniversalRestriction: hasFeature only AdvancedFeature
+
+Class: :HighEndEquipment
+    Annotations:
+        rdfs:label "高端设备"@zh
+    EquivalentTo:
+        :Equipment
+        and (:price some xsd:decimal[>= "1000000"^^xsd:decimal])
+        and (:hasFeature only :AdvancedFeature)

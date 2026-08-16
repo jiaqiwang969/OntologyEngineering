@@ -1,0 +1,91 @@
+# OWL 属性定义示例（Manchester Syntax）
+# OWL Property Definitions - Manchester Syntax
+
+Prefix: owl:  <http://www.w3.org/2002/07/owl#>
+Prefix: rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+Prefix: xsd:  <http://www.w3.org/2001/XMLSchema#>
+Prefix: :     <http://example.org/manufacturing#>
+
+Ontology: <http://example.org/manufacturing>
+
+# ==============================
+# 对象属性 (Object Properties)
+# ==============================
+
+ObjectProperty: :canProcess
+    Annotations:
+        rdfs:label "能加工"@zh
+    Domain: :Equipment
+    Range: :Material
+
+ObjectProperty: :hasCapability
+    Annotations:
+        rdfs:label "具有能力"@zh
+    Domain: :Equipment
+    Range: :EquipmentCapability
+    Characteristics: Functional
+
+ObjectProperty: :hasStatus
+    Annotations:
+        rdfs:label "具有状态"@zh
+    Domain: :Equipment
+    Range: :EquipmentStatus
+    Characteristics: Functional
+
+ObjectProperty: :locatedIn
+    Annotations:
+        rdfs:label "位于"@zh
+    Domain: :Equipment
+    Range: :WorkCell
+
+ObjectProperty: :precedes
+    Annotations:
+        rdfs:label "先于"@zh
+        rdfs:comment "工序之间的先后顺序，具有传递性"@zh
+    Domain: :Operation
+    Range: :Operation
+    Characteristics: Transitive
+
+ObjectProperty: :requires
+    Annotations:
+        rdfs:label "需要"@zh
+    Domain: :Operation
+    Range: :Equipment
+
+ObjectProperty: :assignedTo
+    Annotations:
+        rdfs:label "分配给"@zh
+    Domain: :Task
+    Range: :Equipment
+
+# ==============================
+# 数据属性 (Data Properties)
+# ==============================
+
+DataProperty: :maxDiameter
+    Annotations:
+        rdfs:label "最大加工直径"@zh
+        rdfs:comment "单位：mm"@zh
+    Domain: :Lathe
+    Range: xsd:decimal
+
+DataProperty: :power
+    Annotations:
+        rdfs:label "功率"@zh
+        rdfs:comment "单位：kW"@zh
+    Domain: :Equipment
+    Range: xsd:decimal
+
+DataProperty: :serialNumber
+    Annotations:
+        rdfs:label "序列号"@zh
+    Domain: :Equipment
+    Range: xsd:string
+    Characteristics: Functional
+
+DataProperty: :utilization
+    Annotations:
+        rdfs:label "利用率"@zh
+        rdfs:comment "设备利用率，取值范围 [0, 1]"@zh
+    Domain: :Equipment
+    Range: xsd:decimal

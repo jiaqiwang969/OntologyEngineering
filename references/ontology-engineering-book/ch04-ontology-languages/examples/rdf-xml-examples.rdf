@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  RDF/XML 格式示例 - 制造领域本体
+  RDF/XML Format Example - Manufacturing Domain Ontology
+
+  RDF/XML 是 RDF 的 XML 序列化格式，是最早的标准格式
+  虽然较为冗长，但在与XML工具集成时有优势
+-->
+<rdf:RDF
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xmlns:mfg="http://example.org/manufacturing#">
+
+  <!-- 本体声明 -->
+  <owl:Ontology rdf:about="http://example.org/manufacturing">
+    <rdfs:label xml:lang="zh">制造领域本体</rdfs:label>
+    <rdfs:label xml:lang="en">Manufacturing Domain Ontology</rdfs:label>
+  </owl:Ontology>
+
+  <!-- 类定义：设备 -->
+  <owl:Class rdf:about="http://example.org/manufacturing#Equipment">
+    <rdfs:label xml:lang="zh">设备</rdfs:label>
+    <rdfs:comment xml:lang="zh">制造系统中所有物理设备的基类</rdfs:comment>
+  </owl:Class>
+
+  <!-- 类定义：加工设备（子类） -->
+  <owl:Class rdf:about="http://example.org/manufacturing#ProcessingEquipment">
+    <rdfs:label xml:lang="zh">加工设备</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://example.org/manufacturing#Equipment"/>
+  </owl:Class>
+
+  <!-- 类定义：车床 -->
+  <owl:Class rdf:about="http://example.org/manufacturing#Lathe">
+    <rdfs:label xml:lang="zh">车床</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://example.org/manufacturing#ProcessingEquipment"/>
+  </owl:Class>
+
+  <!-- 对象属性：canProcess -->
+  <owl:ObjectProperty rdf:about="http://example.org/manufacturing#canProcess">
+    <rdfs:label xml:lang="zh">能加工</rdfs:label>
+    <rdfs:domain rdf:resource="http://example.org/manufacturing#Equipment"/>
+    <rdfs:range rdf:resource="http://example.org/manufacturing#Material"/>
+  </owl:ObjectProperty>
+
+  <!-- 数据属性：serialNumber -->
+  <owl:DatatypeProperty rdf:about="http://example.org/manufacturing#serialNumber">
+    <rdfs:label xml:lang="zh">序列号</rdfs:label>
+    <rdfs:domain rdf:resource="http://example.org/manufacturing#Equipment"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+
+  <!-- 实例数据 -->
+  <mfg:Lathe rdf:about="http://example.org/manufacturing#Lathe_001">
+    <rdfs:label xml:lang="zh">1号数控车床</rdfs:label>
+    <mfg:serialNumber>CNC-LATHE-2024-001</mfg:serialNumber>
+  </mfg:Lathe>
+
+</rdf:RDF>

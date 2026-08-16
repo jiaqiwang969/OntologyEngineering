@@ -1,0 +1,74 @@
+# OWL 属性约束说明
+# OWL Property Restrictions (∃ / ∀)
+#
+# 本文件展示 OWL 中两种核心属性约束：存在限制和全称限制
+
+# ==============================
+# 1. 存在限制（Existential Restriction）
+# ==============================
+# 语法：∃R.C（Manchester语法：R some C）
+# 语义：规定实体至少有一个满足条件的属性值
+# 即："该对象至少存在一个R关系的对象属于C类"
+
+# 示例："每个产品至少经过一次检验"
+# Product SubClassOf: hasInspection some Inspection
+
+# 描述逻辑表达：
+∃R.C
+# 其中 R = hasInspection, C = Inspection
+
+# OWL Manchester语法：
+# Class: Product
+#   SubClassOf: hasInspection some Inspection
+
+# Turtle语法：
+# mfg:Product rdfs:subClassOf [
+#     a owl:Restriction ;
+#     owl:onProperty mfg:hasInspection ;
+#     owl:someValuesFrom mfg:Inspection
+# ] .
+
+# ==============================
+# 2. 全称限制（Universal Restriction）
+# ==============================
+# 语法：∀R.C（Manchester语法：R only C）
+# 语义：规定实体的所有属性值都满足条件
+# 即："与该对象存在R关系的所有对象，都属于C类"
+
+# 示例："高端设备的所有特性都是高级特性"
+# HighEndEquipment SubClassOf: hasFeature only AdvancedFeature
+
+# 描述逻辑表达：
+∀R.C
+# 其中 R = hasFeature, C = AdvancedFeature
+
+# OWL Manchester语法：
+# Class: HighEndEquipment
+#   SubClassOf: hasFeature only AdvancedFeature
+
+# Turtle语法：
+# mfg:HighEndEquipment rdfs:subClassOf [
+#     a owl:Restriction ;
+#     owl:onProperty mfg:hasFeature ;
+#     owl:allValuesFrom mfg:AdvancedFeature
+# ] .
+
+# ==============================
+# 3. 两者的区别
+# ==============================
+# ∃R.C（存在限制）：至少一个，即"存在"
+#   → 如果满足，推理器保证存在一个相应个体
+#   → 适合表达"必须有..."
+#
+# ∀R.C（全称限制）：全部满足，即"所有"
+#   → 如果有关系存在，则所有关系对象都必须满足约束
+#   → 如果没有关系，则全称限制自动满足（空满足）
+#   → 适合表达"只允许..."
+
+# ==============================
+# 4. 工程实践中的使用建议
+# ==============================
+# - 优先使用 ∃（存在限制），推理负担小
+# - 谨慎使用 ∀（全称限制），会增加Tableau算法复杂度
+# - 将复杂表达式拆分为多个简单表达式
+# - 避免深度嵌套的约束组合

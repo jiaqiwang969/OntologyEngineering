@@ -1,0 +1,291 @@
+[
+ {
+  "id": "cq_methodology",
+  "split": "valid",
+  "scope": "book",
+  "query": "能力问题 competency question 本体构建",
+  "min_hits": 5,
+  "required_any_paths": [
+   "ontology-engineering-book/ch03-ontology-methodology/README.md",
+   "ontology-engineering-book/ch03-ontology-methodology/examples/competency-questions.txt",
+   "ontology-engineering-book/handbook/chapters/ch03.tex"
+  ],
+  "required_terms": [
+   "能力问题"
+  ]
+ },
+ {
+  "id": "ontoclean_quality",
+  "split": "valid",
+  "scope": "book",
+  "query": "OntoClean 刚性 统一性 身份 本体质量",
+  "min_hits": 3,
+  "required_any_paths": [
+   "ontology-engineering-book/ch03-ontology-methodology/README.md",
+   "ontology-engineering-book/ch03-ontology-methodology/examples/ontoclean-evaluation.txt",
+   "ontology-engineering-book/handbook/chapters/appB-glossary.tex"
+  ],
+  "required_terms": [
+   "OntoClean"
+  ]
+ },
+ {
+  "id": "language_stack",
+  "split": "valid",
+  "scope": "book",
+  "query": "RDF RDFS OWL SPARQL Turtle 本体描述语言",
+  "min_hits": 5,
+  "required_any_paths": [
+   "ontology-engineering-book/ch04-ontology-languages/README.md",
+   "ontology-engineering-book/ch04-ontology-languages/examples/rdf-turtle-examples.ttl",
+   "ontology-engineering-book/ch04-ontology-languages/examples/sparql-queries.sparql"
+  ],
+  "required_terms": [
+   "SPARQL"
+  ]
+ },
+ {
+  "id": "llm_hallucination_control",
+  "split": "valid",
+  "scope": "book",
+  "query": "幻觉控制 ontology guided agent GraphRAG Text2SPARQL",
+  "min_hits": 5,
+  "required_any_paths": [
+   "ontology-engineering-book/ch08-ontology-llm/README.md",
+   "ontology-engineering-book/ch08-ontology-llm/examples/hallucination-control.txt",
+   "ontology-engineering-book/ch08-ontology-llm/examples/ontology-guided-agent.py"
+  ],
+  "required_terms": [
+   "幻觉控制"
+  ]
+ },
+ {
+  "id": "manufacturing_capstone",
+  "split": "valid",
+  "scope": "book",
+  "query": "manufacturing ontology SPARQL Jena owlready2 制造 本体",
+  "min_hits": 5,
+  "required_any_paths": [
+   "ontology-engineering-book/ch09-capstone-manufacturing/README.md",
+   "ontology-engineering-book/ch09-capstone-manufacturing/src/QueryService.java",
+   "ontology-engineering-book/ch09-capstone-manufacturing/src/reasoner.py"
+  ],
+  "required_terms": [
+   "SPARQL"
+  ]
+ },
+ {
+  "id": "description_logic_reasoning",
+  "split": "test",
+  "scope": "book",
+  "query": "描述逻辑 description logic 推理 tableau 一致性",
+  "min_hits": 4,
+  "required_any_paths": [
+   "ontology-engineering-book/ch02-ontology-foundations/examples/description-logic.txt",
+   "ontology-engineering-book/ch05-reasoning/examples/description-logic-examples.txt",
+   "ontology-engineering-book/handbook/chapters/ch05.tex"
+  ],
+  "required_terms": [
+   "描述逻辑"
+  ]
+ },
+ {
+  "id": "kg_shacl_quality",
+  "split": "test",
+  "scope": "book",
+  "query": "知识图谱 SHACL 质量 校验 shapes constraint",
+  "min_hits": 4,
+  "required_any_paths": [
+   "ontology-engineering-book/ch07-knowledge-graph/README.md",
+   "ontology-engineering-book/ch07-knowledge-graph/examples/kg-quality-shacl.ttl",
+   "ontology-engineering-book/handbook/chapters/ch07.tex"
+  ],
+  "required_terms": [
+   "SHACL"
+  ]
+ },
+ {
+  "id": "manufacturing_scheduling_application",
+  "split": "test",
+  "scope": "book",
+  "query": "制造 调度 manufacturing scheduling 设备 加工能力",
+  "min_hits": 4,
+  "required_any_paths": [
+   "ontology-engineering-book/ch06-applications/examples/manufacturing-scheduling.txt",
+   "ontology-engineering-book/ch06-applications/README.md",
+   "ontology-engineering-book/handbook/chapters/ch06.tex"
+  ],
+  "required_terms": [
+   "设备"
+  ]
+ },
+ {
+  "id": "cad_agent_controlled_evolution",
+  "split": "cad",
+  "scope": "cad",
+  "query": "CAD Agent EvolutionCandidate regression authorization Fusion reproduction",
+  "min_hits": 5,
+  "required_any_paths": [
+   "cad-agent/docs/video-driven-self-evolution.md",
+   "cad-agent/src/cad_agent/evolution.py",
+   "cad-agent/shapes/cad-agent.shacl.ttl"
+  ],
+  "required_terms": [
+   "READY_FOR_CONTROLLED_APPLICATION",
+   "prior_release",
+   "application_authorized"
+  ]
+ },
+ {
+  "id": "ptw_claim_parts",
+  "split": "valid",
+  "scope": "book",
+  "query": "主张 部件 决定范围 缺件",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch01-introduction/chapter.md",
+   "product-trustworthiness-book/ch11-claim-ontology/chapter.md"
+  ],
+  "required_terms": [
+   "决定范围"
+  ]
+ },
+ {
+  "id": "ptw_fault_chain",
+  "split": "valid",
+  "scope": "book",
+  "query": "故障 错误 失效 链 处置 走错门",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch02-concepts-terminology/chapter.md"
+  ],
+  "required_terms": [
+   "失效"
+  ]
+ },
+ {
+  "id": "ptw_confirmation_trio",
+  "split": "valid",
+  "scope": "book",
+  "query": "确认评审 审核 功能安全评估 独立",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch03-safety-management/chapter.md"
+  ],
+  "required_terms": [
+   "审核"
+  ]
+ },
+ {
+  "id": "ptw_hara",
+  "split": "valid",
+  "scope": "book",
+  "query": "危害事件 运行情形 情境 分级 查表",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch04-concept-hara/chapter.md",
+   "product-trustworthiness-book/ch14-context-hazard-ontology/chapter.md"
+  ],
+  "required_terms": [
+   "危害事件"
+  ]
+ },
+ {
+  "id": "ptw_metrics_denominator",
+  "split": "valid",
+  "scope": "book",
+  "query": "单点故障度量 分母 潜伏 底账",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch06-hardware-development/chapter.md",
+   "product-trustworthiness-book/ch16-measurement-ontology/chapter.md"
+  ],
+  "required_terms": [
+   "分母"
+  ]
+ },
+ {
+  "id": "ptw_pass_expiry",
+  "split": "valid",
+  "scope": "book",
+  "query": "差异分析 保质期 编译器 升级 重跑",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch07-software-development/chapter.md",
+   "product-trustworthiness-book/ch17-change-ontology/chapter.md"
+  ],
+  "required_terms": [
+   "差异分析"
+  ]
+ },
+ {
+  "id": "ptw_independence",
+  "split": "valid",
+  "scope": "book",
+  "query": "分解 独立 共因 供电 缝",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch08-asil-decomposition-dfa/chapter.md",
+   "product-trustworthiness-book/ch18-dependency-ontology/chapter.md"
+  ],
+  "required_terms": [
+   "共因"
+  ]
+ },
+ {
+  "id": "ptw_field_identity",
+  "split": "valid",
+  "scope": "book",
+  "query": "批次 单件 代换 设计评估 追回",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch09-production-operation/chapter.md",
+   "product-trustworthiness-book/ch19-field-ontology/chapter.md"
+  ],
+  "required_terms": [
+   "代换"
+  ]
+ },
+ {
+  "id": "ptw_living_case",
+  "split": "valid",
+  "scope": "book",
+  "query": "安全案例 基线 重开 签字 活",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch10-supporting-processes/chapter.md",
+   "product-trustworthiness-book/ch20-assurance-ontology/chapter.md"
+  ],
+  "required_terms": [
+   "重开"
+  ]
+ },
+ {
+  "id": "ptw_identity_threeway",
+  "split": "valid",
+  "scope": "book",
+  "query": "同名 未知 桥接 证据 判据 合并",
+  "min_hits": 2,
+  "required_any_paths": [
+   "product-trustworthiness-book/ch02-concepts-terminology/chapter.md",
+   "product-trustworthiness-book/ch12-identity-ontology/chapter.md"
+  ],
+  "required_terms": [
+   "未知"
+  ]
+ },
+ {
+  "id": "ptw_thesis_survival",
+  "split": "valid",
+  "scope": "book",
+  "query": "模型 更新 吃掉 行业本体",
+  "min_hits": 1,
+  "required_any_paths": [
+   "product-trustworthiness-book/front-matter/preface.md",
+   "product-trustworthiness-book/ch20-assurance-ontology/chapter.md"
+  ],
+  "required_terms": [
+   "行业本体"
+  ]
+ }
+]

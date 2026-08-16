@@ -1,0 +1,70 @@
+\chapter{综合实战案例：智能制造知识管理系统}
+\chapterart{ch09}{智能制造知识管理系统的三层架构}
+
+\begin{introbox}
+\textbf{【导读】}
+最后一章把前八章的能力组装成一个可运行的系统。
+建议的学习方式是「跑通—修改—扩展」：先按指引跑通 Java 与 Python 两侧，
+再加一台新设备观察推理变化，最后实现一个你自己领域的 CQ。
+完成这个循环，你就具备了独立交付本体工程项目的能力。
+\end{introbox}
+
+\section{系统全景}
+
+系统是经典三层：\textbf{本体层}（\texttt{manufacturing.owl}，Manchester 语法的
+制造领域 TBox + SWRL 规则）、\textbf{查询服务层}（Java/Jena，
+回答第 3 章那组能力问题）、\textbf{推理引擎层}（Python/owlready2 + Pellet，
+一致性检查与冲突检测）。Java 与 Python 加载的是\textbf{同一份本体文件}——
+知识只有一个权威源，两种技术栈只是两个消费端，这正是第 1 章理念的落地。
+
+本体层的核心是约束公理与规则。设备类层次之外，
+文件用注释形式完整记录了描述逻辑约束——它们就是系统的「物理定律」：
+
+\input{fragments/snip-ch09-axioms}
+\snipsource{ch09-capstone-manufacturing/src/manufacturing.owl}
+
+\section{一条 CQ 的旅程}
+
+以 CQ1「哪些设备可以加工铝合金」为例，看知识如何穿过三层。
+它在本体层对应 \texttt{canProcess} 属性与材料类层次；
+查询服务层把它写成 SPARQL，用 Jena 4.x 的构建器 API 执行：
+
+\input{fragments/snip-ch09-java}
+\snipsource{ch09-capstone-manufacturing/src/QueryService.java}
+
+而推理引擎层让答案变「聪明」：直接查询只能返回显式断言过
+\texttt{canProcess} 的设备，跑过 Pellet 推理后，
+由规则推导出的能力（例如「所有数控车床都能加工铝合金」这类类级断言的实例化）
+也会进入结果——查询不变，答案更全：
+
+\input{fragments/snip-ch09-py}
+\snipsource{ch09-capstone-manufacturing/src/reasoner.py}
+
+推理完成后，脚本还会执行冲突检测，把 SWRL 规则推导出的能力冲突、
+时间冲突个体收集成检测报告——这正是第 6 章制造调度案例的可运行版本。
+
+\section{跑通它}
+
+Java 侧需要 Maven 引入 \texttt{apache-jena-libs} 4.10+，
+编译后运行 \texttt{QueryService}；
+Python 侧 \texttt{pip install owlready2}（Pellet 需要 Java 8+ 环境），
+直接 \texttt{python src/reasoner.py}。
+两侧都跑通后，做两个实验最能加深理解：
+在 \texttt{manufacturing.owl} 里新增一台设备实例，观察哪些查询结果变了；
+故意制造一个冲突（给运行中的设备派任务），看推理器如何当场抓住它。
+
+\section{本章文件指引}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.36\linewidth}X@{}}
+\toprule
+\normalfont\textbf{文件（ch09-.../src/）} & \textbf{内容与阅读建议} \\
+\midrule
+manufacturing.owl & 核心本体：类层次、属性、DL 约束、SWRL 规则注释 \\
+sparql-queries.sparql & CQ1--CQ5 标准查询集 \\
+OntologyManager.java & 本体加载、推理模型选择、类层次遍历 \\
+QueryService.java & 每个 CQ 一个方法的服务封装 \\
+reasoner.py & Pellet 推理、冲突检测、工艺推荐 \\
+\bottomrule
+\end{tabularx}
+\end{center}

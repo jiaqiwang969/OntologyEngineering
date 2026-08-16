@@ -1,0 +1,133 @@
+# 智能制造知识管理系统 - SPARQL查询集
+# Manufacturing KMS - SPARQL Query Collection
+
+PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX :     <http://example.org/manufacturing#>
+
+# ==============================
+# CQ1: 哪些设备可以加工铝合金？
+# Which equipment can process aluminum alloy?
+# ==============================
+SELECT ?equipment ?name ?power ?location
+WHERE {
+    ?equipment a :Equipment ;
+               :canProcess :Aluminum ;
+               rdfs:label ?name .
+    OPTIONAL { ?equipment :power ?power }
+    OPTIONAL {
+        ?equipment :locatedIn ?cell .
+        ?cell rdfs:label ?location .
+    }
+    FILTER(lang(?name) = "zh")
+}
+ORDER BY ASC(?name)
+
+# ==============================
+# CQ2: 当前哪些设备空闲可以接受任务？
+# Which equipment is currently idle?
+# ==============================
+SELECT ?equipment ?name ?capability
+WHERE {
+    ?equipment a :ProcessingEquipment ;
+               :hasStatus :Idle ;
+               rdfs:label ?name .
+    OPTIONAL {
+        ?equipment :hasCapability ?cap .
+        ?cap rdfs:label ?capability .
+    }
+    FILTER(lang(?name) = "zh")
+}
+
+# ==============================
+# CQ3: 查询所有冲突任务（SWRL推理后）
+# Find all conflicting tasks after inference
+# ==============================
+SELECT ?task ?conflictType
+WHERE {
+    {
+        ?task a :CapabilityConflict .
+        BIND("能力冲突：设备无法加工所需材料" AS ?conflictType)
+    }
+    UNION
+    {
+        ?task a :TimeConflict .
+        BIND("时间冲突：设备时间段重叠" AS ?conflictType)
+    }
+    UNION
+    {
+        ?task a :StatusConflict .
+        BIND("状态冲突：设备状态不可用" AS ?conflictType)
+    }
+    UNION
+    {
+        ?task a :ResourceConflict .
+        BIND("资源冲突：资源可用性不足" AS ?conflictType)
+    }
+}
+
+# ==============================
+# CQ4: 给定产品，查询推荐工艺路线
+# Get recommended process for a product
+# ==============================
+SELECT ?product ?process ?processLabel ?confidence
+WHERE {
+    ?product a :Product ;
+             :recommendedProcess ?process .
+    ?process rdfs:label ?processLabel .
+    OPTIONAL { ?process :confidence ?confidence }
+    FILTER(?product = :Product_001)
+    FILTER(lang(?processLabel) = "zh")
+}
+ORDER BY DESC(?confidence)
+
+# ==============================
+# CQ5: 工单的工序执行顺序
+# Get correct operation sequence for a work order
+# ==============================
+SELECT ?operation ?opLabel ?startTime ?status
+WHERE {
+    :WorkOrder_001 :hasProcess ?process .
+    ?process :hasOperation ?operation .
+    ?operation rdfs:label ?opLabel ;
+               :hasStatus ?status .
+    OPTIONAL { ?operation :hasStartTime ?startTime }
+    FILTER(lang(?opLabel) = "zh")
+}
+ORDER BY ?startTime
+
+# ==============================
+# CQ6: 设备利用率统计
+# Equipment utilization statistics
+# ==============================
+SELECT ?equipment ?name (COUNT(?task) AS ?taskCount)
+WHERE {
+    ?equipment a :Equipment ;
+               rdfs:label ?name .
+    OPTIONAL { ?task :assignedTo ?equipment }
+    FILTER(lang(?name) = "zh")
+}
+GROUP BY ?equipment ?name
+ORDER BY DESC(?taskCount)
+
+# ==============================
+# CQ7: 需要维护的设备预警列表
+# Equipment requiring maintenance alerts
+# ==============================
+SELECT ?equipment ?name ?warningType
+WHERE {
+    {
+        ?equipment a :LongMaintenanceWarning ;
+                   rdfs:label ?name .
+        BIND("长时间维护预警（超过24小时）" AS ?warningType)
+    }
+    UNION
+    {
+        ?equipment :hasStatus :Faulty ;
+                   rdfs:label ?name .
+        BIND("设备故障，需立即处理" AS ?warningType)
+    }
+    FILTER(lang(?name) = "zh")
+}

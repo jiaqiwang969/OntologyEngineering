@@ -19,10 +19,10 @@ references/
 ├── ontology-engineering-book/              # 第一卷全书（章节 + examples + 排版工程）
 ├── product-trustworthiness-book/           # 第二卷全书（前言 + 20 章 + 附录 A–D）
 │   └── handbook/                           #   321 页成书 PDF + 全书图谱计划
+├── iso-normative-ontology/                 # ISO 26262 本体化刻录层（条款 TTL + 卡片视图）
 ├── source-map.md                           # 第一卷章节地图
 ├── product-trustworthiness-source-map.md   # 第二卷章节地图（含人物与事故索引）
-└── eval-cases.json                         # 20 条能力问题式检索评测（成书质量门禁）
-├── iso-normative-ontology/                 # ISO 26262 本体化刻录层（条款 TTL + 卡片视图）
+└── eval-cases.json                         # 22 条能力问题式检索评测（成书质量门禁）
 scripts/
 ├── search_ontology_sources.py              # 双卷 + 刻录层全文检索
 ├── engrave_iso.py                          # 标准刻录器（需本地受控提取件）

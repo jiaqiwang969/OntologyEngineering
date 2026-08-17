@@ -1,0 +1,62 @@
+EPS 现场监测闭环：教学规划模板
+================================
+
+状态边界
+--------
+FieldObservationInstructions_Draft : Draft / TeachingExample
+FieldMonitoringProcessDefinition_Draft : definition node only
+主 ABox 已登记 FieldObservation 实例 : 0
+主 ABox 已登记 SafetyRelatedFieldIssue 实例 : 0
+主 ABox 已登记 FieldAction 实例 : 0
+
+以上 0 只描述当前交付图，不表示外部现实中没有现场观测、问题或行动。
+
+条款要求的三段语义（ISO 26262-7:2018, 7.4.1.1）
+-------------------------------------------------------
+
+1. 提供可供分析的现场数据；
+2. 分析数据，以检出功能安全问题；
+3. 对已识别的功能安全问题触发行动。
+
+分析可以得到“识别问题”“未识别问题”或“证据不足”。不能由“有数据”直接推出“有问题”，也不能由“问题实例为 0”推出“分析已经完成且没有问题”。
+
+当前粗粒度本体映射
+--------------------
+
+FieldMonitoringProcessDefinition
+  definedByFieldObservationInstructions -> FieldObservationInstructions
+
+FieldObservation
+  collectedUnderFieldMonitoringProcess -> FieldMonitoringProcessDefinition
+  identifiesFieldIssue -> SafetyRelatedFieldIssue
+
+SafetyRelatedFieldIssue
+  triggersFieldAction -> FieldAction
+
+当前主 ABox 只登记第一组“说明→过程定义”关系。后两组只是 TBox 可表达的粗粒度路径，主图没有其实例。模型尚无独立现场分析执行、分析输入范围、分析方法，以及“未识别问题/证据不足”的结果对象。
+
+目标过程模板应回答
+------------------
+
+- 哪些候选数据源被提供，怎样形成可分析上下文；
+- 谁在什么节奏与事件触发下分析，输入范围怎样冻结；
+- 如何将症状、对象、配置、时间和生产/服务历史关联；
+- 何种结果构成已识别的功能安全问题；
+- 谁在什么判据和时限下触发、执行并评价行动；
+- 哪些行动回到车辆，哪些回到生产、服务或开发变更。
+
+这些是目标过程/模板问题，不是当前 RDF 已登记字段。VIN/批次、阈值、数据源和行动类型均由项目及适用法规决定。
+
+当前门禁的准确宽度
+------------------
+
+`SafetyRelatedFieldIssueShape` 只检查：若图中已经登记一个现场功能安全问题，它是否指向一个行动。主图问题数为 0 时，空集通过不证明数据提供、分析或行动过程已运行。行动的充分性、执行与有效性仍需项目证据。
+
+服务与报废（ISO 26262-7:2018, 7.4.1.2）
+-------------------------------------------
+
+ServiceOrDecommissioningExecution
+  followsLifecycleInstruction -> LifecycleInstruction
+  documentedByLifecycleRecord -> LifecycleExecutionRecord
+
+计划、说明或模板不能替代执行记录。主 ABox 没有登记任何服务或报废执行实例；正反 fixture 只验证“按适用说明执行 + 留下记录”的结构合同。

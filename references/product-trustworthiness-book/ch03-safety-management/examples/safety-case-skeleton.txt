@@ -1,0 +1,48 @@
+# Safety Case 的最小 CAE 骨架
+
+SafetyCase [reviewStatus]
+  containsClaim -> Claim [claimStatement, claimStatus]
+  containsArgument -> Argument
+  hasConfirmationMeasure -> ConfirmationMeasure [measureExecutionStatus]
+
+Completed SafetyCase confirmation review
+  appliesToWorkProduct -> the same SafetyCase
+
+Argument
+  supportsClaim -> Claim
+  backedByEvidence -> Evidence [evidenceStatus]
+
+Evidence 是工程对象在当前论证中的角色。建立 `backedByEvidence` 连边只说明被引用：
+
+- `EvidenceCandidate`：候选，尚不能支撑接受 Claim
+- `EvidenceVerified`：已经完成规定验证
+- `EvidenceAccepted`：已由论证治理过程接受
+- `EvidenceRejected`：不再作为有效支撑
+
+Claim 状态：
+
+- `ClaimOpen`：命题已提出，证据与论证仍不充分
+- `ClaimUnderReview`：论证正在受控评审
+- `ClaimAccepted`：本书门禁还要求 Safety Case 已批准、针对该同一案例的 Safety Case 确认评审已完成且有报告，并且实际支撑证据全部为 `EvidenceAccepted`
+- `ClaimRejected`：论证未被接受
+
+EPS 教学实例：
+
+SafetyCase [Draft]
+  containsClaim -> Claim_SG1 [ClaimOpen]
+  containsArgument -> Arg_SG1
+  hasConfirmationMeasure -> CR_SafetyCase [MeasurePlanned, planned I3]
+
+Arg_SG1
+  supportsClaim -> Claim_SG1
+  backedByEvidence -> HARA draft / FSR / TSR / hardware metric / decomposition /
+                      safety-validation specification draft / safety-validation report template
+  all seven cited entities -> EvidenceCandidate
+
+The Clause 8 specification and report remain Draft; the validation activity,
+result, and evaluation remain SafetyValidationPlanned, ValidationCaseNotRun,
+and ValidationEvaluationNotPerformed. Adding these candidate roles does not
+advance Claim_SG1 beyond ClaimOpen.
+
+因此，图表达的是“待完成的论证结构”，不是“SG1 已经被证明满足”。
+上述 CAE 状态联动是本书闭世界治理策略：已批准案例不得保留开放、评审中或已否决 Claim，也不得借用针对其他案例的确认评审。它不能证明论证技术上充分，也不能验证评审人员的真实组织独立性。

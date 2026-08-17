@@ -36,7 +36,7 @@
 | 附录 A–D | appendices/ | 半导体指南走查；摩托车/卡客车适配；受控术语表；28 张方法表速查 |
 | 路线图 | ch01-introduction/examples/book-roadmap.txt | 20 章依赖图、三条阅读路径、最短可用路径 |
 | 图谱 | handbook/book-figure-plan.yaml | 全书章首图与编号图的提示词计划 |
-| 成书 | handbook/产品可信工程-全书.pdf | 321 页排版成品（占位图待生成） |
+| 成书 | handbook/产品可信工程-全书.pdf | 345 页图文排版成品（含封面与章首艺术图） |
 
 ## 人物与事故索引（叙事检索用）
 

@@ -1,7 +1,6 @@
 # 第 20 章 活的安全案例：发布与保证本体
 
-> **章首导读图（待生成）**
-> 图片提示词：一册摊开的厚案卷，页面上一条心电图般的脉搏线贯穿始终仍在延伸；最末页空白处，一只手持笔正要落笔。脉搏线为琥珀色。
+![一册持续跳动的可信案卷把最后的决定与签名位置留给人](../../handbook/figures-imagegen/art-ch20-v01.png "chapter-art")
 
 > **【导读】**
 > 试点走到最后一站，要换载体的轮到放行桌自己。本章先把前半部收口时冻结的三个
@@ -243,9 +242,13 @@ SELECT ?member ?binding WHERE {
 
 骨头经住了换水。正戏还等在前面：RC18 的放行，在新载体上究竟怎么走？
 
-> **图 20-1（待生成）· 活的案例：过期自己举手，签名仍然是人**
-> 图片提示词：一册摊开案卷的示意结构：顶层主张条、中层论证结、底层证据卡阵列；其中两张证据卡上翘并亮起小旗（自动标过期），一条重开条件丝带绕到页边；页面右下角一个空白签名框，一支笔悬停其上。小旗与签名框为琥珀色。
-> 受控标签：无文字
+<!-- FIG:ch20-fig01-live-assurance-case:OBSERVE -->
+> **读图任务**：从顶部主张经中层论证跟随到底部证据卡，找到两张主动举起过期旗的卡，然后沿重开丝带看向右下角留给人的签名框。
+
+![摊开案卷中顶层主张、中层论证结和底部证据卡构成动态案例，两张证据卡翘起并举起琥珀色过期旗，重开条件丝带绕向页边，右下签名框上方仍悬着一支笔。](../../handbook/figures-imagegen/ch20-fig01-live-assurance-case-v01.png "活的保证案例会在对象、配置、证据或假设改变时主动暴露过期和重开条件。自动检查负责举旗，最终承担风险的决定和签名仍然属于人。")
+
+<!-- FIG:ch20-fig01-live-assurance-case:CONSUME -->
+> **图后判断**：图中过期标记不等于证据错误，签名框也不表示放行已获授权。本图不替代真实案例的反驳、缺口处置和责任人核验。
 
 ## 20.5 RC18：活的安全案例第一次开庭
 
@@ -307,11 +310,11 @@ SELECT ?evidence ?testifiesTo ?scope ?status WHERE {
 
 ```text
 # 最后一步：机器提议，人决定（示意记法）
-rel:Proposal_RR18 a rel:AgentProposal ;
-    rel:proposes         rel:Decision_RR18 ;
+rel:Proposal_RC18 a rel:AgentProposal ;
+    rel:proposes         rel:Decision_RC18 ;
     rel:basedOnCaseState rel:CaseState_AtSigning ;  # 签署时刻的案例状态
     rel:status           rel:ProposedOnly .         # 提议，不是决定
-rel:Decision_RR18 a rel:AuthorizationDecision ;
+rel:Decision_RC18 a rel:AuthorizationDecision ;
     rel:acceptedBy rel:Role_ReleaseAuthority ;      # 有权角色，今天是陈工
     rel:withReopen rel:Reopen_AnomalyRecur ,
                    rel:Reopen_WindowExpiry ,
@@ -384,8 +387,8 @@ rel:Decision_RR18 a rel:AuthorizationDecision ;
 
 ---
 
-> **本章注记** 本章的试点情节、人物、事故经过与全部产品数字（候选代号、软硬件与
+> **本章注记**：本章的试点情节、人物、事故经过与全部产品数字（候选代号、软硬件与
 > 标定版本、时间跨度、台数等）均为合成教学材料，不对应任何真实企业、真实产品或
 > 真实个人。正文中的片段为教学示意记法，不构成完整的形式化定义，可运行版本见
-> 本章配套材料（建设中）。本章对安全案例与发布保证活动的转述为自然语言概括，
+> 本章配套材料。本章对安全案例与发布保证活动的转述为自然语言概括，
 > 精确要求以标准原文为准；本章不构成对任何实际系统的判定或放行结论。

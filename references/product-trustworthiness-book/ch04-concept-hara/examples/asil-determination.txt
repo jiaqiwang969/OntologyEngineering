@@ -1,0 +1,53 @@
+# ASIL 判定表的本体化解读
+# Ontologizing the ASIL Determination Matrix
+#
+# 依据 ISO 26262-3:2018, 6.4.3.10, Table 4。
+# 本文件不复制原表，而是说明其机器表达、边界规则和回归方法。
+
+# ==============================
+# 1. Table 4 是一个有限映射
+# ==============================
+# 输入域：S1..S3 × E1..E4 × C1..C3，共 36 个单元格。
+# 输出域：QM / ASIL A / B / C / D。
+#
+# 代表性映射：
+#   S3 E4 C3 -> D      S3 E4 C2 -> C      S3 E4 C1 -> B
+#   S3 E3 C3 -> C      S3 E3 C2 -> B      S3 E3 C1 -> A
+#   S2 E4 C3 -> C      S2 E4 C2 -> B      S2 E4 C1 -> A
+#   S1 E3 C3 -> A      S1 E3 C1/C2 -> QM
+#
+# 完整 36 行位于 ontology/asil-table4.ttl，每一行都连接 source anchor
+# iso262:Table_3_4（PDF page 18, block 0, bbox 60,120,880,392）。
+
+# ==============================
+# 2. S0/E0/C0 不是 QM 的别名
+# ==============================
+# 6.4.3.4：S0 时不要求 ASIL assignment。
+# 6.4.3.7：E0 时不要求 ASIL assignment，并需要记录排除依据。
+# 6.4.3.9：C0 时不要求 ASIL assignment。
+# QM 是 Table 4 的结果，表示质量管理过程足以管理已识别风险。
+# eval/fixtures/valid-no-asil-boundary.ttl 证明 S0 且无 hasASIL 可以通过门禁。
+
+# ==============================
+# 3. 从手工查表到可执行知识
+# ==============================
+# ABox 保留工程师确认后的直接结果：
+#   event hasSeverity S3 ; hasExposure E4 ; hasControllability C3 ; hasASIL D
+#
+# ontology/asil-table4.ttl 保存权威映射单元；
+# ontology/shapes.shacl.ttl 的 ASILTable4Shape 将事件值与映射单元连接，
+# 实际 ASIL 与期望 ASIL 不同即产生 violation。
+#
+# 反例 eval/fixtures/invalid-table4.ttl 故意把 S2 E4 C3 写成 ASIL B，
+# 门禁必须由 ASILTable4Shape 拒绝；正确结果是 ASIL C。
+
+# ==============================
+# 4. EPS 教学判定链
+# ==============================
+# HE_UnintendedAssist_Highway:
+#   S3 × E4 × C3 -> ASIL D
+# HE_LossOfAssist_Parking:
+#   S1 × E3 × C1 -> QM
+#
+# 这些 S/E/C 依据是教学假设，不是标准给出的 EPS 结论。
+# BMS 和 AEB 的结果在各自 ABox 完成并经过相同门禁前保持 TBD。

@@ -1,7 +1,6 @@
 # 第 12 章 名字背后的身份判据：对象与同一本体
 
-> **章首导读图（待生成）**
-> 图片提示词：三张系着细绳的空白吊牌悬在上方，下方一台精致的天平；连接吊牌与天平的是一条逐节相扣的锁链，其中一节以琥珀色发光，另有一节尚未闭合。
+![三张身份吊牌通过一条尚未完全闭合的证据链连向天平](../../handbook/figures-imagegen/art-ch12-v01.png "chapter-art")
 
 > **【导读】**
 > 上一章结束时，主张有了机器可查的骨架，缺件即拒——可是主语那一格，
@@ -118,9 +117,13 @@ id:PhysicalUnit  id:disjointWith  id:SoftwareArtifact .
 判据分了族，下一个问题立刻跟上来：判据是族的，可桌上摆的是**记录**。
 三条记录和那一台机器之间，到底是什么关系？
 
-> **图 12-1（待生成）· 三族对象，三种判据**
-> 图片提示词：三个并排的展台：左台一颗零件下方接一条环环相扣的履历链；中台一份文件下方接一枚指纹状纹样；右台一个组合方块下方接一组卡合的拼图。三种判据图形各不相同，互不通用。中台指纹为琥珀色。
-> 受控标签：物理单件、软件工件、产品候选
+<!-- FIG:ch12-fig01-three-identity-criteria:OBSERVE -->
+> **读图任务**：逐个比较三个展台上的对象与它们下方的判据，寻找为什么履历链、内容指纹和组合契合不能互相借用。
+
+![左侧物理单件对应逐环相扣的履历链，中间软件工件对应琥珀色内容指纹，右侧产品候选对应多个配置块的拼合关系，三种判据图形彼此不同。](../../handbook/figures-imagegen/ch12-fig01-three-identity-criteria-v01.png "不同对象族需要不同的“同一个”判据。物理实物依赖连续履历，数字工件依赖可重现的内容身份，产品候选则依赖受控配置的完整组合。")
+
+<!-- FIG:ch12-fig01-three-identity-criteria:CONSUME -->
+> **图后判断**：图中图形只是判据类型的缩写，不是真实序列号、哈希值或 BOM。它不证明某一条履历完整，也不解决身份冒用。
 
 ## 12.3 记录是别名，“同一”要带证据
 
@@ -153,12 +156,12 @@ id:PhysicalUnit  id:disjointWith  id:SoftwareArtifact .
 id:Unit_417 a id:PhysicalUnit .                  # 那台机器本身
 id:Alias_DUT_P07    id:aliasOf id:Unit_417 ;
     id:inSource     id:BenchLedger ;             # 来源：台架台账
-    id:evidence     id:EntryForm_0312 .          # 桥：进机登记单（抄录铭牌序列号）
+    id:evidence     id:EntryForm_0312 .  # 桥：进机登记单（抄铭牌序列号）
 id:Alias_SN_000417  id:aliasOf id:Unit_417 ;
-    id:inSource     id:MfgSystem .               # 来源：制造系统（出生登记）
+    id:inSource     id:MfgSystem .  # 来源：制造系统（出生登记）
 id:Alias_ASSY_043   id:aliasOf id:Unit_417 ;
-    id:inSource     id:PlmTrialLedger ;          # 来源：PLM 试制台账单件条目
-    id:evidence     id:AssemblyRecord_0290 .     # 桥：装配记录（件号挂序列号）
+    id:inSource     id:PlmTrialLedger ;  # 来源：PLM 试制台账单件条目
+    id:evidence     id:AssemblyRecord_0290 .  # 桥：装配记录（件号挂序列号）
 ```
 
 规矩随之立下，三值一个不少——这套三值纪律上一章已经讲过原理，
@@ -239,8 +242,8 @@ RC17 就登记在候选族里。位号所属的族与候选族早在骨架里声
 
 ```text
 # 撞名告警：消息进群前的最后一道检查（示意记法）
-IF   消息引用名 "R17" 在来源域解析为 id:ComponentRefDes（元件位号）
-AND  目标语境的高频期待族为 id:ProductCandidate（候选代号，近邻名 "RC17"）
+IF   消息引用名"R17"在来源域解析为 id:ComponentRefDes（元件位号）
+AND  目标语境的高频期待族为 id:ProductCandidate（候选代号，近邻名"RC17"）
 AND  两族已声明 id:disjointWith                    # 位号族 ∩ 候选族 = 空
 THEN 暂缓转发，附告警：
      "R17 为元件位号，与候选代号 RC17 分属不同对象族，不指同一对象。"
@@ -375,9 +378,9 @@ id:Proposal_0041 a id:MergeProposal ;
 
 ---
 
-> **本章注记** 本章的人物、会议、台账记录、相似度评分与全部产品数字
+> **本章注记**：本章的人物、会议、台账记录、相似度评分与全部产品数字
 > （候选代号、位号、序列号、样机编号等）均为合成教学材料，不对应任何
 > 真实企业、真实产品或真实个人。正文对 ISO 26262 术语（相关项、系统、
 > 元素等）的转述为自然语言概括，精确定义以标准原文为准。
 > 文中各记法片段为教学示意记法，不构成任何本体语言的规范语法；
-> 可运行版本见本章配套材料（建设中）。
+> 可运行版本见本章配套材料。

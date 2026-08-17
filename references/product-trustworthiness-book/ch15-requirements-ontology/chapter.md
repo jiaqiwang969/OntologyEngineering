@@ -1,7 +1,6 @@
 # 第 15 章 承诺不再丢失：需求与追溯本体
 
-> **章首导读图（待生成）**
-> 图片提示词：俯视一条从上方源头流下的河，向下多级分汊；每个分汊口都有一座小闸门与一块空白铭牌立在岸边。一条支流末端以琥珀色微光收尾。
+![需求河流从源头逐级分汊，每个分配口都有闸门与理由牌](../../handbook/figures-imagegen/art-ch15-v01.png "chapter-art")
 
 > **【导读】**
 > 前一章的试点把“担心什么”建成了机器可查的结构，危害定了目标；可目标要落地，
@@ -72,7 +71,7 @@ req:TSR_TorqueCompare a req:Requirement ;
     req:mode       req:NormalDriving ;                 # 模式：正常行驶
     req:action     "请求抑制助力并转入降级" ;           # 动作
     req:criterion  "偏差判定与降级进入均可在台架复现" ;  # 判据
-    req:timeLimit  req:BudgetItem_Detect .             # 时限：指向账本的一格
+    req:timeLimit  req:BudgetItem_Detect .  # 时限：指向账本的一格
 ```
 
 注意最后一行：时限不是一个随手填的数，它指向时间账本里的一格——这一格
@@ -156,9 +155,9 @@ req:Der_042 a req:Derivation ;
     req:fromReq  req:FSR_DetectAndMitigate ;      # 上游：功能层承诺
     req:toReq    req:TSR_TorqueCompare ;          # 下游：比对需求
     req:rationale [ a req:DerivationRationale ;
-        req:dependsOnAspect req:Param_SensorUpdate ;      # 锚点：依赖传感器更新特性
+        req:dependsOnAspect req:Param_SensorUpdate ;  # 锚点：传感器更新特性特性
         req:justification   "比对窗口按老款传感器最坏刷新设定" ;
-        req:confirmedIn     req:ReviewRecord_P15_03 ] .   # 出处：本次评审记录
+        req:confirmedIn     req:ReviewRecord_P15_03 ] .  # 出处：本次评审记录
 ```
 
 锚点那一行请记住——它指向的不是一条需求，而是接缝上的一个参数。
@@ -191,9 +190,13 @@ req:Der_042 a req:Derivation ;
 线也立住了。可小蔡心里还悬着一件事：当年最疼的那一跤，
 不是摔在需求上，是摔在接缝上——那个 2 毫秒，换了载体还会不会重演？
 
-> **图 15-1（待生成）· 连线要带理由，分配要等确认**
-> 图片提示词：两列节点之间的多条连线，每条连线中点都嵌着一枚小圆牌（理由对象）；其中一条连线的圆牌空缺，线呈虚线且下垂；另一条线末端有一枚未合上的搭扣（待确认）。空缺与搭扣为琥珀色。
-> 受控标签：无文字
+<!-- FIG:ch15-fig01-reasoned-allocation:OBSERVE -->
+> **读图任务**：跟随左右节点之间的每条连线，检查线中间的理由牌是否存在，再找到一条理由缺失和一条末端搭扣尚未闭合的关系。
+
+![两列需求节点之间的多条连线都嵌有理由对象，其中一条因中点圆牌缺失而变成下垂虚线，另一条在末端保留琥珀色未闭合搭扣。](../../handbook/figures-imagegen/ch15-fig01-reasoned-allocation-v01.png "需求追溯不是两个 ID 之间的裸连线。每一次派生、分解、分配或满足都要交代理由，而分配边在承接方确认前仍然是待定状态。")
+
+<!-- FIG:ch15-fig01-reasoned-allocation:CONSUME -->
+> **图后判断**：本图不会因连线完整就证明需求正确，也不代替技术实现、验证或组织授权。理由对象自身仍需可追溯事实支持。
 
 ## 15.4 两毫秒，第二次来到门口
 
@@ -275,10 +278,10 @@ req:Param_SensorUpdate a req:InterfaceParam ;
 req:LedgerFaultToSafe a req:TimeBudget ;
     req:totalWindow  req:Pending ;              # 容忍窗口：待定
     req:pendingOwner "车辆动力学分析（进行中）" ;  # 待定有主，不是没人管
-    req:hasItem req:BudgetItem_Sense ,          # 传感一段：最坏 8 ms，出自接缝承诺
+    req:hasItem req:BudgetItem_Sense ,  # 传感段：最坏 8 ms（接缝承诺）
                 req:BudgetItem_Detect ,         # 检出一段：最坏值已承诺
                 req:BudgetItem_React ;          # 反应一段：最坏值已承诺
-    req:margin  req:Unknown .                   # 余量：未知——不是零，也不是够
+    req:margin  req:Unknown .                   # 余量：未知（非零也非够）
 ```
 
 这本账立起来之后，机器多了一种从前没有的诚实。有人在评审里问“现在余量
@@ -315,7 +318,7 @@ req:LedgerFaultToSafe a req:TimeBudget ;
 SELECT ?affected ?why
 WHERE {
   ?edge  req:rationale       ?r .
-  ?r     req:dependsOnAspect req:Param_SensorUpdate .   # 理由锚在这个参数上
+  ?r     req:dependsOnAspect req:Param_SensorUpdate .  # 理由锚在这个参数上
   ?edge  req:toReq           ?affected .
   ?r     req:justification   ?why .
 }
@@ -386,10 +389,10 @@ WHERE {
 
 ---
 
-> **本章注记** 本章的人物、会议、事故经过与全部数字（更新周期、最坏值、
+> **本章注记**：本章的人物、会议、事故经过与全部数字（更新周期、最坏值、
 > 迁移批次、清单行数、用时等）均为合成教学材料，不对应任何真实企业、
 > 真实产品或真实个人；文中“8 毫秒”等数值仅为教学示例，不是任何实际系统
 > 的参数；容忍时间窗口在本章保持“待定”语义，不构成任何取值建议。
 > 正文对功能安全标准内容的转述为自然语言概括，精确表述以标准原文为准。
 > 各记法片段为教学示意记法，做了有意的简化，可运行版本见本章配套材料
-> （建设中）。
+> 。

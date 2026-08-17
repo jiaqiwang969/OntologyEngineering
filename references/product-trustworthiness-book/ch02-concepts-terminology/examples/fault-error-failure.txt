@@ -1,0 +1,38 @@
+# fault / error / failure 观察边界卡
+# 依据：ISO 26262-1:2018 3.46、3.50、3.54；Part 10 §4.3.1 只作资料性示例。
+
+术语边界
+
+- fault / 故障（1-3.54）：能够导致 element 或 item failure 的异常条件。
+  “能够”不是“已经导致”；可能未激活、间歇、潜伏、被隔离或被容错。
+- error / 错误（1-3.46）：计算、观察或测量的值/条件，与真实、规定或理论正确值/条件之间的差异。
+  判断需要参照值/条件；error 不只属于软件，也不以可见性定义。
+- failure / 失效（1-3.50）：fault 显现后，element 或 item 的一项 intended behaviour 终止。
+  判断需要对象与 intended behaviour；failure 不以“用户看见”定义。
+
+条件传播
+
+fault --can cause--> error --can propagate to--> failure
+
+每条边需要：观察边界、激活条件、传播路径、容错/控制、时间与证据。
+Fault、Error、Failure 在 TBox 中保持并列，不建成子类链或必然因果公理。
+
+EPS 合成路径
+
+- R17 内部裂纹：R17 hardware part 的 fault 候选。
+- R17 开路：R17 intended resistance behaviour 的 failure；在声明架构中可能成为输入网络 fault。
+- ADC 值偏离正确值：ECU 边界内的 error。
+- 错误转矩请求：ECU failure 候选；在更高边界可能成为 fault 候选。
+- 非预期助力：item 相对设计意图的 malfunctioning behaviour 候选。
+
+跨层禁止外推
+
+Part 10 §4.3.1 的 component failure→item fault 属于一个资料性示例。
+不要推出“每个下层 failure 永远等于上层 fault”；换层身份必须绑定结构、观察边界和因果模型。
+
+必须区分的四种结果
+
+1. 已传播并有证据；
+2. 条件未激活；
+3. 已被容错、修正或隔离；
+4. 证据不足，当前为 Unknown。

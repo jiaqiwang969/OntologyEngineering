@@ -1,0 +1,107 @@
+EPS 软件单元验证用例计划
+=======================
+
+artifact_id: EPS-SWUV-TEACHING-001
+artifact_type: SoftwareVerificationSpecification
+review_status: Draft
+execution_status: Planned
+example_status: TeachingExample
+expert_review_status: pending
+verification_report: eps:SW_UnitVerification_Report_Template (empty)
+
+Boundary
+--------
+
+This file specifies planned verification cases. It contains no test log,
+coverage result, anomaly disposition, independent review or approval. A case
+marked Planned is not evidence that a SoftwareUnit passed stand-alone testing.
+
+Case UVC-TM-BOUNDARY-001
+------------------------
+
+verifies_requirement: SSR_TorqueRangeCheck
+verifies_unit: SWU_TorqueMonitor
+objective: verify handling at, just inside and just outside configured torque limits
+method_selection: project test strategy; boundary-value partitions
+preconditions: executable unit baseline and approved calibration are identified
+stimulus: lower/upper boundary classes plus invalid numeric representations
+expected_oracle: result and diagnostic reaction match the approved SSR refinement
+environment: host unit harness; target differences must be recorded
+evidence_location: TBD
+execution_status: Planned
+
+Case UVC-TM-RATE-002
+--------------------
+
+verifies_requirement: SSR_TorqueRangeCheck
+verifies_unit: SWU_TorqueMonitor
+objective: verify rate-of-change detection across normal, boundary and violating sequences
+method_selection: project test strategy; sequence and temporal partitioning
+preconditions: cycle time, numeric precision and rate threshold are approved inputs
+stimulus: monotonic ramps, steps, jitter and timestamp discontinuities
+expected_oracle: reaction follows approved timing and degradation requirements
+environment: host unit harness followed by target-representative confirmation if needed
+evidence_location: TBD
+execution_status: Planned
+
+Case UVC-PC-DIAG-001
+--------------------
+
+verifies_requirement: SSR_InputPlausibility
+verifies_unit: SWU_PlausibilityCheck
+objective: verify each approved sensor diagnostic-state transition
+method_selection: project test strategy; requirements-based and fault-injection testing
+preconditions: diagnostic-state semantics and permitted transitions are baselined
+stimulus: valid, pending, failed and recovery transitions
+expected_oracle: validity and degradation outputs match the approved state model
+environment: host unit harness; injected faults are configuration controlled
+evidence_location: TBD
+execution_status: Planned
+
+Case UVC-PC-STALE-002
+---------------------
+
+verifies_requirement: SSR_InputPlausibility
+verifies_unit: SWU_PlausibilityCheck
+objective: verify stale, missing, reordered and delayed input handling
+method_selection: project test strategy; robustness and temporal tests
+preconditions: update period, timeout and timestamp source are approved
+stimulus: missing samples, frozen values, delayed frames and timestamp rollback
+expected_oracle: stale data is detected within the approved interval and handled as specified
+environment: host unit harness plus target timing confirmation where differences matter
+evidence_location: TBD
+execution_status: Planned
+
+Completeness and structural coverage plan
+-----------------------------------------
+
+requirements_coverage:
+  SSR_TorqueRangeCheck -> UVC-TM-BOUNDARY-001, UVC-TM-RATE-002
+  SSR_InputPlausibility -> UVC-PC-DIAG-001, UVC-PC-STALE-002
+
+structural_coverage_metric: project to select according to ASIL and method strategy
+structural_coverage_target: TBD; do not invent a universal threshold
+shortfall_disposition: add cases or provide reviewed rationale using other evidence
+target_environment_difference_analysis: required before relying on host-only results
+
+Evidence package required before completion
+-------------------------------------------
+
+- immutable software and test-harness configuration identifiers
+- input vectors, expected oracle version and execution logs
+- requirement and structural coverage results
+- observed anomalies and dispositions
+- target-environment difference analysis and additional target tests
+- reviewed SoftwareVerificationReport with sign-off
+
+Ontology links
+--------------
+
+activity: eps:SW_UnitVerification_Planned
+input: eps:SW_UnitVerification_Spec_Draft
+output: eps:SW_UnitVerification_Report_Template
+source anchors: Part 6 9.4.1, 9.4.2, 9.5.1, 9.5.2
+
+The source anchors establish the obligation and work-product roles. Case IDs,
+field schema, coverage workflow and evidence-package checklist are the book's
+engineering house policy and remain subject to project approval.

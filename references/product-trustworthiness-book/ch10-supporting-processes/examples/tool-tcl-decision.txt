@@ -1,0 +1,55 @@
+# 软件工具置信度判定（TI/TD/TCL）
+# Software Tool Confidence Level Determination
+#
+# 依据 ISO 26262-8:2018, Clause 11（§11.4.5 判定，§11.4.6 资格认证）。
+# ==============================
+# 1. 限定 usage，再做三步判定
+# ==============================
+# 前提（§11.4.5.1）：
+#   为本次评估定义具体的工具 usage：预期目的、输入/预期输出、
+#   使用步骤，以及适用的环境与功能约束。ToolEvaluation 必须绑定该 usage 描述，
+#   不能只对一个脱离使用边界的工具名称评级。
+# 第一步 TI（工具影响，§11.4.5.2）：
+#   工具失效是否可能把安全相关错误引入产品、或漏检已有错误？
+#   TI1 = 有论据证明不可能；TI2 = 其他所有情况。
+# 第二步 TD（错误检出，§11.4.5.2）：
+#   工具失效及其错误输出被"预防或检出"的置信度？
+#   TD1 = 高置信；TD2 = 中置信；TD3 = 其他（通常=无系统性手段，只能随机发现）。
+# 第三步 TCL（§11.4.5.4, Table 3）：
+#   TI1 → 恒 TCL1；TI2 → TD1=TCL1, TD2=TCL2, TD3=TCL3。
+#   §11.4.5.4 使用 shall，要求根据 TI/TD 按 Table 3 确定 TCL。
+#   另外，§11.4.5.3 使用 should，建议在 TI/TD 选择不明或有疑问时保守估计。
+
+# ==============================
+# 2. 资格认证义务（§11.4.6.1）
+# ==============================
+# TCL1：§11.4.6.1 不要求 qualification methods。
+# TCL2：适用 Table 5 的方法推荐画像。
+# TCL3：适用 Table 4 的方法推荐画像。
+# 结论：TCL 不是荣誉等级，也不是资格认证强度分数；它决定 §11.4.6.1 适用哪张方法表。
+# 表内 1a-1d 按 §4.3 选择适当组合、优先较高推荐度并论证理由，不能把 +/++ 求和。
+# TCL1 不代表 Clause 11 其他适用义务获得豁免。
+
+# ==============================
+# 3. 两个对照评估（EPS 教学）
+# ==============================
+# 代码生成器：TI2（生成代码进入 ASIL 软件）× TD3（生成代码不再验证）
+#   → TCL3，须按 Table 4 选择 qualification methods。
+# 静态分析工具：TI2（漏报可放过缺陷）× TD2
+#   （按 §11.4.5.2 Example 3：静态检查除零风险，并对同一目的同时测试）
+#   → TCL2，需按 Table 5 选用 qualification methods。
+#   Example 3 的另一分支是：只依赖该静态分析工具 → TD3。
+#   本例不把普通测试兜底过度推导为 TD1。
+# TD 必须由具体 usage 下真实、可重复的预防/检出证据决定；改进独立评审或测试可能改变 TD，
+# 但不能以“降低 TCL”为目标改标签，也不能把泛称“有测试”直接当成 TD1。
+# 代码生成器对应 §11.4.5.2 Example 1 的 TD3 分支；静态分析案例仅借用 Example 3 的对照思路。
+
+# ==============================
+# 4. 本体表达
+# ==============================
+# ontology/tcl-table3.ttl：Table 3 全 6 单元 → TCLMapping（第三张判定表）。
+# ontology/abox-eps-tools.ttl：ToolEvaluation 绑定具体 usage，记录 TI/TD/TCL + 各自 rationale。
+# ToolEvaluationCompletenessShape：usage/工具/TI/TD/TCL/rationale 的完整性与唯一性。
+# TCLDeterminationShape：声明 TCL 与唯一映射一致；缺映射、重复映射、未知值均 fail closed。
+# TCLMappingCompletenessShape：Table 3 的 6 个预期映射完整且唯一。
+# 反例 invalid-tcl-mismatch.ttl（TI2×TD3 标 TCL1）由 TCLDeterminationShape 拦下。

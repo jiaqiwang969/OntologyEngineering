@@ -1,41 +1,121 @@
-% 《工程本体论》配套手册 · 图文导读版
+% 《工程本体论》· 可扩展本体框架与 Agent Skill
 % XeLaTeX 编译；片段与节选由 build_handbook.py 生成；插图由 gen_figures.py 生成
 \documentclass[a4paper]{ctexbook}
 \input{preamble}
 
 \begin{document}
+\frontmatter
 
 % ================================================================ 封面
 \begin{titlepage}
-  \centering
-  \vspace*{0.8cm}
-  {\zihao{2}\heiti 《工程本体论》}\\[0.7em]
-  {\zihao{1}\heiti 配套手册 · 图文导读版}\\[1.6em]
-  {\color{rulegray}\rule{0.6\textwidth}{0.7pt}}\\[1.3em]
-  {\zihao{4}\songti 概念讲解 \,·\, 代码精讲 \,·\, 学习路径 \,·\, 资源目录}\\[0.9em]
-  {\zihao{-4}\songti 全书九章}\\[1.4em]
-  \IfFileExists{figures/cover.png}{%
-    \includegraphics[width=0.55\textwidth]{figures/cover.png}\\[-0.1em]
-  }{\vspace*{5.2cm}}
-  {\zihao{-3}\songti 作者：\texttt{claude-fable-5}}\\[0.9em]
-  {\zihao{-3}\heiti\textcolor{wechatgreen}{欢迎加微交流!}}\\[0.55em]
-  \begin{minipage}{0.22\textwidth}
-    \centering
-    \IfFileExists{figures/wechat-qr.png}{%
-      \includegraphics[width=\linewidth]{figures/wechat-qr.png}%
-    }{%
-      {\zihao{-5}\color{black!45}二维码待补充}%
-    }
-  \end{minipage}\\[0.35em]
-  {\zihao{-4}\songti 微信号：\texttt{18969691988}}
-  \vfill
-  {\zihao{-4}依据 \texttt{ontology-engineering-book} 仓库整理生成}\\[0.6em]
-  {\zihao{-4}全书成稿与排版共计6小时，token费用5k}\\[0.6em]
-  {\zihao{-4}2026 年 6 月}
-  \vspace*{0.8cm}
+  \thispagestyle{empty}
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[inner sep=0pt] at (current page.center) {%
+      \IfFileExists{figures/cover-series-v02-focus.png}{%
+        \includegraphics[width=\paperwidth,height=\paperheight]{figures/cover-series-v02-focus.png}%
+      }{\color{seriesnight}\rule{\paperwidth}{\paperheight}}%
+    };
+    % 撤掉整块蒙版，四级文字各用一条低存在感透明衬底。
+    \path[fill=seriesnight,fill opacity=0.24]
+      ([xshift=10.78cm,yshift=-1.40cm]current page.north west) rectangle
+      ([xshift=16.38cm,yshift=-2.03cm]current page.north west);
+    \path[fill=seriesnight,fill opacity=0.24]
+      ([xshift=10.78cm,yshift=-2.35cm]current page.north west) rectangle
+      ([xshift=19.52cm,yshift=-4.10cm]current page.north west);
+    \path[fill=seriesnight,fill opacity=0.24]
+      ([xshift=10.78cm,yshift=-4.44cm]current page.north west) rectangle
+      ([xshift=19.40cm,yshift=-5.52cm]current page.north west);
+    \path[fill=seriesnight,fill opacity=0.24]
+      ([xshift=10.78cm,yshift=-5.66cm]current page.north west) rectangle
+      ([xshift=18.72cm,yshift=-6.40cm]current page.north west);
+    % 恢复旧版字号、行距与四级标题结构，只将整块横移到右侧象限。
+    \draw[seriescyan,line width=1.5pt]
+      ([xshift=10.90cm,yshift=-1.22cm]current page.north west) --
+      ([xshift=14.50cm,yshift=-1.22cm]current page.north west);
+    \node[anchor=north west,inner sep=0pt,text width=8.75cm,align=left]
+      at ([xshift=10.90cm,yshift=-1.52cm]current page.north west) {%
+        {\fontsize{10.5}{13}\selectfont\sffamily\bfseries\color{seriesice!88!white}
+          ENGINEERING ONTOLOGY}\par\vspace{0.52cm}
+        {\fontsize{42}{50}\selectfont\heiti\bfseries\color{white}工程本体论}\par\vspace{0.34cm}
+        {\fontsize{20}{27}\selectfont\heiti\color{seriesice}可扩展本体框架 · Agent Skill}\par\vspace{0.28cm}
+        {\fontsize{11.5}{17}\selectfont\songti\color{white!82}
+          从概念体系到可计算的工程语义}%
+      };
+
+    % 旧版的底部左右栏：左侧卷册与制作信息，右侧本卷定位。
+    % 同文字的微小偏移副本形成克制投影，仅用于压住底图纹理。
+    \node[anchor=south west,inner sep=0pt,align=left,opacity=0.68]
+      at ([xshift=1.59cm,yshift=0.84cm]current page.south west) {%
+        {\fontsize{10.5}{15}\selectfont\heiti\color{black}
+          第一卷 · 理论与方法}\\[-0.04cm]
+        {\fontsize{7.4}{9.8}\selectfont\songti\color{black}
+          作者 claude F5 max · 5k · 用时 6h · 2026.06}\\[-0.04cm]
+        {\fontsize{6.2}{8.2}\selectfont\songti\color{black}
+          依据 ontology-engineering-book 仓库整理生成}%
+      };
+    \node[anchor=south west,inner sep=0pt,align=left]
+      at ([xshift=1.55cm,yshift=0.88cm]current page.south west) {%
+        {\fontsize{10.5}{15}\selectfont\heiti\color{white!88}
+          第一卷 · 理论与方法}\\[-0.04cm]
+        {\fontsize{7.4}{9.8}\selectfont\songti\color{white!70}
+          作者 claude F5 max · 5k · 用时 6h · 2026.06}\\[-0.04cm]
+        {\fontsize{6.2}{8.2}\selectfont\songti\color{white!62}
+          依据 ontology-engineering-book 仓库整理生成}%
+      };
+    \node[anchor=south east,inner sep=0pt,align=right,opacity=0.68]
+      at ([xshift=-1.51cm,yshift=1.24cm]current page.south east) {%
+        {\fontsize{10.5}{15}\selectfont\heiti\color{black}
+          本体基础 · 方法论 · 推理 · 知识图谱}\\[-0.04cm]
+        {\fontsize{9.5}{13}\selectfont\songti\color{black}
+          本体 × LLM · 制造业综合实战}%
+      };
+    \node[anchor=south east,inner sep=0pt,align=right]
+      at ([xshift=-1.55cm,yshift=1.28cm]current page.south east) {%
+        {\fontsize{10.5}{15}\selectfont\heiti\color{seriescyan!92!white}
+          本体基础 · 方法论 · 推理 · 知识图谱}\\[-0.04cm]
+        {\fontsize{9.5}{13}\selectfont\songti\color{white!76}
+          本体 × LLM · 制造业综合实战}%
+      };
+    \node[anchor=south east,inner sep=0pt,align=right,opacity=0.68]
+      at ([xshift=-1.51cm,yshift=0.50cm]current page.south east) {%
+        {\fontsize{7.2}{9.2}\selectfont\sffamily\color{black}
+          jiaqiwang969/OntologyEngineering}%
+      };
+    \node[anchor=south east,inner sep=0pt,align=right]
+      at ([xshift=-1.55cm,yshift=0.54cm]current page.south east) {%
+        {\fontsize{7.2}{9.2}\selectfont\sffamily\color{white!64}
+          \href{https://github.com/jiaqiwang969/OntologyEngineering}{\textcolor{white!64}{jiaqiwang969/OntologyEngineering}}}%
+      };
+  \end{tikzpicture}
+  \null
 \end{titlepage}
 
-\frontmatter
+% 快速封面校样：xelatex "\\def\\CoverOnly{1}\\input{main.tex}"（需运行两遍）
+\ifdefined\CoverOnly
+\else
+
+% ================================================================ 版本与权利说明
+\clearpage
+\thispagestyle{empty}
+\vspace*{0.56\textheight}
+\begin{minipage}{0.88\textwidth}
+\small\color{black!68}
+\textbf{版本说明}\quad 本册为《工程本体论》的配套成书版本，并提供可扩展本体框架与 Agent Skill；作者署名为
+\textbf{claude F5 max}；ISBN、出版社与印刷参数在出版决定后另行冻结。\par\medskip
+
+\textbf{内容边界}\quad 本册以概念讲解、代码节选、学习路径和资源索引为主；涉及标准、
+项目责任或工程结论时，应回到受控来源与具名责任人的决定。\par\medskip
+
+\textbf{图片边界}\quad 封面与章首概念图由图像模型生成，只承担教学与编辑表达，不冒充
+规范原图、试验照片、仿真结果或现实产品证据。\par\medskip
+
+\textbf{来源致谢}\quad 依据 ontology-engineering-book 仓库整理生成。\par\medskip
+
+\textbf{一体化说明}\quad Skill × 本体 × 书：一体化工程资产。
+\url{https://github.com/jiaqiwang969/OntologyEngineering}
+\end{minipage}
+\clearpage
+
 \tableofcontents
 
 % ================================================================ 前言
@@ -107,4 +187,5 @@
 
 \input{chapters/appB-glossary}
 
+\fi
 \end{document}

@@ -38,3 +38,19 @@ isoN:servesChapter a owl:DatatypeProperty ; rdfs:label "书章映射"@zh .
 isoN:pageIndex a owl:DatatypeProperty ; rdfs:comment "提取件页索引，0 基"@zh ; rdfs:range xsd:integer .
 isoN:blockIndex a owl:DatatypeProperty ; rdfs:range xsd:integer .
 isoN:glossStatus a owl:DatatypeProperty ; rdfs:comment "glossed | pending"@zh .
+
+isoN:TeachingCase a owl:Class ;
+    rdfs:label "教学案例"@zh ;
+    rdfs:comment "书中场景/事故/命题的一等对象：一个案例教多个概念，图里只写一次。"@zh .
+isoN:taughtBy a owl:ObjectProperty ;
+    rdfs:label "书中讲法"@zh ; rdfs:range isoN:TeachingCase ;
+    rdfs:comment "规范单元→教学案例的边，由刻录时按 teachesConcepts 关键词交集计算（泛化连接，非人工逐条映射）。无直接边时按 词条→章→该章案例 遍历兜底。"@zh .
+isoN:inChapter a owl:DatatypeProperty .
+isoN:teachesConcepts a owl:DatatypeProperty .
+isoN:caseSummary a owl:DatatypeProperty .
+
+isoN:CoverageDeclaration a owl:Class ;
+    rdfs:label "覆盖声明"@zh ;
+    rdfs:comment "声明本层对某 Part 的收录边界——先声明记全，才有资格判缺（第 11 章纪律）。"@zh .
+isoN:coversRange a owl:DatatypeProperty .
+isoN:unitCount a owl:DatatypeProperty .

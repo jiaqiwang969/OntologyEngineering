@@ -1,0 +1,130 @@
+@prefix isoN: <https://ontology-engineering.local/iso26262/normative#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+
+# 教学案例层：书中场景/事故的一等对象（讲法关系的目标端）
+
+isoN:Case_six_green a isoN:TeachingCase ;
+    isoN:inChapter "ch01" ;
+    isoN:teachesConcepts "主张、放行、决定范围、证据、通过" ;
+    isoN:caseSummary "六盏绿灯僵局——六份局部通过拼不成一句可签主张；\"绿色是结论的颜色，不是结论的主语\"" .
+
+isoN:Case_claim_parts a isoN:TeachingCase ;
+    isoN:inChapter "ch01" ;
+    isoN:teachesConcepts "主张、配置、关注、情境、假设、决定" ;
+    isoN:caseSummary "主张七部件解剖——\"一句不能被反驳的话，也没有资格被签署\"" .
+
+isoN:Case_single_factor a isoN:TeachingCase ;
+    isoN:inChapter "ch01" ;
+    isoN:teachesConcepts "变更、版本、差异、重开、标定、配置、软件" ;
+    isoN:caseSummary "SW1.8.3→1.8.4 单因变式——\"版本变化不把旧证据变假，它改变证据与主张的关系\"" .
+
+isoN:Case_seat_cards a isoN:TeachingCase ;
+    isoN:inChapter "ch02" ;
+    isoN:teachesConcepts "相关项、系统、元素、工件、边界、item、system、element、组件" ;
+    isoN:caseSummary "座位牌场景——\"相关项、系统、元素是分析边界的名字，不是零件的名字\"" .
+
+isoN:Case_r17_chain a isoN:TeachingCase ;
+    isoN:inChapter "ch02" ;
+    isoN:teachesConcepts "故障、错误、失效、fault、error、failure、异常、传播" ;
+    isoN:caseSummary "R17 电阻裂纹链——故障是种子不是收成；\"把链压成一个词，处置就会走错门\"" .
+
+isoN:Case_four_100ms a isoN:TeachingCase ;
+    isoN:inChapter "ch02" ;
+    isoN:teachesConcepts "时间间隔、FTTI、FDTI、FRTI、FHTI、诊断、容忍、检测时间、反应时间、处理时间" ;
+    isoN:caseSummary "四个一百毫秒——\"同单位同数值不等于同一种时间；每个数字都要有宿主、起点和终点\"" .
+
+isoN:Case_safe_state a isoN:TeachingCase ;
+    isoN:inChapter "ch02" ;
+    isoN:teachesConcepts "安全状态、关断、关机、运行模式、应急运行" ;
+    isoN:caseSummary "\"关断不自动等于安全状态\"——高速失去助力本身可能制造新危害" .
+
+isoN:Case_asil_language a isoN:TeachingCase ;
+    isoN:inChapter "ch02" ;
+    isoN:teachesConcepts "完整性等级、ASIL、QM、风险、等级" ;
+    isoN:caseSummary "小唐\"都按 D 做\"之问——\"ASIL 是风险的语言，不是荣誉的语言\"" .
+
+isoN:Case_three_confirmations a isoN:TeachingCase ;
+    isoN:inChapter "ch03" ;
+    isoN:teachesConcepts "确认措施、评审、审核、评估、独立、工作产物、过程、安全文化、能力" ;
+    isoN:caseSummary "三种确认与方工旧案——评审对工作产物、审核对过程、评估对整体；\"签名不制造责任，只指向责任\"" .
+
+isoN:Case_two_nets a isoN:TeachingCase ;
+    isoN:inChapter "ch04" ;
+    isoN:teachesConcepts "危害、危害事件、运行情形、失常、识别、HARA、风险评估" ;
+    isoN:caseSummary "两道网——功能×失常得危害候选，危害×运行情形得危害事件；\"先画措施\"的快捷路径为何不够" .
+
+isoN:Case_three_rulers a isoN:TeachingCase ;
+    isoN:inChapter "ch04" ;
+    isoN:teachesConcepts "严重度、暴露、可控性、分级" ;
+    isoN:caseSummary "三把尺子——S 绑伤害证据、E 绑运行剖面、C 绑动作/窗口/画像，证据不可互换" .
+
+isoN:Case_context_split a isoN:TeachingCase ;
+    isoN:inChapter "ch04" ;
+    isoN:teachesConcepts "情境、场景、后果、切分" ;
+    isoN:caseSummary "高速 vs 维修工位——\"失常名称不足以身份化正在评价的对象\"；切分纪律" .
+
+isoN:Case_goal_inherit a isoN:TeachingCase ;
+    isoN:inChapter "ch04" ;
+    isoN:teachesConcepts "安全目标、继承、相关项定义、功能安全概念、功能安全要求" ;
+    isoN:caseSummary "多危害事件导出同一目标取最高 ASIL；相关项定义是 HARA 之前的边界文件" .
+
+isoN:Case_hsi_2ms a isoN:TeachingCase ;
+    isoN:inChapter "ch05" ;
+    isoN:teachesConcepts "接口、硬件-软件接口、典型值、派生、分配、需求" ;
+    isoN:caseSummary "梁工 2ms 典型值事故——\"接缝不属于任何一方\"；五要素缺一下游就得靠猜" .
+
+isoN:Case_time_budget a isoN:TeachingCase ;
+    isoN:inChapter "ch05" ;
+    isoN:teachesConcepts "预算、窗口、时序、余量、集成、安全确认、技术安全" ;
+    isoN:caseSummary "200ms 预算账——\"窗口属于危害，不属于机制；没有账本的预算谁都可以多花\"" .
+
+isoN:Case_fit_400 a isoN:TeachingCase ;
+    isoN:inChapter "ch06" ;
+    isoN:teachesConcepts "失效率、单点、潜伏、残余、多点、度量、硬件、FIT、诊断覆盖" ;
+    isoN:caseSummary "吴工 400 FIT 底账——SPFM 95.00% 对 99% 门限\"没过\"；\"度量是除法，诚实全在分母\"" .
+
+isoN:Case_six_edges a isoN:TeachingCase ;
+    isoN:inChapter "ch16" ;
+    isoN:teachesConcepts "测量、不确定度、单位、来源、校准、证据" ;
+    isoN:caseSummary "数字六条边护照——\"复制的数字过不了夜\"；不确定度是已承认的无知有多宽" .
+
+isoN:Case_v_model a isoN:TeachingCase ;
+    isoN:inChapter "ch07" ;
+    isoN:teachesConcepts "验证、单元、集成测试、覆盖率、软件、架构" ;
+    isoN:caseSummary "V 模型两侧对质——\"软件没有失效率，只有还没被触发的错误\"；覆盖率量的是走过不是判对" .
+
+isoN:Case_compiler_upgrade a isoN:TeachingCase ;
+    isoN:inChapter "ch07" ;
+    isoN:teachesConcepts "工具链、编译、环境、回归" ;
+    isoN:caseSummary "小林编译器十一天事故——代码零改动，节拍变了；\"通过绑定的是整条链\"" .
+
+isoN:Case_power_tree a isoN:TeachingCase ;
+    isoN:inChapter "ch08" ;
+    isoN:teachesConcepts "相关失效、共因、级联、独立、依赖" ;
+    isoN:caseSummary "梁工电源树——两条通道汇于同一稳压器；\"独立是有分母的结论\"" .
+
+isoN:Case_decomp_credit a isoN:TeachingCase ;
+    isoN:inChapter "ch08" ;
+    isoN:teachesConcepts "分解、冗余、共存" ;
+    isoN:caseSummary "分解信用账——\"拆开的是承诺，不是工作量\"；原级信用靠独立证明赎回" .
+
+isoN:Case_lot_recall a isoN:TeachingCase ;
+    isoN:inChapter "ch09" ;
+    isoN:teachesConcepts "批次、单件、代换、追溯、一致性、生产、现场、报废、维修" ;
+    isoN:caseSummary "老何 2100 台追回——\"等效是设计结论，不是对照表\"；身份链把嫌疑圈到 683 台" .
+
+isoN:Case_cart_case a isoN:TeachingCase ;
+    isoN:inChapter "ch10" ;
+    isoN:teachesConcepts "安全档案、主张、论证、基线、配置管理、变更管理、文档" ;
+    isoN:caseSummary "推车与文件塔——\"一摞文件是档案，不是案例\"；23:40 错基线事故" .
+
+isoN:Case_tcl_two_questions a isoN:TeachingCase ;
+    isoN:inChapter "ch10" ;
+    isoN:teachesConcepts "软件工具、置信度、资格" ;
+    isoN:caseSummary "TCL 两问——先定\"多不放心\"的档，档再决定攒多少证据" .
+
+isoN:Case_identity_three a isoN:TeachingCase ;
+    isoN:inChapter "ch12" ;
+    isoN:teachesConcepts "同一、身份、判据、别名、序列、桥接" ;
+    isoN:caseSummary "三族判据——物理件靠履历、软件件靠内容、候选靠配置；\"同名是线索不是证明\"" .

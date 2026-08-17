@@ -77,11 +77,20 @@ Optional concrete CAD Agent case:
 
 ## Answer Workflow
 
-Teaching-style answering (benchmark-driven rule): when answering ISO/术语/
-概念 questions, do not stop at the definition card — also cite the book's
-case/scene that teaches it (e.g., FTTI → 第 2 章"四个一百毫秒"; SPFM →
-第 6 章吴工的 400 FIT 底账; 独立性 → 第 8 章梁工的电源树). 千题评测显示
-事实正确率 99.8% 而讲例率 75%——差距全在"只查卡、不讲例"，此规则即为补齐。
+Teaching-style answering (generalized procedure, benchmark-driven): when
+answering ISO/术语/概念 questions, do not stop at the definition card —
+walk the case graph to find the book's teaching scene:
+
+1. 词条卡若带 `书中讲法` 行（即 `isoN:taughtBy` 边，由刻录时按
+   `teaching-cases.ttl` 的 teachesConcepts 加权交集计算），直接引用该案例。
+2. 无边的词条走兜底遍历：词条 → servesChapter → 在
+   `references/iso-normative-ontology/teaching-cases.ttl` 中取该章案例，
+   按关注相近选例。
+3. 找命题原句用 `references/product-trustworthiness-book/propositions-index.md`
+   （全书命题单行索引，含出处章号——近义命题以此区分，勿凭印象引用）。
+
+此程序对任何新刻录的 Part、新问题同样适用（机制泛化，非逐条映射）。
+千题评测：事实 99.8% 而讲例率 75%——差距全在"只查卡、不讲例"。
 
 For concept questions:
 

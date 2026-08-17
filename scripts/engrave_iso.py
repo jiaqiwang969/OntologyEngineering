@@ -105,9 +105,62 @@ def find_part1_anchor(units, extract_path: Path):
             u["anchor"] = index[u["num"]]
 
 
+def load_cases():
+    """教学案例注册表：一等对象。返回 {case_id: {ch, teaches[], summary}}"""
+    p = NORM / "glosses" / "teaching-cases.yaml"
+    out, key, cur = {}, None, {}
+    for ln in p.read_text().splitlines():
+        if not ln.strip() or ln.strip().startswith("#"): continue
+        m = re.match(r"^([a-z0-9-]+):\s*$", ln)
+        if m:
+            if key: out[key] = cur
+            key, cur = m.group(1), {}
+            continue
+        m = re.match(r"^\s+(ch|teaches|summary):\s*(.*)$", ln)
+        if m and key:
+            k, v = m.group(1), m.group(2).strip()
+            cur[k] = [x.strip() for x in v.strip("[]").split(",")] if v.startswith("[") else v
+    if key: out[key] = cur
+    return out
+
+
+def link_case(name, gloss, cases, threshold=4):
+    """泛化连接（加权+门槛）：名称命中权重 3×len(kw)，转述命中 1×len(kw)；
+    总分低于门槛不连（宁缺毋滥，兜底走 词条→章→案例 遍历）。"""
+    best, score = None, 0
+    for cid, c in cases.items():
+        s = 0
+        for kw in c.get("teaches", []):
+            if not kw: continue
+            if kw in name: s += 3 * len(kw)
+            elif kw in gloss: s += len(kw)
+        if s > score:
+            best, score = cid, s
+    return best if score >= threshold else None
+
+
+def emit_cases_ttl(cases):
+    ttl = [PREFIX, "# 教学案例层：书中场景/事故的一等对象（讲法关系的目标端）\n"]
+    for cid, c in cases.items():
+        iri = "isoN:Case_" + cid.replace("-", "_")
+        ttl.append(f'{iri} a isoN:TeachingCase ;')
+        ttl.append(f'    isoN:inChapter "{c.get("ch","")}" ;')
+        kws = "、".join(k for k in c.get("teaches", []) if k)
+        ttl.append(f'    isoN:teachesConcepts "{esc(kws)}" ;')
+        ttl.append(f'    isoN:caseSummary "{esc(c.get("summary",""))}" .\n')
+    (NORM / "teaching-cases.ttl").write_text("\n".join(ttl))
+
+
 def engrave_part1():
     units = mine_part1_from_glossary()
     find_part1_anchor(units, SRC / PART_DIRS[1])
+    cases = load_cases()
+    emit_cases_ttl(cases)
+    for u in units:
+        cid = link_case(u["zh"] + " " + u["en"], u["gloss"], cases)
+        if cid:
+            u["case_id"] = cid
+            u["taught"] = "[" + cases[cid].get("ch","") + "] " + cases[cid].get("summary","")
     ttl = [PREFIX, "# Part 1 术语刻录（转述来源：本书附录 C；模态=Definition）\n"]
     cards = ["# ISO 26262 Part 1 术语卡（本体化刻录 · 卡片视图）\n",
              "> 自动生成自 part1-vocabulary.ttl；转述为本书作者综合，非标准原文。\n"]
@@ -121,11 +174,20 @@ def engrave_part1():
             ttl.append(f'    isoN:servesChapter "{u["serves"]}" ;')
         if u.get("anchor"):
             ttl.append(f'    isoN:pageIndex {u["anchor"][0]} ; isoN:blockIndex {u["anchor"][1]} ;')
+        if u.get("case_id"):
+            ttl.append(f'    isoN:taughtBy isoN:Case_{u["case_id"].replace("-","_")} ;')
         ttl.append(f'    isoN:zhGloss "{esc(u["gloss"])}" .\n')
         anchor = f'p{u["anchor"][0]}/b{u["anchor"][1]}' if u.get("anchor") else "待钉"
         cards.append(f'### 1-3.{u["num"]} {u["zh"]}（{u["en"]}）｜术语')
         cards.append(f'转述：{u["gloss"]}')
+        if u.get("taught"):
+            cards.append(f'书中讲法：{u["taught"]}')
         cards.append(f'映射：{u.get("serves") or "—"} ｜ 提取件锚点：{anchor}\n')
+    nums = sorted(u["num"] for u in units)
+    ttl.append(f'isoN:Coverage_P1 a isoN:CoverageDeclaration ; isoN:partNumber 1 ;')
+    ttl.append(f'    isoN:coversRange "1-3.{nums[0]} 至 1-3.{nums[-1]}" ; isoN:unitCount {len(units)} ;')
+    ttl.append(f'    rdfs:comment "本层 Part 1 收录以上词条；范围外词条号未收录，请回标准原文核对。"@zh .')
+    cards.insert(2, f'> **覆盖声明**：本层收录词条 1-3.{nums[0]} 至 1-3.{nums[-1]} 共 {len(units)} 条；此范围之外的词条号本层未收录（判缺以此声明为界）。\n')
     (NORM / "part1-vocabulary.ttl").write_text("\n".join(ttl))
     (NORM / "part1-cards.md").write_text("\n".join(cards))
     return len(units)

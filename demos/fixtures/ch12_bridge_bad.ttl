@@ -1,0 +1,10 @@
+# ch12 §12.4 挂接场景（插曲）：PLM 记录被误标，别名挂到了型号（装配物料号）上
+@prefix id: <https://product-trustworthiness.local/identity#> .
+
+id:Unit_SN_000417 a id:PhysicalUnit .
+id:Model_EPS_ASSY a id:DesignModel .
+
+id:Alias_DUT_P07   id:aliasOf id:Model_EPS_ASSY ;    # 座位错误：把型号当单件
+                   id:evidence id:RigEntryForm .
+id:Alias_SN_000417 id:aliasOf id:Model_EPS_ASSY ;
+                   id:evidence id:AssemblyRecord .

@@ -9,7 +9,12 @@
 【佐证结论】成立 / 不成立
 ```
 
-demo 以退出码表达佐证结果（0=成立，非 0=不成立），可当回归测试跑。
+demo 以退出码表达佐证结果（0=成立，非 0=不成立），可当回归测试跑；
+`.github/workflows/corroboration.yml` 在每次 push 时自动全量回归。
+
+结构约定：数据与断言分离——场景图放在 `fixtures/*.ttl`（可单独审阅、复用），
+demo 代码只含门禁形状、查询与断言；`_common.py` 是公共入口（静默 Semantica
+进度输出、提供 `load_fixture()`），每个 demo 的第一个 import 都是它。
 
 ## 准备运行时（一次性）
 

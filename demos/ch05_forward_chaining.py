@@ -15,6 +15,8 @@ swrl-rules.swrl，作者手推的推理链）：
 数值比较在进事实前先行判定——这属于「书 ↔ 代码」映射表中声明的差异。
 """
 
+import _common  # noqa: F401 — 静默 Semantica 进度输出
+
 import sys
 from pathlib import Path
 

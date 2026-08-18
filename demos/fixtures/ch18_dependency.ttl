@@ -1,0 +1,17 @@
+# ch18 场景：供电拓扑（两级上溯才相遇）+ 独立性主张的排除（一条押过期事实）
+@prefix dep: <https://product-trustworthiness.local/dependency#> .
+
+# 供电边：降成本变更把两路稳压合并到同一颗上游 Reg5V_U3
+dep:MainChain dep:feedsFrom dep:LDO_Main .
+dep:MonChain  dep:feedsFrom dep:LDO_Mon .
+dep:LDO_Main  dep:feedsFrom dep:Reg5V_U3 .
+dep:LDO_Mon   dep:feedsFrom dep:Reg5V_U3 .
+dep:Reg5V_U3  dep:feedsFrom dep:Batt_KL30 .
+
+# 排除：传感器配对事实已升版（v3→v4），押 v3 的排除应自动标疑
+dep:Fact_SensorPair_v3 dep:supersededBy dep:Fact_SensorPair_v4 .
+dep:Excl_NoSharedSensor a dep:Exclusion ; dep:restsOn dep:Fact_SensorPair_v3 .
+dep:Claim_ChannelIndep dep:hasExclusion dep:Excl_NoSharedSensor .
+
+# 对照：押现行事实的排除，不受牵连
+dep:Excl_NoSharedClock a dep:Exclusion ; dep:restsOn dep:Fact_ClockTree_v2 .

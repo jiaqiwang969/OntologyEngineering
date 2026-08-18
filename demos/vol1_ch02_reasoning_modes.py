@@ -16,6 +16,8 @@ examples/reasoning-examples.txt）：
 OWA/CWA 用 rdflib 的证明缺失 vs FILTER NOT EXISTS 对照。
 """
 
+import _common  # noqa: F401 — 静默 Semantica 进度输出
+
 import sys
 from semantica.reasoning import Reasoner
 

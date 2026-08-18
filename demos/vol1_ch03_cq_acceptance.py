@@ -12,6 +12,8 @@ examples/competency-questions.txt）：
   B. 反例：删除 canProcess 能力后 CQ1 返回空（验收测试真的能挡住不合格本体）。
 """
 
+import _common  # noqa: F401 — 静默 Semantica 进度输出
+
 import re
 import sys
 from pathlib import Path

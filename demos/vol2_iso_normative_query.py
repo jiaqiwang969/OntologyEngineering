@@ -14,6 +14,8 @@
   C. 反例对照：注入一个缺模态的坏条款个体，形状应当场拦截。
 """
 
+import _common  # noqa: F401 — 静默 Semantica 进度输出
+
 import sys
 from pathlib import Path
 

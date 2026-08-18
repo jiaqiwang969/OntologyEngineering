@@ -15,6 +15,8 @@ kg-quality-shacl.ttl 文件头，与 ch04 语言章呼应）：
 三条都成立 → 佐证成立，退出码 0；任何一条不成立 → 退出码 1。
 """
 
+import _common  # noqa: F401 — 静默 Semantica 进度输出
+
 import sys
 from pathlib import Path
 

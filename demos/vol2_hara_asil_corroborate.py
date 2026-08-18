@@ -18,6 +18,8 @@ asil-determination.txt 与 hara-worksheet.csv；ch14 情境危害本体章）：
      门禁应当场拒绝。
 """
 
+import _common  # noqa: F401 — 静默 Semantica 进度输出
+
 import csv
 import sys
 from pathlib import Path

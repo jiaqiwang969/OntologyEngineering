@@ -24,6 +24,7 @@ bash runtime/setup_runtime.sh
 | `ch04_shacl_open_vs_closed.py` | ch04/ch07：缺值在 OWL 开放世界下只是"未知"，在 SHACL 下是违规报告；且从概念模型自动派生的形状与手写形状拦截同一违例 | rdflib SPARQL、pyshacl、Semantica `OntologyEngine.to_shacl` |
 | `ch05_forward_chaining.py` | ch05：swrl-rules.swrl 中作者手推的 Lathe_003 两步推理链，机器复算结论一致且可解释 | Semantica `Reasoner`（前向链）+ `ExplanationGenerator` |
 | `vol2_iso_normative_query.py` | 第二卷：工程规范可本体化为带模态的可查询个体；刻录纪律可写成 SHACL 被机器强制 | rdflib SPARQL、pyshacl |
+| `vol2_hara_asil_corroborate.py` | 第二卷 ch04/ch14：EPS HARA 工作表的 S×E×C→ASIL 判定链机器复算与作者手填一致；查表一致性门禁拒绝书中反例（S2E4C3 误标 B） | Semantica `Reasoner`、pyshacl（SPARQL constraint） |
 
 运行单个 demo：
 

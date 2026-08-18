@@ -1,0 +1,17 @@
+# ch13 治理场景：归并分析作者与候选评审人的组织关系 + 清晨亮灯事实
+@prefix gov: <https://product-trustworthiness.local/governance#> .
+
+# 场景一：小林评郑工的归并分析——同队、同考核线（书中答案两行）
+gov:MergeAnalysis_v2 gov:authoredBy gov:ZhengGong .
+gov:ZhengGong gov:memberOf gov:Team_Ledger ;
+              gov:reportsTo gov:Mgr_A ;
+              gov:appraisedBy gov:Appraiser_X .
+gov:XiaoLin   gov:memberOf gov:Team_Ledger ;        # 同一队伍
+              gov:reportsTo gov:Mgr_B ;             # 上级不同
+              gov:appraisedBy gov:Appraiser_X .     # 同一考核线
+
+# 场景二：清晨亮灯——距离被击穿的评审安排 + 过期授权（判定日 2027-10-08）
+gov:Review_FangGong gov:promisedDistance gov:OutsideMgmtLine ;
+                    gov:currentDistance  gov:SameMgmtLine .
+gov:LedgerAuthority gov:validUntil "2027-09-30" .
+gov:PilotAuthority  gov:validUntil "2028-06-30" .   # 未过期，不应亮灯

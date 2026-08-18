@@ -90,6 +90,11 @@ walk the case graph to find the book's teaching scene:
 此程序对任何新刻录的 Part、新问题同样适用（机制泛化，非逐条映射）。
 千题评测：事实 99.8% 而讲例率 75%——差距全在"只查卡、不讲例"。
 
+4. **有 runnable 就跑**（与查卡同级，不是可选附加）：问题落在
+   `demos/README.md` 覆盖的主题上时，跑对应 demo 并引用其真实输出作为讲例
+   ——一次当场执行的门禁拒绝或推理复算，是最强的讲例形态；
+   demo 输出自带书内锚点，讲例与出处一次到位。
+
 For concept questions:
 
 1. Search the concept and likely synonyms in Chinese and English.

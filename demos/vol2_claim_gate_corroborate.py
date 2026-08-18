@@ -19,6 +19,8 @@
   C. 缺件即拒：Release_RC17 缺 context/validWindow → 门禁拦截并指出缺件。
 """
 
+import _common  # noqa: F401 — 静默 Semantica 进度输出
+
 import sys
 import pyshacl
 from rdflib import Graph, Namespace, RDF, Literal

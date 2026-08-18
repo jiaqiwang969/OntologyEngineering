@@ -1,0 +1,47 @@
+name: corroboration
+
+# 佐证回归：15 个「书 ↔ 代码相互佐证」demo + SkillOpt 检索门禁 + 隐私门禁。
+# 任何一个 demo 佐证不成立（退出码非 0）即失败——"全绿"由 CI 持续保证，
+# 而不是一次性的本地声明。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  demos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install runtime (pinned)
+        run: pip install "semantica==0.6.5" "pyshacl>=0.25" "rdflib>=7.0"
+
+      - name: Run all corroboration demos
+        env:
+          SEMANTICA_DISABLE_PROGRESS: "1"
+        run: |
+          fails=0
+          for d in demos/*.py; do
+            case "$d" in */_common.py) continue;; esac
+            echo "==== $d"
+            if python "$d"; then echo "PASS $d"; else echo "FAIL $d"; fails=$((fails+1)); fi
+          done
+          echo "failed demos: $fails"
+          exit $fails
+
+      - name: SkillOpt retrieval gates
+        run: |
+          python scripts/eval_ontology_skill.py
+          python scripts/eval_ontology_skill.py --split test
+
+      - name: Privacy gate
+        run: python scripts/check_public_privacy.py

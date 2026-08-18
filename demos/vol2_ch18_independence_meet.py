@@ -10,23 +10,15 @@ chapter.md）：
      传感器配对事实升版后，靠它成立的排除记为 Stale，
      所属独立性主张记为 NeedsReopen。
 
-执行：A. 用 SPARQL 属性路径 feedsFrom+ 复算两级上溯的汇合点（恰好一行）；
-     B. 事实 v3→v4 升版后，押 v3 的排除被标疑、主张被标重开；
-        押现行事实的排除不受影响。
+数据：fixtures/ch18_dependency.ttl。
+执行：A. SPARQL 属性路径 feedsFrom+ 复算两级上溯的汇合点；
+     B. 押 v3 过期事实的排除被标疑，押现行事实的不受影响。
 """
 
 import sys
-from rdflib import Graph, Namespace, RDF, Literal
+from _common import load_fixture
 
-DEP = Namespace("https://product-trustworthiness.local/dependency#")
-
-g = Graph()
-# 供电拓扑：两级上溯才相遇（书：吴工的案子向上追了两级）
-g.add((DEP.MainChain, DEP.feedsFrom, DEP.LDO_Main))
-g.add((DEP.MonChain, DEP.feedsFrom, DEP.LDO_Mon))
-g.add((DEP.LDO_Main, DEP.feedsFrom, DEP.Reg5V_U3))   # 降成本合并后的共同上游
-g.add((DEP.LDO_Mon, DEP.feedsFrom, DEP.Reg5V_U3))
-g.add((DEP.Reg5V_U3, DEP.feedsFrom, DEP.Batt_KL30))
+g = load_fixture("ch18_dependency")
 
 print("【书中论断】沿供电边闭包上溯，两通道在 Reg5V_U3 相遇（一行）；过期事实上的排除自动举手")
 print("【锚点】ch18 chapter.md 汇合查询 · 门禁三条硬规矩\n")
@@ -48,14 +40,7 @@ print(f"   只追一步：{len(one_hop_rows)} 行（书：只追一步不算数�
 meet_ok = "Reg5V_U3" in meet and len(one_hop_rows) == 0
 
 # B. 事实换版，理由举手（书中门禁伪码的直译）
-facts = Graph()
-facts.add((DEP.Fact_SensorPair_v3, DEP.supersededBy, DEP.Fact_SensorPair_v4))  # 已升版
-facts.add((DEP.Excl_NoSharedSensor, RDF.type, DEP.Exclusion))
-facts.add((DEP.Excl_NoSharedSensor, DEP.restsOn, DEP.Fact_SensorPair_v3))      # 押过期事实
-facts.add((DEP.Claim_ChannelIndep, DEP.hasExclusion, DEP.Excl_NoSharedSensor))
-facts.add((DEP.Excl_NoSharedClock, RDF.type, DEP.Exclusion))
-facts.add((DEP.Excl_NoSharedClock, DEP.restsOn, DEP.Fact_ClockTree_v2))        # 现行事实
-stale = list(facts.query("""
+stale = list(g.query("""
     PREFIX dep: <https://product-trustworthiness.local/dependency#>
     SELECT ?excl ?claim WHERE {
       ?excl a dep:Exclusion ; dep:restsOn ?fact .

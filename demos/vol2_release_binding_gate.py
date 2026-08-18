@@ -15,6 +15,8 @@ chapter.md §20.2–§20.3）：
 拒收装包草案；合规包（r12 换回 r11 修订）应放行。
 """
 
+import _common  # noqa: F401 — 静默 Semantica 进度输出
+
 import sys
 import pyshacl
 from rdflib import Graph, Namespace, RDF, Literal

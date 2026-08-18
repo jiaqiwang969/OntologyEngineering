@@ -1,0 +1,6 @@
+# ch19 §19.5 台账重建：一条有装箱单实据的事实 + 一条就近推断（无受控来源）
+@prefix fld: <https://product-trustworthiness.local/field#> .
+
+fld:Fact_Box12 a fld:LedgerFact ;
+    fld:fromRecord fld:PackingSlip_0312 .   # 仓库纸账翻出的实据
+fld:Fact_Box17 a fld:LedgerFact .           # 按时间就近推断——不得写成事实

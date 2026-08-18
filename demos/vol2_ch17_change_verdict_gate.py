@@ -9,31 +9,18 @@ chapter.md）：
   3)「保留是判断，不是默认：请写明该卡为何不受本次变更波及」——
      没有理由的"保留"同样拒收（书中 GateReport 记法）。
 
-执行：A. 书中查询原样跑——变更 0091 换掉软件维旧值，绑定它的通过记录被
-牵出（冲振卡绑定的维未被触碰，不返回）；B. 空波及面的作废判决被拒；
-C. 缺理由的保留判决被拒，补上理由后放行。
+数据：fixtures/ch17_change.ttl、ch17_verdicts_bad.ttl、ch17_verdicts_good.ttl。
+执行：A. 书中查询原样跑——绑定旧值的三张通过被牵出（冲振卡不返回）；
+     B. 空波及面的作废与缺理由的保留被拒；C. 理由写入后放行。
 """
 
 import sys
+from _common import load_fixture
+
 import pyshacl
-from rdflib import Graph, Namespace, RDF, Literal
+from rdflib import Graph
 
-CHG = Namespace("https://product-trustworthiness.local/change#")
-
-g = Graph()
-# 变更 0091：软件维 SW_183 → SW_184
-g.add((CHG.Change_0091, CHG.changedDimension, CHG.Dim_Software))
-g.add((CHG.Change_0091, CHG.changedFrom, CHG.SW_183))
-# 三张绑定旧软件值的通过记录（书：查询返回的三张判重开）
-for name in ["Pass_SwReg", "Pass_HilRun", "Pass_FaultInjection"]:
-    p = CHG[name]
-    g.add((p, RDF.type, CHG.PassRecord))
-    g.add((p, CHG.boundValue, CHG.SW_183))
-    g.add((CHG.boundValue, CHG.bindsDimension, CHG.Dim_Software))
-# 冲振卡：绑定环境维，与本次变更无关
-g.add((CHG.Pass_Vibration, RDF.type, CHG.PassRecord))
-g.add((CHG.Pass_Vibration, CHG.boundEnv, CHG.Env_V2))
-g.add((CHG.boundEnv, CHG.bindsDimension, CHG.Dim_Environment))
+g = load_fixture("ch17_change")
 
 print("【书中论断】旧值牵出绑定它的通过；空波及面的作废是挥手；无理由的保留被拒")
 print("【锚点】ch17 chapter.md 第四条路查询 · GateReport 记法\n")
@@ -66,21 +53,16 @@ chg:RetainNeedsReason a sh:NodeShape ;
 """
 shapes = Graph().parse(data=GATE, format="turtle")
 
-v = Graph()
-v.add((CHG.Verdict_VibrationRevoke, RDF.type, CHG.RevokeVerdict))   # 空波及面
-v.add((CHG.Verdict_ConceptCard, RDF.type, CHG.RetainVerdict))       # 缺理由
+v = load_fixture("ch17_verdicts_bad")
 conforms_bad, _, text = pyshacl.validate(data_graph=v, shacl_graph=shapes)
 msgs = [l.strip()[9:] for l in text.splitlines() if l.strip().startswith("Message")]
-print(f"\nB/C. 两条违规判决：conforms={conforms_bad}，门禁消息 {len(msgs)} 条")
+print(f"\nB. 两条违规判决：conforms={conforms_bad}，门禁消息 {len(msgs)} 条")
 for m in sorted(msgs):
     print(f"   - {m[:46]}")
 
-v2 = Graph()
-v2.add((CHG.Verdict_ConceptCard, RDF.type, CHG.RetainVerdict))
-v2.add((CHG.Verdict_ConceptCard, CHG.retainReason,
-        Literal("软件版本不改变相关项边界，安全场景选定经复核未涉软件行为")))
+v2 = load_fixture("ch17_verdicts_good")
 conforms_ok, _, _ = pyshacl.validate(data_graph=v2, shacl_graph=shapes)
-print(f"   理由写入判决后：conforms={conforms_ok}（成为下次变更可复查、可推翻的东西）")
+print(f"C. 理由写入判决后：conforms={conforms_ok}（成为下次变更可复查、可推翻的东西）")
 
 ok = q_ok and "Pass_Vibration" not in rows and not conforms_bad and len(msgs) == 2 and conforms_ok
 print(f"\n【佐证结论】{'成立' if ok else '不成立'}：三张通过被旧值牵出、挥手式作废与"

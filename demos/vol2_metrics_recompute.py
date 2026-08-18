@@ -15,6 +15,8 @@ examples/metrics-walkthrough.md，§6.4–§6.6 的可重算教学数据）：
 最后用 SHACL「got ≥ need」门禁复演目标对照（未达标必须被标出）。
 """
 
+import _common  # noqa: F401 — 静默 Semantica 进度输出
+
 import sys
 
 # 书中 §2 基线表（原始数据，单位 FIT）

@@ -1,0 +1,26 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ SWRL调度规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 能力匹配：任务需要的材料，设备必须能加工}}
+\codeline{Task(?t)\ \(\land\)\ requiresMaterial(?t,\ ?m)\ \(\land\)}
+\codeline{assignedTo(?t,\ ?e)\ \(\land\)\ Equipment(?e)\ \(\land\)}
+\codeline{\(\lnot\)canProcess(?e,\ ?m)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ CapabilityConflict(?t)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 状态检查：正在运行的设备不能分配新任务}}
+\codeline{Equipment(?e)\ \(\land\)\ hasStatus(?e,\ Running)\ \(\land\)}
+\codeline{Task(?t)\ \(\land\)\ assignedTo(?t,\ ?e)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ StatusConflict(?t)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 时间冲突：同一设备同一时段不能执行两个任务}}
+\codeline{Task(?t1)\ \(\land\)\ Task(?t2)\ \(\land\)}
+\codeline{assignedTo(?t1,\ ?e)\ \(\land\)\ assignedTo(?t2,\ ?e)\ \(\land\)}
+\codeline{hasStartTime(?t1,\ ?s1)\ \(\land\)\ hasEndTime(?t1,\ ?e1)\ \(\land\)}
+\codeline{hasStartTime(?t2,\ ?s2)\ \(\land\)\ hasEndTime(?t2,\ ?e2)\ \(\land\)}
+\codeline{swrlb:lessThan(?s1,\ ?e2)\ \(\land\)}
+\codeline{swrlb:greaterThan(?e1,\ ?s2)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ TimeConflict(?t1,\ ?t2)}
+\codeblank{}
+\end{codebox}

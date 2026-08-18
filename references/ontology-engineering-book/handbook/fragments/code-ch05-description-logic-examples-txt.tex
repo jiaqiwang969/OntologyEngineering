@@ -1,0 +1,104 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 描述逻辑推理示例\ -\ Tableau算法}}
+\codeline{\textcolor{cmtgray}{\#\ Description\ Logic\ Reasoning\ -\ Tableau\ Algorithm}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ Tableau算法是OWL推理器的核心，用于检测概念可满足性}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 基本概念}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 全称限制（Universal\ Restriction，\(\forall\)）：}}
+\codeline{\textcolor{cmtgray}{\#\ \(\forall\)R.C\ 含义：与该对象存在R关系的所有对象，都属于C类}}
+\codeline{\textcolor{cmtgray}{\#\ Tableau规则：如果(\(\forall\)R.C)(a)\ 和\ R(a,b)\ 都在模型中，且C(b)不在，就添加C(b)}}
+\codeblank{}
+\codeline{\(\forall\)R.C}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 存在限制（Existential\ Restriction，\(\exists\)）：}}
+\codeline{\textcolor{cmtgray}{\#\ \(\exists\)R.C\ 含义：该对象至少存在一个R关系的对象属于C类}}
+\codeline{\textcolor{cmtgray}{\#\ Tableau规则：如果(\(\exists\)R.C)(a)在模型中，且没有个体b能满足R(a,b)且C(b)，}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ 就创建新个体b，添加R(a,b)和C(b)}}
+\codeblank{}
+\codeline{\(\exists\)R.C}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ Tableau推理演示}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 问题：Lathe\_003\ 是否需要冷却系统？}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ TBox（类定义）：}}
+\codeline{高功率设备\ \(\equiv\)\ 设备\ \(\land\)\ \(\exists\)功率.浮点数[\(\ge\)15]}
+\codeline{高功率设备\ \(\sqsubseteq\)\ \(\exists\)需要冷却.冷却系统}
+\codeline{设备\ \(\land\)\ 材料\ \(\sqsubseteq\)\ \(\bot\)\ \ \ （设备和材料不相交）}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ABox（事实）：}}
+\codeline{设备(Lathe\_003)}
+\codeline{功率(Lathe\_003,\ 15.5)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 推理步骤：}}
+\codeline{\textcolor{cmtgray}{\#\ 步骤1：匹配等价类规则}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 功率(Lathe\_003,\ 15.5)，且\ 15.5\ \(\ge\)\ 15，满足"\(\exists\)功率.浮点数[\(\ge\)15]"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 结合"高功率设备\ \(\equiv\)\ 设备\ \(\land\)\ \(\exists\)功率.浮点数[\(\ge\)15]"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 推出：Lathe\_003\ 属于高功率设备}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 步骤2：应用子类公理}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 已知"高功率设备\ \(\sqsubseteq\)\ \(\exists\)需要冷却.冷却系统"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 且\ Lathe\_003\ 属于高功率设备}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 推出：Lathe\_003\ 属于"\(\exists\)需要冷却.冷却系统"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 步骤3：应用存在规则}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Lathe\_003\ 属于"\(\exists\)需要冷却.冷却系统"，模型中没有对应的冷却系统个体}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 创建新个体\ cooling\_1}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 添加：需要冷却(Lathe\_003,\ cooling\_1)\ 和\ 冷却系统(cooling\_1)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 结论：Lathe\_003\ 需要冷却系统\ \(\checkmark\)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ Tableau算法终止条件：}}
+\codeline{\textcolor{cmtgray}{\#\ 产生冲突\ \(\rightarrow\)\ 概念C不可满足}}
+\codeline{\textcolor{cmtgray}{\#\ 没有规则可应用\ \(\rightarrow\)\ 概念C可满足（找到了合法模型）}}
+\codeline{\textcolor{cmtgray}{\#\ 所有分支都有冲突\ \(\rightarrow\)\ 概念C不可满足}}
+\codeline{\textcolor{cmtgray}{\#\ 至少有一个分支无冲突\ \(\rightarrow\)\ 概念C可满足}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 一致性检查示例}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 一致性公理（相互矛盾的例子）：}}
+\codeline{\textcolor{cmtgray}{\#\ 公理1：所有设备都必须位于某个工作单元}}
+\codeline{\(\forall\)x:\ Equipment(x)\ \(\rightarrow\)\ locatedIn(x,\ WorkCell)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 公理2：存在不位于任何工作单元的设备}}
+\codeline{\(\exists\)x:\ Equipment(x)\ \(\land\)\ \(\lnot\)(\(\exists\)w:\ locatedIn(x,\ w))}
+\codeline{\textcolor{cmtgray}{\#\ \(\uparrow\)\ 这两条公理相互矛盾，违反一致性要求}}
+\codeline{\textcolor{cmtgray}{\#\ Tableau算法会检测到所有分支都产生冲突，报告不一致}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 工程中的描述逻辑约束}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 数控车床必须有数控系统}}
+\codeline{CNCLathe\ \(\sqsubseteq\)\ \(\exists\)hasControl.CNCControl}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 设备利用率在0-1之间}}
+\codeline{Equipment\ \(\sqsubseteq\)\ \(\forall\)hasUtilization.(\(\ge\)0\ \(\sqcap\)\ \(\le\)1.0)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 正在运行的设备不能同时维护（不相交）}}
+\codeline{Running\ \(\sqcap\)\ Maintenance\ \(\sqsubseteq\)\ \(\bot\)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 加工设备必须能加工至少一种材料}}
+\codeline{ProcessingEquipment\ \(\sqsubseteq\)\ \(\exists\)canProcess.Material}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 5.\ 推理性能优化建议}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 优先使用子类关系（\(\sqsubseteq\)）而非等价类（\(\equiv\)）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ 等价类推理负担更重}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 将复杂类表达式拆分为多个简单表达式，避免深度嵌套}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 优先使用存在约束（\(\exists\)R.C），谨慎使用全称约束（\(\forall\)R.C）}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 简单约束（只使用类层次）：}}
+\codeline{\hspace*{4\ttcw}\(\exists\)R.C}
+\codeline{\textcolor{cmtgray}{\#\ 5.\ 复杂约束（添加全称约束，推理负担增加）：}}
+\codeline{\hspace*{4\ttcw}\(\forall\)R.C}
+\end{codebox}

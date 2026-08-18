@@ -1,0 +1,178 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ reasoner.py}}
+\codeline{\textcolor{cmtgray}{\#\ 基于\ owlready2\ 的本体推理引擎}}
+\codeline{\textcolor{cmtgray}{\#\ Ontology\ Reasoning\ Engine\ using\ owlready2}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 功能：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 1.\ 加载OWL本体}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 2.\ 使用Pellet推理器执行规则推理}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 3.\ 冲突检测（能力冲突、时间冲突、状态冲突）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 4.\ 工艺推荐（基于产品特征相似性）}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 安装依赖：pip\ install\ owlready2}}
+\codeline{\textcolor{cmtgray}{\#\ 注意：Pellet推理需要Java\ 8+环境}}
+\codeblank{}
+\codeline{from\ owlready2\ import\ *}
+\codeline{from\ typing\ import\ List,\ Dict}
+\codeblank{}
+\codeblank{}
+\codeline{class\ ManufacturingReasoner:}
+\codeline{\hspace*{4\ttcw}"""智能制造知识管理系统\ -\ 本体推理引擎"""}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}def\ \_\_init\_\_(self,\ ontology\_path:\ str):}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}初始化推理引擎，加载本体文件}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}Args:}
+\codeline{\hspace*{12\ttcw}ontology\_path:\ OWL本体文件路径（支持.owl/.ttl格式）}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}self.onto\ =\ get\_ontology(ontology\_path).load()}
+\codeline{\hspace*{8\ttcw}print(f"已加载本体:\ \{ontology\_path\}")}
+\codeline{\hspace*{8\ttcw}print(f"\ \ 类数量:\ \{len(list(self.onto.classes()))\}")}
+\codeline{\hspace*{8\ttcw}print(f"\ \ 属性数量:\ \{len(list(self.onto.properties()))\}")}
+\codeline{\hspace*{8\ttcw}print(f"\ \ 实例数量:\ \{len(list(self.onto.individuals()))\}")}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}def\ run\_reasoner(self):}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}执行Pellet推理器}
+\codeline{\hspace*{8\ttcw}推理后，本体中会新增推导出的知识（隐含三元组）}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}print("\textbackslash{}n正在运行\ Pellet\ 推理器...")}
+\codeline{\hspace*{8\ttcw}with\ self.onto:}
+\codeline{\hspace*{12\ttcw}sync\_reasoner\_pellet(}
+\codeline{\hspace*{16\ttcw}infer\_property\_values=True,\ \ \ \ \ \ \ \#\ 推导属性值}
+\codeline{\hspace*{16\ttcw}infer\_data\_property\_values=True\ \ \ \#\ 推导数据属性值}
+\codeline{\hspace*{12\ttcw})}
+\codeline{\hspace*{8\ttcw}print("推理完成")}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}def\ check\_conflicts(self)\ ->\ List[Dict]:}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}检测所有任务冲突（运行SWRL规则推理后查询冲突实例）}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}Returns:}
+\codeline{\hspace*{12\ttcw}冲突列表，每个元素包含\ type,\ task,\ description}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 运行推理以激活SWRL规则}}
+\codeline{\hspace*{8\ttcw}self.run\_reasoner()}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}conflicts\ =\ []}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 查询能力冲突（设备无法加工所需材料）}}
+\codeline{\hspace*{8\ttcw}if\ hasattr(self.onto,\ 'CapabilityConflict'):}
+\codeline{\hspace*{12\ttcw}for\ c\ in\ list(self.onto.search(type=self.onto.CapabilityConflict)):}
+\codeline{\hspace*{16\ttcw}conflicts.append(\{}
+\codeline{\hspace*{20\ttcw}"type":\ "capability",}
+\codeline{\hspace*{20\ttcw}"type\_zh":\ "能力冲突",}
+\codeline{\hspace*{20\ttcw}"task":\ c.name,}
+\codeline{\hspace*{20\ttcw}"description":\ f"任务\ \{c.name\}:\ 分配的设备无法加工所需材料"}
+\codeline{\hspace*{16\ttcw}\})}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 查询时间冲突（设备时间段重叠）}}
+\codeline{\hspace*{8\ttcw}if\ hasattr(self.onto,\ 'TimeConflict'):}
+\codeline{\hspace*{12\ttcw}for\ c\ in\ list(self.onto.search(type=self.onto.TimeConflict)):}
+\codeline{\hspace*{16\ttcw}conflicts.append(\{}
+\codeline{\hspace*{20\ttcw}"type":\ "time",}
+\codeline{\hspace*{20\ttcw}"type\_zh":\ "时间冲突",}
+\codeline{\hspace*{20\ttcw}"task":\ c.name,}
+\codeline{\hspace*{20\ttcw}"description":\ f"任务\ \{c.name\}:\ 设备时间段存在重叠"}
+\codeline{\hspace*{16\ttcw}\})}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 查询状态冲突（设备处于Running状态）}}
+\codeline{\hspace*{8\ttcw}if\ hasattr(self.onto,\ 'StatusConflict'):}
+\codeline{\hspace*{12\ttcw}for\ c\ in\ list(self.onto.search(type=self.onto.StatusConflict)):}
+\codeline{\hspace*{16\ttcw}conflicts.append(\{}
+\codeline{\hspace*{20\ttcw}"type":\ "status",}
+\codeline{\hspace*{20\ttcw}"type\_zh":\ "状态冲突",}
+\codeline{\hspace*{20\ttcw}"task":\ c.name,}
+\codeline{\hspace*{20\ttcw}"description":\ f"任务\ \{c.name\}:\ 设备当前状态不可用"}
+\codeline{\hspace*{16\ttcw}\})}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}return\ conflicts}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}def\ recommend\_process(self,\ product\_name:\ str)\ ->\ List[Dict]:}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}基于产品特征相似性推荐工艺}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}Args:}
+\codeline{\hspace*{12\ttcw}product\_name:\ 产品实例名称}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}Returns:}
+\codeline{\hspace*{12\ttcw}推荐工艺列表，按置信度排序}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}product\ =\ self.onto.search\_one(iri=f"*\#\{product\_name\}")}
+\codeline{\hspace*{8\ttcw}if\ not\ product:}
+\codeline{\hspace*{12\ttcw}print(f"产品未找到:\ \{product\_name\}")}
+\codeline{\hspace*{12\ttcw}return\ []}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}self.run\_reasoner()}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}recommendations\ =\ []}
+\codeline{\hspace*{8\ttcw}if\ hasattr(product,\ 'recommendedProcess'):}
+\codeline{\hspace*{12\ttcw}for\ proc\ in\ product.recommendedProcess:}
+\codeline{\hspace*{16\ttcw}confidence\_vals\ =\ getattr(proc,\ 'confidence',\ [])}
+\codeline{\hspace*{16\ttcw}confidence\ =\ confidence\_vals[0]\ if\ confidence\_vals\ else\ 0.8}
+\codeline{\hspace*{16\ttcw}comment\_vals\ =\ getattr(proc,\ 'comment',\ [])}
+\codeline{\hspace*{16\ttcw}description\ =\ str(comment\_vals[0])\ if\ comment\_vals\ else\ ''}
+\codeline{\hspace*{16\ttcw}recommendations.append(\{}
+\codeline{\hspace*{20\ttcw}"name":\ proc.name,}
+\codeline{\hspace*{20\ttcw}"confidence":\ confidence,}
+\codeline{\hspace*{20\ttcw}"description":\ description}
+\codeline{\hspace*{16\ttcw}\})}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 按置信度降序排序}}
+\codeline{\hspace*{8\ttcw}recommendations.sort(key=lambda\ x:\ x['confidence'],\ reverse=True)}
+\codeline{\hspace*{8\ttcw}return\ recommendations}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}def\ get\_equipment\_for\_material(self,\ material\_name:\ str)\ ->\ List[str]:}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}查询能加工指定材料的设备列表}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}Args:}
+\codeline{\hspace*{12\ttcw}material\_name:\ 材料类名称（如\ 'Aluminum'）}
+\codeline{\hspace*{8\ttcw}"""}
+\codeline{\hspace*{8\ttcw}material\_cls\ =\ getattr(self.onto,\ material\_name,\ None)}
+\codeline{\hspace*{8\ttcw}if\ not\ material\_cls:}
+\codeline{\hspace*{12\ttcw}print(f"材料类未找到:\ \{material\_name\}")}
+\codeline{\hspace*{12\ttcw}return\ []}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}results\ =\ []}
+\codeline{\hspace*{8\ttcw}if\ hasattr(self.onto,\ 'Equipment'):}
+\codeline{\hspace*{12\ttcw}for\ equipment\ in\ self.onto.Equipment.instances():}
+\codeline{\hspace*{16\ttcw}for\ material\ in\ getattr(equipment,\ 'canProcess',\ []):}
+\codeline{\hspace*{20\ttcw}if\ isinstance(material,\ material\_cls):}
+\codeline{\hspace*{24\ttcw}\textcolor{cmtgray}{\#\ equipment.label\ is\ a\ LocalizedStringList;\ use\ index\ access}}
+\codeline{\hspace*{24\ttcw}label\_list\ =\ equipment.label}
+\codeline{\hspace*{24\ttcw}label\ =\ label\_list[0]\ if\ label\_list\ else\ equipment.name}
+\codeline{\hspace*{24\ttcw}results.append(str(label))}
+\codeline{\hspace*{24\ttcw}break}
+\codeline{\hspace*{8\ttcw}return\ results}
+\codeblank{}
+\codeblank{}
+\codeline{def\ main():}
+\codeline{\hspace*{4\ttcw}"""演示推理引擎的基本用法"""}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 初始化推理引擎}}
+\codeline{\hspace*{4\ttcw}reasoner\ =\ ManufacturingReasoner("src/manufacturing.owl")}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 1.\ 检测冲突}}
+\codeline{\hspace*{4\ttcw}print("\textbackslash{}n===\ 冲突检测\ ===")}
+\codeline{\hspace*{4\ttcw}conflicts\ =\ reasoner.check\_conflicts()}
+\codeline{\hspace*{4\ttcw}if\ not\ conflicts:}
+\codeline{\hspace*{8\ttcw}print("无冲突（需要ABox实例数据才能触发SWRL规则）")}
+\codeline{\hspace*{4\ttcw}else:}
+\codeline{\hspace*{8\ttcw}for\ c\ in\ conflicts:}
+\codeline{\hspace*{12\ttcw}print(f"[\{c['type\_zh']\}]\ \{c['description']\}")}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 2.\ 工艺推荐}}
+\codeline{\hspace*{4\ttcw}print("\textbackslash{}n===\ 工艺推荐（产品\ Product\_001）\ ===")}
+\codeline{\hspace*{4\ttcw}recommendations\ =\ reasoner.recommend\_process("Product\_001")}
+\codeline{\hspace*{4\ttcw}if\ not\ recommendations:}
+\codeline{\hspace*{8\ttcw}print("暂无推荐（需要更多产品实例数据）")}
+\codeline{\hspace*{4\ttcw}else:}
+\codeline{\hspace*{8\ttcw}for\ r\ in\ recommendations:}
+\codeline{\hspace*{12\ttcw}print(f"\ \ 工艺:\ \{r['name']\}\ \ 置信度:\ \{r['confidence']:.1\%\}")}
+\codeblank{}
+\codeblank{}
+\codeline{if\ \_\_name\_\_\ ==\ "\_\_main\_\_":}
+\codeline{\hspace*{4\ttcw}main()}
+\end{codebox}

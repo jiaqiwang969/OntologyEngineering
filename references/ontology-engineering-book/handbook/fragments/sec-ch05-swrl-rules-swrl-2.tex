@@ -1,0 +1,39 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 设备调度规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：状态冲突检查\ -\ 正在运行的设备不能分配新任务}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Status\ conflict\ -\ running\ equipment\ cannot\ be\ assigned\ new\ tasks}}
+\codeline{Equipment(?e)\ \(\land\)\ hasStatus(?e,\ Running)\ \(\land\)}
+\codeline{Task(?t)\ \(\land\)\ assignedTo(?t,\ ?e)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ StatusConflict(?t)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：时间冲突检查}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Time\ conflict\ detection}}
+\codeline{\textcolor{cmtgray}{\#\ 注：后件使用单变量类断言\ TimeConflict(?t1)，SWRL类原子只接受单个参数}}
+\codeline{\textcolor{cmtgray}{\#\ Note:\ The\ consequent\ uses\ a\ unary\ class\ assertion\ TimeConflict(?t1);}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ SWRL\ class\ atoms\ take\ exactly\ one\ argument.}}
+\codeline{Task(?t1)\ \(\land\)\ Task(?t2)\ \(\land\)}
+\codeline{assignedTo(?t1,\ ?e)\ \(\land\)\ assignedTo(?t2,\ ?e)\ \(\land\)}
+\codeline{hasStartTime(?t1,\ ?s1)\ \(\land\)\ hasEndTime(?t1,\ ?e1)\ \(\land\)}
+\codeline{hasStartTime(?t2,\ ?s2)\ \(\land\)\ hasEndTime(?t2,\ ?e2)\ \(\land\)}
+\codeline{swrlb:lessThan(?s1,\ ?e2)\ \(\land\)}
+\codeline{swrlb:greaterThan(?e1,\ ?s2)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ TimeConflict(?t1)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：长时间维护预警（超过24小时）}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Long\ maintenance\ warning\ (over\ 24\ hours)}}
+\codeline{\textcolor{cmtgray}{\#\ 注：swrlb:add(?now,\ 86400,\ ?tomorrow)\ 中\ ?now}}
+\codeline{\hspace*{4\ttcw}需由外部提供或使用swrlb:currentTimeMillis等内置函数}
+\codeline{\textcolor{cmtgray}{\#\ Note:\ The\ built-in\ swrlb:add\ requires\ ?now\ to\ be\ bound.\ Use\ a\ dedicated\ temporal}}
+\codeline{\hspace*{4\ttcw}built-in}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ or\ inject\ the\ current\ timestamp\ as\ an\ ABox\ fact\ before\ reasoning.}}
+\codeline{Equipment(?e)\ \(\land\)\ hasStatus(?e,\ Maintenance)\ \(\land\)}
+\codeline{hasMaintenanceStart(?e,\ ?start)\ \(\land\)}
+\codeline{hasMaintenanceEnd(?e,\ ?end)\ \(\land\)}
+\codeline{swrlb:subtract(?end,\ ?start,\ ?duration)\ \(\land\)}
+\codeline{swrlb:greaterThan(?duration,\ 86400)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ LongMaintenanceWarning(?e)}
+\codeblank{}
+\end{codebox}

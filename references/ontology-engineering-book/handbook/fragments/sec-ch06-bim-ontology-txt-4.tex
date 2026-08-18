@@ -1,0 +1,17 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 规范自动检查规则（示例）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 防火规范：防火分区面积不超过2500平方米}}
+\codeline{FireCompartment(?fc)\ \(\land\)\ hasArea(?fc,\ ?a)\ \(\land\)}
+\codeline{swrlb:greaterThan(?a,\ 2500)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ ViolatesFireCode(?fc)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 节能规范：外墙传热系数不超过限值}}
+\codeline{ExteriorWall(?w)\ \(\land\)\ hasThermalTransmittance(?w,\ ?k)\ \(\land\)}
+\codeline{ClimateZone(?zone)\ \(\land\)\ maxTransmittance(?zone,\ ?limit)\ \(\land\)}
+\codeline{swrlb:greaterThan(?k,\ ?limit)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ ViolatesEnergyCode(?w)}
+\codeblank{}
+\end{codebox}

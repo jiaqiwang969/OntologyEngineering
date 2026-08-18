@@ -1,8 +1,9 @@
 # 产品可信工程：从规范、本体到证据闭环
 
 > 贯穿样板：ISO 26262:2018 汽车功能安全
-> 当前状态：20 章新架构全量重写中；目录名 `functional-safety-book/` 是迁移期兼容路径，
-> 不再表示全书只讨论功能安全。
+> 当前分发状态：前言、20 章、附录与 345 页图文 PDF 已形成可读快照；目录名
+> `functional-safety-book/` 是兼容路径，不表示全书只讨论功能安全。该快照不是官方标准、
+> 合规意见或已完成权利放行的正式出版物。
 
 这本书讨论的目标是**产品可信**：对于一个产品、系统、工件、模型、数据、过程或工具动作，
 我们能否说清它在哪个版本、什么情境和时间窗内，具有什么安全性、可靠性、稳定性、韧性、
@@ -121,7 +122,7 @@ ImageGen 重设计，并回到正文一起完成技术关系、文字、来源�
 登记，发布态必须等每章最终资产和正文消费均被接受后才能通过：
 
 ```bash
-cd /Users/jqwang/143-工程规范
+cd "${ONTOLOGY_ENGINEERING_AUTHORING_ROOT:?set the controlled authoring workspace}"
 .venv/bin/python eval/check_product_trustworthiness_figures.py
 .venv/bin/python eval/check_product_trustworthiness_figures.py --release
 ```
@@ -133,15 +134,15 @@ cd /Users/jqwang/143-工程规范
 | ISO 原始证据 | `../ISO 26262-2018/`、`../structured/` | 解析存在不等于实质回读、解释或出版权利完成 |
 | ISO 纵向模型与门禁 | `../ontology/*.ttl`、`../eval/` | 只证明其声明的 ISO 教学合同，不证明合规或真实产品结论 |
 | 架构前 canary | `../ontology/engineering-assurance/`、`../eval/engineering-assurance/` | 仅验证早期 Claim/Evidence/Authority 等做法；不是后十章上位本体、依赖或完成证据 |
-| 连续正文 | 本目录各章 `chapter.md` 与 `appendices/*.md` | 旧架构现存的 ch01--ch11 是迁移输入；ch12--ch20 目标目录尚待建立 |
-| 独立本体例子 | 未来各 ch11--ch20 的 `ontology-example/` | 必须逐章独立运行并通过 sibling 屏蔽检查 |
+| 连续正文 | 本目录各章 `chapter.md` 与 `appendices/*.md` | 20 章与附录构成当前可读快照；修改后须同步重建 PDF 与来源地图 |
+| 独立本体例子 | 受控工程正本中的 ch11--ch20 `ontology-example/` | 完整 runner 未随当前公共阅读包分发；不得把正文描述冒充机器门禁结果 |
 | 出版与成熟度 | `../publication/`、`../handbook/` | 编译绿色不能代替技术、来源、权利、视觉与用户验收 |
 
 现有 `engineering-assurance` 是 **pre-architecture canary**。它可作为包结构、查询和反例的
 迁移输入，但后十章不得 import 它，也不得继承它的通过状态。当前可单独检查 canary：
 
 ```bash
-cd /Users/jqwang/143-工程规范
+cd "${ONTOLOGY_ENGINEERING_AUTHORING_ROOT:?set the controlled authoring workspace}"
 .venv/bin/python eval/engineering-assurance/run_eval.py
 ```
 
@@ -152,5 +153,3 @@ skill、来源与权利账本、handbook/PDF、逐页视觉冷读、技术评审
 本书最终要交给读者的，不是一个万能评分，也不是一个可以替人批准的 Agent，而是一种更
 基础的能力：面对陌生工程对象，先建立可争论、可计算的共同现实，再诚实回答“为什么相信、
 相信到哪里、改变什么就必须重议”。
-
-<!-- 新架构候选稿：前言、ch01--ch20、附录、本体、skill 与图稿仍在同树重写和验收中。 -->

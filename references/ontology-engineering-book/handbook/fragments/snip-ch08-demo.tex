@@ -1,0 +1,17 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 问："Lathe\_003\ 能加工钛合金吗？它功率多大？"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 无控制（直接生成）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "Lathe\_003功率22kW，可以加工钛合金。"\ \ ←\ 两个事实都是编造}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 三层控制下：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 第一层注入：本体中\ Equipment/Material\ 词汇\ +\ canProcess\ 定义}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 第二层查询：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ASK\ \{\ mfg:Lathe\_003\ mfg:canProcess\ mfg:TitaniumAlloy\ \}\ \ \(\rightarrow\)\ false}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ SELECT\ ?p\ \{\ mfg:Lathe\_003\ mfg:hasPower\ ?p\ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \(\rightarrow\)\ 15.5}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 第三层校验后输出：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ "功率15.5kW（来源：设备台账）。知识库中没有该设备可加工}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ 钛合金的能力记录（注意：'无记录'不等于'不能'，}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ 如需确认请联系工艺部门）。"}}
+\codeblank{}
+\end{codebox}

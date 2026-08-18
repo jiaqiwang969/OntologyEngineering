@@ -1,0 +1,24 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 非结构化数据：抽取式构建}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 维修日志原文：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "3月21日，3号车床主轴异响，检查发现轴承磨损，更换轴承后恢复运行。"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 实体抽取（NER）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ [3号车床]\(\rightarrow\)Equipment\ \ [主轴]\(\rightarrow\)Component\ \ [异响]\(\rightarrow\)Symptom}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ [轴承磨损]\(\rightarrow\)FaultCause\ \ [更换轴承]\(\rightarrow\)RepairAction}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 关系抽取（RE）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (Lathe\_003,\ hasComponent,\ Spindle)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (FaultEvent\_0321,\ occursOn,\ Lathe\_003)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (FaultEvent\_0321,\ hasSymptom,\ AbnormalNoise)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (FaultEvent\_0321,\ hasCause,\ BearingWear)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (FaultEvent\_0321,\ resolvedBy,\ BearingReplacement)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 抽取技术选型：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 规则/模板\ \ ——\ 高精度低召回，适合格式固定的日志}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ NER模型\ \ \ \ ——\ 需标注数据，适合大批量同类文本}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ LLM抽取\ \ \ \ ——\ 零样本能力强，但必须经本体校验后入库（第8章详述）}}
+\codeblank{}
+\end{codebox}

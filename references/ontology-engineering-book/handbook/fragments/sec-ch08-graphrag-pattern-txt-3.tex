@@ -1,0 +1,21 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 子图序列化格式对比}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 格式A：三元组列表（最忠实，token较省）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (P001,\ producedBy,\ W001)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (W001,\ partOf,\ O-2026-088)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (O-2026-088,\ orderedBy,\ Customer\_C17)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (O-2026-088,\ dueDate,\ "2026-06-20")}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 格式B：自然语言化（LLM理解最稳）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "产品P001由工单W001生产；W001属于订单O-2026-088；}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ 该订单的客户是C17，交期2026-06-20。"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 格式C：JSON（适合函数调用/结构化输出链路）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \{"entity":"P001","produced\_by":\{"workorder":"W001",}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ "order":\{"id":"O-2026-088","customer":"C17","due":"2026-06-20"\}\}\}}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 实践：格式A+B混合——三元组保证可校验，旁附一句话说明降低误读}}
+\codeblank{}
+\end{codebox}

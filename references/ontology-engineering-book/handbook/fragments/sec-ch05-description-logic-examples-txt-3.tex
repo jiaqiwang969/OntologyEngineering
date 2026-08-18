@@ -1,0 +1,15 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 一致性检查示例}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 一致性公理（相互矛盾的例子）：}}
+\codeline{\textcolor{cmtgray}{\#\ 公理1：所有设备都必须位于某个工作单元}}
+\codeline{\(\forall\)x:\ Equipment(x)\ \(\rightarrow\)\ locatedIn(x,\ WorkCell)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 公理2：存在不位于任何工作单元的设备}}
+\codeline{\(\exists\)x:\ Equipment(x)\ \(\land\)\ \(\lnot\)(\(\exists\)w:\ locatedIn(x,\ w))}
+\codeline{\textcolor{cmtgray}{\#\ \(\uparrow\)\ 这两条公理相互矛盾，违反一致性要求}}
+\codeline{\textcolor{cmtgray}{\#\ Tableau算法会检测到所有分支都产生冲突，报告不一致}}
+\codeblank{}
+\end{codebox}

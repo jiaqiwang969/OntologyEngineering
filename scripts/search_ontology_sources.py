@@ -13,13 +13,6 @@ from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 BUNDLED_WORKSPACE = SKILL_DIR / "references"
-LEGACY_WORKSPACE = Path("/Users/jqwang/97-本体论")
-DEFAULT_CAD_AGENT_ROOT = Path(
-    "/Users/jqwang/120-agent-cad/01-fusion-tutorial/cad-agent"
-)
-LEGACY_CAD_AGENT_ROOT = Path(
-    "/Users/jqwang/120-agent-cad/01-fusion-tutorial/cad-geometry-mcp"
-)
 TEXT_EXTENSIONS = {
     ".java",
     ".md",
@@ -105,7 +98,6 @@ def discover_workspace(explicit: Path | None) -> Path:
     candidates.append(BUNDLED_WORKSPACE)
     candidates.append(Path.cwd())
     candidates.extend(Path.cwd().parents)
-    candidates.append(LEGACY_WORKSPACE)
 
     for candidate in candidates:
         root = candidate.expanduser().resolve()
@@ -140,7 +132,6 @@ def discover_cad_agent_root() -> Path | None:
     env_root = os.environ.get("CAD_AGENT_ROOT")
     if env_root:
         candidates.append(Path(env_root))
-    candidates.extend((DEFAULT_CAD_AGENT_ROOT, LEGACY_CAD_AGENT_ROOT))
     for candidate in candidates:
         root = candidate.expanduser().resolve()
         if (

@@ -1,0 +1,27 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 全称限制（Universal\ Restriction）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 语法：\(\forall\)R.C（Manchester语法：R\ only\ C）}}
+\codeline{\textcolor{cmtgray}{\#\ 语义：规定实体的所有属性值都满足条件}}
+\codeline{\textcolor{cmtgray}{\#\ 即："与该对象存在R关系的所有对象，都属于C类"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 示例："高端设备的所有特性都是高级特性"}}
+\codeline{\textcolor{cmtgray}{\#\ HighEndEquipment\ SubClassOf:\ hasFeature\ only\ AdvancedFeature}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 描述逻辑表达：}}
+\codeline{\(\forall\)R.C}
+\codeline{\textcolor{cmtgray}{\#\ 其中\ R\ =\ hasFeature,\ C\ =\ AdvancedFeature}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ OWL\ Manchester语法：}}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ HighEndEquipment}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ SubClassOf:\ hasFeature\ only\ AdvancedFeature}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ Turtle语法：}}
+\codeline{\textcolor{cmtgray}{\#\ mfg:HighEndEquipment\ rdfs:subClassOf\ [}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ a\ owl:Restriction\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ owl:onProperty\ mfg:hasFeature\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ owl:allValuesFrom\ mfg:AdvancedFeature}}
+\codeline{\textcolor{cmtgray}{\#\ ]\ .}}
+\codeblank{}
+\end{codebox}

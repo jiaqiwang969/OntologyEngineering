@@ -28,9 +28,9 @@
 
 | 文件 | SHA-256 | 本章使用角色 |
 |---|---|---|
-| `/Users/jqwang/.codex/skills/ontology-engineering/references/ontology-engineering-book/ch01-introduction/README.md` | `87821a7319c68251808721304b0224abccb881cdbcb2708bd17bae7b6f49139e` | 共享、显式概念化及工程本体论入口 |
-| `/Users/jqwang/.codex/skills/ontology-engineering/references/ontology-engineering-book/ch01-introduction/examples/philosophy-to-engineering.txt` | `a4ef35eec0bb6962049005d7d2946bbcae67486c1c8a5d53fdcccc1906dc90fc` | 从对象、类型和关系进入任务共同体的工程约定 |
-| `/Users/jqwang/.codex/skills/ontology-engineering/references/ontology-engineering-book/ch01-introduction/examples/ontology-in-ai-era.txt` | `d7863d21126281de90c7b8305ae911cbf28c8132e08b3e15f67f360315c5a40a` | LLM 与本体分工，以及“无记录”不得偷换为事实为否 |
+| `ontology-engineering-book/ch01-introduction/README.md` | `87821a7319c68251808721304b0224abccb881cdbcb2708bd17bae7b6f49139e` | 共享、显式概念化及工程本体论入口 |
+| `ontology-engineering-book/ch01-introduction/examples/philosophy-to-engineering.txt` | `a4ef35eec0bb6962049005d7d2946bbcae67486c1c8a5d53fdcccc1906dc90fc` | 从对象、类型和关系进入任务共同体的工程约定 |
+| `ontology-engineering-book/ch01-introduction/examples/ontology-in-ai-era.txt` | `d7863d21126281de90c7b8305ae911cbf28c8132e08b3e15f67f360315c5a40a` | LLM 与本体分工，以及“无记录”不得偷换为事实为否 |
 
 这些材料是本地工程本体论书的受控方法来源，不是汽车功能安全标准的组成部分，也不替代原始学术文献。
 当前正文没有使用作者—年份式学术归因和直接引语；若正式出版增加此类归因，应另建一手文献书目。

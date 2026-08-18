@@ -1,0 +1,42 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 概念化产物（Conceptualization）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ METHONTOLOGY\ 要求产出一组中间表格，先于任何OWL代码：}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (1)\ 术语表（Glossary\ of\ Terms，节选）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 术语\ \ \ \ \ \ \ \ \ \ 类型\ \ \ \ \ \ 描述}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ ----------\ \ \ \ ------\ \ \ \ --------------------------------}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment\ \ \ \ \ 概念\ \ \ \ \ \ 车间中可执行加工/测量任务的装置}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CNCLathe\ \ \ \ \ \ 概念\ \ \ \ \ \ 数控车床}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ canProcess\ \ \ \ 二元关系\ \ 设备具备加工某材料的能力}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ hasPower\ \ \ \ \ \ 属性\ \ \ \ \ \ 设备额定功率，kW，非负实数}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Lathe\_003\ \ \ \ \ 实例\ \ \ \ \ \ 3号数控车床}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (2)\ 概念分类树（Concept\ Taxonomy）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ├──\ ProcessingEquipment}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ \ \ └──\ CNCMachine\ ──\ CNCLathe\ /\ CNCMillingMachine}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ └──\ MeasurementEquipment}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (3)\ 二元关系表（Binary\ Relations\ Table）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 关系名\ \ \ \ \ \ 定义域\ \ \ \ \ \ \ 值域\ \ \ \ \ \ \ 逆关系\ \ \ \ \ \ \ \ 特性}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ --------\ \ \ \ ---------\ \ \ \ -------\ \ \ \ ----------\ \ \ \ ------}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ canProcess\ \ Equipment\ \ \ \ Material\ \ \ processedBy\ \ \ —}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ locatedIn\ \ \ Equipment\ \ \ \ WorkCell\ \ \ contains\ \ \ \ \ \ 函数性}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ precedes\ \ \ \ Process\ \ \ \ \ \ Process\ \ \ \ follows\ \ \ \ \ \ \ 传递性}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (4)\ 概念字典（Concept\ Dictionary，节选）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 概念\ \ \ \ \ \ \ \ 实例标识\ \ \ \ \ \ \ \ 属性\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 关系}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ --------\ \ \ \ ------------\ \ \ \ ------------------\ \ \ \ ----------------}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment\ \ \ serialNumber\ \ \ \ hasPower,\ hasStatus\ \ \ canProcess,\ locatedIn}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (5)\ 实例表（Instance\ Table，节选）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 实例\ \ \ \ \ \ \ \ 所属概念\ \ \ \ 属性赋值}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ ---------\ \ \ --------\ \ \ \ --------------------------------}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Lathe\_003\ \ \ CNCLathe\ \ \ \ hasPower=15.5;\ hasStatus=Idle}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 产物的价值：领域专家不读OWL，但能逐行评审这些表格——}}
+\codeline{\textcolor{cmtgray}{\#\ 概念化表格是专家与本体工程师之间的"共同语言"}}
+\codeblank{}
+\end{codebox}

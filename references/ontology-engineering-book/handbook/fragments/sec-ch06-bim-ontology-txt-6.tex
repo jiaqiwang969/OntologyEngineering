@@ -1,0 +1,14 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ SPARQL合规性查询}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ PREFIX\ bim:\ <http://example.org/bim\#>}}
+\codeline{\textcolor{cmtgray}{\#\ SELECT\ ?element\ ?violation\ ?description}}
+\codeline{\textcolor{cmtgray}{\#\ WHERE\ \{}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?element\ bim:violates\ ?rule\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?rule\ bim:description\ ?description\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ BIND(CONCAT(STR(?element),\ "\ violates\ ",\ STR(?rule))\ AS\ ?violation)}}
+\codeline{\textcolor{cmtgray}{\#\ \}}}
+\codeline{\textcolor{cmtgray}{\#\ ORDER\ BY\ ?element}}
+\end{codebox}

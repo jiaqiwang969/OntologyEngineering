@@ -1,0 +1,14 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ CQ1:\ 哪些设备可以加工铝合金？}}
+\codeline{\textcolor{cmtgray}{\#\ Which\ equipment\ can\ process\ aluminum\ alloy?}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{SELECT\ ?equipment\ ?name\ ?power}
+\codeline{WHERE\ \{}
+\codeline{\hspace*{4\ttcw}?equipment\ a\ :Equipment\ ;}
+\codeline{\hspace*{15\ttcw}:canProcess\ :Aluminum\ ;}
+\codeline{\hspace*{15\ttcw}rdfs:label\ ?name\ .}
+\codeline{\hspace*{4\ttcw}OPTIONAL\ \{\ ?equipment\ :power\ ?power\ \}}
+\codeline{\hspace*{4\ttcw}FILTER(lang(?name)\ =\ "zh")}
+\codeline{\}}
+\codeline{ORDER\ BY\ ASC(?name)}
+\end{codebox}

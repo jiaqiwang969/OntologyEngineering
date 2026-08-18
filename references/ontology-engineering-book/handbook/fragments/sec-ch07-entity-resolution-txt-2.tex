@@ -1,0 +1,17 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 第一层：规则归一化}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 编号正则归一：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "3号|3\#|三号|No.3"\ \ +\ "车床"\ \ \(\rightarrow\)\ \ 候选\ Lathe\_003}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 设备编号\ "E0117"\ /\ "EQ-2023-0117"\ \(\rightarrow\)\ 去前缀补零归一}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 别名表（最朴素也最有效）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Lathe\_003:\ \ ["3号数控车床",\ "CNC-Lathe-003",\ "3\#车床",\ "L003"]}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 维护成本低，命中即对齐；新别名出现时人工补一行}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规格归一化：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 功率\ "15.5kW"\ /\ "15500W"\ /\ "15.5千瓦"\ \(\rightarrow\)\ 15.5\ (kW,\ xsd:float)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 日期\ "2026/3/21"\ /\ "26年3月21日"\ \ \ \ \ \(\rightarrow\)\ "2026-03-21"\^{}\^{}xsd:date}}
+\codeblank{}
+\end{codebox}

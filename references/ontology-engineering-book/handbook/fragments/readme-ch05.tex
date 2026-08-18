@@ -1,0 +1,50 @@
+
+\section{本章内容}
+
+本章深入介绍本体推理机制，包括：
+\begin{itemize}
+\item 前向推理与后向推理策略
+\item 描述逻辑 Tableau 算法
+\item SWRL 规则（Semantic Web Rule Language）
+\item 时态推理与具名图（Named Graph）
+\item 概率本体推理
+\item 推理性能优化
+\end{itemize}
+
+\section{文件说明}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}XX@{}}
+\toprule
+\textbf{文件} & \textbf{内容} \\
+\midrule
+\texttt{swrl-rules.swrl} & SWRL 规则示例（设备调度、工艺推荐） \\
+\texttt{description-logic-examples.txt} & 描述逻辑推理示例（Tableau算法） \\
+\texttt{temporal-reasoning.txt} & 时态推理与具名图示例 \\
+\texttt{probabilistic-reasoning.txt} & 概率本体推理示例 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{推理类型对比}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{推理类型} & \textbf{机制} & \textbf{适用场景} \\
+\midrule
+前向推理 & 从已知事实推导新结论 & 实时推理、数据流 \\
+后向推理 & 从目标反向查找证据 & 诊断、问题求解 \\
+Tableau & 基于描述逻辑的可满足性检测 & 一致性检查 \\
+SWRL & 基于规则的推导 & 业务规则表达 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{SWRL 语法说明}
+
+\begin{codebox}
+\codeline{前提(Antecedent)\ \(\rightarrow\)\ 结论(Consequent)}
+\codeline{多个原子用\ \(\land\)\ (AND)\ 连接}
+\codeline{变量用\ ?variableName\ 表示}
+\end{codebox}

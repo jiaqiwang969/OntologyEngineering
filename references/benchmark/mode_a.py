@@ -2,7 +2,8 @@
 """Mode A：检索可答率。题面 3-gram 打分选 top-5 文件，检查事实金标准是否在其中。"""
 import json, re
 from pathlib import Path
-SKILL = Path('/Users/jqwang/.codex/skills/ontology-engineering/references')
+BENCHMARK = Path(__file__).resolve().parent
+SKILL = Path(__file__).resolve().parents[1]
 files = {}
 for root in ['ontology-engineering-book','product-trustworthiness-book','iso-normative-ontology']:
     for p in (SKILL/root).rglob('*'):
@@ -38,7 +39,11 @@ def gold_hit(gold, texts):
         for t in texts:
             if re.search(pat, t): return True
     return False
-bank = [json.loads(l) for l in open('bank.jsonl')]
+bank = [
+    json.loads(line)
+    for line in (BENCHMARK / "bank-1000.jsonl").read_text(encoding="utf-8").splitlines()
+    if line
+]
 from collections import defaultdict
 stat = defaultdict(lambda: [0,0])
 misses = []

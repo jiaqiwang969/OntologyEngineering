@@ -1,0 +1,16 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ CQ8:\ 查询故障设备及其维修历史}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{SELECT\ ?equipment\ ?faultTime\ ?maintenanceRecord}
+\codeline{WHERE\ \{}
+\codeline{\hspace*{4\ttcw}?equipment\ a\ :Equipment\ ;}
+\codeline{\hspace*{15\ttcw}:hasStatus\ :Faulty\ ;}
+\codeline{\hspace*{15\ttcw}:hasFaultTime\ ?faultTime\ .}
+\codeline{\hspace*{4\ttcw}OPTIONAL\ \{}
+\codeline{\hspace*{8\ttcw}?maintenanceRecord\ :relatedTo\ ?equipment\ ;}
+\codeline{\hspace*{27\ttcw}a\ :MaintenanceRecord\ .}
+\codeline{\hspace*{4\ttcw}\}}
+\codeline{\}}
+\codeline{ORDER\ BY\ DESC(?faultTime)}
+\end{codebox}

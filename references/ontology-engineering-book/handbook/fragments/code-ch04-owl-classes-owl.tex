@@ -1,0 +1,114 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ OWL\ 类定义示例（Manchester\ Syntax）}}
+\codeline{\textcolor{cmtgray}{\#\ OWL\ Class\ Definitions\ in\ Manchester\ Syntax}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ Manchester语法是OWL的一种人类可读格式，常用于Protégé}}
+\codeline{\textcolor{cmtgray}{\#\ Manchester\ Syntax\ is\ a\ human-readable\ OWL\ format,\ used\ in\ Protégé}}
+\codeblank{}
+\codeline{Prefix:\ owl:\ \ <http://www.w3.org/2002/07/owl\#>}
+\codeline{Prefix:\ rdfs:\ <http://www.w3.org/2000/01/rdf-schema\#>}
+\codeline{Prefix:\ xsd:\ \ <http://www.w3.org/2001/XMLSchema\#>}
+\codeline{Prefix:\ :\ \ \ \ \ <http://example.org/manufacturing\#>}
+\codeblank{}
+\codeline{Ontology:\ <http://example.org/manufacturing>}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 基础类定义}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{Class:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "设备"@zh,}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "Equipment"@en,}
+\codeline{\hspace*{8\ttcw}rdfs:comment\ "制造系统中所有物理设备的基类"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeline{\hspace*{4\ttcw}DisjointWith:\ :Material,\ :Tool}
+\codeblank{}
+\codeline{Class:\ :ProcessingEquipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "加工设备"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Equipment}
+\codeblank{}
+\codeline{Class:\ :CNCMachine}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "数控机床"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :ProcessingEquipment}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :hasControl\ value\ :CNCControl}
+\codeblank{}
+\codeline{Class:\ :Lathe}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "车床"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :CNCMachine}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :canProcess\ some\ :RotationalPart}
+\codeblank{}
+\codeline{Class:\ :MeasurementEquipment}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Equipment}
+\codeblank{}
+\codeline{Class:\ :Material}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "材料"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Tool}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "刀具"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Product}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "产品"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Inspection}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "检验"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 枚举类（设备状态）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{Individual:\ :Idle}
+\codeline{Individual:\ :Running}
+\codeline{Individual:\ :Maintenance}
+\codeline{Individual:\ :Faulty}
+\codeblank{}
+\codeline{Class:\ :EquipmentStatus}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "设备状态"@zh}
+\codeline{\hspace*{4\ttcw}EquivalentTo:}
+\codeline{\hspace*{8\ttcw}\{\ :Idle,\ :Running,\ :Maintenance,\ :Faulty\ \}}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 四种状态两两不相交}}
+\codeblank{}
+\codeline{Class:\ :WorkCell}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "工作单元"@zh}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ OWL约束（属性限制）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ OWL\ Property\ Restrictions}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 存在限制（\(\exists\)）：每个产品至少经过一次检验}}
+\codeline{\textcolor{cmtgray}{\#\ ExistentialRestriction:\ hasInspection\ some\ Inspection}}
+\codeblank{}
+\codeline{Class:\ :QualifiedProduct}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "合格产品"@zh}
+\codeline{\hspace*{4\ttcw}EquivalentTo:}
+\codeline{\hspace*{8\ttcw}:Product}
+\codeline{\hspace*{8\ttcw}and\ (:hasInspection\ some}
+\codeline{\hspace*{12\ttcw}(:Inspection}
+\codeline{\hspace*{13\ttcw}and\ (:hasResult\ value\ "Pass")))}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 全称限制（\(\forall\)）：高端设备的所有特性都是高级特性}}
+\codeline{\textcolor{cmtgray}{\#\ UniversalRestriction:\ hasFeature\ only\ AdvancedFeature}}
+\codeblank{}
+\codeline{Class:\ :HighEndEquipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "高端设备"@zh}
+\codeline{\hspace*{4\ttcw}EquivalentTo:}
+\codeline{\hspace*{8\ttcw}:Equipment}
+\codeline{\hspace*{8\ttcw}and\ (:price\ some\ xsd:decimal[>=\ "1000000"\^{}\^{}xsd:decimal])}
+\codeline{\hspace*{8\ttcw}and\ (:hasFeature\ only\ :AdvancedFeature)}
+\end{codebox}

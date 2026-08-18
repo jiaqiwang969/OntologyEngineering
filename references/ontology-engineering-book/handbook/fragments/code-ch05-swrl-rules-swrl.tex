@@ -1,0 +1,135 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ SWRL\ 规则示例\ -\ 工程领域推理规则}}
+\codeline{\textcolor{cmtgray}{\#\ SWRL\ Rules\ -\ Engineering\ Domain\ Inference\ Rules}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ SWRL\ (Semantic\ Web\ Rule\ Language)\ 结合了OWL的类定义和规则推理}}
+\codeline{\textcolor{cmtgray}{\#\ 语法：前件(Antecedent)\ \(\rightarrow\)\ 后件(Consequent)}}
+\codeline{\textcolor{cmtgray}{\#\ 多个原子之间用\ \(\land\)\ (AND)\ 连接}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 注意：标准SWRL不支持规则体中的否定（\(\lnot\)）。}}
+\codeline{\textcolor{cmtgray}{\#\ 能力冲突规则中的"设备无法加工"需借助外部DL-Safe规则扩展实现，}}
+\codeline{\textcolor{cmtgray}{\#\ 或在应用层通过SPARQL查询辅助判断。}}
+\codeline{\textcolor{cmtgray}{\#\ Note:\ Standard\ SWRL\ does\ not\ support\ negation-as-failure\ in\ rule\ bodies.}}
+\codeline{\textcolor{cmtgray}{\#\ Capability\ conflict\ rules\ requiring\ "equipment\ cannot\ process"\ must\ be\ handled}}
+\codeline{\textcolor{cmtgray}{\#\ via\ DL-Safe\ rule\ extensions\ or\ supplementary\ SPARQL\ queries\ at\ the\ application}}
+\codeline{\hspace*{4\ttcw}layer.}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 基础推理规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：高功率设备需要冷却}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ High-power\ equipment\ requires\ cooling}}
+\codeline{设备(?x)\ \(\land\)\ 功率(?x,\ ?p)\ \(\land\)\ swrlb:greaterThan(?p,\ 10)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ 高功率设备(?x)}
+\codeblank{}
+\codeline{高功率设备(?x)\ \(\rightarrow\)\ 需要冷却(?x)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 验证推理链（前向推理示例）：}}
+\codeline{\textcolor{cmtgray}{\#\ 事实:\ 设备(Lathe\_003)，功率(Lathe\_003,\ 15)}}
+\codeline{\textcolor{cmtgray}{\#\ 步骤1:\ 功率(Lathe\_003,\ 15)\ \(\land\)\ 15>10\ \(\rightarrow\)\ 高功率设备(Lathe\_003)}}
+\codeline{\textcolor{cmtgray}{\#\ 步骤2:\ 高功率设备(Lathe\_003)\ \(\rightarrow\)\ 需要冷却(Lathe\_003)}}
+\codeline{\textcolor{cmtgray}{\#\ 结论:\ Lathe\_003\ 需要冷却}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 设备调度规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：状态冲突检查\ -\ 正在运行的设备不能分配新任务}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Status\ conflict\ -\ running\ equipment\ cannot\ be\ assigned\ new\ tasks}}
+\codeline{Equipment(?e)\ \(\land\)\ hasStatus(?e,\ Running)\ \(\land\)}
+\codeline{Task(?t)\ \(\land\)\ assignedTo(?t,\ ?e)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ StatusConflict(?t)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：时间冲突检查}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Time\ conflict\ detection}}
+\codeline{\textcolor{cmtgray}{\#\ 注：后件使用单变量类断言\ TimeConflict(?t1)，SWRL类原子只接受单个参数}}
+\codeline{\textcolor{cmtgray}{\#\ Note:\ The\ consequent\ uses\ a\ unary\ class\ assertion\ TimeConflict(?t1);}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ SWRL\ class\ atoms\ take\ exactly\ one\ argument.}}
+\codeline{Task(?t1)\ \(\land\)\ Task(?t2)\ \(\land\)}
+\codeline{assignedTo(?t1,\ ?e)\ \(\land\)\ assignedTo(?t2,\ ?e)\ \(\land\)}
+\codeline{hasStartTime(?t1,\ ?s1)\ \(\land\)\ hasEndTime(?t1,\ ?e1)\ \(\land\)}
+\codeline{hasStartTime(?t2,\ ?s2)\ \(\land\)\ hasEndTime(?t2,\ ?e2)\ \(\land\)}
+\codeline{swrlb:lessThan(?s1,\ ?e2)\ \(\land\)}
+\codeline{swrlb:greaterThan(?e1,\ ?s2)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ TimeConflict(?t1)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：长时间维护预警（超过24小时）}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Long\ maintenance\ warning\ (over\ 24\ hours)}}
+\codeline{\textcolor{cmtgray}{\#\ 注：swrlb:add(?now,\ 86400,\ ?tomorrow)\ 中\ ?now}}
+\codeline{\hspace*{4\ttcw}需由外部提供或使用swrlb:currentTimeMillis等内置函数}
+\codeline{\textcolor{cmtgray}{\#\ Note:\ The\ built-in\ swrlb:add\ requires\ ?now\ to\ be\ bound.\ Use\ a\ dedicated\ temporal}}
+\codeline{\hspace*{4\ttcw}built-in}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ or\ inject\ the\ current\ timestamp\ as\ an\ ABox\ fact\ before\ reasoning.}}
+\codeline{Equipment(?e)\ \(\land\)\ hasStatus(?e,\ Maintenance)\ \(\land\)}
+\codeline{hasMaintenanceStart(?e,\ ?start)\ \(\land\)}
+\codeline{hasMaintenanceEnd(?e,\ ?end)\ \(\land\)}
+\codeline{swrlb:subtract(?end,\ ?start,\ ?duration)\ \(\land\)}
+\codeline{swrlb:greaterThan(?duration,\ 86400)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ LongMaintenanceWarning(?e)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 工艺推荐规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：基于材料相似性推荐工艺}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Process\ recommendation\ based\ on\ material\ similarity}}
+\codeline{Product(?p1)\ \(\land\)\ Product(?p2)\ \(\land\)}
+\codeline{hasMaterial(?p1,\ ?m)\ \(\land\)\ hasMaterial(?p2,\ ?m)\ \(\land\)}
+\codeline{hasFeature(?p1,\ ?f)\ \(\land\)\ hasFeature(?p2,\ ?f)\ \(\land\)}
+\codeline{hasProcess(?p2,\ ?proc)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ recommendedProcess(?p1,\ ?proc)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：基于设备能力推荐操作设备}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Equipment\ recommendation\ based\ on\ capability}}
+\codeline{Product(?p)\ \(\land\)\ requiresOperation(?p,\ ?op)\ \(\land\)}
+\codeline{Turning(?op)\ \(\land\)\ Equipment(?e)\ \(\land\)}
+\codeline{Lathe(?e)\ \(\land\)\ hasCapability(?e,\ ?cap)\ \(\land\)}
+\codeline{suitableFor(?cap,\ ?op)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ recommendedEquipment(?op,\ ?e)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 工序顺序推理规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：工序必须按顺序执行（前序完成才能开始后序）}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Operations\ must\ follow\ order\ (predecessor\ must\ complete\ before\ successor}}
+\codeline{\hspace*{4\ttcw}starts)}
+\codeline{Operation(?op1)\ \(\land\)\ Operation(?op2)\ \(\land\)}
+\codeline{precedes(?op1,\ ?op2)\ \(\land\)\ hasStatus(?op1,\ Completed)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ canStart(?op2,\ true)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：热处理必须在焊接之后进行（领域约束）}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Heat\ treatment\ must\ follow\ welding\ (domain\ constraint)}}
+\codeline{Operation(?op1)\ \(\land\)\ Operation(?op2)\ \(\land\)}
+\codeline{hasType(?op1,\ HeatTreatment)\ \(\land\)\ hasType(?op2,\ Welding)\ \(\land\)}
+\codeline{isPartOfSameProcess(?op1,\ ?op2)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ precedes(?op2,\ ?op1)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：工艺参数超范围预警}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Process\ parameter\ out-of-range\ warning}}
+\codeline{CuttingOperation(?op)\ \(\land\)\ hasSpeed(?op,\ ?s)\ \(\land\)}
+\codeline{swrlb:greaterThan(?s,\ 5000)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ ParameterWarning(?op)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 5.\ 资源冲突规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：资源可用性不足时冲突预警}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Resource\ availability\ conflict}}
+\codeline{Task(?t)\ \(\land\)\ requiresResource(?t,\ ?r)\ \(\land\)}
+\codeline{Resource(?r)\ \(\land\)\ hasAvailability(?r,\ ?a)\ \(\land\)}
+\codeline{swrlb:lessThan(?a,\ 1)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ ResourceConflict(?t)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ SWRL\ 语法备注}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ Antecedent\ \(\rightarrow\)\ Consequent（前提\ \(\rightarrow\)\ 结论）}}
+\codeline{\textcolor{cmtgray}{\#\ 多个原子之间用"\(\land\)"（AND）连接，表示"同时满足所有原子条件"}}
+\codeline{\textcolor{cmtgray}{\#\ 变量用\ ?variableName\ 格式表示}}
+\codeline{\textcolor{cmtgray}{\#\ swrlb:*\ 是内置函数库（比较、计算、字符串操作等）}}
+\codeline{\textcolor{cmtgray}{\#\ 类原子（Class\ atoms）只接受一个变量参数，如\ ClassName(?x)}}
+\codeline{\textcolor{cmtgray}{\#\ 属性原子（Property\ atoms）接受两个参数，如\ propertyName(?x,\ ?y)}}
+\end{codebox}

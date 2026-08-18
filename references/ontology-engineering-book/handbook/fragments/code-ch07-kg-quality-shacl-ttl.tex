@@ -1,0 +1,110 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ SHACL\ 数据质量校验形状\ -\ 制造知识图谱}}
+\codeline{\textcolor{cmtgray}{\#\ SHACL\ Shapes\ for\ Manufacturing\ KG\ Quality\ Validation}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 运行方式（pySHACL）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ pip\ install\ pyshacl}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ pyshacl\ -s\ kg-quality-shacl.ttl\ -d\ instance-data.ttl}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ OWL公理面向"推理"（开放世界），SHACL面向"校验"（封闭检查）：}}
+\codeline{\textcolor{cmtgray}{\#\ 缺序列号在OWL下只是"未知"，在SHACL下就是一条违规报告}}
+\codeblank{}
+\codeline{@prefix\ sh:\ \ \ <http://www.w3.org/ns/shacl\#>\ .}
+\codeline{@prefix\ xsd:\ \ <http://www.w3.org/2001/XMLSchema\#>\ .}
+\codeline{@prefix\ rdf:\ \ <http://www.w3.org/1999/02/22-rdf-syntax-ns\#>\ .}
+\codeline{@prefix\ mfg:\ \ <http://example.org/manufacturing\#>\ .}
+\codeline{@prefix\ mfgsh:\ <http://example.org/manufacturing/shapes\#>\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 设备完整性形状}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{mfgsh:EquipmentShape}
+\codeline{\hspace*{4\ttcw}a\ sh:NodeShape\ ;}
+\codeline{\hspace*{4\ttcw}sh:targetClass\ mfg:Equipment\ ;}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 序列号：必填、唯一格式\ EQ-YYYY-NNNN}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:hasSerialNumber\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:maxCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:datatype\ xsd:string\ ;}
+\codeline{\hspace*{8\ttcw}sh:pattern\ "\^{}EQ-[0-9]\{4\}-[0-9]\{4\}\$"\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "设备必须有且仅有一个格式为\ EQ-YYYY-NNNN\ 的序列号"\ ;}
+\codeline{\hspace*{4\ttcw}]\ ;}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 功率：0\ <\ power\ <=\ 10000\ kW}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:hasPower\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:datatype\ xsd:float\ ;}
+\codeline{\hspace*{8\ttcw}sh:minExclusive\ 0.0\ ;}
+\codeline{\hspace*{8\ttcw}sh:maxInclusive\ 10000.0\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "设备功率必须为\ (0,\ 10000]\ kW\ 内的浮点数"\ ;}
+\codeline{\hspace*{4\ttcw}]\ ;}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 状态：受控词表}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:hasStatus\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:maxCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:in\ (\ mfg:Running\ mfg:Idle\ mfg:Maintenance\ mfg:Fault\ )\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "设备状态只能是\ Running/Idle/Maintenance/Fault\ 之一"\ ;}
+\codeline{\hspace*{4\ttcw}]\ ;}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 位置：必须关联到一个工作单元}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:locatedIn\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:class\ mfg:WorkCell\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "设备必须位于某个\ WorkCell"\ ;}
+\codeline{\hspace*{4\ttcw}]\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 维护时效性形状}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{mfgsh:MaintenanceRecordShape}
+\codeline{\hspace*{4\ttcw}a\ sh:NodeShape\ ;}
+\codeline{\hspace*{4\ttcw}sh:targetClass\ mfg:MaintenanceRecord\ ;}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:maintenanceDate\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:datatype\ xsd:date\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "维护记录必须有\ xsd:date\ 类型的日期"\ ;}
+\codeline{\hspace*{4\ttcw}]\ ;}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 维护日期不能晚于记录创建日期（字段间约束）}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:maintenanceDate\ ;}
+\codeline{\hspace*{8\ttcw}sh:lessThanOrEquals\ mfg:recordCreatedDate\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "维护日期不能晚于记录创建日期"\ ;}
+\codeline{\hspace*{4\ttcw}]\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 任务排产一致性形状（SPARQL约束）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 复杂业务规则用\ sh:sparql\ 表达：任务结束时间必须晚于开始时间}}
+\codeline{mfgsh:TaskIntervalShape}
+\codeline{\hspace*{4\ttcw}a\ sh:NodeShape\ ;}
+\codeline{\hspace*{4\ttcw}sh:targetClass\ mfg:Task\ ;}
+\codeline{\hspace*{4\ttcw}sh:sparql\ [}
+\codeline{\hspace*{8\ttcw}a\ sh:SPARQLConstraint\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "任务结束时间必须晚于开始时间"\ ;}
+\codeline{\hspace*{8\ttcw}sh:prefixes\ mfg:\ ;}
+\codeline{\hspace*{8\ttcw}sh:select\ """}
+\codeline{\hspace*{12\ttcw}SELECT\ \$this\ WHERE\ \{}
+\codeline{\hspace*{16\ttcw}\$this\ mfg:startTime\ ?s\ .}
+\codeline{\hspace*{16\ttcw}\$this\ mfg:endTime\ \ \ ?e\ .}
+\codeline{\hspace*{16\ttcw}FILTER\ (?e\ <=\ ?s)}
+\codeline{\hspace*{12\ttcw}\}}
+\codeline{\hspace*{8\ttcw}"""\ ;}
+\codeline{\hspace*{4\ttcw}]\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 入库闸门的使用约定}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 校验级别约定（在流水线中区分处理，见\ kg-construction-pipeline.txt）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ sh:Violation\ \ ——\ 拒绝入库，进隔离区}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ sh:Warning\ \ \ \ ——\ 允许入库，生成数据质量工单}}
+\codeline{\textcolor{cmtgray}{\#\ 本文件形状默认\ sh:Violation；}}
+\codeline{\textcolor{cmtgray}{\#\ 如需降级为警告，在对应\ PropertyShape\ 中加：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ sh:severity\ sh:Warning\ ;}}
+\end{codebox}

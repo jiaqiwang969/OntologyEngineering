@@ -1,0 +1,22 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 路线A示例：模板槽填充}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 模板T01\ 设备状态查询：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 意图关键词：状态/在干嘛/空闲吗}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 模板：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ SELECT\ ?status\ WHERE\ \{\ \{EQUIPMENT\}\ mfg:hasStatus\ ?status\ \}}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 槽位：\{EQUIPMENT\}\ ←\ 实体链接结果（别名表见第7章）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 模板T02\ 能力查询：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "哪些设备能加工\{MATERIAL\}？"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ SELECT\ ?e\ WHERE\ \{}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ ?e\ rdf:type/rdfs:subClassOf*\ mfg:Equipment\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ \ mfg:canProcess\ \{MATERIAL\}\ .\ \}}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 填槽过程：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "3号车床现在空闲吗"\ \(\rightarrow\)\ 意图T01\ +\ 实体mfg:Lathe\_003}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ SELECT\ ?status\ WHERE\ \{\ mfg:Lathe\_003\ mfg:hasStatus\ ?status\ \}}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 返回\ mfg:Idle\ \(\rightarrow\)\ 生成回答"是，当前空闲"}}
+\codeblank{}
+\end{codebox}

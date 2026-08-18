@@ -1,0 +1,21 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 工程约束的一阶逻辑表达}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：所有设备都需要定期维护}}
+\codeline{\(\forall\)x:\ Equipment(x)\ \(\rightarrow\)\ \(\exists\)m:\ Maintenance(m)\ \(\land\)\ requires(x,\ m)\ \(\land\)\ isPeriodic(m)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：容量大的故障设备优先维修}}
+\codeline{\(\forall\)a,b:\ (Equipment(a)\ \(\land\)\ Equipment(b)\ \(\land\)\ capacity(a)\ >\ capacity(b)\ \(\land\)\ hasFault(a))}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ priority(repair(a))\ >\ priority(repair(b))}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：同一时刻设备只能执行一个任务}}
+\codeline{\(\forall\)\ e,\ t,\ task1,\ task2:\ (executes(e,\ task1,\ t)\ AND\ executes(e,\ task2,\ t))}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ (task1\ =\ task2)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：热处理必须在焊接之后进行}}
+\codeline{\(\forall\)\ p1,\ p2:\ (p1.type\ =\ "HeatTreatment"\ AND\ p2.type\ =\ "Welding")}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ precedes(p2,\ p1)}
+\codeblank{}
+\end{codebox}

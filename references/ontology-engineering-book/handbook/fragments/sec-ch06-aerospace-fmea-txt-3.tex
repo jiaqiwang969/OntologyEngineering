@@ -1,0 +1,21 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ SWRL推理规则（自动影响推导）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：液压泵故障\ \(\rightarrow\)\ 液压系统压力丧失}}
+\codeline{Component(?c)\ \(\land\)\ hasFailureMode(?c,\ ?fm)\ \(\land\)}
+\codeline{HydraulicPump(?c)\ \(\land\)\ FailureMode\_Blockage(?fm)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ SystemEffect\_PressureLoss(?fm)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：液压系统压力丧失\ \(\rightarrow\)\ 飞行控制面失效}}
+\codeline{SystemEffect\_PressureLoss(?se)\ \(\land\)\ affects(?se,\ ?cs)\ \(\land\)}
+\codeline{ControlSurface(?cs)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ FlightEffect\_ControlLoss(?se)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：设计变更影响分析（可追溯性）}}
+\codeline{DesignChange(?dc)\ \(\land\)\ affects(?dc,\ ?component)\ \(\land\)}
+\codeline{hasFailureMode(?component,\ ?fm)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ requiresFMEAUpdate(?dc,\ ?fm)}
+\codeblank{}
+\end{codebox}

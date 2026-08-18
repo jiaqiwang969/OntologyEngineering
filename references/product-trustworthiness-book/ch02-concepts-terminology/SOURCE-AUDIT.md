@@ -63,11 +63,11 @@ Part 1 的术语也没有被剥离命名空间后冒充跨行业通用类。
 
 | 文件 | SHA-256 | 本章使用角色 |
 |---|---|---|
-| `/Users/jqwang/.codex/skills/ontology-engineering/references/ontology-engineering-book/ch02-ontology-foundations/README.md` | `865482aecbb7c7f634aaeba210fece3c3f51c33dfc5905f1584b379834d735f3` | 类、个体、对象属性/数据属性与类层次的基础边界 |
-| `/Users/jqwang/.codex/skills/ontology-engineering/references/ontology-engineering-book/ch02-ontology-foundations/examples/core-concepts.txt` | `b4758062d5c21d76234a3b29b4d5533b386ea9ccfa068e5d24d217db06f22703` | “对象—关系—属性”不能由同名自动合并；映射必须显式 |
-| `/Users/jqwang/.codex/skills/ontology-engineering/references/ontology-engineering-book/ch03-ontology-methodology/examples/ontoclean-evaluation.txt` | `5084fd309be51c79543765dc9fcbfdd6dfca7dfccba29ecd842decb90ce553ed` | 同一性判据兼容性；刚性类型与反刚性 state/role 分离；关系不冒充继承 |
-| `/Users/jqwang/.codex/skills/ontology-engineering/references/ontology-engineering-book/ch07-knowledge-graph/README.md` | `6a184352a8a12f5027ec0b4f1db9ef9b55dda5e019657984ef9d0e326277fbc1` | TBox/ABox 与实体消歧在知识融合中的位置 |
-| `/Users/jqwang/.codex/skills/ontology-engineering/references/ontology-engineering-book/ch07-knowledge-graph/examples/entity-resolution.txt` | `547a45e489e33274be1c32f581dde1541a41a26eed2076ad23113d531f1dc522` | 同物异名、异物同名、候选匹配、冲突裁决与强同一传播风险 |
+| `ontology-engineering-book/ch02-ontology-foundations/README.md` | `865482aecbb7c7f634aaeba210fece3c3f51c33dfc5905f1584b379834d735f3` | 类、个体、对象属性/数据属性与类层次的基础边界 |
+| `ontology-engineering-book/ch02-ontology-foundations/examples/core-concepts.txt` | `b4758062d5c21d76234a3b29b4d5533b386ea9ccfa068e5d24d217db06f22703` | “对象—关系—属性”不能由同名自动合并；映射必须显式 |
+| `ontology-engineering-book/ch03-ontology-methodology/examples/ontoclean-evaluation.txt` | `5084fd309be51c79543765dc9fcbfdd6dfca7dfccba29ecd842decb90ce553ed` | 同一性判据兼容性；刚性类型与反刚性 state/role 分离；关系不冒充继承 |
+| `ontology-engineering-book/ch07-knowledge-graph/README.md` | `6a184352a8a12f5027ec0b4f1db9ef9b55dda5e019657984ef9d0e326277fbc1` | TBox/ABox 与实体消歧在知识融合中的位置 |
+| `ontology-engineering-book/ch07-knowledge-graph/examples/entity-resolution.txt` | `547a45e489e33274be1c32f581dde1541a41a26eed2076ad23113d531f1dc522` | 同物异名、异物同名、候选匹配、冲突裁决与强同一传播风险 |
 
 ### 方法材料的使用边界
 

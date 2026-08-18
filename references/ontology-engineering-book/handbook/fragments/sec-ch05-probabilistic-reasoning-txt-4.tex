@@ -1,0 +1,15 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 马尔可夫逻辑网络\ (MLN)\ 权重规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ MLN\ 为一阶逻辑规则附加权重：权重越大，约束越"硬"}}
+\codeline{\textcolor{cmtgray}{\#\ 权重语义：满足该规则的可能世界，其概率按\ exp(权重)\ 倍提升}}
+\codeblank{}
+\codeline{2.5\ \ HighPowerEquipment(x)\ \(\rightarrow\)\ NeedsCooling(x)\ \ \ \ \ \ \#\ 强约束}
+\codeline{1.2\ \ CNCMachine(x)\ \(\land\)\ Aged(x)\ \(\rightarrow\)\ PrecisionDrift(x)\ \ \#\ 中等约束}
+\codeline{0.4\ \ Idle(x)\ \(\rightarrow\)\ Available(x)\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ 弱约束（默认倾向）}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 对比：硬约束（等价于无穷大权重）直接用\ OWL\ 公理表达}}
+\codeline{Running\ \(\sqcap\)\ Maintenance\ \(\sqsubseteq\)\ \(\bot\)\ \ \ \#\ 运行中的设备不可同时维护（确定性）}
+\codeblank{}
+\end{codebox}

@@ -1,0 +1,28 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 典型违规与修正}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 违规示例1：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment(+R)\ \(\sqsubseteq\)\ Resource(\textasciitilde{}R)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "设备是资源"——但\ Resource\ 是调度语境下的角色（反刚性），}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 设备是刚性类型，刚性类挂在反刚性类下，违反规则1}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 修正：用"角色扮演"关系替代继承}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment\ playsRole\ ResourceRole}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ （类型层次与角色层次分离，角色通过对象属性关联）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 违规示例2：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CNCLathe\ \(\sqsubseteq\)\ IdleEquipment\ ?}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 把状态建成父类——车床会运行，届时不再是"空闲设备"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 修正：状态用数据属性或状态个体表达}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Lathe\_003\ hasStatus\ Idle\ \ \ \ \ \ \#\ 状态可变，不进类层次}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 违规示例3：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment(+U)\ \(\sqsubseteq\)\ Metal(-U)\ ?}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "设备是金属"——混淆了"由金属构成"与"是金属"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 修正：构成关系不是继承}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment\ madeOf\ MetalMaterial}}
+\codeblank{}
+\end{codebox}

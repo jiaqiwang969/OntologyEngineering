@@ -1,0 +1,17 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 描述逻辑约束（DL\ Axioms）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 以下约束用自然语言和DL符号表示，需在Protégé中通过OWL表达式输入}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 数控车床必须有数控系统：}}
+\codeline{\textcolor{cmtgray}{\#\ CNCLathe\ \(\sqsubseteq\)\ \(\exists\)hasControl.CNCControl}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 设备利用率在0-1之间：}}
+\codeline{\textcolor{cmtgray}{\#\ Equipment\ \(\sqsubseteq\)\ \(\forall\)hasUtilization.(\(\ge\)0\ \(\sqcap\)\ \(\le\)1.0)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 正在运行的设备不能同时处于维护状态：}}
+\codeline{\textcolor{cmtgray}{\#\ Running\ \(\sqcap\)\ Maintenance\ \(\sqsubseteq\)\ \(\bot\)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 加工设备至少能加工一种材料：}}
+\codeline{\textcolor{cmtgray}{\#\ ProcessingEquipment\ \(\sqsubseteq\)\ \(\exists\)canProcess.Material}}
+\end{codebox}

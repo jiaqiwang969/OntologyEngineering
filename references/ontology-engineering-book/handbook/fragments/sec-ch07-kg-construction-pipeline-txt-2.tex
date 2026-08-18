@@ -1,0 +1,13 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 流水线总览}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 数据接入\ \(\rightarrow\)\ 映射/抽取\ \(\rightarrow\)\ 实体对齐\ \(\rightarrow\)\ 本体校验\ \(\rightarrow\)\ 入库\ \(\rightarrow\)\ 增量更新}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ └\ 三元组库/属性图}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ └\ SHACL形状校验（见\ kg-quality-shacl.ttl）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ \ └\ 同名归一（见\ entity-resolution.txt）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ └\ 结构化:R2RML映射\ /\ 非结构化:NER+关系抽取}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ └\ CDC订阅台账变更、文档批量解析}}
+\codeblank{}
+\end{codebox}

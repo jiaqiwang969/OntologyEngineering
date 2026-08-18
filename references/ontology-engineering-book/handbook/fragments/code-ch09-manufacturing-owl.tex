@@ -1,0 +1,382 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 智能制造知识管理系统\ -\ 核心本体（OWL\ Manchester语法）}}
+\codeline{\textcolor{cmtgray}{\#\ Manufacturing\ KMS\ -\ Core\ Ontology\ (Manchester\ Syntax)}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 包含：设备类层次、工艺类层次、属性定义、约束公理、SWRL规则注释}}
+\codeblank{}
+\codeline{Prefix:\ owl:\ \ <http://www.w3.org/2002/07/owl\#>}
+\codeline{Prefix:\ rdfs:\ <http://www.w3.org/2000/01/rdf-schema\#>}
+\codeline{Prefix:\ xsd:\ \ <http://www.w3.org/2001/XMLSchema\#>}
+\codeline{Prefix:\ :\ \ \ \ \ <http://example.org/manufacturing\#>}
+\codeblank{}
+\codeline{Ontology:\ <http://example.org/manufacturing>}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "智能制造本体"@zh,}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "Manufacturing\ Ontology"@en,}
+\codeline{\hspace*{8\ttcw}rdfs:comment}
+\codeline{\hspace*{12\ttcw}"智能制造知识管理系统核心本体，覆盖设备、工艺、产品、任务四大模块"@zh}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 顶层类（Top-level\ Classes）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{Class:\ :Resource}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "资源"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Material}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "材料"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Tool}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "刀具"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Product}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "产品"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Task}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "任务"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :WorkCell}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "工作单元"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :WorkOrder}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "工单"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Conflict}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "冲突"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :RotationalPart}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "回转体零件"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Material}
+\codeblank{}
+\codeline{Class:\ :EquipmentCapability}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "设备能力"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 设备模块\ (Equipment\ Module)\ -\ TBox}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{Class:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "设备"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Resource}
+\codeline{\hspace*{4\ttcw}DisjointWith:\ :Material,\ :Tool}
+\codeblank{}
+\codeline{Class:\ :ProcessingEquipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "加工设备"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Equipment}
+\codeblank{}
+\codeline{Class:\ :CNCMachine}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "数控机床"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :ProcessingEquipment}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :hasControl\ value\ :CNCControl}
+\codeblank{}
+\codeline{Class:\ :Lathe}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "车床"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :CNCMachine}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :canProcess\ some\ :RotationalPart}
+\codeblank{}
+\codeline{Class:\ :MeasurementEquipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "测量设备"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Equipment}
+\codeblank{}
+\codeline{Class:\ :AuxiliaryEquipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "辅助设备"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Equipment}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 设备状态枚举\ (Equipment\ Status\ Enumeration)}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{Individual:\ :Idle}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "空闲"@zh}
+\codeblank{}
+\codeline{Individual:\ :Running}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "运行中"@zh}
+\codeblank{}
+\codeline{Individual:\ :Maintenance}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "维护中"@zh}
+\codeblank{}
+\codeline{Individual:\ :Faulty}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "故障"@zh}
+\codeblank{}
+\codeline{Individual:\ :Completed}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "已完成"@zh}
+\codeblank{}
+\codeline{Individual:\ :CNCControl}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "数控系统"@zh}
+\codeblank{}
+\codeline{Class:\ :EquipmentStatus}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "设备状态"@zh}
+\codeline{\hspace*{4\ttcw}EquivalentTo:\ \{\ :Idle,\ :Running,\ :Maintenance,\ :Faulty\ \}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 对象属性\ (Object\ Properties)\ -\ RBox}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{ObjectProperty:\ :canProcess}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "能加工"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :Material}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasCapability}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有能力"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :EquipmentCapability}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasStatus}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有状态"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :EquipmentStatus}
+\codeline{\hspace*{4\ttcw}Characteristics:\ Functional}
+\codeblank{}
+\codeline{ObjectProperty:\ :locatedIn}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "位于"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :WorkCell}
+\codeblank{}
+\codeline{ObjectProperty:\ :assignedTo}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "分配给"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Task}
+\codeline{\hspace*{4\ttcw}Range:\ :Equipment}
+\codeblank{}
+\codeline{ObjectProperty:\ :requiresMaterial}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "需要材料"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Task}
+\codeline{\hspace*{4\ttcw}Range:\ :Material}
+\codeblank{}
+\codeline{ObjectProperty:\ :precedes}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "先于"@zh}
+\codeline{\hspace*{8\ttcw}rdfs:comment\ "工序之间的先后顺序，具有传递性"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Operation}
+\codeline{\hspace*{4\ttcw}Range:\ :Operation}
+\codeline{\hspace*{4\ttcw}Characteristics:\ Transitive}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasControl}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有控制系统"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :CNCMachine}
+\codeline{\hspace*{4\ttcw}Range:\ owl:Thing}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasOperation}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "包含工序"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Process}
+\codeline{\hspace*{4\ttcw}Range:\ :Operation}
+\codeblank{}
+\codeline{ObjectProperty:\ :isPartOf}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "是...的一部分"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Operation}
+\codeline{\hspace*{4\ttcw}Range:\ :Process}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasMaterial}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有材料"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ :Material}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasFeature}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有特征"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ owl:Thing}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasProcess}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有工艺"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ :Process}
+\codeblank{}
+\codeline{ObjectProperty:\ :recommendedProcess}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "推荐工艺"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ :Process}
+\codeblank{}
+\codeline{ObjectProperty:\ :requiresResource}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "需要资源"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Task}
+\codeline{\hspace*{4\ttcw}Range:\ :Resource}
+\codeblank{}
+\codeline{ObjectProperty:\ :requiresOperation}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "需要工序"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ :Operation}
+\codeblank{}
+\codeline{ObjectProperty:\ :suitableFor}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "适合"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :EquipmentCapability}
+\codeline{\hspace*{4\ttcw}Range:\ :Operation}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 数据属性\ (Data\ Properties)}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{DataProperty:\ :maxDiameter}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "最大加工直径(mm)"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Lathe}
+\codeline{\hspace*{4\ttcw}Range:\ xsd:decimal}
+\codeblank{}
+\codeline{DataProperty:\ :power}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "功率(kW)"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ xsd:decimal}
+\codeblank{}
+\codeline{DataProperty:\ :serialNumber}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "序列号"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ xsd:string}
+\codeline{\hspace*{4\ttcw}Characteristics:\ Functional}
+\codeblank{}
+\codeline{DataProperty:\ :hasStartTime}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "开始时间"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Task}
+\codeline{\hspace*{4\ttcw}Range:\ xsd:dateTime}
+\codeblank{}
+\codeline{DataProperty:\ :hasEndTime}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "结束时间"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Task}
+\codeline{\hspace*{4\ttcw}Range:\ xsd:dateTime}
+\codeblank{}
+\codeline{DataProperty:\ :confidence}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "置信度"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Process}
+\codeline{\hspace*{4\ttcw}Range:\ xsd:decimal}
+\codeblank{}
+\codeline{DataProperty:\ :hasAvailability}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "可用性"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Resource}
+\codeline{\hspace*{4\ttcw}Range:\ xsd:decimal}
+\codeblank{}
+\codeline{DataProperty:\ :price}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "价格"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ xsd:decimal}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 工艺模块\ (Process\ Module)\ -\ TBox}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{Class:\ :Process}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "加工工艺"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Operation}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "工序"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :isPartOf\ some\ :Process}
+\codeblank{}
+\codeline{Class:\ :Turning}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "车削"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Operation}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :requires\ some\ :Lathe}
+\codeblank{}
+\codeline{Class:\ :Milling}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "铣削"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Operation}
+\codeblank{}
+\codeline{Class:\ :Drilling}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "钻孔"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Operation}
+\codeblank{}
+\codeline{ObjectProperty:\ :requires}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "需要设备"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Operation}
+\codeline{\hspace*{4\ttcw}Range:\ :Equipment}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 冲突类（由SWRL规则推导生成）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{Class:\ :CapabilityConflict}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "能力冲突"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Conflict}
+\codeblank{}
+\codeline{Class:\ :StatusConflict}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "状态冲突"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Conflict}
+\codeblank{}
+\codeline{Class:\ :TimeConflict}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "时间冲突"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Conflict}
+\codeblank{}
+\codeline{Class:\ :ResourceConflict}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "资源冲突"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Conflict}
+\codeblank{}
+\codeline{Class:\ :LongMaintenanceWarning}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "长时间维护预警"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Conflict}
+\codeblank{}
+\codeline{Class:\ :ParameterWarning}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "参数超范围预警"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Conflict}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 描述逻辑约束（DL\ Axioms）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 以下约束用自然语言和DL符号表示，需在Protégé中通过OWL表达式输入}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 数控车床必须有数控系统：}}
+\codeline{\textcolor{cmtgray}{\#\ CNCLathe\ \(\sqsubseteq\)\ \(\exists\)hasControl.CNCControl}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 设备利用率在0-1之间：}}
+\codeline{\textcolor{cmtgray}{\#\ Equipment\ \(\sqsubseteq\)\ \(\forall\)hasUtilization.(\(\ge\)0\ \(\sqcap\)\ \(\le\)1.0)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 正在运行的设备不能同时处于维护状态：}}
+\codeline{\textcolor{cmtgray}{\#\ Running\ \(\sqcap\)\ Maintenance\ \(\sqsubseteq\)\ \(\bot\)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 加工设备至少能加工一种材料：}}
+\codeline{\textcolor{cmtgray}{\#\ ProcessingEquipment\ \(\sqsubseteq\)\ \(\exists\)canProcess.Material}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ SWRL调度规则（在Protégé\ SWRL\ Tab中输入）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则1：能力冲突检测}}
+\codeline{\textcolor{cmtgray}{\#\ Task(?t)\ \(\land\)\ requiresMaterial(?t,\ ?m)\ \(\land\)\ assignedTo(?t,\ ?e)\ \(\land\)}}
+\codeline{\textcolor{cmtgray}{\#\ Equipment(?e)\ \(\land\)\ \(\lnot\)canProcess(?e,\ ?m)}}
+\codeline{\textcolor{cmtgray}{\#\ \(\rightarrow\)\ CapabilityConflict(?t)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则2：状态冲突检测}}
+\codeline{\textcolor{cmtgray}{\#\ Equipment(?e)\ \(\land\)\ hasStatus(?e,\ Running)\ \(\land\)\ Task(?t)\ \(\land\)\ assignedTo(?t,\ ?e)}}
+\codeline{\textcolor{cmtgray}{\#\ \(\rightarrow\)\ StatusConflict(?t)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则3：时间冲突检测}}
+\codeline{\textcolor{cmtgray}{\#\ Task(?t1)\ \(\land\)\ Task(?t2)\ \(\land\)\ assignedTo(?t1,\ ?e)\ \(\land\)\ assignedTo(?t2,\ ?e)\ \(\land\)}}
+\codeline{\textcolor{cmtgray}{\#\ hasStartTime(?t1,\ ?s1)\ \(\land\)\ hasEndTime(?t1,\ ?e1)\ \(\land\)}}
+\codeline{\textcolor{cmtgray}{\#\ hasStartTime(?t2,\ ?s2)\ \(\land\)\ hasEndTime(?t2,\ ?e2)\ \(\land\)}}
+\codeline{\textcolor{cmtgray}{\#\ swrlb:lessThan(?s1,\ ?e2)\ \(\land\)\ swrlb:greaterThan(?e1,\ ?s2)}}
+\codeline{\textcolor{cmtgray}{\#\ \(\rightarrow\)\ TimeConflict(?t1)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则4：工艺推荐}}
+\codeline{\textcolor{cmtgray}{\#\ Product(?p1)\ \(\land\)\ Product(?p2)\ \(\land\)}}
+\codeline{\textcolor{cmtgray}{\#\ hasMaterial(?p1,\ ?m)\ \(\land\)\ hasMaterial(?p2,\ ?m)\ \(\land\)}}
+\codeline{\textcolor{cmtgray}{\#\ hasFeature(?p1,\ ?f)\ \(\land\)\ hasFeature(?p2,\ ?f)\ \(\land\)}}
+\codeline{\textcolor{cmtgray}{\#\ hasProcess(?p2,\ ?proc)}}
+\codeline{\textcolor{cmtgray}{\#\ \(\rightarrow\)\ recommendedProcess(?p1,\ ?proc)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则5：工序顺序}}
+\codeline{\textcolor{cmtgray}{\#\ Operation(?op1)\ \(\land\)\ Operation(?op2)\ \(\land\)}}
+\codeline{\textcolor{cmtgray}{\#\ precedes(?op1,\ ?op2)\ \(\land\)\ hasStatus(?op1,\ Completed)}}
+\codeline{\textcolor{cmtgray}{\#\ \(\rightarrow\)\ canStart(?op2,\ true)}}
+\end{codebox}

@@ -1,0 +1,26 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ Step\ 4.\ 定义类与类层次}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 三种策略：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 自顶向下：Equipment\ \(\rightarrow\)\ ProcessingEquipment\ \(\rightarrow\)\ CNCMachine\ \(\rightarrow\)\ CNCLathe}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 自底向上：先有\ CNCLathe/CNCMill，再归纳出\ CNCMachine}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 混合法（推荐）：先定中层骨干概念，向上挂顶层、向下细化}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 本例类层次（节选）：}}
+\codeline{\textcolor{cmtgray}{\#\ Equipment\ \(\sqsubseteq\)\ PhysicalObject}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ ProcessingEquipment\ \(\sqsubseteq\)\ Equipment}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ CNCMachine\ \(\sqsubseteq\)\ ProcessingEquipment}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ CNCLathe\ \(\sqsubseteq\)\ CNCMachine}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ CNCMillingMachine\ \(\sqsubseteq\)\ CNCMachine}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ MeasurementEquipment\ \(\sqsubseteq\)\ Equipment}}
+\codeline{\textcolor{cmtgray}{\#\ Material\ \(\sqsubseteq\)\ PhysicalObject}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ MetalMaterial\ \(\sqsubseteq\)\ Material}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ AluminumAlloy\ \(\sqsubseteq\)\ MetalMaterial}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 常见错误自查：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 单一子类（某类只有一个子类）\(\rightarrow\)\ 层次可能多余}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 类名用复数\ \(\rightarrow\)\ 统一用单数（CNCLathe\ 而非\ CNCLathes）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 把实例当类（"3号车床"是个体，不是类）}}
+\codeblank{}
+\end{codebox}

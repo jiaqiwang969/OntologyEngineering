@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 """生成 1000 题双金标准题库：questions.jsonl（无答案，给答题 agent）+ bank.jsonl（含金标准）"""
-import json, re, random, itertools
+import json, os, re, random, itertools
 from pathlib import Path
 random.seed(26262)
 
-SKILL = Path('/Users/jqwang/.codex/skills/ontology-engineering/references')
-REPO = Path('/Users/jqwang/143-工程规范')
-OUT = Path('.')
-import sys; sys.path.insert(0, '.')
+SKILL = Path(__file__).resolve().parents[1]
+BENCHMARK = Path(__file__).resolve().parent
+_authoring_root = os.environ.get('ONTOLOGY_ENGINEERING_AUTHORING_ROOT')
+if not _authoring_root:
+    raise SystemExit('set ONTOLOGY_ENGINEERING_AUTHORING_ROOT to the controlled authoring workspace')
+REPO = Path(_authoring_root).expanduser().resolve()
+OUT = Path(os.environ.get('ONTOLOGY_BENCHMARK_OUTPUT', str(BENCHMARK))).expanduser().resolve()
+OUT.mkdir(parents=True, exist_ok=True)
+import sys; sys.path.insert(0, str(BENCHMARK))
 from casemap import CASEMAP
 
 bank = []
@@ -242,8 +247,8 @@ if len(bank) > 1000:
     idxs = [i for i,b in enumerate(bank) if b["cat"]=="dry-methodcell"][-drop:]
     bank = [b for i,b in enumerate(bank) if i not in set(idxs)]
 print("最终：", len(bank))
-with open('bank.jsonl','w') as f:
+with (OUT / 'bank-1000.jsonl').open('w', encoding='utf-8') as f:
     for b in bank: f.write(json.dumps(b, ensure_ascii=False)+'\n')
-with open('questions.jsonl','w') as f:
+with (OUT / 'questions-1000.jsonl').open('w', encoding='utf-8') as f:
     for b in bank: f.write(json.dumps({"id":b["id"],"q":b["q"]}, ensure_ascii=False)+'\n')
-print("已写 bank.jsonl / questions.jsonl")
+print(f"已写 {OUT / 'bank-1000.jsonl'} / {OUT / 'questions-1000.jsonl'}")

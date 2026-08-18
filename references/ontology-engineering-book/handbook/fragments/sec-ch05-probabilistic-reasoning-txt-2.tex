@@ -1,0 +1,22 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 贝叶斯网络条件概率表\ (CPT)}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 设备故障诊断贝叶斯网络结构：}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ HighTemp（高温）\ \ \ \ \ LongRunning（长时间运行）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \textbackslash{}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ /}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ v\ \ \ \ \ \ \ \ \ \ \ \ \ \ v}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ \ \ Fault（故障）}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 条件概率表：}}
+\codeline{P(Fault\ |\ HighTemp\ \(\land\)\ LongRunning)\ \ \ =\ 0.90}
+\codeline{P(Fault\ |\ HighTemp\ \(\land\)\ \(\lnot\)LongRunning)\ \ =\ 0.30}
+\codeline{P(Fault\ |\ \(\lnot\)HighTemp\ \(\land\)\ LongRunning)\ \ =\ 0.10}
+\codeline{P(Fault\ |\ \(\lnot\)HighTemp\ \(\land\)\ \(\lnot\)LongRunning)\ =\ 0.01}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 先验概率：}}
+\codeline{P(HighTemp)\ =\ 0.20\ \ \ \ \ \ \#\ 车间环境中设备高温的先验概率}
+\codeline{P(LongRunning)\ =\ 0.35\ \ \ \#\ 设备长时间运行的先验概率}
+\codeblank{}
+\end{codebox}

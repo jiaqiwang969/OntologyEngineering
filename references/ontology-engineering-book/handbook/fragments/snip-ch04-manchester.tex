@@ -1,0 +1,25 @@
+\begin{codebox}
+\codeline{Class:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "设备"@zh,}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "Equipment"@en,}
+\codeline{\hspace*{8\ttcw}rdfs:comment\ "制造系统中所有物理设备的基类"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeline{\hspace*{4\ttcw}DisjointWith:\ :Material,\ :Tool}
+\codeblank{}
+\codeline{Class:\ :ProcessingEquipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "加工设备"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Equipment}
+\codeblank{}
+\codeline{Class:\ :CNCMachine}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "数控机床"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :ProcessingEquipment}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :hasControl\ value\ :CNCControl}
+\codeblank{}
+\codeline{Class:\ :Lathe}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "车床"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :CNCMachine}
+\end{codebox}

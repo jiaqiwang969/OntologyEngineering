@@ -1,0 +1,95 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 能力问题设计示例\ -\ 制造领域}}
+\codeline{\textcolor{cmtgray}{\#\ Competency\ Questions\ for\ a\ Manufacturing\ Ontology}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 能力问题（CQ）是本体的"需求规格说明书"与"验收测试用例"：}}
+\codeline{\textcolor{cmtgray}{\#\ 本体建成后，必须能通过查询或推理回答全部CQ}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 能力问题的三个作用}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ (1)\ 划定范围：CQ覆盖不到的概念，不要建（避免过度建模）}}
+\codeline{\textcolor{cmtgray}{\#\ (2)\ 驱动设计：每个CQ都能反推出需要的类、属性与公理}}
+\codeline{\textcolor{cmtgray}{\#\ (3)\ 验收标准：CQ\ \(\rightarrow\)\ SPARQL查询，结果正确即通过验收}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 制造领域CQ清单（节选）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 基础查询类：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ1\ \ 哪些设备可以加工铝合金？}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ2\ \ 当前哪些设备处于空闲状态？}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ3\ \ 工作单元A中有哪些设备？}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 关联推理类：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ4\ \ 任务T001与哪些已排产任务存在时间冲突？}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ5\ \ 产品P001应推荐什么加工工艺？}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ6\ \ 工单W001的工序先后顺序是什么？}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 约束校验类：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ7\ \ 哪些高功率设备没有配置冷却系统？（违反公理）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ8\ \ 哪些设备的维护记录超期？}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 统计分析类：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ9\ \ 各工作单元的设备利用率是多少？}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CQ10\ 过去一个月哪类故障发生频率最高？}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 注：CQ1/CQ2/CQ4/CQ5/CQ6\ 在第9章实战系统中有完整实现}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ CQ\ \(\rightarrow\)\ 本体元素的反推}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 每个CQ可机械地分解出本体需要的元素：}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ CQ1\ "哪些设备可以加工铝合金？"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 类：\ \ \ \ Equipment（设备）、Material（材料）、AluminumAlloy（铝合金）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 属性：\ \ canProcess（对象属性：Equipment\ \(\rightarrow\)\ Material）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 公理：\ \ AluminumAlloy\ \(\sqsubseteq\)\ Material}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 实例：\ \ 具体设备与材料个体}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ CQ4\ "任务T001与哪些任务存在时间冲突？"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 类：\ \ \ \ Task、TimeInterval、Conflict}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 属性：\ \ hasTimeInterval、assignedTo、conflictsWith}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 规则：\ \ 同设备时间区间重叠\ \(\rightarrow\)\ 冲突（SWRL实现见第5章）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ CQ8\ "哪些设备的维护记录超期？"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 类：\ \ \ \ MaintenanceRecord}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 属性：\ \ hasMaintenanceDate（数据属性：xsd:dateTime）、maintenanceCycle}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 约束：\ \ 当前时间\ -\ 上次维护时间\ >\ 周期\ \(\rightarrow\)\ 超期（需注入当前时间）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ CQ\ \(\rightarrow\)\ SPARQL\ 验收查询}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ CQ1\ 的验收查询：}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ PREFIX\ mfg:\ <http://example.org/manufacturing\#>}}
+\codeline{\textcolor{cmtgray}{\#\ SELECT\ ?equipment\ WHERE\ \{}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?equipment\ rdf:type/rdfs:subClassOf*\ mfg:Equipment\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?equipment\ mfg:canProcess\ ?m\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?m\ rdf:type\ mfg:AluminumAlloy\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \}}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 验收判据：返回结果与领域专家给出的标准答案一致}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ CQ7\ 的验收查询（约束校验类，期望结果为空集）：}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ SELECT\ ?e\ WHERE\ \{}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?e\ rdf:type\ mfg:HighPowerEquipment\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ FILTER\ NOT\ EXISTS\ \{\ ?e\ mfg:requiresCooling\ ?c\ \}}}
+\codeline{\textcolor{cmtgray}{\#\ \}}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 验收判据：结果非空说明数据或公理有缺陷，需修复后复测}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 5.\ CQ驱动的迭代流程}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 与领域专家访谈，收集CQ（10\textasciitilde{}30个为宜）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 按"基础/关联/校验/统计"分类，剔除超范围CQ}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 反推类/属性/公理清单（见第3节）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 建模（七步法，见\ ontology-101-process.txt）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 每个CQ写验收查询，全部通过即完成一轮迭代}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 新需求\ =\ 新CQ，进入下一轮迭代}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 工程建议：}}
+\codeline{\textcolor{cmtgray}{\#\ CQ清单应与本体一起进行版本管理（如\ cq/\ 目录下逐条编号），}}
+\codeline{\textcolor{cmtgray}{\#\ 每次本体变更后自动回归执行全部验收查询（CI化，防止回归缺陷）}}
+\end{codebox}

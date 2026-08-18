@@ -1,0 +1,26 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 工序顺序推理规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：工序必须按顺序执行（前序完成才能开始后序）}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Operations\ must\ follow\ order\ (predecessor\ must\ complete\ before\ successor}}
+\codeline{\hspace*{4\ttcw}starts)}
+\codeline{Operation(?op1)\ \(\land\)\ Operation(?op2)\ \(\land\)}
+\codeline{precedes(?op1,\ ?op2)\ \(\land\)\ hasStatus(?op1,\ Completed)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ canStart(?op2,\ true)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：热处理必须在焊接之后进行（领域约束）}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Heat\ treatment\ must\ follow\ welding\ (domain\ constraint)}}
+\codeline{Operation(?op1)\ \(\land\)\ Operation(?op2)\ \(\land\)}
+\codeline{hasType(?op1,\ HeatTreatment)\ \(\land\)\ hasType(?op2,\ Welding)\ \(\land\)}
+\codeline{isPartOfSameProcess(?op1,\ ?op2)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ precedes(?op2,\ ?op1)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：工艺参数超范围预警}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ Process\ parameter\ out-of-range\ warning}}
+\codeline{CuttingOperation(?op)\ \(\land\)\ hasSpeed(?op,\ ?s)\ \(\land\)}
+\codeline{swrlb:greaterThan(?s,\ 5000)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ ParameterWarning(?op)}
+\codeblank{}
+\end{codebox}

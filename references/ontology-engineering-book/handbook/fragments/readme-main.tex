@@ -1,0 +1,88 @@
+
+\section*{关于本书 / About This Book}
+
+\textbf{《工程本体论》} 是一本系统讲述如何将本体论（Ontology）理论应用于工程领域的教材。
+本书涵盖从本体论基础理论、OWL/RDF描述语言、SPARQL查询、推理机制，到完整的智能制造系统实战案例。
+
+\textbf{"Engineering Ontology"} is a Chinese textbook on applying ontology theory to engineering domains.
+It covers foundational ontology theory, OWL/RDF description languages, SPARQL querying,
+reasoning mechanisms, and a full capstone case study on intelligent manufacturing knowledge management.
+
+\section*{仓库结构 / Repository Structure}
+
+\begin{codebox}
+\codeline{ontology-engineering-book/}
+\codeline{├──\ ch01-introduction/\ \ \ \ \ \ \ \ \ \ \ \ \ \#\ 第1章：绪论——从哲学本体论到工程本体论}
+\codeline{│\ \ \ └──\ examples/}
+\codeline{├──\ ch02-ontology-foundations/\ \ \ \ \ \#\ 第2章：本体论基础理论}
+\codeline{│\ \ \ └──\ examples/}
+\codeline{├──\ ch03-ontology-methodology/\ \ \ \ \ \#\ 第3章：本体构建方法论}
+\codeline{│\ \ \ └──\ examples/}
+\codeline{├──\ ch04-ontology-languages/\ \ \ \ \ \ \ \#\ 第4章：本体描述语言与工具}
+\codeline{│\ \ \ └──\ examples/}
+\codeline{├──\ ch05-reasoning/\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ 第5章：知识表示与推理机制}
+\codeline{│\ \ \ └──\ examples/}
+\codeline{├──\ ch06-applications/\ \ \ \ \ \ \ \ \ \ \ \ \ \#\ 第6章：工程领域应用案例}
+\codeline{│\ \ \ └──\ examples/}
+\codeline{├──\ ch07-knowledge-graph/\ \ \ \ \ \ \ \ \ \ \#\ 第7章：知识图谱构建与管理}
+\codeline{│\ \ \ └──\ examples/}
+\codeline{├──\ ch08-ontology-llm/\ \ \ \ \ \ \ \ \ \ \ \ \ \#\ 第8章：本体与大语言模型}
+\codeline{│\ \ \ └──\ examples/}
+\codeline{└──\ ch09-capstone-manufacturing/\ \ \ \#\ 第9章：综合实战案例：智能制造知识管理系统}
+\codeline{\hspace*{4\ttcw}└──\ src/}
+\end{codebox}
+
+\begin{noteblock}
+\textbf{章节覆盖说明 / Chapter Coverage}：全书九章配套目录齐备。
+第2、4、5、6、9章示例提取自原书稿；第1、3、7、8章为补编示例（按全书脉络补写，建议对照原稿校订）。
+All nine chapters now have companion directories. Chapters 2/4/5/6/9 are extracted from
+the original manuscript; chapters 1/3/7/8 are supplementary examples written to fill the gaps.
+\end{noteblock}
+
+\section*{代码说明 / Code Overview}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+\textbf{章节} & \textbf{内容} & \textbf{主要技术} \\
+\midrule
+Ch01 & 绪论：从哲学到工程本体论 & 概念对照、AI时代定位、全书路线图 \\
+Ch02 & 本体论基础理论 & 描述逻辑、SWRL规则、公理定义 \\
+Ch03 & 本体构建方法论 & 能力问题、Ontology 101、METHONTOLOGY、OntoClean \\
+Ch04 & 本体描述语言与工具 & RDF/Turtle、OWL、SPARQL、Protégé \\
+Ch05 & 知识表示与推理机制 & Tableau算法、SWRL、时态推理、概率推理 \\
+Ch06 & 工程领域应用案例 & 自动驾驶、BIM、航空航天FMEA \\
+Ch07 & 知识图谱构建与管理 & 抽取流水线、实体对齐、SHACL校验、存储选型 \\
+Ch08 & 本体与大语言模型 & 幻觉控制、GraphRAG、Text2SPARQL、Agent护栏 \\
+Ch09 & 综合实战案例 & Java/Jena、Python/owlready2、OWL Manchester语法 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section*{如何使用 / How to Use}
+
+\subsection*{运行Java代码 (Ch09)}
+需要 Apache Jena 依赖：
+\begin{codebox}
+\codeline{<dependency>}
+\codeline{\hspace*{2\ttcw}<groupId>org.apache.jena</groupId>}
+\codeline{\hspace*{2\ttcw}<artifactId>apache-jena-libs</artifactId>}
+\codeline{\hspace*{2\ttcw}<version>4.10.0</version>}
+\codeline{</dependency>}
+\end{codebox}
+
+\subsection*{运行Python代码 (Ch09)}
+\begin{codebox}
+\codeline{pip\ install\ owlready2}
+\codeline{python\ src/reasoner.py}
+\end{codebox}
+
+\subsection*{查看OWL文件}
+推荐使用 \href{https://protege.stanford.edu/}{Protégé} 打开 \texttt{.owl} 文件。
+
+\section*{许可 / License}
+
+本仓库代码示例仅供学习参考，版权归原书作者所有。
+Code examples in this repository are for educational purposes only.
+
+\textit{Generated from 《工程本体论》书稿一审0513 正.docx}

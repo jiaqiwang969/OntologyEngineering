@@ -145,6 +145,7 @@ this skill for the ontology framing.
 - OWL 开放世界 vs SHACL 封闭校验（ch04/ch07）→ `demos/ch04_shacl_open_vs_closed.py`
 - 规则前向推理链（ch05 SWRL 手推链的机器复算）→ `demos/ch05_forward_chaining.py`
 - 第二卷"规范可本体化、刻录纪律可校验"→ `demos/vol2_iso_normative_query.py`
+- 第二卷 ch04/ch14 HARA 判定链（S×E×C→ASIL 复算 + 查表门禁）→ `demos/vol2_hara_asil_corroborate.py`
 
 ```bash
 bash runtime/setup_runtime.sh          # 一次性

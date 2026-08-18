@@ -5,8 +5,9 @@
 贯穿案例：合成教学案例 EPS-RC17（电动助力转向候选，配置 H3.2/SW1.8.3/C41/D7/V12）
 与跨域投影件 ENV-01（环境监测单元）。全部人物、事故、数字均为合成教学材料。
 
-工程正本（本体/SHACL 门禁/来源锚点/问题合同）仍在 `/Users/jqwang/143-工程规范`；
-本卷是冻结的可读知识快照。精确 ISO 条款坐标查该仓库的 SOURCE-AUDIT 与 ontology/。
+工程正本（本体/SHACL 门禁/来源锚点/问题合同）保存在另行受控、由
+`ONTOLOGY_ENGINEERING_AUTHORING_ROOT` 指向的私有工作区；本卷是冻结的可读知识快照。
+精确 ISO 条款坐标应回该私有工作区的 SOURCE-AUDIT 与 ontology/ 核对。
 
 ## 章节地图（问答镜像：ch N ↔ ch N+10）
 
@@ -23,16 +24,16 @@
 | ch08 | ch08-asil-decomposition-dfa/chapter.md | 分解拆开承诺不拆工作量；共因藏在缝里；独立是有分母的结论；DFA |
 | ch09 | ch09-production-operation/chapter.md | 三层身份（设计定义/批次/单件）；"等效"是设计结论；2100 台追回事故 |
 | ch10 | ch10-supporting-processes/chapter.md | 回到放行桌；档案≠案例；主张-论证-证据；TCL；纸面三极限 |
-| ch11 | ch11-claim-ontology/chapter.md | 可信主张本体；三元组/类与实例首讲；缺件即拒；Unknown 三值与局部完整性 |
-| ch12 | ch12-identity-ontology/chapter.md | 对象与同一本体；三族判据（履历/内容/配置）；Same/Different/Unknown；撞名闸 |
-| ch13 | ch13-governance-ontology/chapter.md | 治理本体；签名还原成关系；组织距离可计算；授权带日期 |
+| ch11 | ch11-claim-ontology/chapter.md | 可信主张本体；三元组/类与实例首讲；缺件即拒；Unknown 三值与局部完整性 · runnable: `demos/vol2_claim_gate_corroborate.py` |
+| ch12 | ch12-identity-ontology/chapter.md | 对象与同一本体；三族判据（履历/内容/配置）；Same/Different/Unknown；撞名闸 · runnable: `demos/vol2_ch12_identity_bridge.py` |
+| ch13 | ch13-governance-ontology/chapter.md | 治理本体；签名还原成关系；组织距离可计算；授权带日期 · runnable: `demos/vol2_ch13_governance_distance.py` |
 | ch14 | ch14-context-hazard-ontology/chapter.md | 情境危害本体；表格站成对象；换情境重开清单；空椅子 |
-| ch15 | ch15-requirements-ontology/chapter.md | 需求追溯本体；五要素缺项即拒；连线带理由；重开由查询返回 |
+| ch15 | ch15-requirements-ontology/chapter.md | 需求追溯本体；五要素缺项即拒；连线带理由；重开由查询返回 · runnable: `demos/vol2_ch15_reopen_list.py` |
 | ch16 | ch16-measurement-ontology/chapter.md | 测量证据本体；数字六条边；分母是名单；复制的数过不了夜 |
-| ch17 | ch17-change-ontology/chapter.md | 版本变化本体；快照与变更边；每张通过交代自己的世界；两种痛快被拦 |
-| ch18 | ch18-dependency-ontology/chapter.md | 依赖本体；缝成为一等对象；闭包查共享点；排除理由押着事实 |
-| ch19 | ch19-field-ontology/chapter.md | 制造现场本体；单件事件账；代换须挂设计评估；683 台反查 |
-| ch20 | ch20-assurance-ontology/chapter.md | 发布保证本体；活的安全案例；模型升级本体存活；终章三问 |
+| ch17 | ch17-change-ontology/chapter.md | 版本变化本体；快照与变更边；每张通过交代自己的世界；两种痛快被拦 · runnable: `demos/vol2_ch17_change_verdict_gate.py` |
+| ch18 | ch18-dependency-ontology/chapter.md | 依赖本体；缝成为一等对象；闭包查共享点；排除理由押着事实 · runnable: `demos/vol2_ch18_independence_meet.py` |
+| ch19 | ch19-field-ontology/chapter.md | 制造现场本体；单件事件账；代换须挂设计评估；683 台反查 · runnable: `demos/vol2_ch19_substitution_gate.py` |
+| ch20 | ch20-assurance-ontology/chapter.md | 发布保证本体；活的安全案例；模型升级本体存活；终章三问 · runnable: `demos/vol2_release_binding_gate.py` |
 | 附录 A–D | appendices/ | 半导体指南走查；摩托车/卡客车适配；受控术语表；28 张方法表速查 |
 | 路线图 | ch01-introduction/examples/book-roadmap.txt | 20 章依赖图、三条阅读路径、最短可用路径 |
 | 图谱 | handbook/book-figure-plan.yaml | 全书章首图与编号图的提示词计划 |
@@ -48,7 +49,7 @@
 ## 使用纪律
 
 - 案例边界：EPS-RC17 与 ENV-01 均为合成教学材料，不得作为真实产品结论引用。
-- 条款纪律：正文为 ISO 自然语言转述；需要精确条款/表格坐标时，指向仓库
-  `/Users/jqwang/143-工程规范` 的来源账，不要凭记忆报条款号。
+- 条款纪律：正文为 ISO 自然语言转述；需要精确条款/表格坐标时，回
+  `ONTOLOGY_ENGINEERING_AUTHORING_ROOT` 指向的受控来源账，不要凭记忆报条款号。
 - 两卷分工：概念/方法/语言/推理问题优先第一卷；功能安全实践、产品可信、
   标准本体化示范优先第二卷；"如何把一部规范本体化"用第二卷后十章做样例。

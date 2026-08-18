@@ -21,9 +21,10 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: runtime/requirements.txt
 
       - name: Install runtime (pinned)
-        run: pip install "semantica==0.6.5" "pyshacl>=0.25" "rdflib>=7.0"
+        run: pip install -r runtime/requirements.txt
 
       - name: Run all corroboration demos
         env:

@@ -11,10 +11,7 @@ if [ ! -d "$VENV" ]; then
   python3 -m venv "$VENV"
 fi
 "$VENV/bin/pip" install --quiet --upgrade pip
-"$VENV/bin/pip" install --quiet \
-  "semantica==0.6.5" \
-  "pyshacl>=0.25" \
-  "rdflib>=7.0"
+"$VENV/bin/pip" install --quiet -r "$RUNTIME_DIR/requirements.txt"
 
 echo "runtime ready: $VENV"
 echo "run demos with: $VENV/bin/python demos/<demo>.py"

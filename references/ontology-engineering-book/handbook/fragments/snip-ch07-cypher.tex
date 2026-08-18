@@ -1,0 +1,15 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ SPARQL（三元组库）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ PREFIX\ mfg:\ <http://example.org/manufacturing\#>}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ SELECT\ ?name\ ?power\ WHERE\ \{}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ ?e\ \ rdf:type/rdfs:subClassOf*\ mfg:Equipment\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ mfg:hasStatus\ \ mfg:Idle\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ mfg:locatedIn\ \ mfg:WorkCell\_A\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ mfg:hasName\ \ \ \ ?name\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ mfg:hasPower\ \ \ ?power\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \}}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ Cypher（Neo4j）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ MATCH\ (e:Equipment\ \{status:'Idle'\})-[:LOCATED\_IN]->(w:WorkCell\ \{name:'A'\})}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ RETURN\ e.name,\ e.power}}
+\end{codebox}

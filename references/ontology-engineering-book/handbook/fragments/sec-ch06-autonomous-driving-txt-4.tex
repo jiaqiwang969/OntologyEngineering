@@ -1,0 +1,23 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 时序关系推理规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：计算碰撞时间（TTC\ -\ Time\ to\ Collision）}}
+\codeline{Vehicle(?ego)\ \(\land\)\ Vehicle(?other)\ \(\land\)}
+\codeline{isInFrontOf(?other,\ ?ego)\ \(\land\)}
+\codeline{hasSpeed(?ego,\ ?v\_ego)\ \(\land\)\ hasSpeed(?other,\ ?v\_other)\ \(\land\)}
+\codeline{hasDistance(?ego,\ ?other,\ ?d)\ \(\land\)}
+\codeline{swrlb:greaterThan(?v\_ego,\ ?v\_other)\ \(\land\)}
+\codeline{swrlb:subtract(?v\_ego,\ ?v\_other,\ ?delta\_v)\ \(\land\)}
+\codeline{swrlb:divide(?d,\ ?delta\_v,\ ?ttc)\ \(\land\)}
+\codeline{swrlb:lessThan(?ttc,\ 3.0)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ CollisionRisk(?ego,\ ?other)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：识别行人过街危险场景}}
+\codeline{Pedestrian(?p)\ \(\land\)\ isCrossingRoad(?p,\ true)\ \(\land\)}
+\codeline{Vehicle(?v)\ \(\land\)\ isApproaching(?v,\ ?p)\ \(\land\)}
+\codeline{hasDistance(?v,\ ?p,\ ?d)\ \(\land\)}
+\codeline{swrlb:lessThan(?d,\ 30.0)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ PedestrianDangerZone(?p,\ ?v)}
+\end{codebox}

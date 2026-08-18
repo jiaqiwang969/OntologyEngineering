@@ -1,0 +1,21 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ CQ1\ 的验收查询：}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ PREFIX\ mfg:\ <http://example.org/manufacturing\#>}}
+\codeline{\textcolor{cmtgray}{\#\ SELECT\ ?equipment\ WHERE\ \{}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?equipment\ rdf:type/rdfs:subClassOf*\ mfg:Equipment\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?equipment\ mfg:canProcess\ ?m\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?m\ rdf:type\ mfg:AluminumAlloy\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \}}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 验收判据：返回结果与领域专家给出的标准答案一致}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ CQ7\ 的验收查询（约束校验类，期望结果为空集）：}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ SELECT\ ?e\ WHERE\ \{}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ?e\ rdf:type\ mfg:HighPowerEquipment\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ FILTER\ NOT\ EXISTS\ \{\ ?e\ mfg:requiresCooling\ ?c\ \}}}
+\codeline{\textcolor{cmtgray}{\#\ \}}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 验收判据：结果非空说明数据或公理有缺陷，需修复后复测}}
+\end{codebox}

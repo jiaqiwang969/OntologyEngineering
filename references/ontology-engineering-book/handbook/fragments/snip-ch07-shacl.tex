@@ -1,0 +1,15 @@
+\begin{codebox}
+\codeline{mfgsh:EquipmentShape}
+\codeline{\hspace*{4\ttcw}a\ sh:NodeShape\ ;}
+\codeline{\hspace*{4\ttcw}sh:targetClass\ mfg:Equipment\ ;}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 序列号：必填、唯一格式\ EQ-YYYY-NNNN}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:hasSerialNumber\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:maxCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:datatype\ xsd:string\ ;}
+\codeline{\hspace*{8\ttcw}sh:pattern\ "\^{}EQ-[0-9]\{4\}-[0-9]\{4\}\$"\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "设备必须有且仅有一个格式为\ EQ-YYYY-NNNN\ 的序列号"\ ;}
+\codeline{\hspace*{4\ttcw}]\ ;}
+\end{codebox}

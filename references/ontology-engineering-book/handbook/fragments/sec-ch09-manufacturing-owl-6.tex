@@ -1,0 +1,33 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 工艺模块\ (Process\ Module)\ -\ TBox}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{Class:\ :Process}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "加工工艺"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeblank{}
+\codeline{Class:\ :Operation}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "工序"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ owl:Thing}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :isPartOf\ some\ :Process}
+\codeblank{}
+\codeline{Class:\ :Turning}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "车削"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Operation}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :requires\ some\ :Lathe}
+\codeblank{}
+\codeline{Class:\ :Milling}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "铣削"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Operation}
+\codeblank{}
+\codeline{Class:\ :Drilling}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "钻孔"@zh}
+\codeline{\hspace*{4\ttcw}SubClassOf:\ :Operation}
+\codeblank{}
+\codeline{ObjectProperty:\ :requires}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "需要设备"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Operation}
+\codeline{\hspace*{4\ttcw}Range:\ :Equipment}
+\codeblank{}
+\end{codebox}

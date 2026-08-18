@@ -1,0 +1,23 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ CQ\ \(\rightarrow\)\ 本体元素的反推}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 每个CQ可机械地分解出本体需要的元素：}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ CQ1\ "哪些设备可以加工铝合金？"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 类：\ \ \ \ Equipment（设备）、Material（材料）、AluminumAlloy（铝合金）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 属性：\ \ canProcess（对象属性：Equipment\ \(\rightarrow\)\ Material）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 公理：\ \ AluminumAlloy\ \(\sqsubseteq\)\ Material}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 实例：\ \ 具体设备与材料个体}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ CQ4\ "任务T001与哪些任务存在时间冲突？"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 类：\ \ \ \ Task、TimeInterval、Conflict}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 属性：\ \ hasTimeInterval、assignedTo、conflictsWith}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 规则：\ \ 同设备时间区间重叠\ \(\rightarrow\)\ 冲突（SWRL实现见第5章）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ CQ8\ "哪些设备的维护记录超期？"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 类：\ \ \ \ MaintenanceRecord}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 属性：\ \ hasMaintenanceDate（数据属性：xsd:dateTime）、maintenanceCycle}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 约束：\ \ 当前时间\ -\ 上次维护时间\ >\ 周期\ \(\rightarrow\)\ 超期（需注入当前时间）}}
+\codeblank{}
+\end{codebox}

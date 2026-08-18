@@ -13,9 +13,8 @@ from pathlib import Path
 SKILL = Path(__file__).resolve().parent.parent
 NORM = SKILL / "references" / "iso-normative-ontology"
 BOOK2 = SKILL / "references" / "product-trustworthiness-book"
-SRC = Path(os.environ.get(
-    "ISO_SOURCE_ROOT",
-    "/Users/jqwang/143-工程规范/structured/mineru/ISO-26262-2018"))
+_source_root = os.environ.get("ISO_SOURCE_ROOT")
+SRC = Path(_source_root).expanduser() if _source_root else None
 
 PART_DIRS = {
     1: "part-01-vocabulary/native-full/ISO 26262-1-2018/auto/ISO 26262-1-2018_content_list_v2.json",
@@ -78,6 +77,18 @@ def load_glosses(part: int) -> dict:
     return out
 
 
+def required_extract(part: int) -> Path:
+    if SRC is None:
+        raise SystemExit(
+            "Engraving requires an authorized local extract. "
+            "Set ISO_SOURCE_ROOT to its controlled root."
+        )
+    path = SRC / PART_DIRS[part]
+    if not path.is_file():
+        raise SystemExit(f"required controlled extract is missing for Part {part}")
+    return path
+
+
 def mine_part1_from_glossary() -> list[dict]:
     """从附录 C 挖 Part 1 术语转述（本 skill 自带，无需外部件）。"""
     text = (BOOK2 / "appendices" / "appendix-c-glossary.md").read_text()
@@ -93,8 +104,8 @@ def mine_part1_from_glossary() -> list[dict]:
     return units
 
 
-def find_part1_anchor(units, extract_path: Path):
-    if not extract_path.exists(): return
+def find_part1_anchor(units, extract_path: Path | None):
+    if extract_path is None or not extract_path.exists(): return
     index = {}
     for pi, bi, txt in blocks(extract_path):
         m = re.match(r"^3\.(\d+)(?:\s|$)", txt)
@@ -152,8 +163,9 @@ def emit_cases_ttl(cases):
 
 
 def engrave_part1():
+    extract_path = required_extract(1)
     units = mine_part1_from_glossary()
-    find_part1_anchor(units, SRC / PART_DIRS[1])
+    find_part1_anchor(units, extract_path)
     cases = load_cases()
     emit_cases_ttl(cases)
     for u in units:
@@ -194,7 +206,7 @@ def engrave_part1():
 
 
 def engrave_part3():
-    path = SRC / PART_DIRS[3]
+    path = required_extract(3)
     glosses = load_glosses(3)
     units = []
     for pi, bi, txt in blocks(path):
@@ -237,6 +249,9 @@ def engrave_part3():
 if __name__ == "__main__":
     parts = [int(a.split("=")[-1]) for a in sys.argv[1:] if a.startswith("--part")] \
             or ([int(x) for x in sys.argv[2::2]] if "--part" in sys.argv else [1, 3])
+    # Preflight every requested source before the first generated file is touched.
+    for part in parts:
+        required_extract(part)
     if 1 in parts or not parts:
         n = engrave_part1()
         print(f"Part1: {n} 条术语已刻（含转述）")

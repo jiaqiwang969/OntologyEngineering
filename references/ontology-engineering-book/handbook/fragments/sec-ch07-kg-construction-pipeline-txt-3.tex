@@ -1,0 +1,20 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 结构化数据：映射式构建}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 台账表\ equipment\_ledger：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ id\ \ \ \ |\ name\ \ \ \ \ \ |\ model\ \ \ |\ power\_kw\ |\ workcell}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ E0117\ |\ 3号数控车床\ |\ CK6140\ \ |\ 15.5\ \ \ \ \ |\ A区}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ R2RML/自写脚本映射为三元组：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ mfg:Lathe\_003\ \ rdf:type\ \ \ \ \ \ \ \ \ mfg:CNCLathe\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mfg:hasSerialNumber\ "EQ-2023-0117"\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mfg:hasPower\ \ \ \ \ "15.5"\^{}\^{}xsd:float\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mfg:locatedIn\ \ \ \ mfg:WorkCell\_A\ .}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 映射要点：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 行\ \(\rightarrow\)\ 个体（IRI由稳定主键生成，禁止用易变的名称做IRI）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 列\ \(\rightarrow\)\ 数据属性；外键列\ \(\rightarrow\)\ 对象属性}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 代码表（如状态枚举）\(\rightarrow\)\ 受控词表个体}}
+\codeblank{}
+\end{codebox}

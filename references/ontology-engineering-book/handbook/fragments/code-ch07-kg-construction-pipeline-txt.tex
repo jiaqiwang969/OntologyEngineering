@@ -1,0 +1,94 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 知识图谱构建流水线\ -\ 制造领域}}
+\codeline{\textcolor{cmtgray}{\#\ Knowledge\ Graph\ Construction\ Pipeline\ for\ Manufacturing}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 目标：把分散在台账、工艺文件、维修日志中的知识}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ 统一到本体约束下的知识图谱中}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 数据源盘点}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 结构化数据（最容易，优先做）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 设备台账（Excel/MES数据库）——\ 设备、型号、功率、位置}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ BOM/工艺路线表\ \ \ \ \ \ \ \ \ \ \ \ \ ——\ 产品、工序、先后关系}}
+\codeline{\textcolor{cmtgray}{\#\ 半结构化数据：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 工艺规程文件（Word/PDF表格）——\ 参数、约束条款}}
+\codeline{\textcolor{cmtgray}{\#\ 非结构化数据（最难，价值高）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 维修日志、班组交接记录\ \ \ \ \ \ ——\ 故障现象、原因、处置}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 流水线总览}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 数据接入\ \(\rightarrow\)\ 映射/抽取\ \(\rightarrow\)\ 实体对齐\ \(\rightarrow\)\ 本体校验\ \(\rightarrow\)\ 入库\ \(\rightarrow\)\ 增量更新}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ └\ 三元组库/属性图}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ └\ SHACL形状校验（见\ kg-quality-shacl.ttl）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ \ └\ 同名归一（见\ entity-resolution.txt）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ │\ \ \ \ \ \ \ \ \ \ \ └\ 结构化:R2RML映射\ /\ 非结构化:NER+关系抽取}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ └\ CDC订阅台账变更、文档批量解析}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 结构化数据：映射式构建}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 台账表\ equipment\_ledger：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ id\ \ \ \ |\ name\ \ \ \ \ \ |\ model\ \ \ |\ power\_kw\ |\ workcell}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ E0117\ |\ 3号数控车床\ |\ CK6140\ \ |\ 15.5\ \ \ \ \ |\ A区}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ R2RML/自写脚本映射为三元组：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ mfg:Lathe\_003\ \ rdf:type\ \ \ \ \ \ \ \ \ mfg:CNCLathe\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mfg:hasSerialNumber\ "EQ-2023-0117"\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mfg:hasPower\ \ \ \ \ "15.5"\^{}\^{}xsd:float\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mfg:locatedIn\ \ \ \ mfg:WorkCell\_A\ .}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 映射要点：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 行\ \(\rightarrow\)\ 个体（IRI由稳定主键生成，禁止用易变的名称做IRI）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 列\ \(\rightarrow\)\ 数据属性；外键列\ \(\rightarrow\)\ 对象属性}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 代码表（如状态枚举）\(\rightarrow\)\ 受控词表个体}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 非结构化数据：抽取式构建}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 维修日志原文：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "3月21日，3号车床主轴异响，检查发现轴承磨损，更换轴承后恢复运行。"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 实体抽取（NER）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ [3号车床]\(\rightarrow\)Equipment\ \ [主轴]\(\rightarrow\)Component\ \ [异响]\(\rightarrow\)Symptom}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ [轴承磨损]\(\rightarrow\)FaultCause\ \ [更换轴承]\(\rightarrow\)RepairAction}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 关系抽取（RE）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (Lathe\_003,\ hasComponent,\ Spindle)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (FaultEvent\_0321,\ occursOn,\ Lathe\_003)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (FaultEvent\_0321,\ hasSymptom,\ AbnormalNoise)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (FaultEvent\_0321,\ hasCause,\ BearingWear)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (FaultEvent\_0321,\ resolvedBy,\ BearingReplacement)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 抽取技术选型：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 规则/模板\ \ ——\ 高精度低召回，适合格式固定的日志}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ NER模型\ \ \ \ ——\ 需标注数据，适合大批量同类文本}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ LLM抽取\ \ \ \ ——\ 零样本能力强，但必须经本体校验后入库（第8章详述）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 5.\ 入库前的本体校验闸门}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 每批待入库三元组必须通过三道检查：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (1)\ 词汇检查：类与属性必须在本体中已定义}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ （抽取结果出现\ mfg:SuperLathe\ \(\rightarrow\)\ 拒绝，进人工复核队列）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (2)\ 公理检查：不得违反不相交、函数性等公理}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ （同一设备两个序列号\ \(\rightarrow\)\ 违反函数性\ \(\rightarrow\)\ 拒绝）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (3)\ 形状检查：SHACL校验必填项、取值范围、格式}}
+\codeline{\textcolor{cmtgray}{\#\ 通过\ \(\rightarrow\)\ 写入；不通过\ \(\rightarrow\)\ 隔离区\ +\ 告警\ +\ 人工裁决}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 6.\ 增量更新与版本管理}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 全量重建仅用于初始化；日常采用增量：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 台账变更（CDC）\(\rightarrow\)\ 生成三元组补丁（INSERT/DELETE）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 文档新增\ \(\rightarrow\)\ 抽取\ \(\rightarrow\)\ 校验\ \(\rightarrow\)\ 追加}}
+\codeline{\textcolor{cmtgray}{\#\ 版本策略：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 本体（TBox）变更走发布流程（语义版本号\ +\ 变更日志）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 实例（ABox）变更记录到具名图，支持时间切片回溯（见第5章时态推理）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 工程经验：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 先打通"台账\(\rightarrow\)图谱"的结构化主干（两周可见效），}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 再逐步纳入非结构化抽取——避免一开始陷入NLP精度泥潭}}
+\end{codebox}

@@ -1,0 +1,49 @@
+
+\section{本章内容}
+
+大语言模型带来强大的语言理解与生成能力，也带来幻觉风险。
+本章给出"本体 \(\times\) LLM"的四种工程融合模式：
+\begin{itemize}
+\item \textbf{幻觉控制三层架构}：生成前约束注入、生成中工具调用、生成后事实校验
+\item \textbf{GraphRAG}：以知识图谱子图增强检索，解决多跳问题与结构丢失
+\item \textbf{Text2SPARQL}：自然语言到查询语言的安全转换
+\item \textbf{本体引导的 Agent}：让智能体的每个动作经过本体校验与审计
+\end{itemize}
+
+\section{文件说明}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}XX@{}}
+\toprule
+\textbf{文件} & \textbf{内容} \\
+\midrule
+\texttt{hallucination-control.txt} & 幻觉控制三层架构与制造场景实例 \\
+\texttt{graphrag-pattern.txt} & GraphRAG 检索模式：子图扩展与序列化 \\
+\texttt{text2sparql.txt} & 自然语言转SPARQL：模板法、LLM生成与校验层 \\
+\texttt{ontology-guided-agent.py} & 本体引导Agent参考实现（提议\(\rightarrow\)校验\(\rightarrow\)执行\(\rightarrow\)审计） \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{LLM 与本体的互补}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{能力} & \textbf{LLM} & \textbf{本体/知识图谱} \\
+\midrule
+自然语言理解 & 强 & 无 \\
+事实可靠性 & 不保证（统计推断） & 强（结构化断言） \\
+一致性检验 & 无 & 推理器/SHACL \\
+可解释性 & 弱 & 强（推理路径+溯源） \\
+知识更新 & 需重训/微调 & 增量写入即生效 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{核心原则}
+
+\begin{noteblock}
+LLM 负责"理解与表达"，本体负责"事实与约束"——
+任何进入业务系统的结论，都必须能追溯到本体中的一条结构化知识。
+\end{noteblock}

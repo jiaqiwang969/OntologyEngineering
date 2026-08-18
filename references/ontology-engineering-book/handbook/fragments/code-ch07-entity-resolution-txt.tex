@@ -1,0 +1,84 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 实体对齐与消歧示例}}
+\codeline{\textcolor{cmtgray}{\#\ Entity\ Resolution\ and\ Disambiguation}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 同一台设备在不同系统中有不同标识——对齐是知识融合的第一关}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 问题形态}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 同一实体多种写法（需合并）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 台账系统：\ \ "3号数控车床"\ \ (id=E0117)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ MES系统：\ \ \ "CNC-Lathe-003"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 维修日志：\ \ "3\#车床"\ /\ "三号车床"\ /\ "L003"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 不同实体同名（需区分）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "加工中心"\ ——\ A车间的\ VMC850\ 与\ B车间的\ VMC1060\ 都被这么叫}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 第一层：规则归一化}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 编号正则归一：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ "3号|3\#|三号|No.3"\ \ +\ "车床"\ \ \(\rightarrow\)\ \ 候选\ Lathe\_003}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 设备编号\ "E0117"\ /\ "EQ-2023-0117"\ \(\rightarrow\)\ 去前缀补零归一}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 别名表（最朴素也最有效）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Lathe\_003:\ \ ["3号数控车床",\ "CNC-Lathe-003",\ "3\#车床",\ "L003"]}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 维护成本低，命中即对齐；新别名出现时人工补一行}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规格归一化：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 功率\ "15.5kW"\ /\ "15500W"\ /\ "15.5千瓦"\ \(\rightarrow\)\ 15.5\ (kW,\ xsd:float)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 日期\ "2026/3/21"\ /\ "26年3月21日"\ \ \ \ \ \(\rightarrow\)\ "2026-03-21"\^{}\^{}xsd:date}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 第二层：相似度匹配}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 规则未命中时，计算候选对的加权相似度：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 名称相似度（编辑距离/拼音）\ \ \ \ \ \ \ \ \ \ 权重\ 0.3}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 属性相似度（型号、功率、厂商一致性）\ \ 权重\ 0.4}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 关系相似度（所在工作单元、操作工重合）权重\ 0.3}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 判定阈值：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ score\ \(\ge\)\ 0.90\ \ \(\rightarrow\)\ 自动合并}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 0.70\ \textasciitilde{}\ 0.90\ \ \ \(\rightarrow\)\ 进人工复核队列}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ score\ <\ 0.70\ \ \(\rightarrow\)\ 视为不同实体}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 示例：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ ("3号车床",\ power=15.5,\ cell=A)\ vs\ (CNC-Lathe-003,\ power=15.5,\ cell=A)}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 名称0.6\(\times\)0.3\ +\ 属性1.0\(\times\)0.4\ +\ 关系1.0\(\times\)0.3\ =\ 0.88\ \(\rightarrow\)\ 人工复核\ \(\rightarrow\)\ 确认合并}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 合并的表达：owl:sameAs\ 及其陷阱}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 确认对齐后的两种做法：}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 做法A：物理合并（推荐用于同一企业内部）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 选定主IRI（mfg:Lathe\_003），其余标识写成别名属性：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ mfg:Lathe\_003\ mfg:hasAlias\ "CNC-Lathe-003",\ "3\#车床"\ .}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 做法B：owl:sameAs\ 关联（用于跨系统联邦场景）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ mes:CNC-Lathe-003\ owl:sameAs\ mfg:Lathe\_003\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 陷阱：sameAs是强语义——两个IRI的所有断言互相传播；}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 若对齐错误，错误属性会"传染"到正确实体。}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 联邦场景中宁可用弱关联\ skos:closeMatch，确认后再升级为sameAs}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 5.\ 冲突消解}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 对齐后属性值冲突：台账说功率15.5，MES说11.0}}
+\codeline{\textcolor{cmtgray}{\#\ 消解策略（按优先级）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (1)\ 来源可信度：台账(设备科维护)\ >\ MES配置\ >\ 日志文本抽取}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (2)\ 时效性：带时间戳的新值覆盖旧值（保留历史到具名图）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (3)\ 提交裁决：高价值字段（安全相关）冲突必须人工确认}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 溯源记录（与第5章PROV思想一致）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 每条三元组附带来源与时间元数据，}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 冲突裁决时可追溯"这个值是谁、什么时候、从哪个系统来的"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 6.\ 工程建议}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 对齐质量直接决定图谱可信度，上线前用抽样审计：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 随机抽200个合并决策人工复核，精确率应\ \(\ge\)\ 98\%}}
+\codeline{\textcolor{cmtgray}{\#\ 阈值不是一次定终身：每月用复核队列的人工标注回归调参}}
+\end{codebox}

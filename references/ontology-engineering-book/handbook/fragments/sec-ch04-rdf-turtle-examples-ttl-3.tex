@@ -1,0 +1,65 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 属性定义\ (Property\ Definitions)\ -\ RBox}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 对象属性}}
+\codeline{mfg:canProcess\ a\ owl:ObjectProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Equipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ mfg:Material\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "能加工"@zh\ .}
+\codeblank{}
+\codeline{mfg:locatedIn\ a\ owl:ObjectProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Equipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ mfg:WorkCell\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "位于"@zh\ .}
+\codeblank{}
+\codeline{mfg:producedBy\ a\ owl:ObjectProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Product\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ mfg:Equipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "由...生产"@zh\ .}
+\codeblank{}
+\codeline{mfg:requires\ a\ owl:ObjectProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Operation\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ mfg:Equipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "需要"@zh\ .}
+\codeblank{}
+\codeline{mfg:precedes\ a\ owl:ObjectProperty\ ;}
+\codeline{\hspace*{4\ttcw}a\ owl:TransitiveProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Operation\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ mfg:Operation\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "先于"@zh\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:comment\ "工序之间的先后顺序，具有传递性"@zh\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 数据属性}}
+\codeline{mfg:serialNumber\ a\ owl:DatatypeProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Equipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ xsd:string\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "序列号"@zh\ .}
+\codeblank{}
+\codeline{mfg:weight\ a\ owl:DatatypeProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Equipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ xsd:decimal\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:comment\ "单位：kg"@zh\ .}
+\codeblank{}
+\codeline{mfg:power\ a\ owl:DatatypeProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Equipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ xsd:decimal\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:comment\ "单位：kW"@zh\ .}
+\codeblank{}
+\codeline{mfg:maxDiameter\ a\ owl:DatatypeProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Lathe\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ xsd:decimal\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:comment\ "车床最大加工直径，单位：mm"@zh\ .}
+\codeblank{}
+\codeline{mfg:price\ a\ owl:DatatypeProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Product\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ xsd:decimal\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:comment\ "单位：元"@zh\ .}
+\codeblank{}
+\codeline{mfg:duration\ a\ owl:DatatypeProperty\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:domain\ mfg:Operation\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:range\ xsd:integer\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:comment\ "单位：分钟"@zh\ .}
+\codeblank{}
+\end{codebox}

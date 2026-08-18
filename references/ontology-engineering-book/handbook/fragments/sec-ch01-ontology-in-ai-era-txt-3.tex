@@ -1,0 +1,18 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 本体作为幻觉控制层}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 本体为\ AI\ 系统提供三类硬约束：}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (1)\ 词汇约束\ ——\ AI\ 只能使用本体中定义的类与属性}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 防止编造不存在的概念（"超导车床"）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (2)\ 公理约束\ ——\ 违反公理的陈述直接被拒绝}}
+\codeline{Running\ \(\sqcap\)\ Maintenance\ \(\sqsubseteq\)\ \(\bot\)\ \ \ \ \ \ \ \ \#\ "设备正在运行中维护"是非法陈述}
+\codeline{Equipment\ \(\sqcap\)\ Material\ \(\sqsubseteq\)\ \(\bot\)\ \ \ \ \ \ \ \ \ \ \#\ "把车床作为原材料投料"是非法陈述}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (3)\ 范围约束\ ——\ 数值必须落在物理合理区间}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 功率\ ∈\ [0,\ 10000]\ kW；温度\ \(\ge\)\ -273.15\ °C}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ （SHACL\ 实现见第7章质量校验）}}
+\codeblank{}
+\end{codebox}

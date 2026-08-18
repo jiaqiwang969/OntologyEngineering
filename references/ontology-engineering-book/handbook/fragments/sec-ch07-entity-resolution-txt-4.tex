@@ -1,0 +1,17 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 合并的表达：owl:sameAs\ 及其陷阱}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 确认对齐后的两种做法：}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 做法A：物理合并（推荐用于同一企业内部）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 选定主IRI（mfg:Lathe\_003），其余标识写成别名属性：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ mfg:Lathe\_003\ mfg:hasAlias\ "CNC-Lathe-003",\ "3\#车床"\ .}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 做法B：owl:sameAs\ 关联（用于跨系统联邦场景）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ mes:CNC-Lathe-003\ owl:sameAs\ mfg:Lathe\_003\ .}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 陷阱：sameAs是强语义——两个IRI的所有断言互相传播；}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 若对齐错误，错误属性会"传染"到正确实体。}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 联邦场景中宁可用弱关联\ skos:closeMatch，确认后再升级为sameAs}}
+\codeblank{}
+\end{codebox}

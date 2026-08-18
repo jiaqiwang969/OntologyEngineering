@@ -1,0 +1,41 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ Tableau推理演示}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 问题：Lathe\_003\ 是否需要冷却系统？}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ TBox（类定义）：}}
+\codeline{高功率设备\ \(\equiv\)\ 设备\ \(\land\)\ \(\exists\)功率.浮点数[\(\ge\)15]}
+\codeline{高功率设备\ \(\sqsubseteq\)\ \(\exists\)需要冷却.冷却系统}
+\codeline{设备\ \(\land\)\ 材料\ \(\sqsubseteq\)\ \(\bot\)\ \ \ （设备和材料不相交）}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ABox（事实）：}}
+\codeline{设备(Lathe\_003)}
+\codeline{功率(Lathe\_003,\ 15.5)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 推理步骤：}}
+\codeline{\textcolor{cmtgray}{\#\ 步骤1：匹配等价类规则}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 功率(Lathe\_003,\ 15.5)，且\ 15.5\ \(\ge\)\ 15，满足"\(\exists\)功率.浮点数[\(\ge\)15]"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 结合"高功率设备\ \(\equiv\)\ 设备\ \(\land\)\ \(\exists\)功率.浮点数[\(\ge\)15]"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 推出：Lathe\_003\ 属于高功率设备}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 步骤2：应用子类公理}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 已知"高功率设备\ \(\sqsubseteq\)\ \(\exists\)需要冷却.冷却系统"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 且\ Lathe\_003\ 属于高功率设备}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 推出：Lathe\_003\ 属于"\(\exists\)需要冷却.冷却系统"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 步骤3：应用存在规则}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Lathe\_003\ 属于"\(\exists\)需要冷却.冷却系统"，模型中没有对应的冷却系统个体}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 创建新个体\ cooling\_1}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 添加：需要冷却(Lathe\_003,\ cooling\_1)\ 和\ 冷却系统(cooling\_1)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 结论：Lathe\_003\ 需要冷却系统\ \(\checkmark\)}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ Tableau算法终止条件：}}
+\codeline{\textcolor{cmtgray}{\#\ 产生冲突\ \(\rightarrow\)\ 概念C不可满足}}
+\codeline{\textcolor{cmtgray}{\#\ 没有规则可应用\ \(\rightarrow\)\ 概念C可满足（找到了合法模型）}}
+\codeline{\textcolor{cmtgray}{\#\ 所有分支都有冲突\ \(\rightarrow\)\ 概念C不可满足}}
+\codeline{\textcolor{cmtgray}{\#\ 至少有一个分支无冲突\ \(\rightarrow\)\ 概念C可满足}}
+\codeblank{}
+\end{codebox}

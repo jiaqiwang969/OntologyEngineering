@@ -1,0 +1,27 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 具名图（Named\ Graph）示例}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ Named\ Graph\ 允许对\ RDF\ 三元组进行分组和命名}}
+\codeline{\textcolor{cmtgray}{\#\ 常用于表达时间快照或来源元数据}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ TriG\ 格式（Turtle的扩展，支持具名图）：}}
+\codeline{\textcolor{cmtgray}{\#\ 具名图的图名必须是URI（用尖括号括起来），不能是裸名}}
+\codeline{\textcolor{cmtgray}{\#\ Named\ graph\ names\ must\ be\ URIs\ enclosed\ in\ angle\ brackets,\ not\ bare\ identifiers.}}
+\codeblank{}
+\codeline{@prefix\ :\ <http://example.org/manufacturing\#>\ .}
+\codeline{@prefix\ xsd:\ <http://www.w3.org/2001/XMLSchema\#>\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 2024年3月21日的状态快照}}
+\codeline{<http://example.org/graph/20240321>\ \{}
+\codeline{\hspace*{4\ttcw}:Lathe\_003\ :status\ "Idle"\ ;\ \ \ \ \ \ \ \ \ \ \ \#\ 车床状态为闲置}
+\codeline{\hspace*{15\ttcw}:locatedIn\ :WorkCell\_B\ .\ \ \ \#\ 位于工作单元B}
+\codeline{\}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 2024年3月22日的状态快照（设备已被移动）}}
+\codeline{<http://example.org/graph/20240322>\ \{}
+\codeline{\hspace*{4\ttcw}:Lathe\_003\ :status\ "Running"\ ;}
+\codeline{\hspace*{15\ttcw}:locatedIn\ :WorkCell\_A\ .\ \ \ \#\ 已移动到A区}
+\codeline{\}}
+\codeblank{}
+\end{codebox}

@@ -1,0 +1,69 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 航空航天FMEA本体应用}}
+\codeline{\textcolor{cmtgray}{\#\ Aerospace\ FMEA\ (Failure\ Mode\ and\ Effect\ Analysis)\ Ontology}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 本体论驱动的故障模式与影响分析，实现自动推理与可追溯性}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ FMEA本体核心概念}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ System\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ 系统（如液压系统）}}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ Component\ \ \ \ \ \ \ \ \ \ \ \ \#\ 组件（如泵、阀门、管路）}}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ FailureMode\ \ \ \ \ \ \ \ \ \ \#\ 故障模式（如泄漏、堵塞、断裂）}}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ Effect\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ 影响（局部影响\(\rightarrow\)系统影响\(\rightarrow\)飞行影响）}}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ Cause\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ 故障原因}}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ Detection\ \ \ \ \ \ \ \ \ \ \ \ \#\ 探测方法}}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ MitigationAction\ \ \ \ \ \#\ 缓解措施}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 关键关系}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ hasFailureMode：组件\ \(\rightarrow\)\ 故障模式（一对多）}}
+\codeline{\textcolor{cmtgray}{\#\ causes：故障模式\ \(\rightarrow\)\ 影响（一对多，可传递）}}
+\codeline{\textcolor{cmtgray}{\#\ hasCause：故障模式\ \(\rightarrow\)\ 原因}}
+\codeline{\textcolor{cmtgray}{\#\ detectedBy：故障模式\ \(\rightarrow\)\ 探测方法}}
+\codeline{\textcolor{cmtgray}{\#\ mitigatedBy：影响\ \(\rightarrow\)\ 缓解措施}}
+\codeline{\textcolor{cmtgray}{\#\ propagatesTo：局部影响\ \(\rightarrow\)\ 系统影响\ \(\rightarrow\)\ 飞行影响}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ SWRL推理规则（自动影响推导）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：液压泵故障\ \(\rightarrow\)\ 液压系统压力丧失}}
+\codeline{Component(?c)\ \(\land\)\ hasFailureMode(?c,\ ?fm)\ \(\land\)}
+\codeline{HydraulicPump(?c)\ \(\land\)\ FailureMode\_Blockage(?fm)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ SystemEffect\_PressureLoss(?fm)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：液压系统压力丧失\ \(\rightarrow\)\ 飞行控制面失效}}
+\codeline{SystemEffect\_PressureLoss(?se)\ \(\land\)\ affects(?se,\ ?cs)\ \(\land\)}
+\codeline{ControlSurface(?cs)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ FlightEffect\_ControlLoss(?se)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：设计变更影响分析（可追溯性）}}
+\codeline{DesignChange(?dc)\ \(\land\)\ affects(?dc,\ ?component)\ \(\land\)}
+\codeline{hasFailureMode(?component,\ ?fm)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ requiresFMEAUpdate(?dc,\ ?fm)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 应用效果}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ FMEA分析周期：6个月\ \(\rightarrow\)\ 6周（缩短75\%）}}
+\codeline{\textcolor{cmtgray}{\#\ 故障模式识别量：提升40\%}}
+\codeline{\textcolor{cmtgray}{\#\ 设计变更FMEA更新：2周\ \(\rightarrow\)\ 2天}}
+\codeline{\textcolor{cmtgray}{\#\ 可追溯性：设计变更\(\rightarrow\)影响分析\(\rightarrow\)FMEA更新全链路追踪}}
+\codeline{\textcolor{cmtgray}{\#\ 自动推理：局部故障\ \(\rightarrow\)\ 系统影响\ \(\rightarrow\)\ 最终飞行影响}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 飞机液压系统FMEA示例}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 组件：液压泵(HydraulicPump\_01)}}
+\codeline{\textcolor{cmtgray}{\#\ 故障模式：堵塞(Blockage)}}
+\codeline{\textcolor{cmtgray}{\#\ 原因：液压油污染}}
+\codeline{\textcolor{cmtgray}{\#\ 局部影响：泵输出流量减少}}
+\codeline{\textcolor{cmtgray}{\#\ 系统影响：液压系统压力丧失}}
+\codeline{\textcolor{cmtgray}{\#\ 飞行影响：飞行控制面响应迟滞，严重时失控}}
+\codeline{\textcolor{cmtgray}{\#\ 探测方法：压力传感器、流量监测}}
+\codeline{\textcolor{cmtgray}{\#\ 缓解措施：冗余液压系统、定期液压油更换}}
+\end{codebox}

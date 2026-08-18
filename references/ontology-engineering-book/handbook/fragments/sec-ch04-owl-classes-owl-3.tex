@@ -1,0 +1,29 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ OWL约束（属性限制）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ OWL\ Property\ Restrictions}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 存在限制（\(\exists\)）：每个产品至少经过一次检验}}
+\codeline{\textcolor{cmtgray}{\#\ ExistentialRestriction:\ hasInspection\ some\ Inspection}}
+\codeblank{}
+\codeline{Class:\ :QualifiedProduct}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "合格产品"@zh}
+\codeline{\hspace*{4\ttcw}EquivalentTo:}
+\codeline{\hspace*{8\ttcw}:Product}
+\codeline{\hspace*{8\ttcw}and\ (:hasInspection\ some}
+\codeline{\hspace*{12\ttcw}(:Inspection}
+\codeline{\hspace*{13\ttcw}and\ (:hasResult\ value\ "Pass")))}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 全称限制（\(\forall\)）：高端设备的所有特性都是高级特性}}
+\codeline{\textcolor{cmtgray}{\#\ UniversalRestriction:\ hasFeature\ only\ AdvancedFeature}}
+\codeblank{}
+\codeline{Class:\ :HighEndEquipment}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "高端设备"@zh}
+\codeline{\hspace*{4\ttcw}EquivalentTo:}
+\codeline{\hspace*{8\ttcw}:Equipment}
+\codeline{\hspace*{8\ttcw}and\ (:price\ some\ xsd:decimal[>=\ "1000000"\^{}\^{}xsd:decimal])}
+\codeline{\hspace*{8\ttcw}and\ (:hasFeature\ only\ :AdvancedFeature)}
+\end{codebox}

@@ -1,0 +1,24 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 路线B的校验层（关键防线）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ LLM生成的SPARQL必须依次通过四道检查：}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (1)\ 语法校验}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 用SPARQL解析器（Jena\ ARQ\ /\ rdflib）解析，失败\(\rightarrow\)重试或回退模板}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (2)\ 操作白名单（防注入/防破坏）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 只允许\ SELECT\ /\ ASK；}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 拒绝\ INSERT\ /\ DELETE\ /\ DROP\ /\ LOAD\ /\ SERVICE（防外联）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 生产端点同时在服务端禁用update（双保险）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (3)\ Schema校验（防"词汇幻觉"）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 查询中出现的类/属性必须存在于本体：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ LLM编造\ mfg:hasMaxSpeed（本体中只有\ mfg:hasSpindleSpeed）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ \(\rightarrow\)\ Schema校验失败\ \(\rightarrow\)\ 把本体属性清单回喂LLM重新生成}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 这是Text2SPARQL最常见错误，校验后准确率提升显著}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (4)\ 资源限额}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 强制\ LIMIT（如1000）、查询超时（如5s）、禁用笛卡尔积形态}}
+\codeblank{}
+\end{codebox}

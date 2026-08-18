@@ -1,0 +1,19 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 选型决策表}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 维度\ \ \ \ \ \ \ \ \ \ \ \ \ \ 三元组库(Jena/GraphDB)\ \ \ \ \ \ 属性图(Neo4j等)}}
+\codeline{\textcolor{cmtgray}{\#\ ----------------\ \ --------------------------\ \ --------------------------}}
+\codeline{\textcolor{cmtgray}{\#\ 本体/推理支持\ \ \ \ \ \ 原生（RDFS/OWL/SHACL）\ \ \ \ \ \ 无原生推理，需应用层实现}}
+\codeline{\textcolor{cmtgray}{\#\ 标准化\ \ \ \ \ \ \ \ \ \ \ \ W3C标准，厂商可替换\ \ \ \ \ \ \ \ \ \ 各家方言（Cypher/GQL在统一）}}
+\codeline{\textcolor{cmtgray}{\#\ 边属性\ \ \ \ \ \ \ \ \ \ \ \ 繁琐（具名图/RDF-star）\ \ \ \ \ \ 原生支持}}
+\codeline{\textcolor{cmtgray}{\#\ 图算法\ \ \ \ \ \ \ \ \ \ \ \ 较弱\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 强（路径/社区/中心性）}}
+\codeline{\textcolor{cmtgray}{\#\ 联邦查询\ \ \ \ \ \ \ \ \ \ SERVICE关键字原生支持\ \ \ \ \ \ \ \ 需插件}}
+\codeline{\textcolor{cmtgray}{\#\ 团队上手\ \ \ \ \ \ \ \ \ \ 需RDF知识\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 开发者友好}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 选型经验：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 推理与标准合规优先（本书主线场景）\(\rightarrow\)\ 三元组库}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 路径分析/图算法密集（如供应链追溯）\(\rightarrow\)\ 属性图}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 混合架构：三元组库做权威知识层，按需投影到属性图做分析}}
+\codeblank{}
+\end{codebox}

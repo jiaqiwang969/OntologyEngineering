@@ -1,0 +1,91 @@
+
+\section{项目概述}
+
+本章是全书综合实战案例，实现一个完整的 \textbf{智能制造知识管理系统}，
+涵盖本体设计、Java/Jena查询服务、Python推理引擎的完整技术栈。
+
+\section{系统架构}
+
+\begin{codebox}
+\codeline{智能制造知识管理系统}
+\codeline{├──\ 本体层\ (Ontology\ Layer)}
+\codeline{│\ \ \ ├──\ manufacturing.owl\ \ \ \ \#\ 核心制造本体（Manchester语法）}
+\codeline{│\ \ \ └──\ sparql-queries.sparql\ \#\ 标准查询集}
+\codeline{├──\ 查询服务\ (Query\ Service)}
+\codeline{│\ \ \ ├──\ OntologyManager.java\ \#\ 本体加载与管理（Apache\ Jena）}
+\codeline{│\ \ \ └──\ QueryService.java\ \ \ \ \#\ SPARQL查询服务}
+\codeline{└──\ 推理引擎\ (Reasoning\ Engine)}
+\codeline{\hspace*{4\ttcw}└──\ reasoner.py\ \ \ \ \ \ \ \ \ \ \#\ 基于owlready2的推理与冲突检测}
+\end{codebox}
+
+\section{技术栈}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{层次} & \textbf{技术} & \textbf{版本} \\
+\midrule
+本体语言 & OWL Manchester Syntax & OWL 2 DL \\
+Java查询 & Apache Jena & 4.10.0+ \\
+Python推理 & owlready2 + Pellet & 0.46+ \\
+规则引擎 & SWRL + swrlb & - \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{快速开始}
+
+\subsection{运行Java查询服务}
+
+Maven依赖：
+\begin{codebox}
+\codeline{<dependency>}
+\codeline{\hspace*{2\ttcw}<groupId>org.apache.jena</groupId>}
+\codeline{\hspace*{2\ttcw}<artifactId>apache-jena-libs</artifactId>}
+\codeline{\hspace*{2\ttcw}<version>4.10.0</version>}
+\codeline{\hspace*{2\ttcw}<type>pom</type>}
+\codeline{</dependency>}
+\end{codebox}
+
+\begin{codebox}
+\codeline{mvn\ compile}
+\codeline{java\ -cp\ target/classes:target/dependency/*\ QueryService}
+\end{codebox}
+
+\subsection{运行Python推理引擎}
+\begin{codebox}
+\codeline{pip\ install\ owlready2}
+\codeline{python\ src/reasoner.py}
+\end{codebox}
+
+\section{系统核心能力}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{CQ} & \textbf{问题} & \textbf{实现方式} \\
+\midrule
+CQ1 & 哪些设备可以加工铝合金？ & SPARQL查询 \\
+CQ2 & 当前哪些设备空闲？ & SPARQL + hasStatus \\
+CQ3 & 任务T001存在哪些冲突？ & SWRL规则推理 \\
+CQ4 & 产品P001推荐什么工艺？ & 相似性规则 \\
+CQ5 & 工单W001的工序顺序？ & 传递性属性推理 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{开发技术说明}
+
+\subsection{Apache Jena}
+\begin{itemize}
+\item \texttt{OntModel}: 支持OWL推理的本体模型
+\item \texttt{ModelFactory.createOntologyModel(OntModelSpec.OWL\_DL\_MEM\_RULE\_INF)}: 创建带内置推理器的模型
+\item \texttt{QueryExecutionFactory.create(sparql, model)}: 执行SPARQL查询
+\end{itemize}
+
+\subsection{owlready2}
+\begin{itemize}
+\item \texttt{get\_ontology(path).load()}: 加载本体
+\item \texttt{sync\_reasoner\_pellet()}: 运行Pellet推理器
+\item \texttt{onto.search(type=SomeClass)}: 查询特定类的实例
+\end{itemize}

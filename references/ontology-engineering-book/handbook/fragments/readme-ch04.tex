@@ -1,0 +1,53 @@
+
+\section{本章内容}
+
+本章介绍工程本体论中常用的描述语言和工具，包括：
+\begin{itemize}
+\item RDF (Resource Description Framework) 及其序列化格式
+\item RDFS (RDF Schema)
+\item OWL (Web Ontology Language)
+\item SPARQL 查询语言
+\item Protégé 本体编辑器
+\end{itemize}
+
+\section{文件说明}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}XX@{}}
+\toprule
+\textbf{文件} & \textbf{内容} \\
+\midrule
+\texttt{rdf-turtle-examples.ttl} & RDF Turtle格式示例（制造领域） \\
+\texttt{rdf-xml-examples.rdf} & RDF/XML格式示例 \\
+\texttt{rdfs-examples.ttl} & RDFS模式定义示例 \\
+\texttt{owl-classes.owl} & OWL类层次与约束（Manchester语法） \\
+\texttt{owl-properties.owl} & OWL属性定义示例 \\
+\texttt{sparql-queries.sparql} & SPARQL查询示例集 \\
+\texttt{property-restrictions.txt} & OWL属性约束说明（\(\exists\)/\(\forall\)限制） \\
+\texttt{manufacturing.owl} & 制造本体完整示例（配合4.5.3节Protégé教程） \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{语言对比}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{语言} & \textbf{表达能力} & \textbf{主要用途} \\
+\midrule
+RDF & 三元组事实 & 数据表示 \\
+RDFS & 类与属性定义 & 基础模式 \\
+OWL DL & 完整描述逻辑 & 工程本体 \\
+SPARQL & 图查询 & 知识检索 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Protégé快速入门}
+
+\begin{enumerate}
+\item 安装插件：Tools \(\rightarrow\) Plugins，安装 OntoGraf（可视化）、SWRL Tab（规则）、SPARQL Query（查询）
+\item 新建本体：File \(\rightarrow\) New，在 Active Ontology 视图设置 IRI
+\item 导入本体：Active Ontology \(\rightarrow\) Ontology imports，输入IRI或本地文件
+\end{enumerate}

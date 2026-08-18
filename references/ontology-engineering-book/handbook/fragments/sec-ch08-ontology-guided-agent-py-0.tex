@@ -1,0 +1,148 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 本体引导的Agent参考实现：提议\ ->\ 校验\ ->\ 执行\ ->\ 审计}}
+\codeline{\textcolor{cmtgray}{\#\ Ontology-Guided\ Agent:\ propose\ ->\ validate\ ->\ execute\ ->\ audit}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 演示用最小实现：本体用字典模拟（生产中替换为rdflib/owlready2\ +\ SPARQL端点）}}
+\codeline{\textcolor{cmtgray}{\#\ 运行：python3\ ontology-guided-agent.py}}
+\codeblank{}
+\codeline{from\ dataclasses\ import\ dataclass,\ field}
+\codeline{from\ datetime\ import\ datetime,\ timezone}
+\codeblank{}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ------------------------------}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 本体层（生产中=OWL本体+知识图谱，此处用字典模拟TBox/ABox）}}
+\codeline{\textcolor{cmtgray}{\#\ ------------------------------}}
+\codeline{ONTOLOGY\ =\ \{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 设备状态机：本体中的合法状态转换公理}}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ Running\ ->\ Maintenance\ 合法；Fault\ ->\ Running\ 非法（必须先维修）}}
+\codeline{\hspace*{4\ttcw}"status\_transitions":\ \{}
+\codeline{\hspace*{8\ttcw}("Running",\ "Maintenance"),\ ("Idle",\ "Maintenance"),}
+\codeline{\hspace*{8\ttcw}("Idle",\ "Running"),\ ("Running",\ "Idle"),}
+\codeline{\hspace*{8\ttcw}("Maintenance",\ "Idle"),\ ("Fault",\ "Maintenance"),}
+\codeline{\hspace*{4\ttcw}\},}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 动作的前置约束（来自公理：维护中的设备不能派工）}}
+\codeline{\hspace*{4\ttcw}"action\_preconditions":\ \{}
+\codeline{\hspace*{8\ttcw}"assign\_task":\ \ \ \ \{"allowed\_status":\ \{"Idle"\}\},}
+\codeline{\hspace*{8\ttcw}"set\_maintenance":\ \{"allowed\_status":\ \{"Running",\ "Idle",\ "Fault"\}\},}
+\codeline{\hspace*{4\ttcw}\},}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ ABox：当前事实}}
+\codeline{\hspace*{4\ttcw}"equipment":\ \{}
+\codeline{\hspace*{8\ttcw}"Lathe\_003":\ \{"type":\ "CNCLathe",\ "status":\ "Running",\ "power":\ 15.5\},}
+\codeline{\hspace*{8\ttcw}"Mill\_007":\ \ \{"type":\ "CNCMillingMachine",\ "status":\ "Fault",\ "power":}
+\codeline{\hspace*{12\ttcw}11.0\},}
+\codeline{\hspace*{4\ttcw}\},}
+\codeline{\}}
+\codeblank{}
+\codeline{VALID\_ACTIONS\ =\ \{"assign\_task",\ "set\_maintenance",\ "set\_status",\ "query"\}}
+\codeblank{}
+\codeblank{}
+\codeline{@dataclass}
+\codeline{class\ AuditRecord:}
+\codeline{\hspace*{4\ttcw}"""PROV风格审计记录：每个决策可溯源"""}
+\codeline{\hspace*{4\ttcw}timestamp:\ str}
+\codeline{\hspace*{4\ttcw}action:\ str}
+\codeline{\hspace*{4\ttcw}target:\ str}
+\codeline{\hspace*{4\ttcw}verdict:\ str\ \ \ \ \ \ \ \ \ \ \#\ APPROVED\ /\ REJECTED}
+\codeline{\hspace*{4\ttcw}reason:\ str}
+\codeline{\hspace*{4\ttcw}evidence:\ dict\ =\ field(default\_factory=dict)}
+\codeblank{}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ------------------------------}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 本体护栏：对LLM提议的动作做形式校验}}
+\codeline{\textcolor{cmtgray}{\#\ ------------------------------}}
+\codeline{class\ OntologyGuardrail:}
+\codeline{\hspace*{4\ttcw}def\ \_\_init\_\_(self,\ onto):}
+\codeline{\hspace*{8\ttcw}self.onto\ =\ onto}
+\codeline{\hspace*{8\ttcw}self.audit\_log:\ list[AuditRecord]\ =\ []}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}def\ \_audit(self,\ action,\ target,\ verdict,\ reason,\ evidence=None):}
+\codeline{\hspace*{8\ttcw}rec\ =\ AuditRecord(}
+\codeline{\hspace*{12\ttcw}timestamp=datetime.now(timezone.utc).isoformat(),}
+\codeline{\hspace*{12\ttcw}action=action,\ target=target,}
+\codeline{\hspace*{12\ttcw}verdict=verdict,\ reason=reason,\ evidence=evidence\ or\ \{\},}
+\codeline{\hspace*{8\ttcw})}
+\codeline{\hspace*{8\ttcw}self.audit\_log.append(rec)}
+\codeline{\hspace*{8\ttcw}return\ rec}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}def\ validate(self,\ proposal:\ dict)\ ->\ AuditRecord:}
+\codeline{\hspace*{8\ttcw}"""三道检查：词汇\ ->\ 实体\ ->\ 公理（与幻觉控制三层一一对应）"""}
+\codeline{\hspace*{8\ttcw}action\ =\ proposal.get("action",\ "")}
+\codeline{\hspace*{8\ttcw}target\ =\ proposal.get("target",\ "")}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 检查1\ 词汇约束：动作必须在本体定义的动作集中}}
+\codeline{\hspace*{8\ttcw}if\ action\ not\ in\ VALID\_ACTIONS:}
+\codeline{\hspace*{12\ttcw}return\ self.\_audit(action,\ target,\ "REJECTED",}
+\codeline{\hspace*{31\ttcw}f"未知动作\ '\{action\}'（词汇幻觉）")}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 检查2\ 实体存在性：目标必须是ABox中的个体}}
+\codeline{\hspace*{8\ttcw}equip\ =\ self.onto["equipment"].get(target)}
+\codeline{\hspace*{8\ttcw}if\ equip\ is\ None:}
+\codeline{\hspace*{12\ttcw}return\ self.\_audit(action,\ target,\ "REJECTED",}
+\codeline{\hspace*{31\ttcw}f"实体\ '\{target\}'\ 不存在于知识库（实体幻觉）")}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 检查3\ 公理约束：状态机与前置条件}}
+\codeline{\hspace*{8\ttcw}cur\ =\ equip["status"]}
+\codeline{\hspace*{8\ttcw}if\ action\ ==\ "set\_status":}
+\codeline{\hspace*{12\ttcw}new\ =\ proposal.get("value",\ "")}
+\codeline{\hspace*{12\ttcw}if\ (cur,\ new)\ not\ in\ self.onto["status\_transitions"]:}
+\codeline{\hspace*{16\ttcw}return\ self.\_audit(action,\ target,\ "REJECTED",}
+\codeline{\hspace*{35\ttcw}f"非法状态转换\ \{cur\}\ ->\ \{new\}（违反状态机公理）",}
+\codeline{\hspace*{35\ttcw}\{"current\_status":\ cur\})}
+\codeline{\hspace*{8\ttcw}pre\ =\ self.onto["action\_preconditions"].get(action)}
+\codeline{\hspace*{8\ttcw}if\ pre\ and\ cur\ not\ in\ pre["allowed\_status"]:}
+\codeline{\hspace*{12\ttcw}return\ self.\_audit(action,\ target,\ "REJECTED",}
+\codeline{\hspace*{31\ttcw}f"前置条件不满足：\{action\}\ 要求状态\ "}
+\codeline{\hspace*{31\ttcw}f"\{pre['allowed\_status']\}，当前为\ \{cur\}",}
+\codeline{\hspace*{31\ttcw}\{"current\_status":\ cur\})}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}return\ self.\_audit(action,\ target,\ "APPROVED",\ "通过全部本体校验",}
+\codeline{\hspace*{27\ttcw}\{"current\_status":\ cur\})}
+\codeblank{}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ------------------------------}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ Agent主循环：LLM提议（此处用桩模拟）->\ 校验\ ->\ 执行\ ->\ 审计}}
+\codeline{\textcolor{cmtgray}{\#\ ------------------------------}}
+\codeline{def\ llm\_propose(user\_request:\ str)\ ->\ dict:}
+\codeline{\hspace*{4\ttcw}"""生产中此处调用LLM把自然语言转为结构化动作提议；}
+\codeline{\hspace*{4\ttcw}演示用关键词桩模拟（含一个会被拦截的坏提议）"""}
+\codeline{\hspace*{4\ttcw}table\ =\ \{}
+\codeline{\hspace*{8\ttcw}"把3号车床转入维护":\ \{"action":\ "set\_status",}
+\codeline{\hspace*{30\ttcw}"target":\ "Lathe\_003",\ "value":\ "Maintenance"\},}
+\codeline{\hspace*{8\ttcw}"让7号铣床直接开工":\ \{"action":\ "set\_status",}
+\codeline{\hspace*{30\ttcw}"target":\ "Mill\_007",\ "value":\ "Running"\},}
+\codeline{\hspace*{8\ttcw}"给幻影设备派活":\ \ \ \ \{"action":\ "assign\_task",\ "target":\ "Ghost\_999"\},}
+\codeline{\hspace*{4\ttcw}\}}
+\codeline{\hspace*{4\ttcw}return\ table.get(user\_request,\ \{"action":\ "query",\ "target":\ "Lathe\_003"\})}
+\codeblank{}
+\codeblank{}
+\codeline{def\ execute(proposal:\ dict,\ onto)\ ->\ str:}
+\codeline{\hspace*{4\ttcw}"""只有APPROVED的提议才会到达这里"""}
+\codeline{\hspace*{4\ttcw}if\ proposal["action"]\ ==\ "set\_status":}
+\codeline{\hspace*{8\ttcw}onto["equipment"][proposal["target"]]["status"]\ =\ proposal["value"]}
+\codeline{\hspace*{8\ttcw}return\ f"\{proposal['target']\}\ 状态已更新为\ \{proposal['value']\}"}
+\codeline{\hspace*{4\ttcw}return\ "（查询/派工执行略）"}
+\codeblank{}
+\codeblank{}
+\codeline{def\ agent\_turn(user\_request:\ str,\ guard:\ OntologyGuardrail):}
+\codeline{\hspace*{4\ttcw}print(f"\textbackslash{}n用户：\{user\_request\}")}
+\codeline{\hspace*{4\ttcw}proposal\ =\ llm\_propose(user\_request)}
+\codeline{\hspace*{4\ttcw}verdict\ =\ guard.validate(proposal)}
+\codeline{\hspace*{4\ttcw}print(f"\ \ 提议：\{proposal\}")}
+\codeline{\hspace*{4\ttcw}print(f"\ \ 裁决：\{verdict.verdict\}\ ——\ \{verdict.reason\}")}
+\codeline{\hspace*{4\ttcw}if\ verdict.verdict\ ==\ "APPROVED":}
+\codeline{\hspace*{8\ttcw}print(f"\ \ 执行：\{execute(proposal,\ guard.onto)\}")}
+\codeline{\hspace*{4\ttcw}else:}
+\codeline{\hspace*{8\ttcw}print("\ \ 执行：已阻断（向用户解释原因并请求人工确认）")}
+\codeblank{}
+\codeblank{}
+\codeline{if\ \_\_name\_\_\ ==\ "\_\_main\_\_":}
+\codeline{\hspace*{4\ttcw}guard\ =\ OntologyGuardrail(ONTOLOGY)}
+\codeline{\hspace*{4\ttcw}agent\_turn("把3号车床转入维护",\ guard)\ \ \ \#\ 合法：Running->Maintenance}
+\codeline{\hspace*{4\ttcw}agent\_turn("让7号铣床直接开工",\ guard)\ \ \ \#\ 拦截：Fault->Running\ 违反状态机}
+\codeline{\hspace*{4\ttcw}agent\_turn("给幻影设备派活",\ guard)\ \ \ \ \ \ \#\ 拦截：实体不存在}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}print("\textbackslash{}n===\ 审计日志（PROV风格，可序列化为RDF归档）===")}
+\codeline{\hspace*{4\ttcw}for\ rec\ in\ guard.audit\_log:}
+\codeline{\hspace*{8\ttcw}print(f"\ \ [\{rec.timestamp\}]\ \{rec.action\}(\{rec.target\})\ "}
+\codeline{\hspace*{14\ttcw}f"->\ \{rec.verdict\}:\ \{rec.reason\}")}
+\end{codebox}

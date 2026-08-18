@@ -1,0 +1,25 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 三层控制架构}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 用户问题}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ [第一层\ 生成前]\ 约束注入（Prompt阶段）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ ·\ 把本体词汇表/类定义注入上下文："只能使用以下设备类型……"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ ·\ 把取值范围注入："功率单位kW，范围(0,10000]"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ ·\ 声明边界："知识库中没有的信息回答'无记录'"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ [第二层\ 生成中]\ 工具调用（受控通道）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ ·\ LLM不直接回答事实，而是生成查询（SPARQL/函数调用）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ ·\ 事实只能来自知识图谱返回值（见\ text2sparql.txt）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ [第三层\ 生成后]\ 事实校验（出口闸门）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ ·\ 实体校验：回答中的实体能否链接到本体个体？}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ ·\ 断言校验：回答中的三元组是否存在于图谱/可由推理导出？}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ ·\ 范围校验：数值是否通过SHACL形状检查？}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ ·\ 一致性校验：是否违反不相交/函数性公理？}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ▼}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 通过\ \(\rightarrow\)\ 输出（附溯源）；不通过\ \(\rightarrow\)\ 拒答或降级为"无记录"}}
+\codeblank{}
+\end{codebox}

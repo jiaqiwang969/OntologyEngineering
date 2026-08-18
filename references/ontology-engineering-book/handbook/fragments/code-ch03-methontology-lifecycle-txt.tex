@@ -1,0 +1,95 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ METHONTOLOGY\ 生命周期与概念化产物}}
+\codeline{\textcolor{cmtgray}{\#\ METHONTOLOGY\ Lifecycle\ and\ Conceptualization\ Artifacts}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ METHONTOLOGY（Fernández-López\ \&\ Gómez-Pérez,\ 1997）}}
+\codeline{\textcolor{cmtgray}{\#\ 是最接近软件工程规范的本体构建方法：阶段明确、产物可交付}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 生命周期总览}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 管理活动（贯穿全程）：进度控制、质量保证}}
+\codeline{\textcolor{cmtgray}{\#\ 开发活动（主线）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 规格说明\ \(\rightarrow\)\ 概念化\ \(\rightarrow\)\ 形式化\ \(\rightarrow\)\ 实现\ \(\rightarrow\)\ 维护}}
+\codeline{\textcolor{cmtgray}{\#\ 支撑活动（贯穿全程）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 知识获取、集成（复用）、评估、文档化、版本管理}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 与软件工程对照：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 规格说明\ \(\approx\)\ 需求分析\ \ \ \ 概念化\ \(\approx\)\ 概要设计}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 形式化\ \ \ \(\approx\)\ 详细设计\ \ \ \ 实现\ \ \ \(\approx\)\ 编码}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 评估\ \ \ \ \ \(\approx\)\ 测试\ \ \ \ \ \ \ \ 文档化\ \(\approx\)\ 交付文档}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 规格说明书（Specification）示例}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 本体名称：车间设备调度本体\ (WorkshopSchedulingOntology)}}
+\codeline{\textcolor{cmtgray}{\#\ 目的：\ \ \ \ 支撑设备能力匹配、任务排产、冲突检测}}
+\codeline{\textcolor{cmtgray}{\#\ 形式化级别：形式化（OWL\ 2\ DL）}}
+\codeline{\textcolor{cmtgray}{\#\ 范围：\ \ \ \ 设备/材料/工序/任务/工作单元；不含财务与人事}}
+\codeline{\textcolor{cmtgray}{\#\ 知识源：\ \ 设备台账、工艺规程文件、调度员访谈、IOF参考本体}}
+\codeline{\textcolor{cmtgray}{\#\ 用户：\ \ \ \ 调度系统（机读）、工艺工程师（编辑维护）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 概念化产物（Conceptualization）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ METHONTOLOGY\ 要求产出一组中间表格，先于任何OWL代码：}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (1)\ 术语表（Glossary\ of\ Terms，节选）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 术语\ \ \ \ \ \ \ \ \ \ 类型\ \ \ \ \ \ 描述}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ ----------\ \ \ \ ------\ \ \ \ --------------------------------}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment\ \ \ \ \ 概念\ \ \ \ \ \ 车间中可执行加工/测量任务的装置}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CNCLathe\ \ \ \ \ \ 概念\ \ \ \ \ \ 数控车床}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ canProcess\ \ \ \ 二元关系\ \ 设备具备加工某材料的能力}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ hasPower\ \ \ \ \ \ 属性\ \ \ \ \ \ 设备额定功率，kW，非负实数}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Lathe\_003\ \ \ \ \ 实例\ \ \ \ \ \ 3号数控车床}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (2)\ 概念分类树（Concept\ Taxonomy）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ ├──\ ProcessingEquipment}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ \ \ └──\ CNCMachine\ ──\ CNCLathe\ /\ CNCMillingMachine}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ └──\ MeasurementEquipment}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (3)\ 二元关系表（Binary\ Relations\ Table）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 关系名\ \ \ \ \ \ 定义域\ \ \ \ \ \ \ 值域\ \ \ \ \ \ \ 逆关系\ \ \ \ \ \ \ \ 特性}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ --------\ \ \ \ ---------\ \ \ \ -------\ \ \ \ ----------\ \ \ \ ------}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ canProcess\ \ Equipment\ \ \ \ Material\ \ \ processedBy\ \ \ —}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ locatedIn\ \ \ Equipment\ \ \ \ WorkCell\ \ \ contains\ \ \ \ \ \ 函数性}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ precedes\ \ \ \ Process\ \ \ \ \ \ Process\ \ \ \ follows\ \ \ \ \ \ \ 传递性}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (4)\ 概念字典（Concept\ Dictionary，节选）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 概念\ \ \ \ \ \ \ \ 实例标识\ \ \ \ \ \ \ \ 属性\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 关系}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ --------\ \ \ \ ------------\ \ \ \ ------------------\ \ \ \ ----------------}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment\ \ \ serialNumber\ \ \ \ hasPower,\ hasStatus\ \ \ canProcess,\ locatedIn}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ (5)\ 实例表（Instance\ Table，节选）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 实例\ \ \ \ \ \ \ \ 所属概念\ \ \ \ 属性赋值}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ ---------\ \ \ --------\ \ \ \ --------------------------------}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Lathe\_003\ \ \ CNCLathe\ \ \ \ hasPower=15.5;\ hasStatus=Idle}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 产物的价值：领域专家不读OWL，但能逐行评审这些表格——}}
+\codeline{\textcolor{cmtgray}{\#\ 概念化表格是专家与本体工程师之间的"共同语言"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ NeOn\ 场景化方法（概览）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ NeOn（2009）不规定唯一流程，而是给出9种可组合的场景：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 场景1\ \ 从头构建（规格\(\rightarrow\)概念化\(\rightarrow\)实现）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 场景2\ \ 复用非本体资源（术语表/分类标准/数据库Schema\ \(\rightarrow\)\ 本体）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 场景3\ \ 复用本体资源（导入/裁剪已有本体）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 场景4\ \ 复用并重构（对已有本体做模块化改造）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 场景7\ \ 复用本体设计模式（ODP，如"部分-整体"模式）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ ……}}
+\codeline{\textcolor{cmtgray}{\#\ 工程现实中最常见组合：场景2\ +\ 场景3}}
+\codeline{\textcolor{cmtgray}{\#\ （把企业已有的设备分类标准转成本体，同时对齐IOF顶层）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 5.\ 评估与文档化}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 评估三个层面：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 一致性\ \ ——\ 推理器检查（无不可满足类）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 能力\ \ \ \ ——\ CQ验收查询全部通过}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 质量\ \ \ \ ——\ OntoClean元属性审查（见\ ontoclean-evaluation.txt）}}
+\codeline{\textcolor{cmtgray}{\#\ 文档化最低要求：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 每个类/属性有\ rdfs:label（中英双语）与\ rdfs:comment}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 版本信息\ owl:versionInfo\ +\ 变更日志}}
+\end{codebox}

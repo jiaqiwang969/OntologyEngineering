@@ -1,0 +1,18 @@
+\begin{codebox}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{//\ 执行查询（使用Jena\ 4.x推荐的构建器API）}}
+\codeline{\hspace*{8\ttcw}Query\ query\ =\ QueryFactory.create(sparql);}
+\codeline{\hspace*{8\ttcw}try\ (QueryExecution\ qexec\ =\ QueryExecution.create()}
+\codeline{\hspace*{16\ttcw}.query(query)}
+\codeline{\hspace*{16\ttcw}.model(model)}
+\codeline{\hspace*{16\ttcw}.build())\ \{}
+\codeline{\hspace*{12\ttcw}ResultSet\ rs\ =\ qexec.execSelect();}
+\codeline{\hspace*{12\ttcw}while\ (rs.hasNext())\ \{}
+\codeline{\hspace*{16\ttcw}QuerySolution\ soln\ =\ rs.nextSolution();}
+\codeline{\hspace*{16\ttcw}String\ uri\ =\ soln.getResource("equipment").getURI();}
+\codeline{\hspace*{16\ttcw}String\ name\ =\ soln.getLiteral("name").getString();}
+\codeline{\hspace*{16\ttcw}results.add(name\ +\ "\ ("\ +\ uri\ +\ ")");}
+\codeline{\hspace*{12\ttcw}\}}
+\codeline{\hspace*{8\ttcw}\}}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}return\ results;}
+\end{codebox}

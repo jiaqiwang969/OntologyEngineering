@@ -1,0 +1,52 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 对象属性\ (Object\ Properties)}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{ObjectProperty:\ :canProcess}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "能加工"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :Material}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasCapability}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "具有能力"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :EquipmentCapability}
+\codeline{\hspace*{4\ttcw}Characteristics:\ Functional}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasStatus}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "具有状态"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :EquipmentStatus}
+\codeline{\hspace*{4\ttcw}Characteristics:\ Functional}
+\codeblank{}
+\codeline{ObjectProperty:\ :locatedIn}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "位于"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :WorkCell}
+\codeblank{}
+\codeline{ObjectProperty:\ :precedes}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "先于"@zh}
+\codeline{\hspace*{8\ttcw}rdfs:comment\ "工序之间的先后顺序，具有传递性"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Operation}
+\codeline{\hspace*{4\ttcw}Range:\ :Operation}
+\codeline{\hspace*{4\ttcw}Characteristics:\ Transitive}
+\codeblank{}
+\codeline{ObjectProperty:\ :requires}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "需要"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Operation}
+\codeline{\hspace*{4\ttcw}Range:\ :Equipment}
+\codeblank{}
+\codeline{ObjectProperty:\ :assignedTo}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "分配给"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Task}
+\codeline{\hspace*{4\ttcw}Range:\ :Equipment}
+\codeblank{}
+\end{codebox}

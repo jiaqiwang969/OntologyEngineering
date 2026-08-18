@@ -1,0 +1,21 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 开放世界假设与封闭世界假设}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ OWA\ (Open\ World\ Assumption)\ \ ——\ OWL\ /\ 描述逻辑采用}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 未声明的事实\ =\ 未知（可能为真，也可能为假）}}
+\codeline{\textcolor{cmtgray}{\#\ CWA\ (Closed\ World\ Assumption)\ ——\ 关系数据库\ /\ Prolog\ 采用}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 未声明的事实\ =\ 假（否定即失败，Negation\ as\ Failure）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 示例：知识库中只有一条事实}}
+\codeline{producedBy(Product\_A,\ Lathe\_001)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 问题：Product\_A\ 是否由\ Mill\_002\ 生产？}}
+\codeline{\textcolor{cmtgray}{\#\ OWA\ 回答：未知（除非显式声明\ \(\lnot\)producedBy(Product\_A,\ Mill\_002)）}}
+\codeline{\textcolor{cmtgray}{\#\ CWA\ 回答：否（知识库未记录即视为假）}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 工程影响：}}
+\codeline{\textcolor{cmtgray}{\#\ 在\ OWL\ 中校验"设备未分配任何任务"这类否定条件时，}}
+\codeline{\textcolor{cmtgray}{\#\ 需借助\ SPARQL\ 的\ FILTER\ NOT\ EXISTS（局部封闭世界）实现}}
+\codeblank{}
+\end{codebox}

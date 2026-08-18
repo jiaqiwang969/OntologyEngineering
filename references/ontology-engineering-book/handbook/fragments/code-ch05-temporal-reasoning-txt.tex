@@ -1,0 +1,56 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ 时态推理与具名图示例}}
+\codeline{\textcolor{cmtgray}{\#\ Temporal\ Reasoning\ and\ Named\ Graph\ Examples}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 时态本体（Temporal\ Ontology）用于描述随时间变化的知识状态}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 具名图（Named\ Graph）示例}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ Named\ Graph\ 允许对\ RDF\ 三元组进行分组和命名}}
+\codeline{\textcolor{cmtgray}{\#\ 常用于表达时间快照或来源元数据}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ TriG\ 格式（Turtle的扩展，支持具名图）：}}
+\codeline{\textcolor{cmtgray}{\#\ 具名图的图名必须是URI（用尖括号括起来），不能是裸名}}
+\codeline{\textcolor{cmtgray}{\#\ Named\ graph\ names\ must\ be\ URIs\ enclosed\ in\ angle\ brackets,\ not\ bare\ identifiers.}}
+\codeblank{}
+\codeline{@prefix\ :\ <http://example.org/manufacturing\#>\ .}
+\codeline{@prefix\ xsd:\ <http://www.w3.org/2001/XMLSchema\#>\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 2024年3月21日的状态快照}}
+\codeline{<http://example.org/graph/20240321>\ \{}
+\codeline{\hspace*{4\ttcw}:Lathe\_003\ :status\ "Idle"\ ;\ \ \ \ \ \ \ \ \ \ \ \#\ 车床状态为闲置}
+\codeline{\hspace*{15\ttcw}:locatedIn\ :WorkCell\_B\ .\ \ \ \#\ 位于工作单元B}
+\codeline{\}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 2024年3月22日的状态快照（设备已被移动）}}
+\codeline{<http://example.org/graph/20240322>\ \{}
+\codeline{\hspace*{4\ttcw}:Lathe\_003\ :status\ "Running"\ ;}
+\codeline{\hspace*{15\ttcw}:locatedIn\ :WorkCell\_A\ .\ \ \ \#\ 已移动到A区}
+\codeline{\}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 时态推理规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 推理规则：在某时间段内运行的设备，该时段内不可用于其他任务}}
+\codeline{\textcolor{cmtgray}{\#\ 注：以下为概念性SWRL表示，?t1/?t2\ 为时间段端点，需以xsd:dateTime数据值绑定}}
+\codeline{Device(?d)\ \(\land\)\ hasStatus(?d,\ Running,\ ?t1,\ ?t2)\ \(\land\)}
+\codeline{Task(?task)\ \(\land\)\ hasTimeInterval(?task,\ ?s,\ ?e)\ \(\land\)}
+\codeline{swrlb:greaterThan(?e,\ ?t1)\ \(\land\)\ swrlb:lessThan(?s,\ ?t2)\ \(\land\)}
+\codeline{swrlb:notEqual(?task,\ ?currentTask)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ unavailable(?d,\ ?task)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 推理规则：设备历史故障会影响维护计划}}
+\codeline{\textcolor{cmtgray}{\#\ 注：SWRL没有内置NOW()函数；实际应用中需在规则执行前将当前时间注入ABox，}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ 或使用支持时态推理的规则引擎扩展。}}
+\codeline{\textcolor{cmtgray}{\#\ Note:\ SWRL\ has\ no\ NOW()\ built-in.\ Inject\ the\ current\ timestamp\ as\ an\ ABox\ fact}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ (e.g.,\ :currentTime\ :value\ "2024-03-22T08:00:00"\^{}\^{}xsd:dateTime)\ before}}
+\codeline{\hspace*{4\ttcw}reasoning.}
+\codeline{Device(?d)\ \(\land\)\ hasFaultRecord(?d,\ ?fault)\ \(\land\)}
+\codeline{hasFaultTime(?fault,\ ?t)\ \(\land\)}
+\codeline{currentTime(:system,\ ?now)\ \(\land\)}
+\codeline{swrlb:subtract(?now,\ ?t,\ ?elapsed)\ \(\land\)}
+\codeline{swrlb:lessThan(?elapsed,\ 2592000)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ requiresInspection(?d,\ true)}
+\end{codebox}

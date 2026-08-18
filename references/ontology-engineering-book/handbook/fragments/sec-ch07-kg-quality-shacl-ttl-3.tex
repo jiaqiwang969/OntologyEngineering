@@ -1,0 +1,22 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 任务排产一致性形状（SPARQL约束）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 复杂业务规则用\ sh:sparql\ 表达：任务结束时间必须晚于开始时间}}
+\codeline{mfgsh:TaskIntervalShape}
+\codeline{\hspace*{4\ttcw}a\ sh:NodeShape\ ;}
+\codeline{\hspace*{4\ttcw}sh:targetClass\ mfg:Task\ ;}
+\codeline{\hspace*{4\ttcw}sh:sparql\ [}
+\codeline{\hspace*{8\ttcw}a\ sh:SPARQLConstraint\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "任务结束时间必须晚于开始时间"\ ;}
+\codeline{\hspace*{8\ttcw}sh:prefixes\ mfg:\ ;}
+\codeline{\hspace*{8\ttcw}sh:select\ """}
+\codeline{\hspace*{12\ttcw}SELECT\ \$this\ WHERE\ \{}
+\codeline{\hspace*{16\ttcw}\$this\ mfg:startTime\ ?s\ .}
+\codeline{\hspace*{16\ttcw}\$this\ mfg:endTime\ \ \ ?e\ .}
+\codeline{\hspace*{16\ttcw}FILTER\ (?e\ <=\ ?s)}
+\codeline{\hspace*{12\ttcw}\}}
+\codeline{\hspace*{8\ttcw}"""\ ;}
+\codeline{\hspace*{4\ttcw}]\ .}
+\codeblank{}
+\end{codebox}

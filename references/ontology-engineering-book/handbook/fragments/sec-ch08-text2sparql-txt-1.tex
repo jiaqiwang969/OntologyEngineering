@@ -1,0 +1,14 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 三种技术路线}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 路线A\ 模板槽填充：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 预定义查询模板，LLM只负责识别意图与填槽}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 高可控、零注入风险；覆盖面有限}}
+\codeline{\textcolor{cmtgray}{\#\ 路线B\ LLM直接生成SPARQL\ +\ 校验层：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 灵活覆盖长尾问题；必须配校验层（见第3节）}}
+\codeline{\textcolor{cmtgray}{\#\ 路线C\ 语义解析（训练专用模型）：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 精度高；需要标注数据，迭代成本高}}
+\codeline{\textcolor{cmtgray}{\#\ 工程组合：高频问题走A，长尾走B，A/B共享同一校验层}}
+\codeblank{}
+\end{codebox}

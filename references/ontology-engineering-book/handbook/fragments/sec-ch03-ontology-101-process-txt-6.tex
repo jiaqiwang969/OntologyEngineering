@@ -1,0 +1,13 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ Step\ 6.\ 定义属性约束（Facets）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 基数约束：每台设备恰有一个序列号}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ Equipment\ \(\sqsubseteq\)\ =1\ hasSerialNumber}}
+\codeline{\textcolor{cmtgray}{\#\ 值域约束：功率非负}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ hasPower\ 的取值\ \(\ge\)\ 0}}
+\codeline{\textcolor{cmtgray}{\#\ 全称约束：数控机床的控制器都是数控系统}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ CNCMachine\ \(\sqsubseteq\)\ \(\forall\)hasControl.CNCControl}}
+\codeline{\textcolor{cmtgray}{\#\ 不相交：Equipment\ \(\sqcap\)\ Material\ \(\sqsubseteq\)\ \(\bot\)}}
+\codeblank{}
+\end{codebox}

@@ -1,0 +1,19 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 基础推理规则}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 规则：高功率设备需要冷却}}
+\codeline{\textcolor{cmtgray}{\#\ Rule:\ High-power\ equipment\ requires\ cooling}}
+\codeline{设备(?x)\ \(\land\)\ 功率(?x,\ ?p)\ \(\land\)\ swrlb:greaterThan(?p,\ 10)}
+\codeline{\hspace*{4\ttcw}\(\rightarrow\)\ 高功率设备(?x)}
+\codeblank{}
+\codeline{高功率设备(?x)\ \(\rightarrow\)\ 需要冷却(?x)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 验证推理链（前向推理示例）：}}
+\codeline{\textcolor{cmtgray}{\#\ 事实:\ 设备(Lathe\_003)，功率(Lathe\_003,\ 15)}}
+\codeline{\textcolor{cmtgray}{\#\ 步骤1:\ 功率(Lathe\_003,\ 15)\ \(\land\)\ 15>10\ \(\rightarrow\)\ 高功率设备(Lathe\_003)}}
+\codeline{\textcolor{cmtgray}{\#\ 步骤2:\ 高功率设备(Lathe\_003)\ \(\rightarrow\)\ 需要冷却(Lathe\_003)}}
+\codeline{\textcolor{cmtgray}{\#\ 结论:\ Lathe\_003\ 需要冷却}}
+\codeblank{}
+\end{codebox}

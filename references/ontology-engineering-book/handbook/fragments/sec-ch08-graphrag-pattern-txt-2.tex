@@ -1,0 +1,22 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ GraphRAG\ 流程}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ 用户问题}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (1)\ 实体识别与链接}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ \ \ "P001延期影响哪些订单"\ \(\rightarrow\)\ 锚点实体\ mfg:P001}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (2)\ 子图扩展（k-hop\ /\ 按关系类型走）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ \ \ 从P001出发沿\ producedBy/contains/orderedBy\ 扩展2\textasciitilde{}3跳}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ \ \ 得到：P001\ ←\ W001(工单)\ ←\ O-2026-088(订单)\ ←\ 客户C17}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (3)\ 子图裁剪与排序}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ \ \ 按与问题的相关度裁剪（边类型白名单、路径打分），}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │\ \ \ \ \ 控制在LLM上下文预算内}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (4)\ 子图序列化\ \(\rightarrow\)\ 注入上下文}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ │}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (5)\ LLM\ 基于子图作答（要求引用图中三元组作为依据）}}
+\codeblank{}
+\end{codebox}

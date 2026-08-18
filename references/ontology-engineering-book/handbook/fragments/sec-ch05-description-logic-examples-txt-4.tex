@@ -1,0 +1,18 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 工程中的描述逻辑约束}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 数控车床必须有数控系统}}
+\codeline{CNCLathe\ \(\sqsubseteq\)\ \(\exists\)hasControl.CNCControl}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 设备利用率在0-1之间}}
+\codeline{Equipment\ \(\sqsubseteq\)\ \(\forall\)hasUtilization.(\(\ge\)0\ \(\sqcap\)\ \(\le\)1.0)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 正在运行的设备不能同时维护（不相交）}}
+\codeline{Running\ \(\sqcap\)\ Maintenance\ \(\sqsubseteq\)\ \(\bot\)}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 加工设备必须能加工至少一种材料}}
+\codeline{ProcessingEquipment\ \(\sqsubseteq\)\ \(\exists\)canProcess.Material}
+\codeblank{}
+\end{codebox}

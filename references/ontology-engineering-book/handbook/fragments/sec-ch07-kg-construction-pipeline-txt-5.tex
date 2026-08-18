@@ -1,0 +1,13 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 5.\ 入库前的本体校验闸门}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 每批待入库三元组必须通过三道检查：}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (1)\ 词汇检查：类与属性必须在本体中已定义}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ （抽取结果出现\ mfg:SuperLathe\ \(\rightarrow\)\ 拒绝，进人工复核队列）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (2)\ 公理检查：不得违反不相交、函数性等公理}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ \ \ （同一设备两个序列号\ \(\rightarrow\)\ 违反函数性\ \(\rightarrow\)\ 拒绝）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ (3)\ 形状检查：SHACL校验必填项、取值范围、格式}}
+\codeline{\textcolor{cmtgray}{\#\ 通过\ \(\rightarrow\)\ 写入；不通过\ \(\rightarrow\)\ 隔离区\ +\ 告警\ +\ 人工裁决}}
+\codeblank{}
+\end{codebox}

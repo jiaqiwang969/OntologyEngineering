@@ -1,0 +1,54 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 类定义\ (Class\ Definitions)\ -\ TBox}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 设备类层次}}
+\codeline{mfg:Equipment\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "设备"@zh\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "Equipment"@en\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:comment\ "制造系统中所有物理设备的基类"@zh\ .}
+\codeblank{}
+\codeline{mfg:ProcessingEquipment\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:subClassOf\ mfg:Equipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "加工设备"@zh\ .}
+\codeblank{}
+\codeline{mfg:CNCMachine\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:subClassOf\ mfg:ProcessingEquipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "数控机床"@zh\ .}
+\codeblank{}
+\codeline{mfg:Lathe\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:subClassOf\ mfg:CNCMachine\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "车床"@zh\ .}
+\codeblank{}
+\codeline{mfg:MeasurementEquipment\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:subClassOf\ mfg:Equipment\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "测量设备"@zh\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 产品与物料}}
+\codeline{mfg:Product\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "产品"@zh\ .}
+\codeblank{}
+\codeline{mfg:Material\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "材料"@zh\ .}
+\codeblank{}
+\codeline{mfg:Aluminum\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:subClassOf\ mfg:Material\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "铝合金"@zh\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 工艺与工序}}
+\codeline{mfg:Process\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "加工工艺"@zh\ .}
+\codeblank{}
+\codeline{mfg:Operation\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "工序"@zh\ .}
+\codeblank{}
+\codeline{mfg:Turning\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:subClassOf\ mfg:Operation\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "车削工序"@zh\ .}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 工作单元}}
+\codeline{mfg:WorkCell\ a\ owl:Class\ ;}
+\codeline{\hspace*{4\ttcw}rdfs:label\ "工作单元"@zh\ .}
+\codeblank{}
+\end{codebox}

@@ -1,0 +1,46 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 设备完整性形状}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{mfgsh:EquipmentShape}
+\codeline{\hspace*{4\ttcw}a\ sh:NodeShape\ ;}
+\codeline{\hspace*{4\ttcw}sh:targetClass\ mfg:Equipment\ ;}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 序列号：必填、唯一格式\ EQ-YYYY-NNNN}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:hasSerialNumber\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:maxCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:datatype\ xsd:string\ ;}
+\codeline{\hspace*{8\ttcw}sh:pattern\ "\^{}EQ-[0-9]\{4\}-[0-9]\{4\}\$"\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "设备必须有且仅有一个格式为\ EQ-YYYY-NNNN\ 的序列号"\ ;}
+\codeline{\hspace*{4\ttcw}]\ ;}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 功率：0\ <\ power\ <=\ 10000\ kW}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:hasPower\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:datatype\ xsd:float\ ;}
+\codeline{\hspace*{8\ttcw}sh:minExclusive\ 0.0\ ;}
+\codeline{\hspace*{8\ttcw}sh:maxInclusive\ 10000.0\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "设备功率必须为\ (0,\ 10000]\ kW\ 内的浮点数"\ ;}
+\codeline{\hspace*{4\ttcw}]\ ;}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 状态：受控词表}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:hasStatus\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:maxCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:in\ (\ mfg:Running\ mfg:Idle\ mfg:Maintenance\ mfg:Fault\ )\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "设备状态只能是\ Running/Idle/Maintenance/Fault\ 之一"\ ;}
+\codeline{\hspace*{4\ttcw}]\ ;}
+\codeblank{}
+\codeline{\hspace*{4\ttcw}\textcolor{cmtgray}{\#\ 位置：必须关联到一个工作单元}}
+\codeline{\hspace*{4\ttcw}sh:property\ [}
+\codeline{\hspace*{8\ttcw}sh:path\ mfg:locatedIn\ ;}
+\codeline{\hspace*{8\ttcw}sh:minCount\ 1\ ;}
+\codeline{\hspace*{8\ttcw}sh:class\ mfg:WorkCell\ ;}
+\codeline{\hspace*{8\ttcw}sh:message\ "设备必须位于某个\ WorkCell"\ ;}
+\codeline{\hspace*{4\ttcw}]\ .}
+\codeblank{}
+\end{codebox}

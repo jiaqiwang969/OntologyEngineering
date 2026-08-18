@@ -1,0 +1,95 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 对象属性\ (Object\ Properties)\ -\ RBox}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeblank{}
+\codeline{ObjectProperty:\ :canProcess}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "能加工"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :Material}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasCapability}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有能力"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :EquipmentCapability}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasStatus}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有状态"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :EquipmentStatus}
+\codeline{\hspace*{4\ttcw}Characteristics:\ Functional}
+\codeblank{}
+\codeline{ObjectProperty:\ :locatedIn}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "位于"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Equipment}
+\codeline{\hspace*{4\ttcw}Range:\ :WorkCell}
+\codeblank{}
+\codeline{ObjectProperty:\ :assignedTo}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "分配给"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Task}
+\codeline{\hspace*{4\ttcw}Range:\ :Equipment}
+\codeblank{}
+\codeline{ObjectProperty:\ :requiresMaterial}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "需要材料"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Task}
+\codeline{\hspace*{4\ttcw}Range:\ :Material}
+\codeblank{}
+\codeline{ObjectProperty:\ :precedes}
+\codeline{\hspace*{4\ttcw}Annotations:}
+\codeline{\hspace*{8\ttcw}rdfs:label\ "先于"@zh}
+\codeline{\hspace*{8\ttcw}rdfs:comment\ "工序之间的先后顺序，具有传递性"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Operation}
+\codeline{\hspace*{4\ttcw}Range:\ :Operation}
+\codeline{\hspace*{4\ttcw}Characteristics:\ Transitive}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasControl}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有控制系统"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :CNCMachine}
+\codeline{\hspace*{4\ttcw}Range:\ owl:Thing}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasOperation}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "包含工序"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Process}
+\codeline{\hspace*{4\ttcw}Range:\ :Operation}
+\codeblank{}
+\codeline{ObjectProperty:\ :isPartOf}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "是...的一部分"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Operation}
+\codeline{\hspace*{4\ttcw}Range:\ :Process}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasMaterial}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有材料"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ :Material}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasFeature}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有特征"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ owl:Thing}
+\codeblank{}
+\codeline{ObjectProperty:\ :hasProcess}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "具有工艺"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ :Process}
+\codeblank{}
+\codeline{ObjectProperty:\ :recommendedProcess}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "推荐工艺"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ :Process}
+\codeblank{}
+\codeline{ObjectProperty:\ :requiresResource}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "需要资源"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Task}
+\codeline{\hspace*{4\ttcw}Range:\ :Resource}
+\codeblank{}
+\codeline{ObjectProperty:\ :requiresOperation}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "需要工序"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :Product}
+\codeline{\hspace*{4\ttcw}Range:\ :Operation}
+\codeblank{}
+\codeline{ObjectProperty:\ :suitableFor}
+\codeline{\hspace*{4\ttcw}Annotations:\ rdfs:label\ "适合"@zh}
+\codeline{\hspace*{4\ttcw}Domain:\ :EquipmentCapability}
+\codeline{\hspace*{4\ttcw}Range:\ :Operation}
+\codeblank{}
+\end{codebox}

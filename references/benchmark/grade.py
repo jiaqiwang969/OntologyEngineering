@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 """双金标准判分：事实分 + 讲例分 + 陷阱诚实分"""
-import json, re, glob
+import json, re
 from collections import defaultdict
+from pathlib import Path
 
-bank = {json.loads(l)['id']: json.loads(l) for l in open('bank.jsonl')}
+BENCHMARK = Path(__file__).resolve().parent
+bank = {
+    item["id"]: item
+    for item in (
+        json.loads(line)
+        for line in (BENCHMARK / "bank-1000.jsonl").read_text(encoding="utf-8").splitlines()
+        if line
+    )
+}
 answers = {}
-for f in glob.glob('answers/batch*-answers.jsonl'):
-    for line in open(f):
+for path in sorted(BENCHMARK.glob("answers-run-*/*-answers.jsonl")):
+    for line in path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if not line: continue
         try:
@@ -76,4 +85,7 @@ print('-'*55)
 print(f"总计: {tot['n']} 题, 答卷 {tot['ans']}, 事实正确率 {tot['fact']}/{tot['ans']} = {tot['fact']/max(tot['ans'],1):.1%}")
 print(f"失败样例数: {len(fails)}（前 20 条如下）")
 for x in fails[:20]: print(' ', *x)
-json.dump(fails, open('fails.json','w'), ensure_ascii=False, indent=1)
+(BENCHMARK / "fails.json").write_text(
+    json.dumps(fails, ensure_ascii=False, indent=1) + "\n",
+    encoding="utf-8",
+)

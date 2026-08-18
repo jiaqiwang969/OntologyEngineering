@@ -1,0 +1,76 @@
+\begin{codebox}
+\codeline{\textcolor{cmtgray}{\#\ OWL\ 属性约束说明}}
+\codeline{\textcolor{cmtgray}{\#\ OWL\ Property\ Restrictions\ (\(\exists\)\ /\ \(\forall\))}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ 本文件展示\ OWL\ 中两种核心属性约束：存在限制和全称限制}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 1.\ 存在限制（Existential\ Restriction）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 语法：\(\exists\)R.C（Manchester语法：R\ some\ C）}}
+\codeline{\textcolor{cmtgray}{\#\ 语义：规定实体至少有一个满足条件的属性值}}
+\codeline{\textcolor{cmtgray}{\#\ 即："该对象至少存在一个R关系的对象属于C类"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 示例："每个产品至少经过一次检验"}}
+\codeline{\textcolor{cmtgray}{\#\ Product\ SubClassOf:\ hasInspection\ some\ Inspection}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 描述逻辑表达：}}
+\codeline{\(\exists\)R.C}
+\codeline{\textcolor{cmtgray}{\#\ 其中\ R\ =\ hasInspection,\ C\ =\ Inspection}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ OWL\ Manchester语法：}}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ Product}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ SubClassOf:\ hasInspection\ some\ Inspection}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ Turtle语法：}}
+\codeline{\textcolor{cmtgray}{\#\ mfg:Product\ rdfs:subClassOf\ [}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ a\ owl:Restriction\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ owl:onProperty\ mfg:hasInspection\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ owl:someValuesFrom\ mfg:Inspection}}
+\codeline{\textcolor{cmtgray}{\#\ ]\ .}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 2.\ 全称限制（Universal\ Restriction）}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 语法：\(\forall\)R.C（Manchester语法：R\ only\ C）}}
+\codeline{\textcolor{cmtgray}{\#\ 语义：规定实体的所有属性值都满足条件}}
+\codeline{\textcolor{cmtgray}{\#\ 即："与该对象存在R关系的所有对象，都属于C类"}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 示例："高端设备的所有特性都是高级特性"}}
+\codeline{\textcolor{cmtgray}{\#\ HighEndEquipment\ SubClassOf:\ hasFeature\ only\ AdvancedFeature}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ 描述逻辑表达：}}
+\codeline{\(\forall\)R.C}
+\codeline{\textcolor{cmtgray}{\#\ 其中\ R\ =\ hasFeature,\ C\ =\ AdvancedFeature}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ OWL\ Manchester语法：}}
+\codeline{\textcolor{cmtgray}{\#\ Class:\ HighEndEquipment}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ SubClassOf:\ hasFeature\ only\ AdvancedFeature}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ Turtle语法：}}
+\codeline{\textcolor{cmtgray}{\#\ mfg:HighEndEquipment\ rdfs:subClassOf\ [}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ a\ owl:Restriction\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ owl:onProperty\ mfg:hasFeature\ ;}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \ \ owl:allValuesFrom\ mfg:AdvancedFeature}}
+\codeline{\textcolor{cmtgray}{\#\ ]\ .}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 3.\ 两者的区别}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ \(\exists\)R.C（存在限制）：至少一个，即"存在"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 如果满足，推理器保证存在一个相应个体}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 适合表达"必须有..."}}
+\codeline{\textcolor{cmtgray}{\#}}
+\codeline{\textcolor{cmtgray}{\#\ \(\forall\)R.C（全称限制）：全部满足，即"所有"}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 如果有关系存在，则所有关系对象都必须满足约束}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 如果没有关系，则全称限制自动满足（空满足）}}
+\codeline{\textcolor{cmtgray}{\#\ \ \ \(\rightarrow\)\ 适合表达"只允许..."}}
+\codeblank{}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ 4.\ 工程实践中的使用建议}}
+\codeline{\textcolor{cmtgray}{\#\ ==============================}}
+\codeline{\textcolor{cmtgray}{\#\ -\ 优先使用\ \(\exists\)（存在限制），推理负担小}}
+\codeline{\textcolor{cmtgray}{\#\ -\ 谨慎使用\ \(\forall\)（全称限制），会增加Tableau算法复杂度}}
+\codeline{\textcolor{cmtgray}{\#\ -\ 将复杂表达式拆分为多个简单表达式}}
+\codeline{\textcolor{cmtgray}{\#\ -\ 避免深度嵌套的约束组合}}
+\end{codebox}

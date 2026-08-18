@@ -1,0 +1,35 @@
+\begin{codebox}
+\codeline{\hspace*{4\ttcw}def\ validate(self,\ proposal:\ dict)\ ->\ AuditRecord:}
+\codeline{\hspace*{8\ttcw}"""三道检查：词汇\ ->\ 实体\ ->\ 公理（与幻觉控制三层一一对应）"""}
+\codeline{\hspace*{8\ttcw}action\ =\ proposal.get("action",\ "")}
+\codeline{\hspace*{8\ttcw}target\ =\ proposal.get("target",\ "")}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 检查1\ 词汇约束：动作必须在本体定义的动作集中}}
+\codeline{\hspace*{8\ttcw}if\ action\ not\ in\ VALID\_ACTIONS:}
+\codeline{\hspace*{12\ttcw}return\ self.\_audit(action,\ target,\ "REJECTED",}
+\codeline{\hspace*{31\ttcw}f"未知动作\ '\{action\}'（词汇幻觉）")}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 检查2\ 实体存在性：目标必须是ABox中的个体}}
+\codeline{\hspace*{8\ttcw}equip\ =\ self.onto["equipment"].get(target)}
+\codeline{\hspace*{8\ttcw}if\ equip\ is\ None:}
+\codeline{\hspace*{12\ttcw}return\ self.\_audit(action,\ target,\ "REJECTED",}
+\codeline{\hspace*{31\ttcw}f"实体\ '\{target\}'\ 不存在于知识库（实体幻觉）")}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}\textcolor{cmtgray}{\#\ 检查3\ 公理约束：状态机与前置条件}}
+\codeline{\hspace*{8\ttcw}cur\ =\ equip["status"]}
+\codeline{\hspace*{8\ttcw}if\ action\ ==\ "set\_status":}
+\codeline{\hspace*{12\ttcw}new\ =\ proposal.get("value",\ "")}
+\codeline{\hspace*{12\ttcw}if\ (cur,\ new)\ not\ in\ self.onto["status\_transitions"]:}
+\codeline{\hspace*{16\ttcw}return\ self.\_audit(action,\ target,\ "REJECTED",}
+\codeline{\hspace*{35\ttcw}f"非法状态转换\ \{cur\}\ ->\ \{new\}（违反状态机公理）",}
+\codeline{\hspace*{35\ttcw}\{"current\_status":\ cur\})}
+\codeline{\hspace*{8\ttcw}pre\ =\ self.onto["action\_preconditions"].get(action)}
+\codeline{\hspace*{8\ttcw}if\ pre\ and\ cur\ not\ in\ pre["allowed\_status"]:}
+\codeline{\hspace*{12\ttcw}return\ self.\_audit(action,\ target,\ "REJECTED",}
+\codeline{\hspace*{31\ttcw}f"前置条件不满足：\{action\}\ 要求状态\ "}
+\codeline{\hspace*{31\ttcw}f"\{pre['allowed\_status']\}，当前为\ \{cur\}",}
+\codeline{\hspace*{31\ttcw}\{"current\_status":\ cur\})}
+\codeblank{}
+\codeline{\hspace*{8\ttcw}return\ self.\_audit(action,\ target,\ "APPROVED",\ "通过全部本体校验",}
+\codeline{\hspace*{27\ttcw}\{"current\_status":\ cur\})}
+\end{codebox}

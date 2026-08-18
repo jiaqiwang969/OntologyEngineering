@@ -10,8 +10,8 @@ Bundled root: `references/ontology-engineering-book`
 |---|---|---|
 | Overview | `README.md` | Whole-book scope, chapter list, repository layout |
 | Ch01 introduction | `ch01-introduction/README.md`, `examples/*.txt`, `handbook/chapters/ch01.tex` | From philosophical ontology to engineering ontology, AI-era positioning, roadmap |
-| Ch02 foundations | `ch02-ontology-foundations/README.md`, `examples/*.txt`, `handbook/chapters/ch02.tex` | Core concepts, classes/relations/instances, first-order logic, description logic, reasoning basics |
-| Ch03 methodology | `ch03-ontology-methodology/README.md`, `examples/*.txt`, `handbook/chapters/ch03.tex` | Ontology 101, METHONTOLOGY, competency questions, OntoClean evaluation |
+| Ch02 foundations | `ch02-ontology-foundations/README.md`, `examples/*.txt`, `handbook/chapters/ch02.tex` | Core concepts, classes/relations/instances, first-order logic, description logic, reasoning basics · runnable: `demos/vol1_ch02_reasoning_modes.py` |
+| Ch03 methodology | `ch03-ontology-methodology/README.md`, `examples/*.txt`, `handbook/chapters/ch03.tex` | Ontology 101, METHONTOLOGY, competency questions, OntoClean evaluation · runnable: `demos/vol1_ch03_cq_acceptance.py` |
 | Ch04 languages | `ch04-ontology-languages/README.md`, `examples/*`, `handbook/chapters/ch04.tex` | RDF, RDFS, OWL, Manchester-style restrictions, SPARQL, Protege-style modeling · runnable: `demos/ch04_shacl_open_vs_closed.py` |
 | Ch05 reasoning | `ch05-reasoning/README.md`, `examples/*`, `handbook/chapters/ch05.tex` | Description-logic reasoning, SWRL, temporal/probabilistic reasoning · runnable: `demos/ch05_forward_chaining.py` |
 | Ch06 applications | `ch06-applications/README.md`, `examples/*.txt`, `handbook/chapters/ch06.tex` | Autonomous driving, BIM, aerospace FMEA, manufacturing scheduling |

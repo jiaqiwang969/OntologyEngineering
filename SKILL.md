@@ -140,15 +140,17 @@ this skill for the ontology framing.
 
 本 skill 内嵌可执行运行时（Semantica 0.6.5 + pyshacl + rdflib），把书中
 关键论断做成「论断 → 执行 → 佐证结论」的 demo。当回答涉及以下主题且用户
-关心"这在真实工具里是否成立"时，优先运行对应 demo 而不是只引书：
+关心"这在真实工具里是否成立"时，优先运行对应 demo 而不是只引书。
+demo 全表（含每个 demo 佐证哪条论断、用什么引擎）见 `demos/README.md`；
+按主题速查：
 
-- OWL 开放世界 vs SHACL 封闭校验（ch04/ch07）→ `demos/ch04_shacl_open_vs_closed.py`
-- 规则前向推理链（ch05 SWRL 手推链的机器复算）→ `demos/ch05_forward_chaining.py`
-- 第二卷"规范可本体化、刻录纪律可校验"→ `demos/vol2_iso_normative_query.py`
-- 第二卷 ch04/ch14 HARA 判定链（S×E×C→ASIL 复算 + 查表门禁）→ `demos/vol2_hara_asil_corroborate.py`
-- 第二卷 ch03/ch11 主张本体门禁（六绿≠接受、缺件即拒）→ `demos/vol2_claim_gate_corroborate.py`
-- 第二卷 ch06/ch16 硬件度量（SPFM/LFM 算例复算 + got≥need 门禁）→ `demos/vol2_metrics_recompute.py`
-- 第二卷 ch20 发布保证（按绑定取件、装包门禁）→ `demos/vol2_release_binding_gate.py`
+- 第一卷：ch02 单调/OWA-CWA、ch03 CQ 即验收、ch04/ch07 开放世界 vs SHACL、
+  ch05 前向链复算 → `demos/vol1_ch02_*` `vol1_ch03_*` `ch04_*` `ch05_*`
+- 第二卷生命周期：HARA 判定链（ch04/ch14）、硬件度量复算（ch06/ch16）、
+  ISO 刻录纪律 → `demos/vol2_hara_*` `vol2_metrics_*` `vol2_iso_*`
+- 第二卷十大本体：主张（ch03/ch11）、身份（ch12）、治理（ch13）、需求追溯
+  （ch15）、变化（ch17）、依赖独立（ch18）、现场（ch19）、发布保证（ch20）
+  → `demos/vol2_claim_*` `vol2_ch12_*` … `vol2_release_*`
 
 ```bash
 bash runtime/setup_runtime.sh          # 一次性

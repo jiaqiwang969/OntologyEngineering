@@ -147,6 +147,8 @@ this skill for the ontology framing.
 - 第二卷"规范可本体化、刻录纪律可校验"→ `demos/vol2_iso_normative_query.py`
 - 第二卷 ch04/ch14 HARA 判定链（S×E×C→ASIL 复算 + 查表门禁）→ `demos/vol2_hara_asil_corroborate.py`
 - 第二卷 ch03/ch11 主张本体门禁（六绿≠接受、缺件即拒）→ `demos/vol2_claim_gate_corroborate.py`
+- 第二卷 ch06/ch16 硬件度量（SPFM/LFM 算例复算 + got≥need 门禁）→ `demos/vol2_metrics_recompute.py`
+- 第二卷 ch20 发布保证（按绑定取件、装包门禁）→ `demos/vol2_release_binding_gate.py`
 
 ```bash
 bash runtime/setup_runtime.sh          # 一次性

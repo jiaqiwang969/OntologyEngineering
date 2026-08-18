@@ -26,6 +26,8 @@ bash runtime/setup_runtime.sh
 | `vol2_iso_normative_query.py` | 第二卷：工程规范可本体化为带模态的可查询个体；刻录纪律可写成 SHACL 被机器强制 | rdflib SPARQL、pyshacl |
 | `vol2_hara_asil_corroborate.py` | 第二卷 ch04/ch14：EPS HARA 工作表的 S×E×C→ASIL 判定链机器复算与作者手填一致；查表一致性门禁拒绝书中反例（S2E4C3 误标 B） | Semantica `Reasoner`、pyshacl（SPARQL constraint） |
 | `vol2_claim_gate_corroborate.py` | 第二卷 ch03/ch11 主张本体：EPS 待完成论证结构放行；六绿僵局（证据未接受却标 ClaimAccepted）被拒；缺 context/validWindow 的主张被拦并列明缺件 | pyshacl（SPARQL constraint + minCount） |
+| `vol2_metrics_recompute.py` | 第二卷 ch06/ch16：400→403 FIT 算例全程复算（闭合、SPFM 95.00→95.48%、LFM 94.74→94.76%、变式 94.37% 与书中打印值逐一相符）；got≥need 目标门禁只标出 SPFM 未达标 | 纯算式复算 + pyshacl |
+| `vol2_release_binding_gate.py` | 第二卷 ch20 发布保证：书中 SPARQL 违例查询恰好一行（r12 绑错快照）；装包门禁拒收并出处置开单；修订回包后放行 | rdflib SPARQL、pyshacl |
 
 运行单个 demo：
 

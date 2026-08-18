@@ -23,8 +23,8 @@ bundled books first, then add general reasoning only when clearly marked as such
 ASIL、度量、安全案例、产品可信、"规范如何本体化" → 第二卷；两卷各章一一
 呼应处（如第一卷 ch03 方法论 ↔ 第二卷后十章的最小概念化）可对照引用。
 第二卷案例（EPS-RC17/ENV-01/全部人物事故）均为合成教学材料，不得作为真实
-产品结论引用；精确 ISO 条款坐标在工程正本仓库 `/Users/jqwang/143-工程规范`
-的来源账中，不要凭记忆报条款号。
+产品结论引用；精确 ISO 条款坐标只存在于另行受控、由
+`ONTOLOGY_ENGINEERING_AUTHORING_ROOT` 指向的工程正本来源账中，不要凭记忆报条款号。
 
 ## Source Grounding Rule
 
@@ -69,9 +69,7 @@ Optional external example root:
 
 Optional concrete CAD Agent case:
 
-- Set `CAD_AGENT_ROOT` to a local `cad-agent` checkout and run `--scope cad`.
-- The expected local case is
-  `/Users/jqwang/120-agent-cad/01-fusion-tutorial/cad-agent` when available.
+- Set `CAD_AGENT_ROOT` to an authorized local `cad-agent` checkout and run `--scope cad`.
 - This distributable package intentionally does not bundle CAD artifacts or
   video evidence.
 
@@ -138,6 +136,28 @@ For actual PDE solving, simulation, routing validation, or PhysicsNeMo/CUDA
 execution, use the separate `$cauchyx-pde` skill when installed after using
 this skill for the ontology framing.
 
+## Runnable Corroboration（书 ↔ 代码相互佐证，demos/）
+
+本 skill 内嵌可执行运行时（Semantica 0.6.5 + pyshacl + rdflib），把书中
+关键论断做成「论断 → 执行 → 佐证结论」的 demo。当回答涉及以下主题且用户
+关心"这在真实工具里是否成立"时，优先运行对应 demo 而不是只引书：
+
+- OWL 开放世界 vs SHACL 封闭校验（ch04/ch07）→ `demos/ch04_shacl_open_vs_closed.py`
+- 规则前向推理链（ch05 SWRL 手推链的机器复算）→ `demos/ch05_forward_chaining.py`
+- 第二卷"规范可本体化、刻录纪律可校验"→ `demos/vol2_iso_normative_query.py`
+
+```bash
+bash runtime/setup_runtime.sh          # 一次性
+runtime/.venv/bin/python demos/<demo>.py   # 退出码 0=佐证成立
+```
+
+纪律：**书讲的 ≠ 代码都能做**。引用工具能力前先看
+`demos/README.md` 的「书 ↔ 代码 诚实映射表」——明确了哪些概念有可执行
+对应（OWL 生成、SHACL 校验与自动派生、前向链、KG、PROV、决策审计）、哪些
+没有（DL tableau、SWRL 内建、OntoClean）、哪些是坑（semantica 的
+SPARQLReasoner 是占位实现，SPARQL 一律用 rdflib）。demo 可当回归测试：
+升级 semantica 版本前先全部跑绿。
+
 ## SkillOpt-Style Optimization Gate
 
 Treat this skill document as trainable state: make small bounded edits, then
@@ -149,13 +169,16 @@ search script:
 ```bash
 python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py
 python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py --split test
-python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py --split cad
 ```
 
 Use `valid` cases while iterating and `test` cases before delivery. Accept an
 edit only if both gates pass. If a case fails, inspect the missed query and fix
 the retrieval workflow, source map, or search keywords instead of adding broad
 ontology prose to `SKILL.md`.
+
+If an authorized CAD Agent checkout is available, also set `CAD_AGENT_ROOT` and
+run `--split cad`. Treat that split as optional external-case validation, not as
+a portable bundled gate.
 
 ## Useful Commands
 
@@ -194,7 +217,7 @@ Run the local validation gate:
 ```bash
 python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py
 python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py --split test
-python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py --split cad
+CAD_AGENT_ROOT=/path/to/cad-agent python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py --split cad
 ```
 
 ## Response Shape

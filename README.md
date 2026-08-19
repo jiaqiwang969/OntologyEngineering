@@ -69,6 +69,26 @@ python3 skills/standard-to-book/scripts/validate_book.py \
   ./workbooks/quality-management --stage structure
 ```
 
+### 想把自己的工程实践长成行业本体
+
+用 `skills/domain-ontology-loop/` 的内化循环：每次实践产出 delta，
+经差异分析、带理由的冲突判决、版本快照与 PROV 谱系合并进本体，
+最后跑 CQ 防遗忘回归——**学新不忘旧，靠旧 CQ 全绿来证明，不靠感觉**：
+
+```bash
+python3 skills/domain-ontology-loop/scripts/internalize.py init \
+  --workspace ./my-domain --name MyDomainOntology \
+  --baseline lesson01-delta.json --attempt lesson01
+python3 skills/domain-ontology-loop/scripts/internalize.py commit \
+  --workspace ./my-domain --delta lesson02-delta.json --attempt lesson02
+python3 skills/domain-ontology-loop/scripts/internalize.py regress \
+  --workspace ./my-domain
+```
+
+完整规矩与 CAD 课程（01-fusion-tutorial）的映射见
+`skills/domain-ontology-loop/references/loop-contract.md`；
+可运行佐证见 `demos/internalization_loop.py`（CI 每次 push 重跑）。
+
 正式候选发布前，完成命题账、插图、本体、书本 Skill、机器测试报告和公开白名单，再运行
 `--stage release --write-lock` 冻结全部文件，随后用不带 `--write-lock` 的 release 检查复核。
 

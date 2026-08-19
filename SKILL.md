@@ -156,6 +156,12 @@ demo 全表（含每个 demo 佐证哪条论断、用什么引擎）见 `demos/R
 - 第二卷十大本体：主张（ch03/ch11）、身份（ch12）、治理（ch13）、需求追溯
   （ch15）、变化（ch17）、依赖独立（ch18）、现场（ch19）、发布保证（ch20）
   → `demos/vol2_claim_*` `vol2_ch12_*` … `vol2_release_*`
+- 行业本体迭代内化（学新不忘旧：冲突判决 + 版本谱系 + CQ 防遗忘回归）
+  → `demos/internalization_loop.py`，模板见 `skills/domain-ontology-loop/`
+
+当用户想把本仓库当模板、用自己的工程实践（如 CAD 课程、产线质检）持续
+构建行业本体时，路由到 `skills/domain-ontology-loop/SKILL.md`；
+想把一部标准变成一本书时，路由到 `skills/standard-to-book/SKILL.md`。
 
 ```bash
 bash runtime/setup_runtime.sh          # 一次性

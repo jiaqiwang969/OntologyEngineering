@@ -29,6 +29,9 @@ import zipfile
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
+if str(SKILL_ROOT) not in sys.path:
+    sys.path.insert(0, str(SKILL_ROOT))
+
 SCHEMA = "ontology-engineering.book-release-artifacts/v1"
 SOURCE_LOCK_SCHEMA = "ontology-engineering.semantica-source-lock/v1"
 REGRESSION_SCHEMA = "ontology-engineering.regression-evidence/v2"

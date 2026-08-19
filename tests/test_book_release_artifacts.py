@@ -7,6 +7,8 @@ import io
 import json
 from pathlib import Path
 import stat
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -19,6 +21,24 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class BookReleaseArtifactTests(unittest.TestCase):
+    def test_direct_script_bootstraps_repository_imports(self) -> None:
+        script = ROOT / "scripts" / "book_release_artifacts.py"
+        code = (
+            "import runpy; from pathlib import Path; "
+            f"ns=runpy.run_path({str(script)!r}); "
+            f"report=ns['_privacy_report'](Path({str(ROOT)!r})); "
+            "assert report['scope'] == 'tracked-and-unignored-worktree'"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            completed = subprocess.run(
+                [sys.executable, "-c", code],
+                cwd=temporary,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        self.assertEqual(0, completed.returncode, completed.stderr)
+
     def _rewrite_wheel(self, source: Path, target: Path, mutate: object) -> None:
         with zipfile.ZipFile(source) as archive:
             members = {name: archive.read(name) for name in archive.namelist()}

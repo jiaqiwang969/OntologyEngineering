@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""把两卷书源与 Semantica 内建包资产转换为 XeLaTeX 片段。
+"""把第一卷书源与 Semantica 内建包资产转换为 XeLaTeX 片段。
 
-用法：python3 build_handbook.py
+用法：python3 build_handbook.py [--staging-runtime-descriptor PATH]
 输出：handbook/fragments/*.tex
 
 书目录只保留正文。原伴随资产与 capstone 可执行源码已迁入
@@ -9,6 +9,8 @@ Semantica；构建器通过唯一适配层读取 hash-verified 包资产，并�
 枚举仍须排印的小节，
 不会从 ontology-engineering 的平行副本重建片段。
 """
+import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -17,14 +19,71 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 SKILL_ROOT = HERE.parents[2]
 OUT = HERE / "fragments"
-OUT.mkdir(exist_ok=True)
 if str(SKILL_ROOT) not in sys.path:
     sys.path.insert(0, str(SKILL_ROOT))
 
 from ontology_engineering.semantica_runtime import (  # noqa: E402
     package_asset_text,
     read_migration_map,
+    read_staging_runtime_descriptor,
+    verify_runtime_source_identity,
 )
+
+
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--staging-runtime-descriptor",
+        type=Path,
+        default=None,
+        help=(
+            "Explicitly select one controlled, non-authoritative staging wheel. "
+            "The strict descriptor and exact sibling wheel must match the installed "
+            "Semantica distribution; the formal source lock is neither read nor changed."
+        ),
+    )
+    return parser.parse_args(argv)
+
+
+def select_runtime_provenance(staging_descriptor=None):
+    """Verify the selected runtime and return deterministic INDEX provenance."""
+
+    if staging_descriptor is None:
+        selected = verify_runtime_source_identity()
+        return {
+            "mode": "formal-source-lock",
+            "authoritative_runtime_identity": True,
+            "descriptor": "runtime/semantica-source-lock.json",
+            "commit": selected.commit,
+            "version": selected.version,
+            "wheel_filename": selected.artifact_filename,
+            "wheel_sha256": selected.artifact_sha256,
+            "installed_identity_verified": True,
+        }
+
+    descriptor = read_staging_runtime_descriptor(staging_descriptor)
+    selected = verify_runtime_source_identity(
+        staging_descriptor=staging_descriptor
+    )
+    if descriptor.as_runtime_source_lock() != selected:
+        raise RuntimeError(
+            "Semantica staging descriptor changed during runtime verification"
+        )
+    return {
+        "mode": "staging-non-authoritative",
+        "authoritative_runtime_identity": False,
+        "descriptor": "explicit-staging-runtime-descriptor",
+        "descriptor_sha256": descriptor.descriptor_sha256,
+        "commit": selected.commit,
+        "version": selected.version,
+        "wheel_filename": selected.artifact_filename,
+        "wheel_sha256": selected.artifact_sha256,
+        "installed_identity_verified": True,
+        "warning": (
+            "staging output must not update the formal source lock or be represented "
+            "as release output"
+        ),
+    }
 
 
 def required_fragment_names():
@@ -366,7 +425,6 @@ def convert_md_lines(lines, sec_offset=1, starred=False):
                     i += 1
                 elif (mm and len(mm.group(1)) > 0) or (mm2 and len(mm2.group(1)) > 0):
                     mx = mm or mm2
-                    sub_env = "enumerate" if (mx is mm and ordered) or (mx is mm2 and not ordered) else "itemize"
                     if not sub:
                         sub = "itemize" if not OL_RE.match(lines[i].rstrip("\n")) else "enumerate"
                         out.append(r"\begin{%s}" % sub)
@@ -495,8 +553,25 @@ def split_sections(lines):
     return secs
 
 
-def emit_section_fragments(code_sources):
-    index = ["# 小节片段索引（fragment 名 → 文件 · 小节标题 · 行数）", ""]
+def emit_section_fragments(code_sources, runtime_provenance):
+    index = [
+        "# 小节片段索引（fragment 名 → 文件 · 小节标题 · 行数）",
+        "",
+        "## Semantica runtime provenance",
+        "",
+        "```json",
+        *json.dumps(
+            runtime_provenance,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        ).splitlines(),
+        "```",
+        "",
+        "## Fragment mapping",
+        "",
+    ]
+    fragment_count = 0
     for relpath, text in code_sources:
         fp = Path(relpath)
         tag = fp.parts[0].split("-")[0]
@@ -510,8 +585,9 @@ def emit_section_fragments(code_sources):
                 "\n".join(emit_code(lines[s:e], fp.suffix.lower())) + "\n",
                 encoding="utf-8")
             index.append(f"{frag}  ·  {fp.name}  ·  {title}  ·  {e-s}行")
+            fragment_count += 1
     (OUT / "INDEX.md").write_text("\n".join(index) + "\n", encoding="utf-8")
-    print(f"  -> fragments/INDEX.md（小节片段 {len(index)-2} 个）")
+    print(f"  -> fragments/INDEX.md（小节片段 {fragment_count} 个）")
 
 
 # ---------------------------------------------------------------- 生成
@@ -529,7 +605,21 @@ def clean_output():
             path.unlink()
 
 
-def main():
+def main(argv=None):
+    args = parse_args(argv)
+    # Identity verification must succeed before clean_output removes the previous
+    # complete snapshot.  Formal mode is the default; staging is always explicit.
+    runtime_provenance = select_runtime_provenance(
+        args.staging_runtime_descriptor
+    )
+    print(
+        "Semantica runtime: {} {} @ {}".format(
+            runtime_provenance["mode"],
+            runtime_provenance["version"],
+            runtime_provenance["commit"],
+        )
+    )
+    OUT.mkdir(exist_ok=True)
     clean_output()
     print("生成插图提示词片段：")
     sys.path.insert(0, str(HERE))
@@ -577,7 +667,7 @@ def main():
         write(name, emit_code(lines, fp.suffix.lower()))
 
     print("生成小节片段：")
-    emit_section_fragments(code_sources)
+    emit_section_fragments(code_sources, runtime_provenance)
 
     missing = sorted(
         name for name in REQUIRED_FRAGMENTS if not (OUT / name).is_file()

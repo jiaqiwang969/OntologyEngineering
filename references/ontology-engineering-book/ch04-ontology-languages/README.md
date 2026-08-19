@@ -39,17 +39,25 @@ Protégé、Jena、RDF4J、GraphDB、RDFLib、owlready2 等仍在正文中作为
 | SPARQL | 查询/更新 RDF Dataset | 自动拥有外部端点与网络授权 |
 | SHACL | 数据图形状校验 | OWL 世界语义的替代品 |
 
-## 复算
+## 统一语义介入入口
 
-先由受控发布流程把实际 runtime commit 与精确 wheel/工件 SHA-256 分别写入
-`SEMANTICA_RUNTIME_COMMIT`、`SEMANTICA_RUNTIME_SHA256`；缺失或错配必须失败关闭。
+从 ontology-engineering skill 根运行。统一入口从 source lock 自动核验 Semantica
+runtime identity；先发现，再按
+[`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立绑定：
 
 ```bash
-semantica package run semantica.chapter_packages.vol1.ch04 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH04-SCN-OPEN-VS-CLOSED-001 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH04-SCN-OPEN-VS-CLOSED-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
 
 该场景将开放世界下的“缺少序列号”查询与封闭式 shape 违规并置；跨包依赖和 partial
-状态必须保留在结果解释中。
+状态必须保留在结果解释中。书提供语言与方法，受控工程记录提供事实，Semantica 是唯一
+可执行语义；网络访问、事实接受、风险与发布由相应有权人决定。`open` 不自动晋升学习
+结果。原生 `semantica package ...` 只供底层 runner/manifest 诊断，不是主运行路径。

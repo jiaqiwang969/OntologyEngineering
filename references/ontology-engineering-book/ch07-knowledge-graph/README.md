@@ -33,17 +33,25 @@
 | Shapes | 完整性、格式和跨字段约束 | `SemanticRuntime.validate` 与 exact oracle |
 | Projection | 属性图、搜索或分析副本 | 可重建的派生视图，不反向成为语义正本 |
 
-## 复算
+## 统一语义介入入口
 
-先由受控发布流程把实际 runtime commit 与精确 wheel/工件 SHA-256 分别写入
-`SEMANTICA_RUNTIME_COMMIT`、`SEMANTICA_RUNTIME_SHA256`；缺失或错配必须失败关闭。
+从 ontology-engineering skill 根运行。统一入口自动核验 source-locked runtime identity；
+先发现 registry，再按
+[`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立绑定：
 
 ```bash
-semantica package run semantica.chapter_packages.vol1.ch07 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH07-SCN-SHACL-QUALITY-001 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH07-SCN-SHACL-QUALITY-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
 
 场景通过不代表数据写入获得授权；校验者、事实提供者与有权提交 mutation 的执行者
-必须保持为不同责任面。
+必须保持为不同责任面。书提供 KG 方法，受控工程记录提供 ABox 事实，Semantica 是唯一
+可执行语义；写入、风险、晋升和发布由有权人决定。`open` 不自动提交 mutation。
+原生 `semantica package ...` 只供底层 runner/manifest 诊断，不是主运行路径。

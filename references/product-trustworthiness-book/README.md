@@ -64,18 +64,23 @@ Semantica 当前登记 20 个本卷 chapter packages，另有一个规范转述 
 读者先读本章正文，再从源锁定的 Semantica build 查看、运行和验证对应包：
 
 ```bash
-: "${SEMANTICA_RUNTIME_COMMIT:?set from the reviewed Semantica source lock}"
-: "${SEMANTICA_WHEEL_SHA256:?set from the reviewed Semantica wheel lock}"
-semantica package show semantica.chapter_packages.vol2.ch14 --json
-semantica package run semantica.chapter_packages.vol2.ch14 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
-  --json
-semantica package verify semantica.chapter_packages.vol2.ch14 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
-  --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario semantica.vol2.ch14.scenario.primary
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
+
+binding 与 task fixture 先按
+[`semantic-engagement-contract.md`](../semantic-engagement-contract.md) 绑定 `discover`
+返回的精确 package/version/digest；统一入口自动核验并注入 source identity。
+`propose/commit/verify/history/promote` 引用同一合同定义的 delta、candidate 与 gate-evidence
+fixtures，并以各子命令 `--help` 为准。原生 `semantica package show/run/verify` 仅供底层
+runner/manifest 诊断，不是主运行路径。
 
 报告时至少分开四件事：书中依据；package/scenario id；场景 oracle 状态；独立
 release verdict。Python、CLI 与 MCP 都只能是同一个 `SemanticPackageRunner` 的

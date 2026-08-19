@@ -5,7 +5,7 @@
 
 ```text
 新书正文/图/来源地图 → OntologyEngineering 书侧
-本体/CQ/shape/query/case/rule/contract/lifecycle → Semantica built-in package
+本体/CQ/shape/query/case/rule/contract/lifecycle → Semantica governed package
 ```
 
 书是新加入的“石头”。可执行语义不能在 OE 或书包里形成第二套发布正本。
@@ -40,8 +40,9 @@ python3 skills/standard-to-book/scripts/validate_book.py \
 保存在工作区之外的私有受控位置，仅以逻辑 ID 和哈希关联。`.gitignore` 是误操作防线，
 不是允许把私有证据放进书包的理由。
 
-作者工作区里的 ontology/query/shape/case 草稿只是候选材料。候选发布前必须迁入并
-注册为 Semantica built-in package；OE 不接受这些草稿成为平行运行资产。
+作者工作区里的 ontology/query/shape/case 草稿只是候选材料。候选发布前必须通过
+`semantica.ontology.refinery/v1` 进入受控 package registry；OE 不接受这些草稿成为
+平行运行资产。
 
 ## 2. 冻结 Book Charter
 
@@ -75,7 +76,7 @@ Charter 未冻结，不进入批量写作、生图或 package 发布。
 - 什么时候必须停止，让专家、审核人或责任人决定？
 
 每个 CQ 声明读者、所需证据、预期回答、能力 profile 与 exact oracle。CQ 是范围和
-验收合同，不是章节装饰。候选 CQ 可在作者工作区迭代，发布正本进入 Semantica package。
+验收合同，不是章节装饰。候选 CQ 可在作者工作区迭代，晋升正本进入 Semantica package。
 
 ## 5. 建立命题账与书源锚点
 
@@ -86,7 +87,7 @@ Charter 未冻结，不进入批量写作、生图或 package 发布。
 ## 6. 概念化并建立 Semantica package
 
 按领域建立术语、分类、关系、身份、状态、版本、权限与未决项。在 Semantica 中为
-每章或明确的 domain unit 注册 built-in package，至少包含：
+每章或明确的 domain unit 建立 governed package，至少包含：
 
 - manifest、contract、命题/CQ 与书源锚点；
 - TBox/ABox、positive、single-fault negative、ambiguity、prior-release cases；
@@ -94,6 +95,17 @@ Charter 未冻结，不进入批量写作、生图或 package 发布。
 - required capabilities 与诚实的 unsupported/partial/blocked 状态；
 - asset hashes、snapshot/diff、version、PROV、execution report 与 release receipt；
 - Python/CLI/MCP 通过同一个 `SemanticPackageRunner` 的可发现性。
+
+一次炼化输入必须是完整 `PackageDelta`，顶层覆盖：
+
+```text
+ontology · competency_questions · shapes · queries · rules · cases
+contract · provenance · book_impact
+```
+
+`book_impact` 必须明确为 `none`、`vol1-method`、`vol2-iso-exemplar` 或合同声明的组合；
+普通行业实例默认为 `none`。书稿影响不能埋在自由文本 provenance 中，也不能因为
+package 变化就自动重写书。
 
 不要让所有书 import 一个万能总 TBox。跨书对齐要独立登记；移除映射后，每本书仍能
 说明自己的范围。不要在 OE 增加 backend adapter、package loader 或 fallback。
@@ -118,7 +130,9 @@ Charter 未冻结，不进入批量写作、生图或 package 发布。
 
 ## 9. 分层放行
 
-候选发布至少经过：
+候选必须按 `candidate → proposed → committed → regression_passed →
+release_complete → promoted` 逐级推进；`published` 是外部有权人的独立动作。候选发布
+至少经过：
 
 1. 来源与权利检查；
 2. 章节/CQ/命题覆盖检查；
@@ -129,7 +143,7 @@ Charter 未冻结，不进入批量写作、生图或 package 发布。
 7. 领域专家复核；
 8. 隐私扫描和公开资产 allowlist；
 9. PDF、书本 Skill、Semantica package version 与 package lock 冻结；
-10. 有权人作出明确发布决定。
+10. 有权人分别作出 promotion 与对外发布决定。
 
 验证工作区：
 
@@ -144,6 +158,11 @@ python3 skills/standard-to-book/scripts/validate_book.py \
 
 `release/package-lock.csv` 冻结书侧；Semantica receipt 冻结执行侧。二者必须通过稳定
 package ID、书源锚点和 hash 指向同一候选版本。任一侧字节变化都应开启新候选发布。
+
+进入正式问答检索的正文与 reader/usage guides 也必须有内容锁，不能依赖代码中的裸路径
+allowlist。锁条目使用无绝对路径、无 `..`、无非规范分隔的 POSIX 相对路径，并保存
+`(SHA-256, path)`；检索器必须先对同一批待读取字节核验摘要，再解码、评分或引用。
+正文锁与 guide 锁可以按书的作者工作流分开，但缺任一正式锁或任一字节漂移都应失败关闭。
 
 ## 完成定义
 

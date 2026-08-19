@@ -139,3 +139,31 @@ Semantica normative package 只承载依法制作、可审计的转述和派生�
 原始 PDF 或未获许可的逐字抽取件。精确条款、表格与原文必须回用户合法持有的受控
 来源核对。package 通过只证明当前输入符合已编码合同，不授予标准版权、产品合规、
 认证、风险接受或对外发布权。
+
+## 9. 默认语义介入与行业本体炼化
+
+`ontology-engineering` 的长期复用入口不是“查书后可选运行一次 demo”，而是一次
+source-locked semantic engagement。每次被另一个工程 skill 或项目调用时，都必须：
+
+1. 读取严格的 project binding 与 task envelope；
+2. 用两卷书选择方法镜头和解释边界；
+3. 发现并核对 Semantica package、baseline、capability 与 runtime identity；
+4. 在适用时运行现有 CQ/query/shape/rule/oracle；
+5. 分开返回工程结果、Semantica execution/receipt/release 和本体学习判定；
+6. 返回 `no_delta`，或把有证据的可复用缺口送入 Semantica 原生炼化状态机。
+
+行业本体候选必须由 Semantica 管理内容寻址、不可变版本、差异、CQ 回归、PROV、
+receipt 和 promotion。项目绑定只能引用受控 workspace/registry identity 与 digest；
+不得把 package ID 拼成任意文件路径，也不得让 OE 自己加载一个外部 RDF 目录。
+
+受治理 workspace 是候选事务区，不是第二发布正本。只有完成
+`candidate → proposed → committed → regression_passed → release_complete → promoted`
+并由有权人批准后，内容才成为可复用行业 package；`published` 始终是独立外部决定。
+
+完整候选 delta 必须同时覆盖 ontology、CQ、SHACL、named query、受支持规则、
+positive/single-fault-negative/ambiguity/prior-release cases、contract、provenance 和
+book impact。只积累类名、属性名和注释不能称为行业本体已经炼化完成。
+
+详细跨-skill 输入、三联输出、授权矩阵和失败状态见
+`semantic-engagement-contract.md`。两卷书的作者/TeX/PDF 收敛流程见
+`book-authoring-workflow.md`。

@@ -68,24 +68,27 @@ ontology-engineering-book/
 
 先读正文，再查看并运行对应包：
 
-`ONTOLOGY_ENGINEERING_ROOT` 指向同时含两卷书源的受控 checkout。另两个环境变量
-必须由构建/发布流程写入：一个是所运行 Semantica 的 commit 身份，另一个是该精确
-wheel 或运行工件的 SHA-256；空值、占位值或错配值都会 fail closed。
+从 ontology-engineering skill 根运行统一入口。它会从正式 source lock 自动核验并注入
+Semantica commit、版本和 wheel SHA-256；读者不得手抄这些身份。先 `discover`，再按
+[`semantic-engagement-contract.md`](../semantic-engagement-contract.md) 建立与所选
+package/version/digest 精确一致的 binding 与 task fixture：
 
 ```bash
-semantica package list --volume vol1 --json
-semantica package show semantica.chapter_packages.vol1.ch03 --json
-semantica package verify-books \
-  --book-root "$ONTOLOGY_ENGINEERING_ROOT" --volume vol1 --json
-semantica package run semantica.chapter_packages.vol1.ch03 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH03-SCN-CQ-ACCEPTANCE-001 --json
-semantica package verify semantica.chapter_packages.vol1.ch03 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH03-SCN-CQ-ACCEPTANCE-001 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH03-SCN-CQ-ACCEPTANCE-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
+
+`propose/commit/verify/history/promote` 仍调用 `scripts/semantic_engagement.py`，并引用合同定义的
+delta、candidate 与 regression/release evidence fixtures；先读对应子命令 `--help`。
+原生 `semantica package list/show/run/verify/verify-books` 只用于底层 runner、manifest 与
+book binding 诊断，不是日常主入口，也不能绕开统一入口的 source identity 检查。
 
 不要在本书目录另装 Jena、owlready2、pySHACL 或 RDFLib 来构造平行答案。
 Protégé、Jena、RDF4J、HermiT、Pellet、pySHACL 等仍可作为语言生态与历史实现的

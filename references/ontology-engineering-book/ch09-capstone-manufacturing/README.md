@@ -46,23 +46,28 @@ semantica.chapter_packages.vol1.ch09
 
 ## 复算正确入口
 
-先由受控发布流程把实际 runtime commit 与精确 wheel/工件 SHA-256 分别写入
-`SEMANTICA_RUNTIME_COMMIT`、`SEMANTICA_RUNTIME_SHA256`；缺失或错配必须失败关闭。
+从 ontology-engineering skill 根调用统一入口；它自动核验并注入正式 source lock 中的
+runtime commit、版本与 wheel SHA-256。先发现 registry，再按
+[`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立精确
+package binding、workspace binding 与 task fixture：
 
 ```bash
-semantica package show semantica.chapter_packages.vol1.ch09 --json
-semantica package run semantica.chapter_packages.vol1.ch09 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH09-SCN-CQ01-001 --json
-semantica package verify semantica.chapter_packages.vol1.ch09 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH09-SCN-CQ01-001 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH09-SCN-CQ01-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
 
-`run` 可以证明 CQ1 场景是否符合声明 oracle；`verify` 还要检查包完整性、能力边界、
+`run` 可以证明 CQ1 场景是否符合声明 oracle；生命周期的
+`propose/commit/verify/history/promote` 继续引用合同规定的 delta、candidate 与 gate-evidence
+fixtures，并以各命令 `--help` 为准。`verify` 还要检查包完整性、能力边界、
 来源/资产/运行时哈希与发布收据。当前发布状态必须保持 blocked。
+原生 `semantica package show/run/verify` 仅供底层 runner/manifest 诊断，不是主运行入口。
 
 ## 实战扩展顺序
 

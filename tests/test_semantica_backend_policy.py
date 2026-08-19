@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -29,7 +28,9 @@ class TemporaryRepository:
             path.chmod(path.stat().st_mode | 0o700)
         return path
 
-    def policy(self, allowlist: list[dict[str, object]] | None = None, **extra: object) -> Path:
+    def policy(
+        self, allowlist: list[dict[str, object]] | None = None, **extra: object
+    ) -> Path:
         payload: dict[str, object] = {
             "schema_version": gate.SCHEMA_VERSION,
             "bootstrap": gate.REQUIRED_BOOTSTRAP,
@@ -106,15 +107,24 @@ class SemanticaBackendNegativeTests(unittest.TestCase):
                 self.repo.write("app.py", f"import {module}\n")
                 self.repo.policy()
                 report = self.repo.evaluate()
-                self.assertIn(gate.RULE_DIRECT_BACKEND_IMPORT, self.rules(report, "app.py"))
+                self.assertIn(
+                    gate.RULE_DIRECT_BACKEND_IMPORT, self.rules(report, "app.py")
+                )
 
     def test_semantica_import_is_legal_only_in_immutable_bootstrap(self) -> None:
         self.repo.write("application.py", "from semantica.reasoning import Reasoner\n")
-        self.repo.write(gate.REQUIRED_BOOTSTRAP, "from semantica.reasoning import Reasoner\n")
+        self.repo.write(
+            gate.REQUIRED_BOOTSTRAP, "from semantica.reasoning import Reasoner\n"
+        )
         self.repo.policy()
         report = self.repo.evaluate()
-        self.assertIn(gate.RULE_DIRECT_SEMANTICA_IMPORT, self.rules(report, "application.py"))
-        self.assertNotIn(gate.RULE_DIRECT_SEMANTICA_IMPORT, self.rules(report, gate.REQUIRED_BOOTSTRAP))
+        self.assertIn(
+            gate.RULE_DIRECT_SEMANTICA_IMPORT, self.rules(report, "application.py")
+        )
+        self.assertNotIn(
+            gate.RULE_DIRECT_SEMANTICA_IMPORT,
+            self.rules(report, gate.REQUIRED_BOOTSTRAP),
+        )
 
     def test_embedded_semantic_payloads_are_non_allowlistable(self) -> None:
         self.repo.write(
@@ -127,22 +137,29 @@ rule = "IF Equipment(?x) THEN Asset(?x)"
 ''',
         )
         self.repo.policy(
-            allowlist=[{
-                "path": "embedded.py",
-                "rules": [gate.RULE_EMBEDDED_SEMANTIC_PAYLOAD],
-                "reason": "An embedded graph must never remain outside Semantica packages.",
-                "expires_when": "This negative fixture is removed after gate verification.",
-            }]
+            allowlist=[
+                {
+                    "path": "embedded.py",
+                    "rules": [gate.RULE_EMBEDDED_SEMANTIC_PAYLOAD],
+                    "reason": "An embedded graph must never remain outside Semantica packages.",
+                    "expires_when": "This negative fixture is removed after gate verification.",
+                }
+            ]
         )
         report = self.repo.evaluate()
         findings = [
-            item for item in report.findings
+            item
+            for item in report.findings
             if item.rule == gate.RULE_EMBEDDED_SEMANTIC_PAYLOAD
         ]
         self.assertEqual(4, len(findings))
-        self.assertTrue(any("non-allowlistable" in error for error in report.policy_errors))
+        self.assertTrue(
+            any("non-allowlistable" in error for error in report.policy_errors)
+        )
 
-    def test_importlib_aliases_computed_names_getattr_and_dunder_import_are_blocked(self) -> None:
+    def test_importlib_aliases_computed_names_getattr_and_dunder_import_are_blocked(
+        self,
+    ) -> None:
         self.repo.write(
             "dynamic.py",
             """\
@@ -160,7 +177,8 @@ loader("pyoxi" + "graph")
         self.repo.policy()
         report = self.repo.evaluate()
         dynamic = [
-            finding for finding in report.findings
+            finding
+            for finding in report.findings
             if finding.path == "dynamic.py" and finding.rule == gate.RULE_DYNAMIC_IMPORT
         ]
         self.assertEqual(4, len(dynamic))
@@ -177,7 +195,9 @@ compile(payload, "<memory>", "exec")
         )
         self.repo.policy()
         report = self.repo.evaluate()
-        dynamic = [item for item in report.findings if item.rule == gate.RULE_DYNAMIC_IMPORT]
+        dynamic = [
+            item for item in report.findings if item.rule == gate.RULE_DYNAMIC_IMPORT
+        ]
         self.assertEqual(3, len(dynamic))
 
     def test_private_store_backend_access_variants_are_blocked(self) -> None:
@@ -191,7 +211,9 @@ third = engine.__dict__["_store_backend"]
         )
         self.repo.policy()
         report = self.repo.evaluate()
-        private = [item for item in report.findings if item.rule == gate.RULE_PRIVATE_BACKEND]
+        private = [
+            item for item in report.findings if item.rule == gate.RULE_PRIVATE_BACKEND
+        ]
         self.assertEqual(3, len(private))
 
     def test_reflective_and_mapping_evasions_are_blocked(self) -> None:
@@ -220,7 +242,9 @@ reasoner_type = getattr(api, "SPARQL" + "Reasoner")
         )
         self.repo.policy()
         report = self.repo.evaluate()
-        reasoner = [item for item in report.findings if item.rule == gate.RULE_SPARQL_REASONER]
+        reasoner = [
+            item for item in report.findings if item.rule == gate.RULE_SPARQL_REASONER
+        ]
         self.assertEqual(2, len(reasoner))
 
     def test_subprocess_alias_and_computed_engine_command_are_blocked(self) -> None:
@@ -252,7 +276,9 @@ subprocess.run(["python", str(tool)])
         report = self.repo.evaluate()
         self.assertIn(gate.RULE_ALTERNATE_PROCESS, self.rules(report, "runner.py"))
 
-    def test_scanned_clean_helper_through_current_python_is_not_an_alternate_engine(self) -> None:
+    def test_scanned_clean_helper_through_current_python_is_not_an_alternate_engine(
+        self,
+    ) -> None:
         self.repo.write(
             "clean.py",
             "from ontology_engineering.semantica_runtime import create_runtime\n",
@@ -333,7 +359,9 @@ class Client {
         self.repo.policy()
         report = self.repo.evaluate()
         self.assertIn(gate.RULE_ALTERNATE_PROCESS, self.rules(report, "run.sh"))
-        self.assertIn(gate.RULE_DIRECT_BACKEND_IMPORT, self.rules(report, "bin/ontology-runner"))
+        self.assertIn(
+            gate.RULE_DIRECT_BACKEND_IMPORT, self.rules(report, "bin/ontology-runner")
+        )
 
     def test_powershell_and_ci_workflow_commands_are_scanned(self) -> None:
         self.repo.write("tools/run.ps1", "python -m owlready2\n")
@@ -350,7 +378,9 @@ class Client {
         )
 
     def test_nested_vendor_and_reference_directories_are_not_omitted(self) -> None:
-        self.repo.write("vendor/reference/deep/backend.py", "from rdflib import Graph\n")
+        self.repo.write(
+            "vendor/reference/deep/backend.py", "from rdflib import Graph\n"
+        )
         self.repo.policy()
         report = self.repo.evaluate()
         self.assertIn(
@@ -372,7 +402,9 @@ class Client {
         )
         self.assertIn(gate.RULE_JENA_CLIENT, self.rules(report, "pom.xml"))
 
-    def test_duplicate_semantic_assets_are_migration_debt_and_strict_blockers(self) -> None:
+    def test_duplicate_semantic_assets_are_migration_debt_and_strict_blockers(
+        self,
+    ) -> None:
         for relative in (
             "model/domain.ttl",
             "model/domain.owl",
@@ -411,7 +443,9 @@ class Client {
         self.assertEqual(1, len(strict.unapproved_findings))
 
     def test_stale_allowance_is_rejected(self) -> None:
-        self.repo.write("migrated.py", "from ontology_engineering.semantica_runtime import graph\n")
+        self.repo.write(
+            "migrated.py", "from ontology_engineering.semantica_runtime import graph\n"
+        )
         self.repo.policy(
             [
                 {
@@ -424,7 +458,9 @@ class Client {
         )
         report = self.repo.evaluate()
         self.assertFalse(report.passed)
-        self.assertEqual(["migrated.py: direct_backend_import"], report.stale_allowances)
+        self.assertEqual(
+            ["migrated.py: direct_backend_import"], report.stale_allowances
+        )
 
     def test_globs_and_directory_exclusion_configuration_are_rejected(self) -> None:
         self.repo.write("legacy.py", "import rdflib\n")
@@ -441,7 +477,9 @@ class Client {
         )
         report = self.repo.evaluate()
         self.assertFalse(report.passed)
-        self.assertTrue(any("exclusions are forbidden" in error for error in report.policy_errors))
+        self.assertTrue(
+            any("exclusions are forbidden" in error for error in report.policy_errors)
+        )
         self.assertTrue(any("without globs" in error for error in report.policy_errors))
 
     def test_literal_fixture_classification_cannot_hide_application_code(self) -> None:
@@ -458,14 +496,18 @@ class Client {
         report = self.repo.evaluate()
         self.assertFalse(report.passed)
         self.assertIn(gate.RULE_PRIVATE_BACKEND, self.rules(report, "application.py"))
-        self.assertTrue(any("not gate infrastructure" in error for error in report.policy_errors))
+        self.assertTrue(
+            any("not gate infrastructure" in error for error in report.policy_errors)
+        )
 
     def test_active_source_directory_symlink_fails_closed(self) -> None:
         outside = tempfile.TemporaryDirectory()
         self.addCleanup(outside.cleanup)
         outside_path = Path(outside.name)
         (outside_path / "hidden.py").write_text("import rdflib\n", encoding="utf-8")
-        (self.repo.root / "linked-source").symlink_to(outside_path, target_is_directory=True)
+        (self.repo.root / "linked-source").symlink_to(
+            outside_path, target_is_directory=True
+        )
         self.repo.policy()
         report = self.repo.evaluate()
         self.assertFalse(report.passed)
@@ -486,7 +528,9 @@ class Client {
         report = self.repo.evaluate()
         self.assertFalse(report.passed)
         self.assertIn(gate.RULE_PARSE_FAILURE, self.rules(report, "broken.py"))
-        self.assertTrue(any("non-allowlistable" in error for error in report.policy_errors))
+        self.assertTrue(
+            any("non-allowlistable" in error for error in report.policy_errors)
+        )
 
 
 if __name__ == "__main__":

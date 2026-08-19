@@ -40,6 +40,12 @@ python3 scripts/search_ontology_sources.py --scope book --json \
   "OntoClean 刚性 统一性"
 ```
 
+`--scope book` 只检索卷根 `authoring-sources.sha256` 中选定的当前书源；卷根总览、
+九章 README、resources README 与 handbook 正文都由这一个卷根作者锁覆盖，不存在锁外
+导读 allowlist。检索器解析每条 `(SHA-256, path)`，并在每次读取时对同一批字节逐项核验；
+任何 source/guide drift 都失败关闭。只有做来源考古时才显式使用 `--scope archive`；其
+每条命中都会带非权威 provenance warning，不能作为当前书源。
+
 推荐双语查询：
 
 - `本体构建 方法论 Ontology 101 METHONTOLOGY`
@@ -57,11 +63,24 @@ python3 scripts/search_ontology_sources.py --scope book --json \
 ## 执行佐证
 
 ```bash
-bash runtime/setup_runtime.sh
-runtime/.venv/bin/semantica package show \
-  semantica.chapter_packages.vol1.ch03 --json
-runtime/.venv/bin/python demos/vol1_ch03_cq_acceptance.py
+bash runtime/setup_runtime.sh --doctor
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH03-SCN-CQ-ACCEPTANCE-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
+
+先用 `discover` 取得精确 package/version/digest，再按
+[`semantic-engagement-contract.md`](semantic-engagement-contract.md) 制作 package 或
+workspace binding 与 task fixture。`propose/commit/verify/history/promote` 继续使用同一入口，
+并引用合同规定的 delta、candidate 与 gate-evidence fixtures；具体字段以相应 `--help` 为准。
+原生 `semantica package show/run/verify` 只保留为底层诊断接口，不是书的主运行路径，
+也不得要求读者手抄 runtime commit 或 wheel SHA-256。
 
 执行报告的 package/scenario/oracle/receipt 是代码证据，不能替代书源引用。完整 9 章
 各有独立 manifest 与状态；某章的绿色结果不能替另一章生成 receipt。若包需要完整

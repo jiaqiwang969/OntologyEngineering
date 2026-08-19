@@ -33,14 +33,29 @@
 与不可做之事给出边界。当前 ch01 包尚不能自动判定一份范围声明是否完整，因此
 本章练习仍是方法训练，不能声称已被 runner 验收。
 
-## 阅读与检查
+## 统一语义介入入口
+
+从 ontology-engineering skill 根运行。先只读发现 source-locked registry，再按
+[`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立精确
+package binding、workspace binding 与 task envelope：
 
 ```bash
-semantica package show semantica.chapter_packages.vol1.ch01 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH01-SCN-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
 
 此包当前没有可运行的完整场景；注册项 `OE-V1-CH01-SCN-001` 的状态明确为
-`absent`，任何针对它的运行请求都必须 fail closed。
+`absent`，因此 `run` 必须返回可解释 blocker；`open` 只建立受管的行业本体学习回路，
+不自动改动正式 package。书提供方法，受控工程记录提供事实，Semantica 是唯一可执行
+语义；事实接受、风险、晋升与发布仍由有权人决定。原生 `semantica package ...` 只供
+底层 runner/manifest 诊断，不是本章主运行路径。
 
 ## 学习建议
 

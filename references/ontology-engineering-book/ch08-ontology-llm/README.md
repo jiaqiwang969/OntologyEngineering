@@ -30,11 +30,27 @@
 | GraphRAG | 表达与归纳 | 按来源和图结构检索、裁剪并绑定证据 |
 | Agent | 提出动作 | 语义校验、授权、执行、补偿与审计；四者不能合并为模型权限 |
 
-## 包检查
+## 统一语义介入入口
+
+从 ontology-engineering skill 根运行。先只读发现，再按
+[`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立精确
+package/workspace binding 与 task envelope：
 
 ```bash
-semantica package show semantica.chapter_packages.vol1.ch08 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH08-SCN-GUARDRAIL-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
 
 不要直接运行书中历史 `ontology-guided-agent.py` 并把输出当成发布证据。只有绑定输入、
-版本、oracle、工具权限和 receipt 的 Semantica 场景才能支撑可执行主张。
+版本、oracle、工具权限和 receipt 的 Semantica 场景才能支撑可执行主张。当前 adapter
+操作合同不受支持，因此 `run` 必须保留 blocker；`open` 不会把模型提议变成授权动作。
+书提供 Agent 控制方法，受控工程记录提供事实，Semantica 是唯一可执行语义；工具动作、
+风险、晋升和发布仍由有权人决定。原生 `semantica package ...` 只供底层
+runner/manifest 诊断，不是本章主运行路径。

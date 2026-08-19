@@ -869,6 +869,23 @@ def _git_output(root: Path, args: Sequence[str], *, label: str) -> str:
     return completed.stdout.strip()
 
 
+def _git_paths(root: Path, args: Sequence[str], *, label: str) -> list[str]:
+    completed = subprocess.run(
+        ["git", *args], cwd=root, capture_output=True, check=False
+    )
+    if completed.returncode != 0:
+        stderr = completed.stderr.decode("utf-8", errors="replace").strip()
+        raise ReleaseArtifactError(f"cannot inspect {label}: {stderr}")
+    try:
+        return [
+            item.decode("utf-8", errors="strict")
+            for item in completed.stdout.split(b"\0")
+            if item
+        ]
+    except UnicodeDecodeError as exc:
+        raise ReleaseArtifactError(f"{label} contains a non-UTF-8 path") from exc
+
+
 def _git_commit_exists(root: Path, commit: str) -> None:
     if not HEX40.fullmatch(commit):
         raise ReleaseArtifactError(
@@ -914,14 +931,14 @@ def _git_source_boundary(root: Path, commit: str) -> str:
         raise ReleaseArtifactError(
             "ontology_engineering.source_commit is not an ancestor of current HEAD"
         )
-    tracked = _git_output(
-        root, ["diff", "--name-only", commit, "--"], label="source delta"
-    ).splitlines()
-    untracked = _git_output(
+    tracked = _git_paths(
+        root, ["diff", "--name-only", "-z", commit, "--"], label="source delta"
+    )
+    untracked = _git_paths(
         root,
-        ["ls-files", "--others", "--exclude-standard"],
+        ["ls-files", "-z", "--others", "--exclude-standard"],
         label="untracked source delta",
-    ).splitlines()
+    )
     unexpected = sorted(
         path
         for path in {*tracked, *untracked}

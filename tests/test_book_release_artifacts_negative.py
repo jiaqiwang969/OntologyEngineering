@@ -213,7 +213,14 @@ class BookReleaseArtifactNegativeTests(unittest.TestCase):
             )
             source = root / "source.txt"
             source.write_text("source v1\n", encoding="utf-8")
-            subprocess.run(["git", "add", "source.txt"], cwd=root, check=True)
+            unicode_pdf = root / release.BOOK_SPECS["vol1"]["pdf"]
+            unicode_pdf.parent.mkdir(parents=True)
+            unicode_pdf.write_bytes(b"old pdf bytes")
+            subprocess.run(
+                ["git", "add", "source.txt", unicode_pdf.relative_to(root)],
+                cwd=root,
+                check=True,
+            )
             subprocess.run(
                 ["git", "commit", "-q", "-m", "source baseline"],
                 cwd=root,
@@ -235,8 +242,9 @@ class BookReleaseArtifactNegativeTests(unittest.TestCase):
             ).stdout.strip()
 
             fixed = root / release.MANIFEST_PATH
-            fixed.parent.mkdir(parents=True)
+            fixed.parent.mkdir(parents=True, exist_ok=True)
             fixed.write_text("{}\n", encoding="utf-8")
+            unicode_pdf.write_bytes(b"new pdf bytes")
             self.assertEqual(tree, release._git_source_boundary(root, commit))
 
             non_fixed = root / "build" / "unbound-output.json"

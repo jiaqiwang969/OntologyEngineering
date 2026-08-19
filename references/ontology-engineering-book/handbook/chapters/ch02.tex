@@ -14,6 +14,12 @@
 并且对「这条公理会让推理器做出什么」建立起可靠的直觉。
 \end{introbox}
 
+\chapterbinding{semantica.chapter\_packages.vol1.ch02}{partial}{blocked}
+{CQ、OWA/CWA 查询、输入数据与受限正向规则场景已绑定；
+\texttt{OE-V1-CH02-SCN-REASONING-MODES-001} 有精确 oracle。}
+{当前只承诺正向、单调规则适配与 RDF/SPARQL 复算；完整 DL/tableau、默认逻辑、
+一般非单调推理与本章 SHACL 均不支持，必须 fail closed。}
+
 \section{四块积木总览：类、属性、公理、实例}
 
 假设你刚接到一个任务：把一家机加工厂关于设备的知识「装进」信息系统，
@@ -42,10 +48,10 @@
 世界上独一无二的存在。类描述「车床应当是什么样」，实例是「这一台车床」。
 实例回答的问题是：\textbf{现实中到底有谁}。
 
-四块积木中，类层次是最直观的部分。看仓库示例文件中那棵设备分类树：
+四块积木中，类层次是最直观的部分。看 ch02 包内教学资产中的设备分类树：
 
 \input{fragments/sec-ch02-core-concepts-txt-1}
-\snipsource{ch02-ontology-foundations/examples/core-concepts.txt}
+\assetsource{ch02}{core-concepts}
 
 这棵树要竖着读：每一台数控车床都是数控机床，每一台数控机床都是加工设备，
 每一台加工设备都是设备——沿树上行的每一步都是一次「是一种」（is-a）判断。
@@ -240,7 +246,7 @@ OO 的继承是\textbf{实现复用}机制，子类可以覆写（override）父
 「15.5」就只是一个数，数据属性足矣。先看数据属性在台账场景下的样子：
 
 \input{fragments/sec-ch02-core-concepts-txt-2}
-\snipsource{ch02-ontology-foundations/examples/core-concepts.txt}
+\assetsource{ch02}{core-concepts}
 
 每条数据属性都标明了取值类型，实践中对应 XSD 数据类型
 （\texttt{xsd:string}、\texttt{xsd:float}、\texttt{xsd:date} 等，第 4 章正式介绍）。
@@ -255,7 +261,7 @@ OO 的继承是\textbf{实现复用}机制，子类可以覆写（override）父
 再看对象属性：
 
 \input{fragments/sec-ch02-core-concepts-txt-3}
-\snipsource{ch02-ontology-foundations/examples/core-concepts.txt}
+\assetsource{ch02}{core-concepts}
 
 五条属性勾勒出制造领域的关系骨架：产品与设备、设备与空间、工序与物料、
 工序与工序、人与设备。读对象属性清单的正确姿势，是把每一条读成一个\textbf{可问的问题方向}：
@@ -425,10 +431,10 @@ OWL 允许为属性声明一组逻辑特性。每声明一种，
 \textbf{等价公理}（\(\equiv\)）给出\textbf{充分必要条件}，得到\textbf{定义类}（defined class）：
 推理器可以双向工作——已知个体属于该类，推出它满足全部条件；
 已知个体满足全部条件，\textbf{自动}把它归入该类。
-后一个方向就是 2.2 节承诺的「自动交叉分类」引擎。看仓库片段里的例子：
+后一个方向就是 2.2 节承诺的「自动交叉分类」引擎。看包内教学片段里的例子：
 
 \input{fragments/sec-ch02-description-logic-txt-1}
-\snipsource{ch02-ontology-foundations/examples/description-logic.txt}
+\assetsource{ch02}{description-logic}
 
 「合格产品」被定义为：是产品，且所有检验结果均为通过。
 有了这条 \(\equiv\)，一件产品只要满足右边的判据，无须任何人手工打标，
@@ -451,7 +457,7 @@ OWL 允许为属性声明一组逻辑特性。每声明一种，
 只有「订单与产品不相交」在场时才会报警。
 
 实践经验是：分类树同一层的兄弟类，默认就该考虑两两不相交
-（OWL 提供 \texttt{AllDisjointClasses}，一条声明覆盖一组类）；
+（OWL 提供 \texttt{AllDisjoint\allowbreak Classes}，一条声明覆盖一组类）；
 但强度要随数据来源的可控程度调节——集成的外部数据源越多、口径越杂，
 过强的不相交越容易把「分类口径差异」误判成「逻辑矛盾」，
 让一致性检查沦为狼来了。先从最不可能混淆的顶层大类做起，逐层向下收紧，是稳妥的节奏。
@@ -485,7 +491,7 @@ OWL 允许为属性声明一组逻辑特性。每声明一种，
 类表达式真正的表达力来自两种受限量词。看片段：
 
 \input{fragments/sec-ch02-description-logic-txt-2}
-\snipsource{ch02-ontology-foundations/examples/description-logic.txt}
+\assetsource{ch02}{description-logic}
 
 \textbf{存在限制}（existential restriction）\(\exists\)R.C 刻画「拥有什么」：
 至少有一个 R 关系对象属于 C——「数控车床拥有数控系统」。
@@ -524,10 +530,10 @@ QualifiedProduct \(\equiv\) Product \(\sqcap\)
 
 \subsection{矛盾、一致性与公理强度的权衡}
 
-公理多了，彼此打架在所难免。仓库片段给出一对典型矛盾：
+公理多了，彼此打架在所难免。包内教学片段给出一对典型矛盾：
 
 \input{fragments/sec-ch02-description-logic-txt-3}
-\snipsource{ch02-ontology-foundations/examples/description-logic.txt}
+\assetsource{ch02}{description-logic}
 
 公理 1 要求每台设备都位于某个工作单元，公理 2 却断言存在不位于任何工作单元的设备——
 二者不可能同时为真。推理器的\textbf{一致性检查}（consistency checking）
@@ -540,7 +546,7 @@ QualifiedProduct \(\equiv\) Product \(\sqcap\)
 但推理开销越大、对脏数据越敏感、修改维护的门槛越高。三条经验值得记下。
 其一，\textbf{能用 \(\sqsubseteq\) 就不用 \(\equiv\)}：
 定义类是自动分类的引擎，也是推理负担的大户，只给真正需要自动归类的概念；
-普通概念用必要条件描述就够了（仓库片段 \texttt{description-logic.txt}
+普通概念用必要条件描述就够了（包内教学片段 \texttt{description-logic}
 第 4 节记录的正是这条优化经验）。
 其二，\textbf{不相交先窄后宽}：从顶层大类开始声明，随数据质量的提升逐层加密。
 其三，\textbf{每条公理留注释}：公理是领域的「制度条文」，
@@ -816,10 +822,10 @@ DL 的每个构造都能机械地翻译成 FOL：
 
 \subsection{工程规则的 FOL 表达}
 
-什么样的业务规则会用满 FOL 的自由度？看仓库片段里的四条：
+什么样的业务规则会用满 FOL 的自由度？看包内教学片段里的四条：
 
 \input{fragments/sec-ch02-first-order-logic-txt-2}
-\snipsource{ch02-ontology-foundations/examples/first-order-logic.txt}
+\assetsource{ch02}{first-order-logic}
 
 逐条体检，可以精确感受 DL 边界的位置。
 \textbf{规则一}（设备需有定期维护）其实没出圈：
@@ -883,7 +889,7 @@ SWRL 若放任变量绑定到任意推理出的匿名个体，会重新跌入不
 关系数据库与 Prolog 采用。看片段里的最小对照：
 
 \input{fragments/sec-ch02-reasoning-examples-txt-3}
-\snipsource{ch02-ontology-foundations/examples/reasoning-examples.txt}
+\assetsource{ch02}{reasoning-examples}
 
 同一条知识、同一个问题，两种世界观给出不同回答。
 OWA 的道理一句话能讲完：\textbf{知识库永远不完备}——
@@ -988,7 +994,7 @@ OWA 是本体语义层的假设，但它并不禁止你在\textbf{查询层}对�
 经典逻辑——一阶逻辑、描述逻辑——都是单调的；OWL 推理器自然也是。看片段：
 
 \input{fragments/sec-ch02-reasoning-examples-txt-1}
-\snipsource{ch02-ontology-foundations/examples/reasoning-examples.txt}
+\assetsource{ch02}{reasoning-examples}
 
 两条 TBox 公理加一条 ABox 事实，沿子类链推出两条分类结论；
 单调性承诺：今后无论发生什么——设备故障、位置变更、本体扩充——这两条结论永不收回。
@@ -1014,7 +1020,7 @@ OWA 是本体语义层的假设，但它并不禁止你在\textbf{查询层}对�
 看它的最小工作示例：
 
 \input{fragments/snip-ch02-default}
-\snipsource{ch02-ontology-foundations/examples/reasoning-examples.txt}
+\assetsource{ch02}{reasoning-examples}
 
 默认规则读作三段式：\textbf{前提}（x 是设备）、
 \textbf{一致性检验}（「x 可用」与现有知识不矛盾）、\textbf{默认结论}（推出 x 可用）。
@@ -1096,7 +1102,7 @@ OWA 是本体语义层的假设，但它并不禁止你在\textbf{查询层}对�
 \subsection{思考题}
 
 以下八道题覆盖本章全部主干概念。建议动笔写出公理与查询，而不只是口头作答；
-多数题目的线索散落在正文对应小节与仓库示例文件中，
+多数题目的线索散落在正文对应小节与 Semantica 教学资产中，
 个别题目需要把两个小节的结论拼起来用——这是有意为之。
 
 \begin{noteblock}
@@ -1131,27 +1137,32 @@ OWA 是本体语义层的假设，但它并不禁止你在\textbf{查询层}对�
 \end{enumerate}
 \end{noteblock}
 
-\subsection{本章文件指引}
+\subsection{本章包资产与场景指引}
+
+下表资产位于 \texttt{semantica.chapter\_packages.vol1.ch02}，不在书目录中形成副本。
+其中四份文本解释理论；真正可复算的是另行绑定的 OWA/CWA 查询、事实、规则与场景。
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.36\linewidth}X@{}}
 \toprule
-\normalfont\textbf{文件（ch02-.../examples/）} & \textbf{内容与阅读建议} \\
+\normalfont\textbf{Semantica asset} & \textbf{内容与阅读建议} \\
 \midrule
-core-concepts.txt & 四块积木的完整示例：类层次、数据与对象属性、上层本体对应；
+core-concepts & 四块积木的完整示例：类层次、数据与对象属性、上层本体对应；
 配合 2.1 至 2.3 节阅读，建议把每条属性读成「一个可问的问题」 \\
-description-logic.txt & 等价类、\(\exists\)/\(\forall\) 限制、一对矛盾公理；
+description-logic & 等价类、\(\exists\)/\(\forall\) 限制、一对矛盾公理；
 配合 2.4 与 2.6 节阅读；末节的概率标注展示了经典 DL 之外的扩展方向 \\
-first-order-logic.txt & 工程规则的 FOL 写法与默认规则最小示例；
+first-order-logic & 工程规则的 FOL 写法与默认规则最小示例；
 配合 2.7 与 2.9 节，逐条判断「哪条 DL 写得出」是极好的练习 \\
-reasoning-examples.txt & 单调推导、撤销推理、OWA 与 CWA 对照及工程影响；
+reasoning-examples & 单调推导、撤销推理、OWA 与 CWA 对照及工程影响；
 配合 2.8 与 2.9 节，注意第 4 节对两类推理适用场景的划分 \\
+OE-V1-CH02-SCN-REASONING-MODES-001 & 受限正向链与 OWA/CWA 精确 oracle；
+运行成功仍不解除完整 DL、默认逻辑与 release 收据缺口 \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
 理论地基至此打完。下一章把镜头从「积木是什么」转向「怎么搭」——
-能力问题、七步法与 OntoClean 方法论将把本章的判断直觉变成可执行的工程流程。
-在那之前，建议抽半小时把上表四个示例文件完整通读一遍：
-本章引用的只是节选，文件里那些未被引用的小节与注释，
+能力问题、七步法与 OntoClean 方法论将把本章的判断直觉变成可验证的工程流程。
+在那之前，建议抽半小时通过 package asset 读取上表四份材料：
+本章引用的只是节选，资产里那些未被引用的小节与注释，
 正是为已经读完正文的你准备的第二遍材料。

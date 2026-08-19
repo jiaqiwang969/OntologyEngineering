@@ -1,29 +1,31 @@
 ---
 contract_version: 2
 chapter: ch02
+executable_package_id: semantica.chapter_packages.vol2.ch02
+executable_authority: semantica_only_no_book_fallback
+package_status: partial
+release_status: blocked
 title: "同一句“可靠”，为什么可能在说不同的事"
 target_hanzi: 12000
 section_budgets:
-  - heading: "白板上只有一句话，会议里却有六个世界"
-    hanzi: 1200
-  - heading: "名称不是身份，编号也不是"
+  - heading: "白板上的争论，这个行业早就吵过了"
     hanzi: 1800
-  - heading: "功能、行为、关注、度量、状态和角色，不是一棵树"
+  - heading: "相关项、系统、元素：分析边界的名字"
     hanzi: 1700
-  - heading: "三个“故障”，不是一条必然流水线"
+  - heading: "故障、错误、失效：一条链，三个词"
     hanzi: 1500
-  - heading: "同一个“100 ms”，也可能不是同一种时间"
+  - heading: "四个一百毫秒"
     hanzi: 1000
-  - heading: "把“可靠”搬到 ENV-01"
-    hanzi: 1800
-  - heading: "一个词落到多个工程世界"
+  - heading: "ASIL：风险的语言，不是荣誉的语言"
     hanzi: 900
-  - heading: "冻结问题，不提前替第 12 章作答"
-    hanzi: 2100
+  - heading: "换一个世界：ENV-01 需要自己的术语表"
+    hanzi: 1800
+  - heading: "纸上语言到不了的三个地方"
+    hanzi: 3300
 consumes_state_ids: [PTW-PC-01-handoff-same-name-dispute]
 produces_state_ids: [PTW-PC-02-candidate]
 first_teaches: [identity-and-category-boundaries]
-ontology_mapping_shape: problem-contract-only
+ontology_mapping_shape: semantica-package-only
 mirror_answer_chapter: ch12
 source_anchors:
   - id: "1-3.41"
@@ -98,18 +100,21 @@ source_anchors:
     pdf_page: 16
     block: 3
     bbox: [57, 574, 601, 592]
-planned_outputs:
-  - functional-safety-book/ch02-concepts-terminology/chapter.md
-  - functional-safety-book/ch02-concepts-terminology/problem-contract.yaml
-  - functional-safety-book/ch02-concepts-terminology/SOURCE-AUDIT.md
-  - functional-safety-book/ch02-concepts-terminology/README.md
-  - functional-safety-book/ch02-concepts-terminology/examples/core-terms.txt
-  - functional-safety-book/ch02-concepts-terminology/examples/fault-error-failure.txt
-  - functional-safety-book/ch02-concepts-terminology/examples/asil-explained.txt
-  - handbook/figures-imagegen/ch02-fig01-one-word-many-worlds-*.png
+authoring_and_runtime_bindings:
+  - references/product-trustworthiness-book/ch02-concepts-terminology/chapter.md
+  - references/product-trustworthiness-book/outlines/ch02-outline.md
+  - semantica.chapter_packages.vol2.ch02
+  - handbook/figures-imagegen/ch02-fig01-fault-error-failure-chain-v01.png
 gate_count_policy: runtime-derived
 question_count_policy: exactly-three-mirror-cq-drafts
 figure_policy: exactly-one-imagegen-teaching-figure
+figure_contract:
+  id: ch02-fig01-fault-error-failure-chain
+  registry: handbook/book-figure-plan.yaml
+  status: placed_and_consumed_in_chapter
+  current_reader_placement: end_of_section_2_3
+  asset: handbook/figures-imagegen/ch02-fig01-fault-error-failure-chain-v01.png
+  asset_sha256: d3804b5e621339d5aa03e90b6422eab833fab2e9e841b43338c8ce9f17a29baa
 ---
 # 第 2 章 同一句“可靠”，为什么可能在说不同的事
 
@@ -122,42 +127,38 @@ figure_policy: exactly-one-imagegen-teaching-figure
 - 迁移纪律：ENV-01 只共享拆问方法，不继承 EPS 个体、ASIL 或 SafetyGoal。
 - 图文纪律：正文稳定后生成一幅 ImageGen 概念图，图前提出观察任务、图后消费结论。
 
-## 2.1 白板上只有一句话，会议里却有六个世界
+## 2.1 白板上的争论，这个行业早就吵过了
 
-让硬件、软件、整车、制造、服务和项目经理对同一句 `EPS-RC17 可靠` 作出不同但诚实的解释，
-暴露主语、concern、时间与决定范围同时缺失。
+让硬件、软件、整车、制造、服务和项目经理对同一句 `EPS-RC17 可靠` 作出不同但诚实
+的解释，并用受控术语说明同名争论为什么会把对象、关注、时间与决定范围混在一起。
 
-## 2.2 名称不是身份，编号也不是
+## 2.2 相关项、系统、元素：分析边界的名字
 
-用 item/system/element 与 artifact/physical individual 建立对象范畴；说明同名异物、异名同物、
-类型相容的身份判据和证据不足时的 Unknown。
+用 item/system/element 建立分析边界，说明这些名字不是零件户籍；同名异物、异名同物
+和证据不足时的 Unknown 留给后续身份本体回答。
 
-## 2.3 功能、行为、关注、度量、状态和角色，不是一棵树
+## 2.3 故障、错误、失效：一条链，三个词
 
-把 function/behavior、concern/measure、essential type/state/role 分开；用关系代替错误继承，
-给一句“可靠”补出最小防误读变量。
+在 R17→ADC→非预期助力的合成路径中保留 fault/error/failure 的并列定义、观察边界、
+条件传播与 Unknown。图 2-1 就放在本节命题之后，由图前观察任务和图后边界共同消费。
 
-## 2.4 三个“故障”，不是一条必然流水线
-
-在 R17→ADC→非预期助力的合成路径中保留 fault/error/failure 的并列定义、观察边界、条件传播与 Unknown。
-
-## 2.5 同一个“100 ms”，也可能不是同一种时间
+## 2.4 四个一百毫秒
 
 用 FDTI/FHTI/FRTI/FTTI 说明同单位同数值不等于同 measure；safe state 是 failure 语境中的 state，
 不是永久产品类型或关断同义词。
 
-## 2.6 把“可靠”搬到 ENV-01
+## 2.5 ASIL：风险的语言，不是荣誉的语言
+
+把分级重新绑定到危害事件及其风险语境，不把 ASIL 当作组件、产品或团队的等级头衔。
+
+## 2.6 换一个世界：ENV-01 需要自己的术语表
 
 分开准确度、漂移稳定性、可靠性、可用性、可维护性和数据完整性；用校准系数与网络重启两个单因变式检验边界。
 
-## 2.7 一个词落到多个工程世界
+## 2.7 纸上语言到不了的三个地方
 
-图 2-1 展示同一“可靠”标签如何落到车辆功能、系统、组件、软件工件、运行行为和 DUT 角色；
-视觉邻近不执行身份合并。
-
-## 2.8 冻结问题，不提前替第 12 章作答
-
-冻结 `PTW-PC-02`、Same/Different/Unknown、三条 CQ 与镜像验收，随后以“谁有权确认身份合并”交给 ch03。
+冻结纸面语言无法自行处理的身份、活动时效与授权问题；不提前替第 12/13 章作答，
+也不把术语一致误写成对象、事实或决定已经一致。
 
 ## 验收边界
 
@@ -166,5 +167,5 @@ figure_policy: exactly-one-imagegen-teaching-figure
 - 同名不得自动 Same，异名不得自动 Different，证据不足必须保持 Unknown。
 - Fault/Error/Failure 保持并列，跨层关系保留条件；Part 10 示例不得提升为普遍公理。
 - ENV-01 六种 concern 不互相推出，不出现 ASIL、SafetyGoal 或 EPS 个体泄漏。
-- 图 2-1 必须经 ImageGen、语义/视觉/打印/权利复核、正文观察与消费、同树 PDF QA 后才可关闭图文项。
+- 图 2-1 的资产、位置、观察任务与图后边界必须和当前正文逐字对齐；图文 QA 不构成 package release。
 - 章节最多进入 candidate；独立人工冷读、用户章级接受和出版放行未发生时不得标为 accepted。

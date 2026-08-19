@@ -47,6 +47,29 @@
   fontupper=\small
 }
 
+\newtcolorbox{semanticablock}{
+  breakable,enhanced,
+  colback=seriescyan!5!white,frame hidden,
+  borderline west={3pt}{0pt}{seriescyan!75!seriesnight},
+  left=10pt,right=8pt,top=7pt,bottom=7pt,
+  before skip=10pt,after skip=12pt,
+  fontupper=\small
+}
+
+% 每章的机器可读落点。状态取自该版 Semantica manifest；场景通过与发布完成分开。
+\newcommand{\chapterbinding}[5]{%
+  \begin{semanticablock}
+  \textbf{本章的 Semantica 唯一执行绑定}\par\smallskip
+  包：\texttt{#1}\quad
+  package status：\texttt{#2}\quad
+  release status：\texttt{#3}\par\smallskip
+  \textbf{包内落点：}#4\par
+  \textbf{不可越过的边界：}#5\par\smallskip
+  书中代码框只解释语义；本体、CQ、SHACL、SPARQL、案例、规则、合同、
+  输入夹具、oracle、版本、PROV 与 receipt 的可执行正本均在此包。
+  \texttt{run} 的场景结果与 \texttt{verify} 的发布判定必须分别报告。
+  \end{semanticablock}}
+
 \newtcolorbox{introbox}{
   breakable,enhanced,
   colback=introbg,frame hidden,
@@ -56,9 +79,11 @@
   fontupper=\small\linespread{1.3}\selectfont
 }
 
-% 片段出处行：紧跟在代码框后，注明完整文件位置
-\newcommand{\snipsource}[1]{%
-  \par\vspace{-6pt}\noindent{\scriptsize\color{black!45}\(\triangleright\) 节选自仓库 \texttt{#1}，完整文件含更多小节与注释。}\par\vspace{4pt}}
+% 片段出处行：正文只指向 Semantica package/asset；来源链在 manifest 中查询。
+\newcommand{\assetsource}[2]{%
+  \par\vspace{-6pt}\noindent{\scriptsize\color{black!45}\(\triangleright\)
+  唯一资产 \texttt{\detokenize{semantica.chapter_packages.vol1.#1:#2}}；
+  来源锚点、derivation 与 SHA-256 见该包 manifest。}\par\vspace{4pt}}
 
 % 章首插图
 \newcommand{\chapterart}[2]{%
@@ -82,11 +107,14 @@
 
 \usepackage[colorlinks,linkcolor=blue!35!black,urlcolor=blue!55!black]{hyperref}
 \hypersetup{
-  pdftitle={《工程本体论》·可扩展本体框架与 Agent Skill},
+  pdftitle={《工程本体论》·Semantica 唯一执行语义版},
   pdfauthor={claude F5 max},
   bookmarksnumbered=true,
   unicode=true
 }
 
 \setlength{\parskip}{0.35em}
+% Give bilingual prose a small emergency line-breaking reserve.  Long Latin
+% identifiers embedded in Chinese otherwise protrude into the outer margin.
+\setlength{\emergencystretch}{2em}
 \usepackage{longtable}

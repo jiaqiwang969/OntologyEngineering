@@ -1,6 +1,10 @@
 ---
 contract_version: 1
 chapter: ch03
+executable_package_id: semantica.chapter_packages.vol2.ch03
+executable_authority: semantica_only_no_book_fallback
+package_status: partial
+release_status: blocked
 target_hanzi: 40000
 section_budgets:
   - heading: "绿表到了签字页，为什么没人敢签"
@@ -41,7 +45,7 @@ source_anchors:
     block: 4
     bbox: [57, 312, 376, 330]
 planned_outputs:
-  - functional-safety-book/ch03-safety-management/chapter.md
+  - references/product-trustworthiness-book/ch03-safety-management/chapter.md
 gate_count_policy: runtime-derived
 question_count_policy: learning-objective-driven
 figure_policy: engineering-need-driven
@@ -61,14 +65,14 @@ figure_policy: engineering-need-driven
 | 节 | 字数 | 供字素材 | 形态 |
 |---|---:|---|---|
 | 绿表到了签字页，为什么没人敢签 | 4000 | Part 2 §6.4.13、EPS 教学状态 | 失败故事与坏表 |
-| 没有坏人，责任为什么消失 | 4500 | Annex B、`examples/safety-culture.md` | 文化压力测试 |
+| 没有坏人，责任为什么消失 | 4500 | Annex B、Semantica ch03 受控场景 | 文化压力测试 |
 | 任命了安全经理，为什么仍没有合格判断者 | 4000 | Part 2 §5.4.4、§6.4.2 | 角色/能力双门槛 |
-| 计划写了，为什么三年没有发生 | 5000 | §6.4.3–6.4.7、`safety-plan-template.md` | 变更、剪裁、DIA 走查 |
-| “换个人看”为什么不等于独立 | 5000 | Table 1、`confirmation-independence.ttl` | 矩阵与组织关系判定 |
-| 两百份报告，为什么还不是安全档案 | 5500 | `safety-case-skeleton.txt`、Part 10 §5.3 | CAE 贯穿案例 |
+| 计划写了，为什么三年没有发生 | 5000 | §6.4.3–6.4.7、正文合成计划 | 变更、剪裁、DIA 走查 |
+| “换个人看”为什么不等于独立 | 5000 | Table 1、Semantica ch03 contract/scenarios | 矩阵与组织关系判定 |
+| 两百份报告，为什么还不是安全档案 | 5500 | 正文 CAE 合成案例、Part 10 §5.3 | CAE 贯穿案例 |
 | 评估接受了，谁来决定放行 | 4500 | §6.4.12–6.4.13、Clause 7 | 并行汇拢与权力分离 |
-| 本体化实践：机器能抓住哪一种责任空洞 | 4000 | CQ/GATE、Shapes、fixtures | 受控目录与证明边界 |
-| 回到第一次 HARA，谁守住它 | 3500 | `README.md`、ch04 输入契约 | 状态卡、练习与桥接 |
+| 本体化实践：机器能抓住哪一种责任空洞 | 4000 | Semantica ch03 contract/CQ/scenario/oracle | 受控目录与证明边界 |
+| 回到第一次 HARA，谁守住它 | 3500 | 当前正文、ch04 书稿交接 | 状态卡、练习与桥接 |
 
 ## 绿表到了签字页，为什么没人敢签
 
@@ -100,7 +104,10 @@ figure_policy: engineering-need-driven
 
 ## 本体化实践：机器能抓住哪一种责任空洞
 
-以 `CQ-CH03-03` 查询 Safety Case、Claim 与确认措施的状态边界，以 `CQ-CH03-04` 核对确认措施目录，以 `CQ-CH03-05` 遍历安全文化判据到本书机制的映射；再运行相应单因反例，并明确自动化不得替代人类判断与批准。查询目标与预期结果只以 `eval/eval-cases.yaml` 中对应 oracle 为准，结果再回溯 `ontology/source-anchors-part2.ttl`。
+以 Semantica ch03 CQ registry 声明的问题查询 Safety Case、Claim 与确认措施的状态边界，
+再运行包内单因反例；查询与 exact oracle 只以源锁定 package manifest/receipt 为准。
+`semantica.chapter_packages.vol2.normative` 仅提供已迁移的工程释义，标准要求仍回原文核对；
+自动化不得替代人类判断与批准。
 
 ## 回到第一次 HARA，谁守住它
 
@@ -108,8 +115,11 @@ figure_policy: engineering-need-driven
 
 ## 练习配置
 
-覆盖文化判例、能力闭环、裁剪理由、确认独立性查表、CAE 状态判断、放行责任辨析，动手题要求删除一个独立性字段并解释 Shape 报告。
+覆盖文化判例、能力闭环、裁剪理由、确认独立性查表、CAE 状态判断与放行责任辨析。
+机器练习只引用 Semantica ch03 已登记的单因场景及 receipt，不在书旁复制或改写约束。
 
-## 现稿处置
+## 当前源与发布边界
 
-`README.md` 保留模块索引；四个 examples 按上表编织；`chapter.md` 从零撰写，必须吸收 `study-part9-part2.md` 的能力、剪裁、计划、FSA 与放行差集。
+`ch03-safety-management/chapter.md` 是人读正文来源；Semantica ch03 package 是唯一
+机器合同。package 当前为 `partial`、release `blocked`，书稿中的案例、状态卡或练习
+不能充当缺失资产的 fallback，也不能把 Planned/Draft 升格为已执行事实。

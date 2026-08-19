@@ -1,25 +1,78 @@
-contract_version: 1
-measurement: hanzi-regex
-chapter_tolerance_percent: 15
-nominal_total_hanzi: 453000
-chapters:
-  ch01: 20000
-  ch02: 30000
-  ch03: 40000
-  ch04: 40000
-  ch05: 45000
-  ch06: 35000
-  ch07: 40000
-  ch08: 35000
-  ch09: 30000
-  ch10: 40000
-  ch11: 30000
-supplements:
-  appA-semiconductor: 25000
-  appB-motorcycle-truck: 10000
-  appC-glossary: 15000
-  appD-method-quick-reference: 10000
-  front-matter: 8000
-totals:
-  chapters: 385000
-  supplements: 68000
+contract_version: 2
+document_role: historical_authoring_allocation_snapshot
+status: superseded_non_release_input
+release_gate: false
+measurement: hanzi-regex-historical-only
+
+authority:
+  human_readable_source_pattern: references/product-trustworthiness-book/chNN-*/chapter.md
+  executable_authority: semantica-only-no-book-fallback
+  chapter_package_pattern: semantica.chapter_packages.vol2.chNN
+  chapter_package_status: partial
+  chapter_release_status: blocked
+  normative_package_id: semantica.chapter_packages.vol2.normative
+
+word_count_policy:
+  historical_tolerance_percent: 15
+  tolerance_is_release_gate: false
+  conflict_rule: >-
+    These figures preserve an early ch01-ch11-plus-supplements writing plan. Later
+    per-chapter outline budgets and the present 20-chapter manuscript conflict with
+    them and take no release authority from them. Current length is descriptive;
+    source coverage, package bindings, semantic tests, publication QA and explicit
+    human acceptance determine release.
+
+historical_plan:
+  nominal_total_hanzi: 453000
+  chapters:
+    ch01: 20000
+    ch02: 30000
+    ch03: 40000
+    ch04: 40000
+    ch05: 45000
+    ch06: 35000
+    ch07: 40000
+    ch08: 35000
+    ch09: 30000
+    ch10: 40000
+    ch11-historical-capstone: 30000
+  supplements:
+    appA-semiconductor: 25000
+    appB-motorcycle-truck: 10000
+    appC-glossary: 15000
+    appD-method-quick-reference: 10000
+    front-matter: 8000
+  totals:
+    chapters: 385000
+    supplements: 68000
+
+outline_inventory:
+  current_question_chapter_outlines:
+    - ch01-outline.md
+    - ch02-outline.md
+    - ch03-outline.md
+    - ch04-outline.md
+    - ch05-outline.md
+    - ch06-outline.md
+    - ch07-outline.md
+    - ch08-outline.md
+    - ch09-outline.md
+    - ch10-outline.md
+  historical_noncurrent_outline:
+    - ch11-outline.md
+  formal_answer_chapters_without_outline_files:
+    - ch11-claim-ontology
+    - ch12-identity-ontology
+    - ch13-governance-ontology
+    - ch14-context-hazard-ontology
+    - ch15-requirements-ontology
+    - ch16-measurement-ontology
+    - ch17-change-ontology
+    - ch18-dependency-ontology
+    - ch19-field-ontology
+    - ch20-assurance-ontology
+  no_fabricated_outline_policy: >-
+    The absence of ten formal answer-chapter outline files is intentional and is
+    recorded rather than repaired by inventing retrospective plans. Their chapter.md
+    files are the human-readable sources; their Semantica packages are the only
+    executable semantics.

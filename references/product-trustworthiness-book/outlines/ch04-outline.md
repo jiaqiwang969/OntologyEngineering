@@ -1,6 +1,10 @@
 ---
 contract_version: 2
 chapter: ch04
+executable_package_id: semantica.chapter_packages.vol2.ch04
+executable_authority: semantica_only_no_book_fallback
+package_status: partial
+release_status: blocked
 chapter_contract_id: PTW-PC-04
 main_title: "先决定担心什么：从使用情境到安全目标"
 subtitle: "HARA 纵向样板"
@@ -10,8 +14,8 @@ pair_contract_id: PTW-OAC-14
 pair_dependency: contract_only_no_runtime_graph_dependency
 target_hanzi: 18000
 planned_outputs:
-  - functional-safety-book/ch04-concept-hara/chapter.md
-  - functional-safety-book/ch04-concept-hara/problem-contract.yaml
+  - references/product-trustworthiness-book/ch04-concept-hara/chapter.md
+  - semantica.chapter_packages.vol2.ch04 / source-problem-contract
 final_figure_id: ch04-fig01-context-changes-consequence
 figure_policy: imagegen_final_puml_draft_only
 ---

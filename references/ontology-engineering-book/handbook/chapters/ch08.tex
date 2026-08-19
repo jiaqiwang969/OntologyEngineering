@@ -13,8 +13,14 @@
 以及给智能体装上本体护栏的完整协议。最后讨论方向相反的问题——
 大模型反过来如何加速本体工程本身，以及整套系统该如何评测。
 本章是全书与 AI 工程衔接最紧密的一章，也回应了第 1 章的开篇之问：
-为什么 AI 时代的企业必须建立知识权威源。
+为什么 AI 时代的企业必须建立受来源约束的语义权威层；该层不替代现实事实提供者和有权决策者。
 \end{introbox}
+
+\chapterbinding{semantica.chapter\_packages.vol1.ch08}{partial}{blocked}
+{幻觉控制、GraphRAG、Text2SPARQL 与 legacy Agent 案例已经迁入；
+场景 \texttt{OE-V1-CH08-SCN-GUARDRAIL-001} 保留参考 verdict。}
+{其操作合同状态为 \texttt{blocked\_unsupported\_operation\_contract}；
+模型、prompt、ontology snapshot、工具动作与授权尚未端到端绑定，历史 Python 案例不得冒充执行收据。}
 
 \section{幻觉的机理：为什么大模型会一本正经地胡说}
 
@@ -90,7 +96,7 @@
 让违反领域公理的内容根本无法流出系统。先看全景：
 
 \input{fragments/sec-ch08-hallucination-control-txt-2}
-\snipsource{ch08-ontology-llm/examples/hallucination-control.txt}
+\assetsource{ch08}{hallucination-control}
 
 三层闸门各司其职，也各有边界。下面逐层展开。
 
@@ -144,10 +150,10 @@
 
 \subsection{完整对照：同一个问题的两种命运}
 
-把三层闸门串起来，看仓库示例中的完整对照：
+把三层闸门串起来，看包内教学资产中的完整对照：
 
 \input{fragments/snip-ch08-demo}
-\snipsource{ch08-ontology-llm/examples/hallucination-control.txt}
+\assetsource{ch08}{hallucination-control}
 
 逐步拆解路径 B 发生了什么：第一层注入了设备与材料的词汇表，
 使模型在翻译问题时使用规范术语；第二层把两个事实问题
@@ -205,7 +211,7 @@ SHACL 区间通过、无公理冲突；亚秒级。
 经验表明，\textbf{不相交公理}（disjointness）是性价比最高的一类：
 
 \input{fragments/sec-ch08-hallucination-control-txt-4}
-\snipsource{ch08-ontology-llm/examples/hallucination-control.txt}
+\assetsource{ch08}{hallucination-control}
 
 大模型的「张冠李戴」型幻觉，本质上是把不同类别的属性混拼。
 而建模时只要对每组同层兄弟类显式声明 \texttt{AllDisjointClasses}
@@ -219,7 +225,7 @@ SHACL 区间通过、无公理冲突；亚秒级。
 闸门拦截解决「错的不出去」，审计解决「对的可追溯」：
 
 \input{fragments/sec-ch08-hallucination-control-txt-5}
-\snipsource{ch08-ontology-llm/examples/hallucination-control.txt}
+\assetsource{ch08}{hallucination-control}
 
 每个对外输出都携带证据四元组（结论、支撑三元组、来源图、执行的查询与时间戳），
 事后任何人都能重放「AI 为什么这么说」。
@@ -331,7 +337,7 @@ SHACL 区间通过、无公理冲突；亚秒级。
 \subsection{三条技术路线}
 
 \input{fragments/sec-ch08-text2sparql-txt-1}
-\snipsource{ch08-ontology-llm/examples/text2sparql.txt}
+\assetsource{ch08}{text2sparql}
 
 三条路线不是竞争关系而是分工关系。
 模板法把高频问题做成「填空题」，覆盖客服与车间问答中 60\%--80\% 的流量，
@@ -345,7 +351,7 @@ LLM 生成路线负责长尾的灵活问法，是表达力的来源，也是风�
 \subsection{路线A精讲：模板槽填充}
 
 \input{fragments/sec-ch08-text2sparql-txt-2}
-\snipsource{ch08-ontology-llm/examples/text2sparql.txt}
+\assetsource{ch08}{text2sparql}
 
 模板法的两个环节都值得细看。
 \textbf{意图识别}可以用关键词规则起步（示例中的「状态/在干嘛/空闲吗」），
@@ -361,8 +367,11 @@ LLM 生成路线负责长尾的灵活问法，是表达力的来源，也是风�
 LLM 自由生成的查询则必须逐条过闸：
 
 \input{fragments/sec-ch08-text2sparql-txt-3}
-\snipsource{ch08-ontology-llm/examples/text2sparql.txt}
+\assetsource{ch08}{text2sparql}
 
+该历史教学资产括号中列出的 Jena ARQ/rdflib 只是解析器生态举例，不是本书运行入口；
+要升级为可执行主张，四道检查必须全部落在 ch08 的绑定 parser、snapshot、policy、
+runner 与 oracle 内。当前 operation contract 缺失，因此本节仍是设计规格。
 四道校验的次序经过设计，成本递增、收益分层。
 \textbf{语法校验}最便宜，解析失败直接打回，连端点都不用碰。
 \textbf{操作白名单}防的是注入：想象用户输入
@@ -384,7 +393,7 @@ LLM 自由生成的查询则必须逐条过闸：
 （「您是想查状态还是维护记录？」）。
 
 \input{fragments/sec-ch08-text2sparql-txt-5}
-\snipsource{ch08-ontology-llm/examples/text2sparql.txt}
+\assetsource{ch08}{text2sparql}
 
 回退链的铁律写在最后一行：任何失败分支都不允许模型「凭印象」直接回答事实——
 否则前面所有闸门等于虚设。
@@ -481,7 +490,7 @@ top-k 个文本块塞进上下文。它在「答案集中在某一段文字里�
 GraphRAG 的解法是换检索对象：不检索文本块，检索\textbf{图谱子图}。
 
 \input{fragments/sec-ch08-graphrag-pattern-txt-2}
-\snipsource{ch08-ontology-llm/examples/graphrag-pattern.txt}
+\assetsource{ch08}{graphrag-pattern}
 
 五步中有三个工程关键点。
 \textbf{实体锚定}（第 1 步）复用 Text2SPARQL 的实体链接组件，
@@ -516,7 +525,7 @@ GraphRAG 的解法是换检索对象：不检索文本块，检索\textbf{图谱
 拿到子图后还有最后一个设计决策——以什么格式写进上下文：
 
 \input{fragments/sec-ch08-graphrag-pattern-txt-3}
-\snipsource{ch08-ontology-llm/examples/graphrag-pattern.txt}
+\assetsource{ch08}{graphrag-pattern}
 
 三种格式的取舍是「忠实度、可读性、token 成本」的三角：
 三元组列表最忠实且省 token，但模型偶尔会误读方向；
@@ -563,7 +572,7 @@ GraphRAG 的失败往往不是「检索不到」而是「检索回来一堆错�
 图检索与向量检索不是替代关系：
 
 \input{fragments/sec-ch08-graphrag-pattern-txt-4}
-\snipsource{ch08-ontology-llm/examples/graphrag-pattern.txt}
+\assetsource{ch08}{graphrag-pattern}
 
 结构性问题（关联、路径、聚合）走图，描述性知识（维修案例的文字经过）走向量，
 两路结果合并注入。检索的「锚定 \(\rightarrow\) 扩展 \(\rightarrow\) 挂载文档」
@@ -640,29 +649,31 @@ k 值与子图节点上限是否设了硬顶；序列化是否带方向说明；
 这个模式不限于设备：订单状态流转、审批链、配方变更窗口，
 凡是「哪些转换合法」的知识都适用。
 
-\subsection{核心代码精讲}
+\subsection{参考代码与运行合同的差别}
 
-仓库提供了一个可直接运行的最小实现，核心校验逻辑不过三十行：
+ch08 包保留了一份约三十行的历史参考实现，用来阅读三道校验的控制流：
 
 \input{fragments/snip-ch08-agent}
-\snipsource{ch08-ontology-llm/examples/ontology-guided-agent.py}
+\assetsource{ch08}{ontology-guided-agent}
 
-逐段读这个 \texttt{validate} 方法，能看到三类幻觉与三道检查的一一对应：
+逐段读这个 \texttt{validate} 方法，能看到三类幻觉与三道检查的一一对应；但该 asset
+的 role 是 \texttt{legacy\_case\_reference}，不是原生 runner：
 第一段拦「词汇幻觉」——LLM 发明的动作名（比如「超频运行」）在
 \texttt{VALID\_ACTIONS} 里查无此项，直接 REJECTED；
 第二段拦「实体幻觉」——目标设备在 ABox 中不存在，说明实体是编造的；
 第三段拦「状态幻觉」——动作本身合法、实体也存在，
-但当前状态不允许这个转换（演示用字典模拟状态机公理，
-生产中替换为对 OWL 本体的查询与推理）。
+但当前状态不允许这个转换。历史代码用字典模拟状态机，只表达控制流；
+当前 package 尚未把它替换为绑定 snapshot、查询、权限与
+动作执行器的端到端合同。
 每个分支都以 \texttt{\_audit} 收尾，确保审计日志的完整性不依赖调用方自觉。
 
-运行 \texttt{python3 ontology-guided-agent.py} 可以看到三个用例的不同结局：
+scenario registry 记录了三个\textbf{参考 verdict}，而不是建议读者直接运行 Python：
 「把 3 号车床转入维护」——当前状态 Running，转换合法，放行并执行；
 「让 7 号铣床直接开工」——它处于 Fault 状态，
 状态机公理拒绝 \texttt{Fault} \(\rightarrow\) \texttt{Running}，阻断；
 「给幻影设备派活」——\texttt{Ghost\_999} 不存在于知识库，阻断。
-最后打印的审计日志逐条记录了时间戳、动作、目标、裁决与理由——
-这正是 8.2 节 PROV 思想在动作系统中的延续。
+这些预期结果只有在模型、prompt、ontology snapshot、权限、执行器与 receipt
+全部绑定后，才可升级为原生执行证据。当前 runner 对未支持操作合同 fail closed。
 
 \subsection{审计日志的字段设计与保留}
 
@@ -692,8 +703,9 @@ k 值与子图节点上限是否设了硬顶；序列化是否带方向说明；
 而靠共享知识库上的公理——第二个写入的任务断言会触发
 「同设备时间重叠」冲突（第 5 章的 SWRL 规则原样复用），
 仲裁逻辑收敛在一个地方。
-这再次体现知识权威源的架构价值：协作的一致性不依赖参与者的自觉，
-而由共享的、带公理的知识层保证。
+这体现共享语义权威层的架构价值，但“有公理”还不够：冲突检查必须是 Semantica
+已支持并绑定的场景，两个动作还要进入同一事务/并发控制与授权面。当前 ch08 并未
+完成该操作合同，因此这里是设计规格，不是已运行保证。
 
 \subsection{与工具调用协议的关系，以及人的位置}
 
@@ -853,7 +865,7 @@ k 值与子图节点上限是否设了硬顶；序列化是否带方向说明；
 如果只能记住一件事：\textbf{三层闸门中，第二层（受控查询通道）贡献最大}。
 原因在于它改变的是信息流结构——把「开放式生成」变成「受限检索」，
 从机制上取消了模型编造事实的通道；第一层与第三层都是对概率行为的约束与补救，
-第二层是对系统拓扑的重构。仓库示例文件的措辞值得照搬进你的设计评审：
+第二层是对系统拓扑的重构。包内教学资产的措辞值得带进设计评审：
 三层叠加后，幻觉漏过率相比裸用模型可以降低一到两个数量级。
 
 \subsection{指标要可信，先把账算清}
@@ -903,13 +915,14 @@ PROV 审计让每个结论可重放。
 \textbf{反向}层面：LLM 起草、专家裁决、版本库收口，加速本体工程而不降低门槛。
 \textbf{评测}层面：事实准确率、拒答正确率、幻觉漏过率三指标并举，
 评测集向无记录例与边界例倾斜。
-一句话收束全章：\textbf{LLM 负责理解与表达，本体负责事实与约束}——
-凡进入业务系统的结论，必须能追溯到一条结构化知识。
+一句话收束全章：\textbf{LLM 负责理解与表达，受控来源负责事实，Semantica 负责
+可执行语义与证据，具名主体负责决定}——凡进入业务系统的结论或动作，都必须能
+追溯到对应 snapshot、规则/查询、授权与 receipt。
 
 \subsection{思考题}
 
 \begin{noteblock}
-\textbf{思考题}（建议结合仓库示例文件作答）
+\textbf{思考题}（建议结合 ch08 package assets 与 manifest 作答）
 
 1. 「张冠李戴」型幻觉为什么无法靠扩充训练语料根治？三层闸门中哪一层对它最有效？
 （提示：从拼接发生的环节想。）
@@ -937,20 +950,23 @@ PROV 审计让每个结论可重放。
 （提示：拒答率过高同样不可用。）
 \end{noteblock}
 
-\subsection{本章文件指引}
+\subsection{本章包资产与状态指引}
+
+下列 asset 位于 \texttt{semantica.chapter\_packages.vol1.ch08}。
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.38\linewidth}X@{}}
 \toprule
-\normalfont\textbf{文件（ch08-ontology-llm/examples/）} & \textbf{内容与阅读建议} \\
+\normalfont\textbf{Semantica asset} & \textbf{内容与阅读建议} \\
 \midrule
-hallucination-control.txt & 三层架构全文、类型拦截示例、评测指标；与 8.1--8.2 对照读 \\
-text2sparql.txt & 三条路线、四道校验、失败回退策略；8.3 的完整素材 \\
-graphrag-pattern.txt & 子图扩展流程、序列化格式、混合检索；8.4 的完整素材 \\
-ontology-guided-agent.py & 可直接运行的护栏参考实现（建议先跑再读，对照 8.5） \\
+hallucination-control & 三层架构、类型拦截与评测指标；工程规则材料 \\
+text2sparql & 三条路线、四道校验与失败回退；当前没有受 schema/CQ 限定的原生场景 \\
+graphrag-pattern & 子图扩展、序列化与混合检索；教学 case \\
+ontology-guided-agent & legacy case reference；操作合同 unsupported，不是可运行入口 \\
+OE-V1-CH08-SCN-GUARDRAIL-001 & 参考 verdict 已登记；runner status 仍 blocked \\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-读完本章，全书的概念旅程只剩最后一步：把第 1--8 章的所有能力
-组装成一个端到端可运行的系统。这就是第 9 章的任务。
+读完本章，全书的概念旅程只剩最后一步：把第 1--8 章已经支持的能力与仍然阻断的
+能力一起纳入一个诚实的 package/release 视图。这就是第 9 章的任务。

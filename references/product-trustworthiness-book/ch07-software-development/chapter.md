@@ -1,6 +1,12 @@
 # 第 7 章 通过会过期：软件层开发
 
-![V 形山谷两侧的承诺与验证阶梯通过带沙漏的桥相连](../../handbook/figures-imagegen/art-ch07-v01.png "chapter-art")
+> Semantica 绑定： 本章保存软件安全开发与变化影响的可读方法；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch07`，主场景为
+> `semantica.vol2.ch07.scenario.primary`。本体、CQ、查询、Shape、案例、规则、oracle、
+> 版本与 receipt 均由该包持有，无书内 runner。当前为 `partial`、release
+> `blocked`；工具运行成功不能证明软件安全或授权沿用旧证据。
+
+![V 形山谷两侧的承诺与验证阶梯通过带沙漏的桥相连](../handbook/figures-imagegen/art-ch07-v01.png "chapter-art")
 
 > **【导读】**
 > 上一章散场时，硬件的数字终于有了来源与射程；可当同样的问题转向软件——
@@ -56,7 +62,7 @@
 <!-- FIG:ch07-fig01-v-model-promises-evidence:OBSERVE -->
 > **读图任务**：从 V 形左臂逐级向下读承诺，再沿右臂向上读证据，逐层检查同一高度的水平线是否真正成对。
 
-![V 形结构左臂四级阶梯表示逐步细化的承诺，右臂四级阶梯表示对应验证证据，四条同高水平连线带有小徽章，谷底有一块共同基石。](../../handbook/figures-imagegen/ch07-fig01-v-model-promises-evidence-v01.png "软件可信不来自一次统笼 PASS，而来自每层承诺都有同层次的可判定证据与之对质。跨层证据可以补充，却不能悄悄替代缺失的对应关系。")
+![V 形结构左臂四级阶梯表示逐步细化的承诺，右臂四级阶梯表示对应验证证据，四条同高水平连线带有小徽章，谷底有一块共同基石。](../handbook/figures-imagegen/ch07-fig01-v-model-promises-evidence-v01.png "软件可信不来自一次统笼 PASS，而来自每层承诺都有同层次的可判定证据与之对质。跨层证据可以补充，却不能悄悄替代缺失的对应关系。")
 
 <!-- FIG:ch07-fig01-v-model-promises-evidence:CONSUME -->
 > **图后判断**：本图是关系模型，不是项目里程碑计划。它不证明需求已充分、测试已通过，也不要求所有开发必须采用线性流程。

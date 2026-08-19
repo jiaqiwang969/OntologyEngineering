@@ -1,5 +1,13 @@
 # 附录 A 半导体应用指南：把 Part 11 读成一条证据链
 
+> Semantica 边界： 本附录保留 Part 11 的可读解释、来源坐标叙述、算例与建模
+> 蓝图；它不在书内发布本体、查询、Shape 或 runner。现有
+> `semantica.chapter_packages.vol2.ch06`、`vol2.ch16`、`vol2.ch18` 分别承接度量、
+> 测量证据和依赖主题的章级机器合同，但当前 Semantica registry 尚无“Part 11 全附录”
+> 的独立 released package。本附录中的形式化片段因此只是书面蓝图；若要执行，必须先
+> 作为显式 Semantica package delta 注册、补齐 CQ/正反例/oracle/来源与 release 证据，
+> 未注册前一律视为 unsupported/blocked，不能回退到旧本地文件。
+
 > **导读**。正文各章把 ISO 26262 的生命周期走了一遍，芯片在其中大多以“某个元件、某个失效率”的面目一闪而过。本附录面向想深入半导体功能安全的读者，把 ISO 26262-11:2018（下称 Part 11）组织成一条“对象划分→基础失效率→相关失效分析→故障注入→具体技术案例”的证据链。读完本附录，你应当能：
 > 1. 拿到一颗芯片或一个 IP，说清它在 component/part/subpart 层次里的位置、失效模式与故障模型如何挂接，以及 IP 供需双方各自欠对方什么工作产物；
 > 2. 面对一个“XX FIT”的基础失效率，追问并核对它的来源、任务剖面、置信水平与适用边界，手算复核 Part 11 自带的示例；
@@ -394,7 +402,12 @@ Part 11 §5（p68–140）按技术类型给了五份“应用说明”。本节
 
 ## A.8 本体化实践：数值诚实与依赖链的半导体延伸
 
-本节把附录 A 的两条主线——失效率数字与相关失效依赖——接到全书两条对应线索上：数字要能作证（第 6 章提出问题，第 16 章建立测量证据本体）与依赖要看得见（第 8 章提出问题，第 18 章建立依赖本体）。按本书的本体治理红线，本附录不改共享 TBox、不注册新门禁；以下三元组都是**未落库的建模蓝图**，只复用 `ontology/fsafety-tbox.ttl` 已有词汇。按本书的 `BookHousePolicy`，两类事实分文件治理：规划中的 `ontology/source-anchors-part11.ttl` 只登记标准来源事实；EPS 的合成项目实例进入独立的教学 ABox（规划名 `ontology/abox-eps-semiconductor.ttl`）。Part 11 锚点能支持“共享时钟被指南列为 DFI 示例”，不能证明“EPS MCU 实际共享某棵时钟树”。
+本节把附录 A 的两条主线——失效率数字与相关失效依赖——接到全书两条对应线索上：
+数字要能作证（第 6、16 章）与依赖要看得见（第 8、18 章）。按唯一执行语义红线，
+以下三元组都是**未注册的 Semantica package delta 蓝图**，不引用书内共享 TBox，也
+不构成可运行资产。未来 package 必须把标准来源事实与 EPS 合成项目事实放在不同的
+命名图/资产角色中，并分别绑定来源与 `TeachingExample` 身份。Part 11 锚点只能支持
+“共享时钟被指南列为 DFI 示例”，不能证明“EPS MCU 实际共享某棵时钟树”。
 
 **第一件事：把 Part 11 的示例数值按 ch06 范式对象化**。第 6 章的教训是“没有来源坐标与校订留痕的数字不可信”。下面是本书拟采用的 `BookHousePolicy` 表达，不是 Part 11 的数据格式要求：
 
@@ -502,7 +515,13 @@ eps:ClockMonitorVerificationReport_Template
     iso262:exampleStatus "报告模板；没有测试记录或结论。"@zh .
 ```
 
-当前 TBox 用 `rdfs:domain/range` 表达属性两端的预期语义：`arisesFromTopicAssessment` 对应 `DFAFinding→DFATopicAssessment`，不是 Cause→Topic；`identifiesDependentFailureCause` 对应 Finding→Cause，措施通过 Finding 的 `resolvedByMeasure` 接入；`activityStatus` 的 domain 是 `EngineeringActivity`，DFA 执行状态另用 `dfaExecutionStatus`，措施验证的执行状态用 `verificationExecutionStatus`。但 domain/range 是 RDFS 推理语义，误用属性时推理器会补出类型，不会拒绝数据；可执行的禁用、枚举、基数与闭环接收条件来自明示的 SHACL Shape。下面的 SELECT 只是把已声明的来源、发现闭环状态和活动执行状态投影到一张表中，不是门禁：
+候选 conceptualization 用 `rdfs:domain/range` 表达属性两端的预期语义：
+`arisesFromTopicAssessment` 对应 `DFAFinding→DFATopicAssessment`，不是 Cause→Topic；
+`identifiesDependentFailureCause` 对应 Finding→Cause，措施通过 Finding 的
+`resolvedByMeasure` 接入；活动、DFA 执行和措施验证状态必须使用不同属性。domain/range
+只会推导类型，不会拒绝误用；若未来注册 Semantica package，禁用、枚举、基数与闭环
+条件必须进入包内 SHACL，且补齐正反例与 exact oracle。下面的 SELECT 只是书面投影，
+当前不能作为可执行门禁调用：
 
 ```sparql
 SELECT ?dfa ?finding ?dfi ?guidance ?measure ?dfaExec ?closure ?verificationExec WHERE {
@@ -535,9 +554,18 @@ SELECT ?dfa ?finding ?dfi ?guidance ?measure ?dfaExec ?closure ?verificationExec
 
 这条查询只能回答三类“图中声明了什么”的问题：某个 DFI 是否链接 Part 11 informative provision？Finding 声明了什么闭环状态、链接了什么措施？DFA 与措施验证分别声明了哪个执行状态？它不检查措施的 ASIL、验证报告的批准状态或证据充分性，因此不能回答“真的闭环了吗”。`OPTIONAL` 未绑定只表示当前图中缺失或未知，不自动构成违规；只有在某个明示的 `BookHousePolicy` SHACL Shape 将该字段或证据链设为特定放行场景的条件时，未绑定才会成为待补项或校验结果。
 
-落库之前，给未来的集成 agent 留一份本书**交接检查单**（全部为 `BookHousePolicy`）：① Part 11 来源事实只进 source-anchor registry，EPS 合成事实只进 TeachingExample ABox；② 每个来源片段记录页/块/bbox/工件路径并与 `pdftotext -layout` 交叉核对；③ Part 11 fragment 标 `InformativeStatement + ISOInformativeGuidance`，EPS 实例标 `TeachingExample + exampleStatus`；④ 严格按 TBox 的 Assessment→Finding→Cause 与 Finding→Measure→Verification 链连接；⑤ 使用 `AnalysisPlanned`、`VerificationPlanned`、`Draft`、`EvidenceCandidate`、`DFAFindingOpen` 等各自词表，不造泛化 `Planned/Candidate`；⑥ 新增 CQ/Shape/反例走 `integration-request.yaml`，本附录文本不是修改共享语义的授权。
+注册 Semantica package 之前，给未来集成者留一份本书**交接检查单**（全部为
+`BookHousePolicy`）：① Part 11 来源事实与 EPS `TeachingExample` 进入不同资产角色/
+命名图；② 每个来源片段记录页、块、bbox、受控来源哈希并回看原文；③ fragment 标
+`InformativeStatement + ISOInformativeGuidance`，合成实例标 `TeachingExample +
+exampleStatus`；④ 保持 Assessment→Finding→Cause 与 Finding→Measure→Verification；
+⑤ 分开 `AnalysisPlanned`、`VerificationPlanned`、`Draft`、`EvidenceCandidate` 与
+`DFAFindingOpen`；⑥ CQ、Shape、反例、oracle、capability 声明和 source/wheel lock
+必须作为同一个 Semantica package revision 评审。本附录文本本身不授权修改机器语义。
 
-**边界声明**收口：本节全部实例为未落库教学蓝图；`AnalysisPlanned`/`VerificationPlanned`/`EvidenceCandidate` 不是完成，informative provision 不是项目事实或规范性依据，知识门禁通过不是 ISO 验证——三个“不是”，一个都不能少。
+**边界声明**收口：本节全部实例为未注册教学蓝图；`AnalysisPlanned`/
+`VerificationPlanned`/`EvidenceCandidate` 不是完成，informative provision 不是项目
+事实或规范性依据，未来知识门禁即使通过也不是 ISO 验证——三个“不是”，一个都不能少。
 
 ## A.9 要点回顾与思考题
 

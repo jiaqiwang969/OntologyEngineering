@@ -5,17 +5,22 @@
 \textbf{【导读】}
 为什么一本讲工程的书要从哲学谈起？因为「本体论」这个词承载着两千多年的哲学追问，
 而我们要做的，是把它改造成可以写进代码、可以被推理器检验的工程工具。
-本章从制造车间的三个真实知识困境出发，先看清企业知识「信息都在、知识不通」的高熵现状；
+本章从制造车间的三个典型教学困境出发，先看清企业知识「信息都在、知识不通」的高熵现状；
 然后回到哲学源头，用克制的篇幅交代亚里士多德范畴论以来的思想脉络，
 理解哲学追问「无法收敛、不可计算」的特征；
 接着进入本书的主战场——工程转向：逐词精读 Gruber、Borst 与 Studer 的经典定义，
 掂量概念化、显式、形式化、共享四个关键词的工程分量；
 再用「知识熵减」这个统一视角串起全书方法，并把本体与数据库 Schema、分类法、
 叙词表、UML 类图、知识图谱等相邻概念逐一辨析清楚；
-最后回答 AI 时代的核心问题——大模型为什么需要本体作为「知识权威源」，
+最后回答 AI 时代的核心问题——大模型为什么需要受控事实来源与 Semantica 语义权威层，
 并给出全书的知识地图与三条学习路径。
-读完本章，你应当能用一句话向同事解释：本体不是哲学玄谈，而是让机器「懂」业务的基础设施。
+读完本章，你应当能用一句话向同事解释：本体不是哲学玄谈，而是一套让机器按显式边界处理业务语义的基础设施。
 \end{introbox}
+
+\chapterbinding{semantica.chapter\_packages.vol1.ch01}{partial}{blocked}
+{章合同、CQ、两份概念案例与全书路线图已经迁入；包可被原生 registry 装载。}
+{ontology、SHACL、SPARQL 以及可执行 conceptualization 边界报告均缺失；
+当前场景与 oracle 为 absent，不能把阅读练习写成机器验收。}
 
 \section{从一个车间的清晨说起}
 
@@ -246,10 +251,10 @@ Excel 台账里躺着两百台设备的型号与参数，
 有一个共同特征：\textbf{无法收敛，不可计算}。
 每一代哲学家都给出新的回答，没有一个回答能够终结讨论；
 这些问题也无法交给任何程序去判定。
-仓库示例文件 \texttt{philosophy-to-engineering.txt} 的第一节把这条线索压缩成几行注释：
+包内 \texttt{philosophy-to-engineering} 资产的第一节把这条线索压缩成几行注释：
 
 \input{fragments/sec-ch01-philosophy-to-engineering-txt-1}
-\snipsource{ch01-introduction/examples/philosophy-to-engineering.txt}
+\assetsource{ch01}{philosophy-to-engineering}
 
 请注意注释最后一行的措辞：「无法落地、不可计算」不是对哲学的贬低，而是一次\textbf{划界}。
 工程本体论从哲学那里接手的不是答案，而是问题清单与概念工具：
@@ -408,10 +413,10 @@ CNCMachine \(\sqsubseteq\) \(\exists\)hasMaintenancePlan.MaintenancePlan
 工程本体论面对同一个问题的做法是\textbf{约定}：
 在我们的信息系统里，序列号就是设备同一性的判据；
 换了多少零件都不影响身份，序列号变了就视为另一台设备。
-仓库示例文件把这组对照写成了如下片段：
+同一包资产把这组对照写成如下教学片段：
 
 \input{fragments/sec-ch01-philosophy-to-engineering-txt-3}
-\snipsource{ch01-introduction/examples/philosophy-to-engineering.txt}
+\assetsource{ch01}{philosophy-to-engineering}
 
 花一分钟逐行读这四条公理（符号的严格语义在第 2 章，这里先建立直觉）：
 第一行说设备是一种物理对象——\(\sqsubseteq\) 读作「是一种」或「蕴含」；
@@ -432,10 +437,10 @@ CNCMachine \(\sqsubseteq\) \(\exists\)hasMaintenancePlan.MaintenancePlan
 \subsection{什么样的本体是好本体}
 
 既然不再以「哲学上正确」为标准，工程本体的好坏靠什么评判？
-示例文件的最后一节给出五条工程判据：
+包内教学资产的最后一节给出五条工程判据：
 
 \input{fragments/sec-ch01-philosophy-to-engineering-txt-5}
-\snipsource{ch01-introduction/examples/philosophy-to-engineering.txt}
+\assetsource{ch01}{philosophy-to-engineering}
 
 五条判据各自针对一类失败模式。
 \textbf{一致性}针对「公理打架」——约束之间存在矛盾而无人察觉；它可以由推理器自动检验。
@@ -495,10 +500,10 @@ CNCMachine \(\sqsubseteq\) \(\exists\)hasMaintenancePlan.MaintenancePlan
 \subsection{四步熵减}
 
 1.1 节诊断出三个病灶（分散、隐性、歧义），再加上「知识躺在库里不会自己工作」这层静态性，
-对应的治理动作恰好是四步。示例文件把它们压缩成四行：
+对应的治理动作恰好是四步。包内教学资产把它们压缩成四行：
 
 \input{fragments/sec-ch01-philosophy-to-engineering-txt-4}
-\snipsource{ch01-introduction/examples/philosophy-to-engineering.txt}
+\assetsource{ch01}{philosophy-to-engineering}
 
 下面把四步各自展开，并各配一个车间例子。
 
@@ -695,7 +700,7 @@ UML 类图 & 类、属性、关联、继承俱全 & 设计期工件，无统一�
 不要把「知识图谱」与「本体」混着用——一个重实例规模，一个重概念质量。
 下次在评审会上听到这些说法时，你知道该怎么接话了。
 
-\section{AI 时代的定位：给大模型一个知识权威源}
+\section{AI 时代的定位：给大模型一个受控语义权威层}
 
 前几节的论证都还站在「传统」信息化的地基上。
 近几年，大语言模型（LLM，Large Language Model）把「机器理解自然语言」从科幻拉进了日常，
@@ -717,10 +722,10 @@ LLM 的工作原理可以概括为大规模的统计推断：
 请注意：幻觉不是偶发故障，而是这种生成机制的\textbf{内生属性}；
 更大的模型与更好的对齐训练能显著降低幻觉的频率，
 但没有任何已知方法能把它压到零。
-示例文件的第一节给出了简明的概括：
+教学资产的第一节给出了简明的概括：
 
 \input{fragments/sec-ch01-ontology-in-ai-era-txt-1}
-\snipsource{ch01-introduction/examples/ontology-in-ai-era.txt}
+\assetsource{ch01}{ontology-in-ai-era}
 
 注释列出的三种代价值得逐一掂量：
 设备参数答错，轻则废件、重则伤人；
@@ -732,29 +737,29 @@ LLM 的工作原理可以概括为大规模的统计推断：
 RAG 确实显著缓解幻觉，但没有根治：
 检索回来的仍是非结构化文本，新旧版本可能冲突，片段拼接可能断章取义，
 而文本与文本之间的矛盾，机器在文本层面发现不了。
-要害在于：\textbf{系统里缺少一个机器能够核对的、结构化的事实标准}。
+要害在于：\textbf{系统里缺少可由机器核对的语义契约、受控事实来源与证据链}。
 
-\subsection{知识权威源：每个结论都有出处}
+\subsection{三种权威分离：语义、事实与决定}
 
-数据管理领域有一个成熟概念：\textbf{知识权威源}（single source of truth）——
-任何一项事实在全组织只有一个权威定义之处，其余皆为引用。
-把这个原则延伸到 AI 系统，就得到本章的中心论点：
-\textbf{工程级 AI 的每一条事实性输出，都应能追溯到一条结构化的、经过治理的知识}。
-本体正是承载这个权威源的形式：
-TBox 充当\textbf{概念契约}——哪些词是合法词汇、每个词什么含义、什么组合非法；
-按 TBox 组织的 ABox（知识图谱）充当\textbf{事实底座}——
-每条事实带出处、带时间戳、经过质量校验。
-所以解法不是「更努力地训练模型」，而是\textbf{改变架构}：
-让生成式模型负责语言，让权威源负责事实。
+“单一事实源”常被说成一句口号，但工程上必须拆成三种责任。
+\textbf{语义权威}回答词汇、关系、约束、查询与推理 profile 是什么；本书由
+Semantica 的内容绑定 package 承担。\textbf{事实权威}回答某台设备在某时刻的功率、
+状态和来源；它来自受控台账、测量或签名记录，Semantica 不凭空创造。
+\textbf{决策权威}回答谁能批准发布、写入或设备动作；语义符合不能自动授予权限。
+
+因此中心论点应写得更严格：\textbf{工程级 AI 的每条事实性输出，都应追溯到受控事实，
+并在具名 Semantica package/snapshot 的语义下被查询或校验；每个动作还要经过独立授权}。
+TBox 是概念契约，ABox 是带来源和时效的事实载体，receipt 则绑定一次具体复算。
+解法不是“更努力训练模型”，而是改变架构和责任边界。
 
 \subsection{两条回答路径的对照实验}
 
 架构上的差异落到一次具体问答上是什么样子？
 设问题为：「\texttt{Lathe\_003} 的最大功率是多少？可以加工钛合金吗？」
-示例文件给出了两条路径的逐步对照：
+教学资产给出了两条路径的逐步对照：
 
 \input{fragments/snip-ch01-paths}
-\snipsource{ch01-introduction/examples/ontology-in-ai-era.txt}
+\assetsource{ch01}{ontology-in-ai-era}
 
 路径 A 一步到位：模型凭训练语料中「车床通常十几千瓦」的统计印象直接作答，
 流畅、自信、可能全错，而且\textbf{错了也没有任何环节能发现}。
@@ -763,8 +768,9 @@ TBox 充当\textbf{概念契约}——哪些词是合法词汇、每个词什么
 \texttt{mfg:Lathe\_003}，从源头杜绝张冠李戴——问的是 3 号车床，答的却是 13 号。
 \textbf{第二步，结构化查询}：功率值用 SPARQL（第 4 章）从知识库中\textbf{查}出来，
 而不是从模型参数里\textbf{回忆}出来；15.5 千瓦带着出处（设备台账）与入库时间。
-\textbf{第三步，能力校验}：「能否加工钛合金」转成一条 ASK 询问，交给知识库裁决，
-返回 false——知识库中没有这条断言。
+\textbf{第三步，能力校验}：「能否加工钛合金」转成 ASK 查询，交给
+Semantica 对指定 snapshot 执行；返回 false 只表示该图模式没有匹配证据，
+不等于逻辑上证明“不能”。
 \textbf{第四步，受约束生成}：模型把结构化结果组织成自然语言，并如实陈述知识边界。
 
 注意路径 B 的最后一步：回答是「知识库中没有该设备可加工钛合金的记录」，
@@ -780,7 +786,7 @@ TBox 充当\textbf{概念契约}——哪些词是合法词汇、每个词什么
 把路径 B 的把关逻辑一般化，本体为 AI 系统提供三类硬约束：
 
 \input{fragments/sec-ch01-ontology-in-ai-era-txt-3}
-\snipsource{ch01-introduction/examples/ontology-in-ai-era.txt}
+\assetsource{ch01}{ontology-in-ai-era}
 
 \textbf{词汇约束}盯住「说的词存不存在」。
 AI 的输出在落库或执行之前要过一道词汇关：
@@ -793,14 +799,16 @@ AI 的输出在落库或执行之前要过一道词汇关：
 每个词都合法，组合起来仍可能违宪：
 「这台设备正在运行中维护」里没有一个生造词，
 但它违反公理 Running \(\sqcap\) Maintenance \(\sqsubseteq\) \(\bot\)。
-做法是把 AI 生成的候选陈述先放进知识库「试运行」，跑一遍一致性检验，
-矛盾则拒收——推理器在这里扮演宪法法院的角色，其机制见第 5 章。
+做法是在隔离的候选 Dataset 上调用 manifest 声明的校验/推理 profile；
+只有 runtime 实际支持并绑定 oracle 的检查才能作证。完整 DL 未被当前 Semantica
+承诺时必须 fail closed，不能借“宪法法院”比喻假称已完成。
 
 \textbf{范围约束}盯住「数值在不在理」。
 词汇与逻辑都过关的陈述，数值仍可能荒谬：
 功率十五万千瓦的车床、低于绝对零度的炉温、早于下单日期的交货承诺。
 范围约束为数值属性声明物理与业务上的合理区间，
-工程上通常用 SHACL 形状校验实现，见第 7 章的质量门禁。
+工程上通常用 SHACL 形状校验实现；本书的原生例证是第 7 章 ch07 包场景，
+shape、正例、单因反例与 violation oracle 均由同一 runner 绑定。
 
 三类约束分层把关，汇总如下：
 
@@ -822,14 +830,14 @@ AI 的输出在落库或执行之前要过一道词汇关：
 两者的强项几乎完美互补：
 
 \input{fragments/sec-ch01-ontology-in-ai-era-txt-4}
-\snipsource{ch01-introduction/examples/ontology-in-ai-era.txt}
+\assetsource{ch01}{ontology-in-ai-era}
 
 分工模式已经相当清晰：LLM 站在人机界面一侧，
 负责听懂意图、把问题翻译成结构化查询、把结构化结果还原成自然语言——
 它是出色的\textbf{翻译官与文案}；
-本体与知识图谱站在事实与逻辑一侧，负责存储、校验、推理、溯源——
-它是不通融的\textbf{档案馆与法庭}。
-这种「神经网络管语言、符号系统管事实」的组合，学术界称为神经符号（neuro-symbolic）路线；
+Semantica 站在语义执行与证据一侧，负责 package、查询、校验、受限推理、版本和 receipt；
+现实事实仍由具名来源负责。更准确的分工是“神经网络管理解与表达，受控来源管事实，
+Semantica 管可执行语义，具名主体管决定”。这属于神经符号（neuro-symbolic）路线；
 工业界的具体实现模式——GraphRAG、Text2SPARQL、本体引导的智能体（Agent）——
 将在第 8 章逐一拆解并配上代码。
 顺带说一句，这种互补是双向的：本体工程也在受益于大模型——
@@ -914,10 +922,10 @@ AI 的输入输出有了天然的约束框架——正是上一节三类硬约�
 
 \subsection{工业知识图谱的实践方向}
 
-最后看与本书案例最贴近的工业场景。示例文件归纳了三个方向：
+最后看与本书案例最贴近的工业场景。教学资产归纳了三个方向：
 
 \input{fragments/sec-ch01-ontology-in-ai-era-txt-5}
-\snipsource{ch01-introduction/examples/ontology-in-ai-era.txt}
+\assetsource{ch01}{ontology-in-ai-era}
 
 在制造业内部，公开案例较多的应用集中在几条线上。
 \textbf{设备故障诊断}：把「故障模式、可能原因、排查步骤、处置措施」的链条本体化，
@@ -961,17 +969,15 @@ AI 的输入输出有了天然的约束框架——正是上一节三类硬约�
       存储选型与 SHACL 质量门禁；
 \item \textbf{第 8 章（本体与大模型）}：幻觉控制架构、GraphRAG、Text2SPARQL、
       本体引导 Agent；
-\item \textbf{第 9 章（综合实战）}：从需求到上线完整构建一个智能制造知识管理系统，
-      OWL 建模，Jena 与 owlready2 双栈实现。
+\item \textbf{第 9 章（综合实战）}：把制造业 CQ、查询、规则、夹具与 oracle
+      绑定到 Semantica 单一 package/runner；保留旧双栈片段作实现史比较，同时诚实暴露缺口。
 \end{itemize}
 
-示例文件把这个结构画成了一棵带批注的树，建议对照浏览一遍：
-
-\input{fragments/sec-ch01-book-roadmap-txt-1}
-\snipsource{ch01-introduction/examples/book-roadmap.txt}
-
-树上的批注——理论地基、怎么设计、怎么表达、怎么推理——值得记住：
-当你在后续章节里迷路时，回到这棵树看一眼自己所在的枝条，方向感就回来了。
+Semantica 中九个 package 与九章一一对应：
+\texttt{semantica.chapter\_packages.vol1.ch01} 至
+\texttt{semantica.chapter\_packages.vol1.ch09}。这棵树的枝条不再指向书旁的
+迁移前的配套目录，而指向每章的 manifest、asset、scenario 与 gap；
+理论地基仍在书中，机器可执行语义则只有一个落点。
 
 \subsection{章节依赖与最短路径}
 
@@ -980,8 +986,8 @@ AI 的输入输出有了天然的约束框架——正是上一节三类硬约�
 第 7、8 两章并列地立在第 4 到第 6 章之上，相互独立、可以换序阅读；
 第 9 章是总收口，对前八章均有回指。
 赶时间的读者可以走\textbf{最短可用路径}：
-第 4 章（会写）\(\rightarrow\) 第 7 章（入库）\(\rightarrow\) 第 9 章（跑通）——
-三章读完就能搭出一个能查询的知识系统。
+第 4 章（会读写语言）\(\rightarrow\) 第 7 章（理解 Dataset 与质量门禁）
+\(\rightarrow\) 第 9 章（复算具名场景）——三章读完能掌握最小可验证链路。
 但要诚实提示代价：跳过第 2 章的人，
 在系统第一次出现「推理结果反直觉」时会束手无策；
 跳过第 3 章的人，建出的本体往往在第三个月开始返工。
@@ -990,7 +996,7 @@ AI 的输入输出有了天然的约束框架——正是上一节三类硬约�
 \subsection{三条学习路径}
 
 结合常见的读者画像，给出三条路径建议，
-与配套仓库 \texttt{book-roadmap.txt} 第三节一致：
+与包内 \texttt{book-roadmap} 教学资产第三节的阅读路径一致：
 
 \begin{itemize}
 \item \textbf{理论完整路径}（高校课程或系统自学）：按 1 至 9 章顺序精读，
@@ -1004,22 +1010,17 @@ AI 的输入输出有了天然的约束框架——正是上一节三类硬约�
       \(\rightarrow\) 4（补语言基础）\(\rightarrow\) 7（GraphRAG 的图谱底座）
       \(\rightarrow\) 5（推理校验）\(\rightarrow\) 9；
       重点是第 8 章幻觉控制架构与第 7 章 SHACL 校验；
-      产出是给现有 LLM 应用加装「知识权威源」的能力。
+      产出是给现有 LLM 应用加装受控事实、Semantica 语义门禁与审计链的能力。
 \end{itemize}
 
 无论选哪条路径，有两条建议不变。
-其一，第 9 章务必动手：本体工程是手艺，看会与做会之间隔着十几个报错信息。
-其二，善用配套仓库：本书每章正文嵌入的代码片段都注明了出处文件，
-完整文件在仓库对应章节的 \texttt{examples} 目录下（第 9 章另有可运行的 \texttt{src} 工程）；
-片段是地图，文件才是地形。
-仓库各章的素材形态也值得提前知晓：
-第 2、3 章以纯文本推演为主，适合精读批注；
-第 4 章提供可直接在 Protégé 与 Jena 中打开的本体与查询文件；
-第 5 章是规则与推理走查；第 6 章是四个领域的本体片段；
-第 7 章包含构建流水线说明与 SHACL 形状文件；
-第 8 章是幻觉控制与 GraphRAG 的架构示例；
-第 9 章则是一个可以编译运行的完整工程。
-走动手路线的读者，建议边读边把对应文件拉进工具里做实验。
+其一，第 9 章务必动手，但“动手”现在指查看 manifest、运行具名 scenario、
+核对 exact oracle，再观察 release verification 为什么仍阻断。
+其二，善用包清单：正文片段下方保留历史来源锚点，构建器则通过迁移账定位到
+Semantica 的唯一 asset。第 2、3 章以概念推演和 CQ 为主；第 4 章是 RDF/OWL/SPARQL；
+第 5 章同时展示可执行的受限规则与明确不支持的推理 profile；第 6 章案例仍未形式化；
+第 7 章有原生 SHACL 场景；第 8 章动作合同仍阻断；第 9 章只有 CQ1 拥有 exact oracle。
+红灯与绿灯同样是学习材料，不以另装第三方引擎来改写结果。
 
 \section{本章小结与练习}
 
@@ -1041,15 +1042,16 @@ AI 的输入输出有了天然的约束框架——正是上一节三类硬约�
 \item 本体不同于数据库 Schema（私有语义、封闭世界）、分类法（只有骨架）、
       叙词表（弱语义）、UML 类图（无形式语义与推理）；
       与知识图谱是概念层与实例层的关系；
-\item AI 时代本体的新身份是\textbf{知识权威源}：
-      以词汇、公理、范围三类硬约束拦截幻觉，
-      与 LLM 形成「语言归神经网络、事实归符号系统」的互补架构。
+\item AI 时代本体的新身份是\textbf{语义契约}：
+      Semantica 以 package 化词汇、公理、范围、查询与 shape 执行已声明门禁；
+      事实来自受控来源，决定来自具名主体，LLM 只负责理解与表达。
 \end{itemize}
 
 导读里许诺过一句话的版本，现在可以兑现了：
 \textbf{本体是让机器「懂」业务的基础设施}——
 「懂」的工程含义，是用共享的概念契约去查询、校验、推理每一条业务陈述；
-读完后续八章，你将有能力亲手把这句话变成一个运行中的系统。
+读完后续八章，你将有能力把这句话落成一个边界、输入、输出与证据均可复核的系统；
+对尚未实现的能力保留红灯，也是这种能力的一部分。
 
 \subsection{思考题}
 
@@ -1078,19 +1080,19 @@ AI 的输入输出有了天然的约束框架——正是上一节三类硬约�
 \end{enumerate}
 \end{noteblock}
 
-\subsection{本章文件指引}
+\subsection{本章包资产指引}
 
-本章配套的三个示例文件都在仓库 \texttt{ch01-introduction/examples/} 目录下，
-正文已多处节选；下表给出完整文件的内容概要与对应小节，建议通读一遍原文：
+三份教学材料的唯一机器可读正本位于 ch01 package；表中的名称是 asset id，
+正文下方的旧路径只用于证明迁移来源：
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.30\linewidth}Xl@{}}
 \toprule
-\normalfont\textbf{文件} & \textbf{内容与阅读建议} & \textbf{关联小节} \\
+\normalfont\textbf{Semantica asset} & \textbf{内容与阅读建议} & \textbf{关联小节} \\
 \midrule
-philosophy-to-engineering.txt & 哲学与工程的逐节对照；重点看「同一个设备概念」如何被公理消解，以及五条工程判据 & 1.2--1.4 \\
-ontology-in-ai-era.txt & 两条回答路径全文、三类硬约束、LLM 与本体分工模式、产业方向 & 1.6、1.7 \\
-book-roadmap.txt & 全书结构树、章节依赖图与三条学习路径的完整说明 & 1.8 \\
+philosophy-to-engineering & 哲学与工程的逐节对照；重点看「同一个设备概念」如何被公理消解，以及五条工程判据 & 1.2--1.4 \\
+ontology-in-ai-era & 两条回答路径全文、三类硬约束、LLM 与本体分工模式、产业方向 & 1.6、1.7 \\
+book-roadmap & 全书结构树的来源材料；其中旧目录/双栈字样只作迁移前历史，不代表当前入口 & 1.8 \\
 \bottomrule
 \end{tabularx}
 \end{center}

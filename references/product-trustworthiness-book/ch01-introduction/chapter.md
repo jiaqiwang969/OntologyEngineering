@@ -1,6 +1,14 @@
 # 第 1 章 为什么“全绿”不等于产品可信
 
-![六盏绿灯照亮一张签名栏留白的放行文件](../../handbook/figures-imagegen/art-ch01-v01.png "chapter-art")
+> Semantica 绑定： 本章是人可读的规范与案例叙事；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch01`，主场景为
+> `semantica.vol2.ch01.scenario.primary`。本体、CQ、查询、Shape、正反案例、
+> 工程规则、oracle、manifest、PROV 与 receipt 均由该包持有，本目录没有执行
+> 副本或 fallback。当前 manifest 为 `partial`，release 为 `blocked`；场景通过
+> 也不能升级为产品可信或发布结论。涉及 ISO 术语/模态时，仅以
+> `semantica.chapter_packages.vol2.normative` 的工程释义层辅助核对，不能替代标准原文。
+
+![六盏绿灯照亮一张签名栏留白的放行文件](../handbook/figures-imagegen/art-ch01-v01.png "chapter-art")
 
 > **【导读】**
 > 一场只剩最后一页的放行评审，六个绿色的“通过”，却没有人签字。
@@ -90,7 +98,7 @@ rc2 预览版——当时为了复现一个边界工况，正式版还没冻结�
 <!-- FIG:ch01-fig01-green-without-claim:OBSERVE -->
 > **读图任务**：先沿着整车底盘中高亮的 EPS 路径确认对象，再逐张检查六份绿色结果各自覆盖了什么，最后看两条母线是否真的闭合为同一句主张。
 
-![完整乘用车底盘中的 EPS 路径被高亮并向下抽出放大，左右六张绿色结果卡只连到两条在中央缺口前终止的母线，琥珀色括片也没有闭合。](../../handbook/figures-imagegen/ch01-fig01-green-without-claim-v04.png "六份局部 PASS 可以分别真实，却因对象、配置、条件和决定范围未被同一边界绑定，不能仅靠数量组成产品级放行结论。")
+![完整乘用车底盘中的 EPS 路径被高亮并向下抽出放大，左右六张绿色结果卡只连到两条在中央缺口前终止的母线，琥珀色括片也没有闭合。](../handbook/figures-imagegen/ch01-fig01-green-without-claim-v04.png "六份局部 PASS 可以分别真实，却因对象、配置、条件和决定范围未被同一边界绑定，不能仅靠数量组成产品级放行结论。")
 
 <!-- FIG:ch01-fig01-green-without-claim:CONSUME -->
 > **图后判断**：图中最重要的不是六个绿点，而是它们在主张边界前各自停下。它说明局部结果不会自动相加；不证明任何一份报告为假，也不替代放行授权。

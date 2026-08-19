@@ -1,6 +1,12 @@
 # 第 3 章 谁有权说“可以相信”：安全管理与安全生命周期
 
-![六个角色的座位围绕评审桌，笔尖停在授权签名线上方](../../handbook/figures-imagegen/art-ch03-v01.png "chapter-art")
+> Semantica 绑定： 本章保存治理问题、角色与责任的可读论证；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch03`，主场景为
+> `semantica.vol2.ch03.scenario.primary`。治理本体、CQ、查询、Shape、案例、规则、
+> oracle、版本与 receipt 只在 Semantica。当前 manifest 为 `partial`、release 为
+> `blocked`；结构门禁不能制造组织授权，最终决定仍属于有权人员。
+
+![六个角色的座位围绕评审桌，笔尖停在授权签名线上方](../handbook/figures-imagegen/art-ch03-v01.png "chapter-art")
 
 > **【导读】**
 > 上一章散会时，小蔡的问题悬在半空：查证两条记录是同一台之后，谁有权批准改台账？
@@ -193,7 +199,7 @@ RC17 的补课清单摊开：台账归并要人复核桥接证据，台架差异
 <!-- FIG:ch03-fig01-role-distance:OBSERVE -->
 > **读图任务**：先数清圆桌上的六个工作位置，再沿外圈距离尺观察角色之间的间隔，寻找那一对被标出为过近的座位。
 
-![俯视圆桌被分成六个工作扇区，外圈五档距离尺用于表示执行、产证、挑战、评审、担险与授权之间的组织距离，一对过近座位被琥珀色弧线强调。](../../handbook/figures-imagegen/ch03-fig01-role-distance-v01.png "角色数量不等于独立性。只有把关系、汇报线、利益与授权距离显式化，才能计算某次评审需要的挑战强度是否实际存在。")
+![俯视圆桌被分成六个工作扇区，外圈五档距离尺用于表示执行、产证、挑战、评审、担险与授权之间的组织距离，一对过近座位被琥珀色弧线强调。](../handbook/figures-imagegen/ch03-fig01-role-distance-v01.png "角色数量不等于独立性。只有把关系、汇报线、利益与授权距离显式化，才能计算某次评审需要的挑战强度是否实际存在。")
 
 <!-- FIG:ch03-fig01-role-distance:CONSUME -->
 > **图后判断**：这是管治结构的诊断图，不是人员能力评分表。它不因座位更远就证明评审更好，也不单独构成任命或授权。

@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import sys
 from pathlib import Path
@@ -13,17 +12,10 @@ from typing import Any
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
 DEFAULT_CASES = SKILL_DIR / "references" / "eval-cases.json"
-SEARCH_SCRIPT = SKILL_DIR / "scripts" / "search_ontology_sources.py"
+if str(SKILL_DIR) not in sys.path:
+    sys.path.insert(0, str(SKILL_DIR))
 
-
-def load_search_module() -> Any:
-    spec = importlib.util.spec_from_file_location("ontology_source_search", SEARCH_SCRIPT)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Cannot load {SEARCH_SCRIPT}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+from scripts import search_ontology_sources as search_module  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:
@@ -76,13 +68,7 @@ def hit_file_blob(hits: list[Any], workspace: Path) -> str:
 
 
 def search_module_display_path(path: Path, workspace: Path) -> str:
-    module = sys.modules.get("ontology_source_search")
-    if module is not None and hasattr(module, "display_path"):
-        return module.display_path(path, workspace)
-    try:
-        return path.relative_to(workspace).as_posix()
-    except ValueError:
-        return path.resolve().as_posix()
+    return search_module.display_path(path, workspace)
 
 
 def evaluate_case(search_module: Any, workspace: Path, case: dict[str, Any], limit: int) -> dict[str, Any]:
@@ -136,7 +122,6 @@ def print_text_report(results: list[dict[str, Any]]) -> None:
 
 def main() -> int:
     args = parse_args()
-    search_module = load_search_module()
     workspace = search_module.discover_workspace(args.root)
     cases = load_cases(args.cases, args.split)
     if not cases:

@@ -1,71 +1,148 @@
 \chapter[综合实战案例：智能制造知识管理系统]
   {综合实战案例：智能制造\\知识管理系统}
-\chapterart{ch09}{智能制造知识管理系统的三层架构}
+\chapterart{ch09}{从双栈样例到 Semantica 单一执行语义}
 
 \begin{introbox}
 \textbf{【导读】}
-最后一章把前八章的能力组装成一个可运行的系统。
-建议的学习方式是「跑通—修改—扩展」：先按指引跑通 Java 与 Python 两侧，
-再加一台新设备观察推理变化，最后实现一个你自己领域的 CQ。
-完成这个循环，你就具备了独立交付本体工程项目的能力。
+最后一章把前八章的概念、CQ、语言、查询、规则和治理意识汇入一个制造业综合案例。
+旧版的学习路线是分别跑通 Java/Jena 查询服务与 Python/owlready2/Pellet 推理器；
+本版保留这些代码片段作为书史和技术比较，却不再把它们当成运行入口。
+现在的学习路线是「查看 manifest—运行具名 scenario—核对 exact oracle—单独验证 release」：
+所有可执行语义都由 Semantica 内建包承载，未实现的 Manchester、SWRL、DL 与 CQ
+明确阻断，不能靠另一套本地工具链偷偷变绿。
 \end{introbox}
 
-\section{系统全景}
+\chapterbinding{semantica.chapter\_packages.vol1.ch09}{partial}{blocked}
+{章合同、CQ1--CQ7、SPARQL 集合、Manchester 来源本体、结构化 SWRL 规则、
+CQ1 正例与单因反例均已迁入；\texttt{OE-V1-CH09-SCN-CQ01-001} 由原生 runner 执行。}
+{CQ2--CQ7 缺少书内 ABox exact oracle；本章没有 SHACL；当前 runtime 不解析
+Manchester 或一般 SWRL，也不执行完整 DL/tableau。旧 Jena/owlready2 代码不属于运行时。}
 
-系统是经典三层：\textbf{本体层}（\texttt{manufacturing.owl}，Manchester 语法的
-制造领域 TBox + SWRL 规则）、\textbf{查询服务层}（Java/Jena，
-回答第 3 章那组能力问题）、\textbf{推理引擎层}（Python/owlready2 + Pellet，
-一致性检查与冲突检测）。Java 与 Python 加载的是\textbf{同一份本体文件}——
-知识只有一个权威源，两种技术栈只是两个消费端，这正是第 1 章理念的落地。
+\section{系统全景：书是规格，包是唯一实现}
 
-本体层的核心是约束公理与规则。设备类层次之外，
-文件用注释形式完整记录了描述逻辑约束——它们就是系统的「物理定律」：
+这套系统不再按编程语言分成两套权威实现，而按责任分成五层：
+
+\begin{enumerate}
+\item \textbf{可读规格层}：本章叙事、CQ、设计理由、练习与历史实现比较；
+\item \textbf{包身份层}：manifest、contract、asset hash、scenario registry 与 capability gap；
+\item \textbf{语义资产层}：本体来源、查询、规则、夹具与 oracle，均在 ch09 包内；
+\item \textbf{执行层}：\texttt{SemanticPackageRunner} 委托同一个 \texttt{SemanticRuntime}；
+\item \textbf{证据与发布层}：输入/输出/运行时哈希、PROV、receipt 与独立 release verdict。
+\end{enumerate}
+
+这种划分把三个常被混在一起的权威拆开：包定义的是\textbf{语义权威}；
+车间台账、测量与受控记录提供\textbf{事实权威}；具名负责人和有权限的系统承担
+\textbf{决策与动作权威}。查询返回一台设备，绝不等于系统获准启动它。
+
+包内 \texttt{manufacturing} 资产保留了 Manchester Syntax 的类、公理与注释。
+下列节选仍是理解设计意图的重要“石头”，但当前 runtime 不解析 Manchester，
+因此它是 \texttt{ontology\_source}，不是已执行的 DL 证明：
 
 \input{fragments/snip-ch09-axioms}
-\snipsource{ch09-capstone-manufacturing/src/manufacturing.owl}
+\assetsource{ch09}{manufacturing}
 
-\section{一条 CQ 的旅程}
+\section{CQ1 的可复算旅程}
 
-以 CQ1「哪些设备可以加工铝合金」为例，看知识如何穿过三层。
-它在本体层对应 \texttt{canProcess} 属性与材料类层次；
-查询服务层把它写成 SPARQL，用 Jena 4.x 的构建器 API 执行：
+CQ1 问“哪些设备可以加工指定材料”。在 Semantica 中，一条可复算主张必须同时固定：
 
-\input{fragments/snip-ch09-java}
-\snipsource{ch09-capstone-manufacturing/src/QueryService.java}
+\begin{itemize}
+\item 查询资产 \texttt{cq01}；
+\item 正例 \texttt{cq01-positive} 与只改变一个条件的
+      \texttt{cq01-single-fault-negative}；
+\item 场景 \texttt{OE-V1-CH09-SCN-CQ01-001}；
+\item exact multiset oracle：正例返回“数控车床一号”“立式铣床二号”，反例返回 0 行；
+\item package、asset、输入、输出与 runtime 身份绑定的执行结果。
+\end{itemize}
 
-而推理引擎层让答案变「聪明」：直接查询只能返回显式断言过
-\texttt{canProcess} 的设备，跑过 Pellet 推理后，
-由规则推导出的能力（例如「所有数控车床都能加工铝合金」这类类级断言的实例化）
-也会进入结果——查询不变，答案更全：
+旧版 \texttt{QueryService.getEquipmentForMaterial} 的替代入口不是另一段书内代码，
+而是同一 runner 中的 \texttt{execute\_chapter\_query}。这保证 CLI、Python 与 MCP
+只是适配面，不会各自解释一套 SPARQL 语义。
 
-\input{fragments/snip-ch09-py}
-\snipsource{ch09-capstone-manufacturing/src/reasoner.py}
+下列两个 runtime 值必须由受控构建/发布流程注入：commit 对应实际运行源码，
+SHA-256 对应精确 wheel 或运行工件；空值、示例值和错配值都会失败关闭。
 
-推理完成后，脚本还会执行冲突检测，把 SWRL 规则推导出的能力冲突、
-时间冲突个体收集成检测报告——这正是第 6 章制造调度案例的可运行版本。
+\begin{codebox}
+\codeline{semantica\ package\ show\ semantica.chapter\_packages.vol1.ch09\ --json}
+\codeline{semantica\ package\ run\ semantica.chapter\_packages.vol1.ch09\ \textbackslash{}}
+\codeline{\ \ --runtime-commit\ RUNTIME\_COMMIT\ \textbackslash{}}
+\codeline{\ \ --runtime-artifact-sha256\ RUNTIME\_ARTIFACT\_SHA256\ \textbackslash{}}
+\codeline{\ \ --scenario-id\ OE-V1-CH09-SCN-CQ01-001\ --json}
+\codeline{semantica\ package\ verify\ semantica.chapter\_packages.vol1.ch09\ \textbackslash{}}
+\codeline{\ \ --runtime-commit\ RUNTIME\_COMMIT\ \textbackslash{}}
+\codeline{\ \ --runtime-artifact-sha256\ RUNTIME\_ARTIFACT\_SHA256\ \textbackslash{}}
+\codeline{\ \ --scenario-id\ OE-V1-CH09-SCN-CQ01-001\ --json}
+\end{codebox}
 
-\section{跑通它}
+\texttt{run} 回答“声明场景是否符合 oracle”；\texttt{verify} 还检查来源、能力、
+内容与发布证据。当前即使 CQ1 复算成功，release 仍应是 \texttt{blocked}。
 
-Java 侧需要 Maven 引入 \texttt{apache-jena-libs} 4.10+，
-编译后运行 \texttt{QueryService}；
-Python 侧 \texttt{pip install owlready2}（Pellet 需要 Java 8+ 环境），
-直接 \texttt{python src/reasoner.py}。
-两侧都跑通后，做两个实验最能加深理解：
-在 \texttt{manufacturing.owl} 里新增一台设备实例，观察哪些查询结果变了；
-故意制造一个冲突（给运行中的设备派任务），看推理器如何当场抓住它。
+\section{为什么 CQ2--CQ7 不能跟着 CQ1 一起变绿}
 
-\section{本章文件指引}
+包内已经有七条 SPARQL 查询，并不等于七条 CQ 都通过。CQ2--CQ7 缺少与书中问题
+一一对应的 ABox 正例、单因反例与精确预期绑定；仅证明“查询可解析”或“返回了若干行”
+都不足以构成验收。后续每补一条 CQ，都应独立给出：
+
+\begin{enumerate}
+\item 最小输入图与适用范围；
+\item 精确变量、行数、多重集和排序是否属于 oracle；
+\item 单因反例，以及 Unknown 与 false 的区分；
+\item 前一发布版回归；
+\item scenario receipt 与仍然独立的 package release verdict。
+\end{enumerate}
+
+同理，五条 SWRL 规则已经结构化迁入 \texttt{engineering-rules}，但当前
+\texttt{SemanticRuntime} 不解析或执行一般 SWRL 与 built-ins。不能把规则文本存在、
+人工看起来合理或第三方引擎曾经跑过，写成 Semantica 已证明的结论。
+
+\section{旧双栈为什么退出正文执行链}
+
+旧版曾用 Java/Jena 演示查询服务，用 Python/owlready2/Pellet 演示推理工作流。
+它们帮助过读者认识“装载—查询—推理”的传统分层，却也带来两套 parser、profile、
+依赖版本、错误处理和结果证据。若继续排印安装与运行片段，读者很容易在 Semantica
+报告 unsupported 时绕去另一套引擎，最终得到无法与 package identity 和 receipt
+绑定的平行答案。
+
+因此本版删除旧 Java/Python 代码框、Maven/pip 安装步骤与本地运行说明，只在这里
+记录架构演化事实。需要比较生态时可阅读第 4、5 章的原理性介绍；需要复算本章主张时
+只有 ch09 package/runner 一个入口。书史是“石头”，旧运行时不是。
+
+\section{从教学案例走向工程发布}
+
+将本章扩成现实系统时，建议按以下顺序推进：
+
+\begin{enumerate}
+\item 为 CQ2--CQ7 逐条建立最小正例、单因反例与 exact oracle；
+\item 增加本章自有 SHACL，显式区分开放世界推理与封闭式完整性检查；
+\item 若确需 Manchester、OWL DL 或 SWRL，先冻结支持 profile 与合规测试，再实现；
+\item 对每次语义变更执行 snapshot/diff、旧 CQ 回归、PROV 和内容绑定 receipt；
+\item 将真实 ABox 接入、写操作、设备动作和补偿交给具名且有权限的执行面；
+\item 只有所有必需证据齐备并通过独立发布门禁时，才改变 release status。
+\end{enumerate}
+
+\begin{noteblock}
+\textbf{综合案例的完成标准不是“程序启动了”。}
+完成意味着：书中问题能定位到唯一 package 与 scenario；输入、输出和 runtime 可复核；
+不支持的能力被阻断；事实与决定来自有权来源；旧版本回归不被静默破坏。
+当前 ch09 仍是 partial/blocked，这个红灯本身就是可信工程的一部分。
+\end{noteblock}
+
+\section{本章资产指引}
 
 \begin{center}
-\begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.36\linewidth}X@{}}
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
 \toprule
-\normalfont\textbf{文件（ch09-.../src/）} & \textbf{内容与阅读建议} \\
+\textbf{包内资产/场景} & \textbf{用途} & \textbf{当前边界} \\
 \midrule
-manufacturing.owl & 核心本体：类层次、属性、DL 约束、SWRL 规则注释 \\
-sparql-queries.sparql & CQ1--CQ5 标准查询集 \\
-OntologyManager.java & 本体加载、推理模型选择、类层次遍历 \\
-QueryService.java & 每个 CQ 一个方法的服务封装 \\
-reasoner.py & Pellet 推理、冲突检测、工艺推荐 \\
+\texttt{manufacturing} & Manchester 来源本体与设计说明 & 保留，不解析、不声称 DL 通过 \\
+\texttt{engineering-rules} & 从来源本体结构化提取的五条 SWRL & 保留，不执行一般 SWRL/built-ins \\
+\texttt{cq01}--\texttt{cq07} & 制造领域查询正本 & 仅 CQ1 绑定 exact oracle \\
+\texttt{cq01-positive} / 单因反例 & CQ1 受控输入 & 原生 scenario 使用 \\
+\texttt{OE-V1-CH09-SCN-CQ01-001} & CQ1 精确多重集验收 & 可运行；不等于 package release \\
+旧 Java/Python 片段 & 实现史与技术比较 & 不在 runtime，不是 receipt \\
 \bottomrule
 \end{tabularx}
 \end{center}
+
+到这里，全书形成了统一闭环：第 1 章定义目的与边界，第 2--5 章解释语义与方法，
+第 6--8 章展示应用、数据与智能体控制，第 9 章用一个诚实保留红灯的 Semantica 包
+把它们汇合。下一次扩展从包内新增可判定证据开始，而不是从书旁复制一份运行时开始。

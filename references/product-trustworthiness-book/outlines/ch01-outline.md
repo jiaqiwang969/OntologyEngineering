@@ -1,17 +1,18 @@
 ---
 contract_version: 7
 chapter: ch01
+executable_package_id: semantica.chapter_packages.vol2.ch01
+executable_authority: semantica_only_no_book_fallback
+package_status: partial
+release_status: blocked
 chapter_title: "为什么‘全绿’不等于产品可信"
 chapter_role: book_hinge_question_chapter
 mirror_answer_chapter: ch11
 problem_contract_id: PTW-PC-01
 target_hanzi: 7300
-status: teardown_rewrite_candidate_pending_human_gate
-project_case_ref: project-state/product-trustworthiness-book/case.json
-semantic_process_ref: PROC-CH01-SEM
-semantic_gate_ref: GATE-CH01-SEM
-semantic_gate_status: pending
-rewrite_input_contract: notes/ch01-humanity-rewrite-contract.md
+status: authored_package_partial_release_blocked
+book_source: references/product-trustworthiness-book/ch01-introduction/chapter.md
+source_binding_authority: semantica_package_manifest
 section_budgets:
   - heading: "六盏绿灯，为什么没人敢签字"
     hanzi: 1550
@@ -71,15 +72,12 @@ source_anchors:
     pdf_page: 22
     block: 7
     bbox: [57, 243, 885, 274]
-planned_outputs:
-  - functional-safety-book/ch01-introduction/chapter.md
-  - functional-safety-book/ch01-introduction/problem-contract.yaml
-  - functional-safety-book/ch01-introduction/SOURCE-AUDIT.md
-  - functional-safety-book/ch01-introduction/README.md
-  - functional-safety-book/ch01-introduction/examples/book-roadmap.txt
-  - notes/ch01-humanity-rewrite-contract.md
+authoring_and_runtime_bindings:
+  - references/product-trustworthiness-book/ch01-introduction/chapter.md
+  - references/product-trustworthiness-book/outlines/ch01-outline.md
+  - semantica.chapter_packages.vol2.ch01
 adjacent_front_matter:
-  path: functional-safety-book/front-matter/preface.md
+  path: references/product-trustworthiness-book/front-matter/preface.md
   role: authorial_origin_enterprise_ontology_loop_and_book_motivation
   excluded_from_ch01_case: true
   enterprise_ontology_loop:
@@ -87,20 +85,18 @@ adjacent_front_matter:
     participating_activities: [sales, r_and_d, test, quality, manufacturing, service, employee_learning]
     writeback_rule: candidate_then_validate_then_accept
     prohibited_reading: agent_as_truth_or_decision_center
-preserved_deferred_assets:
-  - handbook/figures-imagegen/ch01-fig01-green-without-claim-v04.png
 figure_contract:
   id: ch01-fig01-green-without-claim
-  registry: handbook/figures-product-trustworthiness.yaml
+  registry: handbook/book-figure-plan.yaml
   figure_type: evidence-structure
-  status: generated
-  current_disposition: cross_chapter_deferred
-  current_reader_placement: none
+  status: placed_and_consumed_in_chapter
+  current_disposition: chapter_in_text
+  current_reader_placement: before_section_1_2
   asset: handbook/figures-imagegen/ch01-fig01-green-without-claim-v04.png
-  asset_sha256: 574993005e025459a36ac8fbc11c61bf73af59280be022eae6fbf025a31ae9ac
+  asset_sha256: e5b0af12f4728943cc7dac9c0d076f1007e3a5dcc1ef2c9feed4de22c8abdbab
 gate_count_policy: runtime_derived
 question_count_policy: learning_objective_driven
-figure_policy: preserve_deferred_overview_asset_but_do_not_place_until_downstream_semantics_exist
+figure_policy: exactly_one_in_text_figure_observed_and_consumed
 ---
 
 # 第 1 章 为什么“全绿”不等于产品可信
@@ -129,7 +125,8 @@ figure_policy: preserve_deferred_overview_asset_but_do_not_place_until_downstrea
 
 - `EPS-RC17`（H3.2/SW1.8.3/C41/D7/V12）、台架配置（P07+SW1.8.4-rc2+C42）、人物
   （陈工/小唐/郑工/小林）与冬试返工事故均为合成教学材料，不对应真实项目。
-- 六项绿色结果的活动、范围与 does_not_establish 以 problem-contract.yaml `eps_projection` 为正本。
+- 六项绿色结果的活动、范围与 `does_not_establish` 只以源锁定 Semantica ch01 package
+  的 contract/CQ/oracle 为机器正本；书稿保留解释，不保留执行副本。
 - 软件单因变式用于证明"全部保留"和"全部作废"都不是合法默认值；台架卡在 1.2 与 1.4
   各消费一次（对不上表 / 接近不等于等于）。
 - `ENV-01` 只证明问法可跨出汽车复现，不继承 EPS、汽车分级语义或功能安全结论。
@@ -139,10 +136,12 @@ figure_policy: preserve_deferred_overview_asset_but_do_not_place_until_downstrea
 
 ## 图像处置
 
-现有 EPS 总览图 v04 的资产和历史审查均保留，但它整合了尚未冻结的下游材料。
-当前不放入第 1 章读者视图；待后续十问十答的素材完备后，再决定重做为全书总览或迁移位置。
+图 1-1 已在正文 1.1 的观察任务之后放置，并在进入 1.2 前消费：六张局部绿卡的
+母线都停在中央主张边界之前。它只表达“局部 PASS 不会自动合并成产品级放行主张”，
+不表示下游十个本体已经完成，也不构成 Semantica package 的 release 证据。
 
 ## 章末交接
 
 本章只向第 2 章交出"同一个名称是否指向同一对象和同一概念"这一问题。
-在 `GATE-CH01-SEM` 获得用户或其指定评审者通过以前，第 2 章继续保持 blocked。
+Semantica ch01 package 当前为 `partial`、release `blocked`；第 2 章的书稿存在不改变
+这一状态，也不得作为 ch01 release 的回退入口。

@@ -1,8 +1,6 @@
 name: corroboration
 
-# 佐证回归：15 个「书 ↔ 代码相互佐证」demo + SkillOpt 检索门禁 + 隐私门禁。
-# 任何一个 demo 佐证不成立（退出码非 0）即失败——"全绿"由 CI 持续保证，
-# 而不是一次性的本地声明。
+# 佐证回归：两卷书检索 + Semantica 内建包执行 + 零旁路 + 隐私门禁。
 
 on:
   push:
@@ -24,7 +22,28 @@ jobs:
           cache-dependency-path: runtime/requirements.txt
 
       - name: Install runtime (pinned)
-        run: pip install -r runtime/requirements.txt
+        run: |
+          pip install -r runtime/requirements.txt
+          python scripts/verify_runtime_source_lock.py
+
+      - name: Semantica unique-runtime gate (zero exceptions)
+        run: python scripts/check_semantica_backend_policy.py --mode strict
+
+      - name: Validate Semantica's authoritative 29-chapter registry
+        run: python scripts/validate_chapter_contracts.py
+
+      - name: Verify both books, guides, and TeX snapshots against Semantica
+        run: semantica package verify-books --book-root . --json
+
+      - name: Verify maintained book-source factories and repository contracts
+        run: |
+          python -m pytest -q tests
+          python references/ontology-engineering-book/handbook/build_handbook.py
+          git diff --exit-code -- \
+            references/ontology-engineering-book/handbook/fragments
+          PYTHONPATH=references/product-trustworthiness-book \
+            python -m pytest -q \
+              references/product-trustworthiness-book/handbook/test_build_handbook.py
 
       - name: Run all corroboration demos
         env:

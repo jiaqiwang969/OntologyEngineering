@@ -1,7 +1,16 @@
 
 \begin{noteblock}
-本目录收录书中正文与附录中提及的本体资源链接，按资源类型分类整理，供读者查阅、下载与复用。
+本目录收录书中正文与附录中提及的外部本体资源线索，供读者查阅与评估；它不是
+Semantica package registry，也不是“链接存在即可导入”的自动信任清单。
 \end{noteblock}
+
+\section{与 Semantica 的边界}
+
+本书相关的本体、CQ、形状、查询、案例和规则，其唯一可执行正本位于 Semantica。
+这里列出的 DOLCE、BFO、SUMO、IOF 等属于候选复用来源。将任一外部资源用于工程包前，
+必须核对版本、许可、维护状态、命名空间、语义 profile、来源哈希、与现有概念的冲突，
+再通过受治理的 package delta、回归和 release verdict 纳入；不得把下载到书目录的文件
+当成平行运行时，也不得因“可被 Protégé 打开”就声称通过 Semantica 验证。
 
 
 \section{一、通用顶层本体}
@@ -21,6 +30,7 @@
 \bottomrule
 \end{tabularx}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适配所有工程领域本体的顶层概念复用。提供严格的逻辑定义，可有效保障本体的一致性与严谨性，可作为各类工程本体的顶层框架。
 
@@ -40,6 +50,7 @@
 \bottomrule
 \end{tabular}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适配机械工程、电力工程、土木工程等各类工程领域。与 OWL 语言完美兼容，可直接作为工程本体的顶层概念架构，减少顶层设计工作量。被多个领域本体（包括 IOF、OBO Foundry 成员本体）作为顶层框架复用。
 
@@ -58,6 +69,7 @@
 \bottomrule
 \end{tabular}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适配大型工程本体项目的顶层概念复用，支持复杂逻辑推理，可与多个领域本体集成，适合需要跨领域知识融合的工程场景。
 
@@ -79,6 +91,7 @@
 \bottomrule
 \end{tabular}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适配工程领域中涉及生物医学交叉的场景（如医疗设备工程、生物制药工程）。所有本体均提供详细文档与使用说明，支持商用复用（需遵循对应许可协议）。
 
@@ -98,6 +111,7 @@
 \bottomrule
 \end{tabular}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适配医疗工程、生物工程等交叉领域的高精度本体需求，提供详细的本体文档与维护更新记录。
 
@@ -117,6 +131,7 @@
 \bottomrule
 \end{tabular}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适配智能制造、数字孪生、工业互联网等场景。是目前工程本体领域最具行业影响力的开放标准资源，可直接复用或作为自建工程本体的参考框架。
 
@@ -135,6 +150,7 @@
 \bottomrule
 \end{tabularx}
 \end{center}
+\color{black}
 
 \textbf{资源链接：}
 
@@ -149,6 +165,7 @@ IEEE 1872.1-2024 官方标准 & \url{https://standards.ieee.org/ieee/1872.1/6993
 \bottomrule
 \end{tabularx}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适配工业机器人、智能制造、自动化系统等工程场景，适合需要与自动化标准对接的工程本体项目。开源 OWL 文件可直接下载后导入 Protégé 等本体工具使用。
 
@@ -170,6 +187,7 @@ IEEE 1872.1-2024 官方标准 & \url{https://standards.ieee.org/ieee/1872.1/6993
 \bottomrule
 \end{tabular}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适配各类工程本体的通用概念复用（如"时间""空间""实体"等基础概念），兼容性强，可直接导入 Protégé 等工具。
 
@@ -193,6 +211,7 @@ IEEE 1872.1-2024 官方标准 & \url{https://standards.ieee.org/ieee/1872.1/6993
 \bottomrule
 \end{tabular}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适配工程领域中涉及 Web 展示、数据共享的本体项目（如工程设备展示、项目信息发布），支持与各类 Web 系统集成，无需复杂适配。
 
@@ -214,6 +233,7 @@ IEEE 1872.1-2024 官方标准 & \url{https://standards.ieee.org/ieee/1872.1/6993
 \bottomrule
 \end{tabular}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 定位偏向学术研究场景，适合需要异构本体整合、跨语言本体互操作的工程本体项目。支持按领域筛选本体，提供本体质量评估报告，方便快速判断适配性。
 
@@ -232,6 +252,7 @@ IEEE 1872.1-2024 官方标准 & \url{https://standards.ieee.org/ieee/1872.1/6993
 \bottomrule
 \end{tabular}
 \end{center}
+\color{black}
 
 \textbf{适用场景：} 适合初学者入门练习。
 
@@ -267,6 +288,7 @@ Protégé 工具本身持续维护，可从 \url{https://protege.stanford.edu/} 
 \bottomrule
 \end{tabularx}
 \end{center}
+\color{black}
 
 
 \textit{本目录随书持续更新。如发现链接失效或有新资源建议，欢迎提交 Issue 或 Pull Request。}

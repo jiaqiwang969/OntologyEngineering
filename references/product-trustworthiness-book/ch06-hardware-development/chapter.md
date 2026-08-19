@@ -1,6 +1,12 @@
 # 第 6 章 数字要能作证：硬件层开发与硬件度量
 
-![放大镜下的度量结果长出根系，每条根都扎入来源文件](../../handbook/figures-imagegen/art-ch06-v01.png "chapter-art")
+> Semantica 绑定： 本章保存硬件度量的概念、算例与证据纪律；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch06`，主场景为
+> `semantica.vol2.ch06.scenario.primary`。本体、CQ、查询、Shape、正反案例、规则、
+> oracle、manifest、PROV 与 receipt 只在 Semantica。当前为 `partial`、release
+> `blocked`；算例 oracle 通过不构成 FMEDA 充分性、真实硬件指标或放行结论。
+
+![放大镜下的度量结果长出根系，每条根都扎入来源文件](../handbook/figures-imagegen/art-ch06-v01.png "chapter-art")
 
 > **【导读】**
 > 第 5 章散场时，系统层把需求和预算分了下去：软件领走一叠要实现的承诺，
@@ -254,7 +260,7 @@ LFM = 1 − 20 / (400 − 2 − 18) = 1 − 20/380 = 94.74%
 <!-- FIG:ch06-fig01-failure-rate-flow:OBSERVE -->
 > **读图任务**：沿左侧总流量跟随四条宽度不同的支流，确认安全侧、已监控、残余与潜伏都是同一总体的去向。
 
-![一条代表四百个单位的粗流分成四条宽窄悬殊的支流，分别进入安全侧、已盯住、残余和潜伏容器，最细支流及容器被琥珀色放大镜聚焦。](../../handbook/figures-imagegen/ch06-fig01-failure-rate-flow-v01.png "评价硬件度量时，关键不是只报一个总数，而是说清分类规则与每一单位的去向。小分支也可以决定分子、分母和最终结论。")
+![一条代表四百个单位的粗流分成四条宽窄悬殊的支流，分别进入安全侧、已盯住、残余和潜伏容器，最细支流及容器被琥珀色放大镜聚焦。](../handbook/figures-imagegen/ch06-fig01-failure-rate-flow-v01.png "评价硬件度量时，关键不是只报一个总数，而是说清分类规则与每一单位的去向。小分支也可以决定分子、分母和最终结论。")
 
 <!-- FIG:ch06-fig01-failure-rate-flow:CONSUME -->
 > **图后判断**：这是教学性流量账，不是真实元件失效率报告。它不给出 SPFM、LFM 或 PMHF 数值，也不证明诊断假设已被验证。

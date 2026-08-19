@@ -1,5 +1,5 @@
-# 佐证运行时锁定依赖——setup_runtime.sh 与 CI 共用此文件
-semantica==0.6.5
-pyshacl>=0.25
-rdflib>=7.0
+# Semantica is the sole executable semantic implementation.  The matching
+# source-built wheel is vendored and pinned by semantica-source-lock.json.
+--find-links runtime/vendor
+semantica[ontology-runtime]==0.6.5+oe.1
 pytest>=8.0

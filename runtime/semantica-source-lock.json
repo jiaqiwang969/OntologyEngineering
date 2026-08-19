@@ -1,0 +1,69 @@
+{
+  "$schema": "ontology-engineering.semantica-source-lock/v1",
+  "purpose": "Pin the exact Semantica source and locally reproduced wheel used by ontology-engineering.",
+  "source": {
+    "canonical_repository": "https://github.com/jiaqiwang969/semantica.git",
+    "upstream_repository": "https://github.com/semantica-agi/semantica.git",
+    "observed_remote": "git@github.com:jiaqiwang969/semantica.git",
+    "ref_at_build": "ontology-engineering-deep-binding",
+    "commit": "e02e79dbe9b9611ce9de101e0eb8c10bc87373e1",
+    "upstream_main_at_audit": "e6b159e5c586bbd974a34037128afc739efd2a1c",
+    "version": "0.6.5+oe.1",
+    "commit_timestamp": 1787135252,
+    "commit_time": "2026-08-19T03:27:32-07:00",
+    "commit_subject": "feat(ontology): deeply bind OntologyEngineering books",
+    "complete_git_checkout": true,
+    "shallow": false,
+    "sparse": false,
+    "git_fsck_full": "pass",
+    "tracked_files": 1461,
+    "semantica_python_files": 354
+  },
+  "locked_inputs": {
+    "pyproject_sha256": "2031d9fe16ecadaa2aba0eb45ec3e51b1718b454c162fc2e1d03df280d8ee198",
+    "explorer_package_lock_sha256": "fbd212d6be939b9523b7540ff09c8ce79ef76f47299da8ac09278e4e6b10437d"
+  },
+  "build": {
+    "source_date_epoch": 1787135252,
+    "python_builder": "build==1.3.0",
+    "setuptools": "setuptools==84.0.0",
+    "wheel": "wheel==0.48.0",
+    "frontend_steps": [
+      "npm ci",
+      "npm run test:graph-store",
+      "npm run test:graph-workspace",
+      "npm run test:plugin-registry",
+      "npm run build"
+    ],
+    "python_step": "python -m build --wheel --no-isolation",
+    "observed_environment": {
+      "os": "macOS 26.6.2 arm64",
+      "python": "3.13.12",
+      "node": "25.6.1",
+      "npm": "11.9.0"
+    }
+  },
+  "artifact": {
+    "filename": "semantica-0.6.5+oe.1-py3-none-any.whl",
+    "sha256": "bb3af1256d1d248eb57b7f6b0f91e35424a1e210e067eff370d7f72f09a5ea23",
+    "wheel_files": 808,
+    "contains_explorer_index": true,
+    "explorer_static_assets": 43,
+    "two_build_hashes_identical": true
+  },
+  "verification": {
+    "explorer_tests": "58/58 pass",
+    "semantica_frozen_regression": "430/430 pass",
+    "book_source_bindings": "238/238 pass",
+    "ontology_engineering_demos": "16/16 pass from the vendored wheel",
+    "ontology_engineering_pytest": "46/46 pass plus 4 subtests from the vendored wheel",
+    "vol1_tex_factory": "3/3 pass",
+    "vol2_tex_factory": "33/33 pass including a clone-local isolated XeLaTeX build"
+  },
+  "known_build_limits": [
+    "The repository does not contain a Python wheelhouse or a complete dependency lock, so a first fully offline build is not yet self-contained.",
+    "The lock records the audited fork commit, not either moving main branch.",
+    "The broad upstream test suite is not green because optional Explorer dependencies are absent and unrelated upstream tests have existing failures.",
+    "All 29 chapter packages remain release-blocked: Vol.1 ch06 is absent and the other 28 packages are partial."
+  ]
+}

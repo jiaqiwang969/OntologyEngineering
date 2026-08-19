@@ -1,6 +1,12 @@
 # 第 8 章 多一条通道，不等于多一分独立：ASIL 分解与相关失效分析
 
-![地面上并行的两条管道在地下汇入同一条上游总管](../../handbook/figures-imagegen/art-ch08-v01.png "chapter-art")
+> Semantica 绑定： 本章保存 ASIL 分解、DFA 与独立性论证；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch08`，主场景为
+> `semantica.vol2.ch08.scenario.primary`。方案本体、CQ、查询、Shape、案例、规则、
+> oracle、manifest 与 receipt 全在 Semantica。当前为 `partial`、release
+> `blocked`；未建模或不受支持的依赖推理不得被解释成“已证明独立”。
+
+![地面上并行的两条管道在地下汇入同一条上游总管](../handbook/figures-imagegen/art-ch08-v01.png "chapter-art")
 
 > **【导读】**
 > 上一章散会时，一个问题挂在半空：软件达标了，硬件也达标了，可它们跑在同一块芯片上，
@@ -162,7 +168,7 @@ B 样的电路板已经投了板，试验夹具做了，认证排期订了。
 <!-- FIG:ch08-fig01-hidden-common-power:OBSERVE -->
 > **读图任务**：先看上方两条功能通道为什么像是并行独立，再沿供电线向下追踪到同一上游模块，并注意额外的非对称控制线。
 
-![两列并行功能模块在表面上互不相连，向下延伸的供电线却逐级汇入同一个上游电源模块，琥珀色控制线又从该模块非对称地回连左侧通道。](../../handbook/figures-imagegen/ch08-fig01-hidden-common-power-v01.png "功能分解不等于依赖分解。两条通道只要共享上游资源、环境或控制路径，同一原因就可能同时破坏它们的声称独立性。")
+![两列并行功能模块在表面上互不相连，向下延伸的供电线却逐级汇入同一个上游电源模块，琥珀色控制线又从该模块非对称地回连左侧通道。](../handbook/figures-imagegen/ch08-fig01-hidden-common-power-v01.png "功能分解不等于依赖分解。两条通道只要共享上游资源、环境或控制路径，同一原因就可能同时破坏它们的声称独立性。")
 
 <!-- FIG:ch08-fig01-hidden-common-power:CONSUME -->
 > **图后判断**：图中共享电源是一个反例结构，不代表任何真实架构。它不给出 ASIL 分解等级，也不证明共因故障已发生或已被缓解。

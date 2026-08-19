@@ -1,6 +1,12 @@
 # 第 16 章 带着出处的数字：测量与证据本体
 
-![一枚度量结果佩戴六边形身份章，六条边分别连向其上下文](../../handbook/figures-imagegen/art-ch16-v01.png "chapter-art")
+> Semantica 绑定： 本章保存测量对象、方法、单位、不确定度与来源的概念化；
+> 唯一机器语义是 `semantica.chapter_packages.vol2.ch16`，主场景为
+> `semantica.vol2.ch16.scenario.primary`。本体、CQ、查询、Shape、正反案例、重算规则、
+> oracle、manifest 与 receipt 均在 Semantica。当前为 `partial`、release
+> `blocked`；重算一致不能证明输入数据真实、方法适用或结果足以放行。
+
+![一枚度量结果佩戴六边形身份章，六条边分别连向其上下文](../handbook/figures-imagegen/art-ch16-v01.png "chapter-art")
 
 > **【导读】**
 > 需求那条线的试点收尾时，把话递了过来：验证一条需求要靠数字作证，
@@ -144,7 +150,7 @@ meas:FailureRate_R17Class a meas:MeasurementValue ;
 <!-- FIG:ch16-fig01-denominator-register:OBSERVE -->
 > **读图任务**：不要只看分数线上方的分子方块，将注意力移到下方展开的名单，逐项查看它为什么比一个单独数字更能承担分母。
 
-![一条分数线上方是简单分子方块，下方则是一张展开的分母登记表，多个对象逐项排列，最后一项旁有核对印章，卷轴边缘为琥珀色。](../../handbook/figures-imagegen/ch16-fig01-denominator-register-v01.png "一个度量主张的分母首先是可审计对象集，然后才是一个数。名单让读者能检查每一项的纳入理由、排除理由、版本与适用范围。")
+![一条分数线上方是简单分子方块，下方则是一张展开的分母登记表，多个对象逐项排列，最后一项旁有核对印章，卷轴边缘为琥珀色。](../handbook/figures-imagegen/ch16-fig01-denominator-register-v01.png "一个度量主张的分母首先是可审计对象集，然后才是一个数。名单让读者能检查每一项的纳入理由、排除理由、版本与适用范围。")
 
 <!-- FIG:ch16-fig01-denominator-register:CONSUME -->
 > **图后判断**：图中卷轴不是真实测量数据集，核对印章也不代表结论通过。它只说明可审计分母的结构，不给出任何指标数值。
@@ -411,5 +417,6 @@ meas:Support_042 a meas:SupportLink ;
 > **本章注记**：本章人物、对话、审核事件与全部数字（失效率、度量值、
 > 百分数、概率、位号等）均为合成教学材料，不对应任何真实企业、
 > 真实产品或真实个人。正文对标准中硬件度量与随机失效评估内容的
-> 提及为自然语言概括，精确定义以标准原文为准。文中记法片段
-> 为教学示意记法，可运行版本见本章配套材料。
+> 提及为自然语言概括，精确定义以标准原文为准。文中记法只是教学投影；
+> 唯一可执行版本是 `semantica.chapter_packages.vol2.ch16`，当前为 `partial`、
+> release `blocked`。

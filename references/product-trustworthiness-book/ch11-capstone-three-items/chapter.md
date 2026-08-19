@@ -1,5 +1,14 @@
 # 第11章 综合收口：一份绿了一半的报告，最终能签哪句话
 
+> 历史材料与现行绑定： 本文是早期“第 11 章”总装案例，现行第 11 章已改为
+> 可信主张本体。本文仍作为冻结、漂移与收口边界的书面案例保留，但不再拥有可执行
+> 资产。旧 manifest、查询和边界规则的权威迁移后继仅在
+> `semantica.chapter_packages.vol2.ch20` 的 `legacy-capstone-*` 资产中；当前 package
+> 为 `partial`、release `blocked`。文中旧文件名和旧运行结果是历史叙事，不是可调用入口。
+> 为保留案例原貌，正文未加限定的“当前”“本章目录”“当前 runner”一律指
+> 2026-08-14 诊断快照中的历史状态，不指今天的 OE 目录或 Semantica runtime；引用旧
+> RDFLib/pySHACL/脚本版本是在识别过去的执行语义，不授权安装、调用或恢复它们。
+
 <!--
 章级理解合同：
 1. 用同一份待签收口报告贯穿全章：历史报告中 capstone 子门禁为绿、常规整书门禁为红，且没有运行
@@ -737,13 +746,27 @@ manifest 身份篡改、初始快照、末次复核、查询文本一致性、Cl
 oracle。这里能签的只是“这些 24 个已编码契约在当前测试环境中按预期工作”，不是完整候选包通过；
 旧 manifest 的 10 处漂移仍使同一快照的 capstone 运行在装载前失败。
 
-复现这项局部观察的入口是：
+旧稿曾给出书旁测试入口；该入口已随唯一执行语义迁移而撤销。现在只能从源锁定的
+Semantica build 复核其迁移后继：
 
 ```bash
-.venv/bin/python -m unittest -v eval.test_capstone_bundle
+: "${SEMANTICA_RUNTIME_COMMIT:?export the locked 40-hex Semantica source commit}"
+: "${SEMANTICA_WHEEL_SHA256:?export the locked 64-hex Semantica wheel SHA-256}"
+[[ "$SEMANTICA_RUNTIME_COMMIT" =~ ^[0-9a-fA-F]{40}$ ]] || {
+  echo "invalid SEMANTICA_RUNTIME_COMMIT" >&2; exit 2;
+}
+[[ "$SEMANTICA_WHEEL_SHA256" =~ ^[0-9a-fA-F]{64}$ ]] || {
+  echo "invalid SEMANTICA_WHEEL_SHA256" >&2; exit 2;
+}
+semantica package show semantica.chapter_packages.vol2.ch20 --json
+semantica package run semantica.chapter_packages.vol2.ch20 \
+  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
+  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
+  --json
 ```
 
-命令只运行该测试模块，不会把旧 manifest 重冻，也不代替 `run_eval.py` 或整书 runner。
+命令执行的是 Semantica 声明的 ch20 场景，不会重冻历史 manifest。场景结果与独立
+release verdict 必须分开；当前 package 为 `partial`、release `blocked`。
 
 把 24 项按故障族而不是按文件顺序读，更容易看见覆盖边界。身份族挑战路径、哈希、角色和包摘要；
 快照族挑战核验后磁盘变化；语义族挑战 trace 查询、类型闭包与三案例精确结果；报告边界族挑战标签
@@ -875,20 +898,31 @@ runner 还可能按顺序遇首红即停。因此“没有某项结果”要区�
 说明旧冻结包在它的窄合同下通过；常规整书门禁检查更宽的开发与验收合同，其中至少一项失败。总报告按
 合取语义裁决：必要子门禁有一个红，不能用另一个绿抵销。
 
-读者真正复现时，命令也应体现这种分工：
+这些旧 runner 名称只用于解释历史报告的分层语义，今天不再是可调用入口。读者复核
+迁移后的候选绑定时，唯一入口是：
 
 ```bash
-.venv/bin/python functional-safety-book/ch11-capstone-three-items/src/capstone.py
-.venv/bin/python eval/run_all_gates.py --jobs 8 --report tmp/ch11-acceptance.json
+: "${SEMANTICA_RUNTIME_COMMIT:?export the locked 40-hex Semantica source commit}"
+: "${SEMANTICA_WHEEL_SHA256:?export the locked 64-hex Semantica wheel SHA-256}"
+[[ "$SEMANTICA_RUNTIME_COMMIT" =~ ^[0-9a-fA-F]{40}$ ]] || {
+  echo "invalid SEMANTICA_RUNTIME_COMMIT" >&2; exit 2;
+}
+[[ "$SEMANTICA_WHEEL_SHA256" =~ ^[0-9a-fA-F]{64}$ ]] || {
+  echo "invalid SEMANTICA_WHEEL_SHA256" >&2; exit 2;
+}
+semantica package verify semantica.chapter_packages.vol2.ch20 \
+  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
+  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
+  --json
 ```
 
-在重写期诊断快照上，第一条因旧 manifest 漂移返回 2，这就是应记录的事实；不要为了得到教程里好看的完整输出先
-重冻。第二条是耗时很长且会读取开发态的整书回归，只有在本轮上游收束、图与正文回归准备完成
-后才适合作为新候选的最终检查。命令相同也不保证对象相同，报告必须同时写输入身份。
+历史快照中旧 manifest 漂移、旧 capstone 返回 2 仍是可以保留的历史事实；它现在由
+Semantica ch20 的 `legacy-capstone-*` 资产登记，不能通过重建被删脚本来复现。验证报告
+必须同时写 package、scenario、source commit、wheel SHA-256、输入/输出哈希与 receipt。
 
-默认整书 runner 遇到首个失败会停止后续门禁；若诊断目的需要尽量收集同次工作树上的多个结果，可
-显式使用 `--keep-going`，并在报告中保留该调度选项。它只改变失败后的继续策略，不把任一红灯变绿，
-也不能替代开始/结束输入快照和必要门禁的合取裁决。
+历史整书 runner 默认曾在首个失败处停止；当时的诊断运行可带 `--keep-going` 收集同一
+工作树上的更多结果，并把该调度选项写进历史报告。该 runner 与参数现已撤销，不能调用或
+恢复；这段记录只说明过去的调度差异从未把红灯变绿，也未替代输入快照和必要门禁的合取裁决。
 
 ### 11.7.3 前十章的形态怎样在同一份报告里再被触发
 

@@ -1,0 +1,165 @@
+% 全书装配：前言 + 第 1–20 章 + 附录 A–D（片段由 build_handbook.py 生成）。
+% 编译：cd handbook && latexmk -xelatex -interaction=nonstopmode main.tex
+\documentclass[12pt]{ctexbook}
+\input{preamble}
+
+\begin{document}
+\frontmatter
+\pagestyle{empty}
+
+% ================================================================ 书名页
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[inner sep=0pt] at (current page.center) {%
+      \IfFileExists{figures-imagegen/cover-product-trustworthiness-v03-focus.png}{%
+        \includegraphics[width=\paperwidth,height=\paperheight]{figures-imagegen/cover-product-trustworthiness-v03-focus.png}%
+      }{\color{booknight}\rule{\paperwidth}{\paperheight}}%
+    };
+    % 撤掉整块蒙版，四级文字各用一条低存在感透明衬底。
+    \path[fill=booknight,fill opacity=0.24]
+      ([xshift=10.83cm,yshift=-1.40cm]current page.north west) rectangle
+      ([xshift=16.45cm,yshift=-2.03cm]current page.north west);
+    \path[fill=booknight,fill opacity=0.24]
+      ([xshift=10.83cm,yshift=-2.35cm]current page.north west) rectangle
+      ([xshift=19.55cm,yshift=-4.05cm]current page.north west);
+    \path[fill=booknight,fill opacity=0.24]
+      ([xshift=10.83cm,yshift=-4.40cm]current page.north west) rectangle
+      ([xshift=19.30cm,yshift=-5.48cm]current page.north west);
+    \path[fill=booknight,fill opacity=0.24]
+      ([xshift=10.83cm,yshift=-5.62cm]current page.north west) rectangle
+      ([xshift=18.65cm,yshift=-6.36cm]current page.north west);
+    % 恢复旧版字号、行距与四级标题结构，只将整块横移到右侧象限。
+    \draw[bookcoral,line width=1.5pt]
+      ([xshift=10.95cm,yshift=-1.22cm]current page.north west) --
+      ([xshift=14.55cm,yshift=-1.22cm]current page.north west);
+    \node[anchor=north west,inner sep=0pt,text width=8.70cm,align=left]
+      at ([xshift=10.95cm,yshift=-1.52cm]current page.north west) {%
+        {\fontsize{10.5}{13}\selectfont\sffamily\bfseries\color{bookice!88!white}
+          \BookEnglishTitle}\par\vspace{0.52cm}
+        {\fontsize{40}{48}\selectfont\heiti\bfseries\color{white}\BookTitle}\par\vspace{0.34cm}
+        {\fontsize{20}{27}\selectfont\heiti\color{bookice}\BookSubtitle}\par\vspace{0.28cm}
+        {\fontsize{11.5}{17}\selectfont\songti\color{white!82}\BookScopeLine}%
+      };
+
+    % 旧版的底部左右栏：左侧卷册与制作信息，右侧本卷定位。
+    % 同文字的微小偏移副本形成克制投影，仅用于压住底图纹理。
+    \node[anchor=south west,inner sep=0pt,align=left,opacity=0.68]
+      at ([xshift=1.59cm,yshift=1.28cm]current page.south west) {%
+        {\fontsize{10.5}{15}\selectfont\heiti\color{black}
+          \BookVolumeLabel · \BookVolumeName}\\[-0.04cm]
+        {\fontsize{7.2}{9.5}\selectfont\songti\color{black}
+          作者 \BookCoverCredit · \BookCoverWorkNote · \BookVersion}%
+      };
+    \node[anchor=south west,inner sep=0pt,align=left]
+      at ([xshift=1.55cm,yshift=1.32cm]current page.south west) {%
+        {\fontsize{10.5}{15}\selectfont\heiti\color{white!88}
+          \BookVolumeLabel · \BookVolumeName}\\[-0.04cm]
+        {\fontsize{7.2}{9.5}\selectfont\songti\color{white!70}
+          作者 \BookCoverCredit · \BookCoverWorkNote · \BookVersion}%
+      };
+    \node[anchor=south east,inner sep=0pt,align=right,opacity=0.68]
+      at ([xshift=-1.51cm,yshift=1.28cm]current page.south east) {%
+        {\fontsize{10.5}{15}\selectfont\heiti\color{black}
+          书写规范 · Semantica 执行}\\[-0.04cm]
+        {\fontsize{9.5}{13}\selectfont\songti\color{black}
+          人读教材 · 唯一机器语义入口}%
+      };
+    \node[anchor=south east,inner sep=0pt,align=right]
+      at ([xshift=-1.55cm,yshift=1.32cm]current page.south east) {%
+        {\fontsize{10.5}{15}\selectfont\heiti\color{bookcoral!92!white}
+          书写规范 · Semantica 执行}\\[-0.04cm]
+        {\fontsize{9.5}{13}\selectfont\songti\color{white!76}
+          人读教材 · 唯一机器语义入口}%
+      };
+    \node[anchor=south west,inner sep=0pt,align=left,opacity=0.68]
+      at ([xshift=1.59cm,yshift=0.50cm]current page.south west) {%
+        {\fontsize{7.2}{9.2}\selectfont\sffamily\color{black}
+          jiaqiwang969/OntologyEngineering}%
+      };
+    \node[anchor=south west,inner sep=0pt,align=left]
+      at ([xshift=1.55cm,yshift=0.54cm]current page.south west) {%
+        {\fontsize{7.2}{9.2}\selectfont\sffamily\color{white!64}
+          \href{\BookProjectURL}{\textcolor{white!64}{jiaqiwang969/OntologyEngineering}}}%
+      };
+  \end{tikzpicture}
+  \null
+\end{titlepage}
+
+% 快速封面校样：xelatex "\\def\\CoverOnly{1}\\input{main.tex}"（需运行两遍）
+\ifdefined\CoverOnly
+\else
+
+% ================================================================ 封二留白与内书名页
+\cleardoublepage
+\thispagestyle{empty}
+\vspace*{0.13\textheight}
+\begin{center}
+  {\fontsize{10}{12}\selectfont\sffamily\color{bookslate!75}\BookEnglishTitle\par}
+  \vspace{1.35cm}
+  {\fontsize{34}{42}\selectfont\heiti\bfseries\color{booknight}\BookTitle\par}
+  \vspace{0.48cm}
+  {\fontsize{15}{22}\selectfont\heiti\color{bookcoral!86!black}\BookSubtitle\par}
+  \vspace{1.15cm}
+  {\large\heiti\color{bookslate}\BookVolumeLabel\quad·\quad\BookVolumeName\par}
+  \vspace{0.45cm}
+  {\small\songti\color{black!68}\BookScopeLine\par}
+  \vspace{0.42cm}
+  {\footnotesize\heiti\color{bookteal!72!black}\BookSemanticContractLine\par}
+  \vfill
+  {\small\heiti\color{black!74}作者：\BookCoverCredit\par}
+  \vspace{0.42cm}
+  {\small\sffamily\color{black!62}\BookEditionLabel\quad·\quad\BookDateCN\par}
+  \vspace{0.18cm}
+  {\footnotesize\ttfamily\color{black!52}内部文档号（非 ISBN）：\BookInternalID\par}
+  \vspace{0.28cm}
+  {\scriptsize\songti\color{black!50}\parbox{0.84\textwidth}{\centering\BookSemanticaStatus}\par}
+\end{center}
+\vspace*{0.08\textheight}
+
+\pagestyle{bookfront}
+% 用户要求删除候选出版信息页；数字版目录紧接内书名页，不另插空白 verso。
+\begingroup
+  \let\cleardoublepage\clearpage
+  \tableofcontents
+\endgroup
+
+\input{fragments/preface}
+
+\mainmatter
+\pagestyle{bookhead}
+
+\part{\texorpdfstring{人读规范：按 ISO 规范建立可追责工程判断}{人读规范：按 ISO 规范建立可追责工程判断}}
+
+\input{fragments/readme-ch01}
+\input{fragments/readme-ch02}
+\input{fragments/readme-ch03}
+\input{fragments/readme-ch04}
+\input{fragments/readme-ch05}
+\input{fragments/readme-ch06}
+\input{fragments/readme-ch07}
+\input{fragments/readme-ch08}
+\input{fragments/readme-ch09}
+\input{fragments/readme-ch10}
+
+\part{\texorpdfstring{唯一执行语义：由 Semantica 承接规范本体化}{唯一执行语义：由 Semantica 承接规范本体化}}
+
+\input{fragments/readme-ch11}
+\input{fragments/readme-ch12}
+\input{fragments/readme-ch13}
+\input{fragments/readme-ch14}
+\input{fragments/readme-ch15}
+\input{fragments/readme-ch16}
+\input{fragments/readme-ch17}
+\input{fragments/readme-ch18}
+\input{fragments/readme-ch19}
+\input{fragments/readme-ch20}
+
+\appendix
+\input{fragments/appendix-a}
+\input{fragments/appendix-b}
+\input{fragments/appendix-c}
+\input{fragments/appendix-d}
+
+\fi
+\end{document}

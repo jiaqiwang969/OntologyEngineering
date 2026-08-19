@@ -1,35 +1,53 @@
-# 第3章：本体构建方法论 / Chapter 3: Ontology Engineering Methodologies
+# 第3章：本体构建方法论
 
-## 本章内容
+## 本章任务
 
-本章回答"如何系统地设计一个本体"，介绍：
-- 能力问题（Competency Questions, CQ）驱动的需求定义
-- Ontology Development 101 七步法
-- METHONTOLOGY 生命周期方法
-- NeOn 场景化方法概览
-- OntoClean 本体质量评估（元属性标注）
+本章把“如何设计本体”改写为一条可审查的生命周期：目的与范围 → 能力问题（CQ）→
+概念化 → 形式化 → 场景与 oracle → 回归 → 版本、溯源和发布判定。Ontology 101、
+METHONTOLOGY、NeOn 与 OntoClean 是不同粒度的方法资源；它们不能只停留在文档清单，
+但也不能在没有执行器时假称已自动化。
 
-## 文件说明
+## Semantica 绑定
 
-| 文件 | 内容 |
-|------|------|
-| `competency-questions.txt` | 制造领域能力问题设计：CQ→本体元素→验证查询 |
-| `ontology-101-process.txt` | Ontology 101 七步法完整走查（制造本体） |
-| `methontology-lifecycle.txt` | METHONTOLOGY 生命周期与概念化产物 |
-| `ontoclean-evaluation.txt` | OntoClean 元属性标注与建模错误检查 |
+- package：`semantica.chapter_packages.vol1.ch03`
+- package status：`partial`
+- release status：`blocked`
+- 已迁入：CQ 教学材料、Ontology 101/METHONTOLOGY/OntoClean 工程规则、章合同、
+  CQ 注册表、CQ1 查询、正例与单因反例
+- 原生场景：`OE-V1-CH03-SCN-CQ-ACCEPTANCE-001`
+- 未完成：Ontology 101/METHONTOLOGY 阶段门禁 runner、OntoClean 刚性/同一性/
+  统一性/依赖性检查器、包级发布收据
 
-## 方法论对比
+## 方法论不是四套运行时
 
-| 方法论 | 提出时间 | 特点 | 适用场景 |
-|--------|----------|------|----------|
-| Ontology 101 | 2001 | 七步迭代，轻量易上手 | 教学、中小型本体 |
-| METHONTOLOGY | 1997 | 完整生命周期+产物模板 | 企业级、需文档化交付 |
-| NeOn | 2009 | 九种场景，强调复用 | 网络化、多本体集成 |
-| OntoClean | 2002 | 元属性形式化评估 | 类层次质量审查 |
+| 方法 | 书中作用 | Semantica 中的状态 |
+|---|---|---|
+| Ontology 101 | 轻量七步迭代 | 规则材料已入包，阶段门禁未实现 |
+| METHONTOLOGY | 生命周期与概念化产物 | 规则材料已入包，阶段门禁未实现 |
+| NeOn | 复用、对齐和网络化场景 | 书中方法说明，未声明专用 runner |
+| OntoClean | 类层次元属性审查 | 检查规则已入包，自动检查器缺失 |
+| CQ 回归 | 范围与验收 | CQ1 的正例/单因反例与精确多重集 oracle 已原生绑定 |
 
-## 关键概念
+一个 CQ 只有在问题、查询、输入夹具与预期结果同时固定后才成为可执行验收；
+“能返回一行”不够，必须比较精确绑定、行数与单因反例。
 
-- **能力问题 (CQ)**: 本体建成后必须能回答的问题，是范围定义与验收标准
-- **概念化 (Conceptualization)**: 从术语表到概念分类树、关系表的中间产物
-- **刚性 (Rigidity)**: OntoClean 元属性，区分本质类型与角色/状态
-- **本体复用 (Reuse)**: 优先采用顶层本体（BFO/DOLCE）与领域本体（IOF），见附录A
+## 复算
+
+先由受控发布流程把实际 runtime commit 与精确 wheel/工件 SHA-256 分别写入
+`SEMANTICA_RUNTIME_COMMIT`、`SEMANTICA_RUNTIME_SHA256`；不得用空值或示例摘要替代。
+
+```bash
+semantica package run semantica.chapter_packages.vol1.ch03 \
+  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
+  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
+  --scenario-id OE-V1-CH03-SCN-CQ-ACCEPTANCE-001 --json
+```
+
+该场景只证明 CQ1 在声明夹具上符合 oracle，不证明方法论全部自动化，也不授予本体发布权限。
+
+## 核心纪律
+
+- 先写可判定的问题，再选择概念与语言。
+- 正例、单因反例、歧义例和上一发布版回归必须分开保存。
+- 复用外部本体前审查许可、维护状态、语义承诺和版本锁。
+- 任何语义变更都要经过 snapshot/diff、来源记录和显式发布判定。

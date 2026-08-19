@@ -5,13 +5,19 @@
 \textbf{【导读】}
 理论与语言已经齐备：第 2 章给了知识表示的分层骨架，第 3 章给了从需求走到模型的方法，
 第 4 章给了 OWL 与 SPARQL 这套语言工具，第 5 章让推理器真正转了起来。
-本章把这套装备带进四个真实领域——智能制造调度、自动驾驶场景理解、
+本章把这套装备带进四个真实存在的工程领域——智能制造调度、自动驾驶场景理解、
 建筑信息模型（BIM）合规检查、航空航天故障模式与影响分析（FMEA）。
 读案例时请留意它们的共同模式：\textbf{本体定义约束 + 推理器自动检查}——
 这正是第 1 章「知识熵减」在不同行业的兑现。
 四个案例彼此独立、可按兴趣选读；但 6.1 的模式总论与 6.6 的跨案例分析建议精读，
-它们是把案例经验搬回你自己领域的桥梁。
+它们是把案例经验搬回你自己领域的桥梁。章内人物、过程与效果数字是教学叙事，
+不是现实项目的事实或性能证明。
 \end{introbox}
+
+\chapterbinding{semantica.chapter\_packages.vol1.ch06}{absent}{blocked}
+{四类案例文本、章合同、CQ 与场景注册表已迁入，来源与哈希可审计。}
+{案例尚未形式化为 RDF/OWL，也没有 SHACL、SPARQL、正例/单因反例或 exact oracle；
+\texttt{OE-V1-CH06-SCN-END-TO-END-001} 的场景和 oracle 均为 absent。}
 
 \section{应用模式总论：本体落地的四种方式}
 
@@ -126,6 +132,13 @@ FMEA 项目同时是决策支持（影响推演）与合规审计（适航证据
 辅助模式放进路线图，等数据与团队成熟再叠加。
 \end{noteblock}
 
+\begin{noteblock}
+\textbf{证据边界。}以下四个案例及其 100 毫秒、87\%、两天到三十分钟、
+六个月到六周等数字都是包内教学材料的设定，不是经过现实项目审计的绩效证据。
+ch06 当前 package status 为 \texttt{absent}：没有领域 RDF/OWL、shape、query、夹具或
+exact oracle。正文保留数字是为了讨论评价口径，不能写成 Semantica 或真实项目结论。
+\end{noteblock}
+
 带着这张模式地图，我们来预览四个案例。
 \textbf{智能制造调度}：把设备能力、任务需求、时间窗口建成本体，
 排产冲突由 SWRL 规则自动检出——能力不匹配、状态冲突、时间重叠，
@@ -134,7 +147,7 @@ FMEA 项目同时是决策支持（影响推演）与合规审计（适航证据
 本体提供交通参与者的语义骨架，感知结果填入成为场景图（scene graph），
 每 100 毫秒更新一次；规则在其上判断「行人靠近斑马线 \(\rightarrow\) 准备让行」。
 \textbf{BIM 合规检查}：IFC 标准映射为本体后，
-设计规范从 PDF 文本变成可执行的 SPARQL 检查——
+教学设想把设计规范从 PDF 文本转成候选 SPARQL 检查——
 人工两天的图纸审查缩短到三十分钟，且覆盖全部条款。
 \textbf{航空航天 FMEA}：故障模式、影响传播链、风险优先级本体化之后可复用、可推理——
 新型号继承既有故障知识库，分析周期从六个月压缩到六周，故障识别量反而提升四成。
@@ -184,10 +197,10 @@ APS 排程引擎算力强劲，可是约束以代码形式硬编码在系统里�
 
 \subsection{知识流架构：从需求到推理的五步}
 
-这套调度本体的总体架构，仓库示例文件用一张知识流图概括。
+这套调度本体的总体架构，包内教学资产用一张知识流图概括。
 
 \input{fragments/sec-ch06-manufacturing-scheduling-txt-1}
-\snipsource{ch06-applications/examples/manufacturing-scheduling.txt}
+\assetsource{ch06}{manufacturing-scheduling}
 
 五个箭头串起了一条完整的工程路径，值得逐步拆解。
 第一步\textbf{需求分析与能力问题}：用第 3 章的 CQ 方法圈定范围——
@@ -214,7 +227,7 @@ ABox 由业务系统自动写入、按秒变化——稳定的知识与流动的
 这个案例的五条核心 CQ 如下。
 
 \input{fragments/sec-ch06-manufacturing-scheduling-txt-2}
-\snipsource{ch06-applications/examples/manufacturing-scheduling.txt}
+\assetsource{ch06}{manufacturing-scheduling}
 
 逐条审视，每个 CQ 都在向本体「点菜」，规定了它必须具备的构件：
 \begin{itemize}
@@ -237,7 +250,7 @@ CQ 在项目里扮演双重角色：建模时是\textbf{范围闸门}——凡�
 
 \subsection{TBox 与 RBox 的设计决策}
 
-类层次的全貌在仓库文件 \texttt{manufacturing-scheduling.txt} 中有完整描述：
+类层次的全貌在包内教学资产 \texttt{manufacturing-scheduling} 中有完整描述：
 顶层并列着设备（Equipment）、工艺（Process）、产品（Product）、
 材料（Material）、任务（Task）、工单（WorkOrder）六大类；
 设备向下按职能分为加工设备、测量设备、辅助设备、工装设备，
@@ -275,7 +288,7 @@ RBox 一侧，核心对象属性同样取自该文件：\texttt{canProcess}（�
 调度本体的「牙齿」是三条 SWRL 冲突检测规则——第 5 章学过的规则语法在这里上岗。
 
 \input{fragments/sec-ch06-manufacturing-scheduling-txt-5}
-\snipsource{ch06-applications/examples/manufacturing-scheduling.txt}
+\assetsource{ch06}{manufacturing-scheduling}
 
 逐条解读它们的业务含义与技术细节。
 
@@ -314,7 +327,7 @@ RBox 一侧，核心对象属性同样取自该文件：\texttt{canProcess}（�
 
 \subsection{应用价值：数字与机制}
 
-按照仓库文件记载的量化结果，这套系统上线后有三项可观测的收益。
+按照包内教学资产记载的量化结果，这套系统上线后有三项可观测的收益。
 其一，\textbf{工艺推荐命中率从零起步，六个月后达到 87\%}——
 随着工艺知识持续沉淀进本体，CQ4 那条决策支持线越来越准，
 新产品来了先问本体「有没有相似产品的工艺路线可以参考」，老师傅的经验开始可继承。
@@ -374,10 +387,10 @@ RBox 一侧，核心对象属性同样取自该文件：\texttt{canProcess}（�
 
 \subsection{场景图与 100 毫秒更新流程}
 
-场景图不是离线产物，它必须跟上车辆行驶的节奏。仓库文件给出的更新流程如下。
+场景图不是离线产物，它必须跟上车辆行驶的节奏。包内教学资产给出的更新流程如下。
 
 \input{fragments/sec-ch06-autonomous-driving-txt-1}
-\snipsource{ch06-applications/examples/autonomous-driving.txt}
+\assetsource{ch06}{autonomous-driving}
 
 每 100 毫秒——也就是以 10 赫兹的节拍——这条流水线走完四步：
 \textbf{第一步}，感知模块完成目标检测与跟踪，输出带跟踪编号的目标列表；
@@ -396,7 +409,7 @@ ABox（场景实例）以毫秒级吞吐滚动更新，规则在二者之间持�
 
 \subsection{核心类与空间关系的设计}
 
-场景本体的类层次在仓库文件 \texttt{autonomous-driving.txt} 中完整列出，骨架是三族概念：
+场景本体的类层次在包内教学资产 \texttt{autonomous-driving} 中完整列出，骨架是三族概念：
 \begin{itemize}
 \item \textbf{参与者族}：\texttt{Actor} 为根，下分车辆（\texttt{Vehicle}，
   再细分轿车、卡车、公交车、摩托车）、行人（\texttt{Pedestrian}）、骑行者（\texttt{Cyclist}）。
@@ -425,7 +438,7 @@ ABox（场景实例）以毫秒级吞吐滚动更新，规则在二者之间持�
 场景图之上跑着风险推断规则，文件给出两条代表作。
 
 \input{fragments/sec-ch06-autonomous-driving-txt-4}
-\snipsource{ch06-applications/examples/autonomous-driving.txt}
+\assetsource{ch06}{autonomous-driving}
 
 \textbf{第一条是碰撞时间（Time to Collision，TTC）规则}，逐原子拆开看：
 前三个原子框定情境——自车 \texttt{?ego}、他车 \texttt{?other}、后者在前者前方；
@@ -504,7 +517,7 @@ ABox（场景实例）以毫秒级吞吐滚动更新，规则在二者之间持�
 一栋楼在开工之前先在计算机里被完整地「盖」一遍，
 墙、梁、门、管线都是携带属性的三维对象，而不是图纸上的线条。
 听起来知识已经高度结构化了，为什么还轮得到本体出场？
-因为仓库文件 \texttt{bim-ontology.txt} 开头点出的两处断层依然存在。
+因为包内教学资产 \texttt{bim-ontology} 开头点出的两处断层依然存在。
 
 \textbf{断层一：跨阶段信息不连贯。}
 设计院、施工方、运维方使用不同厂商的软件，
@@ -522,8 +535,8 @@ ABox（场景实例）以毫秒级吞吐滚动更新，规则在二者之间持�
 这是 6.1 模式四的标准画像：强监管、条款多、人工核查慢且要留痕。
 
 两处断层指向同一条药方：先用本体把模型词汇对齐（语义集成打底），
-再把条款写成可执行的规则（合规审计落地）。
-仓库文件给出的解决方案正是这条两段式路线：
+再把条款写成候选规则；只有进入 Semantica 包、绑定合法来源与 oracle 后才可执行。
+包内教学资产给出的解决方案正是这条两段式路线：
 将 BIM 模型转换为 IfcOWL，建立 BIM 本体定义构件语义，
 用 SWRL 规则做规范检查，用 SPARQL 提取合规报告。
 
@@ -539,10 +552,10 @@ IFC 本身用 EXPRESS 语言书写，社区将其完整翻译成 OWL 本体，
 
 但 IfcOWL 只是「字面翻译」，类型繁多、结构深嵌，直接在其上写规则相当吃力。
 工程上的做法是再建一层\textbf{精简的领域本体}，
-只保留合规检查关心的概念，向下映射到 IfcOWL。仓库文件给出了它的核心类。
+只保留合规检查关心的概念，向下映射到 IfcOWL。包内教学资产给出了它的核心类。
 
 \input{fragments/sec-ch06-bim-ontology-txt-3}
-\snipsource{ch06-applications/examples/bim-ontology.txt}
+\assetsource{ch06}{bim-ontology}
 
 四个类各有讲究。\texttt{BuildingElement}（建筑构件）是物理对象的根；
 \texttt{Wall}（墙体）是典型的可见构件；
@@ -625,10 +638,10 @@ FireDoor \(\equiv\) Door \(\sqcap\) \(\exists\)hasFireRating.FireRating
 
 \subsection{规则库与合规查询}
 
-仓库文件给出两条有代表性的正式规则。
+包内教学资产给出两条有代表性的正式规则。
 
 \input{fragments/sec-ch06-bim-ontology-txt-4}
-\snipsource{ch06-applications/examples/bim-ontology.txt}
+\assetsource{ch06}{bim-ontology}
 
 \textbf{防火规范规则}是最简单的「单实体阈值」形态：
 防火分区 \texttt{?fc} 的面积 \texttt{?a} 超过 2500 平方米即违例。
@@ -647,7 +660,7 @@ FireDoor \(\equiv\) Door \(\sqcap\) \(\exists\)hasFireRating.FireRating
 规则跑完，违例事实已经物化在图里，最后一步是把它们取出来变成审查报告。
 
 \input{fragments/sec-ch06-bim-ontology-txt-6}
-\snipsource{ch06-applications/examples/bim-ontology.txt}
+\assetsource{ch06}{bim-ontology}
 
 这条 SPARQL 是第 4 章句式的直接复用：
 \texttt{WHERE} 里两个三元组模式把「构件——违反的条款——条款描述」连成一行，
@@ -659,7 +672,7 @@ FireDoor \(\equiv\) Door \(\sqcap\) \(\exists\)hasFireRating.FireRating
 
 \subsection{价值与局限：哪些条款难以形式化}
 
-仓库文件记录的效果有三项：
+包内教学资产记录的效果有三项：
 规范检查从人工 \textbf{2 天}缩短到自动 \textbf{30 分钟}，效率提升 96 倍；
 条款覆盖率达到 \textbf{100\%}，机器不会疲劳、不会跳行；
 核心类直接映射 IfcOWL，使设计、施工、运维各阶段共享同一套语义，
@@ -723,7 +736,7 @@ FireDoor \(\equiv\) Door \(\sqcap\) \(\exists\)hasFireRating.FireRating
 
 \subsection{本体骨架：概念与关系}
 
-FMEA 本体的骨架在仓库文件 \texttt{aerospace-fmea.txt} 中列得干净利落，
+FMEA 本体的骨架在包内教学资产 \texttt{aerospace-fmea} 中列得干净利落，
 七个核心类加六条关系，整理成一张表：
 
 \begin{center}
@@ -759,10 +772,10 @@ detectedBy / mitigatedBy & 故障模式 \(\rightarrow\) 探测；影响 \(\right
 
 \subsection{影响传播链精讲}
 
-骨架之上是规则。仓库文件给出三条 SWRL 规则，恰好覆盖三类推理任务。
+骨架之上是规则。包内教学资产给出三条 SWRL 规则，恰好覆盖三类推理任务。
 
 \input{fragments/sec-ch06-aerospace-fmea-txt-3}
-\snipsource{ch06-applications/examples/aerospace-fmea.txt}
+\assetsource{ch06}{aerospace-fmea}
 
 \textbf{第一条规则：从组件故障到系统影响。}
 规则体绑定一个组件 \texttt{?c} 及其故障模式 \texttt{?fm}，
@@ -770,7 +783,8 @@ detectedBy / mitigatedBy & 故障模式 \(\rightarrow\) 探测；影响 \(\right
 故障模式得是堵塞（\texttt{FailureMode\_Blockage}）；
 满足即把 \texttt{?fm} 归入「系统影响：压力丧失」类。
 这是领域知识的最小颗粒：「液压泵堵塞会导致系统失压」，
-原本写在老分析师的经验里，现在写成了机器可执行的一行。
+原本写在老分析师的经验里，现在被显式化为一行候选规则；ch06 尚无规则 runner，
+所以它目前可评审但不可据此声称机器已执行。
 
 \textbf{第二条规则：从系统影响到飞行影响。}
 压力丧失 \texttt{?se} 若波及（\texttt{affects}）某个飞行控制面 \texttt{?cs}，
@@ -788,7 +802,7 @@ detectedBy / mitigatedBy & 故障模式 \(\rightarrow\) 探测；影响 \(\right
 该组件挂着故障模式 \texttt{?fm}，
 则断言 \texttt{requiresFMEAUpdate(?dc, ?fm)}——
 「这次变更需要复查哪些 FMEA 条目」从两周的人工排查变成一次查询。
-仓库文件记载这项能力把设计变更后的 FMEA 更新周期从\textbf{两周压缩到两天}，
+包内教学资产记载这项能力把设计变更后的 FMEA 更新周期从\textbf{两周压缩到两天}，
 而且给出的是\textbf{完备清单}：推理器沿着 \texttt{affects} 与
 \texttt{hasFailureMode} 的边走，到得了的全到，不会像人一样凭印象挑着查。
 
@@ -802,7 +816,7 @@ detectedBy / mitigatedBy & 故障模式 \(\rightarrow\) 探测；影响 \(\right
 把镜头拉近到一个具体故障，看本体里的一次完整推演。
 
 \input{fragments/sec-ch06-aerospace-fmea-txt-5}
-\snipsource{ch06-applications/examples/aerospace-fmea.txt}
+\assetsource{ch06}{aerospace-fmea}
 
 这份示例是一条教科书式的 FMEA 记录，逐行翻译成本体断言：
 个体 \texttt{HydraulicPump\_01} 属于液压泵类，
@@ -837,7 +851,7 @@ FMEA 本体最大的红利在\textbf{跨型号复用}。
 新机型启动 FMEA 时先\textbf{继承}通用故障知识库
 （组件类的典型故障模式、影响模板、探测与缓解手段），
 分析师的工作从「从零编表」变成「核对差异、补充新增」。
-仓库文件记载的总账：分析周期从\textbf{六个月}缩短到\textbf{六周}（压缩 75\%），
+包内教学资产记载的总账：分析周期从\textbf{六个月}缩短到\textbf{六周}（压缩 75\%），
 故障模式识别量反而\textbf{提升 40\%}——
 快了反而更全，因为推理器穷举传播路径不知疲倦，
 而人在六个月的表格马拉松里注定会漏。
@@ -987,11 +1001,11 @@ BIM 合规 & IFC 模型、规范条款库；派生分类加 SWRL 检查加 SPARQ
   让一线人员说出「最希望系统替你回答的问题」，按价值排序取前几条；
 \item \textbf{圈定最小概念集}：只为这几条 CQ 建 TBox——
   四个案例的顶层类都不超过十个，你的第一版也不该超过；
-\item \textbf{写 2--3 条规则跑通闭环}：选最痛的一类违例或冲突，
+\item \textbf{为 2--3 条规则建立可判定闭环}：选最痛的一类违例或冲突，
   规则照抄「规则体描述坏组合、规则头贴标签」的骨架，
   用真实历史数据回放验证——历史上出过的事故能被检出，闭环才算通；
-\item \textbf{用 CQ 验收}：每条 CQ 翻译成 SPARQL 跑通，答错的回去改模型，
-  这是第 8 章评估方法的最简版。
+\item \textbf{用 CQ 验收}：每条 CQ 同时绑定查询、正例、单因反例与 exact oracle；
+  通过 Semantica runner 复算，答错的回去改 package delta。
 \end{enumerate}
 
 \textbf{阶段三：扩展运营（第 8--9 步）}
@@ -1042,9 +1056,9 @@ BIM 合规 & IFC 模型、规范条款库；派生分类加 SWRL 检查加 SPARQ
 
 \begin{noteblock}
 \textbf{第一期不要超过一个季度。}
-四个案例的共同节奏是「小闭环先跑通、价值先可见」：
+四个案例倡导的节奏是“先定义小闭环、再用证据证明价值”：
 制造案例先上三条冲突规则，BIM 案例先做量化阈值类条款。
-一个季度内交付不了可演示闭环的方案，多半是范围切大了——
+一个季度内交付不了带 exact oracle 的可复算闭环，多半是范围切大了——
 回到检查单第 5 步，把概念集再砍一半。
 \end{noteblock}
 
@@ -1071,15 +1085,13 @@ CQ 与范围控制来自第 3 章，类与属性的表达来自第 4 章，
 规则、传递属性与前向链来自第 5 章，分层与开放世界的底层逻辑来自第 2 章；
 而它们暴露的新问题——数据管道、版本治理、质量评估——
 正是第 7 章知识图谱管理与第 8 章评估方法的开场白。
-第 9 章将以制造调度为蓝本，从零写出一个可单步调试的完整系统，
-本章读出的骨架届时会变成你亲手敲下的代码。
+第 9 章将以制造调度为蓝本展示一个 partial/blocked 的 Semantica package；
+本章骨架只有补齐可判定输入、反例、oracle 与能力 profile 后才会成为可执行语义。
 
 给动手派读者一条练习路线：
-先把四个仓库文件整篇通读一遍——正文为叙事顺畅而省略的属性清单与注释细节都在里面；
-然后任选一个最贴近你行业的案例，把它的类层次与规则录入 Protégé，
-造三五个个体、跑一遍推理，亲眼看看冲突或违例标签是怎么被贴上的；
-最后用 6.7 的检查单对自己的领域做一次纸面推演，写出主导模式判定、
-三判据结论与 5 条 CQ——这份一页纸的产出，就是你下一个本体项目的种子。
+先查看 ch06 manifest 和四份 case asset，确认场景/oracle 为 absent；然后任选一个案例，
+用 6.7 检查单写出范围、5 条 CQ、一个正例、一个单因反例和可判定 oracle 草案。
+草案只是 proposal；若要获得执行地位，必须作为受治理 delta 进入 Semantica ch06 包。
 
 \subsection*{思考题}
 
@@ -1115,25 +1127,25 @@ CQ 与范围控制来自第 3 章，类与属性的表达来自第 4 章，
 \textbf{做题建议。}
 每题末尾的提示只指方向，不给答案；
 动笔前先回到对应小节把片段重读一遍，
-第 2、5、8 题写完后强烈建议录入 Protégé 实际跑一跑——
-规则「看着对」与「跑得对」之间的距离，正是本章想让你亲手量一次的。
+第 2、5、8 题写完后，为每条规则补一对正/单因反例与预期结论；
+规则“看着对”与“具备可执行合同”之间的距离，正是本章要量出的部分。
 \end{noteblock}
 
-\subsection*{本章文件指引}
+\subsection*{本章包资产与缺口指引}
 
-本章全部代码片段节选自下列四个仓库文件；
-它们是案例的「原始档案」，注释里保有正文未及展开的细节，
+本章全部片段来自 ch06 包内四份 case asset；它们是教学档案，
 建议对照正文整篇通读。
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.40\linewidth}X@{}}
 \toprule
-\normalfont\textbf{文件（ch06-applications/examples/）} & \textbf{内容与阅读建议} \\
+\normalfont\textbf{Semantica asset/scenario} & \textbf{内容与阅读建议} \\
 \midrule
-manufacturing-scheduling.txt & 调度本体知识流架构、五条 CQ、完整类层次与属性清单、三条 SWRL 冲突规则与量化效果；配合 6.2 与第 9 章实战阅读 \\
-autonomous-driving.txt & 场景图 100 毫秒更新流程、参与者与道路类层次、空间关系属性、TTC 与行人危险区规则；配合 6.3 阅读 \\
-bim-ontology.txt & 两处断层、IfcOWL 方案四步、核心类 Manchester 语法、防火与节能检查规则、SPARQL 合规查询；配合 6.4 与第 4 章查询语法阅读 \\
-aerospace-fmea.txt & FMEA 七类六关系、三条影响传播与变更追溯规则、液压系统完整示例、量化效果；配合 6.5 与第 5 章规则机制阅读 \\
+manufacturing-scheduling & 调度架构、CQ、类/属性与 SWRL 草案；教学 case，不是执行 ontology/rules \\
+autonomous-driving & 场景图、空间关系、TTC 与危险区草案；教学 case \\
+bim-ontology & IfcOWL 路线、Manchester 与合规查询草案；教学 case \\
+aerospace-fmea & FMEA 概念、传播与变更追溯草案；教学 case \\
+OE-V1-CH06-SCN-END-TO-END-001 & status/oracle 均 absent；执行请求应 fail closed \\
 \bottomrule
 \end{tabularx}
 \end{center}

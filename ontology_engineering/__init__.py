@@ -1,0 +1,41 @@
+"""Thin source-corpus adapter for Semantica's built-in ontology packages."""
+
+from .semantica_runtime import (
+    RUNTIME_ID,
+    RuntimeSourceLock,
+    chapter_asset_text,
+    create_package_runner,
+    create_runtime,
+    governed_ontology_main,
+    list_chapter_packages,
+    list_domain_packages,
+    normative_engraver_main,
+    package_asset_text,
+    read_migration_map,
+    read_runtime_source_lock,
+    resolve_migration_successor,
+    run_governance_acceptance_scenario,
+    run_package,
+    validate_chapter_registry,
+    validate_domain_packages,
+)
+
+__all__ = [
+    "RUNTIME_ID",
+    "RuntimeSourceLock",
+    "chapter_asset_text",
+    "create_package_runner",
+    "create_runtime",
+    "governed_ontology_main",
+    "list_chapter_packages",
+    "list_domain_packages",
+    "normative_engraver_main",
+    "package_asset_text",
+    "read_migration_map",
+    "read_runtime_source_lock",
+    "resolve_migration_successor",
+    "run_governance_acceptance_scenario",
+    "run_package",
+    "validate_chapter_registry",
+    "validate_domain_packages",
+]

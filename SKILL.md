@@ -5,245 +5,200 @@ description: Use when Codex needs source-grounded answers from the bundled two-v
 
 # Ontology Engineering（两卷一体）
 
-Use this skill to answer ontology and engineering-ontology questions from the
-bundled books first, then add general reasoning only when clearly marked as such.
+Use this skill to answer from the bundled books first and to corroborate executable
+claims through Semantica's built-in packages.
 
-本 skill 打包两卷一体的书系：
+本 skill 的基本边界是：**石头只有两卷书，水是 Semantica**。
 
-- **第一卷《工程本体论》**（理论卷，references/ontology-engineering-book/）：
-  本体论基础、方法论、语言、推理、知识图谱、本体×LLM。
-- **第二卷《产品可信工程》**（实战卷，references/product-trustworthiness-book/）：
-  第一卷的实战续篇。前十章按 ISO 26262 生命周期讲透 AI 之前的传统功能安全
-  最佳实践；后十章把同一套工程逐章本体化（主张/身份/治理/情境危害/需求追溯/
-  测量证据/版本变化/依赖独立/制造现场/发布保证十个独立本体），是
-  "如何把一部工程规范本体化"的完整示范。卷内地图见
-  `references/product-trustworthiness-source-map.md`（含人物与事故索引、使用纪律）。
+- 第一卷《工程本体论》位于 `references/ontology-engineering-book/`，提供理论、
+  方法、语言、推理、知识图谱与 ontology-guided LLM/Agent 的书源。
+- 第二卷《产品可信工程》位于 `references/product-trustworthiness-book/`，以前十章
+  功能安全工程和后十章规范本体化示范给出完整案例。
+- 两卷共 29 章对应 Semantica 的 29 个 built-in chapter packages；规范转述层对应
+  `semantica.chapter_packages.vol2.normative` domain package。
+- 本体、CQ、SHACL、SPARQL、案例、规则、合同、版本、PROV 和执行 receipt 的唯一
+  可执行正本都在 Semantica。ontology-engineering 只保留书、来源地图、检索和教学薄入口。
 
-**Routing**：概念/方法/语言/推理问题 → 第一卷；功能安全、ISO 26262、HARA、
-ASIL、度量、安全案例、产品可信、"规范如何本体化" → 第二卷；两卷各章一一
-呼应处（如第一卷 ch03 方法论 ↔ 第二卷后十章的最小概念化）可对照引用。
-第二卷案例（EPS-RC17/ENV-01/全部人物事故）均为合成教学材料，不得作为真实
-产品结论引用；精确 ISO 条款坐标只存在于另行受控、由
-`ONTOLOGY_ENGINEERING_AUTHORING_ROOT` 指向的工程正本来源账中，不要凭记忆报条款号。
+不存在第二套本体实现或平行资产目录；Semantica 运行失败时直接阻断。
+
+## Routing
+
+- 概念、方法、语言、推理、知识图谱、ontology × LLM/Agent：先查第一卷。
+- 功能安全、ISO 26262、HARA、ASIL、硬件度量、安全案例、产品可信：先查第二卷。
+- “怎样把一部工程规范本体化”：对照第二卷后十章与 Semantica 的 Vol.2 packages。
+- 行业本体持续内化：再使用 `skills/domain-ontology-loop/SKILL.md`。
+- 把另一部标准做成书：再使用 `skills/standard-to-book/SKILL.md`。
+
+第二卷的 EPS-RC17、ENV-01、人物、事故和数值都是合成教学材料，不能作为真实
+产品结论。精确 ISO 条款坐标只可回到用户合法持有、由
+`ONTOLOGY_ENGINEERING_AUTHORING_ROOT` 指向的受控来源账核对；不要凭记忆报条款号，
+也不要把书中转述冒充标准原文。
 
 ## Source Grounding Rule
 
-Before giving a substantive answer, locate relevant local evidence.
+Before giving a substantive answer, locate the relevant book evidence.
 
-1. Read `references/source-map.md`（第一卷）or `references/product-trustworthiness-source-map.md`（第二卷）when you need the chapter map or example map.
-2. Search the local sources with:
+1. Read `references/source-map.md` for Vol.1 or
+   `references/product-trustworthiness-source-map.md` for Vol.2.
+2. Search the two book roots:
 
    ```bash
-   python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py "<query>"
+   python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py \
+     --scope book "<query>"
    ```
 
-3. Read the most relevant files/line ranges returned by the script.
-4. Answer with concrete source anchors such as chapter names, file paths, and
-   example files. Do not quote long passages.
-5. If book evidence is thin or absent, say that the bundled book did
-   not cover the point and separate any general ontology knowledge from the
-   source-grounded answer.
+3. Read the most relevant chapter `README.md`, `chapter.md`, handbook source, glossary,
+   proposition index, or book PDF page when layout matters.
+4. Answer with concrete book anchors. Do not quote long passages.
+5. If the book evidence is thin or absent, say so and label any added general knowledge.
+6. If a claim is executable, run the corresponding Semantica package and report its
+   package ID, scenario, oracle result and receipt/release status separately from the book anchor.
 
-This skill is intended to prevent empty ontology talk. Prefer "the book's Ch04
-OWL examples model X this way" over generic definitions when a local source
-exists.
+Book prose is source evidence. A Semantica execution is corroborating evidence; it does not
+turn a synthetic case into a real product fact or grant compliance/release authority.
 
 ## Source Roots
 
-Bundled source roots:
+The only bundled primary source roots are:
 
-- `~/.codex/skills/ontology-engineering/references/ontology-engineering-book`（第一卷）
-- `~/.codex/skills/ontology-engineering/references/product-trustworthiness-book`（第二卷，
-  含成书 PDF 与全书图谱计划）
-- `~/.codex/skills/ontology-engineering/references/iso-normative-ontology`（ISO 26262
-  本体化刻录层：条款个体 TTL + 卡片视图。回答条款级问题时优先查此层的
-  `partN-cards.md` / `partN-*.ttl`；卡片给出模态与中文转述，锚点指向本地
-  受控提取件。设 `ISO_SOURCE_ROOT` 可用 `scripts/engrave_iso.py` 重刻/扩刻。
-  转述非原文；引用时报"条款号+转述"，原文核对回本地提取件。）
+- `~/.codex/skills/ontology-engineering/references/ontology-engineering-book`
+- `~/.codex/skills/ontology-engineering/references/product-trustworthiness-book`
 
-Optional external example root:
+Do not expect an OE-local ontology, fixture, query, shape, CQ or normative-package directory.
+Those are resolved from Semantica's allowlisted package registry. The exact locally built
+Semantica source and wheel are pinned by `runtime/semantica-source-lock.json`; do not replace
+that lock with a moving branch name or an unverified installed version.
 
-- If a user separately has `cauchyx-ai`, set `ONTOLOGY_ENGINEERING_ROOT` to the
-  workspace that contains it and run `--scope pde`.
-- This distributable package intentionally does not bundle `cauchyx-ai`.
+Optional applied cases are not book evidence:
 
-Optional concrete CAD Agent case:
-
-- Set `CAD_AGENT_ROOT` to an authorized local `cad-agent` checkout and run `--scope cad`.
-- This distributable package intentionally does not bundle CAD artifacts or
-  video evidence.
+- With an authorized local CauchyX checkout, set `ONTOLOGY_ENGINEERING_ROOT` and use
+  `--scope pde`.
+- With an authorized local CAD Agent checkout, set `CAD_AGENT_ROOT` and use `--scope cad`.
 
 ## Answer Workflow
 
-Teaching-style answering (generalized procedure, benchmark-driven): when
-answering ISO/术语/概念 questions, do not stop at the definition card —
-walk the case graph to find the book's teaching scene:
-
-1. 词条卡若带 `书中讲法` 行（即 `isoN:taughtBy` 边，由刻录时按
-   `teaching-cases.ttl` 的 teachesConcepts 加权交集计算），直接引用该案例。
-2. 无边的词条走兜底遍历：词条 → servesChapter → 在
-   `references/iso-normative-ontology/teaching-cases.ttl` 中取该章案例，
-   按关注相近选例。
-3. 找命题原句用 `references/product-trustworthiness-book/propositions-index.md`
-   （全书命题单行索引，含出处章号——近义命题以此区分，勿凭印象引用）。
-
-此程序对任何新刻录的 Part、新问题同样适用（机制泛化，非逐条映射）。
-千题评测：事实 99.8% 而讲例率 75%——差距全在"只查卡、不讲例"。
-
-4. **有 runnable 就跑**（与查卡同级，不是可选附加）：问题落在
-   `demos/README.md` 覆盖的主题上时，跑对应 demo 并引用其真实输出作为讲例
-   ——一次当场执行的门禁拒绝或推理复算，是最强的讲例形态；
-   demo 输出自带书内锚点，讲例与出处一次到位。
-
 For concept questions:
 
-1. Search the concept and likely synonyms in Chinese and English.
-2. Prefer the book chapters first.
-3. Use CauchyX PDE Agent only as an optional external applied example when it
-   is locally available.
-4. Explain the idea in plain Chinese when the user asks in Chinese.
+1. Search Chinese and English synonyms.
+2. Prefer the relevant book chapter and glossary.
+3. Explain plainly, then identify assumptions and open/closed-world boundaries.
+4. Use an applied case only when clearly labelled as external.
 
 For engineering design questions:
 
-1. Search methodology, language/tooling, reasoning, validation, and application
-   chapters.
-2. Turn the answer into an implementable artifact: classes/properties, competency
-   questions, validation constraints, SPARQL checks, or agent routing rules.
-3. Mention which chapter or example supports each design choice.
+1. Search methodology, modeling, reasoning, validation and application chapters.
+2. Turn the answer into implementable semantics: classes/properties, CQs, constraints,
+   named queries, cases, rules or routing contracts.
+3. Put executable semantics in a Semantica package, never beside the book as a second truth source.
+4. Distinguish semantic authority, fact authority and decision authority.
 
-For ontology-guided agent or LLM questions:
+For ontology-guided Agent or LLM questions:
 
-1. Search Ch08 first.
-2. If available, search an external CauchyX PDE Agent for concrete
-   implementation patterns:
-   `ontology/pde_core.ttl`, `sparql/*.rq`, `shapes/*.shacl`,
-   `src/ontology_router.py`, and `test_ontology.py`.
-3. Explain the control loop as: natural-language input -> ontology normalization
-   -> consistency/constraint checks -> solver/tool routing -> provenance report.
+1. Search Vol.1 Ch08, plus Ch03 for scope/CQs and Ch07 for validation.
+2. Explain the control loop as natural-language input → normalization → semantic checks →
+   tool routing → provenance/receipt.
+3. Keep the Agent orchestrator, read-only semantic interface and privileged executor as
+   separate control surfaces. Ontology conformance never grants mutation authority.
 
-For CAD-agent ontology questions or video-driven Agent evolution:
+For CAD/video-driven evolution, treat video as candidate evidence. Require actual reproduction,
+deterministic checks, positive/negative/ambiguity/prior-release regressions, review and explicit
+controlled-application authorization before accepting a lesson delta.
 
-1. Search Ch03, Ch07, and Ch08 for competency questions, SHACL quality gates,
-   and ontology-guided agent patterns.
-2. Search the local CAD case with `--scope cad`, especially
-   `ontology/agent.ttl`, `shapes/cad-agent.shacl.ttl`, `sparql/cq11-*.rq` through
-   `cq14-*.rq`, `src/cad_agent/ontology_router.py`,
-   `src/cad_agent/evolution.py`, and `docs/video-driven-self-evolution.md`.
-3. Keep the Agent orchestrator, read-only semantic MCP, and privileged Fusion
-   executor as separate control surfaces. Ontology conformance never grants CAD
-   mutation authority.
-4. Treat video as candidate evidence. Agent evolution requires actual Fusion
-   reproduction, deterministic checks, positive/negative/ambiguity/prior-release
-   regressions, independent review, and explicit controlled-application
-   authorization.
+## Runnable Corroboration（薄入口 → Semantica）
 
-For actual PDE solving, simulation, routing validation, or PhysicsNeMo/CUDA
-execution, use the separate `$cauchyx-pde` skill when installed after using
-this skill for the ontology framing.
-
-## Runnable Corroboration（书 ↔ 代码相互佐证，demos/）
-
-本 skill 内嵌可执行运行时（Semantica 0.6.5 + pyshacl + rdflib），把书中
-关键论断做成「论断 → 执行 → 佐证结论」的 demo。当回答涉及以下主题且用户
-关心"这在真实工具里是否成立"时，优先运行对应 demo 而不是只引书。
-demo 全表（含每个 demo 佐证哪条论断、用什么引擎）见 `demos/README.md`；
-按主题速查：
-
-- 第一卷：ch02 单调/OWA-CWA、ch03 CQ 即验收、ch04/ch07 开放世界 vs SHACL、
-  ch05 前向链复算 → `demos/vol1_ch02_*` `vol1_ch03_*` `ch04_*` `ch05_*`
-- 第二卷生命周期：HARA 判定链（ch04/ch14）、硬件度量复算（ch06/ch16）、
-  ISO 刻录纪律 → `demos/vol2_hara_*` `vol2_metrics_*` `vol2_iso_*`
-- 第二卷十大本体：主张（ch03/ch11）、身份（ch12）、治理（ch13）、需求追溯
-  （ch15）、变化（ch17）、依赖独立（ch18）、现场（ch19）、发布保证（ch20）
-  → `demos/vol2_claim_*` `vol2_ch12_*` … `vol2_release_*`
-- 行业本体迭代内化（学新不忘旧：冲突判决 + 版本谱系 + CQ 防遗忘回归）
-  → `demos/internalization_loop.py`，模板见 `skills/domain-ontology-loop/`
-
-当用户想把本仓库当模板、用自己的工程实践（如 CAD 课程、产线质检）持续
-构建行业本体时，路由到 `skills/domain-ontology-loop/SKILL.md`；
-想把一部标准变成一本书时，路由到 `skills/standard-to-book/SKILL.md`。
+`demos/` contains teaching launchers, not semantic implementations. A launcher selects a stable
+package/scenario and delegates to Semantica's `SemanticPackageRunner`; its RDF/OWL, CQ, SPARQL,
+SHACL, facts, rules, cases, exact oracle, lifecycle record and receipt remain inside Semantica.
 
 ```bash
-bash runtime/setup_runtime.sh          # 一次性
-runtime/.venv/bin/python demos/<demo>.py   # 退出码 0=佐证成立
+bash runtime/setup_runtime.sh
+runtime/.venv/bin/python demos/<demo>.py
 ```
 
-纪律：**书讲的 ≠ 代码都能做**。引用工具能力前先看
-`demos/README.md` 的「书 ↔ 代码 诚实映射表」——明确了哪些概念有可执行
-对应（OWL 生成、SHACL 校验与自动派生、前向链、KG、PROV、决策审计）、哪些
-没有（DL tableau、SWRL 内建、OntoClean）、哪些是坑（semantica 的
-SPARQLReasoner 是占位实现，SPARQL 一律用 rdflib）。demo 可当回归测试：
-升级 semantica 版本前先全部跑绿。
+Discover packages directly from the installed, source-locked Semantica build:
 
-## SkillOpt-Style Optimization Gate
+```bash
+runtime/.venv/bin/semantica package list --json
+runtime/.venv/bin/semantica package show \
+  semantica.chapter_packages.vol2.ch14 --json
+```
 
-Treat this skill document as trainable state: make small bounded edits, then
-validate them before keeping them.
+Python, CLI and MCP are thin adapters over the same package runner. MCP exposes the package
+operations `list_chapter_packages`, `get_chapter_package`, `run_chapter_package` and
+`verify_chapter_package`; it must not introduce another execution path.
 
-Use the local gate after any non-trivial edit to this skill, source map, or
-search script:
+Read `demos/README.md` for the launcher-to-package map. A scenario can pass its declared oracle
+while release verification remains blocked by an unsupported capability or missing evidence;
+report both statuses. Never turn `blocked`, `partial`, `placeholder`, `absent` or an unsupported
+reasoning profile into green.
+
+Semantica's supported runtime surface includes lossless RDF Dataset handling, SPARQL query/update,
+SHACL validation, bounded positive monotonic forward rules, snapshots/diffs, PROV and release
+receipts. Full DL/tableau reasoning, general SWRL built-ins, non-monotonic/default, temporal and
+probabilistic reasoning are not implied; requests outside declared capabilities fail closed.
+
+## Domain Evolution and New Books
+
+Use `skills/domain-ontology-loop/` when practice should evolve a domain ontology. Its OE script is
+a thin entry to Semantica's governed lifecycle: baseline snapshot → delta → reasoned conflict
+verdict → version/PROV commit → old-CQ regression.
+
+Use `skills/standard-to-book/` for a new standard/book. The new readable book and source map belong
+here; its executable package must be registered and released in Semantica. A package-local copy in
+OE is not an acceptable substitute.
+
+## Zero-Exception Gate
+
+The final architecture is enforced, not advisory:
+
+- OE executable code may import Semantica only through its designated thin bootstrap.
+- OE must not import or invoke RDFLib, pySHACL, PyOxigraph, owlready2, Jena, dynamic backends or
+  subprocess bypasses.
+- OE must not retain executable `.ttl`, `.owl`, `.rq`, `.sparql`, SHACL, rule or fixture copies.
+- Runtime creation has one authorized Semantica profile and no fallback.
+- Unknown packages/scenarios, missing assets, hash mismatch and unsupported capabilities block.
+- Registry/package/source/wheel/input/output hashes and PROV receipts bind every executable claim.
+
+Run the repository gate after changes; any finding or allowlist exception means the migration is
+not complete.
+
+## Skill Evaluation
+
+After changing this skill, either source map, or retrieval behavior:
 
 ```bash
 python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py
 python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py --split test
 ```
 
-Use `valid` cases while iterating and `test` cases before delivery. Accept an
-edit only if both gates pass. If a case fails, inspect the missed query and fix
-the retrieval workflow, source map, or search keywords instead of adding broad
-ontology prose to `SKILL.md`.
-
-If an authorized CAD Agent checkout is available, also set `CAD_AGENT_ROOT` and
-run `--split cad`. Treat that split as optional external-case validation, not as
-a portable bundled gate.
+Use the valid split while iterating and the held-out test split before delivery. Fix missed source
+anchors or retrieval terms; do not hide misses by adding broad generic prose. Optional CAD/PDE
+splits validate external cases only and are not portable book gates.
 
 ## Useful Commands
 
-Search broad local sources:
-
 ```bash
-python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py "能力问题 competency question"
-```
+# Bilingual book search
+python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py \
+  --scope book "能力问题 competency question"
 
-Search only the book:
+# Machine-readable search results
+python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py \
+  --scope book --json "GraphRAG Text2SPARQL"
 
-```bash
-python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py --scope book "OntoClean 刚性 统一性"
-```
-
-Search an optional external CauchyX/PDE Agent:
-
-```bash
-ONTOLOGY_ENGINEERING_ROOT=/path/to/workspace python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py --scope pde "SHACL solver routing provenance"
-```
-
-Search the concrete CAD Agent case:
-
-```bash
-CAD_AGENT_ROOT=/path/to/cad-agent python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py --scope cad "Fusion evolution SHACL regression authorization"
-```
-
-Return machine-readable results:
-
-```bash
-python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py --json "GraphRAG Text2SPARQL"
-```
-
-Run the local validation gate:
-
-```bash
-python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py
-python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py --split test
-CAD_AGENT_ROOT=/path/to/cad-agent python3 ~/.codex/skills/ontology-engineering/scripts/eval_ontology_skill.py --split cad
+# Optional applied cases
+ONTOLOGY_ENGINEERING_ROOT=/path/to/workspace \
+  python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py \
+  --scope pde "solver routing provenance"
+CAD_AGENT_ROOT=/path/to/cad-agent \
+  python3 ~/.codex/skills/ontology-engineering/scripts/search_ontology_sources.py \
+  --scope cad "Fusion evolution SHACL regression authorization"
 ```
 
 ## Response Shape
 
-Keep responses direct:
-
 - Start with the operational answer.
-- Then identify the local evidence used.
-- Then provide the concept, design, or example.
-- For implementation tasks, include the next concrete artifact or command.
-
-When source grounding matters, include a short "依据" line with local file paths.
+- Give a short `依据` line with book path/chapter anchors.
+- Separate book explanation, Semantica execution result and any general inference.
+- For implementation tasks, name the Semantica package/API and the next concrete artifact.
+- State unsupported capability, synthetic-data boundary and decision authority explicitly.

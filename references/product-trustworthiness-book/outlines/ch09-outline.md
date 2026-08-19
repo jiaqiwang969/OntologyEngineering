@@ -1,6 +1,10 @@
 ---
 contract_version: 1
 chapter: ch09
+executable_package_id: semantica.chapter_packages.vol2.ch09
+executable_authority: semantica_only_no_book_fallback
+package_status: partial
+release_status: blocked
 target_hanzi: 30000
 section_budgets:
   - heading: "字段已经填齐，为什么 EPS-CAL-B4 还不能签字？"
@@ -62,7 +66,7 @@ source_anchors:
     block: 4
     bbox: [114, 663, 650, 682]
 planned_outputs:
-  - functional-safety-book/ch09-production-operation/chapter.md
+  - references/product-trustworthiness-book/ch09-production-operation/chapter.md
 gate_count_policy: runtime-derived
 question_count_policy: learning-objective-driven
 figure_policy: engineering-need-driven
@@ -88,11 +92,14 @@ figure_policy: engineering-need-driven
 | 9.6 一个 PASS，凭什么能绑定到这一颗 ECU？ | 6.3.1、6.4.1.1、6.4.1.5、追溯标识和目标基线 | 定义/执行/报告/放行四层证据链及当前准入门禁缺口；再问离厂后谁接手 |
 | 9.7 车辆离开工厂后，谁继续守住同一个安全前提？ | 服务刷写、用户信息、报废/救援说明与 7.4.1.2 | 配置纪律穿越生命周期，说明与执行记录仍分层；再问现场数据何时成为行动 |
 | 9.8 现场数据什么时候才算进入了行动闭环？ | 7.4.1.1 的提供—分析—触发行动 | 闭环与变更/PiU 接口，并暴露 EPS 当前仅有占位挂接；再问机器能守哪些边界 |
-| 9.9 本体化实践：机器与签字人最后各能批准什么？ | CQ、Shape、fixture、当前 ABox 事实与全章 Hold | `EPS-S09` 候选、单因变式、窄签字与 ch10 支撑过程接力 |
+| 9.9 本体化实践：机器与签字人最后各能批准什么？ | Semantica ch09 contract/CQ/scenario/oracle 与全章 Hold | `EPS-S09` 候选、单因变式、窄签字与 ch10 支撑过程接力 |
 
 ## 保留与迁移
 
-正文保留 Part 7 的规划→生产→运行/服务/报废主线、特殊特性与安全机制分界、控制计划五要素、控制报告三要素、偏差四步、已批准配置/授权偏差两分支、现场监控三段、EPS Draft ABox 与六类现有门禁。旧稿的“新词地图”、七项/十项/九项逐条搬运、PFMEA/PPAP 小百科、长 TTL/Shape 节选、文件导航、多轮要点回顾不再充当骨架；细节存回 README、例文、来源锚点和测试文件。
+正文保留 Part 7 的规划→生产→运行/服务/报废主线、特殊特性与安全机制分界、控制
+计划五要素、控制报告三要素、偏差四步、已批准配置/授权偏差两分支、现场监控三段
+和 EPS Draft 教学状态。六类机器合同只在 Semantica ch09 package 执行；当前为
+`partial`、release `blocked`，书稿不保存第二套规则、数据、查询或运行入口。
 
 ## 图的冲突落点
 
@@ -102,7 +109,10 @@ figure_policy: engineering-need-driven
 
 ## 本体化实践的验收边界
 
-`CQ-CH09-01/02/03` 分别核对特殊特性—控制—需求追溯、从安全目标到生产控制的路径和 Draft 计划的步骤定义；`CQ-CH09-04` 只计数当前教学图中登记的 `ProductionExecution` 实例，不使用“真实执行”越界描述。Shape 守定义/执行分离、Approved 计划完整性、报告三要素、配置授权、现场问题行动和服务/报废记录；当前尚不守“执行所引用的过程定义必须由 Approved 计划文档化”的 §6.4.1.1 准入闭环。
+Semantica ch09 CQ registry 分别询问特殊特性—控制—需求追溯、安全目标到生产控制的
+路径、Draft 计划步骤及声明图中的 `ProductionExecution` 计数；计数不得被写成真实执行。
+场景的精确义务与已知缺口只以源锁定 package manifest/oracle 为准，其中 §6.4.1.1
+准入闭环仍是开放项，release 因而保持 `blocked`。
 
 ## 练习配置
 
@@ -110,7 +120,9 @@ figure_policy: engineering-need-driven
 
 ## 字段已经填齐，为什么 EPS-CAL-B4 还不能签字？
 
-用 `ProductionControlPlan_Draft` 的字段齐全与桌面 B4/B3 红行制造冲突，把一个“签字”拆成控制定义、生产准备和某颗产品通过三种主张；每项 Hold 都写明证据关闭条件，不把 ABox 的 0 执行改写成现实世界的 0。
+用 `ProductionControlPlan_Draft` 的字段齐全与桌面 B4/B3 红行制造冲突，把一个“签字”
+拆成控制定义、生产准备和某颗产品通过三种主张；每项 Hold 都写明证据关闭条件，
+不把声明图中的 0 个执行实例改写成现实世界的 0 次执行。
 
 ## 从开发交到产线的，到底不能少哪些东西？
 
@@ -138,8 +150,12 @@ figure_policy: engineering-need-driven
 
 ## 现场数据什么时候才算进入了行动闭环？
 
-以低速助力迟滞工单走完提供可分析数据、分析并允许多种结果、对已识别问题触发行动；说明数据偏差、分析节奏、车辆与过程双向行动、PiU 接口，以及当前模型缺少独立分析对象的断口。
+以低速助力迟滞工单走完提供可分析数据、分析并允许多种结果、对已识别问题触发行动；
+说明数据偏差、分析节奏、车辆与过程双向行动、PiU 接口，以及 Semantica ch09 当前
+package 尚未覆盖独立分析对象的断口。
 
 ## 本体化实践：机器与签字人最后各能批准什么？
 
-收窄 CQ-CH09-04 的自然语言，区分开放世界与局部闭世界、直接要求/本书投影/EPS 策略；用逐配置混合授权、孤立报告和现场空集等单因反例量出门禁宽度，最终只签与证据同宽的 `EPS-S09` 候选。
+以 Semantica ch09 已登记场景区分开放世界与局部闭世界、直接要求/本书投影/EPS
+策略，并用单因反例量出已编码合同宽度。最终只签与证据同宽的 `EPS-S09` 候选；
+scenario 通过不覆盖独立的 blocked release verdict。

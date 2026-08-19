@@ -13,26 +13,42 @@ Use default deny and an explicit public allowlist.
 - reference images or outputs with unclear input rights;
 - unpublished review comments and identity-bearing metadata.
 
-Store these in a separate controlled root. Public manifests use logical IDs and hashes, never private
-locations or verbatim restricted text. Package-level denylisted paths are emergency protection only;
-never treat `.gitignore` as permission to co-locate private evidence with the public book.
+Store them in a separate controlled root. Public registers use logical IDs and
+hashes, never private locations or verbatim restricted text. A denylist is
+emergency protection, not permission to co-locate private evidence.
+
+## The semantic boundary
+
+The book is the external specification. Do not publish book-local ontology,
+CQ, shape, query, case, rule, fixture or runner payloads. These are not merely
+private: they are architecturally forbidden because Semantica is their single
+authoritative and executable home.
+
+The public book may contain stable Semantica IDs, package proposal/binding
+metadata, an artifact/source lock, a native execution receipt and its release
+verdict. All OntologyEngineering calls into Semantica must be routed through
+`ontology_engineering.semantica_runtime`; no direct backend import is allowed.
 
 ## Allow only after review
 
-- original explanations and propositions;
-- synthetic cases clearly marked as synthetic;
-- self-authored ontology, queries, constraints, fixtures and scripts;
+- original explanations and non-quoting proposition summaries;
+- narrative synthetic examples clearly marked as synthetic;
+- source/chapter/proposition maps containing logical IDs and hashes;
 - figures whose inputs, identity risks and rights were reviewed;
-- cleaned PDFs and assets with explicit release status.
+- cleaned books, the routing Skill and Semantica evidence with explicit release status.
 
 ## Provider boundary
 
-Image or language model providers are external dependencies. Open-source the project's prompt
-contract, adapters, deterministic normalization, provenance schema and quality gates; do not claim to
-open-source a hosted model, platform-internal Skill or private session.
+Image or language model providers are external dependencies. Open-source the
+project's prompt contract, adapters, deterministic normalization, provenance
+schema and quality gates only when rights permit; do not claim to open-source
+a hosted model, platform-internal Skill or private session.
 
 ## Required checks
 
-Before release, scan paths and content for secrets and personal locations; inspect document/image
-metadata; review the public asset register; inspect Git history; and obtain human technical, rights and
-privacy decisions. A scanner pass cannot replace these decisions.
+Before release, scan paths and content for secrets and personal locations;
+reject semantic payload suffixes and parallel semantic roots; inspect document
+and image metadata; review the public asset allowlist; inspect Git history;
+cross-check the Semantica source lock, receipt and complete verdict; and obtain
+human technical, rights and privacy decisions. A scanner or Semantica pass
+cannot replace those decisions.

@@ -1,34 +1,40 @@
-# 第8章：本体与大语言模型 / Chapter 8: Ontology Meets Large Language Models
+# 第8章：本体与大语言模型
 
-## 本章内容
+## 本章任务
 
-大语言模型带来强大的语言理解与生成能力，也带来幻觉风险。
-本章给出"本体 × LLM"的四种工程融合模式：
-- **幻觉控制三层架构**：生成前约束注入、生成中工具调用、生成后事实校验
-- **GraphRAG**：以知识图谱子图增强检索，解决多跳问题与结构丢失
-- **Text2SPARQL**：自然语言到查询语言的安全转换
-- **本体引导的 Agent**：让智能体的每个动作经过本体校验与审计
+本章把 LLM 放在受控语义回路中：自然语言请求 → 规范化提议 → 只读语义检查 →
+有权限的执行器 → PROV/receipt。GraphRAG、Text2SPARQL 和 ontology-guided Agent
+不是让模型获得事实权威或操作权限，而是让候选输出经过可复算约束并留下证据链。
 
-## 文件说明
+## Semantica 绑定
 
-| 文件 | 内容 |
-|------|------|
-| `hallucination-control.txt` | 幻觉控制三层架构与制造场景实例 |
-| `graphrag-pattern.txt` | GraphRAG 检索模式：子图扩展与序列化 |
-| `text2sparql.txt` | 自然语言转SPARQL：模板法、LLM生成与校验层 |
-| `ontology-guided-agent.py` | 本体引导Agent参考实现（提议→校验→执行→审计） |
+- package：`semantica.chapter_packages.vol1.ch08`
+- package status：`partial`
+- release status：`blocked`
+- 已迁入：幻觉控制规则、GraphRAG/Text2SPARQL 案例、legacy Agent 参考案例、CQ、
+  合同与场景注册表
+- 场景：`OE-V1-CH08-SCN-GUARDRAIL-001`，status `adapter`
+- runner 状态：`blocked_unsupported_operation_contract`
+- 缺口：受 schema/CQ 约束的 Text2SPARQL 与 Unknown 门禁；模型、prompt、ontology
+  snapshot、工具动作和授权的端到端合同；内容绑定执行收据
 
-## LLM 与本体的互补
+包内 `ontology-guided-agent` 只是 `legacy_case_reference`。书中的三种预期 verdict 是
+参考 oracle，不是当前 Semantica 已执行的动作路由结果；未绑定操作必须 fail closed。
 
-| 能力 | LLM | 本体/知识图谱 |
-|------|-----|---------------|
-| 自然语言理解 | 强 | 无 |
-| 事实可靠性 | 不保证（统计推断） | 强（结构化断言） |
-| 一致性检验 | 无 | 推理器/SHACL |
-| 可解释性 | 弱 | 强（推理路径+溯源） |
-| 知识更新 | 需重训/微调 | 增量写入即生效 |
+## 四种融合模式
 
-## 核心原则
+| 模式 | 模型负责 | Semantica/受控系统负责 |
+|---|---|---|
+| 生成前约束 | 理解上下文 | 提供允许的词汇、CQ、schema 与版本快照 |
+| Text2SPARQL | 生成候选意图/查询 | 解析、allowlist、资源预算、只读执行与结果类型检查 |
+| GraphRAG | 表达与归纳 | 按来源和图结构检索、裁剪并绑定证据 |
+| Agent | 提出动作 | 语义校验、授权、执行、补偿与审计；四者不能合并为模型权限 |
 
-> LLM 负责"理解与表达"，本体负责"事实与约束"——
-> 任何进入业务系统的结论，都必须能追溯到本体中的一条结构化知识。
+## 包检查
+
+```bash
+semantica package show semantica.chapter_packages.vol1.ch08 --json
+```
+
+不要直接运行书中历史 `ontology-guided-agent.py` 并把输出当成发布证据。只有绑定输入、
+版本、oracle、工具权限和 receipt 的 Semantica 场景才能支撑可执行主张。

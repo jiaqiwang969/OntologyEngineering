@@ -1,7 +1,14 @@
-# 千题闭卷评测（ISO 26262 · 双金标准）
+# 历史千题闭卷评测快照（ISO 26262 · 双金标准）
 
-对本 skill 做的 1000 题闭卷测评：答题方唯一知识来源是本 skill
-（两卷书 + 刻录层 + 检索脚本），先验知识只许组织语言、不得供事实。
+本目录冻结 2026-08-16 书稿的 1000 题闭卷测评与答卷，供回归比较，不是当前
+29 章 package 的发布收据。当前架构中，读者知识源只有两卷书；CQ、本体、形状、
+查询、案例、工程规则、规范转述与执行 oracle 的唯一机器正本都在 Semantica。
+因此，历史题库可用于检查书稿是否仍能回答旧问题，却不能替代 Semantica package
+执行，也不能把旧高分外推成当前书、标准解释或产品判断已经通过。
+
+旧版 `gen_bank.py` 会直接读取已退出 OE 的本地 TTL 与作者仓库 ontology，现已删除。
+若要生成下一版题库，应先把题库合同、金标准和 provenance 做成新的 Semantica
+built-in package，再由 OE 保留薄入口与冻结评测报告，不能恢复平行语义目录。
 
 ## 评价标准（双金标准）
 
@@ -18,20 +25,20 @@
 | 类别 | 题数 | 金标准来源 |
 |---|---|---|
 | teach 教学核心 | 50 | 手工案例映射表（casemap.py） |
-| term-teach 术语教学 | 152 | 刻录层 Part 1 词条卡 |
+| term-teach 术语教学 | 152 | 当时的 Part 1 派生词条卡（现由 Semantica normative package 接管） |
 | dry-termid/termname 词条双向 | 200 | 同上（干对照组） |
 | dry-table4 定级 | 36 | 书中第 4 章判定表 |
-| dry-methodcell 方法表格 | 347 | **仓库侧 RDF（不在 skill 内）**——与 skill 附录 D 构成独立交叉验证 |
-| dry-modality 条款模态 | 46 | 刻录层 Part 3 机器事实 |
+| dry-methodcell 方法表格 | 347 | 当时作者工作区的受控 RDF；仅解释历史金标准来源 |
+| dry-modality 条款模态 | 46 | 当时的 Part 3 派生机器事实（现由 Semantica normative package 接管） |
 | prop-source 命题出处 | 79 | 全书加粗命题逐字定位 |
 | curated 精选 | 51 | 手工（数字链/机制/人物弧光） |
 | trap 陷阱 | 39 | 正确行为=承认不覆盖 |
 
 ## 隔离协议与审计
 
-金标准全程不进 skill 目录；题目文件不含答案；答题 agent 明令禁读评测目录
-其他文件。赛后机械审计：九个答题 agent 的完整工具调用记录 grep 金标准
-文件路径，命中全部为零；且方法表金标准（仓库 RDF）物理上不在 skill 内。
+以下说明只描述该次历史实验：金标准当时不进入答题语料，题目文件不含答案；答题
+agent 被明令禁读评测目录其他文件。赛后机械审计显示九个答题 agent 的工具调用记录
+未命中金标准文件路径；方法表金标准当时位于独立作者工作区。
 行为学证据：一道被误设为陷阱的真题（词条 1-3.180/181）被答题方按词条卡
 如实答"对"——与陷阱金标准相反、与事实相符，自证未接触金标准。
 
@@ -52,9 +59,12 @@
 ## 复跑
 
 ```bash
-python3 references/benchmark/mode_a.py    # 检索可答率
+python3 references/benchmark/mode_a.py    # 仅两卷书的历史检索回放
 python3 references/benchmark/grade.py     # 对 answers-run-*/ 重新判分
 ```
+
+`grade.py` 只重算冻结答卷；它不调用本体后端。任何新的语义型评测都必须由
+Semantica package 产生 source-locked receipt，并与书稿回放结果分栏报告。
 
 ## 迭代吸收记录（评测的真正目的）
 

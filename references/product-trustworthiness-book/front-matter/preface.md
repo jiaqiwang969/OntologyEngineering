@@ -1,6 +1,44 @@
 # 前言
 
-![六个流程方块围成闭环，中心仍是等待被补上的共同工程世界](../../handbook/figures-imagegen/art-preface-v01.png "chapter-art")
+![六个流程方块围成闭环，中心仍是等待被补上的共同工程世界](../handbook/figures-imagegen/art-preface-v01.png "chapter-art")
+
+## 这一版书怎样与 Semantica 同步
+
+这一版把全书的机器语义彻底收进 Semantica。书仍然保存为什么要建立这些区分、
+术语从哪里来、案例怎样把问题逼出来以及工程师应当怎样判断；但是本体、能力问题
+注册表、查询、Shape、正反案例、规则、exact oracle、版本、PROV、执行 receipt 与
+release verdict 不再在书旁边各留一份。它们唯一存在于
+`semantica.chapter_packages.vol2.ch01` 至 `vol2.ch20`，规范转述层唯一存在于
+`semantica.chapter_packages.vol2.normative`。
+
+这不是把书交给一个外部工具“跑一下”，而是重新规定二者的身份：**书是人可读的
+工程规范，Semantica 是它唯一可执行的语义继承者。** 读者在正文看到的 Turtle、
+查询或门禁片段只承担解释作用，不是可复制运行的正本；所有机器结论都必须给出
+package id、scenario、源 commit、wheel 哈希、输入/输出哈希和 receipt。Semantica
+缺失、哈希不符或能力不支持时，结论必须停在 `blocked`，不存在书内 fallback。
+
+同样重要的是，执行统一并没有改变权威边界。ISO 术语与模态的 Semantica normative
+package 是本书的工程释义和教学映射，不是标准原文、官方解释或合规证明。场景 oracle
+通过也不等于 release 就绪；本版所有卷二包的 manifest 仍诚实标为 `partial` 且
+`release_status=blocked`。真实产品事实仍来自受控工程系统，风险接受与放行仍由有权
+的人和组织承担。
+
+二十章没有例外地采用同一映射：第 NN 章对应
+`semantica.chapter_packages.vol2.chNN`，其主场景对应
+`semantica.vol2.chNN.scenario.primary`；附加规范转述层是
+`semantica.chapter_packages.vol2.normative`。前十章的规范知识、后十章的本体回答
+以及旧教学资产的迁移后继都只能通过这套 allowlisted registry 解析，不能把书中路径
+拼成文件名去运行。
+
+所以，本版每一处“机器通过”都必须读成四行，而不是一个绿色单词：
+
+1. 书中依据是哪一章、哪一段；
+2. 实际执行的是哪个 package 和 scenario；
+3. exact oracle 的状态与不支持能力是什么；
+4. 独立 release verdict、输入/输出哈希与 receipt 说了什么。
+
+四行缺一，结论就没有完整主语。尤其不能用场景通过覆盖 blocked release，也不能用
+本体一致覆盖未知事实或人的授权。
 
 ## 从一位汽车零部件企业的老板开始
 

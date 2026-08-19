@@ -1,43 +1,37 @@
-# 第 1 章：为什么"全绿"不等于产品可信
+# 第 1 章：为什么“全绿”不等于产品可信
 
-## 本章三问
+正文见 [chapter.md](chapter.md)。本章保留主张、证据射程、版本与重开条件的可读论述、术语、方法和
+合成教学案例；机器可执行语义不在本目录。
 
-本章是全书的开篇与总铰链，回答三个问题：
-六份各自真实的"通过"，为什么合不成一句可以签署的结论（主语不同，颜色不能相加）；
-一句能签的话由哪几个部件组成（主语、配置、关注、情境、时间、假设、决定范围——缺件要显式列出）；
-证据与主张之间有哪几种关系、变化来临时它们如何逐项重开（支持/超出范围/反驳/未知，四层绿色，单因变式）。
+## 唯一执行绑定
 
-## 文件说明
+- package id：`semantica.chapter_packages.vol2.ch01`
+- primary scenario：`semantica.vol2.ch01.scenario.primary`
+- manifest 状态：`partial`
+- release 状态：`blocked`
+- 唯一资产位置：Semantica package registry
 
-| 文件 | 内容 |
-|---|---|
-| `chapter.md` | 正文：EPS 六盏绿灯评审 → 主张解剖 → 证据关系 → 软件单因变式 → ENV-01 跨域 → 全书地图 |
-| `examples/book-roadmap.txt` | 全书 20 章知识地图、章节依赖图、三条阅读路径、最短可用路径 |
-| `problem-contract.yaml` | 本章冻结的问题合同（内部工件，第 11 章的回答验收输入） |
-| `SOURCE-AUDIT.md` | 来源与叙事边界的内部记录（含施工状态与开放项） |
+本体、CQ 注册表、SPARQL、SHACL、正反案例、工程规则、exact oracle、manifest、
+版本、PROV、receipt 与 release verdict 全部由上述包持有。本章不存在本地
+`examples/`、`ontology/`、`eval/`、fixture、runner 或 fallback；旧路径只在
+Semantica migration ledger 中作为哈希来源保留。
 
-## 核心观点对照
+```bash
+: "${SEMANTICA_RUNTIME_COMMIT:?set from the reviewed Semantica source lock}"
+: "${SEMANTICA_WHEEL_SHA256:?set from the reviewed Semantica wheel lock}"
+semantica package show semantica.chapter_packages.vol2.ch01 --json
+semantica package run semantica.chapter_packages.vol2.ch01 \
+  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
+  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
+  --json
+```
 
-| 自然直觉 | 本章立起的区分 |
-|---|---|
-| 六个专业都通过了，加起来就能放行 | 绿色是结论的颜色，不是结论的主语；主语不同，颜色不能相加 |
-| "可以交付了"是一句结论 | 不能被反驳的话没有资格被签署；能签的话有七个部件 |
-| 文件在、字样为"通过"，证据就在 | 报告是工件，支持是关系；关系需要被建立，不会自动发生 |
-| 没测的就当它没问题（或当它不合格） | 缺记录默认为未知，不是真也不是假；未知必须出现在主张里 |
-| 配置变了，旧证据要么全保留要么全作废 | 变化的影响是逐项的；保留是一个需要理由的判断，不是默认 |
-| 安全做好了，可靠、可用不用单说 | 关注并列且存在真实取舍，不折成"可信总分" |
-| 这套问法是汽车行业专属 | 可迁移的是问法，不可迁移的是答案 |
+运行时必须使用项目 source lock 绑定的 Semantica commit 和 wheel SHA-256。报告时将
+书中依据、scenario oracle 与独立 release verdict 分开；不得把 `partial`、
+`blocked`、未运行检查或 unsupported 能力改写成通过。局部绿色只能按其主语解释，不能相加成产品可信。
 
-## 关键边界
-
-- EPS 评审场景、人物、事故与全部产品数字均为合成教学材料（章末注记已声明）。
-- 汽车功能安全是全书的严格纵线，不是各种产品关注的总名称。
-- 第 1—10 章是一条连续问题链，第 11—20 章与其一一镜像；后十章共享方法，不共享业务事实。
-- 工程本体论提供共同语义；受控设计、仪器输出、试验与现场记录提供事实；有权角色作出决定。
-
-## 学习建议
-
-- 顺序阅读者：读完本章先做章尾三个动作（给手头报告写七部件、数缺件、找自己签在哪层绿），再进第 2 章。
-- 负责发布决定的读者：重点读 1.2（主张部件）与 1.3（四层绿色），对照自己签过的最近一次放行。
-- 关心 AI 进入工程的读者：重点读 1.6 的三种权威分立——Agent 在什么条件下获得行动边界。
-- 全书阅读路径（顺读 / 发布决策者 / AI 工程师）见 `examples/book-roadmap.txt`。
+ISO 术语或模态需要机器核对时，只能查询
+`semantica.chapter_packages.vol2.normative` 中**已登记**的范围；该包目前只承诺
+manifest 声明的部分工程释义/教学映射。未登记的分册、条文或表必须报告
+unsupported/blocked 并回到合法持有的原文，不得补造；该包也不是官方解释、
+合规意见或认证证据。

@@ -182,6 +182,45 @@ class BookReleaseEvidenceCollectorTests(unittest.TestCase):
             self.assertNotIn(str(semantica_root), normalized)
             self.assertIn(str(unrelated), normalized)
 
+    def test_regression_log_has_exactly_one_terminal_lf_for_stdout_only(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            parent = Path(temporary).resolve()
+            completed = subprocess.CompletedProcess(
+                args=[],
+                returncode=0,
+                stdout="1 passed in 0.01s\n\n",
+                stderr="",
+            )
+
+            normalized = collector._normalized_regression_output(
+                completed,
+                root=parent / "ontology-engineering",
+                semantica_root=parent / "semantica",
+            )
+
+            self.assertEqual(b"1 passed in 0.01s\n", normalized)
+
+    def test_regression_log_joins_nonempty_stdout_and_stderr_once(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            parent = Path(temporary).resolve()
+            completed = subprocess.CompletedProcess(
+                args=[],
+                returncode=0,
+                stdout="test output without terminal newline",
+                stderr="warning output\r\n\r\n",
+            )
+
+            normalized = collector._normalized_regression_output(
+                completed,
+                root=parent / "ontology-engineering",
+                semantica_root=parent / "semantica",
+            )
+
+            self.assertEqual(
+                b"test output without terminal newline\nwarning output\n",
+                normalized,
+            )
+
     def test_regression_log_does_not_rewrite_similar_path_prefix(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             parent = Path(temporary).resolve()

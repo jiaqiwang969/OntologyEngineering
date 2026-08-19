@@ -208,7 +208,14 @@ def _normalized_regression_output(
     an unrelated leak instead of having a broad sanitizer hide it.
     """
 
-    output = completed.stdout + "\n" + completed.stderr
+    streams = []
+    for stream in (completed.stdout, completed.stderr):
+        normalized_stream = stream.rstrip("\r\n")
+        if normalized_stream:
+            streams.append(normalized_stream)
+    output = "\n".join(streams)
+    if output:
+        output += "\n"
     replacements = (
         (root.expanduser().resolve(), "<ontology-engineering-root>"),
         (semantica_root.expanduser().resolve(), "<semantica-root>"),

@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
-"""把 ontology-engineering-book 的 README 与示例代码转换为 XeLaTeX 片段。
+"""把两卷书源与 Semantica 内建包资产转换为 XeLaTeX 片段。
 
 用法：python3 build_handbook.py
 输出：handbook/fragments/*.tex
+
+书目录只保留正文。原伴随资产与 capstone 可执行源码已迁入
+Semantica；构建器通过唯一适配层读取 hash-verified 包资产，并用迁移账
+枚举仍须排印的小节，
+不会从 ontology-engineering 的平行副本重建片段。
 """
 import re
 import sys
@@ -10,8 +15,33 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
+SKILL_ROOT = HERE.parents[2]
 OUT = HERE / "fragments"
 OUT.mkdir(exist_ok=True)
+if str(SKILL_ROOT) not in sys.path:
+    sys.path.insert(0, str(SKILL_ROOT))
+
+from ontology_engineering.semantica_runtime import (  # noqa: E402
+    package_asset_text,
+    read_migration_map,
+)
+
+
+def required_fragment_names():
+    """Return the closed set of fragments referenced by the author TeX sources."""
+    names = set()
+    sources = [HERE / "main.tex", *sorted((HERE / "chapters").glob("*.tex"))]
+    pattern = re.compile(r"\\input\{fragments/([^}]+)\}")
+    for source in sources:
+        for match in pattern.finditer(source.read_text(encoding="utf-8")):
+            name = match.group(1)
+            names.add(name if name.endswith(".tex") else f"{name}.tex")
+    # chapterart resolves these names dynamically, so they are not visible to the regex.
+    names.update({"prompt-cover.tex", *(f"prompt-ch{i:02d}.tex" for i in range(1, 10))})
+    return frozenset(names)
+
+
+REQUIRED_FRAGMENTS = required_fragment_names()
 
 # ---------------------------------------------------------------- 基础转换
 TEX_SPECIALS = {
@@ -157,6 +187,10 @@ def emit_code(lines, ext: str):
             else:
                 out.append(r"\codeline{%s%s}" % (pre, tex))
     out.append(r"\end{codebox}")
+    # A breakable tcolorbox can leave xdvipdfmx's restored color state at the
+    # page-break color.  Reset at the generated-fragment boundary so following
+    # prose cannot become white-on-white while remaining text-extractable.
+    out.append(r"\color{black}")
     return out
 
 
@@ -235,6 +269,9 @@ def render_table(rows):
     out.append(r"\bottomrule")
     out.append(r"\end{%s}" % env)
     out.append(r"\end{center}")
+    # Tables containing colored hyperlinks can likewise leak a deferred color
+    # through tabularx/longtable page construction.  The book body is black.
+    out.append(r"\color{black}")
     return out
 
 
@@ -373,49 +410,49 @@ def convert_md_file(path: Path, sec_offset=1, starred=False, skip_sections=()):
 
 
 # ---------------------------------------------------------------- 代码节选
-# 书中正文只排印关键片段：按起止标记从真实文件中节选，保证与仓库一致。
-# 格式：片段名: (仓库相对路径, 起始标记, 结束标记, 结束行后额外行数)
+# 书中正文只排印关键片段；每一项直接绑定 Semantica package/asset，
+# 实际内容必须通过包资产哈希校验。历史路径只留在机器迁移账中承担溯源职责，
+# 不再作为作者源里的片段定位方式。
+# 格式：片段名: (包 ID, asset ID, 后缀, 起始标记, 结束标记, 结束行后额外行数)
 SNIPPETS = {
-    "snip-ch01-paths": ("ch01-introduction/examples/ontology-in-ai-era.txt",
+    "snip-ch01-paths": ("semantica.chapter_packages.vol1.ch01", "ontology-in-ai-era", ".txt",
                         "路径A", "被严格区分", 0),
-    "snip-ch02-hier": ("ch02-ontology-foundations/examples/core-concepts.txt",
+    "snip-ch02-hier": ("semantica.chapter_packages.vol1.ch02", "core-concepts", ".txt",
                        "# 设备分类层次", "工装设备 (ToolingEquipment)", 0),
-    "snip-ch02-default": ("ch02-ontology-foundations/examples/reasoning-examples.txt",
+    "snip-ch02-default": ("semantica.chapter_packages.vol1.ch02", "reasoning-examples", ".txt",
                           "# 默认规则（Reiter", "无法表达的", 0),
-    "snip-ch03-cq": ("ch03-ontology-methodology/examples/competency-questions.txt",
+    "snip-ch03-cq": ("semantica.chapter_packages.vol1.ch03", "competency-questions", ".txt",
                      "# CQ1 的验收查询", "需修复后复测", 0),
-    "snip-ch03-ontoclean": ("ch03-ontology-methodology/examples/ontoclean-evaluation.txt",
+    "snip-ch03-ontoclean": ("semantica.chapter_packages.vol1.ch03", "ontoclean-evaluation", ".txt",
                             "# 违规示例1", "角色通过对象属性关联", 0),
-    "snip-ch04-turtle": ("ch04-ontology-languages/examples/rdf-turtle-examples.ttl",
+    "snip-ch04-turtle": ("semantica.chapter_packages.vol1.ch04", "rdf-turtle-examples", ".ttl",
                          "@prefix rdf:", "工单知识", 0),
-    "snip-ch04-manchester": ("ch04-ontology-languages/examples/owl-classes.owl",
+    "snip-ch04-manchester": ("semantica.chapter_packages.vol1.ch04", "owl-classes", ".owl",
                              "Class: :Equipment", "SubClassOf: :CNCMachine", 0),
-    "snip-ch04-sparql": ("ch04-ontology-languages/examples/sparql-queries.sparql",
+    "snip-ch04-sparql": ("semantica.chapter_packages.vol1.ch04", "sparql-queries", ".sparql",
                          "# CQ1:", "ORDER BY ASC(?name)", 0),
-    "snip-ch05-swrl": ("ch05-reasoning/examples/swrl-rules.swrl",
+    "snip-ch05-swrl": ("semantica.chapter_packages.vol1.ch05", "swrl-rules", ".swrl",
                        "# 规则：高功率设备需要冷却", "Lathe_003 需要冷却", 0),
-    "snip-ch05-bayes": ("ch05-reasoning/examples/probabilistic-reasoning.txt",
+    "snip-ch05-bayes": ("semantica.chapter_packages.vol1.ch05", "probabilistic-reasoning", ".txt",
                         "# 第一步，用全概率公式", "维修时优先排查冷却系统", 0),
-    "snip-ch07-shacl": ("ch07-knowledge-graph/examples/kg-quality-shacl.ttl",
+    "snip-ch07-shacl": ("semantica.chapter_packages.vol1.ch07", "kg-quality-shacl", ".ttl",
                         "mfgsh:EquipmentShape", "EQ-YYYY-NNNN 的序列号", 1),
-    "snip-ch07-cypher": ("ch07-knowledge-graph/examples/kg-storage-query.txt",
-                         "# SPARQL（三元组库）", "RETURN e.name, e.power", 0),
-    "snip-ch08-demo": ("ch08-ontology-llm/examples/hallucination-control.txt",
+    "snip-ch07-cypher": ("semantica.chapter_packages.vol1.ch07", "kg-storage-query", ".txt",
+                        "# SPARQL（三元组库）", "RETURN e.name, e.power", 0),
+    "snip-ch08-demo": ("semantica.chapter_packages.vol1.ch08", "hallucination-control", ".txt",
                        "能加工钛合金吗", "请联系工艺部门", 1),
-    "snip-ch08-agent": ("ch08-ontology-llm/examples/ontology-guided-agent.py",
+    "snip-ch08-agent": ("semantica.chapter_packages.vol1.ch08", "ontology-guided-agent", ".py",
                         "def validate(self, proposal", "通过全部本体校验", 1),
-    "snip-ch09-axioms": ("ch09-capstone-manufacturing/src/manufacturing.owl",
+    "snip-ch09-axioms": ("semantica.chapter_packages.vol1.ch09", "manufacturing", ".owl",
                          "# 描述逻辑约束", "canProcess.Material", 0),
-    "snip-ch09-java": ("ch09-capstone-manufacturing/src/QueryService.java",
-                       "// 执行查询（使用Jena 4.x", "return results;", 0),
-    "snip-ch09-py": ("ch09-capstone-manufacturing/src/reasoner.py",
-                     "def run_reasoner", "推理完成\")", 0),
 }
 
 
-def emit_snippet(relpath: str, start: str, end: str, extend: int):
-    fp = ROOT / relpath
-    lines = fp.read_text(encoding="utf-8").splitlines()
+def emit_snippet(package_id: str, asset_id: str, suffix: str,
+                 start: str, end: str, extend: int):
+    """Render a source-locked excerpt from one explicit Semantica asset."""
+    text = package_asset_text(package_id, asset_id)
+    lines = text.splitlines()
     s = e = None
     for i, ln in enumerate(lines):
         if s is None and start in ln:
@@ -424,8 +461,10 @@ def emit_snippet(relpath: str, start: str, end: str, extend: int):
             e = i
             break
     if s is None or e is None:
-        raise SystemExit(f"节选标记未命中: {relpath} [{start} .. {end}]")
-    return emit_code(lines[s:e + 1 + extend], fp.suffix.lower())
+        raise SystemExit(
+            f"节选标记未命中: {package_id}:{asset_id} [{start} .. {end}]"
+        )
+    return emit_code(lines[s:e + 1 + extend], suffix)
 
 
 # ---------------------------------------------------------------- 小节自动切分
@@ -456,14 +495,17 @@ def split_sections(lines):
     return secs
 
 
-def emit_section_fragments(code_files):
+def emit_section_fragments(code_sources):
     index = ["# 小节片段索引（fragment 名 → 文件 · 小节标题 · 行数）", ""]
-    for fp in code_files:
-        tag = fp.parts[-3].split("-")[0]
+    for relpath, text in code_sources:
+        fp = Path(relpath)
+        tag = fp.parts[0].split("-")[0]
         stem = f"sec-{tag}-{fp.name.replace('.', '-')}"
-        lines = fp.read_text(encoding="utf-8").splitlines()
+        lines = text.splitlines()
         for n, (title, s, e) in enumerate(split_sections(lines)):
             frag = f"{stem}-{n}.tex"
+            if frag not in REQUIRED_FRAGMENTS:
+                continue
             (OUT / frag).write_text(
                 "\n".join(emit_code(lines[s:e], fp.suffix.lower())) + "\n",
                 encoding="utf-8")
@@ -474,11 +516,21 @@ def emit_section_fragments(code_files):
 
 # ---------------------------------------------------------------- 生成
 def write(name: str, lines):
+    if name not in REQUIRED_FRAGMENTS:
+        return
     (OUT / name).write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"  -> fragments/{name}")
 
 
+def clean_output():
+    """Remove every generated fragment so deleted mappings cannot survive a rebuild."""
+    for path in OUT.iterdir():
+        if path.is_file() and (path.suffix == ".tex" or path.name == "INDEX.md"):
+            path.unlink()
+
+
 def main():
+    clean_output()
     print("生成插图提示词片段：")
     sys.path.insert(0, str(HERE))
     try:
@@ -500,29 +552,38 @@ def main():
           convert_md_file(ROOT / "resources" / "README.md", skip_sections=("目录",)))
 
     print("生成正文节选片段：")
-    for snip_name, (relpath, start, end, ext_n) in SNIPPETS.items():
-        write(f"{snip_name}.tex", emit_snippet(relpath, start, end, ext_n))
+    for snip_name, (package_id, asset_id, suffix, start, end, ext_n) in SNIPPETS.items():
+        output_name = f"{snip_name}.tex"
+        if output_name not in REQUIRED_FRAGMENTS:
+            continue
+        rendered = emit_snippet(package_id, asset_id, suffix, start, end, ext_n)
+        write(output_name, rendered)
 
-    print("生成代码片段：")
-    code_files = (
-        sorted((ROOT / "ch01-introduction" / "examples").glob("*"))
-        + sorted((ROOT / "ch02-ontology-foundations" / "examples").glob("*"))
-        + sorted((ROOT / "ch03-ontology-methodology" / "examples").glob("*"))
-        + sorted((ROOT / "ch04-ontology-languages" / "examples").glob("*"))
-        + sorted((ROOT / "ch05-reasoning" / "examples").glob("*"))
-        + sorted((ROOT / "ch06-applications" / "examples").glob("*"))
-        + sorted((ROOT / "ch07-knowledge-graph" / "examples").glob("*"))
-        + sorted((ROOT / "ch08-ontology-llm" / "examples").glob("*"))
-        + sorted((ROOT / "ch09-capstone-manufacturing" / "src").glob("*"))
-    )
-    for fp in code_files:
-        tag = fp.parts[-3].split("-")[0]  # chXX
+    print("从 Semantica 迁移账生成代码片段：")
+    prefix = "references/ontology-engineering-book/"
+    code_sources = []
+    for entry in read_migration_map("vol1").entries:
+        if not entry.old_path.startswith(prefix):
+            continue
+        relpath = entry.old_path[len(prefix):]
+        text = package_asset_text(entry.package_id, entry.asset_id)
+        code_sources.append((relpath, text))
+    code_sources.sort(key=lambda item: item[0])
+    for relpath, text in code_sources:
+        fp = Path(relpath)
+        tag = fp.parts[0].split("-")[0]
         name = f"code-{tag}-{fp.name.replace('.', '-')}.tex"
-        lines = fp.read_text(encoding="utf-8").splitlines()
+        lines = text.splitlines()
         write(name, emit_code(lines, fp.suffix.lower()))
 
     print("生成小节片段：")
-    emit_section_fragments(code_files)
+    emit_section_fragments(code_sources)
+
+    missing = sorted(
+        name for name in REQUIRED_FRAGMENTS if not (OUT / name).is_file()
+    )
+    if missing:
+        raise SystemExit("作者源引用的片段未生成：" + ", ".join(missing))
 
     print("完成。")
 

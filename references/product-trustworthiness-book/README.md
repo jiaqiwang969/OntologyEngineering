@@ -1,155 +1,115 @@
 # 产品可信工程：从规范、本体到证据闭环
 
 > 贯穿样板：ISO 26262:2018 汽车功能安全
-> 当前分发状态：前言、20 章、附录与 345 页图文 PDF 已形成可读快照；目录名
-> `functional-safety-book/` 是兼容路径，不表示全书只讨论功能安全。该快照不是官方标准、
-> 合规意见或已完成权利放行的正式出版物。
+> 架构基线：本目录只保存可读书稿；Semantica 是全书唯一机器可执行语义。
 
-这本书讨论的目标是**产品可信**：对于一个产品、系统、工件、模型、数据、过程或工具动作，
-我们能否说清它在哪个版本、什么情境和时间窗内，具有什么安全性、可靠性、稳定性、韧性、
-网络安全、质量或合规属性；这条主张由什么事实与证据支持；改变什么以后必须重新判断。
+本书讨论怎样把“产品值得相信”写成有主语、有版本、有情境、有证据射程、
+有反证入口、有决定者、也有重开条件的工程判断。前十章从功能安全现场提出问题，
+后十章用工程本体逐一回答；术语、方法、合成案例、反例故事与工程规则仍是书的
+内容。它们不会因为执行架构迁移而被删去。
 
-本书的方法根不是 LLM，也不是单 Agent 或多 Agent，而是**工程本体论**。可信判断必须先让
-参与者对“什么存在、什么是同一个对象、对象之间有什么关系、哪些陈述合法、哪些事实当前
-成立”形成共享、显式、形式化且可审查的概念化。工程保证随后把主张、反证、证据、评审和
-决定组织起来；AI 只能在这套语义、事实和权限边界上工作。
+## 书是规范，Semantica 是唯一执行语义
 
-这一定位直接承接《工程本体论》第一章的四个关键词：概念化、显式、形式化、共享。这里的
-“共享”始终限定在一个明确任务与参与者共同体内，不预设全书或整个企业只有一种世界观。
+本书与 Semantica 不是两套实现，也不是“主实现 + 备用实现”。边界固定如下：
 
-```text
-产品可信：目标
-  -> 工程本体论：概念、身份、关系、规则与事实边界
-  -> 工程保证：主张、证据、反证、评审与决定
-  -> LLM：语言和意图接口
-  -> skill：流程、来源、工具与权限契约
-  -> Agent / tool：有界执行与原生回读
-  -> 人：概念共识、工程充分性、风险接受与授权
-```
-
-OWL、查询或 Shape 通过不会使一个产品自动可信；本体的价值是让原本隐性、分散、模糊、
-静态的工程知识变得显式、统一、精确、可推理，从而使分歧、缺口和越权可以被发现。
-
-## 十章先问，十章后答
-
-全书采用 10+10 镜像结构。ch01--ch10 让旧判断在具体工程现场中先发生，再用反例或下游
-后果撞破它；ch11--ch20 分别用一个独立的教学型工程本体回答对应问题，建立新的认知。
-
-| 提问章：拆旧认知 | 回答章：建新认知 | 独立本体例子 |
+| 层 | 唯一权威 | 保存什么 |
 |---|---|---|
-| ch01 为什么“全绿”不等于产品可信 | ch11 把“可信”写成可反驳的主张 | 可信主张本体 |
-| ch02 同一句“可靠”，为什么可能在说不同的事 | ch12 让概念有共同边界，让对象有可追踪身份 | 工程对象与同一本体 |
-| ch03 谁有权说“可以相信” | ch13 把责任、独立性与授权写进治理本体 | 工程治理本体 |
-| ch04 先决定担心什么：从使用情境到安全目标 | ch14 让情境、场景与目标成为可推理对象 | 情境与目标本体；ISO HARA 仅作本章局部 adapter |
-| ch05 把目标翻译成可分配的系统承诺 | ch15 让派生、分配与接口成为不会丢失的关系 | 需求与架构本体 |
-| ch06 数字什么时候才算证据 | ch16 让数字带着对象、方法与来源说话 | 测量证据本体 |
-| ch07 软件做对一次，为什么还不能称为稳定 | ch17 让每次正确都绑定版本、变化与运行时 | 配置与变化本体 |
-| ch08 两条通道为什么可能一起倒下 | ch18 把依赖、独立性与共同原因显式化 | 依赖与韧性本体 |
-| ch09 产品离开设计室以后，谁继续守住它 | ch19 让本体随产品一起活下去 | 产品数字线程本体 |
-| ch10 五张 PASS 为什么拼不成一次放行 | ch20 把工程本体论变成持续保证操作系统 | 持续保证决定本体 |
+| 可读规范层 | 本目录 | 两卷书的论述、术语解释、方法、案例叙事、图、来源说明与能力问题的自然语言意图 |
+| 可执行语义层 | Semantica built-in packages | 本体、CQ 注册表、SPARQL、SHACL、正反案例、工程规则、exact oracle、manifest、版本、PROV、receipt 与 release verdict |
+| 标准事实层 | 用户合法持有的受控 ISO 来源 | 原始条文、表、图及精确坐标；不随公共书稿或 Semantica 包分发 |
+| 决定层 | 有权的工程人员和组织 | 技术充分性、风险接受、合规、发布、制造或现场行动授权 |
 
-镜像是问题与回答之间的关系，不是本体包之间的依赖。上篇可以按工程推理逐步推进；下篇
-每章只消费对应前章冻结的问题合同，并且无需读取兄弟章本体就能运行。
+因此，本目录不再保留可执行 RDF/OWL、查询、Shape、fixture、runner 或后备
+runtime。旧书内路径只作为迁移来源写入 Semantica 的哈希账本；不能再被调用。
+Semantica 不可用、包未知、资产哈希不符或所需能力不受支持时，执行必须阻断，
+不得退回书内副本。
 
-## 十个本体，而不是一个总本体
+Semantica 当前登记 20 个本卷 chapter packages，另有一个规范转述 domain package。
+所有章包 manifest 当前均声明 `status=partial`、`release_status=blocked`。这意味着：
+声明的场景 oracle 即使通过，也只能证明那个受限机器合同；它与发布准备度是两个
+独立状态。不得把 `partial`、`blocked`、占位内容、未运行检查或 unsupported 推理
+解释成绿色。
 
-ch11--ch20 的每个本体都是一个任务限定、可独立评审和版本化的教学工件。每章必须自带：
+## 20 章的一一绑定
 
-- 独有的 package id、base namespace 和 conceptualization；
-- 自己的 TBox、教学 ABox、能力问题（CQ）、SHACL、查询与 exact oracle；
-- 一个正例、关键规则的单因反例、manifest 和独立 runner；
-- 身份判据、适用范围、不会建模的内容、来源状态与现实授权边界。
+| 书章 | 主题 | Semantica package id |
+|---|---|---|
+| ch01 | 为什么全绿不等于产品可信 | `semantica.chapter_packages.vol2.ch01` |
+| ch02 | 概念与术语 | `semantica.chapter_packages.vol2.ch02` |
+| ch03 | 安全管理与决定权 | `semantica.chapter_packages.vol2.ch03` |
+| ch04 | 概念阶段与 HARA | `semantica.chapter_packages.vol2.ch04` |
+| ch05 | 系统级产品开发 | `semantica.chapter_packages.vol2.ch05` |
+| ch06 | 硬件级产品开发 | `semantica.chapter_packages.vol2.ch06` |
+| ch07 | 软件级产品开发 | `semantica.chapter_packages.vol2.ch07` |
+| ch08 | ASIL 分解与 DFA | `semantica.chapter_packages.vol2.ch08` |
+| ch09 | 生产、运行、服务与退役 | `semantica.chapter_packages.vol2.ch09` |
+| ch10 | 支持过程与发布保证 | `semantica.chapter_packages.vol2.ch10` |
+| ch11 | 可信主张本体 | `semantica.chapter_packages.vol2.ch11` |
+| ch12 | 工程对象与同一本体 | `semantica.chapter_packages.vol2.ch12` |
+| ch13 | 工程治理本体 | `semantica.chapter_packages.vol2.ch13` |
+| ch14 | 情境与目标本体 | `semantica.chapter_packages.vol2.ch14` |
+| ch15 | 需求与架构本体 | `semantica.chapter_packages.vol2.ch15` |
+| ch16 | 测量证据本体 | `semantica.chapter_packages.vol2.ch16` |
+| ch17 | 配置与变化本体 | `semantica.chapter_packages.vol2.ch17` |
+| ch18 | 依赖与韧性本体 | `semantica.chapter_packages.vol2.ch18` |
+| ch19 | 产品数字线程本体 | `semantica.chapter_packages.vol2.ch19` |
+| ch20 | 持续保证决定本体 | `semantica.chapter_packages.vol2.ch20` |
 
-十章只共享构建方法、评审原则和包形态，不共享业务 TBox、ABox、查询数据或运行依赖；不得
-`owl:imports` 兄弟章，不得读取根 ontology 或现有 canary 才能通过。RDF、OWL、SHACL、SKOS、
-PROV-O 等标准词汇可以按 manifest `external_vocabularies` 白名单使用；本章 ISO adapter
-与登记的 EPS 文件可以引用 `adapter_namespaces` 白名单中的 `iso262:` IRI。每个白名单条目必须
-写精确绝对 `namespace_iri` 和显式 `allowed_files`，前缀不是权限边界；任何文件都不得 import 或加载根 ISO 图。
-跨章 alignment 或 federation 只能作为包外可选工件；拿掉
-映射以后，各章结果必须保持不变。
+前十章与后十章仍保持 10+10 镜像关系：ch01↔ch11、ch02↔ch12，依此类推。
+镜像说明问题与回答，不允许跨包偷用业务图。每章执行只从其 allowlisted package
+读取资产；跨章综合必须显式记录输入包、版本与映射，不能把兄弟章图静默合并。
 
-ch20 是回答 ch10 的**第十个独立本体**。它可以在书的思想上收口，包外出版编排器也可以
-汇总十份 runner 报告，但不得合并 ch11--ch19 的 RDF 图、继承它们的个体或改变它们的
-conformance。
+## 怎样复核一章
 
-完整隔离合同见 `../notes/independent-chapter-ontology-contract.md`。
-
-## ISO 26262 在书中的位置
-
-ISO 26262 仍是来源最完整、约束最严格的纵向样板和领域适配器。EPS 从相关项、HARA、
-Safety Goal、FSC/TSC 继续走到硬件、软件、分解、生产、工具与保证案例；BMS 与 AEB 只在
-确实改变判断时出现。HARA、S/E/C、ASIL、SPFM/LFM/PMHF、DFA、TCL 等术语保留标准身份，
-不能删去 `iso262:` 前缀以后就冒充跨领域上位概念。
-
-非安全纵线 ENV-01 用工业环境监测节点检验测量可靠性、漂移稳定性、可用性、校准溯源、
-固件复现性和批次一致性。它是合成教学案例，不拥有 ASIL 或 Safety Goal，也不借用 EPS 的
-证据。CAD Agent 只在 ch20 作为本体引导受控行动的正式应用例，不是全书的中心，更不证明真实产品安全、
-制造就绪或已获执行授权。
-
-## AI 必须排在本体之后
-
-本书采用固定的人机顺序：
-
-```text
-工程问题 -> 本章能力问题 -> 本章范围内的共享概念化 -> 本章 TBox 与受控 ABox
-  -> 查询 / 推理 / 局部闭世界检查
-  -> LLM 翻译语言和意图，不补 Unknown
-  -> skill 只选择一个本体包及其流程与权限
-  -> Agent / tool 有界执行
-  -> 原生回读、来源与未决项成为候选事实
-  -> 人工评审、接受、驳回或触发受控演化
-```
-
-LLM 输出不能直接成为 TBox 共识，Agent 的 `success` 不能创建事实权威，SHACL 的
-`conforms` 不能授予执行、制造或发布权限。多 Agent 也只是依赖关系可能更复杂的一组行动者；
-没有共同概念和事实边界时，它们只会更快地放大歧义。
-
-## 正文与配图必须一起完成
-
-ch04 留下的标杆不是固定排版，而是一条写作纪律：先让聪明人也会作出的自然判断完整发生，
-再由冲突推出必须建立的新区分；正式术语、本体和门禁只在读者已经需要它们时出现。二十章
-都要依此完全重写，旧 ch04 也不自动继承为新架构的已接受章节。
-
-每章的正文、观察任务和配图同步设计、同步修改、同步验收。图不是全文写完以后补上的装饰：
-图前要告诉读者看什么，图后必须用图中的关系继续推理。PlantUML 只用来冻结流程、节点和
-关系的草模；所有最终概念辅助图，包括流程图、关系图和反事实图，都要在草模和批准内容基础上经
-ImageGen 重设计，并回到正文一起完成技术关系、文字、来源、权利和版面复核。真实照片、
-标准截图、试验/仿真曲线和原生工具回读只走真实证据路径，不用 ImageGen 伪造或替代。
-生成图不是事实来源，也不能覆盖原始数据、本体回读或工程判断。
-
-完整图文生产与验收边界见 `../notes/chapter-imagegen-contract.md`；目标 registry 是
-`../handbook/figures-product-trustworthiness.yaml`。当前开发态检查只确认二十章视觉问题已
-登记，发布态必须等每章最终资产和正文消费均被接受后才能通过：
+读者先读本章正文，再从源锁定的 Semantica build 查看、运行和验证对应包：
 
 ```bash
-cd "${ONTOLOGY_ENGINEERING_AUTHORING_ROOT:?set the controlled authoring workspace}"
-.venv/bin/python eval/check_product_trustworthiness_figures.py
-.venv/bin/python eval/check_product_trustworthiness_figures.py --release
+: "${SEMANTICA_RUNTIME_COMMIT:?set from the reviewed Semantica source lock}"
+: "${SEMANTICA_WHEEL_SHA256:?set from the reviewed Semantica wheel lock}"
+semantica package show semantica.chapter_packages.vol2.ch14 --json
+semantica package run semantica.chapter_packages.vol2.ch14 \
+  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
+  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
+  --json
+semantica package verify semantica.chapter_packages.vol2.ch14 \
+  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
+  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
+  --json
 ```
 
-## 内容权威与当前状态
+报告时至少分开四件事：书中依据；package/scenario id；场景 oracle 状态；独立
+release verdict。Python、CLI 与 MCP 都只能是同一个 `SemanticPackageRunner` 的
+适配面，不得各自实现另一套执行逻辑。
 
-| 内容 | 权威位置 | 当前边界 |
-|---|---|---|
-| ISO 原始证据 | `../ISO 26262-2018/`、`../structured/` | 解析存在不等于实质回读、解释或出版权利完成 |
-| ISO 纵向模型与门禁 | `../ontology/*.ttl`、`../eval/` | 只证明其声明的 ISO 教学合同，不证明合规或真实产品结论 |
-| 架构前 canary | `../ontology/engineering-assurance/`、`../eval/engineering-assurance/` | 仅验证早期 Claim/Evidence/Authority 等做法；不是后十章上位本体、依赖或完成证据 |
-| 连续正文 | 本目录各章 `chapter.md` 与 `appendices/*.md` | 20 章与附录构成当前可读快照；修改后须同步重建 PDF 与来源地图 |
-| 独立本体例子 | 受控工程正本中的 ch11--ch20 `ontology-example/` | 完整 runner 未随当前公共阅读包分发；不得把正文描述冒充机器门禁结果 |
-| 出版与成熟度 | `../publication/`、`../handbook/` | 编译绿色不能代替技术、来源、权利、视觉与用户验收 |
+当前 Semantica 支持 RDF Dataset、SPARQL query/update、SHACL、受限正向单调规则、
+snapshot/diff、PROV 与 receipt/release 绑定。这不等于完整 DL/tableau 推理、任意
+SWRL built-in、非单调/默认、时态或概率推理已经支持；超出声明能力的请求必须
+fail closed。
 
-现有 `engineering-assurance` 是 **pre-architecture canary**。它可作为包结构、查询和反例的
-迁移输入，但后十章不得 import 它，也不得继承它的通过状态。当前可单独检查 canary：
+## ISO 26262 的权威边界
 
-```bash
-cd "${ONTOLOGY_ENGINEERING_AUTHORING_ROOT:?set the controlled authoring workspace}"
-.venv/bin/python eval/engineering-assurance/run_eval.py
+`semantica.chapter_packages.vol2.normative` 保存本书**已登记范围内**的工程释义、
+术语/模态映射、来源坐标和教学案例；当前资产主要来自 Part 1 与 Part 3，不覆盖
+Part 11/12 或 28 张方法表的全部语义。它的主场景是
+`semantica.vol2.normative.scenario.modality-fidelity`。该包同样是 `partial/blocked`，
+而且不是 ISO 原文副本、官方解释、合规意见或认证证据。精确条文与表格只能回到
+用户合法持有的受控来源核对。书中 EPS、ENV-01、人物、事故和数值均为合成教学
+材料，机器通过不能把它们升级为现实产品事实。
+
+## AI、事实与决定
+
+全书的人机顺序不变，但执行落点已经统一：
+
+```text
+自然语言问题 → 书章中的概念与方法 → Semantica chapter package
+  → 归一化输入 → CQ / query / SHACL / supported rules → oracle
+  → snapshot / PROV / receipt → 独立 release verdict
+  → 原生事实回读与人工工程评审 → 有权主体决定
 ```
 
-这条命令只验证 canary 自己声明的机器合同。全书完成仍要求 20 章正文与配图、十个独立本体、
-skill、来源与权利账本、handbook/PDF、逐页视觉冷读、技术评审、目标读者评审和用户冻结版本
-验收全部绑定同一输入树。任何局部门禁绿色都不能被升级成“产品已经可信”。
+LLM 可以翻译语言与意图，不能补写 Unknown；Agent 可以提出候选动作，不能因
+本体一致就获得写权限；`conforms` 不授予发布、制造或现场变更权限。本体负责语义
+权威，受控设计、仪器和工程系统负责事实权威，人和组织负责决定权威。
 
-本书最终要交给读者的，不是一个万能评分，也不是一个可以替人批准的 Agent，而是一种更
-基础的能力：面对陌生工程对象，先建立可争论、可计算的共同现实，再诚实回答“为什么相信、
-相信到哪里、改变什么就必须重议”。
+本书最终训练的不是“把所有检查做绿”，而是让每句可信主张都能回答：相信什么，
+依据什么，相信到哪里，谁承担决定，以及哪些变化会迫使它重新接受质疑。

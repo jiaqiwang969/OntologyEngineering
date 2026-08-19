@@ -1,6 +1,12 @@
 # 第 9 章 设计走进工厂之后：生产、运行、服务与报废
 
-![一张设计图穿过工厂门后投影为一排拥有各自时间线的实物](../../handbook/figures-imagegen/art-ch09-v01.png "chapter-art")
+> Semantica 绑定： 本章保存生产、现场、服务和退役的工程叙事；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch09`，主场景为
+> `semantica.vol2.ch09.scenario.primary`。本体、CQ、查询、Shape、案例、规则、oracle、
+> PROV 与 receipt 只在 Semantica，本目录没有 fixture 或执行副本。当前为
+> `partial`、release `blocked`；教学链路通过不构成真实批次、配置或现场事实。
+
+![一张设计图穿过工厂门后投影为一排拥有各自时间线的实物](../handbook/figures-imagegen/art-ch09-v01.png "chapter-art")
 
 > **【导读】**
 > 相关失效分析收尾的那天，白板上两条通道之间的独立性终于站住了。下一站是工厂——
@@ -126,7 +132,7 @@ RC17 的设计包开始向制造移交：图纸、公差、软件镜像、标定
 <!-- FIG:ch09-fig01-three-level-identity:OBSERVE -->
 > **读图任务**：从顶层设计定义向下跟随扇形展开的连线，分清批次和单件两层，再找到被单独展开时间线的那一件实物。
 
-![纵向三层从一张设计图展开到三个批次料箱，再展开到多件实物，其中一件被琥珀色描边并下接独立的制造、装车与服务时间线。](../../handbook/figures-imagegen/ch09-fig01-three-level-identity-v01.png "设计定义、批次和单件是可关联但不可互换的身份层。现场结论要回到某一实物，就必须保留它从制造到服务的连续时间账。")
+![纵向三层从一张设计图展开到三个批次料箱，再展开到多件实物，其中一件被琥珀色描边并下接独立的制造、装车与服务时间线。](../handbook/figures-imagegen/ch09-fig01-three-level-identity-v01.png "设计定义、批次和单件是可关联但不可互换的身份层。现场结论要回到某一实物，就必须保留它从制造到服务的连续时间账。")
 
 <!-- FIG:ch09-fig01-three-level-identity:CONSUME -->
 > **图后判断**：本图不声称一个批次内的个体完全相同，也不单凭图上连线证明追溯真实完整；实际身份仍需受控标识与原始记录支持。

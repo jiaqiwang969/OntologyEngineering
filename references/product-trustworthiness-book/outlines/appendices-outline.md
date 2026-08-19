@@ -1,5 +1,9 @@
 ---
 contract_version: 1
+executable_authority: semantica_only_no_book_fallback
+normative_package_id: semantica.chapter_packages.vol2.normative
+normative_package_status: partial
+normative_release_status: blocked
 supplements:
   - supplement: appA-semiconductor
     target_hanzi: 25000
@@ -108,9 +112,8 @@ supplements:
         block: 10
         bbox: [114, 527, 396, 544]
     planned_outputs:
-      - functional-safety-book/appA-semiconductor/README.md
-      - functional-safety-book/appA-semiconductor/chapter.md
-      - ontology/source-anchors-part11.ttl
+      - references/product-trustworthiness-book/appendices/appendix-a-semiconductor.md
+      - future Semantica Part 11 package delta (not yet registered; blocked)
     gate_count_policy: runtime-derived
     question_count_policy: learning-objective-driven
     figure_policy: engineering-need-driven
@@ -206,9 +209,8 @@ supplements:
         block: 1
         bbox: [152, 160, 788, 184]
     planned_outputs:
-      - functional-safety-book/appendices/appendix-b-motorcycle-truck.md
-      - ontology/source-anchors-part12.ttl
-      - ontology/msil-tables.ttl
+      - references/product-trustworthiness-book/appendices/appendix-b-motorcycle-truck.md
+      - future Semantica Part 12 package delta (not yet registered; blocked)
     gate_count_policy: runtime-derived
     question_count_policy: learning-objective-driven
     figure_policy: engineering-need-driven
@@ -233,7 +235,7 @@ supplements:
       - heading: "字母索引、首讲章与交叉引用"
         hanzi: 1600
     ontology_mapping_shape: controlled-glossary-concept-index
-    source_boundary: part1-controlled-terms-no-second-tbox
+    source_boundary: part1-controlled-terms-no-parallel-book-runtime
     inventory_count: 185
     organization_policy: five-concept-groups-plus-alphabetic-index
     source_anchors:
@@ -252,8 +254,7 @@ supplements:
         block: 15
         bbox: [57, 508, 110, 523]
     planned_outputs:
-      - functional-safety-book/appC-glossary/README.md
-      - functional-safety-book/appC-glossary/glossary.md
+      - references/product-trustworthiness-book/appendices/appendix-c-glossary.md
     gate_count_policy: runtime-derived
     question_count_policy: learning-objective-driven
     figure_policy: engineering-need-driven
@@ -273,16 +274,16 @@ supplements:
         hanzi: 1200
       - heading: "人工注释：组合理由与偏离边界"
         hanzi: 1000
-      - heading: "本体化实践：从 RDF 导出到版本化卡片"
+      - heading: "本体化实践：未来 Semantica 全表包"
         hanzi: 800
-    ontology_mapping_shape: generated-method-cards
-    source_boundary: ontology-derived-human-reviewed-not-compliance
+    ontology_mapping_shape: future-semantica-method-card-contract
+    source_boundary: human-reviewed-book-currently-no-released-full-table-package
     inventory_count: 28
     inventory_by_part:
       part4: 14
       part6: 12
       part8: 2
-    generation_policy: ontology-export-plus-human-annotation
+    generation_policy: no-current-automatic-export
     source_anchors:
       - id: "4-Table-3"
         part: 4
@@ -327,15 +328,16 @@ supplements:
         block: 3
         bbox: [58, 410, 880, 568]
     planned_outputs:
-      - functional-safety-book/appD-method-quick-reference/README.md
-      - functional-safety-book/appD-method-quick-reference/method-cards.md
+      - references/product-trustworthiness-book/appendices/appendix-d-method-tables.md
     gate_count_policy: runtime-derived
     question_count_policy: learning-objective-driven
     figure_policy: engineering-need-driven
 ---
 # 四个附录的写作施工图
 
-这四个附录不是正文遗留内容的堆放区。它们分别承担专题深入、域适配、受控词汇入口和方法选择入口，并继续使用全书同一套来源、本体和门禁契约。
+这四个附录不是正文遗留内容的堆放区。它们分别承担专题深入、域适配、受控词汇入口
+和方法选择入口。书稿负责解释；如需机器执行，只能由源锁定的 Semantica package
+承接。当前 normative package 为 `partial`、release `blocked`，附录没有执行回退能力。
 
 ## 附录 A：半导体应用指南
 
@@ -382,7 +384,9 @@ supplements:
 
 ### 本体化实践：数值诚实与依赖链
 
-复用 ch06 的结构化数值+单位+范围+校订留痕和 ch08 的 DFI→故障场景→缓解措施→验证状态链。附录 A 新增半导体 ABox 时仍复用共享 TBox，不自造平行概念。
+复用 ch06 的结构化数值+单位+范围+校订留痕和 ch08 的 DFI→故障场景→缓解措施→
+验证状态链。未来新增半导体机器语义时，必须作为 Semantica package delta 受控注册，
+不得在附录目录自造平行概念或运行时。
 
 **素材账与边界**：Part 11 p10–140 可支撑主体，Annex A–E 只在有明确教学任务时选用。Part 11 是 informative guidance；本附录不得用其取代 Parts 2–9 的适用要求。
 
@@ -398,7 +402,7 @@ supplements:
 | 摩托车 HARA 与 MSIL 判定 | 2500 | §8，p19–26 | 判定表 |
 | 整车集成、测试与安全确认 | 1500 | §9–§10，p26–31 | 流程对照 |
 | 附录判例：严重度、暴露度与可控性 | 1300 | Annex B/C，p38–50 | 判例导读 |
-| 本体化实践：变体分级与 T&B 边界索引 | 1000 | 共享 TBox+Part 12 delta+T&B 条款索引 | 变体模型 |
+| 本体化实践：变体分级与 T&B 边界索引 | 1000 | 未来 Semantica Part 12 package delta | 待建合同 |
 
 ### 导读：同一套标准为何需要车型适配
 
@@ -432,7 +436,9 @@ supplements:
 
 ## 附录 C：185 词术语表与概念网索引
 
-定位：以 Part 1 §3.1–§3.185 为唯一受控词条集，正文按 ch02 的五条概念路径组织，字母序只做入口索引。附录不复制第二套 TBox。
+定位：以 Part 1 §3.1–§3.185 为书稿完整性分母，正文按 ch02 的五条概念路径组织，
+字母序只做入口索引。附录不复制第二套机器语义；可执行词汇与来源绑定只认 Semantica
+normative package。
 
 | 节 | 字数 | 供字素材 | 形态 |
 |---|---:|---|---|
@@ -442,7 +448,7 @@ supplements:
 | 风险群：危害事件、S/E/C 与完整性等级 | 2200 | ch02/ch04+Part 1 词条 | 概念路径 |
 | 需求群：安全目标、需求与工作产物 | 2200 | ch02/ch05+Part 1 词条 | 概念路径 |
 | 时间群：容忍、检测、处理与运行时间 | 1800 | ch02/ch05+Part 1 词条 | 时间线 |
-| 本体化实践：一份词表、多条概念路径 | 1600 | `fsafety-tbox.ttl`+术语来源锚点 | 查询生成 |
+| 本体化实践：一份词表、多条概念路径 | 1600 | Semantica normative `part1-vocabulary`/`part1-cards` | 查询解释 |
 | 字母索引、首讲章与交叉引用 | 1600 | 全书首讲表+章节键 | 出版索引 |
 
 ### 术语条目模板与受控来源
@@ -471,27 +477,33 @@ supplements:
 
 ### 本体化实践：一份词表、多条概念路径
 
-受控条目仅保留一份；五群是可多值标注的语义导航路径，字母表是排序视图。用 SPARQL 生成分群表和章节回指，避免手工维护三份会漂移的清单。
+受控条目仅保留一份；五群是可多值标注的语义导航路径，字母表是排序视图。当前索引
+由书稿出版流程生成并人工核对；未来只有 Semantica normative package 完成 185 词覆盖、
+正反例与 release gate 后，才可用 package 查询结果生成机器校验视图。
 
 ### 字母索引、首讲章与交叉引用
 
 附录末保留字母序全量入口，每个词条反向指向首讲章和操作章，使读者既能查词，也能回到完整工程语境。
 
-**素材账与边界**：Part 1 §3 的 185 个条目为完整性分母；当前 TBox 只锚定了其中一部分，不得以 TBox 当前实例数替代 185 词的出版覆盖账。
+**素材账与边界**：Part 1 §3 的 185 个条目是书稿完整性分母；Semantica normative
+package 当前只迁移了其中一部分，状态仍为 `partial`、release `blocked`。不得用当前
+package 的登记数替代 185 词出版覆盖账。
 
 ## 附录 D：28 张方法表速查
 
-定位：从已校订的方法表本体生成 28 张基础卡，再由人工补写适用场景、组合理由和偏离边界。卡片是选法入口，不是“选了 `++` 就合规”的打勾清单。
+定位：保留 28 张人工校订基础卡与适用场景、组合理由和偏离边界。全表 Semantica
+package 尚未 released，因此当前不是自动生成链。卡片是选法入口，不是“选了 `++`
+就合规”的打勾清单。
 
 | 节 | 字数 | 供字素材 | 形态 |
 |---|---:|---|---|
 | 速查卡读法与推荐等级边界 | 1000 | §4.3 读表规则+主章选法边界 | 使用说明 |
-| Part 4：系统与整车集成的 14 张卡 | 2500 | `system-integration-method-tables.ttl` | 卡片组 |
-| Part 6：软件生命周期的 12 张卡 | 2500 | `sw-method-tables.ttl` | 卡片组 |
-| Part 8：TCL3 与 TCL2 的 2 张卡 | 1000 | `tool-qualification-tables.ttl` | 卡片组 |
+| Part 4：系统与整车集成的 14 张卡 | 2500 | 人工核对的书稿矩阵 | 卡片组 |
+| Part 6：软件生命周期的 12 张卡 | 2500 | 人工核对的书稿矩阵 | 卡片组 |
+| Part 8：TCL3 与 TCL2 的 2 张卡 | 1000 | 人工核对的书稿矩阵 | 卡片组 |
 | 按场景跨表导航 | 1200 | 主章工程问题+方法类型 | 选择树 |
 | 人工注释：组合理由与偏离边界 | 1000 | ch05/ch07/ch10 现有边界声明 | 决策记录 |
-| 本体化实践：从 RDF 导出到版本化卡片 | 800 | 三个 MethodTableSet+来源锚点+子矩阵 | 生成流水线 |
+| 本体化实践：未来 Semantica 全表包 | 800 | 28/123/492 exact inventory+来源+反例 | 待建合同 |
 
 ### 速查卡读法与推荐等级边界
 
@@ -515,10 +527,16 @@ supplements:
 
 ### 人工注释：组合理由与偏离边界
 
-自动导出只能证明表格转录与来源一致。项目为什么选这组方法、替换高推荐度方法的理由是什么、证据是否充分，仍由负责人记录与审查。
+未来 Semantica 全表 package 的导出 receipt 最多证明受控转录与来源绑定在声明范围内
+通过；项目为什么选这组方法、替换高推荐度方法的理由是什么、证据是否充分，仍由
+负责人记录与审查。当前没有 released package，不得描述为已存在的自动导出链。
 
-### 本体化实践：从 RDF 导出到版本化卡片
+### 本体化实践：未来 Semantica 全表包
 
-查询 `MethodTableSet -> MethodTable -> VerificationMethod -> MethodRecommendation` 与来源锚点，生成带输入哈希的基础卡。人工注释与自动字段分层存储，重新导出时不覆盖审查结论。
+未来 package 应查询 `MethodTableSet -> MethodTable -> VerificationMethod ->
+MethodRecommendation` 并绑定来源锚点、输入哈希、正反例与 exact oracle。人工注释与
+机器字段应分层保存；当前 package 缺失，不能把计划写成已实现能力。
 
-**生成流程**：加载三个受控方法表模块→运行来源转录门禁→校验 Part 4/6/8 的 `14/12/2` 库存→导出基础卡→合并人工注释→生成差异报告。任何表、行、ASIL 单元或来源坐标变化都使出版快照失效，必须重新人工复核。
+**候选流程**：在 Semantica 注册全表 package→绑定合法来源的坐标与哈希→以正反例
+校验 Part 4/6/8 的 `14/12/2`、`123` 行和 `492` 单元→产生 receipt/release verdict→
+同步人工书稿。任一表、行、ASIL 单元或来源变化都必须形成新 revision 并重新人工复核。

@@ -1,6 +1,10 @@
 ---
 contract_version: 1
 chapter: ch10
+executable_package_id: semantica.chapter_packages.vol2.ch10
+executable_authority: semantica_only_no_book_fallback
+package_status: partial
+release_status: blocked
 target_hanzi: 40000
 section_budgets:
   - heading: "五张材料都写着 PASS，为什么 B-2026-04 仍不能签？"
@@ -90,7 +94,7 @@ source_anchors:
     block: 0
     bbox: [57, 98, 613, 116]
 planned_outputs:
-  - functional-safety-book/ch10-supporting-processes/chapter.md
+  - references/product-trustworthiness-book/ch10-supporting-processes/chapter.md
 gate_count_policy: runtime-derived
 question_count_policy: learning-objective-driven
 figure_policy: engineering-need-driven
@@ -122,15 +126,16 @@ figure_policy: engineering-need-driven
 | 10.5 从 `B-2026-03` 到 `B-2026-04`，哪些结论必须重开？ | 旧基线、变更请求、影响与验证路径 | 授权决定、新基线与文档身份；再问工具 usage 是否仍受旧资格覆盖 |
 | 10.6 同一品牌、同一张旧证书，为什么不能覆盖新的工具用法？ | 新旧代码生成 usage、输出检查路径与旧资格材料 | 适用性→TI/TD→TCL→方法表→边界化证据；再问旧组件历史能否复用 |
 | 10.7 旧组件用了十年，究竟能走哪条复用通道？ | 精确候选对象、用途变化、既有证据与现场历史 | Clause 12/13/14、SEooC 与工具历史的边界对照；再问机器能否核对快照一致性 |
-| 10.8 本体化实践：机器能否证明五张材料终于指向同一个快照？ | Table 3/4/5、本章 ABox、CQ、Shape 与 fixture | 已建工具子域/未建配置与 DIA 分账；再问签字人还能批准什么 |
+| 10.8 本体化实践：机器能否证明五张材料终于指向同一个快照？ | Semantica ch10 contract/CQ/scenario/oracle | 已建工具子域/未建配置与 DIA 分账；再问签字人还能批准什么 |
 | 10.9 回到放行会，哪些窄结论可以签？ | 全章 Hold、当前仓库事实与 `SUP-S10` | 窄裁决、单因变式、文件入口和 ch11 组装之门 |
 
 ## 保留与迁移
 
 保留旧稿中来源正确且教学价值高的材料：DIA 无主项、坏需求改写、七要素用例、`CR-0412`
 变更链、usage/TI/TD 对照、复用三问、Table 3/4/5 的机器合同和所有诚实边界。旧稿的第二个独立
-PiU 故事、条款鸟瞰、新词地图、十一/十/九/七/六项逐条库存、长 TTL/Shape 展示、完整文件目录和
-多轮回顾不再充当骨架；完整清单迁回 README、examples、来源矩阵和受控机器文件。
+PiU 故事、条款鸟瞰、新词地图和十一/十/九/七/六项逐条库存不再充当骨架。唯一
+机器合同在 Semantica ch10 package；当前为 `partial`、release `blocked`，书稿不保存
+第二套规则、数据、查询、完整目录或运行入口。
 
 ## 图的冲突落点
 
@@ -141,10 +146,11 @@ PiU 故事、条款鸟瞰、新词地图、十一/十/九/七/六项逐条库存
 
 ## 本体化实践的验收边界
 
-`CQ-CH10-01/02/03` 与既有 Shape/fixture 可检查 Table 3 六格、两个教学工具 usage 的 TI/TD/TCL
-以及 Table 4/5 的 2 表/8 方法/32 单元。当前模型不能证明 §11.4.1 的工具清单完整、rationale
-工程真实或资格活动已执行；DIA、需求质量、配置/变更链和五张材料的共同快照仍未对象化。机器合同
-只能对已登记工具子域签结构一致，不能替 `B-2026-04` 放行。
+Semantica ch10 package 已登记的问题与场景可检查 Table 3 六格、两个教学工具 usage 的
+TI/TD/TCL，以及 Table 4/5 的 2 表/8 方法/32 单元。package 当前不能证明 §11.4.1
+工具清单完整、rationale 工程真实或资格活动已执行；DIA、需求质量、配置/变更链与
+五张材料的共同快照仍未对象化。机器只能对登记范围签结构一致，不能替
+`B-2026-04` 放行；release 继续 `blocked`。
 
 ## 练习配置
 
@@ -197,9 +203,9 @@ PiU 和工具使用历史按对象与任务分账。PiU 用 specimen 筛选、�
 
 ## 本体化实践：机器能否证明五张材料终于指向同一个快照？
 
-从 CQ 走到 TBox、ABox、Shape、SPARQL、oracle、fixture 与来源锚，说明单盏机器绿灯的证明边界；
-把现有工具子域与尚未落盘的 `CR-0412` 最小关系设计明确分开。界面区分 Satisfied、Violation、
-Unknown 与 Not modelled，但不把书稿策略冒充 ISO 术语或发布结论。
+从 Semantica ch10 contract 走到 CQ、scenario、oracle 与 receipt，说明单盏机器绿灯的
+证明边界；把已登记工具子域与尚未对象化的 `CR-0412` 最小关系明确分开。结果区分
+Satisfied、Violation、Unknown 与 Not modelled，但不把书稿策略冒充 ISO 术语或发布结论。
 
 ## 回到放行会，哪些窄结论可以签？
 

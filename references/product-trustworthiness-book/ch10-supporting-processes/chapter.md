@@ -1,6 +1,12 @@
 # 第 10 章 回到放行桌：支撑过程与安全案例
 
-![证据文件层层堆成一座塔，顶部主张与塔身之间仍有论证缺口](../../handbook/figures-imagegen/art-ch10-v01.png "chapter-art")
+> Semantica 绑定： 本章保存工具、配置、文档、安全案例与放行边界的可读规范；
+> 唯一机器语义是 `semantica.chapter_packages.vol2.ch10`，主场景为
+> `semantica.vol2.ch10.scenario.primary`。本体、CQ、查询、Shape、案例、规则、oracle、
+> manifest 与 receipt 均在 Semantica。当前为 `partial`、release `blocked`；
+> 多个局部 PASS 不会自动合成为一次有权放行。
+
+![证据文件层层堆成一座塔，顶部主张与塔身之间仍有论证缺口](../handbook/figures-imagegen/art-ch10-v01.png "chapter-art")
 
 > **【导读】**
 > 六周之后，第 1 章那间会议室重新亮灯：还是候选 RC17，还是那六张绿卡，只是桌上
@@ -110,7 +116,7 @@
 <!-- FIG:ch10-fig01-argument-gap:OBSERVE -->
 > **读图任务**：先分别看顶部主张和底部证据卡，再把注意力放在中间的大面积空缺，检查虚线是否真的说明了两者之间的支持关系。
 
-![三层结构顶部是一条待证的主张，底部是多张来源各异的证据卡，中间论证层几乎完全缺失，只有琥珀色虚线试图跨越空白。](../../handbook/figures-imagegen/ch10-fig01-argument-gap-v01.png "证据不会自己走向主张。论证必须交代每份证据支持哪个子主张、依赖哪些假设，以及何种缺口或反证会迫使决定重开。")
+![三层结构顶部是一条待证的主张，底部是多张来源各异的证据卡，中间论证层几乎完全缺失，只有琥珀色虚线试图跨越空白。](../handbook/figures-imagegen/ch10-fig01-argument-gap-v01.png "证据不会自己走向主张。论证必须交代每份证据支持哪个子主张、依赖哪些假设，以及何种缺口或反证会迫使决定重开。")
 
 <!-- FIG:ch10-fig01-argument-gap:CONSUME -->
 > **图后判断**：本图只揭示结构性缺口，不判定底部证据的真伪或充分性，也不因将证据放入案卷就自动产生产品级授权。

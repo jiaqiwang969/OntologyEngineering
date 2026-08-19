@@ -9,8 +9,15 @@
 再环顾推理器市场上的其他流派：以 ELK 为代表的 consequence-based 算法、规则引擎的 RETE 网络、物化与查询时推理的架构之争。
 后半章转向工程中离业务最近的三类机制：SWRL 业务规则怎么写、时态知识怎么打时间戳、不确定知识怎么标概率，
 最后讨论怎样让推理器扛得住生产规模的数据。
-第 2 章铺好的描述逻辑地基在本章全面派上用场，而这里讲到的机制，在第 9 章都会变成可运行的真实代码。
+第 2 章铺好的描述逻辑地基在本章全面派上用场；但理论覆盖范围大于当前 runtime，
+第 9 章只在 manifest 明示的 profile 与 oracle 内复算，不把未支持能力包装成真实代码。
 \end{introbox}
+
+\chapterbinding{semantica.chapter\_packages.vol1.ch05}{partial}{blocked}
+{SWRL、DL、时态与概率材料已作为来源资产保留；受限正向链场景
+\texttt{OE-V1-CH05-SCN-FORWARD-CHAIN-001} 通过适配器绑定精确结论。}
+{一般 SWRL/built-ins、完整 DL tableau、时态、概率、默认与非单调推理均不执行；
+资产存在不等于 parser、profile 或 oracle 存在。}
 
 \section{推理服务全家福：推理器能替你回答什么}
 
@@ -224,7 +231,7 @@ Tableau 回答的基础问题是 5.1.3 的可满足性，而其他服务都能�
 推理器能否得出「Lathe\_003 需要冷却系统」？
 
 \input{fragments/sec-ch05-description-logic-examples-txt-2}
-\snipsource{ch05-reasoning/examples/description-logic-examples.txt}
+\assetsource{ch05}{description-logic-examples}
 
 把片段中的三步翻译成完成图上的动作，逐步解说如下。
 
@@ -271,11 +278,11 @@ Tableau 回答的基础问题是 5.1.3 的可满足性，而其他服务都能�
 \subsection{完整推演之二：一台「不在任何工作单元」的设备}
 
 第二个例子展示 Tableau 的另一面：报告\textbf{不一致}。
-仓库文件用一阶逻辑记法给出了一对互相矛盾的公理——
+包内教学资产用一阶逻辑记法给出了一对互相矛盾的公理——
 为了可读性写成 FOL，但矛盾结构与 DL 表达完全相同。
 
 \input{fragments/sec-ch05-description-logic-examples-txt-3}
-\snipsource{ch05-reasoning/examples/description-logic-examples.txt}
+\assetsource{ch05}{description-logic-examples}
 
 推演过程如下。公理 2 是一个存在断言：天底下有一台设备不位于任何工作单元。
 Tableau 把这个「存在」落实为匿名个体 e，标签登记两件事：
@@ -329,7 +336,7 @@ Tableau 把这个「存在」落实为匿名个体 e，标签登记两件事：
 理解了机理，回头看工程上最常写的四类 DL 约束——它们将成为推理器日常咀嚼的口粮。
 
 \input{fragments/sec-ch05-description-logic-examples-txt-4}
-\snipsource{ch05-reasoning/examples/description-logic-examples.txt}
+\assetsource{ch05}{description-logic-examples}
 
 逐条点评。
 第一条「CNCLathe \(\sqsubseteq\) \(\exists\)hasControl.CNCControl」是\textbf{存在型约束}，最便宜也最常用；
@@ -416,8 +423,8 @@ beta 段一个连接节点，左缓存存「已知的设备」，右缓存存「
 这条半成品就留在右缓存里\textbf{等}，直到设备断言补到为止。
 「数据到一条、网里渗一条、缓存接住没凑齐的」——这就是 RETE 的全部日常。
 Drools、Jena 前向引擎以及多数商用规则引擎都是 RETE 或其变体；
-第 9 章 \texttt{reasoner.py} 的迷你前向引擎虽然只是朴素循环，
-但它每一轮「事实驱动规则」的节奏，正是 RETE 想加速的那个过程。
+Semantica 的受限正向规则 API 也体现“事实驱动规则”的基本节奏，但不因此宣称采用
+完整 RETE、支持一般 SWRL 或拥有第三方引擎的全部 profile。
 
 \subsection{物化还是查询时推理：一张架构对照表}
 
@@ -478,7 +485,7 @@ SWRL 规则的形态是「前件 \(\rightarrow\) 后件」：
 \item 另有同一性原子 sameAs / differentFrom，用于声明两个变量绑定的个体相同或不同，工程中出场较少。
 \end{itemize}
 
-仓库文件 \texttt{swrl-rules.swrl} 末尾的「语法备注」段落把这些约定浓缩成了速查注释，
+包内教学资产 \texttt{swrl-rules} 末尾的「语法备注」段落把这些约定浓缩成了速查注释，
 读规则前先扫一眼，可以避开「类原子塞两个参数」这类最常见的语法错误。
 
 \subsection{swrlb 内建函数族}
@@ -542,7 +549,7 @@ DL-Safe 的边界与工程的台账边界天然重合——这是它在实践中
 调度系统希望这个判断自动完成，而不是靠人工维护「高功率设备清单」。
 
 \input{fragments/snip-ch05-swrl}
-\snipsource{ch05-reasoning/examples/swrl-rules.swrl}
+\assetsource{ch05}{swrl-rules}
 
 推理链是两级火箭：第一条规则用属性原子绑定功率值，内建原子做阈值比较，
 满足即给设备贴上「高功率设备」类标签；
@@ -559,7 +566,7 @@ SWRL 版靠两条规则接力——\textbf{概念建模与规则建模是同一�
 两个任务在同一台设备上撞档期、设备维护超时无人过问。三条规则分别站岗。
 
 \input{fragments/sec-ch05-swrl-rules-swrl-2}
-\snipsource{ch05-reasoning/examples/swrl-rules.swrl}
+\assetsource{ch05}{swrl-rules}
 
 状态冲突规则的推理链最直白：设备状态为 Running，又有任务 \texttt{?t} 派给它，
 两个条件在 \texttt{?e} 上会合，立刻给 \texttt{?t} 贴 StatusConflict 标签。
@@ -590,13 +597,13 @@ SWRL 版靠两条规则接力——\textbf{概念建模与规则建模是同一�
 配套的第二条规则再按工序类型与设备能力推荐承接设备（车削工序配有车削能力的车床）。
 注意推荐结论用的是专门属性 recommendedProcess 而非直接写 hasProcess——
 推理产物与人工确认的事实分属性存放，这是第 7 章数据治理会反复强调的「推理结果可追溯」原则。
-此类两条规则的全文见仓库文件第 3 节。
+此类两条规则的全文见包内教学资产第 3 节。
 
 \textbf{第四类：工序顺序规则——把工艺纪律写成逻辑。}
 业务动机：工序有先后，错序是质量事故的温床——焊缝没做热处理就交付，残余应力迟早出问题。
 
 \input{fragments/sec-ch05-swrl-rules-swrl-4}
-\snipsource{ch05-reasoning/examples/swrl-rules.swrl}
+\assetsource{ch05}{swrl-rules}
 
 第一条规则维护执行秩序：前序工序状态变为 Completed，
 后序工序才获得 canStart 的放行标记，调度器只对放行的工序派工。
@@ -611,7 +618,7 @@ SWRL 版靠两条规则接力——\textbf{概念建模与规则建模是同一�
 业务动机：任务声明需要某资源，而资源的可用量 \texttt{?a} 已小于 1（即无可分配单位），
 则给任务贴 ResourceConflict 标签。
 推理链与状态冲突同构，差别只在比较对象从状态枚举换成了库存数值；
-规则全文见仓库文件第 5 节。
+规则全文见包内 \texttt{swrl-rules} 教学资产第 5 节。
 有一个分工细节值得点破：规则只\textbf{读} hasAvailability 的数值并断言冲突，
 \textbf{不做扣减}——库存增减是库存系统的事务职责，
 推理层保持「只产出结论、不修改输入」的纯净性，
@@ -619,9 +626,9 @@ SWRL 版靠两条规则接力——\textbf{概念建模与规则建模是同一�
 把五类规则连起来看就是一份\textbf{派工前置检查清单}：
 状态、档期、维护时长、工序秩序、资源余量各设一道闸，
 任何一道闸亮灯，调度器都能在派单生效前拿到带标签的告警事实。
-五类规则合在一起，构成第 9 章 \texttt{reasoner.py} 的需求清单——
-那一章会用 Python 实现一个迷你前向引擎，把这批规则真正跑起来，
-读者可以把本节当作那份代码的「规格说明书」。
+五类规则合在一起，构成第 9 章规则需求的来源规格；但当前 ch09 只结构化保留
+这些 SWRL，不执行一般 SWRL/built-ins。可复算的只有 ch05 包中声明的受限正向链，
+不得用旧 Python 实现填补 runtime 的红灯。
 
 \subsection{SWRL 写不了什么：否定的边界与绕法}
 
@@ -681,7 +688,7 @@ RDF 生态最终走通的路线是换一个维度：\textbf{不改造三元组�
 把图名当作时间戳使用，每个图就是一张\textbf{状态快照}：
 
 \input{fragments/sec-ch05-temporal-reasoning-txt-1}
-\snipsource{ch05-reasoning/examples/temporal-reasoning.txt}
+\assetsource{ch05}{temporal-reasoning}
 
 片段用 TriG 格式（Turtle 的具名图扩展）记录了两天的车间状态：
 21 日的图里 Lathe\_003 闲置在 B 区，22 日的图里它已在 A 区运行。
@@ -705,7 +712,7 @@ SPARQL 用 \texttt{GRAPH} 子句按图名取数，即可做\textbf{时间切片�
 快照解决「存」，推理还要解决「算」。两条时态规则展示了典型模式与典型陷阱。
 
 \input{fragments/sec-ch05-temporal-reasoning-txt-2}
-\snipsource{ch05-reasoning/examples/temporal-reasoning.txt}
+\assetsource{ch05}{temporal-reasoning}
 
 第一条规则是 5.4.4 时间冲突规则的时态版：
 设备在 [\texttt{?t1}, \texttt{?t2}] 区间运行，任务区间 [\texttt{?s}, \texttt{?e}] 与之相交
@@ -814,7 +821,7 @@ OWL 里要么写「高功率设备 \(\sqsubseteq\) 需维护设备」（断言 1
 \subsection{给公理标上概率}
 
 最直接的方案是\textbf{在 TBox 公理上标注条件概率}（P-SROIQ、PR-OWL 等风格），
-仓库文件的开头给出两条标准样例：
+包内教学资产的开头给出两条标准样例：
 「P(NeedsMaintenance \(\mid\) HighPowerEquipment) \(=\) 0.85」——
 读作「100 台高功率设备中约 85 台需要定期维护」；
 「P(PrecisionDrift \(\mid\) LongRunning) \(=\) 0.60」——长时间运行的设备六成会出现精度漂移。
@@ -829,7 +836,7 @@ OWL 里要么写「高功率设备 \(\sqsubseteq\) 需维护设备」（断言 1
 仓库的故障诊断网络只有三个节点，却五脏俱全：
 
 \input{fragments/sec-ch05-probabilistic-reasoning-txt-2}
-\snipsource{ch05-reasoning/examples/probabilistic-reasoning.txt}
+\assetsource{ch05}{probabilistic-reasoning}
 
 读表的方法：高温与长时间运行是两个原因节点，共同指向结果节点故障。
 CPT 四行覆盖原因的全部四种组合——双重打击下故障概率高达 0.90，
@@ -856,10 +863,10 @@ CPT 在手，推理可以双向开弓。
 查表第一行得故障概率 0.90，超过阈值，触发预防性维护工单。
 \textbf{诊断方向}（由果溯因）才见真功夫：维修工接到一台故障设备，
 想知道「它处于高温状态的概率多大」，以决定先查冷却系统还是先查别处。
-这要用贝叶斯公式反推，仓库片段给出完整的三步计算，我们逐步带读者手算。
+这要用贝叶斯公式反推，包内教学片段给出完整的三步计算，我们逐步带读者手算。
 
 \input{fragments/snip-ch05-bayes}
-\snipsource{ch05-reasoning/examples/probabilistic-reasoning.txt}
+\assetsource{ch05}{probabilistic-reasoning}
 
 \textbf{第一步：算出「故障」的边缘概率 P(Fault)}。
 全概率公式把四种原因组合的贡献加总，每一项 \(=\)
@@ -900,7 +907,7 @@ P(HighTemp \(\mid\) Fault) \(=\) P(Fault \(\mid\) HighTemp) \(\times\) P(HighTem
 贝叶斯网络要求把变量与依赖结构想清楚，
 另一条路线\textbf{马尔可夫逻辑网络}（Markov Logic Network，MLN）则直接给一阶逻辑规则\textbf{标权重}：
 权重越大，违反这条规则的世界越「不可能」。
-仓库片段（文件第 4 节）给出三档样例：
+包内教学片段（文件第 4 节）给出三档样例：
 权重 2.5 的「高功率设备需要冷却」是强约束，
 权重 1.2 的「老旧数控机床会精度漂移」是中等约束，
 权重 0.4 的「闲置即可用」只是弱倾向。
@@ -921,7 +928,7 @@ MLN 则权衡两边——违反弱规则的代价小，违反中等规则的代�
 
 \subsection{工具生态与架构原则}
 
-概率本体的工具生态不如经典推理器成熟，但各路线都有代表作（详见仓库文件第 5 节）：
+概率本体的工具生态不如经典推理器成熟，但各路线都有代表作（详见包内教学资产第 5 节）：
 \textbf{PR-OWL} 基于多实体贝叶斯网络（MEBN）扩展 OWL；
 \textbf{BayesOWL} 把 OWL 类层次编译成贝叶斯网络；
 \textbf{Pronto} 是 Pellet 推理器的概率扩展（P-SROIQ 路线）；
@@ -969,7 +976,7 @@ MLN 则权衡两边——违反弱规则的代价小，违反中等规则的代�
 \end{tabularx}
 \end{center}
 
-由此沉淀出与仓库文件第 5 节一致的改写守则：
+由此沉淀出与包内教学资产第 5 节一致的改写守则：
 \textbf{能用 \(\sqsubseteq\) 不用 \(\equiv\)}——只有真正需要「自动归类」（5.2.3 那种数值触发）的类才配等价定义，
 纯分类标签用子类即可；
 \textbf{能用 \(\exists\) 不用 \(\forall\)}——「至少有一个」便宜，「全都必须」昂贵，
@@ -1054,16 +1061,14 @@ consequence-based 的 ELK 用砍表达力换多项式速度，RETE 用缓存换�
 性能工程的四件武器——公理价目表、模块抽取、增量推理、物化管道——
 让这一切扛得住生产数据。
 第 2 章的逻辑地基、第 4 章的 OWL 语法、本章的推理机制至此会师；
-第 7 章将把物化管道做成可运维的系统，第 9 章的 \texttt{reasoner.py}
-会把本章的规则推理写成你可以单步调试的代码。
+第 7 章将把 Dataset、SHACL 与版本治理接起来，第 9 章则展示规则资产存在、
+受限 profile 可执行与一般 SWRL 仍阻断怎样在同一 package 中同时诚实表达。
 
 给动手派读者一条练习路线：
-先对照 5.2.3 与仓库文件把 Lathe\_003 的推演\textbf{手算}一遍（含归谬视角）；
-再把这组公理录入 Protégé，跑 HermiT 看推理结果与手算是否一致；
-然后把 \texttt{swrl-rules.swrl} 的规则逐条搬进规则页签，
-改一个阈值、加一条事实，观察结论怎样级联变化；
-最后带着这些手感去读第 9 章的代码——你会发现那个迷你引擎的每一行循环，
-都在重演你手算时的某个动作。推理器不再是黑箱，这正是本章想交付的东西。
+先对照 5.2.3 与包内教学资产把 Lathe\_003 的推演\textbf{手算}一遍（含归谬视角）；
+再查看 ch05 manifest，运行 \texttt{OE-V1-CH05-SCN-FORWARD-CHAIN-001}，
+核对两条 exact conclusion；随后尝试请求未声明的 SWRL/DL/时态/概率操作，确认 runner
+fail closed。最后比较手算理论与受限执行 profile：知道系统没做什么，与知道它做了什么同样重要。
 
 \subsection*{思考题}
 
@@ -1097,21 +1102,21 @@ consequence-based 的 ELK 用砍表达力换多项式速度，RETE 用缓存换�
   给出两种降低推理成本的改写方案，并说明各自损失了什么语义。
 \end{enumerate}
 
-\subsection*{本章文件指引}
+\subsection*{本章包资产与场景指引}
 
-本章全部代码片段节选自下列四个仓库文件；
-它们都是纯文本，建议在编辑器里对照正文整篇通读——
+本章全部片段来自 ch05 包内下列资产；建议对照正文阅读，
 注释里还有不少正文未及展开的细节。
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.40\linewidth}X@{}}
 \toprule
-\normalfont\textbf{文件（ch05-reasoning/examples/）} & \textbf{内容与阅读建议} \\
+\normalfont\textbf{Semantica asset/scenario} & \textbf{内容与阅读建议} \\
 \midrule
-description-logic-examples.txt & Tableau 规则直觉、Lathe\_003 完整推演与终止条件、一致性反例、工程约束与性能优化五条建议；配合 5.2 与 5.7 手算 \\
-swrl-rules.swrl & 五类调度规则全文与语法备注；SWRL 否定限制的工程绕法写在文件头注释，配合 5.4 逐条阅读 \\
-temporal-reasoning.txt & TriG 具名图快照、两条时态规则、NOW() 缺失的注入式处理；配合 5.5 阅读 \\
-probabilistic-reasoning.txt & 概率公理、CPT、完整贝叶斯计算、MLN 权重与工具清单（补编）；配合 5.6 验算每个数字 \\
+description-logic-examples & Tableau 直觉、手算推演与一致性反例；教学 case，不是 DL runner \\
+swrl-rules & 五类调度规则与语法；来源保留，一般 SWRL/built-ins 不执行 \\
+temporal-reasoning & TriG 快照与时态规则；教学材料，无执行 oracle \\
+probabilistic-reasoning & 概率公理、CPT 与贝叶斯计算；教学材料，无执行 oracle \\
+OE-V1-CH05-SCN-FORWARD-CHAIN-001 & 受限正向链 exact oracle；不代表上述四类高级 profile 已支持 \\
 \bottomrule
 \end{tabularx}
 \end{center}

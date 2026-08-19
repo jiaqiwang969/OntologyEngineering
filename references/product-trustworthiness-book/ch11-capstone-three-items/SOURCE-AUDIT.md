@@ -1,5 +1,10 @@
 # ch11 来源审计：收口合同与 Safety Case 生命周期边界
 
+> **现行身份。** 本文件审计的是历史总装书稿，不是现行第 11 章。旧 bundle、查询、
+> 边界规则与缺口记录的唯一可执行/可核验后继位于
+> `semantica.chapter_packages.vol2.ch20` 的 `legacy-capstone-*` 资产；旧书内路径已经
+> 撤销，不得重建为 fallback。Semantica ch20 当前为 `partial`、release `blocked`。
+
 ## 审计结论
 
 第11章不是再吸收一遍前十章的 ISO 条款，而是只读消费其已登记教学对象，用一份待签报告检查
@@ -28,8 +33,9 @@ ISO 26262-10:2018 §5.3.2；其余 HARA、系统、硬件、软件、分解、�
 | p23/b7 | `[112,512,806,527]` | 确认评审回指 Part 2 §6.4.9 | 不由 ch11 执行或宣称完成 |
 | p23/b8 | `[112,537,941,568]` | 相关项修改时评价影响并按需更新 Safety Case | 不等于每次变化可静默吸收 |
 
-正文 §11.5.3 对这五段内容作语义重构，没有复制长段原文。`ontology/source-anchors-part10.ttl`
-以 `Clause_10_5_3_2` 和五个 `SourceFragment` 保存 b3–b8 的受控坐标；outline 同步保存逐块坐标。
+正文 §11.5.3 对这五段内容作语义重构，没有复制长段原文。旧来源锚文件曾以
+`Clause_10_5_3_2` 和五个 `SourceFragment` 保存 b3–b8；现行书稿不再持有该 RDF。
+若坐标将作为机器证据继续使用，必须先进入 Semantica package revision 并绑定受控来源哈希。
 `coverage/source-units.csv` 的 `SU-10-5.3.2` 已登记 `chapter_ids=ch11`、
 `disposition=anchor_only`。锚只对象化来源身份与 informative 边界，不对象化项目执行，因此不能写成
 `modeled`。
@@ -41,8 +47,8 @@ ISO 26262-10:2018 §5.3.2；其余 HARA、系统、硬件、软件、分解、�
 | HARA、FSR/TSR、硬件度量、软件需求、分解、生产与工具对象 | ch04–ch10 | 只读查询、比较结构深度与报告边界 |
 | Clause 8 安全确认对象 | ch05 对象责任边界 | 读取 Draft/Planned/NotRun/NotPerformed，不升级状态 |
 | Claim、Argument 与 EvidenceCandidate 角色 | ch03 CAE 治理边界及对象责任章 | 读取七件候选角色，不创建或接受证据 |
-| CQ/oracle/fixture 与收口报告合同 | ch11 / eval 基础设施 | 可修订检查合同，但必须记录验证器变化影响 |
-| `bundle-manifest.yaml` | 历史冻结记录 | 保留并核验，不因当前漂移自动重冻 |
+| CQ/oracle/fixture 与收口报告合同 | Semantica ch20 package | 只通过 package revision 修订，并记录验证器变化影响 |
+| 历史 bundle manifest | Semantica ch20 `legacy-capstone-bundle-manifest` | 保留并核验，不因当前漂移自动重冻 |
 
 七件候选证据的数量、Clause 8 状态链和 `ClaimOpen` 都来自仓库当前上游教学对象。它们是书稿模型
 事实，不是 ISO 26262 自带案例或真实项目证据。BMS/AEB 的最小链与 EPS 的深链同样属于合成教学

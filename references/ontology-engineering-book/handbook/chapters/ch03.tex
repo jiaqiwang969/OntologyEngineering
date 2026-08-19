@@ -13,6 +13,12 @@
 第 9 章实战系统的设计正是从本章的 CQ 清单开始的。
 \end{introbox}
 
+\chapterbinding{semantica.chapter\_packages.vol1.ch03}{partial}{blocked}
+{CQ 注册表、CQ1 查询、正例、单因反例及
+\texttt{OE-V1-CH03-SCN-CQ-ACCEPTANCE-001} 已原生绑定；方法材料作为包内工程规则保留。}
+{Ontology 101/METHONTOLOGY 阶段门禁和 OntoClean 元属性检查器尚未实现；
+CQ1 场景通过只证明声明夹具符合 exact oracle，不证明整套方法论已自动化。}
+
 \section{为什么需要方法论：三个失败故事}
 
 讲方法论之前，先讲三个失败的故事。它们都是虚构的，但做过知识工程项目的读者
@@ -152,7 +158,7 @@ CQ 既是本体的\textbf{需求规格说明书}，又是它的\textbf{验收测
 愿意为标准答案签字。背书把故事三的坑提前堵上：从需求一开始，
 专家就被拉进了流程，而不是等模型建完再来「围观」。
 
-数量上，仓库示例给出的工程经验是\textbf{每轮迭代 10～30 条为宜}：
+数量上，包内教学材料给出的经验是\textbf{每轮迭代 10～30 条为宜}：
 太少撑不起一个像样的范围，太多则说明范围失控或粒度过细，应当分轮消化。
 
 这三个特征也解释了 CQ 与传统需求文档的差别。需求文档说
@@ -213,13 +219,13 @@ CQ 的主要来源是领域专家访谈。但要注意：\textbf{专家不会直
 先拿下，建立信心；二是\textbf{定技术选型}——关联推理类提示将来需要规则
 （第 5 章 SWRL），统计分析类提示需要查询层聚合而非本体公理；
 三是\textbf{切迭代}——每轮迭代认领一小撮 CQ，做完即验收。
-下面是贯穿本书的制造领域 CQ 清单，来自仓库示例文件：
+下面是贯穿本书的制造领域 CQ 清单，来自 ch03 包内教学资产：
 
 \input{fragments/sec-ch03-competency-questions-txt-2}
-\snipsource{ch03-ontology-methodology/examples/competency-questions.txt}
+\assetsource{ch03}{competency-questions}
 
-请记住其中的 CQ1 至 CQ5——第 9 章的智能制造实战系统将逐条实现它们，
-届时你可以把那一章当作本节方法的「期末答卷」。
+请记住其中的 CQ1 至 CQ5——第 9 章沿用这些编号，但当前只有 CQ1 绑定了
+正例、单因反例与 exact oracle；其余查询即使已迁入，也不能在缺少夹具与 oracle 时假绿。
 还要注意约束校验类的特殊气质：CQ7 问的是「哪些设备\textbf{违反了}应有的配置」，
 这类问题的理想答案是「一个都没有」——这个细节在 3.2.6 小节的验收设计中将变得关键。
 
@@ -239,10 +245,10 @@ CQ 的第二重作用——设计驱动——值得单独演示。反推有一�
 \textbf{动词与介词短语}对应属性（「加工」对应 \texttt{canProcess}，
 「位于」对应 \texttt{locatedIn}），\textbf{种属修饰}对应子类公理
 （「铝合金是一种材料」），\textbf{时间与数值条件}对应数据属性与比较逻辑。
-仓库文件对三条代表性 CQ 做了完整分解：
+包内 \texttt{competency-questions} 教学资产对三条代表性 CQ 做了完整分解：
 
 \input{fragments/sec-ch03-competency-questions-txt-3}
-\snipsource{ch03-ontology-methodology/examples/competency-questions.txt}
+\assetsource{ch03}{competency-questions}
 
 把全部 CQ 的反推结果汇总、去重，就得到第一版\textbf{类清单、属性清单与公理清单}——
 这正是 3.3 节七步法进入「定义类层次」之前最好的输入。反推还有一个副产品：
@@ -261,25 +267,28 @@ CQ 的第二重作用——设计驱动——值得单独演示。反推有一�
 
 \subsection{把验收自动化：从 CQ 到 SPARQL 回归}
 
-验收标准要想长出牙齿，必须\textbf{可执行}。做法是给每条 CQ 配一条验收查询，
-本体每次变更后机器自动重跑。看两个代表性例子：
+验收标准要想长出牙齿，必须\textbf{可判定}。每条 CQ 不只配查询，还要绑定适用范围、
+正例、单因反例与 exact oracle；本体每次变更后由同一 runner 重跑。先看两个教学例子：
 
 \input{fragments/snip-ch03-cq}
-\snipsource{ch03-ontology-methodology/examples/competency-questions.txt}
+\assetsource{ch03}{competency-questions}
 
 第一条对应 CQ1。值得留意路径表达式 \texttt{rdf:type/rdfs:subClassOf*}：
 它把「数控车床的实例」也算进「设备」，否则挂在子类下的设备会漏网——
 这是新手最常踩的查询陷阱（SPARQL 语法在第 4 章系统展开，这里先混个脸熟）。
-验收判据是：返回结果与领域专家事先给出的标准答案一致。
+验收判据不是“看起来差不多”，而是变量、行数与多重集和领域专家冻结的标准答案一致。
+当前 ch03 package 已为 CQ1 原生绑定这一组证据。
 
-第二条对应 CQ7，设计哲学完全不同：\textbf{约束校验类 CQ 的期望结果是空集}。
+第二条对应 CQ7，设计哲学完全不同：\textbf{约束校验类 CQ 的期望结果可以是空集}。
 查询专门去找「高功率却没有配置冷却」的反例，返回任何一行都意味着
 数据或公理有缺陷——结果非空本身就是告警。一正一反两类查询，
-合起来就是本体的「单元测试」。
+合起来展示了“正向答案”与“找反例”两种测试形态；但 CQ7 当前没有章内执行场景，
+不能仅凭教学查询声称已验收。
 
-最后一步是把测试装进流程：CQ 清单与本体文件放进\textbf{同一个版本库}
-（例如 \texttt{cq/} 目录下逐条编号管理），每次本体变更后\textbf{自动回归}
-全部验收查询，全绿才允许合入发布——也就是软件工程里持续集成（CI）的标准做法。
+最后一步是把测试装进 Semantica package：CQ registry、查询、夹具、场景与 oracle
+共同进入 manifest 和内容哈希；每次变化后由 runner 自动回归全部\textbf{声明为必需}
+的场景。只有 package release gate 完成才允许发布，不能在书旁另建 CQ 目录或把
+“若干查询通过”折算成全绿。
 有了这张回归测试网，本体才敢放心重构：改动类层次时，
 任何被破坏的旧能力都会在几秒内亮红灯，而不是三个月后在业务现场爆雷。
 新需求到来时也不慌——新需求就是新 CQ，入池、反推、建模、验收，进入下一轮循环。
@@ -302,7 +311,7 @@ Noy 与 McGuinness 于 2001 年发表的《Ontology Development 101》，
 \(\rightarrow\) 创建实例。它的「轻」体现在不强制任何文档产物，
 随做随改；它的另一关键词是「循环」——七步从来不是瀑布，这一点留到 3.3.8 小节展开。
 本节以贯穿全书的车间设备本体为例逐步精讲，
-仓库文件 \texttt{ontology-101-process.txt} 给出了完整走查记录。
+包内 \texttt{ontology-101-process} 资产给出了完整走查记录。
 
 动手之前先对七步建立整体感：前三步在\textbf{收集}——圈范围、找现货、攒词汇；
 中间三步在\textbf{结构化}——搭层次、连关系、上规矩；最后一步\textbf{实例化}。
@@ -315,7 +324,7 @@ Noy 与 McGuinness 于 2001 年发表的《Ontology Development 101》，
 一切从四个问题开始。它们看似朴素，却分别钉死了项目的四个自由度：
 
 \input{fragments/sec-ch03-ontology-101-process-txt-1}
-\snipsource{ch03-ontology-methodology/examples/ontology-101-process.txt}
+\assetsource{ch03}{ontology-101-process}
 
 第一问「覆盖什么领域」圈定知识的疆界；第二问「用来做什么」决定建模的侧重——
 同样是设备，为调度服务的本体强调能力与状态，为维修服务的本体强调结构与故障模式；
@@ -360,7 +369,7 @@ W3C Time Ontology 管时间区间与先后关系——CQ4 的「时间冲突」�
 现在放下结构包袱，做一件纯体力活：把领域里的重要词汇穷举出来。
 
 \input{fragments/sec-ch03-ontology-101-process-txt-3}
-\snipsource{ch03-ontology-methodology/examples/ontology-101-process.txt}
+\assetsource{ch03}{ontology-101-process}
 
 这一步的口诀是\textbf{「不分类、不纠结、先穷举」}——此刻唯一会犯的错误是漏。
 不要停下来争论「数控车床该挂在哪」，那是第四步的事；现在只管往清单上添词。
@@ -382,7 +391,7 @@ W3C Time Ontology 管时间区间与先后关系——CQ4 的「时间冲突」�
 入手有三种策略：
 
 \input{fragments/sec-ch03-ontology-101-process-txt-4}
-\snipsource{ch03-ontology-methodology/examples/ontology-101-process.txt}
+\assetsource{ch03}{ontology-101-process}
 
 \textbf{自顶向下}从最抽象的概念出发逐层细分。它适合领域里已有公认分类体系
 （例如设备分类国家标准）的场景，骨架一步到位；风险是过早抽象——
@@ -454,7 +463,7 @@ CQ1 的查询无须知道车削与铣削之分。子属性是新手最常遗忘�
 机器可检查的公理：
 
 \input{fragments/sec-ch03-ontology-101-process-txt-6}
-\snipsource{ch03-ontology-methodology/examples/ontology-101-process.txt}
+\assetsource{ch03}{ontology-101-process}
 
 四种最常用的约束各有分工：\textbf{基数约束}「每台设备恰有一个序列号」
 把台账纪律写进模型；\textbf{值域约束}「功率非负」拦住脏数据；
@@ -497,12 +506,13 @@ CQ1 的查询无须知道车削与铣削之分。子属性是新手最常遗忘�
 七个步骤的编号给人瀑布错觉，实际的轨迹永远是螺旋：
 创建实例时发现缺属性，回到第五步；CQ 验收不通过，回到第四步调整层次；
 细化过程中发现复用的上游本体不合身，回到第二步重新谈判。
-每一轮迭代的出口设两道检查：\textbf{推理器一致性检查}——运行推理器，
-确认没有不可满足的类（工具操作见第 4 章 Protégé），
-以及 \textbf{CQ 回归}——3.2.6 小节那张测试网全绿。
+每一轮迭代的出口设两道检查：\textbf{声明 profile 内的语义检查}——通过
+Semantica 场景确认已支持的检查没有失败，以及 \textbf{CQ 回归}——对具名正例、
+单因反例和上一发布版 oracle 做精确比较。未绑定的 DL 或 OntoClean 检查保持红灯。
 
 节奏上的建议是\textbf{小步快走}：每轮认领一小撮 CQ，
-两三周内就要见到「能回答问题」的可运行本体，让专家在评审会上看到实效。
+两三周内就要见到“在声明场景中能回答问题”的 package，让专家同时看到结果、
+反例与未通过项；不以一个查询返回数据替代整包验收。
 这正是敏捷软件开发的节奏感——也再次印证本章的主题：
 方法论不是束缚创造力的枷锁，而是让创造力不脱轨的护栏。
 
@@ -528,7 +538,7 @@ METHONTOLOGY 把项目中的活动分成三类，各司其职。
 \textbf{管理活动}贯穿全程：进度控制与质量保证，对应项目经理的工作面。
 \textbf{开发活动}是主线，依次为五个阶段：\textbf{规格说明}产出规格说明书，
 写明本体名称、目的、形式化级别、范围、知识源与用户
-（仓库文件第 2 节给出了车间调度本体的完整样例，一页纸即可容纳）；
+（包内教学资产第 2 节给出了车间调度本体样例，一页纸即可容纳）；
 \textbf{概念化}把领域知识整理成一组与实现语言无关的中间表格——这是全方法的灵魂，
 下一小节专讲；\textbf{形式化}把表格翻译成描述逻辑等形式模型；
 \textbf{实现}将其落成 OWL 文件；\textbf{维护}处理上线后的变更请求并保持文档同步。
@@ -545,10 +555,10 @@ METHONTOLOGY 把项目中的活动分成三类，各司其职。
 \subsection{灵魂产物：五张概念化表格}
 
 概念化阶段要求在写下任何一行 OWL 之前，先产出五张中间表格。
-先看仓库文件中的节选，再逐张解读：
+先看包内教学资产的节选，再逐张解读：
 
 \input{fragments/sec-ch03-methontology-lifecycle-txt-3}
-\snipsource{ch03-ontology-methodology/examples/methontology-lifecycle.txt}
+\assetsource{ch03}{methontology-lifecycle}
 
 \textbf{术语表}（Glossary of Terms）是七步法第三步那张词汇清单的「转正」：
 每个术语被赋予类型（概念、二元关系、属性、实例）并配上一句自然语言描述。
@@ -603,10 +613,9 @@ METHONTOLOGY 的骨架几乎可以和软件工程逐项对表，
 \end{tabularx}
 \end{center}
 
-评估一栏值得多看一眼：仓库文件把评估拆成三个层面——\textbf{一致性}
-（推理器确认无不可满足类）、\textbf{能力}（CQ 验收查询全部通过）、
-\textbf{质量}（OntoClean 元属性审查，见 3.7 节）。
-这三层恰好对应本章三件工具的验收面孔，可以直接抄进你的项目验收单。
+评估一栏值得多看一眼：教学资产把评估拆成\textbf{一致性}、\textbf{能力}与
+\textbf{质量}三个层面。当前 ch03 只原生绑定 CQ1 能力场景；完整 DL 一致性与
+OntoClean 检查器并未实现。方法框架可以抄进项目验收单，绿色状态只能由实际证据填写。
 
 对照表也暴露了 METHONTOLOGY 的年代局限：它诞生于瀑布模型盛行的年代，
 原始表述里阶段感很重。当代实践早已把它「敏捷化」——
@@ -851,7 +860,7 @@ MIREOT 摘取。同一个项目对不同上游混用三种姿势，不但正常�
 (5) \textbf{修正复扫}，直至无违规。制造本体骨干类的标注结果如下：
 
 \input{fragments/sec-ch03-ontoclean-evaluation-txt-2}
-\snipsource{ch03-ontology-methodology/examples/ontoclean-evaluation.txt}
+\assetsource{ch03}{ontoclean-evaluation}
 
 这张表值得逐行咀嚼。前两行 \texttt{Equipment}、\texttt{CNCLathe}
 是教科书式的本质类型（+R +I +U）：永远是它、认得出它、数得清它。
@@ -884,7 +893,7 @@ MIREOT 摘取。同一个项目对不同上游混用三种姿势，不但正常�
 最常见也最隐蔽，「设备是资源」听起来天经地义：
 
 \input{fragments/snip-ch03-ontoclean}
-\snipsource{ch03-ontology-methodology/examples/ontoclean-evaluation.txt}
+\assetsource{ch03}{ontoclean-evaluation}
 
 修正后的图景值得记住：\textbf{类型层次与角色层次分离}，两者用对象属性
 \texttt{playsRole} 桥接。调度模块面向 \texttt{ResourceRole} 编程，
@@ -920,7 +929,7 @@ CQ 驱动设计与 OntoClean 在这里殊途同归——前者从需求侧、后
 (3) \textbf{推理或查询出现反直觉结果时}：顺着结果反查涉事类的元属性，
 往往能把「概念混淆」从一堆公理里精确定位出来。
 
-仓库文件最后给出一条号称能覆盖八成问题的经验法则，值得抄在评审室白板上：
+包内教学资产最后给出一条经验法则，值得带进评审会验证：
 \textbf{会「变回去」的概念——状态、角色、阶段——不要放进
 \texttt{rdfs:subClassOf} 层次}，用 \texttt{hasStatus}、\texttt{playsRole}、
 \texttt{hasPhase} 这样的属性表达。第 2 章打好的类层次地基，
@@ -967,21 +976,23 @@ CQ 驱动设计与 OntoClean 在这里殊途同归——前者从需求侧、后
 
 \subsection{版本管理：语义版本号与变更日志}
 
-本体和代码一样会演化，照搬软件工程的语义版本号（主.次.修订）即可，
-只需把「兼容性」翻译到知识层面：\textbf{删除类、改变概念语义}等
+本体和代码一样会演化，但版本号只是索引，不能代替内容身份与回归。
+把“兼容性”翻译到知识层面：\textbf{删除类、改变概念语义}等
 不兼容变更升主版本——下游的查询与映射可能因此失效，必须显式通告；
 \textbf{新增类与属性}升次版本——旧查询照跑不误；
-\textbf{修订标签、注释}升修订号。版本号写进 \texttt{owl:versionInfo}，
-并为每个版本维护带日期的\textbf{变更日志}，每条记录三要素：
-改了什么、为什么改、影响哪些 CQ。
+\textbf{修订标签、注释}通常升修订号；但最终身份还要绑定 package manifest、
+asset hash、runtime commit/artifact 与 snapshot/diff。每个版本的\textbf{变更日志}
+至少回答：改了什么、为什么改、影响哪些 CQ、由谁裁决、哪份 receipt 可以复核。
 
 把 3.2 节与 3.7 节的成果接进来，就得到一道完整的\textbf{发布门禁}：
-推理一致性通过、CQ 回归全绿、抽查骨干类无 OntoClean 违规、文档达标——
-四灯全绿才允许发版。本体文件、CQ 清单、变更日志三者同库同版本演进，
-任何一次提交都能回答「这次改了什么、为什么、有没有破坏旧能力」。
+声明 profile 内的检查、CQ 正反例回归、需要的 OntoClean/SHACL 检查、文档与来源证据
+全部完成才允许发布。任何 absent/partial/unsupported 都必须保留为阻断理由。
+本体、CQ、规则、夹具、场景与变更记录在同一个 Semantica package 中共同版本化，
+任何 receipt 都能回答“改了什么、用什么运行、有没有破坏旧能力”。
 
-分支策略可以照搬代码仓库的玩法：主干永远保持「门禁全绿」，
-大重构在分支上进行，合并前跑全量回归。但要预警一个不同点：
+分支策略可以照搬代码仓库的玩法：可发布基线必须门禁全绿；开发中的 package
+允许显式 blocked，但不得冒充 release。大重构在分支上进行，合并前跑全量回归。
+还要预警一个不同点：
 多人同时编辑同一个本体文件的冲突远比代码难合——语法层面的三方合并
 对 OWL 文件几乎不可用。更现实的协作方式是\textbf{按模块分工}：
 类层次、属性、实例分属不同文件，用 \texttt{owl:imports} 组装成整体，
@@ -1044,8 +1055,8 @@ README 里的版本对照表随发版脚本自动更新。治理的最高境界�
 所以排查问题时永远从上游开始——先怀疑 CQ，再怀疑层次，最后才怀疑文档。
 
 方法论给出了路线图，下一步需要交通工具。第 4 章将把本章反复预告的
-OWL、Protégé 与 SPARQL 正式请上场——你在 3.2 节写下的那些验收查询，
-很快就能真的跑起来。
+OWL、Protégé 与 SPARQL 正式请上场——你在 3.2 节写下的验收查询，
+只有在 Semantica 中绑定输入与 oracle 后才成为可复算场景；其余仍是待实现规格。
 
 如果只许用一句话向同事转述本章，可以这样说：
 \textbf{先写问题再建模型，先有表格再有代码，先做体检再上线，
@@ -1081,18 +1092,20 @@ OWL、Protégé 与 SPARQL 正式请上场——你在 3.2 节写下的那些验
         质量与文档四个层面（提示：综合 3.2、3.7、3.8 三节）。
 \end{enumerate}
 
-\subsection*{本章文件指引}
+\subsection*{本章包资产与场景指引}
+
+下列 asset 均位于 \texttt{semantica.chapter\_packages.vol1.ch03}。
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.36\linewidth}X@{}}
 \toprule
-\normalfont\textbf{文件（ch03-.../examples/）} & \textbf{内容与阅读建议} \\
+\normalfont\textbf{Semantica asset} & \textbf{内容与阅读建议} \\
 \midrule
-competency-questions.txt & 十个 CQ 的完整生命周期：清单、分类、反推、验收查询与迭代流程；CQ1--CQ5 与第 9 章实战一一对应 \\
-ontology-101-process.txt & 七步法逐步走查，含每步的常见错误清单与迭代提醒 \\
-methontology-lifecycle.txt & 生命周期、规格说明书样例与五张概念化表格；NeOn 九场景概览与评估三层面 \\
-ontoclean-evaluation.txt & 元属性标注表、三条检查规则、三类典型违规与修正、局部审查时机 \\
+competency-questions & 十个 CQ 的生命周期：清单、分类、反推、验收查询与迭代；只有 CQ1 已绑定原生验收场景 \\
+ontology-101-process & 七步法走查与常见错误；当前是工程规则材料，不是阶段门禁 runner \\
+methontology-lifecycle & 生命周期、规格样例与概念化表格；当前是工程规则材料 \\
+ontoclean-evaluation & 元属性与违规修正；自动 OntoClean 检查器仍缺失 \\
+OE-V1-CH03-SCN-CQ-ACCEPTANCE-001 & CQ1 正例/单因反例的精确多重集验收；不等于 package release \\
 \bottomrule
 \end{tabularx}
 \end{center}
-

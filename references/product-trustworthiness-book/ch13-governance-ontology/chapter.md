@@ -1,6 +1,12 @@
 # 第 13 章 把“谁说了算”画进图里：治理与责任本体
 
-![组织关系图中一条过短的独立性距离边触发了警示](../../handbook/figures-imagegen/art-ch13-v01.png "chapter-art")
+> Semantica 绑定： 本章保存治理距离、责任与授权的概念化；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch13`，主场景为
+> `semantica.vol2.ch13.scenario.primary`。本体、CQ、查询、Shape、激活正反案例、规则、
+> oracle、manifest 与 receipt 均在 Semantica。当前为 `partial`、release
+> `blocked`；机器可验证授权关系，不能自行授予裁决权。
+
+![组织关系图中一条过短的独立性距离边触发了警示](../handbook/figures-imagegen/art-ch13-v01.png "chapter-art")
 
 > **【导读】**
 > 身份的证据链修好了，合并却停在最后一步：谁有权写下“同一”？本章接住这个问题，
@@ -191,7 +197,7 @@ SELECT ?tooClose WHERE {
 <!-- FIG:ch13-fig01-distance-and-authority:OBSERVE -->
 > **读图任务**：分别阅读左侧距离尺和右侧挂在授权边上的日历牌，思考独立性与授权为什么都必须成为带范围和时间的可查对象。
 
-![左半部两个人形节点之间的路径叠着一把分档尺，右半部人员节点与印章之间的授权边挂有日历牌，过短距离和时限标记被琥珀色强调。](../../handbook/figures-imagegen/ch13-fig01-distance-and-authority-v01.png "治理不应只存一个角色名或一个人名。它要能计算某次活动需要的独立距离，并核对某个人对某类决定的授权在当时是否有效。")
+![左半部两个人形节点之间的路径叠着一把分档尺，右半部人员节点与印章之间的授权边挂有日历牌，过短距离和时限标记被琥珀色强调。](../handbook/figures-imagegen/ch13-fig01-distance-and-authority-v01.png "治理不应只存一个角色名或一个人名。它要能计算某次活动需要的独立距离，并核对某个人对某类决定的授权在当时是否有效。")
 
 <!-- FIG:ch13-fig01-distance-and-authority:CONSUME -->
 > **图后判断**：距离尺不是人事排名，日历牌也不是法律授权文件。本图只表示应被记录的关系属性，不单独决定任命合规性。
@@ -414,5 +420,5 @@ SELECT ?item ?why WHERE {
 > **本章注记**：本章的人物、试点场景、组织调整与全部数字（日期、时长、
 > 金额跨度等）均为合成教学材料，不对应任何真实企业、真实产品或真实个人；
 > 对功能安全标准中确认措施独立性与安全管理职责的转述为自然语言概括，
-> 精确要求以标准原文为准。文中各记法与查询片段为教学示意记法，
-> 可运行版本见本章配套材料。
+> 精确要求以标准原文为准。文中各记法与查询片段只用于教学；唯一可执行版本是
+> `semantica.chapter_packages.vol2.ch13`，当前为 `partial`、release `blocked`。

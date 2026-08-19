@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Validate a standard-to-book package at structure, charter or release stage."""
+"""Validate a book corpus and its Semantica-only execution binding.
+
+This validator checks book-package structure and cross-file evidence.  It does
+not implement or invoke an RDF backend.  Any live Semantica operation must be
+routed through ``ontology_engineering.semantica_runtime`` by the surrounding
+workflow.
+"""
 
 from __future__ import annotations
 
@@ -17,10 +23,10 @@ REQUIRED_FILES = (
     "book.yaml",
     "book-charter.md",
     "sources/source-register.csv",
-    "cqs/cq-register.csv",
     "chapters/chapter-register.csv",
     "propositions/proposition-register.csv",
-    "ontology/package-manifest.yaml",
+    "semantica/package-proposal.yaml",
+    "semantica/package-binding.yaml",
     "figures/figure-register.csv",
     "release/public-assets.csv",
     "release/package-lock.csv",
@@ -29,8 +35,11 @@ REQUIRED_FILES = (
 )
 MANIFESTABLE_REQUIRED_FILES = {"skill/SKILL.md"}
 SUPPORTED_SCHEMA_VERSION = "1.0"
-MAX_TEST_REPORT_BYTES = 1_000_000
+MAX_SEMANTICA_EVIDENCE_BYTES = 4_000_000
 BOOK_SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+SEMANTICA_PACKAGE_ID_RE = re.compile(
+    r"^semantica\.[a-z0-9]+(?:[._][a-z0-9]+)*$"
+)
 REQUIRED_CHARTER_SECTIONS = (
     "目标读者",
     "目标标准或知识域",
@@ -56,6 +65,7 @@ REQUIRED_PRIVACY_CONTENT_RULES = {
     "credentials, tokens, keys or cookies",
     "private model sessions or attachment caches",
     "assets with pending input rights",
+    "book-local ontology, CQ, shape, query, case, rule, fixture or runner payloads",
 }
 
 FORBIDDEN_PACKAGE_PATHS = (
@@ -78,30 +88,24 @@ RIGHTS_STATUSES = {
 ID_RE = re.compile(r"^[A-Za-z][A-Za-z0-9._:-]{2,127}$")
 REF_SPLIT_RE = re.compile(r"[;,|\s]+")
 ASSET_ROLES = {
-    "constraint",
     "figure",
-    "fixture",
     "metadata",
-    "ontology",
-    "query",
     "reader-book",
-    "script",
+    "release-verdict",
+    "runtime-receipt",
+    "source-lock",
     "skill",
     "style",
-    "test-report",
 }
 ROLE_SUFFIXES = {
-    "constraint": {".shacl", ".ttl"},
     "figure": {".jpeg", ".jpg", ".pdf", ".png", ".svg", ".webp"},
-    "fixture": {".json", ".rdf", ".ttl"},
     "metadata": {".csv", ".json", ".md", ".txt", ".yaml", ".yml"},
-    "ontology": {".owl", ".rdf", ".ttl"},
-    "query": {".rq", ".sparql"},
     "reader-book": {".epub", ".html", ".md", ".pdf"},
-    "script": {".py"},
+    "release-verdict": {".json"},
+    "runtime-receipt": {".json"},
+    "source-lock": {".json"},
     "skill": {".md"},
     "style": {".sty", ".tex"},
-    "test-report": {".json"},
 }
 CLAIM_CLASSES = {
     "author-explanation",
@@ -109,19 +113,16 @@ CLAIM_CLASSES = {
     "standard-grounded",
     "teaching-assumption",
 }
-ONTOLOGY_BINDINGS = {
-    "tbox": {"ontology"},
-    "controlled_abox_or_adapter": {"fixture", "ontology", "script"},
-    "queries": {"query"},
-    "constraints": {"constraint"},
-    "positive_fixtures": {"fixture"},
-    "single_fault_negative_fixtures": {"fixture"},
-    "runner": {"script"},
-}
 ALLOWED_ASSET_SUFFIXES = {
-    ".csv", ".epub", ".html", ".jpeg", ".jpg", ".json", ".md", ".owl", ".pdf",
-    ".png", ".py", ".rdf", ".rq", ".shacl", ".sparql", ".sty", ".svg", ".tex",
-    ".ttl", ".txt", ".webp", ".yaml", ".yml",
+    ".csv", ".epub", ".html", ".jpeg", ".jpg", ".json", ".md", ".pdf",
+    ".png", ".sty", ".svg", ".tex", ".txt", ".webp", ".yaml", ".yml",
+}
+FORBIDDEN_EXECUTABLE_SEMANTIC_SUFFIXES = {
+    ".owl", ".rdf", ".rq", ".shacl", ".sparql", ".ttl",
+}
+FORBIDDEN_PARALLEL_SEMANTIC_ROOTS = {
+    "case", "cases", "cq", "cqs", "fixture", "fixtures", "ontologies", "ontology",
+    "queries", "query", "rule", "rules", "shape", "shapes",
 }
 PENDING_MARKERS = ("pending", "unknown", "todo", "tbd", "review_required", "not-cleared")
 PLACEHOLDER_RE = re.compile(
@@ -176,20 +177,11 @@ CSV_HEADERS = {
         "technical_review",
         "notes",
     ],
-    "cqs/cq-register.csv": [
-        "cq_id",
-        "question",
-        "reader_decision",
-        "evidence_required",
-        "expected_answer_form",
-        "acceptance_oracle",
-        "status",
-    ],
     "chapters/chapter-register.csv": [
         "chapter_id",
         "title",
         "reader_problem",
-        "cq_ids",
+        "semantica_cq_ids",
         "source_ids",
         "figure_ids",
         "review_status",
@@ -197,7 +189,7 @@ CSV_HEADERS = {
     "propositions/proposition-register.csv": [
         "proposition_id",
         "chapter_id",
-        "cq_ids",
+        "semantica_cq_ids",
         "source_ids",
         "statement_summary",
         "claim_class",
@@ -419,6 +411,123 @@ def normalized(value: object) -> str:
     return text_value(value).lower()
 
 
+def expected_semantica_package_id(slug: str) -> str:
+    return "semantica.books." + slug.replace("-", "_")
+
+
+def validate_semantica_metadata(
+    root: Path,
+    book_metadata: dict[str, object],
+    *,
+    release: bool,
+) -> tuple[list[str], dict[str, object], dict[str, object]]:
+    """Validate the proposal/binding without importing Semantica.
+
+    These documents are references to the sole executable implementation, not
+    a second package manifest.  Release evidence is validated separately.
+    """
+
+    errors: list[str] = []
+    proposal_path = root / "semantica" / "package-proposal.yaml"
+    binding_path = root / "semantica" / "package-binding.yaml"
+    proposal = simple_yaml(proposal_path) if proposal_path.is_file() else {}
+    binding = simple_yaml(binding_path) if binding_path.is_file() else {}
+    append_yaml_errors(proposal, "semantica/package-proposal.yaml", errors)
+    append_yaml_errors(binding, "semantica/package-binding.yaml", errors)
+
+    slug = text_value(book_metadata.get("slug"))
+    expected_package_id = expected_semantica_package_id(slug) if slug else ""
+    required_semantics = {
+        "ontology",
+        "competency-questions",
+        "shapes",
+        "queries",
+        "cases",
+        "engineering-rules",
+    }
+    if proposal:
+        if proposal.get("schema_version") != SUPPORTED_SCHEMA_VERSION:
+            errors.append("Semantica package proposal schema_version is unsupported")
+        if proposal.get("book_slug") != slug:
+            errors.append("Semantica package proposal book_slug does not match book.yaml")
+        proposed_id = text_value(proposal.get("proposed_package_id"))
+        if not SEMANTICA_PACKAGE_ID_RE.fullmatch(proposed_id):
+            errors.append("Semantica proposed_package_id is missing or invalid")
+        elif proposed_id != expected_package_id:
+            errors.append("Semantica proposed_package_id is not the stable book-derived ID")
+        expected_proposal_values = {
+            "external_specification_kind": "book",
+            "external_source_register": "sources/source-register.csv",
+            "chapter_register": "chapters/chapter-register.csv",
+            "proposition_register": "propositions/proposition-register.csv",
+            "execution_owner": "Semantica",
+        }
+        for key, expected in expected_proposal_values.items():
+            if proposal.get(key) != expected:
+                errors.append(f"Semantica package proposal {key} must be {expected}")
+        requested = proposal.get("requested_semantics")
+        if (
+            not isinstance(requested, list)
+            or any(not isinstance(item, str) or not item for item in requested)
+            or len(requested) != len(set(requested))
+            or set(requested) != required_semantics
+        ):
+            errors.append("Semantica package proposal must request the complete semantic payload")
+        allowed_statuses = {"accepted"} if release else {"draft", "accepted"}
+        if normalized(proposal.get("proposal_status")) not in allowed_statuses:
+            errors.append(
+                "Semantica package proposal is not accepted"
+                if release
+                else "Semantica package proposal status is invalid"
+            )
+
+    if binding:
+        if binding.get("schema_version") != SUPPORTED_SCHEMA_VERSION:
+            errors.append("Semantica package binding schema_version is unsupported")
+        if binding.get("book_slug") != slug:
+            errors.append("Semantica package binding book_slug does not match book.yaml")
+        package_id = text_value(binding.get("semantica_package_id"))
+        if not SEMANTICA_PACKAGE_ID_RE.fullmatch(package_id):
+            errors.append("Semantica package binding package_id is missing or invalid")
+        elif package_id != expected_package_id:
+            errors.append("Semantica package binding package_id differs from the accepted proposal")
+        expected_binding_values = {
+            "execution_authority": "semantica-only",
+            "runtime_gateway": "ontology_engineering.semantica_runtime",
+            "source_lock": "release/semantica-source-lock.json",
+            "runtime_receipt": "release/semantica-runtime-receipt.json",
+            "release_verdict": "release/semantica-release-verdict.json",
+        }
+        for key, expected in expected_binding_values.items():
+            if binding.get(key) != expected:
+                errors.append(f"Semantica package binding {key} must be {expected}")
+        allowed_statuses = {"bound"} if release else {"proposed", "bound"}
+        if normalized(binding.get("binding_status")) not in allowed_statuses:
+            errors.append(
+                "Semantica package binding is not bound"
+                if release
+                else "Semantica package binding status is invalid"
+            )
+        version = text_value(binding.get("semantica_package_version"))
+        if release and (
+            not version
+            or version == "unbound"
+            or has_unresolved_marker(version)
+            or not re.fullmatch(r"[0-9]+(?:\.[0-9]+){1,3}(?:[-+][A-Za-z0-9._-]+)?", version)
+        ):
+            errors.append("Semantica package binding has no stable package version")
+        cq_ids = binding.get("bound_cq_ids")
+        if not isinstance(cq_ids, list) or any(
+            not isinstance(item, str) or not ID_RE.fullmatch(item) for item in cq_ids
+        ):
+            errors.append("Semantica package binding bound_cq_ids must be a string ID list")
+        elif len(cq_ids) != len(set(cq_ids)):
+            errors.append("Semantica package binding bound_cq_ids contains duplicates")
+        elif release and not cq_ids:
+            errors.append("Semantica package binding has no bound competency questions")
+    return errors, proposal, binding
+
+
 def parse_refs(value: object) -> list[str]:
     """Parse a semicolon-first ID list while tolerating common CSV separators."""
     return [item for item in REF_SPLIT_RE.split(text_value(value)) if item]
@@ -590,6 +699,266 @@ def privacy_findings(root: Path) -> list[str]:
     return errors
 
 
+def valid_iso_timestamp(value: object) -> bool:
+    timestamp = text_value(value)
+    if not re.fullmatch(
+        r"\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d"
+        r"(?:\.\d{1,6})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)",
+        timestamp,
+    ):
+        return False
+    try:
+        parsed = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    except ValueError:
+        return False
+    return parsed.tzinfo is not None and parsed.utcoffset() is not None
+
+
+def canonical_json_sha256(value: object) -> str:
+    encoded = json.dumps(
+        value,
+        ensure_ascii=False,
+        allow_nan=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def load_json_evidence(path: Path, label: str, errors: list[str]) -> dict[str, object] | None:
+    try:
+        if path.stat().st_size > MAX_SEMANTICA_EVIDENCE_BYTES:
+            errors.append(
+                f"{label} exceeds {MAX_SEMANTICA_EVIDENCE_BYTES} bytes: "
+                f"{path.name}"
+            )
+            return None
+        value = json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=reject_duplicate_json_pairs,
+            parse_constant=reject_nonstandard_json_constant,
+        )
+    except (
+        OSError,
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        ValueError,
+        RecursionError,
+        MemoryError,
+    ):
+        errors.append(f"{label} is not valid UTF-8 JSON: {path.name}")
+        return None
+    if not isinstance(value, dict):
+        errors.append(f"{label} must be a JSON object: {path.name}")
+        return None
+    return value
+
+
+def validate_semantica_release_evidence(
+    root: Path,
+    metadata: dict[str, object],
+    binding: dict[str, object],
+    source_rows: list[dict[str, str]],
+    bound_cq_ids: set[str],
+    evidence_paths: dict[str, Path],
+) -> list[str]:
+    """Cross-check source lock, native receipt and native release verdict.
+
+    This is a strict serialization/integrity check, not a replacement for
+    Semantica's release verifier.  Evidence must already have been produced
+    through ``ontology_engineering.semantica_runtime``.
+    """
+
+    errors: list[str] = []
+    lock_path = evidence_paths.get("source-lock")
+    receipt_path = evidence_paths.get("runtime-receipt")
+    verdict_path = evidence_paths.get("release-verdict")
+    if lock_path is None or receipt_path is None or verdict_path is None:
+        return errors
+
+    source_lock = load_json_evidence(lock_path, "Semantica source lock", errors)
+    receipt = load_json_evidence(receipt_path, "Semantica runtime receipt", errors)
+    verdict = load_json_evidence(verdict_path, "Semantica release verdict", errors)
+    if source_lock is None or receipt is None or verdict is None:
+        return errors
+
+    package_id = text_value(binding.get("semantica_package_id"))
+    package_version = text_value(binding.get("semantica_package_version"))
+    if source_lock.get("$schema") != "ontology-engineering.book-semantica-source-lock/v1":
+        errors.append("Semantica source lock schema is unsupported")
+    expected_lock_values = {
+        "book_slug": text_value(metadata.get("slug")),
+        "package_id": package_id,
+        "package_version": package_version,
+    }
+    for key, expected in expected_lock_values.items():
+        if source_lock.get(key) != expected:
+            errors.append(f"Semantica source lock {key} differs from package binding")
+    for key in (
+        "package_digest",
+        "runtime_artifact_sha256",
+        "source_register_sha256",
+        "chapter_register_sha256",
+        "proposition_register_sha256",
+    ):
+        if not SHA256_RE.fullmatch(normalized(source_lock.get(key))):
+            errors.append(f"Semantica source lock {key} is not a SHA-256 digest")
+    runtime_commit = text_value(source_lock.get("runtime_commit"))
+    if not re.fullmatch(r"[0-9a-f]{40,64}", runtime_commit):
+        errors.append("Semantica source lock runtime_commit is not a source revision")
+    if has_unresolved_marker(source_lock.get("runtime_version")):
+        errors.append("Semantica source lock runtime_version is unresolved")
+    if not valid_iso_timestamp(source_lock.get("created_at")):
+        errors.append("Semantica source lock created_at is not an ISO-8601 timestamp")
+
+    for key, relative in (
+        ("source_register_sha256", "sources/source-register.csv"),
+        ("chapter_register_sha256", "chapters/chapter-register.csv"),
+        ("proposition_register_sha256", "propositions/proposition-register.csv"),
+    ):
+        actual = safe_sha256(root / relative)
+        if actual is None or source_lock.get(key) != actual:
+            errors.append(f"Semantica source lock {key} does not bind {relative}")
+    expected_source_hashes = {
+        text_value(row.get("source_id")): normalized(row.get("sha256"))
+        for row in source_rows
+        if text_value(row.get("source_id"))
+    }
+    locked_source_hashes = source_lock.get("source_hashes")
+    if locked_source_hashes != expected_source_hashes:
+        errors.append("Semantica source lock source_hashes differ from the source register")
+
+    receipt_fields = (
+        "schema_version", "created_at", "runtime_version", "runtime_commit",
+        "runtime_artifact_sha256", "package_id", "package_version", "package_digest",
+        "asset_hashes", "chapter_contract_sha256", "dataset_sha256",
+        "dataset_quad_count", "dataset_revision", "capability_report", "cq_report",
+        "shacl_report", "oracle_report", "output_hashes", "provenance_bundle",
+        "receipt_sha256",
+    )
+    for field in receipt_fields:
+        if field not in receipt:
+            errors.append(f"Semantica runtime receipt lacks {field}")
+    if receipt.get("schema_version") != SUPPORTED_SCHEMA_VERSION:
+        errors.append("Semantica runtime receipt schema_version is unsupported")
+    if not valid_iso_timestamp(receipt.get("created_at")):
+        errors.append("Semantica runtime receipt created_at is not an ISO-8601 timestamp")
+    receipt_lock_bindings = {
+        "runtime_version": "runtime_version",
+        "runtime_commit": "runtime_commit",
+        "runtime_artifact_sha256": "runtime_artifact_sha256",
+        "package_id": "package_id",
+        "package_version": "package_version",
+        "package_digest": "package_digest",
+    }
+    for receipt_key, lock_key in receipt_lock_bindings.items():
+        if receipt.get(receipt_key) != source_lock.get(lock_key):
+            errors.append(
+                f"Semantica runtime receipt {receipt_key} differs from source lock"
+            )
+    for key in (
+        "runtime_artifact_sha256", "package_digest", "chapter_contract_sha256",
+        "dataset_sha256", "receipt_sha256",
+    ):
+        if not SHA256_RE.fullmatch(normalized(receipt.get(key))):
+            errors.append(f"Semantica runtime receipt {key} is not a SHA-256 digest")
+    for key in ("dataset_quad_count", "dataset_revision"):
+        value = receipt.get(key)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            errors.append(f"Semantica runtime receipt {key} must be a non-negative integer")
+    for key in ("asset_hashes", "output_hashes"):
+        hashes = receipt.get(key)
+        if (
+            not isinstance(hashes, dict)
+            or (key == "asset_hashes" and not hashes)
+            or any(
+                not isinstance(name, str)
+                or not name
+                or not isinstance(digest, str)
+                or not SHA256_RE.fullmatch(digest)
+                for name, digest in hashes.items()
+            )
+        ):
+            errors.append(f"Semantica runtime receipt {key} is not a digest map")
+
+    expected_report_kinds = {
+        "capability_report": "capability",
+        "cq_report": "cq",
+        "shacl_report": "shacl",
+        "oracle_report": "oracle",
+    }
+    for key, kind in expected_report_kinds.items():
+        report = receipt.get(key)
+        if not isinstance(report, dict):
+            errors.append(f"Semantica runtime receipt {key} is not an execution report")
+            continue
+        if report.get("kind") != kind or report.get("status") != "passed":
+            errors.append(f"Semantica runtime receipt {key} is not a passed {kind} report")
+        report_hash = report.get("sha256")
+        report_content = {name: value for name, value in report.items() if name != "sha256"}
+        if not isinstance(report_hash, str) or report_hash != canonical_json_sha256(report_content):
+            errors.append(f"Semantica runtime receipt {key} hash does not verify")
+    cq_report = receipt.get("cq_report")
+    cq_payload = cq_report.get("payload") if isinstance(cq_report, dict) else None
+    receipt_cq_ids = (
+        cq_payload.get("competency_question_ids")
+        if isinstance(cq_payload, dict)
+        else None
+    )
+    if (
+        not isinstance(receipt_cq_ids, list)
+        or any(not isinstance(item, str) for item in receipt_cq_ids)
+        or len(receipt_cq_ids) != len(set(receipt_cq_ids))
+        or set(receipt_cq_ids) != bound_cq_ids
+    ):
+        errors.append("Semantica runtime receipt does not cover the exact bound CQ set")
+
+    provenance = receipt.get("provenance_bundle")
+    if not isinstance(provenance, dict):
+        errors.append("Semantica runtime receipt provenance_bundle is missing")
+    else:
+        bundle_hash = provenance.get("bundle_sha256")
+        bundle_content = {
+            name: value for name, value in provenance.items() if name != "bundle_sha256"
+        }
+        if not isinstance(bundle_hash, str) or bundle_hash != canonical_json_sha256(bundle_content):
+            errors.append("Semantica runtime receipt provenance bundle hash does not verify")
+        if not isinstance(provenance.get("records"), list) or not provenance.get("records"):
+            errors.append("Semantica runtime receipt provenance bundle has no records")
+
+    receipt_hash = receipt.get("receipt_sha256")
+    receipt_content = {
+        name: value for name, value in receipt.items() if name != "receipt_sha256"
+    }
+    if not isinstance(receipt_hash, str) or receipt_hash != canonical_json_sha256(receipt_content):
+        errors.append("Semantica runtime receipt content hash does not verify")
+
+    if verdict.get("schema_version") != SUPPORTED_SCHEMA_VERSION:
+        errors.append("Semantica release verdict schema_version is unsupported")
+    if verdict.get("status") != "complete":
+        errors.append("Semantica release verdict is not complete")
+    if verdict.get("receipt_sha256") != receipt_hash:
+        errors.append("Semantica release verdict does not bind the runtime receipt")
+    if not valid_iso_timestamp(verdict.get("checked_at")):
+        errors.append("Semantica release verdict checked_at is not an ISO-8601 timestamp")
+    checks = verdict.get("checks")
+    if (
+        not isinstance(checks, list)
+        or not checks
+        or any(
+            not isinstance(check, dict)
+            or not text_value(check.get("check_id"))
+            or check.get("passed") is not True
+            or not text_value(check.get("message"))
+            for check in checks
+        )
+    ):
+        errors.append("Semantica release verdict does not contain only passed checks")
+    if verdict.get("reasons") != []:
+        errors.append("Semantica complete release verdict must have no reasons")
+    return errors
+
+
 def validate_structure(root: Path) -> list[str]:
     errors: list[str] = []
     for relative in REQUIRED_FILES:
@@ -618,6 +987,25 @@ def validate_structure(root: Path) -> list[str]:
             errors.append(
                 f"forbidden private/session path exists inside public package: {relative.as_posix()}"
             )
+        semantic_path_parts = {
+            part.lower() for part in relative.parts[:-1]
+        } & FORBIDDEN_PARALLEL_SEMANTIC_ROOTS
+        semantic_file_stem = (
+            path.stem.lower() in FORBIDDEN_PARALLEL_SEMANTIC_ROOTS
+            or path.name.lower() == "cq-register.csv"
+        ) if path.is_file() else False
+        semantic_directory = (
+            path.is_dir() and path.name.lower() in FORBIDDEN_PARALLEL_SEMANTIC_ROOTS
+        )
+        if semantic_path_parts or semantic_file_stem or semantic_directory:
+            errors.append(
+                f"parallel semantic root is forbidden; move it into Semantica: {relative.as_posix()}"
+            )
+        if path.is_file() and path.suffix.lower() in FORBIDDEN_EXECUTABLE_SEMANTIC_SUFFIXES:
+            errors.append(
+                f"executable semantic artifact is forbidden in book corpus: {relative.as_posix()}"
+            )
+    metadata: dict[str, object] = {}
     if (root / "book.yaml").is_file():
         metadata = simple_yaml(root / "book.yaml")
         append_yaml_errors(metadata, "book.yaml", errors)
@@ -644,6 +1032,10 @@ def validate_structure(root: Path) -> list[str]:
         for key, expected in expected_policies.items():
             if metadata.get(key) != expected:
                 errors.append(f"book.yaml {key} must be {expected}")
+    semantica_errors, _, _ = validate_semantica_metadata(
+        root, metadata, release=False
+    )
+    errors.extend(semantica_errors)
     return errors
 
 
@@ -677,14 +1069,22 @@ def validate_charter(root: Path) -> list[str]:
         for index, row in enumerate(rows, 2):
             if not row.get("private_logical_id") or not row.get("rights_basis"):
                 errors.append(f"source row {index} lacks logical ID or rights basis")
-    cq_path = root / "cqs" / "cq-register.csv"
-    if cq_path.is_file():
-        _, rows = csv_rows(cq_path)
-        if not 10 <= len(rows) <= 30:
-            errors.append(f"charter stage requires 10-30 competency questions; found {len(rows)}")
-        for index, row in enumerate(rows, 2):
-            if not row.get("question") or not row.get("acceptance_oracle"):
-                errors.append(f"CQ row {index} lacks question or acceptance oracle")
+    if charter.is_file():
+        question_section = markdown_sections(charter_text).get("初始能力问题", "")
+        question_lines = [
+            re.sub(r"^\s*[-*+]\s+", "", line).strip()
+            for line in question_section.splitlines()
+            if re.match(r"^\s*[-*+]\s+", line)
+        ]
+        question_lines = [
+            item for item in question_lines
+            if item and not PLACEHOLDER_RE.match(item) and not INLINE_PLACEHOLDER_RE.search(item)
+        ]
+        if not 10 <= len(question_lines) <= 30:
+            errors.append(
+                "charter stage requires 10-30 proposed reader questions in "
+                f"book-charter.md; found {len(question_lines)}"
+            )
     return errors
 
 
@@ -705,6 +1105,17 @@ def validate_release(root: Path) -> list[str]:
         for key in ("rights_status", "technical_review_status", "reader_review_status"):
             if normalized(metadata.get(key)) not in APPROVED:
                 errors.append(f"book.yaml {key} is not approved")
+
+    semantica_metadata_errors, _, semantica_binding = validate_semantica_metadata(
+        root, metadata, release=True
+    )
+    errors.extend(semantica_metadata_errors)
+    bound_cq_values = semantica_binding.get("bound_cq_ids", [])
+    bound_cq_ids = {
+        item for item in bound_cq_values
+        if isinstance(item, str) and ID_RE.fullmatch(item)
+    } if isinstance(bound_cq_values, list) else set()
+    cq_by_id = {cq_id: {} for cq_id in bound_cq_ids}
 
     source_path = root / "sources" / "source-register.csv"
     source_rows: list[dict[str, str]] = []
@@ -744,31 +1155,6 @@ def validate_release(root: Path) -> list[str]:
         if logical_id:
             logical_ids.add(logical_id)
 
-    cq_path = root / "cqs" / "cq-register.csv"
-    cq_rows: list[dict[str, str]] = []
-    if cq_path.is_file():
-        _, cq_rows = csv_rows(cq_path)
-    cq_by_id = index_rows(cq_rows, "cq_id", "CQ", errors)
-    for index, row in enumerate(cq_rows, 2):
-        require_fields(
-            row,
-            (
-                "cq_id", "question", "reader_decision", "evidence_required",
-                "expected_answer_form", "acceptance_oracle", "status",
-            ),
-            "CQ", index, errors,
-        )
-        reject_placeholders(
-            row,
-            (
-                "question", "reader_decision", "evidence_required",
-                "expected_answer_form", "acceptance_oracle",
-            ),
-            "CQ", index, errors,
-        )
-        if normalized(row.get("status")) not in APPROVED:
-            errors.append(f"CQ row {index} is not approved")
-
     chapter_path = root / "chapters" / "chapter-register.csv"
     chapter_rows: list[dict[str, str]] = []
     if chapter_path.is_file():
@@ -783,20 +1169,25 @@ def validate_release(root: Path) -> list[str]:
     for index, row in enumerate(chapter_rows, 2):
         require_fields(
             row,
-            ("chapter_id", "title", "reader_problem", "cq_ids", "source_ids", "review_status"),
+            (
+                "chapter_id", "title", "reader_problem", "semantica_cq_ids",
+                "source_ids", "review_status",
+            ),
             "chapter", index, errors,
         )
         reject_placeholders(
             row, ("title", "reader_problem"), "chapter", index, errors
         )
         chapter_id = (row.get("chapter_id") or "").strip()
-        cq_refs = parse_refs(row.get("cq_ids"))
+        cq_refs = parse_refs(row.get("semantica_cq_ids"))
         source_refs = parse_refs(row.get("source_ids"))
         figure_refs = parse_refs(row.get("figure_ids"))
         chapter_cq_refs[chapter_id] = cq_refs
         chapter_source_refs[chapter_id] = source_refs
         chapter_figure_refs[chapter_id] = figure_refs
-        check_refs(cq_refs, set(cq_by_id), f"chapter {chapter_id} cq_ids", errors)
+        check_refs(
+            cq_refs, set(cq_by_id), f"chapter {chapter_id} semantica_cq_ids", errors
+        )
         check_refs(source_refs, set(source_by_id), f"chapter {chapter_id} source_ids", errors)
         covered_cqs.update(cq_refs)
         if normalized(row.get("review_status")) not in APPROVED:
@@ -820,7 +1211,7 @@ def validate_release(root: Path) -> list[str]:
         require_fields(
             row,
             (
-                "proposition_id", "chapter_id", "cq_ids", "source_ids", "statement_summary",
+                "proposition_id", "chapter_id", "semantica_cq_ids", "source_ids", "statement_summary",
                 "claim_class", "authority_limit", "evidence_oracle", "review_status",
             ),
             "proposition", index, errors,
@@ -832,13 +1223,18 @@ def validate_release(root: Path) -> list[str]:
         )
         proposition_id = (row.get("proposition_id") or "").strip()
         chapter_id = (row.get("chapter_id") or "").strip()
-        cq_refs = parse_refs(row.get("cq_ids"))
+        cq_refs = parse_refs(row.get("semantica_cq_ids"))
         source_refs = parse_refs(row.get("source_ids"))
         if chapter_id not in chapter_by_id:
             errors.append(f"proposition {proposition_id} references unknown chapter {chapter_id}")
         else:
             proposition_chapters.add(chapter_id)
-        check_refs(cq_refs, set(cq_by_id), f"proposition {proposition_id} cq_ids", errors)
+        check_refs(
+            cq_refs,
+            set(cq_by_id),
+            f"proposition {proposition_id} semantica_cq_ids",
+            errors,
+        )
         check_refs(
             source_refs, set(source_by_id), f"proposition {proposition_id} source_ids", errors
         )
@@ -930,14 +1326,17 @@ def validate_release(root: Path) -> list[str]:
         errors.append("release has no registered public asset")
     index_rows(asset_rows, "asset_id", "public asset", errors)
     manifest_paths: set[str] = set()
-    assets_by_path: dict[str, dict[str, str]] = {}
     reader_assets = 0
     reader_chapter_coverage: set[str] = set()
     released_figure_counts: dict[str, int] = {}
     skill_assets = 0
     skill_chapter_coverage: set[str] = set()
-    test_report_paths: list[Path] = []
-    test_report_chapter_refs: dict[Path, list[str]] = {}
+    evidence_paths: dict[str, Path] = {}
+    evidence_counts = {
+        "source-lock": 0,
+        "runtime-receipt": 0,
+        "release-verdict": 0,
+    }
     for index, row in enumerate(asset_rows, 2):
         require_fields(
             row,
@@ -956,7 +1355,6 @@ def validate_release(root: Path) -> list[str]:
             errors.append(f"public asset row {index} duplicates relative_path {raw_path}")
         if raw_path:
             manifest_paths.add(raw_path)
-            assets_by_path.setdefault(raw_path, row)
         if raw_path in control_files:
             errors.append(f"public asset row {index} attempts to publish a package control file")
 
@@ -971,6 +1369,10 @@ def validate_release(root: Path) -> list[str]:
         elif role == "skill":
             skill_assets += 1
             skill_chapter_coverage.update(chapter_refs)
+        elif role in evidence_counts and set(chapter_refs) != set(chapter_by_id):
+            errors.append(
+                f"public {role} asset row {index} does not cover the exact chapter set"
+            )
 
         figure_id = (row.get("figure_id") or "").strip()
         if role == "figure":
@@ -1053,9 +1455,23 @@ def validate_release(root: Path) -> list[str]:
                         errors.append(f"public skill asset row {index} lacks an authority boundary")
                     if not has_substantive_markdown(workflow):
                         errors.append(f"public skill asset row {index} lacks a workflow")
-            elif role == "test-report":
-                test_report_paths.append(candidate)
-                test_report_chapter_refs[candidate] = chapter_refs
+            elif role in evidence_counts:
+                evidence_counts[role] += 1
+                expected_path = text_value(
+                    semantica_binding.get(
+                        {
+                            "source-lock": "source_lock",
+                            "runtime-receipt": "runtime_receipt",
+                            "release-verdict": "release_verdict",
+                        }[role]
+                    )
+                )
+                if raw_path != expected_path:
+                    errors.append(
+                        f"public {role} asset row {index} does not match package binding"
+                    )
+                else:
+                    evidence_paths[role] = candidate
     if reader_assets < 1:
         errors.append("release has no reader-book asset")
     for chapter_id in chapter_by_id:
@@ -1065,181 +1481,26 @@ def validate_release(root: Path) -> list[str]:
             errors.append(f"chapter {chapter_id} is not covered by a released Skill asset")
     if skill_assets != 1:
         errors.append(f"release must have exactly one canonical Skill asset; found {skill_assets}")
-    if len(test_report_paths) != 1:
-        errors.append(
-            f"release must have exactly one machine test-report asset; found {len(test_report_paths)}"
-        )
+    for role, count in evidence_counts.items():
+        if count != 1:
+            errors.append(
+                f"release must have exactly one Semantica {role} asset; found {count}"
+            )
     for figure_id in figure_by_id:
         count = released_figure_counts.get(figure_id, 0)
         if count != 1:
             errors.append(f"figure {figure_id} must have exactly one released public figure asset; found {count}")
 
-    ontology_path = root / "ontology" / "package-manifest.yaml"
-    ontology: dict[str, str] = {}
-    if ontology_path.is_file():
-        ontology = simple_yaml(ontology_path)
-        append_yaml_errors(ontology, "ontology/package-manifest.yaml", errors)
-        if ontology.get("schema_version") != SUPPORTED_SCHEMA_VERSION:
-            errors.append("ontology schema_version is unsupported")
-        if normalized(ontology.get("status")) not in APPROVED:
-            errors.append("ontology package status is not approved")
-        if has_unresolved_marker(ontology.get("namespace")):
-            errors.append("ontology namespace is unresolved")
-        elif not re.match(r"^(?:https?://|urn:)[^\s]+$", text_value(ontology.get("namespace"))):
-            errors.append("ontology namespace is not an absolute HTTP(S) or URN identifier")
-        if (
-            not text_value(ontology.get("book_slug"))
-            or ontology.get("book_slug") != metadata.get("slug")
-        ):
-            errors.append("ontology book_slug does not match book.yaml")
-        if ontology.get("competency_question_register") != "cqs/cq-register.csv":
-            errors.append("ontology competency_question_register must use the package-root path")
-
-        binding_paths: dict[str, str] = {}
-        for key, allowed_roles in ONTOLOGY_BINDINGS.items():
-            raw_path = text_value(ontology.get(key))
-            candidate, path_error = safe_package_asset(root, raw_path)
-            if path_error:
-                errors.append(f"ontology {key}: {path_error}")
-            elif candidate is None or not candidate.is_file():
-                errors.append(f"ontology {key} path does not exist")
-            if raw_path in binding_paths:
-                errors.append(f"ontology {key} reuses the {binding_paths[raw_path]} artifact")
-            elif raw_path:
-                binding_paths[raw_path] = key
-            asset = assets_by_path.get(raw_path)
-            if asset is None:
-                errors.append(f"ontology {key} is not registered in public-assets.csv")
-            elif normalized(asset.get("asset_role")) not in allowed_roles:
-                expected = ", ".join(sorted(allowed_roles))
-                errors.append(f"ontology {key} requires asset role: {expected}")
-
-    for report_path in test_report_paths:
-        relative = report_path.relative_to(root).as_posix()
-        try:
-            if report_path.stat().st_size > MAX_TEST_REPORT_BYTES:
-                errors.append(f"test report exceeds {MAX_TEST_REPORT_BYTES} bytes: {relative}")
-                continue
-        except OSError:
-            errors.append(f"test report is unreadable: {relative}")
-            continue
-        if set(test_report_chapter_refs.get(report_path, [])) != set(chapter_by_id):
-            errors.append(f"test report asset {relative} does not cover the exact chapter set")
-        try:
-            report = json.loads(
-                report_path.read_text(encoding="utf-8"),
-                object_pairs_hook=reject_duplicate_json_pairs,
-                parse_constant=reject_nonstandard_json_constant,
-            )
-        except (
-            OSError,
-            UnicodeDecodeError,
-            json.JSONDecodeError,
-            ValueError,
-            RecursionError,
-            MemoryError,
-        ):
-            errors.append(f"test report is not valid UTF-8 JSON: {relative}")
-            continue
-        if not isinstance(report, dict):
-            errors.append(f"test report must be a JSON object: {relative}")
-            continue
-        required_report_fields = (
-            "schema_version",
-            "book_slug",
-            "status",
-            "command",
-            "tool",
-            "executed_at",
-            "runner",
-            "runner_sha256",
-            "ontology_manifest_sha256",
+    errors.extend(
+        validate_semantica_release_evidence(
+            root,
+            metadata,
+            semantica_binding,
+            source_rows,
+            bound_cq_ids,
+            evidence_paths,
         )
-        for field in required_report_fields:
-            if not text_value(report.get(field)):
-                errors.append(f"test report {relative} lacks {field}")
-        if report.get("schema_version") != SUPPORTED_SCHEMA_VERSION:
-            errors.append(f"test report {relative} schema_version is unsupported")
-        if (
-            not text_value(report.get("book_slug"))
-            or report.get("book_slug") != metadata.get("slug")
-        ):
-            errors.append(f"test report {relative} book_slug does not match book.yaml")
-        if normalized(str(report.get("status", ""))) not in {"passed"}:
-            errors.append(f"test report {relative} status is not passed")
-        if has_unresolved_marker(str(report.get("command", ""))):
-            errors.append(f"test report {relative} command is unresolved")
-        if has_unresolved_marker(str(report.get("tool", ""))):
-            errors.append(f"test report {relative} tool is unresolved")
-        executed_at = text_value(report.get("executed_at"))
-        timestamp_shape_is_valid = bool(
-            re.fullmatch(
-                r"\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d"
-                r"(?:\.\d{1,6})?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)",
-                executed_at,
-            )
-        )
-        try:
-            parsed_executed_at = datetime.fromisoformat(executed_at.replace("Z", "+00:00"))
-            timestamp_is_valid = (
-                timestamp_shape_is_valid
-                and
-                parsed_executed_at.tzinfo is not None
-                and parsed_executed_at.utcoffset() is not None
-            )
-        except ValueError:
-            timestamp_is_valid = False
-        if not timestamp_is_valid:
-            errors.append(f"test report {relative} executed_at is not an ISO-8601 timestamp")
-        covered_report_cqs = report.get("covered_cq_ids")
-        if not isinstance(covered_report_cqs, list) or any(
-            not isinstance(item, str) for item in covered_report_cqs
-        ):
-            errors.append(f"test report {relative} covered_cq_ids must be a string list")
-        elif len(covered_report_cqs) != len(set(covered_report_cqs)) or set(covered_report_cqs) != set(cq_by_id):
-            errors.append(f"test report {relative} does not cover the exact CQ set")
-        covered_report_propositions = report.get("covered_proposition_ids")
-        if not isinstance(covered_report_propositions, list) or any(
-            not isinstance(item, str) for item in covered_report_propositions
-        ):
-            errors.append(
-                f"test report {relative} covered_proposition_ids must be a string list"
-            )
-        elif (
-            len(covered_report_propositions) != len(set(covered_report_propositions))
-            or set(covered_report_propositions) != set(proposition_by_id)
-        ):
-            errors.append(f"test report {relative} does not cover the exact proposition set")
-        checks = report.get("checks")
-        if not isinstance(checks, list) or not checks or any(
-            not isinstance(check, dict)
-            or not str(check.get("check_id", "")).strip()
-            or normalized(str(check.get("status", ""))) != "passed"
-            for check in checks
-        ):
-            errors.append(f"test report {relative} has no complete passed check list")
-        runner = text_value(ontology.get("runner"))
-        if report.get("runner") != runner:
-            errors.append(f"test report {relative} runner does not match ontology manifest")
-        runner_path, runner_error = safe_package_asset(root, runner)
-        runner_hash = (
-            safe_sha256(runner_path)
-            if runner_error is None and runner_path is not None and runner_path.is_file()
-            else None
-        )
-        if (
-            runner_error
-            or runner_path is None
-            or not runner_path.is_file()
-            or runner_hash is None
-            or report.get("runner_sha256") != runner_hash
-        ):
-            errors.append(f"test report {relative} runner_sha256 does not match")
-        ontology_hash = safe_sha256(ontology_path) if ontology_path.is_file() else None
-        if ontology_path.is_file() and (
-            ontology_hash is None or report.get("ontology_manifest_sha256") != ontology_hash
-        ):
-            errors.append(f"test report {relative} ontology_manifest_sha256 does not match")
+    )
 
     privacy_manifest = root / "privacy" / "public-export.yaml"
     if privacy_manifest.is_file():

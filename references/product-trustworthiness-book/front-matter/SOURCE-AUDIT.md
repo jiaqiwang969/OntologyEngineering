@@ -1,6 +1,15 @@
 # 前言来源边界记录
 
-更新日期：2026-08-15
+更新日期：2026-08-19
+
+## Semantica 架构声明的来源
+
+前言新增的“书是人可读规范、Semantica 是唯一执行语义”不是 ISO 26262 内容，
+而是本版软件/出版架构。其机器事实必须从源锁定 Semantica registry 与 manifest
+核对：卷二章包为 `semantica.chapter_packages.vol2.ch01` 至 `vol2.ch20`，规范转述
+domain package 为 `semantica.chapter_packages.vol2.normative`；当前均声明
+`status=partial`、`release_status=blocked`。本记录只说明书稿为何这样表述，不能代替
+package registry 验证、wheel 哈希、scenario receipt 或 release verdict。
 
 前言开场的雨刷企业缘起来自用户以作者身份提供的直接叙事，并已记录为
 `EVT-20260815-BOOK-ORIGIN-STORY-001`、`EVD-BOOK-ORIGIN-USER-001` 与
@@ -28,7 +37,7 @@
 重新建立对象表、邻接表和 Figure Contract。
 
 前言对工程本体论、LLM/Skill/Agent 分工和 Unknown 边界的方法来源，与第 1 章
-`SOURCE-AUDIT.md` 第 2、4 节相同。汽车功能安全只作为严格纵向样板自然说明，
+正文及 `semantica.chapter_packages.vol2.ch01` 的 `source-audit` 迁移资产一致。汽车功能安全只作为严格纵向样板自然说明，
 不显示内部条款坐标，也不把安全推广为全部产品可信问题。
 
 前言只负责作者缘起、全书动机、范围和读法，不承担第 1 章 EPS 合成案例的事实来源，

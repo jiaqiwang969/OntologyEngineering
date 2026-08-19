@@ -1,0 +1,27 @@
+# fragments index（自动生成，勿手改）
+
+- preface.tex <- product-trustworthiness-book/front-matter/preface.md
+- readme-ch01.tex <- product-trustworthiness-book/ch01-introduction/chapter.md
+- readme-ch02.tex <- product-trustworthiness-book/ch02-concepts-terminology/chapter.md
+- readme-ch03.tex <- product-trustworthiness-book/ch03-safety-management/chapter.md
+- readme-ch04.tex <- product-trustworthiness-book/ch04-concept-hara/chapter.md
+- readme-ch05.tex <- product-trustworthiness-book/ch05-system-development/chapter.md
+- readme-ch06.tex <- product-trustworthiness-book/ch06-hardware-development/chapter.md
+- readme-ch07.tex <- product-trustworthiness-book/ch07-software-development/chapter.md
+- readme-ch08.tex <- product-trustworthiness-book/ch08-asil-decomposition-dfa/chapter.md
+- readme-ch09.tex <- product-trustworthiness-book/ch09-production-operation/chapter.md
+- readme-ch10.tex <- product-trustworthiness-book/ch10-supporting-processes/chapter.md
+- readme-ch11.tex <- product-trustworthiness-book/ch11-claim-ontology/chapter.md
+- readme-ch12.tex <- product-trustworthiness-book/ch12-identity-ontology/chapter.md
+- readme-ch13.tex <- product-trustworthiness-book/ch13-governance-ontology/chapter.md
+- readme-ch14.tex <- product-trustworthiness-book/ch14-context-hazard-ontology/chapter.md
+- readme-ch15.tex <- product-trustworthiness-book/ch15-requirements-ontology/chapter.md
+- readme-ch16.tex <- product-trustworthiness-book/ch16-measurement-ontology/chapter.md
+- readme-ch17.tex <- product-trustworthiness-book/ch17-change-ontology/chapter.md
+- readme-ch18.tex <- product-trustworthiness-book/ch18-dependency-ontology/chapter.md
+- readme-ch19.tex <- product-trustworthiness-book/ch19-field-ontology/chapter.md
+- readme-ch20.tex <- product-trustworthiness-book/ch20-assurance-ontology/chapter.md
+- appendix-a.tex <- product-trustworthiness-book/appendices/appendix-a-semiconductor.md
+- appendix-b.tex <- product-trustworthiness-book/appendices/appendix-b-motorcycle-truck.md
+- appendix-c.tex <- product-trustworthiness-book/appendices/appendix-c-glossary.md
+- appendix-d.tex <- product-trustworthiness-book/appendices/appendix-d-method-tables.md

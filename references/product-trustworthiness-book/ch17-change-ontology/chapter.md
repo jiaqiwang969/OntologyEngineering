@@ -1,6 +1,12 @@
 # 第 17 章 变化有了形状：版本与变化本体
 
-![两座版本快照岛之间有一座带身份与状态灯的变更桥](../../handbook/figures-imagegen/art-ch17-v01.png "chapter-art")
+> Semantica 绑定： 本章保存配置、变化、证据保质期与逐项裁决方法；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch17`，主场景为
+> `semantica.vol2.ch17.scenario.primary`。本体、CQ、查询、Shape、变化/裁决正反案例、
+> 规则、oracle、snapshot/diff、PROV 与 receipt 全部在 Semantica。当前为
+> `partial`、release `blocked`；未登记变化不得被系统静默解释为“无影响”。
+
+![两座版本快照岛之间有一座带身份与状态灯的变更桥](../handbook/figures-imagegen/art-ch17-v01.png "chapter-art")
 
 > **【导读】**
 > 上一章结束时，数字终于都带上了出处：每个值背后站着对象、方法与来源，
@@ -150,7 +156,7 @@ chg:Pass_MfgWrite a chg:PassRecord ;
 <!-- FIG:ch17-fig01-snapshot-scoped-pass:OBSERVE -->
 > **读图任务**：先找到两组快照蜂窝中的配置差异，再沿下方三张 PASS 卡的锚线回到它们各自属于的快照，最后看哪条锚线已断开。
 
-![两组六边形蜂窝表示配置略有差异的两个快照，一座变更桥连接二者，下方三张通过卡分别锚定到特定快照，其中一条锚线断开并挂起琥珀色过期旗。](../../handbook/figures-imagegen/ch17-fig01-snapshot-scoped-pass-v01.png "PASS 是带对象、配置、条件和时间的快照结论。快照改变后，旧卡片不必立即变假，但它与当前世界的支持关系必须重新判定。")
+![两组六边形蜂窝表示配置略有差异的两个快照，一座变更桥连接二者，下方三张通过卡分别锚定到特定快照，其中一条锚线断开并挂起琥珀色过期旗。](../handbook/figures-imagegen/ch17-fig01-snapshot-scoped-pass-v01.png "PASS 是带对象、配置、条件和时间的快照结论。快照改变后，旧卡片不必立即变假，但它与当前世界的支持关系必须重新判定。")
 
 <!-- FIG:ch17-fig01-snapshot-scoped-pass:CONSUME -->
 > **图后判断**：过期旗只表示需要重开评价，不自动否定原证据，也不表示变更一定导致安全问题。重新通过仍需人员依据差异和影响做决定。
@@ -377,5 +383,6 @@ chg:Change_0104 a chg:ChangeEvent ;
 > **本章注记**：本章的人物、会议、事故经过与全部产品数字（候选代号、软硬件
 > 版本、标定编号、环境与工具链代号、用例数、排查天数等）均为合成教学材料，
 > 不对应任何真实企业、真实产品或真实个人；文中对变更管理与配置管理做法的
-> 转述为自然语言概括，不构成对任何实际系统的判定或放行结论。各段记法片段
-> 为教学示意记法，可运行版本见本章配套材料。
+> 转述为自然语言概括，不构成对任何实际系统的判定或放行结论。各段记法只是
+> 教学投影；唯一可执行版本是 `semantica.chapter_packages.vol2.ch17`，当前为
+> `partial`、release `blocked`。

@@ -31,6 +31,7 @@ BINARY_SUFFIXES = {
     ".pptx",
     ".tar",
     ".webp",
+    ".whl",
     ".xls",
     ".xlsx",
     ".xz",
@@ -139,7 +140,12 @@ def git_candidates(root: Path, tracked_only: bool) -> list[Path] | None:
     if result.returncode != 0:
         return None
     names = [name for name in result.stdout.decode("utf-8", "surrogateescape").split("\0") if name]
-    return sorted((root / name for name in names), key=lambda path: path.as_posix())
+    paths = [root / name for name in names]
+    # ``git ls-files`` continues to report tracked paths deleted in the
+    # worktree.  A release-candidate scan must evaluate the prospective tree,
+    # not misclassify intentional deletions as special filesystem nodes.
+    existing = [path for path in paths if path.exists() or path.is_symlink()]
+    return sorted(existing, key=lambda path: path.as_posix())
 
 
 def filesystem_candidates(root: Path) -> list[Path]:

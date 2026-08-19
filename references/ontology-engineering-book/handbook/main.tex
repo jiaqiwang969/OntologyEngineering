@@ -1,4 +1,4 @@
-% 《工程本体论》· 可扩展本体框架与 Agent Skill
+% 《工程本体论》· Semantica 唯一执行语义版
 % XeLaTeX 编译；片段与节选由 build_handbook.py 生成；插图由 gen_figures.py 生成
 \documentclass[a4paper]{ctexbook}
 \input{preamble}
@@ -36,8 +36,8 @@
       at ([xshift=10.90cm,yshift=-1.52cm]current page.north west) {%
         {\fontsize{10.5}{13}\selectfont\sffamily\bfseries\color{seriesice!88!white}
           ENGINEERING ONTOLOGY}\par\vspace{0.52cm}
-        {\fontsize{42}{50}\selectfont\heiti\bfseries\color{white}工程本体论}\par\vspace{0.34cm}
-        {\fontsize{20}{27}\selectfont\heiti\color{seriesice}可扩展本体框架 · Agent Skill}\par\vspace{0.28cm}
+        {\fontsize{42}{50}\selectfont\heiti\color{white}工程本体论}\par\vspace{0.34cm}
+        {\fontsize{20}{27}\selectfont\heiti\color{seriesice}Semantica 唯一执行语义版}\par\vspace{0.28cm}
         {\fontsize{11.5}{17}\selectfont\songti\color{white!82}
           从概念体系到可计算的工程语义}%
       };
@@ -100,18 +100,21 @@
 \vspace*{0.56\textheight}
 \begin{minipage}{0.88\textwidth}
 \small\color{black!68}
-\textbf{版本说明}\quad 本册为《工程本体论》的配套成书版本，并提供可扩展本体框架与 Agent Skill；作者署名为
+\textbf{版本说明}\quad 本册为《工程本体论》的 Semantica 唯一执行语义版；作者署名为
 \textbf{claude F5 max}；ISBN、出版社与印刷参数在出版决定后另行冻结。\par\medskip
 
-\textbf{内容边界}\quad 本册以概念讲解、代码节选、学习路径和资源索引为主；涉及标准、
-项目责任或工程结论时，应回到受控来源与具名责任人的决定。\par\medskip
+\textbf{内容边界}\quad 两卷书是规格、解释与教学案例的“石头”；Semantica 是贯穿其间的
+唯一执行语义。本册不再携带平行 ontology、CQ、shape、query、case、rule 或 runner。
+涉及现实事实、标准、项目责任或工程结论时，仍须回到受控来源与具名责任人的决定。\par\medskip
 
 \textbf{图片边界}\quad 封面与章首概念图由图像模型生成，只承担教学与编辑表达，不冒充
 规范原图、试验照片、仿真结果或现实产品证据。\par\medskip
 
-\textbf{来源致谢}\quad 依据 ontology-engineering-book 仓库整理生成。\par\medskip
+\textbf{来源致谢}\quad 依据 ontology-engineering-book 书源整理；教学片段由构建器经
+迁移账从 source-locked Semantica built-in packages 读取并核验。\par\medskip
 
-\textbf{一体化说明}\quad Skill × 本体 × 书：一体化工程资产。
+\textbf{一体化说明}\quad 两卷书给出可读规格，Semantica 承担全部可执行语义，Skill
+只做检索与薄入口。场景 oracle 通过不自动等于 package release 完成。
 \url{https://github.com/jiaqiwang969/OntologyEngineering}
 \end{minipage}
 \clearpage
@@ -121,24 +124,31 @@
 % ================================================================ 前言
 \chapter{前言}
 
-这本手册是《工程本体论》的配套读物。它不是代码清单的汇编，
-而是一份\textbf{带着读者走}的导读：每章先用日常语言把概念讲清楚，
-再用从仓库真实文件中节选的关键片段印证讲解，
-最后给出文件指引表，告诉你完整代码在仓库的哪个位置、值得注意什么。
+这本手册是《工程本体论》的成书版本。它不是第二套代码仓库，
+而是一份\textbf{带着读者走}的可执行规格导读：每章先用日常语言把概念讲清楚，
+再用 Semantica built-in package 中的受控资产节选印证讲解，最后明确 package、
+scenario、oracle、能力边界与 release status。理论与方法留在书里；所有机器可执行
+语义只在 Semantica 中维护。
 
 \begin{noteblock}
-\textbf{补编说明}：第 2、4、5、6、9 章示例提取自原书稿；
-第 1、3、7、8 章原稿配套代码空缺，本手册按全书脉络补写
-（绪论、本体构建方法论、知识图谱构建与管理、本体与大语言模型），
-建议作者对照原稿校订后正式发布。
+\textbf{材料与状态说明}：第 2、4、5、6、9 章教学材料提取自原书稿；
+第 1、3、7、8 章按全书脉络补写。迁移不抹去来源差异：Semantica manifest 用
+\texttt{source\_anchor}、哈希、derivation、payload status 与 gap 明示原文、提取、
+适配和缺口。书中说“已迁入”不等于 runtime 已支持，“scenario pass”也不等于发布完成。
 \end{noteblock}
 
 \section*{如何阅读本手册}
 
-\textbf{正文以讲解为主，代码以节选为辅。}
-书中出现的每个代码片段都由构建脚本从仓库真实文件中按标记自动节选，
-与仓库内容保持一致；片段下方的「\(\triangleright\) 节选自……」标明完整文件位置。
-完整文件可运行、可在 Protégé 中打开，不再随书全文排印。
+\textbf{正文以讲解为主，包资产以节选为辅。}
+书中出现的语义片段由构建脚本依据迁移账，从 Semantica 的 allowlisted package
+按 asset id 读取并校验；片段下方只标唯一 package/asset，历史来源与 derivation
+留在 manifest 中查证。迁移前路径不是运行入口，
+Protégé、Jena、owlready2 或 pySHACL 的单独运行结果也不是本书的发布证据。
+
+\textbf{复算以同一 runner 为准。}
+Python、CLI 与 MCP 都委托 \texttt{SemanticPackageRunner}。执行时先查看 manifest，
+再运行具名 scenario，最后单独执行 release verification；未知包、未知场景、缺失资产、
+哈希不符或不支持的 DL/SWRL/时态/概率能力均应 fail closed。
 
 \textbf{代码框的排版约定}：注释以\textcolor{cmtgray}{灰蓝色}显示，代码为黑色；
 描述逻辑符号（\(\sqsubseteq\)、\(\sqcap\)、\(\forall\)、\(\exists\) 等）以标准数学记号排印。
@@ -148,40 +158,50 @@
 全部提示词统一维护在 handbook 目录的 \texttt{gen\_figures.py} 中，
 书中展示与实际生成完全一致（单一来源）。
 
-\section*{仓库结构与运行环境}
+\section*{书稿结构与 Semantica 运行边界}
 \input{fragments/readme-main}
 
 \mainmatter
 
 % ================================================================ 第1章
+\color{black}
 \input{chapters/ch01}
 
 % ================================================================ 第2章
+\color{black}
 \input{chapters/ch02}
 
 % ================================================================ 第3章
+\color{black}
 \input{chapters/ch03}
 
 % ================================================================ 第4章
+\color{black}
 \input{chapters/ch04}
 
 % ================================================================ 第5章
+\color{black}
 \input{chapters/ch05}
 
 % ================================================================ 第6章
+\color{black}
 \input{chapters/ch06}
 
 % ================================================================ 第7章
+\color{black}
 \input{chapters/ch07}
 
 % ================================================================ 第8章
+\color{black}
 \input{chapters/ch08}
 
 % ================================================================ 第9章
+\color{black}
 \input{chapters/ch09}
 
 % ================================================================ 附录
 \appendix
+\color{black}
 \chapter{配套资源目录}
 \input{fragments/readme-resources}
 

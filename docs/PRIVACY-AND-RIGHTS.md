@@ -9,7 +9,7 @@ OntologyEngineering 默认把标准原文、企业资料和生产会话视为私
 |---|---|---|
 | 私有证据层 | 标准原始 PDF、购买记录、MinerU/OCR 抽取物、企业文档、真实项目数据、会话与附件 | 仓库外保存；最小权限；不得公开 |
 | 受控派生层 | 条款锚点、内部审读笔记、候选转述、原始生成图、模型事件和人工评语 | 私有或受限协作；逐项审查 |
-| 公共制品层 | 原创讲解、合成案例、经清权利图、本体、查询、约束、脚本和发布 PDF | 白名单放行；保留版本与权利状态 |
+| 公共制品层 | OE 的原创书稿/合成叙事/经清权利图/薄脚本，以及 Semantica 中另行登记的 package assets | 两个仓库分别白名单放行；保留版本、来源与权利状态 |
 
 哈希和逻辑 ID 可以连接三层，但公共层不得保存能够还原个人目录、账号、企业存储位置或
 受限原文的路径与内容。
@@ -50,12 +50,16 @@ OntologyEngineering 默认把标准原文、企业资料和生产会话视为私
 
 ## 本地与公开仓库隔离
 
-推荐使用两个根目录：
+推荐把私有来源、公开书稿与 Semantica package 作者区分开：
 
 ```text
 private-evidence-root/      # 原始来源、企业资料、受控抽取、会话；不进入 Git 公共历史
-public-book-root/           # 仅接收白名单制品、合成 fixtures 和相对逻辑 ID
+public-book-root/           # 两卷/新书正文、图、来源地图与相对逻辑 ID
+semantica-authoring-root/   # ontology/CQ/query/shape/case/rule 候选；审计后进入 built-in package
 ```
+
+OE 书根不保存 executable semantic assets 的发布副本。Semantica package 即使只含合成
+fixtures 和原创语义，也必须独立登记权利与 NOTICE；迁入另一个仓库不等于自动清权。
 
 不要依靠 `.gitignore` 作为唯一保护。`.gitignore` 只防止常见误加入；正式公开仍需资产台账、
 隐私扫描、人工复核和 Git 历史检查。

@@ -1,20 +1,22 @@
 ---
 name: standard-to-book
-description: Convert a lawfully accessed ISO, IEC, GB, industry standard, or controlled technical corpus into a privacy-safe, plain-language engineering book plus competency questions, source registers, ontology/SHACL packages, synthetic manufacturing cases, figure contracts, and release gates. Use when Codex is asked to turn a standard into a book, start a new OntologyEngineering volume, build AI×manufacturing knowledge for SME manufacturers, lower the barrier to a specialist domain, or audit a standard-to-book pipeline. Do not use to redistribute standards, bypass rights, or claim certification.
+description: Convert a lawfully accessed ISO, IEC, GB, industry standard, or controlled technical corpus into a privacy-safe engineering book whose sole executable semantics are a built-in Semantica package. Use when Codex is asked to start a new OntologyEngineering volume, turn a standard into a source-grounded book, or audit that book-to-Semantica release chain. Do not use to redistribute standards, bypass rights, create a parallel ontology runtime, or claim certification.
 ---
 
 # Standard to Book
 
-Produce a learning and verification system, not a prose summary. Keep the standard or controlled
-corpus in a private evidence root; place only original explanations, synthetic examples and cleared
-release assets in the public book package.
+Produce an external specification and learning corpus, not a second semantic
+implementation.  The two existing OntologyEngineering volumes and every new
+book are the durable “stones”: prose, source anchors, proposition maps and
+teaching figures.  Semantica owns all executable ontology, CQ, SHACL/shape,
+SPARQL/query, case, rule, fixture, lifecycle and release behavior.
 
 ## Start safely
 
-1. Read `references/privacy-release.md` before accepting source files or creating public artifacts.
-2. Read `references/book-contract.md` before defining the book or its directory structure.
-3. Run `scripts/init_book.py` to create a new package when no package exists.
-4. Never overwrite an existing package or push/publish without explicit user authorization.
+1. Read `references/privacy-release.md` before accepting sources or creating public artifacts.
+2. Read `references/book-contract.md` before defining the book package.
+3. Run `scripts/init_book.py` only when the target package does not exist.
+4. Never overwrite, publish or push without the user's explicit authorization.
 
 ```bash
 python3 scripts/init_book.py \
@@ -24,7 +26,12 @@ python3 scripts/init_book.py \
   --output ./workbooks
 ```
 
-Confirm the generated structure, then use stricter stages as the work matures:
+The initializer creates book/source registers plus
+`semantica/package-proposal.yaml` and `semantica/package-binding.yaml`.  It
+must not create a local CQ register, ontology, shape, query, case, rule,
+fixture or runner.
+
+Validate progressively:
 
 ```bash
 python3 scripts/validate_book.py ./workbooks/welding-quality --stage structure
@@ -33,55 +40,59 @@ python3 scripts/validate_book.py ./workbooks/welding-quality --stage release --w
 python3 scripts/validate_book.py ./workbooks/welding-quality --stage release
 ```
 
-Use `--write-lock` only after the reader book, proposition map, teaching figures, ontology artifacts,
-released book Skill, machine test report, reviews and public-asset allowlist are complete. Any later
-change invalidates the lock; regenerate it only as an explicit new freeze.
+Use `--write-lock` only after the book, reviews, public allowlist and the three
+Semantica evidence documents are final.  Any byte change invalidates the
+lock; freezing again is a new release action.
 
-## Build the book
+## Build the book and Semantica package
 
-1. **Freeze the Book Charter.** State the target SME manufacturing readers, shop-floor problem,
-   allowed decisions, forbidden conclusions, standard edition, scope, exclusions, reviewers and
-   public/private boundary.
-2. **Register sources and rights.** Use logical IDs and hashes. Do not store personal absolute paths,
-   credentials, sessions, raw standards or restricted extracts in the public package.
-3. **Write competency questions first.** Capture what a non-specialist engineer must understand,
-   decide, verify or escalate. Make each CQ testable.
-4. **Register propositions.** Bind each plain-language claim to its chapter, CQs, sources, claim
-   class, authority limit, evidence oracle and reviewer. Do not copy restricted standard text.
-5. **Conceptualize the domain.** Define terms, classes, relations, identity criteria, lifecycle,
-   versions, evidence and authority. Keep TBox, controlled ABox and real-world facts distinct.
-6. **Create executable answers where useful.** Add exact queries, SHACL or equivalent constraints,
-   positive fixtures, single-fault negative fixtures and a runner. Do not build a universal ontology.
-7. **Teach through synthetic manufacturing scenes.** Let a plausible misunderstanding happen,
-   expose why it fails, then present the proposition, source-grounded explanation and boundary.
-8. **Produce figures from contracts.** Define a visual question and semantic baseline before using
-   ImageGen or another provider. Treat generated images as candidate teaching visuals, never evidence.
-9. **Assemble and release in layers.** Check sources/rights, semantics, fixtures, reader comprehension,
-   expert review, privacy, metadata, PDF rendering and frozen checksums separately.
+1. **Freeze the Book Charter.** State readers, manufacturing problem, allowed decisions,
+   escalation boundaries, source edition, exclusions, reviewers and public/private boundary.
+2. **Register lawful sources.** Use logical IDs and hashes. Keep raw standards, restricted
+   extracts, enterprise data, credentials and sessions outside the public package.
+3. **Draft reader questions.** Put 10–30 proposed questions in the charter. They guide the
+   book, but they are not executable CQs until accepted into Semantica.
+4. **Register propositions and chapters.** Bind public summaries to sources and later to the
+   stable CQ IDs issued by the Semantica package. Do not copy restricted text.
+5. **Submit the package proposal to Semantica.** Implement every CQ, ontology, shape, query,
+   synthetic case, rule, fixture and oracle in the built-in package identified by
+   `proposed_package_id`. Do not leave a book-local fallback or compatibility backend.
+6. **Bind through the sole gateway.** All Semantica discovery, execution and verification from
+   OntologyEngineering must go through `ontology_engineering.semantica_runtime`; never import
+   `semantica`, RDFLib, pySHACL or another semantic backend in this workflow.
+7. **Capture native evidence.** Copy the source lock, content-addressed runtime receipt and
+   `complete` release verdict emitted by the bound Semantica package into the exact paths in
+   `package-binding.yaml`. Structural validation never manufactures a green verdict.
+8. **Teach through the book.** Use original explanations and reviewed teaching figures. A
+   narrative example may appear in prose, but its machine case and oracle live in Semantica.
+9. **Release in layers.** Check rights, source hashes, book comprehension, technical review,
+   privacy, Semantica evidence integrity, rendering and the final package lock separately.
 
 ## Preserve the constitution
 
-Reuse competency-question methods, provenance, package shapes, gates and human authorization.
-Rebuild domain semantics, facts, sources, rights, cases, conclusions, visuals and review decisions for
-every new book. Do not copy the ISO 26262 10+10 chapter structure unless the new teaching problem
-actually requires the same mirror.
+Reuse source-grounding, provenance, competency-question methodology, versioned package
+contracts and human authorization. Rebuild domain content for each book. Do not copy the ISO
+26262 10+10 chapter structure unless the reader problem genuinely requires it.
 
-Keep these authorities separate:
+Keep authorities separate:
 
-- Ontology and contracts define shared meaning.
-- Controlled activities and native records produce candidate facts.
-- Qualified people review, accept risk and authorize release.
-- LLMs translate and organize; Skills route the workflow; Agents execute only within granted scope.
+- Books and controlled standards are external specifications.
+- Semantica is the only owner and executor of semantic knowledge packages.
+- Native records produce candidate facts; qualified people review facts, accept risk and
+  authorize publication.
+- A Skill routes work and an LLM translates or organizes; neither creates compliance authority.
 
 ## Stop conditions
 
-Stop and report the gap when source rights are unclear, a decisive claim lacks an anchor, the target
-reader or decision is undefined, a real enterprise could be identified, an Agent would need broader
-authority, or no qualified reviewer is available. Continue with a charter or synthetic demo only when
-that remains useful and honest.
+Stop and report the gap when source rights are unclear, a decisive proposition lacks an anchor,
+the target reader or decision is undefined, a real enterprise could be identified, the proposed
+Semantica package is absent/unbound, the native receipt or verdict is missing/blocked, an Agent
+would need broader authority, or no qualified reviewer is available. A charter or synthetic
+book draft may continue only when that remains useful and is clearly unreleased.
 
 ## Completion response
 
-Report the created or updated package, the CQs and gates covered, private inputs that were deliberately
-excluded, unresolved rights/review items, validation results and the next human decision. Never state
-that a book, ontology or green test establishes certification or product compliance.
+Report the book package, the bound Semantica package ID/version, covered CQ IDs, source lock,
+receipt and verdict status, excluded private inputs, unresolved rights/review items, validation
+results and the next human decision. Never state that a book, ontology, receipt or green gate
+establishes certification or product compliance.

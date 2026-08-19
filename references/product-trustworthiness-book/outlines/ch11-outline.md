@@ -1,6 +1,11 @@
 ---
 contract_version: 1
 chapter: ch11
+outline_identity: historical_capstone_supplement_not_current_ch11
+executable_successor_package_id: semantica.chapter_packages.vol2.ch20
+executable_authority: semantica_only_no_book_fallback
+package_status: partial
+release_status: blocked
 target_hanzi: 30000
 section_budgets:
   - heading: "11.1 子门禁已经是绿的，为什么报告还是不能签？"
@@ -69,7 +74,7 @@ source_anchors:
     block: 8
     bbox: [112, 537, 941, 568]
 planned_outputs:
-  - functional-safety-book/ch11-capstone-three-items/chapter.md
+  - references/product-trustworthiness-book/ch11-capstone-three-items/chapter.md
 gate_count_policy: runtime-derived
 question_count_policy: learning-objective-driven
 figure_policy: engineering-need-driven
@@ -77,7 +82,9 @@ abox_policy: assemble-frozen-upstream-only
 ---
 # 第11章 综合收口：一份绿了一半的报告，最终能签哪句话
 
-本章只跟随一个对象：历史整书报告、它引用的旧 `bundle-manifest.yaml`、`20260814-ch11-rewrite-diagnostic.json` 锁定的重写期漂移快照，以及尚未形成的新冻结候选。九节按下列问题链连续推进：
+本提纲对应已归档的旧“第 11 章”总装案例，不是现行可信主张本体章。历史整书报告、
+旧 bundle manifest 与漂移快照继续作为书面案例；其执行后继只在
+`semantica.chapter_packages.vol2.ch20` 的 `legacy-capstone-*` 资产中。九节按下列问题链连续推进：
 
 ```text
 子门禁绿了，为什么总报告仍不能签？
@@ -101,7 +108,9 @@ abox_policy: assemble-frozen-upstream-only
 
 ## 11.2 这次究竟验的是哪一包字节？
 
-解释旧 manifest 的 41 个输入、逐文件 SHA-256、`bundle_sha256` 与 `manifest_sha256` 分工，以及重写期快照十处字节漂移为何只说明“不是旧包”，不自动说明新字节对错。`capstone.py` 应在第一处不匹配失败关闭；不得串成“发现漂移→自动重冻→继续验收”。图 11-1 放在初始快照、末次复核和冻结者/收口者分工讲清之后。
+解释旧 manifest 的 41 个输入、逐文件 SHA-256、bundle/manifest 哈希分工，以及十处
+字节漂移为何只说明“不是旧包”。旧 capstone 的首处不匹配失败关闭作为历史事实保留；
+现行复核必须通过 Semantica ch20，不得重建旧脚本或“自动重冻→继续验收”。
 
 预算：约 4,000 汉字。产物是本次被检查对象的精确身份与失败关闭状态。
 
@@ -131,7 +140,9 @@ abox_policy: assemble-frozen-upstream-only
 
 ## 11.7 怎样让别人复现的是同一个结论，而不只是同一份数据？
 
-把数据包、验证器、运行环境和报告四层身份同时写进结论；并排说明 `run_all_gates.py` 的外层调度，以及 `capstone.py` 与 `run_eval.py` 两个兄弟子合同的部分重叠边界。前十章的六种映射形态和 ch10 跨边界复用在同一报告里再次被查询、Shape 或状态视图消费。图 11-3 放在六形态总装回读之后。最后以“只换验证器、数据不变”的变式说明旧绿必须重议。
+把数据包、验证器、运行环境和报告四层身份同时写进结论；旧 runner 名称只解释历史
+报告的分层边界。现行执行由 Semantica ch20 的单一 runner 完成，并把 scenario oracle
+与 release verdict 分开。最后以“只换验证器、数据不变”的变式说明旧绿必须重议。
 
 预算：约 4,000 汉字。产物是含输入身份、检查器身份、当次结果、未决项和边界的最小可复核报告。
 

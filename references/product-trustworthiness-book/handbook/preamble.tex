@@ -1,0 +1,120 @@
+% 共享排版样式（对标《工程本体论》handbook：三盒子 + 中文 + 等宽）
+\input{book-metadata}
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\usepackage{booktabs,tabularx,xltabular,amssymb,amsmath}
+\usepackage{graphicx}
+\usepackage{adjustbox}   % 图宽自适应：max size 封顶不放大
+\usepackage{rotating}    % 极宽图 sidewaysfigure 横排
+\usepackage[font=small,labelfont=bf,labelsep=quad,hypcap=false]{caption}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{calc,fadings}
+\usepackage{fontspec}
+\usepackage{needspace}
+\usepackage{emptypage}
+\usepackage{fvextra}
+\usepackage[topmarks]{titleps}
+\setmonofont{Menlo}[Scale=0.86]
+\usepackage{xurl}
+\usepackage{hyperref}
+\urlstyle{tt}
+\definecolor{bookslate}{RGB}{54,78,99}
+\definecolor{bookteal}{RGB}{45,139,139}
+\definecolor{bookamber}{RGB}{214,145,52}
+\definecolor{booknight}{RGB}{7,20,33}
+\definecolor{bookice}{RGB}{178,220,240}
+\definecolor{bookcoral}{RGB}{239,82,54}
+\hypersetup{
+  hidelinks,
+  pdftitle={\BookTitle：\BookSubtitle},
+  pdfauthor={\BookAuthorStatus},
+  pdfsubject={\BookScopeLine；书是人读规范，Semantica 是唯一执行语义},
+  pdfkeywords={产品可信工程, ISO 26262, 功能安全, 工程本体, Semantica, 唯一执行语义, 证据闭环},
+  bookmarksnumbered=true,
+  unicode=true
+}
+
+% 中文正文避免段首/段尾单行跨页；代码框前导句由构建器用 \nopagebreak 绑定。
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\brokenpenalty=10000
+\setlength{\emergencystretch}{3.5em}
+\raggedbottom
+
+% 成书页眉页脚：运行页眉镜像排布；页码置于外侧页脚。
+% 内部文档号只保留在内书名页，不进正文页脚（读者视图保持安静）。
+% 章、部和目录首页使用安静的 plain 样式；openright 自动空白页仍由 emptypage 清空。
+\newpagestyle{bookfront}[\small\sffamily\color{bookslate!82!black}]{
+  \sethead[\BookTitle][][\BookVolumeLabel\quad\BookVolumeName]
+          {\BookVolumeLabel\quad\BookVolumeName}{}{\BookTitle}
+  \setfoot[\thepage][][]
+          {}{}{\thepage}
+  \setheadrule{0.35pt}}
+
+\newpagestyle{bookhead}[\small\sffamily\color{bookslate!82!black}]{
+  \sethead[\BookTitle][][\CTEXthechapter\quad\chaptertitle]
+          {\CTEXthechapter\quad\chaptertitle}{}{\BookTitle}
+  \setfoot[\thepage][][]
+          {}{}{\thepage}
+  \setheadrule{0.35pt}}
+
+\renewpagestyle{plain}[\small\sffamily\color{black!58}]{
+  \sethead{}{}{}
+  \setfoot[][\thepage][]{}{\thepage}{}}
+
+\definecolor{noteblue}{RGB}{238,244,247}
+\definecolor{codegray}{RGB}{246,246,244}
+
+% 章首插图不修改原图的语义内容，只在成书装配时用纸白覆盖层做四边渐隐。
+% 图的尺寸由构建器原有的 adjustbox 决定；此宏不缩放、不裁切图片。
+\tikzfading[name=chapterart-fade-west,
+  left color=transparent!0,right color=transparent!100]
+\tikzfading[name=chapterart-fade-east,
+  left color=transparent!100,right color=transparent!0]
+\tikzfading[name=chapterart-fade-south,
+  bottom color=transparent!0,top color=transparent!100]
+\tikzfading[name=chapterart-fade-north,
+  bottom color=transparent!100,top color=transparent!0]
+\newcommand{\chapterartfade}[1]{%
+  \begin{tikzpicture}[baseline=(chapterart.base)]
+    \node[inner sep=0pt,outer sep=0pt] (chapterart) {#1};
+    \begin{scope}
+      \clip (chapterart.south west) rectangle (chapterart.north east);
+      \fill[white,path fading=chapterart-fade-west]
+        (chapterart.south west) rectangle
+        ($(chapterart.north west)!0.10!(chapterart.north east)$);
+      \fill[white,path fading=chapterart-fade-east]
+        ($(chapterart.south east)!0.10!(chapterart.south west)$) rectangle
+        (chapterart.north east);
+      \fill[white,path fading=chapterart-fade-south]
+        (chapterart.south west) rectangle
+        ($(chapterart.south east)!0.12!(chapterart.north east)$);
+      \fill[white,path fading=chapterart-fade-north]
+        ($(chapterart.north west)!0.12!(chapterart.south west)$) rectangle
+        (chapterart.north east);
+      % 覆住透明渐变在部分 PDF 渲染器中留下的单像素图片边界。
+      \draw[white,line width=1.2pt]
+        (chapterart.south west) rectangle (chapterart.north east);
+    \end{scope}
+  \end{tikzpicture}%
+}
+
+\newtcolorbox{noteblock}{enhanced,colback=noteblue,frame hidden,
+  borderline west={2pt}{0pt}{bookteal!65!bookslate},
+  left=7pt,right=7pt,top=5pt,bottom=5pt,breakable}
+\newtcolorbox{codebox}{colback=codegray,colframe=black!25,
+  boxrule=0.4pt,left=6pt,right=6pt,top=2pt,bottom=2pt,breakable}
+\newtcolorbox{introbox}{enhanced,colback=bookamber!8,frame hidden,
+  borderline west={2.2pt}{0pt}{bookamber!85!black},
+  left=9pt,right=8pt,top=7pt,bottom=7pt,breakable}
+
+\setcounter{tocdepth}{1}
+\setcounter{secnumdepth}{2}
+
+% 图号采用连字号式“图 X-M”（附录为“图 A-M”），与正文占位编号口径一致。
+\renewcommand{\thefigure}{\thechapter-\arabic{figure}}
+
+% 线框图 PDF（rsvg-convert 产出）为 1.7 版；抬升输出版本消除 xdvipdfmx 告警。
+\AtBeginDocument{\special{pdf:minorversion 7}}

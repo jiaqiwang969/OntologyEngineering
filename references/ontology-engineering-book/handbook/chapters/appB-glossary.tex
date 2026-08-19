@@ -1,4 +1,8 @@
 % 附录B 中英术语对照表（按主题分组，组内拼音/字母混排）
+% Reset the text color at this source boundary: the preceding generated
+% resource tables contain colored hyperlinks, and the longtable must never
+% inherit a link color into deferred rows.
+\color{black}
 \chapter{中英术语对照表}
 
 这张表为「对照查阅」而设：读英文文献或标准文档时碰到生词、给类与属性起英文名时拿不准译法、
@@ -205,7 +209,7 @@ XSD & XML Schema Datatypes & RDF 字面量沿用的数据类型体系：string�
 反模式 & Anti-pattern & 常见的错误建模套路，如把部分整体关系写成「是一种」。 \\
 刚性 & Rigidity & OntoClean 元属性：实例是否在一切可能情形下都属于该类。 \\
 领域专家 & Domain Expert & 掌握领域知识、负责提供并验收建模内容的业务专家。 \\
-METHONTOLOGY & METHONTOLOGY & 马德里理工提出的经典方法论：从规范说明到维护的全流程。 \\
+METH\allowbreak ONTOLOGY & METH\allowbreak ONTOLOGY & 马德里理工提出的经典方法论：从规范说明到维护的全流程。 \\
 命名约定 & Naming Convention & 类、属性、个体的统一命名规则，如类名大驼峰、属性小驼峰。 \\
 MIREOT & Minimum Information to Reference an External Ontology Term & 只抽取外部术语最小必要信息的轻量复用策略。 \\
 能力问题 & Competency Question & 本体建成后必须能回答的问题清单，驱动范围界定与验收。 \\
@@ -296,11 +300,14 @@ Text2SPARQL & Text-to-SPARQL & 把自然语言问题翻译成 SPARQL 的任务�
 语义解析 & Semantic Parsing & 把自然语言映射为形式化查询或逻辑表示的任务总称。 \\
 语义相似度 & Semantic Similarity & 度量两段内容含义接近程度的指标，常用向量余弦。 \\
 智能体 & Agent & 能感知、规划并调用工具自主行动的大模型应用形态。 \\
-知识权威源 & Authoritative Knowledge Source & 系统中裁决事实对错的唯一可信来源；本书主张由本体担任。 \\
+语义权威 & Semantic Authority & 概念、关系、约束与推理 profile 的受控正本；本书由 Semantica 包承担，不替代事实或决策权威。 \\
+事实权威 & Fact Authority & 对现实对象、测量、事件与时间有效性负责的受控来源；语义引擎不自行创造。 \\
+决策权威 & Decision Authority & 有权批准发布、变更或现实动作的具名主体；语义符合性不自动授予权限。 \\
 知识注入 & Knowledge Injection & 把图谱事实经提示、检索或训练送入模型的各种手段。 \\
 \addlinespace[10pt]
 \multicolumn{3}{@{}l}{\textbf{——工具与生态——}} \\*
 \addlinespace[3pt]
+Semantica & Semantica & 本书唯一执行语义：内建 package、RDF Dataset、SPARQL、SHACL、受限正向规则、snapshot/diff、PROV、receipt 与 release gate。 \\
 BFO & Basic Formal Ontology & 严格实在论取向的小型顶层本体，ISO 标准；OBO 与 IOF 之基。 \\
 Blazegraph & Blazegraph & 开源三元组库，曾长期支撑 Wikidata 的公共查询服务。 \\
 DBpedia & DBpedia & 从维基百科信息框抽取的多语言知识图谱，链接数据的枢纽。 \\
@@ -309,29 +316,29 @@ Dublin Core & Dublin Core (dcterms) & 题名、创建者、日期等十五项起
 ELK & ELK Reasoner & 面向 OWL 2 EL 的高速推理器，秒级分类百万级类层次。 \\
 FaCT++ & FaCT++ & C++ 实现的经典 Tableau 推理器，支持 OWL DL。 \\
 FOAF & Friend of a Friend & 描述人、组织及其社会关系的早期经典词汇。 \\
-Fuseki & Apache Jena Fuseki & Jena 配套的 SPARQL 服务器，HTTP 端点开箱即用。 \\
+Fuseki & Apache Jena Fuseki & Jena 配套的 SPARQL 服务器；本书仅作生态比较，不是 package 执行入口。 \\
 GraphDB & Ontotext GraphDB & 商用 RDF 库，以规则物化推理与全文检索见长，有免费版。 \\
 HermiT & HermiT & 基于 hypertableau 演算的 OWL 2 DL 推理器，Protégé 常用选项。 \\
 IOF & Industrial Ontologies Foundry & 工业本体铸造厂：基于 BFO 的制造业参考本体体系。 \\
 ISO 15926 & ISO 15926 & 流程工业全生命周期数据集成与交换的本体化标准。 \\
-Jena & Apache Jena & Java 语义网框架：RDF 模型、SPARQL、规则推理与 TDB 存储。 \\
+Jena & Apache Jena & Java 语义网框架；本书不以其独立结果替代 Semantica receipt。 \\
 LOV & Linked Open Vocabularies & 词汇表检索门户：找前人词汇、看复用情况的第一站。 \\
 Neo4j & Neo4j & 主流属性图数据库，用 Cypher 查询；可经插件与 RDF 互转。 \\
 OBO Foundry & Open Biological and Biomedical Ontologies Foundry & 生物医学本体协作生态，以正交性等共同原则著称。 \\
 OOPS! & OntOlogy Pitfall Scanner & 在线本体「找茬」工具，自动检测数十种常见建模缺陷。 \\
 OWL API & OWL API & Java 的 OWL 标准编程接口，Protégé 与多数推理器的底座。 \\
-owlready2 & Owlready2 & 把 OWL 类映射成 Python 类的库，可一行代码调用推理器。 \\
+owlready2 & Owlready2 & 把 OWL 类映射成 Python 类的生态库；不属于本书运行时。 \\
 OWL-Time & W3C Time Ontology & W3C 时间本体：时刻、时段及先后关系的标准词汇。 \\
 Pellet & Pellet / Openllet & 开源 OWL DL 推理器，支持 SWRL 与解释服务；今由 Openllet 延续。 \\
 Protégé & Protégé & 斯坦福出品的本体编辑器，事实标准，插件生态丰富。 \\
-pySHACL & pySHACL & Python 的 SHACL 校验器，命令行一键产出校验报告。 \\
+pySHACL & pySHACL & Python SHACL 校验生态；本书 shape 只经 Semantica runtime 复算。 \\
 QUDT & Quantities, Units, Dimensions and Types & 量、单位、量纲本体：工程数据单位语义化的权威词汇。 \\
 RDF4J & Eclipse RDF4J & Java 的 RDF 工具箱与存储框架，GraphDB 等产品的接口基础。 \\
-rdflib & RDFLib & Python 最常用的 RDF 库：解析、序列化与内存 SPARQL。 \\
+rdflib & RDFLib & Python RDF 生态库；本书不得从 OE 书源直接调用形成平行后端。 \\
 ROBOT & ROBOT (ROBOT is an OBO Tool) & OBO 社区的本体流水线命令行：抽取、合并、推理、发布。 \\
 Schema.org & Schema.org & 主流搜索引擎共建的网页结构化数据词汇，SEO 事实标准。 \\
 SOSA/SSN & Sensor, Observation, Sample, and Actuator / Semantic Sensor Network & W3C 传感器与观测本体，物联网数据语义化的标准词汇。 \\
-SPARQLWrapper & SPARQLWrapper & Python 访问远程 SPARQL 端点的轻量客户端库。 \\
+SPARQL\allowbreak Wrapper & SPARQL\allowbreak Wrapper & Python 访问远程 SPARQL 端点的轻量客户端库。 \\
 SUMO & Suggested Upper Merged Ontology & 大型开源上层本体，词条与 WordNet 全面对齐。 \\
 TDB & Apache Jena TDB & Jena 原生持久化三元组存储（现为 TDB2），单机部署常见选择。 \\
 TopBraid & TopBraid EDG & 基于 SHACL 的商用语义数据治理平台，出自 SHACL 主笔团队。 \\

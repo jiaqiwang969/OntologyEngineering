@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Create a privacy-first standard-to-book package without ingesting source text."""
+"""Create a privacy-first book corpus bound to Semantica-owned semantics.
+
+The generated tree is deliberately *not* an ontology implementation.  It
+contains the external specification (the book/source corpus) and a proposal
+for a built-in Semantica package.  CQ definitions, ontologies, shapes,
+queries, cases, rules, fixtures and runners belong in Semantica itself.
+"""
 
 from __future__ import annotations
 
@@ -38,6 +44,12 @@ def parse_args() -> argparse.Namespace:
 
 def yaml_value(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
+
+
+def semantica_package_id(slug: str) -> str:
+    """Return the stable proposed built-in package identifier for a book."""
+
+    return "semantica.books." + slug.replace("-", "_")
 
 
 def write_text(path: Path, content: str) -> None:
@@ -151,11 +163,13 @@ reader_review_status: "pending"
 ## 公共与私有边界
 
 - 私有：标准原文、受限抽取、企业资料、会话和真实项目数据；必须位于书包外部的受控根
-- 公共候选：原创讲解、合成案例、本体、查询、约束、脚本和经清权利图
+- 公共候选：原创讲解、来源/命题映射、教学图、书本路由 Skill 和 Semantica 发布证据
+- 唯一可执行语义：Semantica 内置包；CQ、本体、形状、查询、案例、规则、fixture 和 runner 不进入书包
 
 ## 初始能力问题
 
-在 `cqs/cq-register.csv` 登记 10–30 个可验收问题后再冻结章节结构。
+在本节起草 10–30 个读者问题；评审后把 CQ 定义和验收 oracle 提交到
+`semantica/package-proposal.yaml` 所标识的 Semantica 内置包，再冻结章节结构。
 """,
     )
 
@@ -176,24 +190,12 @@ reader_review_status: "pending"
         ],
     )
     write_csv(
-        target / "cqs" / "cq-register.csv",
-        [
-            "cq_id",
-            "question",
-            "reader_decision",
-            "evidence_required",
-            "expected_answer_form",
-            "acceptance_oracle",
-            "status",
-        ],
-    )
-    write_csv(
         target / "chapters" / "chapter-register.csv",
         [
             "chapter_id",
             "title",
             "reader_problem",
-            "cq_ids",
+            "semantica_cq_ids",
             "source_ids",
             "figure_ids",
             "review_status",
@@ -204,7 +206,7 @@ reader_review_status: "pending"
         [
             "proposition_id",
             "chapter_id",
-            "cq_ids",
+            "semantica_cq_ids",
             "source_ids",
             "statement_summary",
             "claim_class",
@@ -253,21 +255,42 @@ reader_review_status: "pending"
         ["relative_path", "sha256"],
     )
 
+    package_id = semantica_package_id(args.slug)
     write_text(
-        target / "ontology" / "package-manifest.yaml",
+        target / "semantica" / "package-proposal.yaml",
         f"""
 schema_version: "1.0"
 book_slug: {yaml_value(args.slug)}
-namespace: "TODO"
-competency_question_register: "cqs/cq-register.csv"
-tbox: "TODO"
-controlled_abox_or_adapter: "TODO"
-queries: "TODO"
-constraints: "TODO"
-positive_fixtures: "TODO"
-single_fault_negative_fixtures: "TODO"
-runner: "TODO"
-status: "not-started"
+proposed_package_id: {yaml_value(package_id)}
+external_specification_kind: "book"
+external_source_register: "sources/source-register.csv"
+chapter_register: "chapters/chapter-register.csv"
+proposition_register: "propositions/proposition-register.csv"
+requested_semantics:
+  - "ontology"
+  - "competency-questions"
+  - "shapes"
+  - "queries"
+  - "cases"
+  - "engineering-rules"
+execution_owner: "Semantica"
+proposal_status: "draft"
+""",
+    )
+    write_text(
+        target / "semantica" / "package-binding.yaml",
+        f"""
+schema_version: "1.0"
+book_slug: {yaml_value(args.slug)}
+semantica_package_id: {yaml_value(package_id)}
+semantica_package_version: "unbound"
+binding_status: "proposed"
+execution_authority: "semantica-only"
+runtime_gateway: "ontology_engineering.semantica_runtime"
+source_lock: "release/semantica-source-lock.json"
+runtime_receipt: "release/semantica-runtime-receipt.json"
+release_verdict: "release/semantica-release-verdict.json"
+bound_cq_ids:
 """,
     )
     write_text(
@@ -290,6 +313,7 @@ forbidden_public_content:
   - "credentials, tokens, keys or cookies"
   - "private model sessions or attachment caches"
   - "assets with pending input rights"
+  - "book-local ontology, CQ, shape, query, case, rule, fixture or runner payloads"
 public_manifest: "release/public-assets.csv"
 human_privacy_review: "required"
 """,
@@ -310,9 +334,10 @@ description: {yaml_value(f"Use when a reader needs the reviewed knowledge and de
 
 ## Workflow
 
-1. Bind the exact released book version and declared scope.
-2. Answer only covered competency questions with registered proposition and source IDs.
-3. Report assumptions, evidence gaps and mandatory escalation points.
+1. Bind the exact released book version and its `semantica/package-binding.yaml`.
+2. Route executable questions only through `ontology_engineering.semantica_runtime`.
+3. Answer only Semantica-receipted competency questions with registered proposition and source IDs.
+4. Report assumptions, evidence gaps and mandatory escalation points.
 """,
     )
     write_text(
@@ -326,8 +351,12 @@ description: {yaml_value(f"Use when a reader needs the reviewed knowledge and de
 - 目标读者：{args.audience}
 - 当前状态：Book Charter，尚未形成标准解释、合规结论或发布物
 
-先完成 `book-charter.md`、来源账、CQ、命题账和书本 Skill；公开候选还必须补齐教学图、
-本体制品、机器测试报告与公开资产白名单，最后写入 package lock。
+先完成 `book-charter.md`、来源账、命题账和书本 Skill，并将能力问题、形状、查询、案例、
+规则和本体提交到 `semantica/package-proposal.yaml` 指定的 Semantica 内置包。书包本身不得
+生成或保留平行的语义资产与 runner。
+
+公开候选还必须绑定已安装的 Semantica 包，并补齐 source lock、runtime receipt、
+`complete` release verdict、教学图和公开资产白名单，最后写入 package lock。
 原始标准、企业资料和模型会话必须位于书包外部的受控证据根，不得放入本公共候选包。
 运行 `validate_book.py` 的 structure、charter 和 release 阶段检查当前成熟度。
 """,
@@ -343,7 +372,7 @@ def main() -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 2
     print(f"created privacy-first book package: {target}")
-    print("next: complete the charter, source/CQ/proposition registers and book Skill")
+    print("next: complete the charter/source/proposition maps and submit the Semantica package proposal")
     print("no standard text was read, copied or generated")
     return 0
 

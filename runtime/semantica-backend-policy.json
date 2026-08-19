@@ -1,0 +1,17 @@
+{
+  "schema_version": "ontology-engineering.semantica-backend-policy/v1",
+  "bootstrap": "ontology_engineering/semantica_runtime.py",
+  "literal_fixture_hosts": [
+    {
+      "path": "scripts/check_semantica_backend_policy.py",
+      "scope": "string_literals_only",
+      "reason": "The gate names forbidden APIs as inert test data while its executable AST remains fully scanned."
+    },
+    {
+      "path": "tests/test_semantica_backend_policy.py",
+      "scope": "string_literals_only",
+      "reason": "Negative tests embed hostile source snippets as inert strings while the test module AST remains scanned."
+    }
+  ],
+  "allowlist": []
+}

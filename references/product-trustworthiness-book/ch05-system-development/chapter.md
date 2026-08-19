@@ -1,6 +1,12 @@
 # 第 5 章 把目标接住：技术安全概念与系统层开发
 
-![高处目标像水流那样分配到多条带有闸门和量杯的工程支路](../../handbook/figures-imagegen/art-ch05-v01.png "chapter-art")
+> Semantica 绑定： 本章保存系统开发的推理链与教学案例；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch05`，主场景为
+> `semantica.vol2.ch05.scenario.primary`。需求/架构本体、CQ、查询、Shape、案例、
+> 规则、oracle、manifest 与 receipt 均在 Semantica，本目录没有可执行替代。
+> 当前为 `partial`、release `blocked`；未支持或证据不完整的能力必须保持阻断。
+
+![高处目标像水流那样分配到多条带有闸门和量杯的工程支路](../handbook/figures-imagegen/art-ch05-v01.png "chapter-art")
 
 > **【导读】**
 > 上一章散会时，安全目标和三条候选措施留在了白板上。目标写得再好，它也只是墙上的
@@ -237,7 +243,7 @@
 <!-- FIG:ch05-fig01-time-budget:OBSERVE -->
 > **读图任务**：对比上下两条总时间窗口，先看检测、反应和余量如何分配，再看检测延长后哪一段被挤出右边界。
 
-![上方水平时间条将总窗口分为检测、反应和余量三段，下方相同窗口中检测段被拉长，最后的琥珀色部分超出右侧时限。](../../handbook/figures-imagegen/ch05-fig01-time-budget-v01.png "系统反应时间是一笔有上限的预算，不是多个团队各自声称足够快就能成立。任一环节超支，都会挤压后续执行和安全余量。")
+![上方水平时间条将总窗口分为检测、反应和余量三段，下方相同窗口中检测段被拉长，最后的琥珀色部分超出右侧时限。](../handbook/figures-imagegen/ch05-fig01-time-budget-v01.png "系统反应时间是一笔有上限的预算，不是多个团队各自声称足够快就能成立。任一环节超支，都会挤压后续执行和安全余量。")
 
 <!-- FIG:ch05-fig01-time-budget:CONSUME -->
 > **图后判断**：图中的段长是概念性预算，不是某个产品的实测数据。它不单独证明诊断覆盖、反应路径或 FTTI/FHTI 已满足。

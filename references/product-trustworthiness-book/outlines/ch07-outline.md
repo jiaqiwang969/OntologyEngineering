@@ -1,6 +1,10 @@
 ---
 contract_version: 1
 chapter: ch07
+executable_package_id: semantica.chapter_packages.vol2.ch07
+executable_authority: semantica_only_no_book_fallback
+package_status: partial
+release_status: blocked
 target_hanzi: 40000
 section_budgets:
   - heading: "十个“++”，为什么评审人仍按下暂停？"
@@ -48,7 +52,7 @@ source_anchors:
     block: 8
     bbox: [114, 643, 435, 659]
 planned_outputs:
-  - functional-safety-book/ch07-software-development/chapter.md
+  - references/product-trustworthiness-book/ch07-software-development/chapter.md
 gate_count_policy: runtime-derived
 question_count_policy: learning-objective-driven
 figure_policy: engineering-need-driven
@@ -73,16 +77,22 @@ figure_policy: engineering-need-driven
 | 7.5 “++”到底要求你做什么？ | §4.3、Table 7/8/9 | 推荐/适用性/组合规则；再问项目组合 |
 | 7.6 手写 C 路线该怎样形成一组方法？ | 失效假说与方法候选 | 离线适用性账、六证据组合理由与单因变式；再问执行 |
 | 7.7 四个 Planned 用例，离验证结论还有多远？ | Draft 规格与用例 | 单元/集成/嵌入式证据边界及项目阶段门；再问机器能力 |
-| 7.8 本体化实践：机器能证明十个“++”的哪一层？ | 方法矩阵、ABox、CQ/Shape | 推荐/选择/证据三层与模型缺口；再问签字范围 |
+| 7.8 本体化实践：机器能证明十个“++”的哪一层？ | Semantica ch07 contract/CQ/scenario/oracle | 推荐/选择/证据三层与模型缺口；再问签字范围 |
 | 7.9 评审最后能批准什么？ | 全章状态 | `EPS-S07-SW` 候选与开放项；交给 ch08 会合 |
 
 ## 保留与迁移
 
-正文保留软件入口责任、两条 SSR 与两个软件单元、`requiredDevelopmentASIL`、FFI 五通道、§4.3 连续/备选规则、Table 7 十个 `++`、手写 C 组合理由、四个 Planned 用例、三级验证和三层方法表门禁。Table 1–15 的逐格巡礼、AEB 副线、长 TTL/Shape 目录、完整 fixture 教程与 SEooC 深讲迁往 README、examples、受控本体或后续章节，不再充当叙事骨架。当前闭世界 oracle 只覆盖 Table 2、4、5、7–15；Table 1、3、6 仍是教学摘要，不宣称同等级来源治理。
+正文保留软件入口责任、两条 SSR 与两个软件单元、`requiredDevelopmentASIL`、FFI
+五通道、§4.3 连续/备选规则、Table 7 十个 `++`、手写 C 组合理由、四个 Planned
+用例、三级验证和三层方法表边界。机器合同只存在于 Semantica ch07 package；当前为
+`partial`、release `blocked`。package 中已登记的表覆盖与未覆盖项必须由 manifest/oracle
+诚实报告，正文不得补出第二套可执行目录或把摘要当作同等级来源治理。
 
 ## 练习配置
 
-练习围绕单因迁移：新增行为模型、改变目标处理器、补一条启动模式 SSR、把 Planned 偷改 Completed、删除软件分配前提或改变跨表查询范围，要求指出适用性、组合理由、验证层级与 Shape 中哪一项重开，以及机器仍不能证明什么。
+练习围绕单因迁移：新增行为模型、改变目标处理器、补一条启动模式 SSR、把 Planned
+偷改 Completed、删除软件分配前提或改变跨表查询范围。机器部分只运行已登记的
+Semantica ch07 场景并读取 receipt；书稿不复制约束，也不提供替代入口。
 
 ## 十个“++”，为什么评审人仍按下暂停？
 
@@ -114,7 +124,10 @@ figure_policy: engineering-need-driven
 
 ## 本体化实践：机器能证明十个“++”的哪一层？
 
-用 `CQ-CH07-01/04/05/08` 分别证明追溯、状态、推荐画像和条款模态的窄事实；三层闭世界门禁只守受控转录与局部状态一致性，不评方法充分性或证据真实性，并明确 12 表 oracle 不包含 Table 1、3、6。
+Semantica ch07 的 CQ registry 分别询问追溯、状态、推荐画像和条款模态；package 的
+局部闭世界场景只守声明范围内的转录与状态一致性，不评方法充分性或证据真实性。
+精确覆盖集合只以源锁定 manifest/oracle 为准；当前 `partial` 与 `blocked` 状态不得由
+正文中的表格数量覆盖。
 
 ## 评审最后能批准什么？
 

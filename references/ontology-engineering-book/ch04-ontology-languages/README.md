@@ -1,38 +1,55 @@
-# 第4章：本体描述语言与工具 / Chapter 4: Ontology Description Languages and Tools
+# 第4章：本体描述语言与工具
 
-## 本章内容
+## 本章任务
 
-本章介绍工程本体论中常用的描述语言和工具，包括：
-- RDF (Resource Description Framework) 及其序列化格式
-- RDFS (RDF Schema)
-- OWL (Web Ontology Language)
-- SPARQL 查询语言
-- Protégé 本体编辑器
+本章介绍 RDF Dataset、RDFS、OWL 2、SPARQL 与 Protégé，强调“语法可读”与
+“语义可执行”不是同一件事。RDF/Turtle、RDF/XML、Manchester Syntax 和 SPARQL
+可以作为教学文本比较；本书的可复算主张则只经过 Semantica 的包加载、查询和门禁。
 
-## 文件说明
+## Semantica 绑定
 
-| 文件 | 内容 |
-|------|------|
-| `rdf-turtle-examples.ttl` | RDF Turtle格式示例（制造领域） |
-| `rdf-xml-examples.rdf` | RDF/XML格式示例 |
-| `rdfs-examples.ttl` | RDFS模式定义示例 |
-| `owl-classes.owl` | OWL类层次与约束（Manchester语法） |
-| `owl-properties.owl` | OWL属性定义示例 |
-| `sparql-queries.sparql` | SPARQL查询示例集 |
-| `property-restrictions.txt` | OWL属性约束说明（∃/∀限制） |
-| `manufacturing.owl` | 制造本体完整示例（配合4.5.3节Protégé教程） |
+- package：`semantica.chapter_packages.vol1.ch04`
+- package status：`partial`
+- release status：`blocked`
+- payload：ontology/CQ/SPARQL/case `native`；rules `partial`；shapes `absent`
+- 场景：`OE-V1-CH04-SCN-OPEN-VS-CLOSED-001`（状态 `partial`）
+- 原生部分：无损 RDF Dataset 处理、SPARQL 查询，以及调用 ch07 shape 的跨包校验
+- 明示边界：Manchester 资产被保留但当前 runtime 不解析；本章没有自有 shapes；
+  图同构 round-trip oracle 未声明；依赖外部端点的 CQ7 `SERVICE` 离线 fail closed
+
+## 包内资产
+
+| 角色 | 资产 |
+|---|---|
+| ontology / ontology source | `rdf-turtle-examples`、`rdf-xml-examples`、`rdfs-examples`、`manufacturing`、`owl-classes`、`owl-properties` |
+| SPARQL | `cq01`–`cq08`、`cq-missing-serial`、`sparql-queries` |
+| case | `property-restrictions`、`open-world-data` |
+| 跨包 shape | `semantica.chapter_packages.vol1.ch07:kg-quality-shacl` |
+
+Protégé、Jena、RDF4J、GraphDB、RDFLib、owlready2 等仍在正文中作为生态、互操作或
+历史实现讨论；它们不构成本书的并行执行入口，也不能替代 Semantica receipt。
 
 ## 语言对比
 
-| 语言 | 表达能力 | 主要用途 |
-|------|----------|----------|
-| RDF | 三元组事实 | 数据表示 |
-| RDFS | 类与属性定义 | 基础模式 |
-| OWL DL | 完整描述逻辑 | 工程本体 |
-| SPARQL | 图查询 | 知识检索 |
+| 层 | 主要用途 | 不应误解为 |
+|---|---|---|
+| RDF | 图事实与 Dataset | 数据质量约束语言 |
+| RDFS | 基础模式与蕴含 | 表单式 domain/range 校验 |
+| OWL | 描述逻辑公理 | 完整性约束或封闭世界规则 |
+| SPARQL | 查询/更新 RDF Dataset | 自动拥有外部端点与网络授权 |
+| SHACL | 数据图形状校验 | OWL 世界语义的替代品 |
 
-## Protégé快速入门
+## 复算
 
-1. 安装插件：Tools → Plugins，安装 OntoGraf（可视化）、SWRL Tab（规则）、SPARQL Query（查询）
-2. 新建本体：File → New，在 Active Ontology 视图设置 IRI
-3. 导入本体：Active Ontology → Ontology imports，输入IRI或本地文件
+先由受控发布流程把实际 runtime commit 与精确 wheel/工件 SHA-256 分别写入
+`SEMANTICA_RUNTIME_COMMIT`、`SEMANTICA_RUNTIME_SHA256`；缺失或错配必须失败关闭。
+
+```bash
+semantica package run semantica.chapter_packages.vol1.ch04 \
+  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
+  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
+  --scenario-id OE-V1-CH04-SCN-OPEN-VS-CLOSED-001 --json
+```
+
+该场景将开放世界下的“缺少序列号”查询与封闭式 shape 违规并置；跨包依赖和 partial
+状态必须保留在结果解释中。

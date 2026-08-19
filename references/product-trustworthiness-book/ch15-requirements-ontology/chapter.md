@@ -1,6 +1,12 @@
 # 第 15 章 承诺不再丢失：需求与追溯本体
 
-![需求河流从源头逐级分汊，每个分配口都有闸门与理由牌](../../handbook/figures-imagegen/art-ch15-v01.png "chapter-art")
+> Semantica 绑定： 本章保存派生、分配、接口和重开关系的解释；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch15`，主场景为
+> `semantica.vol2.ch15.scenario.primary`。本体、CQ、查询、Shape、traceability 案例、
+> 规则、oracle、manifest 与 receipt 只在 Semantica。当前为 `partial`、release
+> `blocked`；闭世界检查只在声明范围内成立，不能证明现实依赖已经记全。
+
+![需求河流从源头逐级分汊，每个分配口都有闸门与理由牌](../handbook/figures-imagegen/art-ch15-v01.png "chapter-art")
 
 > **【导读】**
 > 前一章的试点把“担心什么”建成了机器可查的结构，危害定了目标；可目标要落地，
@@ -193,7 +199,7 @@ req:Der_042 a req:Derivation ;
 <!-- FIG:ch15-fig01-reasoned-allocation:OBSERVE -->
 > **读图任务**：跟随左右节点之间的每条连线，检查线中间的理由牌是否存在，再找到一条理由缺失和一条末端搭扣尚未闭合的关系。
 
-![两列需求节点之间的多条连线都嵌有理由对象，其中一条因中点圆牌缺失而变成下垂虚线，另一条在末端保留琥珀色未闭合搭扣。](../../handbook/figures-imagegen/ch15-fig01-reasoned-allocation-v01.png "需求追溯不是两个 ID 之间的裸连线。每一次派生、分解、分配或满足都要交代理由，而分配边在承接方确认前仍然是待定状态。")
+![两列需求节点之间的多条连线都嵌有理由对象，其中一条因中点圆牌缺失而变成下垂虚线，另一条在末端保留琥珀色未闭合搭扣。](../handbook/figures-imagegen/ch15-fig01-reasoned-allocation-v01.png "需求追溯不是两个 ID 之间的裸连线。每一次派生、分解、分配或满足都要交代理由，而分配边在承接方确认前仍然是待定状态。")
 
 <!-- FIG:ch15-fig01-reasoned-allocation:CONSUME -->
 > **图后判断**：本图不会因连线完整就证明需求正确，也不代替技术实现、验证或组织授权。理由对象自身仍需可追溯事实支持。
@@ -394,5 +400,5 @@ WHERE {
 > 真实产品或真实个人；文中“8 毫秒”等数值仅为教学示例，不是任何实际系统
 > 的参数；容忍时间窗口在本章保持“待定”语义，不构成任何取值建议。
 > 正文对功能安全标准内容的转述为自然语言概括，精确表述以标准原文为准。
-> 各记法片段为教学示意记法，做了有意的简化，可运行版本见本章配套材料
-> 。
+> 各记法片段是有意简化的教学投影；唯一可执行版本是
+> `semantica.chapter_packages.vol2.ch15`，当前为 `partial`、release `blocked`。

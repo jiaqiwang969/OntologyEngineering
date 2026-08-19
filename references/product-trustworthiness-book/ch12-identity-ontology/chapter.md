@@ -1,6 +1,12 @@
 # 第 12 章 名字背后的身份判据：对象与同一本体
 
-![三张身份吊牌通过一条尚未完全闭合的证据链连向天平](../../handbook/figures-imagegen/art-ch12-v01.png "chapter-art")
+> Semantica 绑定： 本章保存对象身份与同一判据的解释；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch12`，主场景为
+> `semantica.vol2.ch12.scenario.primary`。本体、CQ、查询、Shape、正反 bridge 案例、
+> 规则、oracle、manifest 与 receipt 只在 Semantica。当前为 `partial`、release
+> `blocked`；相似度或局部门禁通过不能授权合并现实记录。
+
+![三张身份吊牌通过一条尚未完全闭合的证据链连向天平](../handbook/figures-imagegen/art-ch12-v01.png "chapter-art")
 
 > **【导读】**
 > 上一章结束时，主张有了机器可查的骨架，缺件即拒——可是主语那一格，
@@ -120,7 +126,7 @@ id:PhysicalUnit  id:disjointWith  id:SoftwareArtifact .
 <!-- FIG:ch12-fig01-three-identity-criteria:OBSERVE -->
 > **读图任务**：逐个比较三个展台上的对象与它们下方的判据，寻找为什么履历链、内容指纹和组合契合不能互相借用。
 
-![左侧物理单件对应逐环相扣的履历链，中间软件工件对应琥珀色内容指纹，右侧产品候选对应多个配置块的拼合关系，三种判据图形彼此不同。](../../handbook/figures-imagegen/ch12-fig01-three-identity-criteria-v01.png "不同对象族需要不同的“同一个”判据。物理实物依赖连续履历，数字工件依赖可重现的内容身份，产品候选则依赖受控配置的完整组合。")
+![左侧物理单件对应逐环相扣的履历链，中间软件工件对应琥珀色内容指纹，右侧产品候选对应多个配置块的拼合关系，三种判据图形彼此不同。](../handbook/figures-imagegen/ch12-fig01-three-identity-criteria-v01.png "不同对象族需要不同的“同一个”判据。物理实物依赖连续履历，数字工件依赖可重现的内容身份，产品候选则依赖受控配置的完整组合。")
 
 <!-- FIG:ch12-fig01-three-identity-criteria:CONSUME -->
 > **图后判断**：图中图形只是判据类型的缩写，不是真实序列号、哈希值或 BOM。它不证明某一条履历完整，也不解决身份冒用。
@@ -382,5 +388,5 @@ id:Proposal_0041 a id:MergeProposal ;
 > （候选代号、位号、序列号、样机编号等）均为合成教学材料，不对应任何
 > 真实企业、真实产品或真实个人。正文对 ISO 26262 术语（相关项、系统、
 > 元素等）的转述为自然语言概括，精确定义以标准原文为准。
-> 文中各记法片段为教学示意记法，不构成任何本体语言的规范语法；
-> 可运行版本见本章配套材料。
+> 文中各记法片段为教学示意，不构成任何本体语言的规范语法；唯一可执行版本是
+> `semantica.chapter_packages.vol2.ch12`，当前为 `partial`、release `blocked`。

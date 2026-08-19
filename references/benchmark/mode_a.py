@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Mode A：检索可答率。题面 3-gram 打分选 top-5 文件，检查事实金标准是否在其中。"""
+"""Mode A：仅对两卷书做历史题库的检索可答率回放。
+
+这不是语义执行器。需要 CQ、查询、形状、规则或规范转述佐证时，调用方必须
+通过 ``ontology_engineering.semantica_runtime`` 进入 Semantica 内建包。
+"""
 import json, re
 from pathlib import Path
 BENCHMARK = Path(__file__).resolve().parent
 SKILL = Path(__file__).resolve().parents[1]
 files = {}
-for root in ['ontology-engineering-book','product-trustworthiness-book','iso-normative-ontology']:
+for root in ['ontology-engineering-book', 'product-trustworthiness-book']:
     for p in (SKILL/root).rglob('*'):
         if p.suffix in ('.md','.txt','.ttl','.yaml','.tex') and p.is_file():
             files[str(p.relative_to(SKILL))] = p.read_text(errors='ignore')

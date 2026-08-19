@@ -1,6 +1,10 @@
 ---
 contract_version: 1
 chapter: ch08
+executable_package_id: semantica.chapter_packages.vol2.ch08
+executable_authority: semantica_only_no_book_fallback
+package_status: partial
+release_status: blocked
 target_hanzi: 35000
 section_budgets:
   - heading: "C(D)+A(D) 已命中，为什么评审仍拒绝签字？"
@@ -48,7 +52,7 @@ source_anchors:
     block: 0
     bbox: [57, 98, 485, 115]
 planned_outputs:
-  - functional-safety-book/ch08-asil-decomposition-dfa/chapter.md
+  - references/product-trustworthiness-book/ch08-asil-decomposition-dfa/chapter.md
 gate_count_policy: runtime-derived
 question_count_policy: learning-objective-driven
 figure_policy: engineering-need-driven
@@ -74,11 +78,14 @@ figure_policy: engineering-need-driven
 | 8.6 FFI 已列为开放项，为什么还不是独立性证据？ | 共处架构、不同等级与共享资源 | 共存、FFI、技术独立性三者边界；再问 DFA 怎样举证 |
 | 8.7 一份 DFA 怎样把“独立”变成可反驳结论？ | 安全分析线索、九主题、耦合因子与模式 | 可信原因、措施、理由、深度、验证和两种合规结论分支；再问信号从哪里来 |
 | 8.8 安全分析有数值，为什么仍不能替 DFA 签字？ | ch06 数值候选、FTA/FMEA 线索与同一共因 | 定性/定量、归纳/演绎的任务边界，安全分析→DFA→设计/测试回路；再问机器放行范围 |
-| 8.9 本体化实践：机器与评审人最后各能批准什么？ | 基准 CQ、EPS 状态 CQ、Candidate/Approved Shape 与全章 Hold | `EPS-S08` 候选、单因变式、窄签字与 ch09 交接 |
+| 8.9 本体化实践：机器与评审人最后各能批准什么？ | Semantica ch08 contract/CQ/scenario/oracle 与全章 Hold | `EPS-S08` 候选、单因变式、窄签字与 ch09 交接 |
 
 ## 保留与迁移
 
-正文保留 Clause 5 的分解合同、八个基准与 higher-ASIL 规则、括号标记、Clause 6 共存判据、Clause 7 的九主题与 Annex C 七类耦合因子、Clause 8 安全分析边界、EPS Draft ABox、Candidate/Approved 两层门禁和关键正反 fixture。旧稿的十二条逐号巡礼、三张组合卡、术语百科、长 TTL/Shape 片段、完整文件目录和多轮总结不再充当骨架；详细对象与运行入口迁回 README、受控本体和测试文件。
+正文保留 Clause 5 的分解合同、八个基准与 higher-ASIL 规则、括号标记、Clause 6
+共存判据、Clause 7 的九主题与 Annex C 七类耦合因子、Clause 8 安全分析边界及
+EPS Draft 教学状态。Candidate/Approved 两层合同与正反场景只在 Semantica ch08 package
+执行；package 当前为 `partial`、release `blocked`，书稿不保存第二套规则、数据或 runner。
 
 ## 练习配置
 
@@ -118,4 +125,7 @@ FTA/FMEA 给 DFA 找候选发起者，定量分析补充随机硬件失效目标
 
 ## 本体化实践：机器与评审人最后各能批准什么？
 
-`CQ-CH08-01` 只证明八个基准登记；`CQ-CH08-02` 只返回 EPS 的产出、标记、分配和占位状态。Candidate Shape 守结构，Approved house-policy Shape 才要求完成 DFA、九主题、结论分支、措施、验证报告和确认评审；即使通过也不证明理由真实或物理独立。章末维持 Draft，输出带开放项的 `EPS-S08`。
+Semantica ch08 CQ registry 的基准问题只核对八个基准登记，状态问题只返回 EPS 的产出、
+标记、分配与占位状态。Candidate/Approved 场景的精确义务只以 package contract/oracle
+为准；即使场景通过也不证明理由真实或物理独立。章末维持 Draft，输出带开放项的
+`EPS-S08`，且 release 继续 `blocked`。

@@ -1,6 +1,12 @@
 # 第 11 章 把“可以交付”写成机器能查的一句话：可信主张本体
 
-![一句工程主张被拆成七个部件，逐一放入结构化卡槽](../../handbook/figures-imagegen/art-ch11-v01.png "chapter-art")
+> Semantica 绑定： 本章是可信主张概念化的人可读正本；唯一机器语义是
+> `semantica.chapter_packages.vol2.ch11`，主场景为
+> `semantica.vol2.ch11.scenario.primary`。类/属性、CQ、查询、Shape、正反案例、规则、
+> exact oracle、manifest、PROV 与 receipt 全部在 Semantica。正文记法只用于讲解，
+> 不构成第二套本体。当前为 `partial`、release `blocked`；结构可查不等于主张为真。
+
+![一句工程主张被拆成七个部件，逐一放入结构化卡槽](../handbook/figures-imagegen/art-ch11-v01.png "chapter-art")
 
 > **【导读】**
 > 前十章走到了纸面的极限：证据不能自己对表，影响不能自己现身，案例不会跟着产品活着。
@@ -101,7 +107,7 @@ claim:Release_RC17 a claim:TrustClaim ;  # 类型声明：这是一条可信主�
 <!-- FIG:ch11-fig01-claim-to-triples:OBSERVE -->
 > **读图任务**：把左侧主张卡的七个分格逐一对应到右侧七组点—边—点结构，观察自然语言在进入图谱时哪些关系必须被显式命名。
 
-![左侧一张七格主张卡经由过渡箭头转化为右侧七组纵向排列的点—边—点三元结构，其中一格及对应关系被琥珀色突出。](../../handbook/figures-imagegen/ch11-fig01-claim-to-triples-v01.png "主张从一句话变成可查询对象，不是把整句话存成字符串，而是把主语、配置、关注、情境、时间、假设和决定范围变成可验证关系。")
+![左侧一张七格主张卡经由过渡箭头转化为右侧七组纵向排列的点—边—点三元结构，其中一格及对应关系被琥珀色突出。](../handbook/figures-imagegen/ch11-fig01-claim-to-triples-v01.png "主张从一句话变成可查询对象，不是把整句话存成字符串，而是把主语、配置、关注、情境、时间、假设和决定范围变成可验证关系。")
 
 <!-- FIG:ch11-fig01-claim-to-triples:CONSUME -->
 > **图后判断**：这张图表示结构化转换，不是完整的 RDF/OWL 模型；它不给出具体 IRI、基数约束或推理规则，也不证明转换后的主张真实。
@@ -342,5 +348,5 @@ eps:AgentRun_014 a claim:BoundedAgentRun ;
 > **本章注记**：本章的试点场景、人物、对话与全部产品数字（候选代号、硬件与软件
 > 版本、标定与基线编号、时间跨度等）均为合成教学材料，不对应任何真实企业、
 > 真实产品或真实个人；本章不构成对任何实际系统的判定或放行结论。文中全部
-> 记法片段为教学示意记法，用于说明结构与门禁的原理，可运行版本见本章配套材料
-> 。
+> 记法片段只用于说明结构与门禁原理；唯一可执行版本是
+> `semantica.chapter_packages.vol2.ch11`。当前包为 `partial`、release `blocked`。

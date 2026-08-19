@@ -9,12 +9,18 @@
 先盘点企业数据源，论证「先结构化主干」的开工顺序；
 再走通两条进料通道——台账类数据的映射式构建、维修日志类文本的抽取式构建；
 然后处理规模化必然撞上的三道坎：同一台设备的多个名字（实体对齐）、
-错误合并的语义传染（\texttt{sameAs} 陷阱）、脏数据混入库内（SHACL 校验）；
-最后讨论图谱住在哪里（三元组库与属性图的选型）、
-怎样长期健康运转（具名图、监控与漂移检测）。
-全章延续制造车间场景，代码片段全部节选自仓库
-\texttt{ch07-knowledge-graph/examples/} 下四个可运行、可对照阅读的文件。
+错误合并的语义传染（\texttt{sameAs} 陷阱）、脏数据进入受控 Dataset（SHACL 校验）；
+最后讨论如何从 Semantica 唯一可执行语义正本生成三元组库或属性图投影，
+以及怎样长期治理内容绑定 Dataset 与这些可重建投影（具名图、监控与漂移检测）。
+全章延续制造车间场景，语义片段均由构建器从 Semantica ch07 包读取；
+正文只标 package/asset，迁移前路径留在 manifest 的来源账中。
 \end{introbox}
+
+\chapterbinding{semantica.chapter\_packages.vol1.ch07}{partial}{blocked}
+{CQ、SPARQL、\texttt{kg-quality-shacl}、正例与缺序列号单因反例已原生绑定；
+\texttt{OE-V1-CH07-SCN-SHACL-QUALITY-001} 有精确 violation oracle。}
+{领域 mutation 的原子事务合同尚未声明，Property Graph 与 canonical RDF Dataset
+尚无统一事务语义；shape 通过也不授予写入权限。}
 
 \section{本体与知识图谱：骨架与血肉}
 
@@ -67,7 +73,8 @@ ABox 是断言层，存放个体与事实。当时这是一个逻辑上的区分
 \end{noteblock}
 
 前两个成分是第 2 章概念的直接延续——并且要注意，本体并未在图谱中「消失」：
-\(\sqsubseteq\) 层次、不相交公理、函数性声明都随图谱一起入库并继续生效，
+\(\sqsubseteq\) 层次、不相交公理、函数性声明都随内容绑定 Dataset 一起进入
+Semantica package 并继续生效，
 查询时沿子类闭包展开（7.8 节）、校验时充当判错依据（7.7 节）。
 真正容易被遗漏的是第三个成分。许多项目把知识图谱当成「装满三元组的库」，
 上线即巅峰，几个月后没人说得清某个值从哪来、对不对、新数据怎么进——
@@ -79,14 +86,17 @@ ABox 是断言层，存放个体与事实。当时这是一个逻辑上的区分
 
 \begin{center}
 数据接入 \(\rightarrow\) 映射/抽取 \(\rightarrow\) 实体对齐 \(\rightarrow\)
-本体校验闸门 \(\rightarrow\) 入库 \(\rightarrow\) 增量更新
+本体校验闸门 \(\rightarrow\) Semantica 重绑定/receipt \(\rightarrow\) 投影发布
 \end{center}
 
 六个环节各司其职：接入环节对接数据库与文档库（结构化源订阅变更、文档走批量解析）；
 映射与抽取环节把原始记录变成候选三元组（7.3、7.4 节）；
 对齐环节确保同一实体在图谱中只有一个节点（7.5、7.6 节）；
-闸门拦下不合格批次（7.7 节）；入库环节落到选好的存储（7.8 节）；
-增量环节让图谱跟上现实变化（7.9 节）。
+闸门拦下不合格批次（7.7 节）；通过者回到 Semantica package 重算内容绑定、
+场景 oracle 与 receipt；若业务需要外部查询或图算法，再发布只读、可重建的存储投影
+（7.8 节）；增量环节让 canonical Dataset 与投影跟上现实变化（7.9 节）。
+本章下文沿用行业术语「入库」，它只表示候选数据通过上述 Semantica 受控提交，
+绝不表示脚本可以直接写 Fuseki、Jena、RDFLib 或任意三元组/属性图库。
 其中\textbf{本体校验闸门}是质量生命线，值得在总览阶段就把它的三道检查立起来：
 
 \begin{itemize}
@@ -102,10 +112,11 @@ ABox 是断言层，存放个体与事实。当时这是一个逻辑上的区分
   7.7 节专门展开。
 \end{itemize}
 
-通过者写入，未通过者进\textbf{隔离区}并触发告警，由数据管理员裁决三选一：
+通过者进入重绑定与 receipt 阶段，未通过者进\textbf{隔离区}并触发告警，
+由数据管理员裁决三选一：
 数据错了（修源头）、抽取错了（修管道），还是本体漏了（走本体变更流程）。
 这个裁决记录日后会成为知识漂移检测的信号源（7.9 节）。
-闸门思想还会在第 9 章再次出场——那里把「先校验、后写入」做进系统实现的代码骨架，
+闸门思想还会在第 9 章再次出场——那里把「先校验、后受控提交」落实到 Semantica runner，
 本章先把每道关卡的原理与运营讲透。
 下面按流水线顺序开讲，第一站：盘点你手里有什么数据。
 
@@ -120,10 +131,10 @@ MES 数据库、台账 Excel、文档库里的工艺规程 PDF、维修班组的
 
 \subsection{三类数据源细看}
 
-仓库文件 \texttt{kg-construction-pipeline.txt} 开篇就是盘点清单，按结构化程度分三档：
+包内教学资产 \texttt{kg-construction-pipeline} 开篇就是盘点清单，按结构化程度分三档：
 
 \input{fragments/sec-ch07-kg-construction-pipeline-txt-1}
-\snipsource{ch07-knowledge-graph/examples/kg-construction-pipeline.txt}
+\assetsource{ch07}{kg-construction-pipeline}
 
 \textbf{结构化数据}是图谱的「主粮」。
 设备台账给出骨干实体：每台设备的编号、型号、功率、位置——
@@ -179,7 +190,7 @@ BOM/工艺路线 & 高：关系主干 & 较高：结构清晰 & 较低：多有�
 
 \subsection{先结构化主干：一个值得背下来的开工顺序}
 
-仓库文件末尾那条工程经验值得抄在项目白板上：
+包内教学资产末尾那条工程经验值得抄在项目白板上：
 \textbf{先打通「台账到图谱」的结构化主干（两周可见效），再逐步纳入非结构化抽取}。
 论证有三条，分别关于信任、依赖与风险。
 
@@ -226,10 +237,10 @@ W3C 为「关系数据库到 RDF」定过标准映射语言 R2RML（RDB to RDF M
 \item \textbf{代码表 \(\rightarrow\) 受控词表}：枚举值升格为本体中的命名个体。
 \end{itemize}
 
-对照仓库文件里的台账例子逐条验证：
+对照包内教学资产里的台账例子逐条验证：
 
 \input{fragments/sec-ch07-kg-construction-pipeline-txt-3}
-\snipsource{ch07-knowledge-graph/examples/kg-construction-pipeline.txt}
+\assetsource{ch07}{kg-construction-pipeline}
 
 一行台账（主键 E0117 的「3 号数控车床」，型号 CK6140）映射出四条三元组，每条都有讲究。
 第一条 \texttt{rdf:type} 把个体挂进本体类 \texttt{mfg:CNCLathe}——
@@ -254,9 +265,9 @@ W3C 为「关系数据库到 RDF」定过标准映射语言 R2RML（RDB to RDF M
 \item \textbf{用稳定主键，禁用易变名称}。
   \texttt{mfg:Lathe\_003} 背后应当是台账主键或全厂序列号这类「死也不变」的标识。
   用名称铸 IRI 是经典事故源：「3 号数控车床」哪天改叫「3 号车铣复合中心」，
-  IRI 跟着变，全图断链。仓库文件把这条写成了禁令——禁止用易变的名称做 IRI。
-\item \textbf{命名空间规划先行}。本体词汇与实例数据共享
-  \texttt{http://example.org/manufacturing\#} 这类命名空间时，
+  IRI 跟着变，全图断链。包内教学资产把这条写成了禁令——禁止用易变的名称做 IRI。
+\item \textbf{命名空间规划先行}。本体词汇与实例数据共享\linebreak[4]
+  \nolinkurl{http://example.org/manufacturing#} 这类命名空间时，
   前缀划分、大小写约定、编号格式都要立规矩；
   具名图另立 \texttt{http://example.org/graph/} 前缀（7.9 节）。
   命名空间一经发布就是对外承诺，宁可开工前多开一次评审会。
@@ -312,7 +323,7 @@ SHACL 用 \texttt{sh:in} 一行就能锁死取值集合（7.7 节会看到原文
 \subsection{一条日志的完整解剖}
 
 \input{fragments/sec-ch07-kg-construction-pipeline-txt-4}
-\snipsource{ch07-knowledge-graph/examples/kg-construction-pipeline.txt}
+\assetsource{ch07}{kg-construction-pipeline}
 
 抽取分两步。\textbf{实体抽取}（NER，Named Entity Recognition）把文本片段标到本体类上：
 「3号车床」是 Equipment、「主轴」是 Component、「异响」是 Symptom、
@@ -333,7 +344,7 @@ SHACL 用 \texttt{sh:in} 一行就能锁死取值集合（7.7 节会看到原文
 
 \subsection{三代抽取技术的成本账}
 
-仓库文件末尾的技术选型可以展开成一张成本对照表：
+包内教学资产末尾的技术选型可以展开成一张成本对照表：
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}p{0.13\linewidth}p{0.24\linewidth}XX@{}}
@@ -367,7 +378,8 @@ LLM 把抽取的冷启动成本压到了前所未有的低——
 
 \begin{center}
 LLM 抽取 \(\rightarrow\) 词汇检查 \(\rightarrow\) 公理与形状检查 \(\rightarrow\)
-通过入库；未通过 \(\rightarrow\) 带违规报告回到复核队列 \(\rightarrow\) 人工改判回流为示例
+通过后进入 Semantica 重绑定/场景复算/receipt；未通过 \(\rightarrow\)
+带违规报告回到复核队列 \(\rightarrow\) 人工改判回流为示例
 \end{center}
 
 本体在闭环里扮演双重角色：抽取前它是\textbf{提示词里的词汇表}，约束输出空间；
@@ -390,8 +402,9 @@ LLM 抽取 \(\rightarrow\) 词汇检查 \(\rightarrow\) 公理与形状检查 \(
 日志文体会漂移——新班组、新设备、新缩写——精度会无声衰减，
 7.9 节的漂移检测会回收这个话题。
 最后是兜底原则：评估做得再好也有漏网之鱼，
-所以文本抽取的三元组一律进单独的低可信具名图（7.9 节），与权威数据物理隔离——
-\textbf{质量不确定的知识可以入库，但必须可识别、可隔离、可回滚}。
+所以文本抽取的三元组只能作为候选输入进入单独的低可信具名图（7.9 节），
+与事实权威来源物理隔离——\textbf{质量不确定的候选只有在 package 显式绑定来源、
+置信度、shape/oracle 与 receipt 后才可发布；外部库不得自行接纳它}。
 
 \section{实体对齐：同一台设备的多个名字}
 
@@ -410,7 +423,7 @@ LLM 抽取 \(\rightarrow\) 词汇检查 \(\rightarrow\) 公理与形状检查 \(
 \subsection{问题的两个方向}
 
 \input{fragments/sec-ch07-entity-resolution-txt-1}
-\snipsource{ch07-knowledge-graph/examples/entity-resolution.txt}
+\assetsource{ch07}{entity-resolution}
 
 对齐问题有两个相反的方向，工程上都要防。
 \textbf{同一实体多种写法}是主流形态，根源是各系统独立建设、各起各名，
@@ -432,7 +445,7 @@ LLM 抽取 \(\rightarrow\) 词汇检查 \(\rightarrow\) 公理与形状检查 \(
 却承包了对齐工作量的大头：
 
 \input{fragments/sec-ch07-entity-resolution-txt-2}
-\snipsource{ch07-knowledge-graph/examples/entity-resolution.txt}
+\assetsource{ch07}{entity-resolution}
 
 \textbf{编号正则}处理写法变体：「3号、3\#、三号、No.3」加上设备类型词，
 统一归到候选 \texttt{Lathe\_003}；
@@ -462,7 +475,7 @@ LLM 抽取 \(\rightarrow\) 词汇检查 \(\rightarrow\) 公理与形状检查 \(
 规则没接住的长尾进入第二层：给候选实体对打分，按分数分流。
 
 \input{fragments/sec-ch07-entity-resolution-txt-3}
-\snipsource{ch07-knowledge-graph/examples/entity-resolution.txt}
+\assetsource{ch07}{entity-resolution}
 
 三路证据加权。\textbf{名称相似度}（编辑距离、拼音）权重 0.3，
 \textbf{属性相似度}（型号、功率、厂商一致性）权重 0.4，
@@ -494,7 +507,7 @@ LLM 抽取 \(\rightarrow\) 词汇检查 \(\rightarrow\) 公理与形状检查 \(
 复核队列是\textbf{运营}出来的，不是配置出来的：
 队列要有专人值守与处理时限——积压意味着新数据延迟入库；
 每个判例要留下「为什么合、为什么不合」的一句话理由，这是日后调参的原料；
-仓库文件最后一条说得直白：阈值不是一次定终身，
+包内教学资产最后一条说得直白：阈值不是一次定终身，
 \textbf{每月用复核队列攒下的人工标注做回归，重新校准权重与门限}。
 人工复核不是成本，是免费送上门的标注数据，不回流就浪费了。
 
@@ -502,7 +515,7 @@ LLM 抽取 \(\rightarrow\) 词汇检查 \(\rightarrow\) 公理与形状检查 \(
 
 对齐质量直接决定图谱可信度，上线前要过\textbf{审计}：
 随机抽取 200 个合并决策交人工复核，精确率应不低于 98\%。
-两个数字都来自仓库文件，红线划在这里的理由值得说透：
+两个数字都来自包内教学资产，红线划在这里的理由值得说透：
 合并是一种会\textbf{传播}的操作——错合一对实体，
 它们名下的全部历史互相污染，并沿着后续的查询、统计、推理继续扩散。
 98\% 意味着每一百个合并决策至多容两个错，
@@ -523,7 +536,7 @@ LLM 抽取 \(\rightarrow\) 词汇检查 \(\rightarrow\) 公理与形状检查 \(
 \subsection{两种表达：物理合并与 sameAs}
 
 \input{fragments/sec-ch07-entity-resolution-txt-4}
-\snipsource{ch07-knowledge-graph/examples/entity-resolution.txt}
+\assetsource{ch07}{entity-resolution}
 
 做法 A 是\textbf{物理合并}：选定主 IRI（\texttt{mfg:Lathe\_003}），
 把其余标识降格为别名属性 \texttt{mfg:hasAlias}，
@@ -556,9 +569,10 @@ VMC850 的维修记录传播到 VMC1060 名下，B 车间看到一堆自己从�
 若功率被声明为函数性属性，第 5 章讲过的一致性检查直接亮红灯，
 而解释服务给出的最小公理集会指向那条无辜的功率断言，元凶 sameAs 反而藏在解释链的深处；
 位置断言传播之后，一台设备同时「位于」两个车间，排产与库存系统跟着混乱。
-最阴险的是\textbf{清理难}：若推理结论已经物化进库（第 5 章的物化策略），
-撤销那条 sameAs 并不会自动收回衍生三元组，
-必须靠溯源记录把每一条传播产物找出来删掉。
+最阴险的是\textbf{清理难}：若推理结论已经物化进外部投影（第 5 章的物化策略），
+只在投影里撤销那条 sameAs 并不会自动收回衍生三元组。
+必须先依靠 provenance 在 Semantica 中提交反向 delta、重验证并取得新 receipt，
+再按新 snapshot 丢弃和重建整张投影图。
 没有溯源的图谱遇到这种事故，等于做一次没有备份的灾难恢复。
 
 \subsection{closeMatch 升级阶梯}
@@ -587,7 +601,7 @@ VMC850 的维修记录传播到 VMC1060 名下，B 车间看到一堆自己从�
 两个来源对同一属性各执一词怎么办？
 
 \input{fragments/sec-ch07-entity-resolution-txt-5}
-\snipsource{ch07-knowledge-graph/examples/entity-resolution.txt}
+\assetsource{ch07}{entity-resolution}
 
 台账说功率 15.5，MES 说 11.0，图谱里留哪个？消解策略按优先级排队。
 \textbf{第一优先：来源可信度}。台账由设备科专人维护，是设备属性的权威源；
@@ -617,7 +631,8 @@ MES 配置次之；日志文本抽取的值垫底。
 一条维护记录的维护日期晚于记录创建日期（导出时日期列错位）。
 难堪之处在于，这些数据在 RDF 语法上全部无懈可击——
 三元组模型百无禁忌，任何主谓宾组合都是合法 RDF；
-可它们一旦入库，下游的查询、统计与推理都会跟着失真。
+可它们一旦未经 Semantica 闸门进入 canonical Dataset，
+下游的查询、统计与推理都会跟着失真。
 关系数据库时代，这道防线由表结构与应用层把守
 （非空列、检查约束、表单校验）；图谱时代，
 它要用 \textbf{SHACL}（Shapes Constraint Language，形状约束语言）重建。
@@ -630,7 +645,7 @@ MES 配置次之；日志文本抽取的值垫底。
 推理器面对「图谱里查不到这台设备的序列号」，解读是
 「序列号存在，只是尚未被记录」——基数公理甚至会帮它推出
 「存在一个匿名的序列号」这种结论，全程心安理得，毫无报错。
-仓库文件 \texttt{kg-quality-shacl.ttl} 开头的注释一语中的：
+包内教学资产 \texttt{kg-quality-shacl} 开头的注释一语中的：
 \textbf{缺序列号在 OWL 下只是「未知」，在 SHACL 下就是一条违规报告}。
 把两套机制的脾气并排放清楚：
 
@@ -663,7 +678,7 @@ SHACL 自己也用 RDF 书写，第 4 章的 Turtle 语法原样复用，不需�
 看设备形状的第一段原文：
 
 \input{fragments/snip-ch07-shacl}
-\snipsource{ch07-knowledge-graph/examples/kg-quality-shacl.ttl}
+\assetsource{ch07}{kg-quality-shacl}
 
 逐行解剖。\texttt{sh:targetClass} 是锚：图谱中每个 \texttt{mfg:Equipment}
 实例都会被这个形状检查，且沿子类闭包生效——\texttt{mfg:CNCLathe} 的实例同样在列，
@@ -676,7 +691,7 @@ SHACL 自己也用 RDF 书写，第 4 章的 Turtle 语法原样复用，不需�
 末尾的 \texttt{sh:message} 是纯运营字段：校验引擎会把这句话原样写进违规报告，
 它的读者是凌晨被告警叫起来的数据管理员——请写人话，写清「该是什么样」。
 
-完整的设备形状还有三段属性形状（见仓库文件）。
+完整的设备形状还有三段属性形状（见包内教学资产）。
 功率必须是大于 0 且不超过 10000 千瓦的浮点数——
 上界看起来多余，直到有人把单位填成瓦、一台「15500 千瓦」的车床来闯关那天：
 7.5 节规格归一化漏掉的，这里来兜底。
@@ -711,7 +726,7 @@ Running、Idle、Maintenance、Fault 四个词表个体，
 看排产一致性的例子：
 
 \input{fragments/sec-ch07-kg-quality-shacl-ttl-3}
-\snipsource{ch07-knowledge-graph/examples/kg-quality-shacl.ttl}
+\assetsource{ch07}{kg-quality-shacl}
 
 这种写法的思维方向是反的——不是「定义什么是好的」，而是「查出什么是坏的」。
 \texttt{sh:select} 里是一段标准 SPARQL：
@@ -731,13 +746,14 @@ Running、Idle、Maintenance、Fault 四个词表个体，
 形状写好了，还剩一个运营问题：是不是所有违规都该一律拦下？
 
 \input{fragments/sec-ch07-kg-quality-shacl-ttl-4}
-\snipsource{ch07-knowledge-graph/examples/kg-quality-shacl.ttl}
+\assetsource{ch07}{kg-quality-shacl}
 
 一刀切的闸门活不长。所有违规统统硬拦，上游一次小改版就会让整批数据滞留隔离区，
 业务等不起，最后的结局往往是有人「临时」绕过闸门上线——闸门从此名存实亡。
-SHACL 用 \texttt{sh:severity} 给违规分级，仓库文件约定了两档的管道语义：
-\texttt{sh:Violation} 拒绝入库、进隔离区、触发告警；
-\texttt{sh:Warning} 放行入库、生成数据质量工单、限期消化。
+SHACL 用 \texttt{sh:severity} 给违规分级，包内教学资产约定了两档的管道语义：
+\texttt{sh:Violation} 拒绝受控提交、进隔离区、触发告警；
+\texttt{sh:Warning} 可随告警与质量工单进入下一轮 package 验收，
+但仍须绑定到 receipt、限期消化。
 分级线怎么画？问一个问题：这条数据进库后，会不会污染主干查询与统计？
 会的——序列号缺失（设备身份不明）、词表外状态（分组统计失真）、
 范围外数值（平均值被拉飞）——必须 Violation；
@@ -752,12 +768,9 @@ SHACL 用 \texttt{sh:severity} 给违规分级，仓库文件约定了两档的�
 \subsection{形状进 CI：校验即测试}
 
 形状文件的最佳类比是\textbf{单元测试套件}：
-它和代码一样进版本库、走评审、随被测对象协同演化。
-仓库文件头部给了最小运行方式——\texttt{pip install pyshacl} 之后一行命令：
-
-\begin{center}
-\texttt{pyshacl -s kg-quality-shacl.ttl -d instance-data.ttl}
-\end{center}
+它和代码一样进版本库、走评审、随被测对象协同演化。在本书的执行链中，shape、
+正例和单因反例都从 ch07 包加载，由 \texttt{SemanticRuntime.validate} 运行；
+不另装独立校验器，也不从书目录拼接临时输入。
 
 校验在两个位置执行。\textbf{管道运行时}：每批候选三元组过闸门逐批校验，
 这是 7.1 节定下的主战场。\textbf{持续集成（CI）时}：
@@ -768,22 +781,24 @@ SHACL 用 \texttt{sh:severity} 给违规分级，仓库文件约定了两档的�
 形状还反过来服务本体演化：本体打算收紧某条公理时，
 先把对应的新形状对存量数据跑一遍，
 违规数量就是未来迁移工作量最诚实的预算（7.9 节展开）。
-第 9 章会把「先校验、后写入」的闸门写成可单步调试的代码骨架，
-届时本节这份形状文件将原样上岗。
+第 9 章会继续区分查询、校验与写入授权；本章 shape 不会自动变成 ch09 自有资产，
+跨包依赖必须在 scenario 中显式声明。
 
-\section{存储与查询架构}
+\section{存储与查询投影架构}
 
-闸门之后，三元组得有个家。选库讨论会上常见两派：
+Semantica 完成重绑定、重验证与 receipt 后，业务有时仍需要远程查询或专门图算法；
+此时讨论的是\textbf{投影 adapter}，不是另选语义后端。历史选库会上常见两派：
 标准派主张三元组库——「本体生态全在这边」；
 开发派主张属性图数据库——「图数据库不就是存图的吗，社区大、上手快」。
 两边都只说对了一半。本节先把两种数据模型的真实差异摆上桌面，
 再用同一个业务问题对照两种问法，
-最后给出选型判据与一条兼得的混合架构。
+最后给出投影选型判据与一条兼得的投影架构。无论下文哪一项更合适，
+Semantica package/runtime/receipt 都保持唯一可执行语义正本。
 
 \subsection{两种数据模型}
 
 \input{fragments/sec-ch07-kg-storage-query-txt-1}
-\snipsource{ch07-knowledge-graph/examples/kg-storage-query.txt}
+\assetsource{ch07}{kg-storage-query}
 
 差异比「都叫图」深得多。RDF 把世界拆到原子粒度：一切皆三元组，
 节点没有内部结构，连「属性」也是一条边；
@@ -798,11 +813,13 @@ SHACL 用 \texttt{sh:severity} 给违规分级，仓库文件约定了两档的�
 
 表面上 LPG 赢了便利，但 RDF 的「不便」换来的东西要看清楚。
 其一，IRI 全球标识：跨系统合并图谱不会撞名，7.6 节的联邦场景全靠它。
-其二，词汇与数据同一模型：本体本身就是一段 RDF，与实例同库共存——
-7.1 节说「本体随图谱入库并继续生效」，这件事在 LPG 里没有对应物：
+其二，词汇与数据同一模型：本体本身就是一段 RDF，可与实例放在同一 Dataset——
+7.1 节说「本体随内容绑定 Dataset 进入 package 并继续生效」，这件事投影到 LPG 时
+没有原生对应物：
 标签 \texttt{:Equipment} 只是一个字符串，没有公理、没有层次、没有定义。
 其三，标准栈互操作：SPARQL、OWL、SHACL 围绕同一个数据模型生长，
-前两节的全部机制对三元组库开箱即用。
+三元组库的标准接口可以呈现前两节机制的结果；但“开箱即用”不等于独立验收，
+其输入与输出仍须绑定回 Semantica receipt。
 LPG 的属性语义则由应用约定：\texttt{status:'Idle'} 里的 \texttt{'Idle'}
 能取哪些值、什么含义，数据库不知道，知道的是你团队的文档——
 而文档拦不住一条拼错的状态。
@@ -812,7 +829,7 @@ LPG 的属性语义则由应用约定：\texttt{status:'Idle'} 里的 \texttt{'I
 需求：找出 A 区所有空闲设备的名称与功率。两种写法并排：
 
 \input{fragments/snip-ch07-cypher}
-\snipsource{ch07-knowledge-graph/examples/kg-storage-query.txt}
+\assetsource{ch07}{kg-storage-query}
 
 先读 SPARQL 版。最关键的是第一行属性路径
 \texttt{rdf:type/rdfs:subClassOf*}：它沿子类闭包匹配，
@@ -830,8 +847,8 @@ LPG 的属性语义则由应用约定：\texttt{status:'Idle'} 里的 \texttt{'I
 紧凑的代价藏在两处。
 其一，\textbf{没有子类闭包}：\texttt{:Equipment} 标签匹配不到
 只打了 \texttt{:CNCLathe} 标签的节点；
-要么入库时给每个节点把祖先标签全部打上（把推理前移成建模纪律），
-要么查询时手工枚举所有子类标签。
+要么在生成 LPG 投影时给每个节点把祖先标签全部打上，
+要么在投影查询时手工枚举所有子类标签；两者都是 adapter 映射，不修改 package 语义。
 其二，\texttt{'Idle'} 是\textbf{裸字符串}：拼成小写不会报错，
 只会静默返回空集；三元组库里词表个体写错则 IRI 根本不存在，错误暴露得更早。
 
@@ -842,17 +859,17 @@ SPARQL 要逐跳写明三元组模式；Cypher 把多跳串进一个图样式。
 Cypher 的 \texttt{[:PRECEDES*1..5]} 既能限定跳数区间、又能把路径本身返回——
 做追溯链可视化、瓶颈分析时顺手得多。这个差异会在选型表里再次现身。
 
-\subsection{选型决策表}
+\subsection{投影 adapter 选型决策表}
 
 \input{fragments/sec-ch07-kg-storage-query-txt-3}
-\snipsource{ch07-knowledge-graph/examples/kg-storage-query.txt}
+\assetsource{ch07}{kg-storage-query}
 
-六个维度逐行展开。
-\textbf{本体与推理支持}是三元组库的主场：本体直接加载，
-RDFS/OWL 推理与 SHACL 校验开箱即用；
+六个维度逐行展开；这里比较的是已验收 Dataset 的\textbf{部署投影能力}。
+\textbf{本体与推理支持}是三元组库投影的主场：RDF/OWL/SHACL 交换保真度高；
 属性图里没有公理的位置，子类闭包、属性传递都要在应用层重新发明一遍。
-\textbf{标准化}决定可替换性：SPARQL 是 W3C 标准，
-查询从 Jena 搬到 GraphDB 照跑，供应商绑定风险低；
+\textbf{标准化}决定 adapter 可替换性：SPARQL 是 W3C 标准，
+查询从 Jena 搬到 GraphDB 的改写成本通常较低；迁移后仍要对绑定 snapshot 重跑
+query/shape/oracle，不能仅凭“查询照跑”宣布等价；
 属性图各家方言并立，GQL 标准化正在路上。
 \textbf{边属性}与\textbf{图算法}是属性图的主场：
 原生边属性免去建模绕路；路径搜索、社区发现、中心性等算法库成熟，
@@ -862,58 +879,54 @@ RDFS/OWL 推理与 SHACL 校验开箱即用；
 \textbf{团队上手}：RDF 的概念门槛实打实存在，属性图对开发者更友好——
 这一行不要轻视：工具再正确，团队用不起来就是不正确。
 
-文件末尾的三行选型经验可以直接抄用：
-推理与标准合规优先（本书主线场景）选三元组库；
-路径分析与图算法密集（如供应链追溯）选属性图；两头都重，上混合架构。
+文件末尾的三行经验应当作为\textbf{投影工作负载}判据来读：
+标准 RDF 查询与交换优先时投影到三元组库；
+路径分析与图算法密集（如供应链追溯）时投影到属性图；两头都重，可生成两类投影。
 落到操作上：把你最常问的十个业务问题写下来，
 数一数几个依赖本体推理、几个依赖路径算法——
-\textbf{选型选的不是「更好的库」，而是与工作负载匹配的库}。
+\textbf{选型选的不是新的语义权威，而是与工作负载匹配、可重建的 adapter}。
 
 \subsection{混合架构：权威层加分析投影}
 
 两头都要的团队越来越多，混合架构的数据流值得画清楚：
 
 \begin{center}
-校验闸门 \(\rightarrow\) 三元组库（权威知识层） \(\rightarrow\) 投影管道
-\(\rightarrow\) 属性图（分析视图） \(\rightarrow\) 图算法与可视化
+Semantica package/runtime/receipt（唯一语义正本）
+\(\rightarrow\) 内容绑定 Dataset \(\rightarrow\) 三元组库存储投影
+\(\rightarrow\) 属性图分析投影 \(\rightarrow\) 图算法与可视化
 \end{center}
 
-三元组库是\textbf{单一事实源}：本体与全量实例都住在这里，
-7.7 节的闸门只设在它的入口，溯源与具名图也只在这里维护。
-属性图是\textbf{衍生品}：按分析需求投影出子图
-（比如只取设备、工序与先后关系边），跑完算法可以整库丢弃重建，
-\textbf{绝不回写}——一旦有人往分析库里直接写知识，两库开始漂移，
-单一事实源失守，混合架构就退化成「两个互相怀疑的库」。
+Semantica package 是\textbf{唯一可执行语义正本}：它绑定本体、数据快照、CQ、查询、
+形状、规则、场景 oracle、运行时身份与 receipt。三元组库只是这一已验收 Dataset 的
+持久化或查询投影；即使它保存全量实例，也不能自行定义 package 身份、校验状态或结论。
+属性图是第二层\textbf{分析投影}：按分析需求取出子图
+（比如只取设备、工序与先后关系边），跑完算法可以整库丢弃重建。
+两种投影都\textbf{绝不反向写成权威知识}：任何修改必须作为候选输入回到 Semantica，
+重新绑定、验证并生成新 receipt；否则架构就退化成多个互相怀疑的真值来源。
 投影节奏二选一：周期性全量重建，实现简单、延迟以小时计；
 订阅变更增量同步，接近实时、复杂度高出一截。
-最后泼一盆冷水：双库不是免费午餐——两套运维、一条同步管道，
-同步管道自己也要监控。默认从单库起步，
-让真实出现的分析需求、而不是技术好奇心，来触发第二个库。
+最后泼一盆冷水：双投影不是免费午餐——两套运维、两条可审计生成链，
+同步管道自己也要监控。默认只运行 Semantica canonical Dataset；
+让真实出现的远程查询或图算法需求、而不是技术好奇心，触发第一个或第二个外部投影。
 
-\subsection{把三元组库跑起来}
+\subsection{部署边界：存储不是第二个语义正本}
 
-选型落锤，落地其实只要几条命令。仓库文件给了 Jena Fuseki 的最小部署：
+独立三元组服务器可以承担持久化与远程查询，但本版删除了 Fuseki 安装、启动、
+上传与 assembler 教程：这些命令会把读者引向一个没有 package identity、asset hash、
+scenario oracle 与 receipt 的旁路。部署适配层若存在，只能消费 Semantica 产生或验证的
+内容绑定 Dataset；查询端点只读，mutation 必须回到有权限、可审计的执行面。
 
-\input{fragments/sec-ch07-kg-storage-query-txt-4}
-\snipsource{ch07-knowledge-graph/examples/kg-storage-query.txt}
+这不是一般安全提醒，而是单一语义正本的结构要求：若脚本可以绕过 package 与校验
+直接写库，闸门就形同虚设。\textbf{全部写入走受控管道，投影库不得反向成为权威}。
+外部存储的查询结果只有在输入 snapshot、查询、runtime/adapter 与输出 hash 被绑定时，
+才能进入 Semantica receipt；服务器“成功返回 200”从来不是语义验收。
 
-一行启动：\texttt{--loc} 指定 TDB2 持久化目录，\texttt{/mfg} 是数据集端点名。
-第二步用 \texttt{curl} 把本体文件灌进去——注意灌的是 \texttt{manufacturing.owl}：
-本体与实例同库共存，7.1 节的工作定义在部署层面坐实。
-随后得到两个端点：查询端点 \url{http://localhost:3030/mfg/query} 开放给应用；
-\textbf{更新端点在生产环境必须关闭或加鉴权}。
-这不是一句普通的安全提醒：7.7 节的闸门设在管道里，
-若更新端点对外裸奔，等于在闸门旁边开了一扇不设防的侧门，
-任何一段脚本都能绕过全部校验直写库内，闸门形同虚设。
-\textbf{全部写入走管道，库的写接口只对管道开放}——
-这条纪律与 7.1 节「实例数据永远走管道」首尾呼应。
-最后一段 assembler 配置展示如何给数据集挂接 OWL 推理器，
-查询时自动展开推理结论。
 第 5 章讨论过的推理代价在生产规模下更加尖锐：
 全量 OWL 前向链在亿级三元组上开销高昂，
-工程上常退守 RDFS 子集，或离线物化推理结论再入库；
+遗留工程常退守 RDFS 子集，或离线物化推理结论再写库；在本书架构中，
+这类物化只能由 Semantica 受支持 profile 重算，或作为外部候选结果回到 package 重验证；
 物化结论的回收难题，7.6 节的 sameAs 事故已经领教过——
-此处的对策同样是具名图：物化产物单独成图，重算时整图替换。
+通过验收后再把物化产物单独投影成具名图，重算时整图替换。
 具名图在本章已经第三次救场，下一节给它一个正式的运维席位。
 
 \section{图谱运维：让图谱长期可信}
@@ -929,10 +942,10 @@ RDFS/OWL 推理与 SHACL 校验开箱即用；
 
 第 5 章把具名图当作时态与溯源机制介绍；换到运维视角，
 它升格为\textbf{图谱的目录结构}——没有它，亿级三元组是一锅粥；
-有了它，每一类运维操作都有了抓手。仓库文件给出两种组织策略：
+有了它，每一类运维操作都有了抓手。包内教学资产给出两种组织策略：
 
 \input{fragments/sec-ch07-kg-storage-query-txt-5}
-\snipsource{ch07-knowledge-graph/examples/kg-storage-query.txt}
+\assetsource{ch07}{kg-storage-query}
 
 \textbf{按来源分图}让前文的多处预告一次性落地。
 7.4 节说「文本抽取的三元组进低可信具名图」，指的就是 \texttt{extracted} 图，
@@ -947,8 +960,9 @@ ABox 的历史可以按时间切片回溯，「上个季度这台设备归谁管
 具名图还附赠一件运维利器——\textbf{按图回滚}。
 某晚发现当天一批抽取数据系统性出错（比如提示词改坏了），
 若它们混在默认图里，撤销要逐条甄别；
-独立成图，则一条 \texttt{DROP GRAPH} 干净收回——
-这是图谱世界里最接近「事务回滚」的武器。
+独立投影成图，则 adapter 可以用一条 \texttt{DROP GRAPH} 丢弃并重建该投影——
+这是投影世界里最接近「事务回滚」的武器；它不修改 canonical Dataset。
+若要撤销权威内容，必须提交反向 delta，经过 Semantica 重绑定、重验证与新 receipt。
 图自身的 IRI 同样要规划：统一前缀 \texttt{http://example.org/graph/}、
 名称稳定可预测，7.3 节的 IRI 铸造原则对图 IRI 一字不差地适用。
 
@@ -981,24 +995,25 @@ ABox 的历史可以按时间切片回溯，「上个季度这台设备归谁管
 
 \subsection{本体升级与 ABox 迁移}
 
-仓库文件的版本策略一句话分好了工：
+包内教学资产的版本策略一句话分好了工：
 TBox 变更走发布流程（语义版本号加变更日志），
 ABox 变更记录到具名图、支持时间切片回溯。
 TBox 一侧的演化流程第 3 章讲过，这里补上图谱视角的关键难题：
-\textbf{本体改了，库里百万级存量实例怎么办？}
+\textbf{本体改了，canonical Dataset 里的百万级存量实例怎么办？}
 
 按兼容性分两档。\textbf{向后兼容变更}——加类、加属性、放宽约束——
 存量数据无需改动，发布即可，新数据按新本体进。
 \textbf{破坏性变更}——类改名、一类拆成两类、公理收紧、词表删值——必须迁移，五步走：
-其一，影响评估，用 SPARQL 数清受影响实例的规模与分布；
-其二，编写迁移补丁，批量改写的更新脚本连同新旧本体一起评审；
-其三，副本演练，在生产副本上跑通并核对前后计数；
+其一，影响评估，用 Semantica 执行绑定 SPARQL，数清受影响实例的规模与分布；
+其二，编写候选迁移 delta，连同新旧本体、预期 query/shape/oracle 一起评审；
+其三，隔离演练，在绑定 snapshot 上由 Semantica 跑通并核对前后计数；
 其四，全量复检，7.7 节的形状此刻是迁移的验收标准——
 新形状跑一遍迁移后的数据，违规清零才算完
 （其实在动手之前，「新形状跑存量数据」的违规数就是迁移工作量最诚实的预算，
 7.7 节末尾埋的这一手在此兑现）；
-其五，切换并留底，旧版本数据保留为快照具名图——回得去，才敢往前走。
-最后一条纪律：\textbf{本体发布与数据迁移必须在同一个变更窗口完成}，
+其五，生成新 package/receipt 后原子切换，旧版本内容由旧 package identity 保留；
+外部具名图投影全部从新版本重建——回得去，才敢往前走。
+最后一条纪律：\textbf{本体发布、数据迁移与 receipt 必须在同一个变更窗口完成}，
 否则图谱处于「新本体配旧数据」的撕裂态，闸门与查询两头报错。
 
 \subsection{知识漂移检测}
@@ -1040,7 +1055,7 @@ CDC 只能捕获数据库里发生的变化，捕获不到「该录而没录」�
 骨架数百个概念靠评审保质量，血肉百万级三元组只能靠管道保质量——
 实例数据永远走管道，手只用来写映射规则和裁决疑难案例，
 这是全章第一条也是最硬的一条纪律。
-流水线六个环节（接入、映射与抽取、对齐、闸门、入库、增量）各司其职，
+流水线六个环节（接入、映射与抽取、对齐、闸门、Semantica 受控提交、投影/增量）各司其职，
 本体校验闸门的三道检查——词汇、公理、形状——是贯穿始终的质量生命线，
 未通过者进隔离区，由人按「修数据、修管道、改本体」三选一裁决。
 
@@ -1071,10 +1086,11 @@ SHACL 则以封闭检查补上 OWL 开放世界管不了的数据质量：
 severity 分级让闸门在业务压力下活得下来，
 形状文件像单元测试一样进版本库、进 CI、随本体协同演化。
 
-\textbf{安身与长寿}。存储选型选的不是「更好的库」，而是与工作负载匹配的库：
-本体推理与标准合规倾向三元组库，边属性与图算法密集倾向属性图，
-两头都重就上「权威知识层加分析投影」的混合架构，且分析库绝不回写。
-部署层面的纪律与开篇呼应：全部写入走管道，更新端点只对管道开放。
+\textbf{安身与长寿}。外部存储选型选的不是「更好的语义后端」，
+而是与工作负载匹配的投影 adapter：标准 RDF 查询与交换倾向三元组库投影，
+边属性与图算法密集倾向属性图投影，两头都重就从同一 Semantica receipt 生成两类投影。
+部署层面的纪律与开篇呼应：外部端点一律只读；任何 mutation 都作为候选 delta
+回到 Semantica 重绑定、重验证并生成新 receipt，投影库绝不回写成权威。
 运维把长期健康拆成四件事：具名图按来源与时间组织三元组、提供按图回滚，
 监控体检表盯住管道、库与人工队列的整体，
 本体破坏性变更配五步 ABox 迁移并与发布同窗口完成，
@@ -1084,16 +1100,14 @@ severity 分级让闸门在业务压力下活得下来，
 而是被一天天运营出来的性质，停止运营之日就是信任开始流失之时。
 
 给动手派读者一条练习路线：
-先把四个仓库文件整篇通读一遍——正文为叙事顺畅省略的注释与细节都在里面；
-然后装好 pyshacl，对照 7.7 节把形状文件跑在一份自己手造的实例数据上，
-故意漏掉序列号、填一个 0 功率、写一个词表外状态，
-亲眼看看三条违规报告分别长什么样；
-再按 7.8 节的命令在本机启动 Fuseki，把本体与实例灌进同一个数据集，
-用属性路径查询验证子类闭包确实生效；
-最后回到 7.5 节，把「3号车床」对「CNC-Lathe-003」的 0.88 分亲手算一遍，
+先查看 ch07 manifest 与四类教学 asset；随后运行
+本章章首给出的 SHACL quality 场景，对照正例与缺序列号单因反例，
+核对 conforms、violation count 与消息 oracle；再单独运行 verify，观察为什么
+release 仍 blocked。最后回到 7.5 节，把「3号车床」对「CNC-Lathe-003」的 0.88 分亲手算一遍，
 体会权重设计背后的领域判断，再把双门限上下挪动一档，
 观察自动合并与人工复核的工作量怎样随之涨落。
-四步走完，本章的流水线你就亲手摸过一遍了。
+这条路线走完，你既摸到可复算场景，也不会把未绑定的 0 功率、词表外状态或外部存储
+教程误写成已通过能力。
 
 \subsection{思考题}
 
@@ -1119,36 +1133,37 @@ severity 分级让闸门在业务压力下活得下来，
   属性相似度降到 0.4、关系相似度降到 0.3，名称相似度仍是 0.6。
   按权重算出总分并给出分流结果，再解释为什么「名字像」远不足以自动合并。
   提示：算完对照权重设计的初衷——名称恰恰是各系统分裂最严重、最不可信的那路证据。
-\item \textbf{sameAs 清污}：7.6 节那条错误 sameAs 的推理结论已经物化入库。
+\item \textbf{sameAs 清污}：7.6 节那条错误 sameAs 的推理结论已经物化进外部投影。
   写一份清理预案：依赖哪些前置设施、按什么顺序撤销、用什么标准验证清理干净。
-  提示：没有溯源与具名图这道题无解——先列出两者各自能提供哪条线索，再排操作顺序。
+  提示：先在 Semantica 中提交反向 delta 并取得新 receipt，再丢弃和重建投影；
+  没有 provenance、package identity 与具名图，这道题无解。
 \item \textbf{形状编写}：为「维护记录」写一个节点形状，覆盖四条需求：
   必须关联一台设备、必须有维护日期、维护日期不晚于记录创建日期、备注缺失只警告不拦截。
   提示：对照约束家族速查表，四条需求恰好用到 \texttt{sh:class}、\texttt{sh:minCount}、
   \texttt{sh:lessThanOrEquals} 与 \texttt{sh:severity} 各一次。
-\item \textbf{选型与运维}：业务方的十个高频问题里，六个要沿工艺路线做多跳追溯并展示路径，
-  四个依赖设备分类的子类闭包统计。给出存储选型与数据流设计，
+\item \textbf{投影选型与运维}：业务方的十个高频问题里，六个要沿工艺路线做多跳追溯并展示路径，
+  四个依赖设备分类的子类闭包统计。给出投影 adapter 选型与数据流设计，
   并为上线后的第一张监控体检表挑出你认为最优先的三个指标。
   提示：先判断这是不是 7.8 节说的「两头都重」；指标按「图谱停止生长与长出垃圾同样是事故」去挑。
 \end{enumerate}
 \end{noteblock}
 
-\subsection{本章文件指引}
+\subsection{本章包资产与场景指引}
 
-本章全部代码片段节选自下列四个仓库文件。
-与前几章略有不同，这四份文件本身就是一条流水线的设计文档：
+本章全部片段来自 ch07 包的下列资产。它们共同描述一条流水线：
 按表中顺序通读，相当于把全章再走一遍——
 正文为叙事取舍而未及展开的清单、注释与备选方案，都完整保留在文件里。
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}>{\ttfamily\footnotesize}p{0.40\linewidth}X@{}}
 \toprule
-\normalfont\textbf{文件（ch07-knowledge-graph/examples/）} & \textbf{内容与阅读建议} \\
+\normalfont\textbf{Semantica asset/scenario} & \textbf{内容与阅读建议} \\
 \midrule
-kg-construction-pipeline.txt & 数据源盘点清单、流水线总览、映射式与抽取式构建的完整示例、校验闸门约定、增量更新与版本策略；配合 7.1 至 7.4 与 7.9 阅读，开篇与结尾的工程经验值得抄进项目白板 \\
-entity-resolution.txt & 对齐问题的两种形态、规则归一化三件套、加权相似度与双门限阈值、sameAs 两种表达与陷阱、冲突消解优先级、抽样审计建议；配合 7.5 与 7.6 阅读，建议把相似度示例亲手验算 \\
-kg-quality-shacl.ttl & 可直接运行的形状文件：设备完整性、维护时效性、排产一致性（SPARQL 约束）三组形状与入库闸门使用约定；装好 pyshacl 即可对自己的数据开跑，配合 7.7 阅读 \\
-kg-storage-query.txt & 两种数据模型对照、同一查询的 SPARQL 与 Cypher 写法、六维选型决策表、Fuseki 部署命令、具名图组织策略；配合 7.8 与 7.9 阅读，多跳查询一组建议两种语法都亲手跑一遍 \\
+kg-construction-pipeline & 数据源清单、映射/抽取、校验闸门、增量与版本策略；工程规则资产 \\
+entity-resolution & 归一化、加权相似度、双门限、sameAs 风险与抽样审计；教学 case \\
+kg-quality-shacl & 唯一 shape 正本；由 runtime 与受控夹具执行，不从书目录直接运行 \\
+kg-storage-query & RDF/LPG、SPARQL/Cypher、投影选型与具名图；部署讨论不构成本书入口 \\
+OE-V1-CH07-SCN-SHACL-QUALITY-001 & 正例与缺序列号单因反例的原生 exact oracle；release 仍 blocked \\
 \bottomrule
 \end{tabularx}
 \end{center}

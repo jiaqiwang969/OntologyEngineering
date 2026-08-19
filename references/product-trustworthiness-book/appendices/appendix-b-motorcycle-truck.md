@@ -1,5 +1,13 @@
 # 附录 B 摩托车适配与 T&B 边界索引：Part 12 改了什么、为什么
 
+> Semantica 边界： 本附录保存 Part 12 的可读适配说明、两张表的人工转述与教学
+> 走查；书内不再保存或运行 TBox、表实例、SPARQL、SHACL、fixture 或测试脚本。
+> `semantica.chapter_packages.vol2.ch04` 只承接本书第 4 章声明的 HARA 场景；当前
+> `semantica.chapter_packages.vol2.normative` 只登记已经迁移的 Part 1/Part 3 工程
+> 释义资产，并不声称覆盖 Part 12 全表。因此本附录的 36 格 MSIL 表、5 行映射表及
+> 专项门禁目前没有 released executable successor：任何机器化声称必须先进入新的
+> Semantica package revision，未完成前保持 unsupported/blocked，绝不调用书内旧路径。
+
 > **导读**。正文第 4 章的 HARA、S/E/C 与 ASIL 判定都以乘用车为默认舞台。ISO 26262-12:2018（下称 Part 12）回答的问题是：同一套标准搬到摩托车上，哪些条款要换、换成什么、为什么非换不可。读完本附录，你应当能：
 > 1. 说清 Part 12 的适用边界与“替代关系”——它改写了 Parts 2–4 的哪几处，又如何与其余适用要求和工作产物衔接；
 > 2. 独立走一遍摩托车 HARA：用与第 4 章相同的 S/E/C 骨架得出 MSIL，再经映射表落到 ASIL，并解释 MSIL 与 ASIL 为什么不是同义词；
@@ -162,13 +170,20 @@ Part 12 的三个资料性附录是判定证据的“教具库”。**用法纪�
 
 **可控性评估技术**（Annex C，p46–49）：核心概念是**可控性分类小组**（CCP）——一个可按项目裁剪人数与构成的评估小组，专长覆盖摩托车可控性评估（由专家骑手执行）、车辆动力学、E/E 系统、功能安全、骑手行为五个方向（C.2，p46）；多组织可共担 CCP，概念阶段即可由 CCP 评估可控性分类，需有理由支撑。为什么不能照搬汽车的“代表性驾驶员群体实测”？C.3 说得直白（p47）：摩托车动力学对人的依赖远超乘用车——稳定性、轨迹与姿态都靠骑手参与维持，骑手的控制行为也与汽车驾驶员截然不同，所以业界通行做法是**由专家骑手试乘并判断“代表性骑手能否应对”**——专家骑手有经验与技巧处理相当极端的危害事件，但其安全要有充分的风险控制（C.3/C.5，p47–48）。专家骑手不设资格认证标准，由厂商/测试机构/供应商按内部程序选拔，选拔参考项：多年全场景骑行经验、掌握公司标准化可控性分级、有评估经验、能把测试结果**折算到代表性骑手**、能用技术语言讨论结果、受过公司骑手培训或持公司专家骑手认定（C.4，p47）。四种评估技术（C.5，p47–48）：代表性骑手群体评估（仅适用于不影响稳定性/轨迹/姿态的低风险事件，如电加热把手）；专家骑手评估（Annex C 将其说明为使用频度较高的方法，建议多名专家骑手交叉）；骑行模拟器（真人骑手 + 物理机电动力学台架）；数学建模与仿真（车辆动力学 + 骑手/控制器模型全软件）。Annex C 还说明，对专家骑手也不能以可接受安全水平执行的机动，应分类为 C3（C.5，p48）。评估维度三张小表（C.6，Table C.1–C.3，p48–49）：车辆响应与性能变化（无/轻微/中等/重大）、骑手感知与警觉（不可察觉/可察觉不惊扰/可察觉且惊扰/强烈惊扰，及骑手动作时机从无关紧要到性命攸关）、控制行为（无需改变/正常补偿动作足够/需超出正常补偿/需非凡技巧或超常控制力）——给 C 分级写理由时，可从这三个维度组织证据；具体分级仍要按项目对象、场景和评估记录确认。
 
-## B.7 本体化实践：已落库的 MSIL 表模型与未完成边界
+## B.7 本体化实践：MSIL 表的 Semantica 候选合同与未完成边界
 
-本节把 Part 12 的两张分级表接到第 4 章的判定表模式上，但**不复用 Part 3 专属的 `iso262:ASILMapping` 契约**。当前实现已经落库，不再是蓝图：TBox 在 `ontology/fsafety-tbox.ttl`，两张表的实例在 `ontology/msil-tables.ttl`，精确来源坐标在 `ontology/source-anchors-part12.ttl`，封闭世界转录门禁在 `ontology/shapes.shacl.ttl`，查询与反例登记在 `eval/`。这些模块表达的是标准表知识，不是某个摩托车项目已经完成的 HARA。
+本节把 Part 12 的两张分级表接到第 4 章的判定表模式上，但**不复用 Part 3 专属的
+`iso262:ASILMapping` 契约**。旧本体仓库曾有一套表模型、来源锚、Shape、查询和反例；
+它们不在现行书稿中，也没有登记为当前 Semantica built-in package。所以下文只保存
+候选 conceptualization 和验收分母，不能描述为“已经落库”或“机器门禁已通过”。
 
 **先分开分类值与关系类型。** Table 5 继续使用既有的 `iso262:Severity`、`iso262:Exposure` 与 `iso262:Controllability` 受控值，但输出另建为 `iso262:MSIL_A` 至 `iso262:MSIL_D`；`iso262:QM` 可作为两张表的输入或输出，却既不是 MSIL，也不是 ASIL。`iso262:MSIL` 与 `iso262:ASIL`、`iso262:QMClassification` 保持类型不相交。两张表也各有自己的关系类：Table 5 的单元属于 `iso262:MSILDeterminationMapping`，Table 6 的行属于 `iso262:MSILToASILMapping`。因此不得把任一单元写成 `iso262:ASILMapping`，也不得用 `owl:sameAs` 把 MSIL 与 ASIL 合并。
 
-**再把两张表作为两种可执行关系登记。** `iso262:MSILTableRegistry_2018` 分别指向 `iso262:MSILDeterminationTable_12_5` 与 `iso262:MSILToASILTable_12_6`。Table 5 精确包含 S1–S3 × E1–E4 × C1–C3 的 **36 格**，每格用 `iso262:msilMappingSeverity`、`iso262:msilMappingExposure`、`iso262:msilMappingControllability` 和 `iso262:msilDeterminationResult` 表达。Table 6 精确包含 **5 行**：QM→QM、MSIL A→QM、MSIL B→ASIL A、MSIL C→ASIL B、MSIL D→ASIL C；每行用 `iso262:mappingMSILSource` 与 `iso262:mappingASILResult` 表达。以 B.4.4 的教学输入为例，库中的真实记录是：
+**若进入 Semantica，应把两张表登记成两种关系。** 候选
+`iso262:MSILTableRegistry_2018` 分别指向 Table 5 与 Table 6。验收分母必须明确：
+Table 5 是 S1–S3 × E1–E4 × C1–C3 的 **36 格**；Table 6 是 **5 行**：QM→QM、
+MSIL A→QM、MSIL B→ASIL A、MSIL C→ASIL B、MSIL D→ASIL C。以下 Turtle 只是
+书面建模蓝图，不是当前 registry 中可加载的资产：
 
 ```turtle
 iso262:MSIL_T5_S2_E4_C2 a iso262:MSILDeterminationMapping ;
@@ -186,21 +201,33 @@ iso262:MSIL_T6_B_A a iso262:MSILToASILMapping ;
     iso262:hasSourceAnchor iso262:Table_12_6 .
 ```
 
-两个来源锚点落到提取件的精确坐标：两表的物理页码、块号与坐标已完整登记于本体来源账。这里的锚点只回答“表在原文哪里”，表单元才回答“受控映射值是什么”；两者合在一起仍不产生项目合规结论。
+正式迁入时，每张表还必须绑定用户合法持有来源中的物理页、块号与坐标。当前公开书稿
+只陈述人工核对过的来源位置，不声称存在 released 机器来源账。即使未来锚点与表单元
+同时通过，也仍不会产生项目合规结论。
 
-**最后用查询、全量预期集和单因反例守住转录。** `iso262:MSILTableRegistryShape` 检查唯一 registry 与两张指定表、36/5 的精确数量、每格的表归属与来源锚点、属性单值性、S/E/C 组合唯一性、五行映射值以及 QM/MSIL/ASIL 类型边界；它还显式拒绝 `MSIL_* owl:sameAs ASIL_*`。Shape 内为 36 格使用的紧凑分值计算是本书的可执行 oracle，不是 ISO 原文给出的通用公式。`eval/test_part12_msil.py` 另以显式期望集合核对全部 36 格和 5 行、锚点及类型边界。能力问题分三层：`CQ-APPB-01` 精确走查 **S3/E4/C3→MSIL D→ASIL C** 这一条示例链；`CQ-APPB-02` 用 36 行 exact bindings 核对 Table 5 全表；`CQ-APPB-03` 用 5 行 exact bindings 核对 Table 6 全表。三条 CQ 的专家审读状态均仍为 `pending`；全表机器 oracle 不等于覆盖了任何项目危害场景。已登记的单因 SHACL 反例覆盖 Table 5 缺格、重复格、错误结果，Table 6 错误结果、缺锚点、缺行，以及 MSIL/ASIL `owl:sameAs`。
+**候选验收必须用查询、全量预期集和单因反例守住转录。** 一个合格的未来
+Semantica package 至少要检查唯一 registry、36/5 的精确数量、表归属、来源锚点、
+属性单值性、S/E/C 组合唯一性、五行映射和 QM/MSIL/ASIL 类型边界，并拒绝
+`MSIL_* owl:sameAs ASIL_*`。CQ 仍可分三层：单链
+**S3/E4/C3→MSIL D→ASIL C**、36 行 exact bindings、5 行 exact bindings；反例至少
+覆盖缺格、重复格、错误结果、缺锚点、缺行和类型偷换。这些是待注册合同，不是已经
+执行的 oracle；紧凑分值计算也只能是本书实现选择，不能冒充 ISO 的通用公式。
 
-这里必须把机器门禁的能力边界钉死：**当前 Part 12 模块没有摩托车项目危害事件 ABox，也没有 HARA 报告、验证报告或 §8.4.5.1 f) 的执行状态实例。** 因而现有查询可以回答“给定 S/E/C 时两张标准表规定什么”，不能回答“某项目危害事件的映射一致性是否已经验证”。即使这些门禁全部通过，也只表示表转录满足本书声明的结构、来源与回归约束；它不等于完成 ISO 26262 项目验证、安全确认、确认评审、专家批准、出版放行或产品认证。
+这里必须把能力边界钉死：**当前没有 released Part 12 package，也没有摩托车项目危害
+事件 ABox、HARA 报告、验证报告或 §8.4.5.1 f) 的执行状态实例。** 因而现阶段连
+“给定 S/E/C 时两张机器表返回什么”都不能作为 Semantica 执行结果报告，只能回到
+正版标准人工核对；更不能回答某项目映射是否已验证。
 
 其余两块仍保持规划态，不能借 Table 5/6 的完成度代替：
 
 | 模块 | 当前状态 | 边界 |
 |---|---|---|
-| Part 12 Table 5/6 MSIL 表模型 | `modeled` | 36+5 表知识已对象化；不含项目 HARA/验证实例 |
+| Part 12 Table 5/6 MSIL 表模型 | `planned / blocked` | 36+5 验收分母保留在书中；尚无 released Semantica package |
 | “基线条款→适配 delta→摩托车域适用性”链 | `planned` | Clause 4.5–10 目前主要是 `anchor_only` 来源坐标；其余 provision、CQ 与 SHACL 尚未对象化 |
 | 跨 Parts 1–9 的 T&B 专属条款账本 | `planned` | Part 12 §4.6 只提供标记边界；完整条款盘点、覆盖状态与门禁尚未建立 |
 
-这一区分决定了当前能发布什么：可以发布两张 MSIL 表的受控机器转录及其教学查询；不能发布“Part 12 全部适配 delta 已可查询”或“T&B 适配指南已经完成”的结论。
+这一区分决定了当前能发布什么：可以发布本附录的人工阅读快照；不能发布“两张表的
+受控机器转录已就绪”“Part 12 全部适配 delta 已可查询”或“T&B 适配指南已经完成”。
 
 ## B.8 要点回顾与思考题
 
@@ -212,7 +239,8 @@ iso262:MSIL_T6_B_A a iso262:MSILToASILMapping ;
 4. Table 6 的五行是 QM→QM、MSIL A→QM、B→ASIL A、C→ASIL B、D→ASIL C；这是摩托车域的逐行映射事实，不是可向其他车辆域泛化的“降级算法”，MSIL 与 ASIL 也不是同义词。
 5. 整车测试与确认的方法表没有 D 列，长期/用户测试对摩托车可能不可行；HARA 假设应在安全确认中闭环验证，但本书的表模型并不证明某项目已经完成该闭环。
 6. Annex B/C 是判例教具：AIS 概率化伤情谱、双口径暴露估计、90%/99% 可控性分位点、CCP 与专家骑手。
-7. 当前本体已对象化 Table 5 的 36 格与 Table 6 的 5 行；适配 delta 语义链仍为 `planned`，不能由来源锚点或表门禁代替。
+7. Table 5 的 36 格与 Table 6 的 5 行是未来 Semantica package 的精确验收分母；当前
+   尚未 released，适配 delta 语义链也仍为 `planned/blocked`。
 8. T&B 在 Part 12 里只有标记约定；跨 Parts 1–9 的 T&B 条款覆盖账本仍为 `planned`，建成前不能输出完整指南。
 
 **思考题**（依学习目标设置）：
@@ -220,7 +248,7 @@ iso262:MSIL_T6_B_A a iso262:MSILToASILMapping ;
 1. 【概念辨析】“MSIL B 的系统按 ASIL A 开发，等于摩托车行业给自己放水。”用 §8.2 NOTE、Table 6 的三条 NOTE 与 B.4.3 的论证结构反驳或限定这句话，并指出哪一步论证只有标准委员会有资格做。
 2. 【工程推导】教学场景：摩托车电子悬架的危害事件“高速直线行驶中阻尼突变为最硬”。参照 Annex B 的判例组织方式，为 S、E、C 各写一条带证据类型的判定理由（不必给出最终等级），并说明其中哪一条最需要 CCP 介入。
 3. 【工程推导】某确认测试计划把 Table 8 中 `++` 的故障注入测试替换为台架仿真。按 §4.3 的读表规则与 9.2.2.1 NOTE 3，写出这个替换要补的两段论证。
-4. 【动手题】使用当前受控查询契约查询 S2+E4+C2→MSIL B→ASIL A：Table 5 侧使用 `inMSILDeterminationTable`、`msilMappingSeverity`、`msilMappingExposure`、`msilMappingControllability`、`msilDeterminationResult`，Table 6 侧使用 `inMSILToASILTable`、`mappingMSILSource`、`mappingASILResult`。同时返回两侧 `hasSourceAnchor`，再解释为什么查询命中只显示当前图与冻结 oracle 在已编码字段及联接上相符；转录忠实仍须对照受控 PDF，且该结果不能证明 S/E/C 项目输入成立或 §8.4.5.1 f) 已执行。
+4. 【合同设计题】把下面的 SPARQL 当作未来 Semantica Part 12 package 的**候选查询蓝图**，人工推演 S2+E4+C2→MSIL B→ASIL A：Table 5 侧使用 `inMSILDeterminationTable`、`msilMappingSeverity`、`msilMappingExposure`、`msilMappingControllability`、`msilDeterminationResult`，Table 6 侧使用 `inMSILToASILTable`、`mappingMSILSource`、`mappingASILResult`，并返回两侧 `hasSourceAnchor`。说明 package 尚未 released 时为什么不能把人工推演写成查询命中；未来即使 exact oracle 通过，也只证明登记图与冻结预期在已编码字段及联接上相符，转录忠实仍须对照受控来源，且结果不能证明 S/E/C 项目输入成立或 §8.4.5.1 f) 已执行。
 
 ```sparql
 PREFIX iso262: <https://w3id.org/iso26262#>

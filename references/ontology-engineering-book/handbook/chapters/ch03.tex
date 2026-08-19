@@ -990,6 +990,23 @@ asset hash、runtime commit/artifact 与 snapshot/diff。每个版本的\textbf{
 本体、CQ、规则、夹具、场景与变更记录在同一个 Semantica package 中共同版本化，
 任何 receipt 都能回答“改了什么、用什么运行、有没有破坏旧能力”。
 
+\subsection{把每次实践接进双循环}
+
+版本管理还需要回答一个更实际的问题：现场新学到的东西怎样进入本体，又怎样避免
+把一次偶然成功写成行业真理。可复用工作流分成两个速度不同的循环。
+\textbf{快速内环}随每个工程任务发生：读取 project binding 与带哈希证据的 task
+envelope，发现现有 package/baseline/capability，运行适用的 CQ、query、shape、rule
+与 oracle，最后分开返回工程结果、Semantica 结果和学习判定。没有新知识就写明
+\texttt{no\_delta}；这不是失败，也不应制造空版本。
+
+只有反复出现、可复现且现有 package 确实表达不了的模式，才进入\textbf{慢速外环}：
+\texttt{candidate}、\texttt{proposed}、\texttt{committed}、
+\texttt{regression\_passed}、\texttt{release\_complete}、\texttt{promoted}。
+完整候选不只是添几个类名，而要同时说明 ontology、CQ、SHACL、具名查询、受支持规则、
+正例/单因反例/歧义例/前版例、能力合同、来源以及是否影响书稿。冲突、替换、删除、
+风险接受、晋升和公开发布仍由声明的有权人决定；\texttt{committed} 绝不等于
+\texttt{release\_complete}，\texttt{promoted} 也不等于 \texttt{published}。
+
 分支策略可以照搬代码仓库的玩法：可发布基线必须门禁全绿；开发中的 package
 允许显式 blocked，但不得冒充 release。大重构在分支上进行，合并前跑全量回归。
 还要预警一个不同点：

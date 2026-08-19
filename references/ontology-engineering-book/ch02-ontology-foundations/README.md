@@ -37,20 +37,25 @@ Turtle 数据与两条 SPARQL ASK 查询；它们不是对整章推理能力的�
 | ∧ / ∨ / ¬ | 与 / 或 / 非 |
 | ⊓ / ⊔ | 类交 / 类并 |
 
-## 复算与边界检查
+## 统一语义介入与边界检查
 
-`SEMANTICA_RUNTIME_COMMIT` 与 `SEMANTICA_RUNTIME_SHA256` 必须由受控发布流程绑定到
-当前实际运行的 commit 和精确 wheel/工件；缺失或错配时命令应失败关闭。
+从 ontology-engineering skill 根运行。统一入口自动核验并注入 source lock 中的
+Semantica commit、版本与 wheel SHA-256；调用者不得手抄运行时身份。先发现 registry，
+再按 [`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立绑定：
 
 ```bash
-semantica package run semantica.chapter_packages.vol1.ch02 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH02-SCN-REASONING-MODES-001 --json
-semantica package verify semantica.chapter_packages.vol1.ch02 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH02-SCN-REASONING-MODES-001 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH02-SCN-REASONING-MODES-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
 
-预期是场景 oracle 可被复算，而发布验证仍因包级缺口与收据状态被阻断；两者不可合并报道。
+预期是场景 oracle 可被复算，而发布验证仍因包级缺口与收据状态被阻断；两者不可合并
+报道。书提供 OWA/CWA 方法，受控工程记录提供事实，Semantica 是唯一可执行语义；事实
+接受、风险与发布由有权人决定。`open` 只打开受管学习回路，不自动晋升 package。
+原生 `semantica package ...` 只供底层 runner/manifest 诊断，不是本章主运行路径。

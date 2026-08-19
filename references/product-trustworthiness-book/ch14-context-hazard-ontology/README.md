@@ -17,16 +17,24 @@
 Semantica migration ledger 中作为哈希来源保留。
 
 ```bash
-: "${SEMANTICA_RUNTIME_COMMIT:?set from the reviewed Semantica source lock}"
-: "${SEMANTICA_WHEEL_SHA256:?set from the reviewed Semantica wheel lock}"
-semantica package show semantica.chapter_packages.vol2.ch14 --json
-semantica package run semantica.chapter_packages.vol2.ch14 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
-  --json
+# 从 ontology-engineering skill 根运行
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario semantica.vol2.ch14.scenario.primary
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
 
-运行时必须使用项目 source lock 绑定的 Semantica commit 和 wheel SHA-256。报告时将
+统一入口自动核验并注入项目 source lock 的 Semantica commit、版本与 wheel SHA-256。
+`package-binding.json`、`workspace-binding.json` 与 `task-envelope.json` 必须按
+[`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立。
+`propose/commit/verify/history/promote` 继续引用该合同定义的 delta、candidate 与
+gate-evidence fixtures，参数以各子命令 `--help` 为准。原生
+`semantica package show/run/verify` 仅供底层 runner/manifest 诊断，不是主运行路径。报告时将
 书中依据、scenario oracle 与独立 release verdict 分开；不得把 `partial`、
 `blocked`、未运行检查或 unsupported 能力改写成通过。机器只核对已编码结构；现实分级仍需领域证据与专家决定。
 

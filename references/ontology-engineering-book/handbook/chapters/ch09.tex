@@ -58,23 +58,25 @@ CQ1 问“哪些设备可以加工指定材料”。在 Semantica 中，一条�
 而是同一 runner 中的 \texttt{execute\_chapter\_query}。这保证 CLI、Python 与 MCP
 只是适配面，不会各自解释一套 SPARQL 语义。
 
-下列两个 runtime 值必须由受控构建/发布流程注入：commit 对应实际运行源码，
-SHA-256 对应精确 wheel 或运行工件；空值、示例值和错配值都会失败关闭。
+主运行路径是 ontology-engineering 的统一 semantic engagement 入口。它自动核验并注入
+正式 source lock 中的 runtime commit、版本与 wheel SHA-256；binding 与 task fixture
+必须按 \texttt{references/semantic-engagement-contract.md} 建立，不能手抄运行时身份。
 
 \begin{codebox}
-\codeline{semantica\ package\ show\ semantica.chapter\_packages.vol1.ch09\ --json}
-\codeline{semantica\ package\ run\ semantica.chapter\_packages.vol1.ch09\ \textbackslash{}}
-\codeline{\ \ --runtime-commit\ RUNTIME\_COMMIT\ \textbackslash{}}
-\codeline{\ \ --runtime-artifact-sha256\ RUNTIME\_ARTIFACT\_SHA256\ \textbackslash{}}
-\codeline{\ \ --scenario-id\ OE-V1-CH09-SCN-CQ01-001\ --json}
-\codeline{semantica\ package\ verify\ semantica.chapter\_packages.vol1.ch09\ \textbackslash{}}
-\codeline{\ \ --runtime-commit\ RUNTIME\_COMMIT\ \textbackslash{}}
-\codeline{\ \ --runtime-artifact-sha256\ RUNTIME\_ARTIFACT\_SHA256\ \textbackslash{}}
-\codeline{\ \ --scenario-id\ OE-V1-CH09-SCN-CQ01-001\ --json}
+\codeline{runtime/.venv/bin/python\ scripts/semantic\_engagement.py\ discover}
+\codeline{runtime/.venv/bin/python\ scripts/semantic\_engagement.py\ run\ \textbackslash{}}
+\codeline{\ \ --binding\ /path/to/package-binding.json\ --task\ /path/to/task-envelope.json\ \textbackslash{}}
+\codeline{\ \ --scenario\ OE-V1-CH09-SCN-CQ01-001}
+\codeline{runtime/.venv/bin/python\ scripts/semantic\_engagement.py\ open\ \textbackslash{}}
+\codeline{\ \ --binding\ /path/to/workspace-binding.json\ --task\ /path/to/task-envelope.json\ \textbackslash{}}
+\codeline{\ \ --workspace\ /path/to/semantica-managed-registry}
 \end{codebox}
 
 \texttt{run} 回答“声明场景是否符合 oracle”；\texttt{verify} 还检查来源、能力、
 内容与发布证据。当前即使 CQ1 复算成功，release 仍应是 \texttt{blocked}。
+\texttt{propose/commit/verify/history/promote} 继续消费合同定义的 delta、candidate 与
+gate-evidence fixtures；参数以统一入口各子命令的 \texttt{--help} 为准。
+原生 \texttt{semantica package show/run/verify} 只保留为底层诊断接口，不是主运行路径。
 
 \section{为什么 CQ2--CQ7 不能跟着 CQ1 一起变绿}
 
@@ -125,6 +127,20 @@ SHA-256 对应精确 wheel 或运行工件；空值、示例值和错配值都�
 不支持的能力被阻断；事实与决定来自有权来源；旧版本回归不被静默破坏。
 当前 ch09 仍是 partial/blocked，这个红灯本身就是可信工程的一部分。
 \end{noteblock}
+
+\section{综合案例也是行业本体的炼化入口}
+
+现实项目不应另建一套“从经验长本体”的旁路。每次使用本章方法时，项目用严格
+task envelope 交代目的、能力需求和带哈希证据，用 project binding 锁定 Semantica
+workspace、baseline、事实权威、决定权威和允许推进的生命周期。工作结束必须同时看
+三份账：工程问题是否解决，现有 package 的执行/回归/receipt/release 是否闭合，
+以及这次实践是否真的带来了跨项目可复用的 delta。
+
+若答案是 candidate，完整变更包要覆盖 ontology、CQ、SHACL、query、rule、四类案例、
+contract、provenance 与独立的 book impact；然后按 proposed、committed、
+regression passed、release complete、promoted 顺序推进。任何阶段的 exit code、一次
+CQ 通过或一个“看起来合理”的解释都不能跳级。项目事实仍留在项目证据层，只有经过
+作用域判断、冲突裁决、旧知识回归与有权晋升的结构才进入行业 registry。
 
 \section{本章资产指引}
 

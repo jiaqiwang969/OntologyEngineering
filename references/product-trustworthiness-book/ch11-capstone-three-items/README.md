@@ -10,18 +10,20 @@
 `legacy-capstone-queries` 与 `legacy-capstone-missing-inputs`。本目录不得重建或
 运行这些旧文件，也没有 fallback。
 
-要复核迁移事实和当前边界，只查看/运行 Semantica 包：
+要复核迁移事实和当前边界，从 ontology-engineering skill 根调用统一入口。它会核验
+source lock 并自动注入 runtime commit、版本与 wheel SHA-256；调用者不得手抄身份。
+先 `discover`，再按
+[`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立绑定：
 
 ```bash
-: "${SEMANTICA_RUNTIME_COMMIT:?set from the reviewed Semantica source lock}"
-: "${SEMANTICA_WHEEL_SHA256:?set from the reviewed Semantica wheel lock}"
-semantica package show semantica.chapter_packages.vol2.ch20 --json
-semantica package run semantica.chapter_packages.vol2.ch20 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
-  --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario semantica.vol2.ch20.scenario.primary
 ```
 
 当前 ch20 manifest 为 `partial`、release `blocked`。历史叙事中出现的旧路径、
 RDFLib/pySHACL 版本和旧 runner 输出只是在解释一次过去的冻结对象；它们不是今天
-可调用的后端，也不能作为当前发布证据。
+可调用的后端，也不能作为当前发布证据。原生 `semantica package ...` 只供底层
+runner/manifest 诊断，不是主运行路径。

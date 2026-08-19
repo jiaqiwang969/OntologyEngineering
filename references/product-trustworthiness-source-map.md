@@ -61,14 +61,32 @@ python3 scripts/search_ontology_sources.py --scope book \
   "ASIL decomposition independence DFA"
 ```
 
+`--scope book` 只读取 `handbook/current-source.sha256` 锁定的正文/装配源，以及
+`handbook/formal-search-guides.sha256` 锁定的卷根 README、命题索引、handbook README
+和 20 章 usage guide；不存在锁外正式导读 allowlist。检索器在每次读取同一批字节时核对
+锁中 SHA-256，正文或 guide drift 都失败关闭。历史
+`ch11-capstone-three-items/`、`outlines/` 等只可用显式 `--scope archive` 做来源考古；
+archive 命中带非权威 provenance warning，不能作为本版书源。
+
 再按需运行 package：
 
 ```bash
-bash runtime/setup_runtime.sh
-runtime/.venv/bin/semantica package show \
-  semantica.chapter_packages.vol2.ch18 --json
-runtime/.venv/bin/python demos/vol2_ch18_independence_meet.py
+bash runtime/setup_runtime.sh --doctor
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario semantica.vol2.ch18.scenario.primary
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
+
+binding、task 及后续生命周期使用的 delta/candidate/gate-evidence fixtures 必须按
+[`semantic-engagement-contract.md`](semantic-engagement-contract.md) 建立；命令字段以统一入口
+各子命令的 `--help` 为准。原生 `semantica package show/run/verify` 仅是底层诊断接口，
+不是主运行路径，不接收手抄的 source identity。
 
 回答应同时给出书源路径和 package/scenario 状态。一次 package 运行只能佐证其声明的
 oracle；release verdict 仍可能因缺失证据、不支持能力或 provenance 绑定不完整而

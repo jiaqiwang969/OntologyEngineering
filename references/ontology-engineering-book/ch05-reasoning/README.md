@@ -31,16 +31,25 @@ manifest 中 role、format、scenario binding 与 capability 必须同时支持�
 | 时态推理 | 时间区间、状态演化 | 教学材料，未绑定 oracle |
 | 概率推理 | 不确定性与概率本体 | 教学材料，未绑定 oracle |
 
-## 复算
+## 统一语义介入入口
 
-先由受控发布流程把实际 runtime commit 与精确 wheel/工件 SHA-256 分别写入
-`SEMANTICA_RUNTIME_COMMIT`、`SEMANTICA_RUNTIME_SHA256`；缺失或错配必须失败关闭。
+从 ontology-engineering skill 根运行。统一入口自动核验 source-locked runtime identity；
+先发现 registry，再按
+[`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立绑定：
 
 ```bash
-semantica package run semantica.chapter_packages.vol1.ch05 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH05-SCN-FORWARD-CHAIN-001 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH05-SCN-FORWARD-CHAIN-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
 
 不要把这个小型正向链场景表述为 Pellet/HermiT/SWRL 全兼容，也不要据此给整章发布绿灯。
+书提供推理方法，受控工程记录提供事实，Semantica 是唯一可执行语义；风险接受、晋升与
+发布仍由有权人决定。`open` 只开启受管学习回路。原生 `semantica package ...` 只供
+底层 runner/manifest 诊断，不是本章主运行路径。

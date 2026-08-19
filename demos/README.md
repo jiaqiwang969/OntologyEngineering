@@ -24,13 +24,14 @@ runtime/.venv/bin/python demos/<demo>.py
 wheel。锁中绑定具体源码 commit、wheel 文件与 SHA-256；不要用一个未核验的全局
 Semantica 安装替代它。
 
-发现同一安装中的所有内建包：
+从 ontology-engineering skill 根发现 source-locked registry：
 
 ```bash
-runtime/.venv/bin/semantica package list --json
-runtime/.venv/bin/semantica package show \
-  semantica.chapter_packages.vol1.ch03 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
 ```
+
+该入口自动核验并注入 source identity。原生 `semantica package list/show` 只供维护者
+排查底层 registry/manifest，不是 demo 或读者的主发现路径。
 
 ## Demo 与唯一执行正本
 
@@ -74,13 +75,14 @@ runtime/.venv/bin/semantica package show \
 
 ## Python / CLI / MCP 是同一个核心
 
-Python 使用 `semantica.chapter_packages.SemanticPackageRunner`；CLI 使用
-`semantica package list/show/run/verify`；MCP 使用
+底层 Python 使用 `semantica.chapter_packages.SemanticPackageRunner`；原生 CLI 暴露
+`semantica package list/show/run/verify`；MCP 暴露
 `list_chapter_packages`、`get_chapter_package`、`run_chapter_package` 和
 `verify_chapter_package`。三者都是同一 runner 的薄适配，不各自解释 package 合同。
 
-直接运行 `run`/`verify` 时，要提供 source lock 中的 runtime commit 与 wheel SHA-256。
-OE demo bootstrap 会从 lock 读取并绑定这些值；缺失或错误的身份必须 fail closed。
+读者与 Agent 不直接调用原生 `run`/`verify`，也不手抄 runtime commit 或 wheel SHA-256；
+统一 `scripts/semantic_engagement.py` 从 lock 读取并绑定这些值。OE demo bootstrap 复用同一
+校验器；缺失或错误的身份必须 fail closed。原生接口仅保留为底层适配器诊断。
 
 ## 教学与权利边界
 

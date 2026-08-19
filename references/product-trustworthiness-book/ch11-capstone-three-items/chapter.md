@@ -746,27 +746,22 @@ manifest 身份篡改、初始快照、末次复核、查询文本一致性、Cl
 oracle。这里能签的只是“这些 24 个已编码契约在当前测试环境中按预期工作”，不是完整候选包通过；
 旧 manifest 的 10 处漂移仍使同一快照的 capstone 运行在装载前失败。
 
-旧稿曾给出书旁测试入口；该入口已随唯一执行语义迁移而撤销。现在只能从源锁定的
-Semantica build 复核其迁移后继：
+旧稿曾给出书旁测试入口；该入口已随唯一执行语义迁移而撤销。现在只能从
+ontology-engineering skill 根调用统一入口；它逐项核验 source lock 并自动注入
+Semantica runtime identity，调用者不得手抄。binding 与 task 按
+[`semantic-engagement-contract.md`](../../semantic-engagement-contract.md) 建立：
 
 ```bash
-: "${SEMANTICA_RUNTIME_COMMIT:?export the locked 40-hex Semantica source commit}"
-: "${SEMANTICA_WHEEL_SHA256:?export the locked 64-hex Semantica wheel SHA-256}"
-[[ "$SEMANTICA_RUNTIME_COMMIT" =~ ^[0-9a-fA-F]{40}$ ]] || {
-  echo "invalid SEMANTICA_RUNTIME_COMMIT" >&2; exit 2;
-}
-[[ "$SEMANTICA_WHEEL_SHA256" =~ ^[0-9a-fA-F]{64}$ ]] || {
-  echo "invalid SEMANTICA_WHEEL_SHA256" >&2; exit 2;
-}
-semantica package show semantica.chapter_packages.vol2.ch20 --json
-semantica package run semantica.chapter_packages.vol2.ch20 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
-  --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario semantica.vol2.ch20.scenario.primary
 ```
 
 命令执行的是 Semantica 声明的 ch20 场景，不会重冻历史 manifest。场景结果与独立
-release verdict 必须分开；当前 package 为 `partial`、release `blocked`。
+release verdict 必须分开；当前 package 为 `partial`、release `blocked`。原生
+`semantica package ...` 只供底层 runner/manifest 诊断，不是主运行路径。
 
 把 24 项按故障族而不是按文件顺序读，更容易看见覆盖边界。身份族挑战路径、哈希、角色和包摘要；
 快照族挑战核验后磁盘变化；语义族挑战 trace 查询、类型闭包与三案例精确结果；报告边界族挑战标签
@@ -902,23 +897,21 @@ runner 还可能按顺序遇首红即停。因此“没有某项结果”要区�
 迁移后的候选绑定时，唯一入口是：
 
 ```bash
-: "${SEMANTICA_RUNTIME_COMMIT:?export the locked 40-hex Semantica source commit}"
-: "${SEMANTICA_WHEEL_SHA256:?export the locked 64-hex Semantica wheel SHA-256}"
-[[ "$SEMANTICA_RUNTIME_COMMIT" =~ ^[0-9a-fA-F]{40}$ ]] || {
-  echo "invalid SEMANTICA_RUNTIME_COMMIT" >&2; exit 2;
-}
-[[ "$SEMANTICA_WHEEL_SHA256" =~ ^[0-9a-fA-F]{64}$ ]] || {
-  echo "invalid SEMANTICA_WHEEL_SHA256" >&2; exit 2;
-}
-semantica package verify semantica.chapter_packages.vol2.ch20 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_WHEEL_SHA256" \
-  --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario semantica.vol2.ch20.scenario.primary
+runtime/.venv/bin/python scripts/semantic_engagement.py verify \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario semantica.vol2.ch20.scenario.primary
 ```
 
 历史快照中旧 manifest 漂移、旧 capstone 返回 2 仍是可以保留的历史事实；它现在由
 Semantica ch20 的 `legacy-capstone-*` 资产登记，不能通过重建被删脚本来复现。验证报告
 必须同时写 package、scenario、source commit、wheel SHA-256、输入/输出哈希与 receipt。
+统一入口自动绑定前两类 source identity；原生 `semantica package ...` 仍只供底层诊断。
 
 历史整书 runner 默认曾在首个失败处停止；当时的诊断运行可带 `--keep-going` 收集同一
 工作树上的更多结果，并把该调度选项写进历史报告。该 runner 与参数现已撤销，不能调用或

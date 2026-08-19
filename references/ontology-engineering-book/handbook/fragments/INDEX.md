@@ -1,5 +1,22 @@
 # 小节片段索引（fragment 名 → 文件 · 小节标题 · 行数）
 
+## Semantica runtime provenance
+
+```json
+{
+  "authoritative_runtime_identity": true,
+  "commit": "5ec547b8cda2c99ea288289483b303f58fa078ea",
+  "descriptor": "runtime/semantica-source-lock.json",
+  "installed_identity_verified": true,
+  "mode": "formal-source-lock",
+  "version": "0.6.5+oe.3",
+  "wheel_filename": "semantica-0.6.5+oe.3-py3-none-any.whl",
+  "wheel_sha256": "108f0e4cc08df01bd3125fc1660c508cfd4c81319c34a30fbb187f14f06f24ff"
+}
+```
+
+## Fragment mapping
+
 sec-ch01-ontology-in-ai-era-txt-1.tex  ·  ontology-in-ai-era.txt  ·  1. 大模型的知识困境  ·  12行
 sec-ch01-ontology-in-ai-era-txt-3.tex  ·  ontology-in-ai-era.txt  ·  3. 本体作为幻觉控制层  ·  16行
 sec-ch01-ontology-in-ai-era-txt-4.tex  ·  ontology-in-ai-era.txt  ·  4. LLM 与本体的互补结构  ·  12行

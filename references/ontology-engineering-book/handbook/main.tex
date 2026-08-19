@@ -1,4 +1,4 @@
-% 《工程本体论》· Semantica 唯一执行语义版
+% 《工程本体论》· 2026.08 Semantica 唯一执行语义候选版
 % XeLaTeX 编译；片段与节选由 build_handbook.py 生成；插图由 gen_figures.py 生成
 \documentclass[a4paper]{ctexbook}
 \input{preamble}
@@ -37,7 +37,7 @@
         {\fontsize{10.5}{13}\selectfont\sffamily\bfseries\color{seriesice!88!white}
           ENGINEERING ONTOLOGY}\par\vspace{0.52cm}
         {\fontsize{42}{50}\selectfont\heiti\color{white}工程本体论}\par\vspace{0.34cm}
-        {\fontsize{20}{27}\selectfont\heiti\color{seriesice}Semantica 唯一执行语义版}\par\vspace{0.28cm}
+        {\fontsize{20}{27}\selectfont\heiti\color{seriesice}Semantica 唯一执行语义候选版}\par\vspace{0.28cm}
         {\fontsize{11.5}{17}\selectfont\songti\color{white!82}
           从概念体系到可计算的工程语义}%
       };
@@ -49,7 +49,7 @@
         {\fontsize{10.5}{15}\selectfont\heiti\color{black}
           第一卷 · 理论与方法}\\[-0.04cm]
         {\fontsize{7.4}{9.8}\selectfont\songti\color{black}
-          作者 claude F5 max · 5k · 用时 6h · 2026.06}\\[-0.04cm]
+          作者 claude F5 max · 5k · 用时 6h · 2026.08}\\[-0.04cm]
         {\fontsize{6.2}{8.2}\selectfont\songti\color{black}
           依据 ontology-engineering-book 仓库整理生成}%
       };
@@ -58,7 +58,7 @@
         {\fontsize{10.5}{15}\selectfont\heiti\color{white!88}
           第一卷 · 理论与方法}\\[-0.04cm]
         {\fontsize{7.4}{9.8}\selectfont\songti\color{white!70}
-          作者 claude F5 max · 5k · 用时 6h · 2026.06}\\[-0.04cm]
+          作者 claude F5 max · 5k · 用时 6h · 2026.08}\\[-0.04cm]
         {\fontsize{6.2}{8.2}\selectfont\songti\color{white!62}
           依据 ontology-engineering-book 仓库整理生成}%
       };
@@ -100,7 +100,7 @@
 \vspace*{0.56\textheight}
 \begin{minipage}{0.88\textwidth}
 \small\color{black!68}
-\textbf{版本说明}\quad 本册为《工程本体论》的 Semantica 唯一执行语义版；作者署名为
+\textbf{版本说明}\quad 本册为《工程本体论》的 2026.08 Semantica 唯一执行语义候选版；作者署名为
 \textbf{claude F5 max}；ISBN、出版社与印刷参数在出版决定后另行冻结。\par\medskip
 
 \textbf{内容边界}\quad 两卷书是规格、解释与教学案例的“石头”；Semantica 是贯穿其间的
@@ -113,8 +113,10 @@
 \textbf{来源致谢}\quad 依据 ontology-engineering-book 书源整理；教学片段由构建器经
 迁移账从 source-locked Semantica built-in packages 读取并核验。\par\medskip
 
-\textbf{一体化说明}\quad 两卷书给出可读规格，Semantica 承担全部可执行语义，Skill
-只做检索与薄入口。场景 oracle 通过不自动等于 package release 完成。
+\textbf{一体化说明}\quad 两卷书给出方法与可读规格，Semantica 承担全部可执行语义，
+Skill 是默认语义接入与行业本体炼化控制面，而不只是检索入口。每次工程任务都要分开
+返回工程结果、Semantica 结果与本体学习判定；场景 oracle 通过不自动等于 package
+release 完成，更不等于经验已经晋升为行业知识。
 \url{https://github.com/jiaqiwang969/OntologyEngineering}
 \end{minipage}
 \clearpage
@@ -149,6 +151,13 @@ Protégé、Jena、owlready2 或 pySHACL 的单独运行结果也不是本书的
 Python、CLI 与 MCP 都委托 \texttt{SemanticPackageRunner}。执行时先查看 manifest，
 再运行具名 scenario，最后单独执行 release verification；未知包、未知场景、缺失资产、
 哈希不符或不支持的 DL/SWRL/时态/概率能力均应 fail closed。
+
+\textbf{实践学习以同一 refinery 为准。}
+工程任务先用带哈希证据的 task envelope 与 project binding 打开 source-locked semantic
+engagement；结束时必须给出 \texttt{no\_delta} 及理由，或形成完整 package delta 候选。
+候选依次经过 proposed、committed、regression passed、release complete 与 promoted，
+每一步都保留独立状态和授权。书负责教人怎样判断，不能替项目作证，也不能替有权人
+晋升、签字或发布。
 
 \textbf{代码框的排版约定}：注释以\textcolor{cmtgray}{灰蓝色}显示，代码为黑色；
 描述逻辑符号（\(\sqsubseteq\)、\(\sqcap\)、\(\forall\)、\(\exists\) 等）以标准数学记号排印。

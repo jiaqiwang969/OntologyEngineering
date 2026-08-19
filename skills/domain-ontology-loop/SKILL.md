@@ -1,70 +1,138 @@
 ---
 name: domain-ontology-loop
-description: Grow a domain/industry ontology from ongoing engineering practice through a governed internalization loop — baseline snapshot, delta proposal, conflict verdicts with reasons, versioned commit with provenance, and competency-question regression so new lessons never silently erase old knowledge. Use when a team (e.g. a CAD curriculum, a factory QC program, a design-review practice) wants to repeatedly convert practice artifacts into an accumulating ontology instead of one-off deltas; when someone asks how to iterate an ontology without forgetting; or when auditing why an ontology stopped growing. Do not use for one-shot ontology generation without regression.
+description: Govern the slow outer loop that turns a reusable candidate from the root ontology-engineering semantic engagement into an immutable, regression-verified and release-complete Semantica industry package. Use after engineering practice yields a non-empty PackageDelta; when reviewing conflicts, removals, regressions, release evidence or promotion; or when auditing why a domain ontology stopped growing. Use Semantica's native ontology refinery and managed CAS/registry only. Do not use for routine read-only engagements, no_delta results, one-shot vocabulary generation, or external publication.
 ---
 
-# Domain Ontology Loop（工程实践 → 行业本体的迭代内化）
+# Domain Ontology Loop：Semantica 行业本体慢速治理外循环
 
-一句话：**学新不忘旧，靠的不是感觉，是版本谱系 + 冲突判决 + 旧 CQ 回归。**
+把本 skill 作为根 `ontology-engineering` 的慢速外循环，不作为独立本体工具。根 skill
+在每次工程任务中完成快速语义接入、现有 package 验证和学习判定；只有结果为有复用
+价值的 `candidate` 时，才进入这里做治理、回归、release 和 promotion。
 
-本模板把第二卷的治理方法用在本体自己身上：本体版本是发布快照（ch20），
-每次实践产出的 delta 是变更（ch17），能力问题库是防遗忘回归集（第一卷 ch03
-「CQ 即验收测试」）。任何领域——CAD 课程、产线质检、评审实践——都可以照此
-把自己的工程实践不断内化成行业本体。
+两卷书只提供方法镜头：第一卷说明怎样建模与验收，第二卷示范怎样把 ISO 工程知识
+本体化。项目事实来自受控工程活动，唯一可执行语义和行业记忆都在 Semantica；有权人
+掌握冲突、替换、删除、风险、合规、提升和发布决定。
 
-## 循环（每次实践一圈）
+## 先决条件
 
-```
-实践产出 delta（归一化为 delta.json）
-  → propose   差异分析：新增了什么、和旧知识撞了什么、想删什么
-  → 人判决    冲突与删除必须带理由（ch17：保留/作废是判断，不是默认）
-  → commit    合并 → 新版本快照（checksum + PROV 派生链 + changelog）
-  → regress   ★ 旧 CQ 全部重跑：答不上 = 真的忘了，门禁拦下不许发版
-  → 新 CQ 入库，成为下一轮的"旧知识"
-```
+1. 从本文件位置向上解析根 `ontology-engineering` 目录，记为 `OE_SKILL_ROOT`。不要
+   依赖当前工作目录，不要写死用户主目录或某个 Semantica checkout。
+2. 读取根 `references/semantic-engagement-contract.md` 和本目录的
+   `references/loop-contract.md`。
+3. 使用根 skill 的 source-locked 入口完成 doctor、capability discovery、task
+   envelope、project binding 和 engagement receipt。runtime commit、version 与 wheel
+   SHA-256 必须由根 source lock 自动注入；缺失、手抄或与安装 wheel 不一致时 fail closed。
+4. 根 binding 要求 `semantic_api=semantica.ontology.refinery/v1`；适配器把它投影成 native
+   `semantic_api_contract`。原生 refinery capability 必须完整，不得把旧 governance
+   lifecycle 当成 fallback。
+5. 根响应 `learning.verdict=no_delta` 时记录理由并返回快速内环；不得制造空 candidate
+   或空版本（native receipt 内部对应 `learning.status=no_delta`）。
 
-RDF 的单调语义保证"新增不撤销旧结论"（第一卷 ch02，有 runnable 佐证）；
-会造成遗忘的只有两件事：**无版本的覆盖**和**无判决的删除**——循环的门禁
-正是拦这两件事的。
-
-## 上手
+可移植入口形式如下；先由 Agent 从本文件位置解析 `OE_SKILL_ROOT`：
 
 ```bash
-# 1. 用第一课的产出建基线（拒绝覆盖已有 workspace）
-python3 scripts/internalize.py init \
-  --workspace ./my-domain --name MyDomainOntology \
-  --baseline lesson01-delta.json --attempt lesson01
-
-# 2. 每完成一次实践：先看差异
-python3 scripts/internalize.py propose --workspace ./my-domain --delta lesson02-delta.json
-#    有冲突/删除时退出码 2，写 verdicts.json（每条带 action + 非空 reason）再提交
-
-# 3. 受控合并出新版
-python3 scripts/internalize.py commit --workspace ./my-domain \
-  --delta lesson02-delta.json --verdicts verdicts.json --attempt lesson02
-
-# 4. 防遗忘回归（旧 CQ + 新 CQ，全绿才算内化完成）
-python3 scripts/internalize.py regress --workspace ./my-domain
-
-# 5. 随时查谱系
-python3 scripts/internalize.py history --workspace ./my-domain
+"$OE_SKILL_ROOT/runtime/.venv/bin/python" \
+  "$OE_SKILL_ROOT/scripts/semantic_engagement.py" doctor
+"$OE_SKILL_ROOT/runtime/.venv/bin/python" \
+  -m semantica.ontology.refinery --help
 ```
 
-工作区结构、delta/verdict/CQ 文件格式、以及 `01-fusion-tutorial`（CAD 课程）
-如何映射到本循环，见 `references/loop-contract.md`。
+不要调用本子技能中旧的兼容性 `scripts/internalize.py` 来创建平行正本，也不要根据其
+旧文件名猜测工作区结构。
 
-## 门禁规矩（与书对应）
+## 慢速外循环
 
-| 规矩 | 出处 | 工具行为 |
-|---|---|---|
-| 同名不同义必须判决，判决必须带理由 | ch17「保留是判断，不是默认」 | `commit` 拒绝无判决/无理由的冲突 |
-| 删除必须说明依据与波及 | ch17「宣布作废却说不出作废了谁，是挥手」 | `commit` 拒绝无理由的 removes |
-| 版本不可静默重建 | ch20 发布快照 | `init` 拒绝覆盖已有 workspace；每版带 checksum + parent |
-| 派生可追 | ch20 / PROV | `prov.ttl` 记录 vN wasDerivedFrom vN-1 |
-| 旧知识以旧 CQ 度量 | 第一卷 ch03 CQ 即验收 | `regress` 任一旧 CQ 失败即非零退出 |
+严格按不可跳级状态推进：
 
-## 佐证
+```text
+candidate → proposed → committed → regression_passed
+          → release_complete → promoted
+```
 
-`demos/internalization_loop.py`（仓库根 demos/）用书内 I01/S01 数据完整走一圈，
-并证明：冲突无理由被拒、判决后合并、三个版本后 v1 时代的 CQ 依然全绿。
-CI（corroboration workflow）每次 push 重跑。
+- `candidate`：保存 exact `PackageDelta`、task envelope、binding 和 engagement receipt；
+  它不是行业事实。
+- `proposed`：写入不可变 candidate/proposed ledger 并完成差异、影响、冲突、替换和删除
+  分析；它仍不改变 promoted registry truth。
+- `committed`：有权人对 exact delta 授权后，物化不可变候选 package。
+- `regression_passed`：旧 CQ、新 CQ、positive、negative、ambiguity 和 prior-release
+  回归均由内容绑定证据证明通过。
+- `release_complete`：完整 package coverage、capability、receipt、PROV、来源、权利和
+  release checks 闭合；不等于已提升。
+- `promoted`：有独立 promotion 授权后，将不可变 package version 加入 Semantica
+  registry；不得覆盖已有版本。
+
+每次写入都必须来自当前根 OE 调用的 task。根适配器为 `candidate`、`proposed`、
+`committed`、`execute_candidate`、两类 gate 推导、`regression_passed`、
+`release_complete` 和 `promoted` 分别生成 exact 单 action context；Semantica 将其 hash
+写入 CAS 与相应事件/执行套件/门禁/晋升记录。早先 candidate task 不是未来迁移授权。
+
+`published` 不属于 refinery 状态机，也没有 refinery publish 命令。它是外部权利人或
+发布机构的动作，必须单独报告。
+
+## 完整 PackageDelta
+
+使用原生 `PackageDelta`，显式携带八类资产数组和独立的书稿影响字段：
+
+```text
+ontology · competency_questions · shapes · queries · rules
+cases · contract · provenance · book_impact
+```
+
+每项资产都是 `add|replace|remove` 的内容寻址变更；replace/remove 必须绑定被替代内容
+的 SHA-256。`cases` 至少覆盖 `positive / negative / ambiguity / prior_release`；适用时
+把 negative 设计为单故障反例。`book_impact` 是独立顶层枚举，不得藏进 provenance；
+即使影响为 `none`，也必须显式声明，并在 delta rationale 中说明理由。
+
+八个资产数组可以只声明相对 bound baseline 的真实变化，但不能省略字段或用空数组
+暗示“已经验证无影响”。最终 materialized package 在 `release_complete` 前必须覆盖全部
+八类资产和四类 case；`book_impact` 同时通过 enum、delta SHA、manifest 和 promotion
+record 验证。项目实例通常保留为 evidence 或 case 输入，不自动提升为行业 ABox。
+
+## 工作区与不可变性
+
+只让 `semantica.ontology.refinery` 创建和管理工作区。它使用 `workspace.json`、
+`registry.json`、`objects/sha256/` CAS、content-addressed refinements、不可变事件链、
+hash-keyed package versions 和 append-only registry events。package ID 是 opaque registry
+key，不是路径。
+
+禁止手改 CAS、events、candidate documents、package records 或 registry。`init` 拒绝覆盖
+已存在工作区；hash mismatch、stale baseline、已有目标 version、断链或残留锁都应阻断。
+
+## 授权边界
+
+允许自动执行只读 status/history/list/resolve、candidate 留存、proposal 分析和门禁计算。
+以下动作不能因进程可执行而视为已获授权：
+
+- `commit`：必须有 exact delta-bound 的 commit authorization；冲突、replace/remove 的
+  判决和理由由 binding 中的 decision authority 提供。
+- 风险、合规、事实接受和产品放行：由相应有权人决定，并作为 release evidence；
+  Semantica 只验证合同与证据绑定。
+- `promote`：必须有独立的 promote authorization，且 actor/authority/target 与 binding
+  一致；`target` 固定为 registry channel `industry-registry`，不是 package ID。
+- `verify`：不接受调用方撰写的 regression/release pass JSON；两类证据只能由 Semantica
+  执行 exact committed subject 后从同一 execution suite 内部推导。
+- 书稿修改、push 和 `published`：均为外部动作，各自需要明确授权。
+
+Promotion 响应只产生 `auto_applied=false` 的 successor binding 投影。批准、另存和切换
+新 binding 是外部控制面动作；旧 binding 不得原地改写。
+
+## 结果报告
+
+不要把退出码 0、`candidate`、`committed`、一个 CQ 通过或一份 receipt 当成全部绿色。
+通过根入口时分别报告实际 section，不另造平行 alias：
+
+```text
+execution.status · regression.status · receipt.status · release.status
+learning.status · learning.verdict · learning.promotion.status
+learning.publication.status / decision
+```
+
+同时给出 `delta_sha256`、当前 state、package/version/package SHA、event/receipt/PROV
+哈希、缺失 capability、失败 check、授权主体和 blocker。CLI 的 exit 0 只表示该命令成功
+返回；gate blocked、输入/工作区错误和外部 publication 必须按各自状态解释。
+
+## 门禁
+
+修改本 skill 或合同后，至少执行根仓库的 retrieval eval、held-out eval、strict backend
+policy 和测试；再检查本文与 refinery capability/CLI 是否一致。任何旧单文件工作区描述、
+硬编码本机路径、隐藏的第二 backend 或 governance fallback 都是失败。

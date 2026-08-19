@@ -31,19 +31,28 @@ METHONTOLOGY、NeOn 与 OntoClean 是不同粒度的方法资源；它们不能�
 一个 CQ 只有在问题、查询、输入夹具与预期结果同时固定后才成为可执行验收；
 “能返回一行”不够，必须比较精确绑定、行数与单因反例。
 
-## 复算
+## 统一语义介入入口
 
-先由受控发布流程把实际 runtime commit 与精确 wheel/工件 SHA-256 分别写入
-`SEMANTICA_RUNTIME_COMMIT`、`SEMANTICA_RUNTIME_SHA256`；不得用空值或示例摘要替代。
+从 ontology-engineering skill 根运行。统一入口自动绑定 source-locked runtime identity；
+先只读发现，再按 [`semantic-engagement-contract.md`](../../semantic-engagement-contract.md)
+建立 package/workspace binding 与 task envelope：
 
 ```bash
-semantica package run semantica.chapter_packages.vol1.ch03 \
-  --runtime-commit "$SEMANTICA_RUNTIME_COMMIT" \
-  --runtime-artifact-sha256 "$SEMANTICA_RUNTIME_SHA256" \
-  --scenario-id OE-V1-CH03-SCN-CQ-ACCEPTANCE-001 --json
+runtime/.venv/bin/python scripts/semantic_engagement.py discover
+runtime/.venv/bin/python scripts/semantic_engagement.py run \
+  --binding /path/to/package-binding.json \
+  --task /path/to/task-envelope.json \
+  --scenario OE-V1-CH03-SCN-CQ-ACCEPTANCE-001
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
 ```
 
-该场景只证明 CQ1 在声明夹具上符合 oracle，不证明方法论全部自动化，也不授予本体发布权限。
+该场景只证明 CQ1 在声明夹具上符合 oracle，不证明方法论全部自动化，也不授予本体发布
+权限。书提供构建方法，受控工程记录提供事实，Semantica 是唯一可执行语义；冲突、风险、
+晋升和发布仍由有权人决定。`open` 只形成可审查学习候选的入口，不静默修改正式本体。
+原生 `semantica package ...` 只供底层 runner/manifest 诊断。
 
 ## 核心纪律
 

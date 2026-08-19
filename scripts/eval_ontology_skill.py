@@ -60,10 +60,15 @@ def hit_file_blob(hits: list[Any], workspace: Path) -> str:
             continue
         seen.add(hit.path)
         parts.append(search_module_display_path(hit.path, workspace))
-        try:
-            parts.append(hit.path.read_text(encoding="utf-8"))
-        except UnicodeDecodeError:
-            parts.append(hit.path.read_text(encoding="utf-8", errors="ignore"))
+        parts.append(
+            search_module.read_text(
+                search_module.SearchFile(
+                    hit.path,
+                    getattr(hit, "source_sha256", None),
+                    getattr(hit, "source_lock", None),
+                )
+            )
+        )
     return "\n".join(parts)
 
 
@@ -72,8 +77,7 @@ def search_module_display_path(path: Path, workspace: Path) -> str:
 
 
 def evaluate_case(search_module: Any, workspace: Path, case: dict[str, Any], limit: int) -> dict[str, Any]:
-    roots = search_module.scoped_roots(workspace, case["scope"])
-    files = search_module.iter_files(roots)
+    files = search_module.scoped_files(workspace, case["scope"])
     hits = search_module.search(files, case["query"], limit, context_size=2)
     blob = hit_blob(hits, workspace)
     full_blob = hit_file_blob(hits, workspace)

@@ -78,7 +78,8 @@ class SkillControlPlaneContractTests(unittest.TestCase):
             "promoted",
         ):
             self.assertIn(required, text)
-        self.assertNotRegex(text, re.compile(r"~/148|/Users/[^/]+/148-Semantica"))
+        personal_checkout = re.compile(r"~/148|/" + r"Users/[^/]+/148-Semantica")
+        self.assertNotRegex(text, personal_checkout)
 
     def test_every_native_write_uses_a_current_exact_action_context(self) -> None:
         contract = (ROOT / "references" / "semantic-engagement-contract.md").read_text(

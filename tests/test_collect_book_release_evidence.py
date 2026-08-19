@@ -110,6 +110,24 @@ class BookReleaseEvidenceCollectorTests(unittest.TestCase):
         with mock.patch.object(release.subprocess, "run", return_value=completed):
             self.assertEqual((False, 1), release._pdf_font_report(Path("fake.pdf")))
 
+    def test_font_embedding_parser_accepts_a_name_past_the_header_width(self) -> None:
+        header = (
+            "name                                 type              encoding         "
+            "emb sub uni object ID"
+        )
+        row = (
+            "VASEJB+LMRomanSlant10-Regular-Identity-H "
+            "CID Type 0C       Identity-H       yes yes yes    577  0"
+        )
+        completed = subprocess.CompletedProcess(
+            args=["pdffonts", "fake.pdf"],
+            returncode=0,
+            stdout=f"{header}\n{'-' * len(header)}\n{row}\n",
+            stderr="",
+        )
+        with mock.patch.object(release.subprocess, "run", return_value=completed):
+            self.assertEqual((True, 1), release._pdf_font_report(Path("fake.pdf")))
+
     def test_regression_report_stores_logical_command_not_host_path(self) -> None:
         report = collector._regression_report(
             repository="https://example.invalid/repository.git",

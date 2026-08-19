@@ -194,6 +194,33 @@ def _regression_report(
     }
 
 
+def _normalized_regression_output(
+    completed: subprocess.CompletedProcess[str],
+    *,
+    root: Path,
+    semantica_root: Path,
+) -> bytes:
+    """Remove only the two known checkout prefixes from a stored test log.
+
+    Pytest warnings include absolute source paths.  Those paths are useful while
+    running locally but are neither stable evidence nor safe public metadata.
+    Keep every other absolute path intact so the privacy gate can still reject
+    an unrelated leak instead of having a broad sanitizer hide it.
+    """
+
+    output = completed.stdout + "\n" + completed.stderr
+    replacements = (
+        (root.expanduser().resolve(), "<ontology-engineering-root>"),
+        (semantica_root.expanduser().resolve(), "<semantica-root>"),
+    )
+    for checkout, token in sorted(
+        replacements, key=lambda item: len(str(item[0])), reverse=True
+    ):
+        prefix = re.escape(str(checkout))
+        output = re.sub(rf"{prefix}(?=$|[/\\])", token, output)
+    return output.encode("utf-8")
+
+
 def collect_regressions(root: Path, semantica_root: Path) -> dict[str, Any]:
     source_lock = json.loads(
         (root / release.SOURCE_LOCK_PATH).read_text(encoding="utf-8")
@@ -244,9 +271,11 @@ def collect_regressions(root: Path, semantica_root: Path) -> dict[str, Any]:
         completed=semantica_completed,
         log={},
     )
-    semantica_output = (
-        semantica_completed.stdout + "\n" + semantica_completed.stderr
-    ).encode("utf-8")
+    semantica_output = _normalized_regression_output(
+        semantica_completed,
+        root=root,
+        semantica_root=semantica_root,
+    )
     semantica_log_path = root / release.REGRESSION_LOG_PATHS["semantica_regression"]
     release._atomic_write(semantica_log_path, semantica_output)
     semantica_report["log"] = release.artifact_ref(
@@ -268,7 +297,11 @@ def collect_regressions(root: Path, semantica_root: Path) -> dict[str, Any]:
         completed=oe_completed,
         log={},
     )
-    oe_output = (oe_completed.stdout + "\n" + oe_completed.stderr).encode("utf-8")
+    oe_output = _normalized_regression_output(
+        oe_completed,
+        root=root,
+        semantica_root=semantica_root,
+    )
     oe_log_path = root / release.REGRESSION_LOG_PATHS["ontology_engineering_regression"]
     release._atomic_write(oe_log_path, oe_output)
     oe_report["log"] = release.artifact_ref(

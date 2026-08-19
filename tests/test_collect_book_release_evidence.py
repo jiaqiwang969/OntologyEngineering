@@ -8,6 +8,7 @@ import unittest
 from unittest import mock
 
 from scripts import book_release_artifacts as release
+from scripts import check_public_privacy as privacy
 from scripts import collect_book_release_evidence as collector
 
 
@@ -148,6 +149,94 @@ class BookReleaseEvidenceCollectorTests(unittest.TestCase):
         self.assertTrue(report["passed"])
         self.assertEqual(["runtime-python", "-m", "pytest", "-q"], report["command"])
         self.assertNotIn(str(Path.home()), release.canonical_bytes(report).decode())
+
+    def test_regression_log_normalizes_only_known_checkout_roots(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            parent = Path(temporary).resolve()
+            root = parent / "ontology-engineering"
+            semantica_root = parent / "semantica"
+            unrelated = parent / "unrelated-private-path" / "secret.py"
+            completed = subprocess.CompletedProcess(
+                args=["runtime-python", "-m", "pytest", "-q"],
+                returncode=0,
+                stdout=(
+                    f"{root}/tests/test_release.py:10: warning\n"
+                    f"{semantica_root}/tests/test_ontology.py:20: warning\n"
+                    f"{unrelated}:30: must remain visible\n"
+                    "3 passed in 0.01s\n"
+                ),
+                stderr="",
+            )
+
+            normalized = collector._normalized_regression_output(
+                completed,
+                root=root,
+                semantica_root=semantica_root,
+            ).decode("utf-8")
+
+            self.assertIn(
+                "<ontology-engineering-root>/tests/test_release.py", normalized
+            )
+            self.assertIn("<semantica-root>/tests/test_ontology.py", normalized)
+            self.assertNotIn(str(root), normalized)
+            self.assertNotIn(str(semantica_root), normalized)
+            self.assertIn(str(unrelated), normalized)
+
+    def test_regression_log_does_not_rewrite_similar_path_prefix(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            parent = Path(temporary).resolve()
+            root = parent / "ontology-engineering"
+            semantica_root = parent / "semantica"
+            lookalike = parent / "ontology-engineering-shadow" / "warning.py"
+            completed = subprocess.CompletedProcess(
+                args=[],
+                returncode=0,
+                stdout=f"{lookalike}:10: must remain visible\n1 passed in 0.01s\n",
+                stderr="",
+            )
+
+            normalized = collector._normalized_regression_output(
+                completed,
+                root=root,
+                semantica_root=semantica_root,
+            ).decode("utf-8")
+
+            self.assertIn(str(lookalike), normalized)
+
+    def test_unrelated_personal_path_remains_visible_to_privacy_gate(self) -> None:
+        personal_root = Path("/") / "Users" / "example-account"
+        root = personal_root / "work" / "ontology-engineering"
+        semantica_root = personal_root / "work" / "semantica"
+        unrelated = personal_root / "other-project" / "secret.py"
+        completed = subprocess.CompletedProcess(
+            args=[],
+            returncode=0,
+            stdout=(
+                f"{root}/tests/test_release.py:10: known root\n"
+                f"{unrelated}:20: unrelated path\n"
+                "1 passed in 0.01s\n"
+            ),
+            stderr="",
+        )
+        normalized = collector._normalized_regression_output(
+            completed,
+            root=root,
+            semantica_root=semantica_root,
+        ).decode("utf-8")
+
+        with tempfile.TemporaryDirectory() as temporary:
+            scan_root = Path(temporary)
+            log_path = scan_root / "regression.log"
+            log_path.write_text(normalized, encoding="utf-8")
+            findings = privacy.content_findings(log_path, scan_root)
+
+        self.assertIn("<ontology-engineering-root>/tests/test_release.py", normalized)
+        self.assertNotIn(str(root), normalized)
+        self.assertIn(str(unrelated), normalized)
+        self.assertEqual(
+            ["macOS personal absolute path"],
+            [finding.rule for finding in findings],
+        )
 
 
 if __name__ == "__main__":

@@ -48,6 +48,12 @@ runtime/.venv/bin/python demos/<demo>.py
 | `vol2_ch19_substitution_gate.py` | ch19 现场：缺设计评估的代换被拒（对照表不是评估）；推断不得写成事实 | pyshacl |
 | `vol2_release_binding_gate.py` | ch20 发布保证：违例查询恰好一行（r12 绑错快照）；装包门禁拒收并出处置开单，修订回包放行 | rdflib SPARQL、pyshacl |
 
+## 模板（skills/）
+
+| demo | 佐证的模板论断 | 引擎 |
+|---|---|---|
+| `internalization_loop.py` | domain-ontology-loop：无判决的冲突被拒、版本谱系拒绝覆盖、三版后旧 CQ 全绿（学新不忘旧）、合规删除造成的真遗忘被回归当场抓住 | `skills/domain-ontology-loop/scripts/internalize.py`、rdflib |
+
 覆盖：第一卷 ch02/03/04/05/07；第二卷 ch03/04/06 与后十章的 ch11–ch20 全部十个本体
 （ch14 情境危害并入 HARA demo，ch16 测量并入度量 demo）。
 

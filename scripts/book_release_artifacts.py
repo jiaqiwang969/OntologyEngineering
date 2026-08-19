@@ -527,15 +527,28 @@ def _pdf_font_report(path: Path) -> tuple[bool, int]:
     lines = completed.stdout.splitlines()
     if len(lines) < 3:
         return False, 0
-    header = lines[0].lower()
-    embedded_start = header.find("emb")
-    subset_start = header.find("sub", embedded_start + 3)
-    if embedded_start < 0 or subset_start <= embedded_start:
+    header_fields = lines[0].lower().split()
+    if "emb" not in header_fields or "sub" not in header_fields:
         raise ReleaseArtifactError("pdffonts output lacks the emb column")
     rows = [line for line in lines[2:] if line.strip()]
-    embedded = bool(rows) and all(
-        line[embedded_start:subset_start].strip().lower() == "yes" for line in rows
-    )
+    embedded_values: list[bool] = []
+    for line in rows:
+        fields = line.rsplit(maxsplit=5)
+        if (
+            len(fields) != 6
+            or not fields[0].strip()
+            or any(field.lower() not in {"yes", "no"} for field in fields[1:4])
+        ):
+            raise ReleaseArtifactError("pdffonts output contains a malformed font row")
+        try:
+            int(fields[4])
+            int(fields[5])
+        except ValueError as exc:
+            raise ReleaseArtifactError(
+                "pdffonts output contains a malformed font row"
+            ) from exc
+        embedded_values.append(fields[1].lower() == "yes")
+    embedded = bool(embedded_values) and all(embedded_values)
     return embedded, len(rows)
 
 

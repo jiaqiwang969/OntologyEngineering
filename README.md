@@ -161,7 +161,7 @@ Semantica 与 PDF 的完整顺序见
 
 | 项目 | 当前事实 |
 |---|---|
-| Semantica 运行时 | [`0.6.5+oe.3`](runtime/semantica-source-lock.json)，由 source commit 与 wheel SHA-256 精确锁定；doctor 还逐文件核验 wheel `RECORD` 与实际 import root |
+| Semantica 运行时 | [`0.6.5+oe.4`](runtime/semantica-source-lock.json)，由 source commit 与 wheel SHA-256 精确锁定；doctor 还逐文件核验 wheel `RECORD` 与实际 import root |
 | 可执行语义 | ontology、CQ、SHACL、query、受支持 rule、cases、contract、PROV、receipt 与生命周期只在 Semantica 中保留正本；OE 没有第二 backend、fallback 或平行 registry |
 | 章节 packages | 共 29 个：第一卷 9 个、第二卷 20 个。第一卷 ch06 为 `absent`，其余 28 个为 `partial`；29 个全部 `release_status=blocked` |
 | 规范派生 package | 另有一个 `semantica.chapter_packages.vol2.normative` domain package，当前同为 `partial/blocked`；它不是 ISO 原文副本或合规意见 |

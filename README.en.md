@@ -178,7 +178,7 @@ authorization to publish:
 
 | Area | Current, verifiable state |
 |---|---|
-| Semantica runtime | [`0.6.5+oe.3`](runtime/semantica-source-lock.json), pinned to an exact source commit and wheel SHA-256. Doctor also verifies every package file against the wheel `RECORD` and checks the real import root |
+| Semantica runtime | [`0.6.5+oe.4`](runtime/semantica-source-lock.json), pinned to an exact source commit and wheel SHA-256. Doctor also verifies every package file against the wheel `RECORD` and checks the real import root |
 | Executable semantics | Ontologies, CQs, SHACL, queries, supported rules, cases, contracts, PROV, receipts, and lifecycle state have one executable home: Semantica. OE carries no second backend, fallback, or parallel registry |
 | Chapter packages | 29 total: 9 for Volume 1 and 20 for Volume 2. Volume 1 Chapter 6 is `absent`; the other 28 are `partial`; all 29 have `release_status=blocked` |
 | Normative-derived package | A separate `semantica.chapter_packages.vol2.normative` domain package is also `partial/blocked`. It is neither a copy of ISO text nor a compliance opinion |

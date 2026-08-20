@@ -5,13 +5,13 @@
 ```json
 {
   "authoritative_runtime_identity": true,
-  "commit": "5ec547b8cda2c99ea288289483b303f58fa078ea",
+  "commit": "dadb5f62f3e92141ceee127f8ac1d8df79929f3a",
   "descriptor": "runtime/semantica-source-lock.json",
   "installed_identity_verified": true,
   "mode": "formal-source-lock",
-  "version": "0.6.5+oe.3",
-  "wheel_filename": "semantica-0.6.5+oe.3-py3-none-any.whl",
-  "wheel_sha256": "108f0e4cc08df01bd3125fc1660c508cfd4c81319c34a30fbb187f14f06f24ff"
+  "version": "0.6.5+oe.4",
+  "wheel_filename": "semantica-0.6.5+oe.4-py3-none-any.whl",
+  "wheel_sha256": "f6df659258f7c24ac290772a2dff4eb2d1843b6fc3d42c7e4253f2519f9339dc"
 }
 ```
 

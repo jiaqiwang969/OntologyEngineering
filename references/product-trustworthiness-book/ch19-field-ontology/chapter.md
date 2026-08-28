@@ -6,7 +6,7 @@
 > 规则、oracle、PROV 与 receipt 全部在 Semantica。当前为 `partial`、release
 > `blocked`；教学查询不能声明真实单件、批次、装车或现场范围。
 
-![一件实物穿过工厂，身后拖着由批次、装车和服务事件构成的身份尾迹](../handbook/figures-imagegen/art-ch19-v01.png "chapter-art")
+![一件实物穿过工厂，身后拖着由批次、装车和服务事件构成的身份尾迹](../handbook/figures-imagegen/art-ch19-v01.jpg "chapter-art")
 
 > **【导读】**
 > 依赖与共因在图里看得见之后，试点例会上老何只问了一句话：“你们图里的方框，
@@ -193,7 +193,7 @@ fld:SubReq_47 a fld:SubstitutionRequest ;
 <!-- FIG:ch19-fig01-five-stage-trace:OBSERVE -->
 > **读图任务**：从左侧被聚光的料箱开始，逐跳跟随批次、其中单件、装车和发运路径，找出哪一跳由实线变成了断开的琥珀色虚线。
 
-![一条从料箱到批次群、部分单件、装车和发运码头的五阶段追查路径由四段箭头构成，起点以琥珀色聚光，其中第一跳断为不含文字或标点的虚线缺口。](../handbook/figures-imagegen/ch19-fig01-five-stage-trace-v01.png "现场追查是一条可执行的身份路径，而不是某个系统里有一张表就算完成。任一跳未知，都应显式限制搜索结果和影响范围的声称。")
+![一条从料箱到批次群、部分单件、装车和发运码头的五阶段追查路径由四段箭头构成，起点以琥珀色聚光，其中第一跳断为不含文字或标点的虚线缺口。](../handbook/figures-imagegen/ch19-fig01-five-stage-trace-v01.jpg "现场追查是一条可执行的身份路径，而不是某个系统里有一张表就算完成。任一跳未知，都应显式限制搜索结果和影响范围的声称。")
 
 <!-- FIG:ch19-fig01-five-stage-trace:CONSUME -->
 > **图后判断**：图中路径是教学模型，不是供应链事实记录。聚光和断链不证明风险大小，也不替代召回范围、所有权或隐私授权判定。

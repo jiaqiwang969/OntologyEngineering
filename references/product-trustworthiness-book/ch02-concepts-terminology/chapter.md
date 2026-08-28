@@ -8,7 +8,7 @@
 > 用户合法持有的标准；`semantica.chapter_packages.vol2.normative` 只保存本书的
 > 工程释义与教学映射。
 
-![纷乱的对话气泡汇入词典，词典成为承重的概念柱](../handbook/figures-imagegen/art-ch02-v01.png "chapter-art")
+![纷乱的对话气泡汇入词典，词典成为承重的概念柱](../handbook/figures-imagegen/art-ch02-v01.jpg "chapter-art")
 
 > **【导读】**
 > 第 1 章散会时，白板中央的三个字母在四个人眼里是四个东西。本章不急着发明新办法，
@@ -170,7 +170,7 @@
 <!-- FIG:ch02-fig01-fault-error-failure-chain:OBSERVE -->
 > **读图任务**：从左向右跟随三个站点，特别看两个传播闸门和三条向下的拦截路径，判断为什么箭头只表示可能传播。
 
-![左侧裂纹部件、中间偏离刻度的状态表盘和右侧熄灭的输出灯串联排列，两处琥珀色闸门与三条下行支路表示传播可被条件化或拦截。](../handbook/figures-imagegen/ch02-fig01-fault-error-failure-chain-v01.png "故障、错误和失效是一条因果链上不同位置，两段过渡都不是必然。图中的旁路提醒读者，拦截、修正或未激活都可以阻止下一站出现。")
+![左侧裂纹部件、中间偏离刻度的状态表盘和右侧熄灭的输出灯串联排列，两处琥珀色闸门与三条下行支路表示传播可被条件化或拦截。](../handbook/figures-imagegen/ch02-fig01-fault-error-failure-chain-v01.jpg "故障、错误和失效是一条因果链上不同位置，两段过渡都不是必然。图中的旁路提醒读者，拦截、修正或未激活都可以阻止下一站出现。")
 
 <!-- FIG:ch02-fig01-fault-error-failure-chain:CONSUME -->
 > **图后判断**：这张图只规范三个概念的位置和条件性；它不给出具体系统的发生概率，也不证明任一监控或容错措施已经有效。

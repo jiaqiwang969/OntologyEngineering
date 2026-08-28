@@ -104,7 +104,7 @@ authoring_and_runtime_bindings:
   - references/product-trustworthiness-book/ch02-concepts-terminology/chapter.md
   - references/product-trustworthiness-book/outlines/ch02-outline.md
   - semantica.chapter_packages.vol2.ch02
-  - handbook/figures-imagegen/ch02-fig01-fault-error-failure-chain-v01.png
+  - handbook/figures-imagegen/ch02-fig01-fault-error-failure-chain-v01.jpg
 gate_count_policy: runtime-derived
 question_count_policy: exactly-three-mirror-cq-drafts
 figure_policy: exactly-one-imagegen-teaching-figure
@@ -113,7 +113,7 @@ figure_contract:
   registry: handbook/book-figure-plan.yaml
   status: placed_and_consumed_in_chapter
   current_reader_placement: end_of_section_2_3
-  asset: handbook/figures-imagegen/ch02-fig01-fault-error-failure-chain-v01.png
+  asset: handbook/figures-imagegen/ch02-fig01-fault-error-failure-chain-v01.jpg
   asset_sha256: d3804b5e621339d5aa03e90b6422eab833fab2e9e841b43338c8ce9f17a29baa
 ---
 # 第 2 章 同一句“可靠”，为什么可能在说不同的事

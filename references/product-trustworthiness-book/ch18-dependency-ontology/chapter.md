@@ -6,7 +6,7 @@
 > oracle、manifest 与 receipt 只在 Semantica。当前为 `partial`、release
 > `blocked`；超出受支持的单调规则或已声明事实范围时必须失败关闭。
 
-![两条表面独立的通道在透视视图中显出共享的底层骨架](../handbook/figures-imagegen/art-ch18-v01.png "chapter-art")
+![两条表面独立的通道在透视视图中显出共享的底层骨架](../handbook/figures-imagegen/art-ch18-v01.jpg "chapter-art")
 
 > **【导读】**
 > 上一章结束时，变化有了形状：哪一次变更、动了哪个维度、该向谁提问，机器都答得出。
@@ -166,7 +166,7 @@ SELECT ?node WHERE {
 <!-- FIG:ch18-fig01-audited-seams:OBSERVE -->
 > **读图任务**：沿两列模块之间的不同连线逐类检查，再对照右侧六格审计清单，最后跟随已盖章格子向下找到它依据的事实基石。
 
-![两列模块与多类依赖边构成一张图，右侧六个小格记录已检查的接缝，部分已盖章而一格仍空白，一个已盖章结论向下锚定到出现琥珀色裂纹的事实基石。](../handbook/figures-imagegen/ch18-fig01-audited-seams-v01.png "依赖分析的分母是真正检查过的接缝集合，而每一个排除结论又必须押在可追溯事实上。缺一格会破坏完整性，基石失效会迫使结论重开。")
+![两列模块与多类依赖边构成一张图，右侧六个小格记录已检查的接缝，部分已盖章而一格仍空白，一个已盖章结论向下锚定到出现琥珀色裂纹的事实基石。](../handbook/figures-imagegen/ch18-fig01-audited-seams-v01.jpg "依赖分析的分母是真正检查过的接缝集合，而每一个排除结论又必须押在可追溯事实上。缺一格会破坏完整性，基石失效会迫使结论重开。")
 
 <!-- FIG:ch18-fig01-audited-seams:CONSUME -->
 > **图后判断**：图上印章只表示已记录查看，不证明排除永久有效。本图不评价任何具体架构的独立性，也不替代 DFA 的实际证据。

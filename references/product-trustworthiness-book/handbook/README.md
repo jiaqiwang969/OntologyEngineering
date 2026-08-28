@@ -25,7 +25,7 @@
 
 二进制出版资产位于以下两类相对路径；完整逐文件清单见资产锁：
 
-- `handbook/figures-imagegen/*.png`
+- `handbook/figures-imagegen/*.jpg`
 - `handbook/figures-rendered/*.pdf` 与 `handbook/figures-rendered/.render-manifest.json`
 
 ## 生成 TeX 快照

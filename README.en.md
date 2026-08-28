@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="references/ontology-engineering-book/handbook/工程本体论-全书.pdf">
-    <img src="docs/assets/engineering-ontology-cover.png" width="320" alt="Cover of Engineering Ontology, Volume 1">
+    <img src="docs/assets/engineering-ontology-cover.jpg" width="320" alt="Cover of Engineering Ontology, Volume 1">
   </a>
 </p>
 

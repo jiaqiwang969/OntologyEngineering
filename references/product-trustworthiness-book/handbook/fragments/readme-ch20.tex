@@ -12,7 +12,7 @@ legacy capstone 迁移证据、oracle、snapshot、PROV、receipt 与 release ve
 \begin{center}
 \vspace{0.2em}
 \chapterartfade{%
-\adjustbox{max size={0.88\linewidth}{0.27\textheight}}{\includegraphics{figures-imagegen/art-ch20-v01.png}}%
+\adjustbox{max size={0.88\linewidth}{0.27\textheight}}{\includegraphics{figures-imagegen/art-ch20-v01.jpg}}%
 }
 \vspace{0.35em}
 \end{center}
@@ -296,7 +296,7 @@ rel:SWRegReport\_\allowbreak{}r12 & rel:Snapshot\_\allowbreak{}NextSW\_\allowbre
 \begin{center}
 \begin{minipage}{\linewidth}
 \centering
-\adjustbox{max size={\linewidth}{0.78\textheight}}{\includegraphics{figures-imagegen/ch20-fig01-live-assurance-case-v01.png}}
+\adjustbox{max size={\linewidth}{0.78\textheight}}{\includegraphics{figures-imagegen/ch20-fig01-live-assurance-case-v01.jpg}}
 \captionof{figure}{活的保证案例会在对象、配置、证据或假设改变时主动暴露过期和重开条件。自动检查负责举旗，最终承担风险的决定和签名仍然属于人。}
 \end{minipage}
 \end{center}
@@ -444,6 +444,20 @@ rel:Decision_RC18 a rel:AuthorizationDecision ;
 和对外 \nolinkurl{published} 仍是各自独立的人的决定。六个生命周期状态不是六盏绿灯，
 更不是一支自动签字的笔；它们只是
 让签字者清楚自己正依据哪一版记忆、哪些证据和哪些未决项。
+
+还有一层容易被误当作“流程配置”的保证边界：候选第一次登记时使用的 binding，是它
+以后不可扩大的生命周期能力上限。若最初只允许走到 \nolinkurl{proposed}，后来即使换上一份更宽
+的 binding，也不能把同一条候选记录救成 \nolinkurl{committed}；否则控制面就能在评审之后悄悄
+改写当时的权限条件。正确做法是从首次 proposal 起声明完整的预期上限，再让每一次新的
+task 只请求眼前动作，让 commit 与 promotion 分别引用新的有权决定。能力上限、当前请求
+和人的授权三者分离，既不会让“有能力”自动变成“已获准”，也不会让一次短任务永久截断
+一条本来准备接受完整保证审查的候选。
+
+同样，来源锚点的哈希相等只证明“当时引用的字节仍是那些字节”，不能证明 successor
+candidate 的新结论已经被本书吸收。每当闭包、receipt 或授权语义改变，影响记录都要重新
+区分：正文原已覆盖的原则、新增的通用保证方法、只属于项目案例的数字，以及 ISO 推演
+是否真的改变。没有这份新的内容绑定说明，旧 book-impact 记录只能作为历史来源证据，
+不能充当“书稿已同步”的绿灯。
 
 导读的期票，最后兑现一次。合上全书之前，做三件事：翻出你手头最近的安全案例，
 找到主张—论证—证据里“论证”那一层，问它上一次产品变更之后动过没有——没动过，

@@ -1,6 +1,6 @@
 # README visual assets
 
-`engineering-ontology-cover.png` is the reader-facing preview used by the
+`engineering-ontology-cover.jpg` is the reader-facing preview used by the
 repository README files. It is a deterministic render of page 1 of
 `references/ontology-engineering-book/handbook/工程本体论-全书.pdf`; it is not an
 independent book-cover source.

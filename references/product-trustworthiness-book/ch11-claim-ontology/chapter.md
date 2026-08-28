@@ -6,7 +6,7 @@
 > exact oracle、manifest、PROV 与 receipt 全部在 Semantica。正文记法只用于讲解，
 > 不构成第二套本体。当前为 `partial`、release `blocked`；结构可查不等于主张为真。
 
-![一句工程主张被拆成七个部件，逐一放入结构化卡槽](../handbook/figures-imagegen/art-ch11-v01.png "chapter-art")
+![一句工程主张被拆成七个部件，逐一放入结构化卡槽](../handbook/figures-imagegen/art-ch11-v01.jpg "chapter-art")
 
 > **【导读】**
 > 前十章走到了纸面的极限：证据不能自己对表，影响不能自己现身，案例不会跟着产品活着。
@@ -107,7 +107,7 @@ claim:Release_RC17 a claim:TrustClaim ;  # 类型声明：这是一条可信主�
 <!-- FIG:ch11-fig01-claim-to-triples:OBSERVE -->
 > **读图任务**：把左侧主张卡的七个分格逐一对应到右侧七组点—边—点结构，观察自然语言在进入图谱时哪些关系必须被显式命名。
 
-![左侧一张七格主张卡经由过渡箭头转化为右侧七组纵向排列的点—边—点三元结构，其中一格及对应关系被琥珀色突出。](../handbook/figures-imagegen/ch11-fig01-claim-to-triples-v01.png "主张从一句话变成可查询对象，不是把整句话存成字符串，而是把主语、配置、关注、情境、时间、假设和决定范围变成可验证关系。")
+![左侧一张七格主张卡经由过渡箭头转化为右侧七组纵向排列的点—边—点三元结构，其中一格及对应关系被琥珀色突出。](../handbook/figures-imagegen/ch11-fig01-claim-to-triples-v01.jpg "主张从一句话变成可查询对象，不是把整句话存成字符串，而是把主语、配置、关注、情境、时间、假设和决定范围变成可验证关系。")
 
 <!-- FIG:ch11-fig01-claim-to-triples:CONSUME -->
 > **图后判断**：这张图表示结构化转换，不是完整的 RDF/OWL 模型；它不给出具体 IRI、基数约束或推理规则，也不证明转换后的主张真实。

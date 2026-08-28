@@ -92,7 +92,7 @@ figure_contract:
   status: placed_and_consumed_in_chapter
   current_disposition: chapter_in_text
   current_reader_placement: before_section_1_2
-  asset: handbook/figures-imagegen/ch01-fig01-green-without-claim-v04.png
+  asset: handbook/figures-imagegen/ch01-fig01-green-without-claim-v04.jpg
   asset_sha256: e5b0af12f4728943cc7dac9c0d076f1007e3a5dcc1ef2c9feed4de22c8abdbab
 gate_count_policy: runtime_derived
 question_count_policy: learning_objective_driven

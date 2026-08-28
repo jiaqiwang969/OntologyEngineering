@@ -7,7 +7,7 @@
 > `blocked`；`semantica.chapter_packages.vol2.normative` 仅提供工程释义映射，
 > 机器分级一致性不能代替标准原文核对或领域专家判断。
 
-![表格网格化为点与连线，重组成可查询的情境危害图谱](../handbook/figures-imagegen/art-ch14-v01.png "chapter-art")
+![表格网格化为点与连线，重组成可查询的情境危害图谱](../handbook/figures-imagegen/art-ch14-v01.jpg "chapter-art")
 
 > **【导读】**
 > 上一章把“谁说了算”画进了图里：谁有权录入、谁有权评审、谁有权裁决，各自成了
@@ -124,7 +124,7 @@ haz:CJ_Highway a haz:ControllabilityJudgment ;
 <!-- FIG:ch14-fig01-event-and-three-rulers:OBSERVE -->
 > **读图任务**：先看失常与情境如何共同构成中央事件，再沿三条下行边检查三把尺下面是否各自挂着不同类型的证据。
 
-![左右两个圆节点代表失常与情境，共同合成中央菱形事件，事件向下分出三把尺，每把尺分别挂着伤害、暴露或可控性类证据图形。](../handbook/figures-imagegen/ch14-fig01-event-and-three-rulers-v01.png "风险评价的对象是条件化事件，而不是裸露的失常名。严重度、暴露度和可控性是三种不同测量主张，它们需要不同的来源与适用条件。")
+![左右两个圆节点代表失常与情境，共同合成中央菱形事件，事件向下分出三把尺，每把尺分别挂着伤害、暴露或可控性类证据图形。](../handbook/figures-imagegen/ch14-fig01-event-and-three-rulers-v01.jpg "风险评价的对象是条件化事件，而不是裸露的失常名。严重度、暴露度和可控性是三种不同测量主张，它们需要不同的来源与适用条件。")
 
 <!-- FIG:ch14-fig01-event-and-three-rulers:CONSUME -->
 > **图后判断**：图中三把尺不产生评级数值，也不展示 ISO 26262 查表过程。它只规范事件身份与证据类型，不证明任一 ASIL 结论。

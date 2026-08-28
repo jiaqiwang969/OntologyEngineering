@@ -1,6 +1,6 @@
 # 前言
 
-![六个流程方块围成闭环，中心仍是等待被补上的共同工程世界](../handbook/figures-imagegen/art-preface-v01.png "chapter-art")
+![六个流程方块围成闭环，中心仍是等待被补上的共同工程世界](../handbook/figures-imagegen/art-preface-v01.jpg "chapter-art")
 
 ## 这一版书怎样与 Semantica 同步
 

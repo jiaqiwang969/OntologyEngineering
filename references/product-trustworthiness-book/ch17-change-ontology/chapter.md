@@ -6,7 +6,7 @@
 > 规则、oracle、snapshot/diff、PROV 与 receipt 全部在 Semantica。当前为
 > `partial`、release `blocked`；未登记变化不得被系统静默解释为“无影响”。
 
-![两座版本快照岛之间有一座带身份与状态灯的变更桥](../handbook/figures-imagegen/art-ch17-v01.png "chapter-art")
+![两座版本快照岛之间有一座带身份与状态灯的变更桥](../handbook/figures-imagegen/art-ch17-v01.jpg "chapter-art")
 
 > **【导读】**
 > 上一章结束时，数字终于都带上了出处：每个值背后站着对象、方法与来源，
@@ -156,7 +156,7 @@ chg:Pass_MfgWrite a chg:PassRecord ;
 <!-- FIG:ch17-fig01-snapshot-scoped-pass:OBSERVE -->
 > **读图任务**：先找到两组快照蜂窝中的配置差异，再沿下方三张 PASS 卡的锚线回到它们各自属于的快照，最后看哪条锚线已断开。
 
-![两组六边形蜂窝表示配置略有差异的两个快照，一座变更桥连接二者，下方三张通过卡分别锚定到特定快照，其中一条锚线断开并挂起琥珀色过期旗。](../handbook/figures-imagegen/ch17-fig01-snapshot-scoped-pass-v01.png "PASS 是带对象、配置、条件和时间的快照结论。快照改变后，旧卡片不必立即变假，但它与当前世界的支持关系必须重新判定。")
+![两组六边形蜂窝表示配置略有差异的两个快照，一座变更桥连接二者，下方三张通过卡分别锚定到特定快照，其中一条锚线断开并挂起琥珀色过期旗。](../handbook/figures-imagegen/ch17-fig01-snapshot-scoped-pass-v01.jpg "PASS 是带对象、配置、条件和时间的快照结论。快照改变后，旧卡片不必立即变假，但它与当前世界的支持关系必须重新判定。")
 
 <!-- FIG:ch17-fig01-snapshot-scoped-pass:CONSUME -->
 > **图后判断**：过期旗只表示需要重开评价，不自动否定原证据，也不表示变更一定导致安全问题。重新通过仍需人员依据差异和影响做决定。

@@ -7,7 +7,7 @@
 > release `blocked`。`semantica.chapter_packages.vol2.normative` 是本书的规范转述层，
 > 不是 ISO 原文；机器映射通过也不证明现实 HARA 正确。
 
-![画满装置与连线的白板中留有一块等待定义的问号形空白](../handbook/figures-imagegen/art-ch04-v01.png "chapter-art")
+![画满装置与连线的白板中留有一块等待定义的问号形空白](../handbook/figures-imagegen/art-ch04-v01.jpg "chapter-art")
 
 > **【导读】**
 > 职责清单齐了，团队坐进概念评审会，白板上很快画满措施——却没有人先问"我们在担心什么"。
@@ -93,7 +93,7 @@ U4 读者能把同一问法迁移到 ENV-01 的测量漂移稳定性，同时拒
 <!-- FIG:ch04-fig01-context-changes-consequence:OBSERVE -->
 > **读图任务**：先找出左右两幅中没有改变的车辆、EPS 与失常符号，再只比较道路高速行驶和维修工位这组情境差异。
 
-![左右对开画面保持同一车辆、同一 EPS 与同一琥珀色非预期助力符号，左侧高速道路上的轨迹继续指向碰撞链，右侧架起的静止车辆只显示方向盘运动。](../handbook/figures-imagegen/ch04-fig01-context-changes-consequence-v01.png "同一对象和同一偏差进入不同情境后，场景、后果和后续评价必须重开。图中真正被替换的是车速、道路、车辆模式、附近人员和可用反应时间。")
+![左右对开画面保持同一车辆、同一 EPS 与同一琥珀色非预期助力符号，左侧高速道路上的轨迹继续指向碰撞链，右侧架起的静止车辆只显示方向盘运动。](../handbook/figures-imagegen/ch04-fig01-context-changes-consequence-v01.jpg "同一对象和同一偏差进入不同情境后，场景、后果和后续评价必须重开。图中真正被替换的是车速、道路、车辆模式、附近人员和可用反应时间。")
 
 <!-- FIG:ch04-fig01-context-changes-consequence:CONSUME -->
 > **图后判断**：本图只说明情境会改变后果链；不证明现实事故必然发生，也不给出严重度、暴露度、可控性、ASIL 或任何措施有效性。

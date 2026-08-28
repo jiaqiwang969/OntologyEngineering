@@ -6,7 +6,7 @@
 > 规则、oracle、manifest 与 receipt 只在 Semantica。当前为 `partial`、release
 > `blocked`；相似度或局部门禁通过不能授权合并现实记录。
 
-![三张身份吊牌通过一条尚未完全闭合的证据链连向天平](../handbook/figures-imagegen/art-ch12-v01.png "chapter-art")
+![三张身份吊牌通过一条尚未完全闭合的证据链连向天平](../handbook/figures-imagegen/art-ch12-v01.jpg "chapter-art")
 
 > **【导读】**
 > 上一章结束时，主张有了机器可查的骨架，缺件即拒——可是主语那一格，
@@ -126,7 +126,7 @@ id:PhysicalUnit  id:disjointWith  id:SoftwareArtifact .
 <!-- FIG:ch12-fig01-three-identity-criteria:OBSERVE -->
 > **读图任务**：逐个比较三个展台上的对象与它们下方的判据，寻找为什么履历链、内容指纹和组合契合不能互相借用。
 
-![左侧物理单件对应逐环相扣的履历链，中间软件工件对应琥珀色内容指纹，右侧产品候选对应多个配置块的拼合关系，三种判据图形彼此不同。](../handbook/figures-imagegen/ch12-fig01-three-identity-criteria-v01.png "不同对象族需要不同的“同一个”判据。物理实物依赖连续履历，数字工件依赖可重现的内容身份，产品候选则依赖受控配置的完整组合。")
+![左侧物理单件对应逐环相扣的履历链，中间软件工件对应琥珀色内容指纹，右侧产品候选对应多个配置块的拼合关系，三种判据图形彼此不同。](../handbook/figures-imagegen/ch12-fig01-three-identity-criteria-v01.jpg "不同对象族需要不同的“同一个”判据。物理实物依赖连续履历，数字工件依赖可重现的内容身份，产品候选则依赖受控配置的完整组合。")
 
 <!-- FIG:ch12-fig01-three-identity-criteria:CONSUME -->
 > **图后判断**：图中图形只是判据类型的缩写，不是真实序列号、哈希值或 BOM。它不证明某一条履历完整，也不解决身份冒用。

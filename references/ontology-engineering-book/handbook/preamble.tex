@@ -90,7 +90,9 @@
 % 章首插图
 \newcommand{\chapterart}[2]{%
   \begin{center}
-    \IfFileExists{figures/#1.png}{%
+    \IfFileExists{figures/#1.jpg}{%
+      \includegraphics[width=0.62\linewidth]{figures/#1.jpg}\par\vspace{0.4em}%
+    }{\IfFileExists{figures/#1.png}{%
       \includegraphics[width=0.62\linewidth]{figures/#1.png}\par\vspace{0.4em}%
     }{%
       \begin{tcolorbox}[width=0.82\linewidth,height=4.2cm,colback=black!2,
@@ -98,7 +100,7 @@
         halign=center,valign=center]
         {\color{black!50}\small 〔插图位预留：运行 \texttt{gen\_figures.py} 生成〕}
       \end{tcolorbox}\par\vspace{0.4em}%
-    }%
+    }}%
     {\small\color{black!60}\textbf{#2}}\par\vspace{0.5em}
     \begin{minipage}{0.82\linewidth}
       \scriptsize\color{black!45}\raggedright

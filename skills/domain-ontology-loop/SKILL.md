@@ -66,6 +66,12 @@ candidate → proposed → committed → regression_passed
 `release_complete` 和 `promoted` 分别生成 exact 单 action context；Semantica 将其 hash
 写入 CAS 与相应事件/执行套件/门禁/晋升记录。早先 candidate task 不是未来迁移授权。
 
+Candidate 会永久保留首次登记时的 exact binding，后续 transition 既不能超过其中的
+有序 lifecycle prefix，也不能换用扩宽后的 binding。把完整预期生命周期写进 binding，
+再用每次 fresh task 限制“本轮做到哪里”；不要用缩短 binding 来表达单次任务边界。
+如果现有 candidate 的 retained prefix 太短，只能保留其不可变历史，并以新 binding、
+非空 successor delta 和 fresh candidate 重走 proposal。
+
 `published` 不属于 refinery 状态机，也没有 refinery publish 命令。它是外部权利人或
 发布机构的动作，必须单独报告。
 

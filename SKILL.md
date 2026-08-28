@@ -78,6 +78,11 @@ envelope/context：`propose` 产生 `candidate` 与 `proposed`；`commit` 产生
 也不得给 workspace `verify` 提交外部 pass/fail gate evidence。崩溃恢复与幂等重放必须从
 immutable event/CAS 恢复原 context，并逐项比对；不得把新 context 报成已经发生的迁移。
 
+首次 proposal 会把 exact binding 永久保留在 candidate 中；后续 transition 不得换用更宽
+binding，也不得越过 retained lifecycle prefix。准备 release/promote 时，从一开始就在
+binding 中声明完整有序能力上限，再由 fresh task 和独立 commit/promote authorization
+收窄当前动作。短 prefix candidate 只能保留为历史，不能原地扩权。
+
 按任务使用同一入口的 `discover`、`run`、`propose`、`commit`、`verify`、`history` 或
 `promote`。先读 `--help`；不要绕过入口手抄 source identity。
 

@@ -784,6 +784,21 @@ SHACL 用 \texttt{sh:severity} 给违规分级，包内教学资产约定了两�
 第 9 章会继续区分查询、校验与写入授权；本章 shape 不会自动变成 ch09 自有资产，
 跨包依赖必须在 scenario 中显式声明。
 
+\subsection{完整可执行 TBox 与 Dataset 闭包}
+
+“package 声明了九个 ontology 文件”与“九个文件共同进入了可执行 Dataset”是两件事。
+可信的闭包证明必须枚举每个声明资产的内容哈希，确认它们全部实际装载；再在两个彼此
+独立的 fresh runtime 中至少以正序和逆序装载，要求同一 canonical snapshot 算法、
+quad count 与 Dataset SHA 完全一致。最后还要让 package registration 产生的 Dataset
+与这份独立闭包相等。这样才能排除漏载、隐式环境状态与偶然装载顺序决定答案。
+
+Scenario receipt 也不能只绑定“这次跑过的 query 和 case”。每个 receipt 应引用完整的
+package asset map，并证明 receipt 生成在完整 ontology load 之后；否则同一个场景结果
+可能暗中来自一个缺模块的 TBox。这里证明的是声明资产、执行 Dataset 与 receipt 之间的
+可复算内容闭包，不是更大的结论：相同 RDF snapshot 不等于 OWL DL 一致性证明，也不
+等于当前工程事实、连续物理行为、制造可行性或 release。需要这些结论时，必须另有与其
+问题类型相称的 reasoner、原生读回、仿真、试验与授权门禁。
+
 \section{存储与查询投影架构}
 
 Semantica 完成重绑定、重验证与 receipt 后，业务有时仍需要远程查询或专门图算法；

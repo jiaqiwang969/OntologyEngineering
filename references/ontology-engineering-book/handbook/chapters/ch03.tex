@@ -1007,6 +1007,21 @@ envelope，发现现有 package/baseline/capability，运行适用的 CQ、query
 风险接受、晋升和公开发布仍由声明的有权人决定；\texttt{committed} 绝不等于
 \texttt{release\_complete}，\texttt{promoted} 也不等于 \texttt{published}。
 
+这里有一个很容易写反的控制：project binding 里的生命周期前缀是候选的
+\textbf{不可扩展能力上限}，不是“这一次准备做到哪里”的临时计划。候选第一次登记时，
+Semantica 会把 exact binding 与它一同保留；后续 transition 既不能越过该前缀，也不能
+临时换一份更宽的 binding。因此，准备走到 release 的候选必须从首次 proposal 起就声明
+到 \texttt{release\_complete} 的完整有序前缀，未来可能晋升时还要预先包含
+\texttt{promoted}。本轮只做到 proposed，应由本轮 fresh task 来收窄；commit 与 promotion
+仍分别需要内容绑定的有权授权。若前缀一开始写短了，旧候选只能作为不可变历史，不能
+原地扩权；必须用新 binding 和非空 successor delta 形成新候选。
+
+书稿影响也要按同一原则管理。若一份 successor candidate 引入了新的 Dataset 闭包、
+receipt 绑定或生命周期结论，仅仅复用前版的 book-impact 文件，哪怕其中所有章节锚点
+哈希仍然匹配，也只证明“引用的书源字节没有漂移”，不能证明新结论已经写进正文。
+新的候选必须重新区分：原书已覆盖什么、哪一卷需要新增方法、哪些只属于项目案例，
+以及另一卷为何需要或不需要修改，并把这份判断重新内容绑定。
+
 分支策略可以照搬代码仓库的玩法：可发布基线必须门禁全绿；开发中的 package
 允许显式 blocked，但不得冒充 release。大重构在分支上进行，合并前跑全量回归。
 还要预警一个不同点：

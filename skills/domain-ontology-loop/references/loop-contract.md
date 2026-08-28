@@ -127,6 +127,14 @@ actor/authority 必须命中 decision authority。OE 的 command verbs、`semant
 `lifecycle_actions` 由根适配器确定性投影成 native state verbs、
 `semantic_api_contract` 与 `allowed_actions`，详见根 engagement contract。
 
+Binding 是 candidate 的不可扩展能力上限。Semantica 在首次登记时把 exact binding 写入
+immutable refinement；`commit/verify/promote` 均从 retained binding 读取允许状态，并要求
+当前 transition context 的 binding 与它内容等价。因此 release-capable candidate 必须从
+第一次 proposal 起保留到 `release_complete` 的完整有序 prefix；未来可能 promotion 时也
+必须预先包含 `promoted`。Fresh task 与 commit/promote authorization 继续独立限制每个
+实际动作。已用短 prefix 登记的 candidate 不能被新 binding“救活”，只能作为历史，由
+非空 successor delta 形成新 candidate。
+
 ### TransitionContextDTO
 
 每个 native 写动作必须使用当前 OE 调用重新投影的 exact 单 action envelope，并与当前

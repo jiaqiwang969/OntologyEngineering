@@ -117,6 +117,10 @@ gate-evidence fixtures；参数以统一入口各子命令的 \texttt{--help} �
 \item 增加本章自有 SHACL，显式区分开放世界推理与封闭式完整性检查；
 \item 若确需 Manchester、OWL DL 或 SWRL，先冻结支持 profile 与合规测试，再实现；
 \item 对每次语义变更执行 snapshot/diff、旧 CQ 回归、PROV 和内容绑定 receipt；
+\item 将全部声明 ontology 实际装入 Dataset，并用独立 fresh runtime 与不同装载顺序
+      证明 canonical snapshot、quad count 和 Dataset SHA 一致；
+\item 让每个 scenario receipt 绑定完整 package asset map，并确认它产生在完整 TBox
+      装载之后，而不是只绑定本次 query/case 子集；
 \item 将真实 ABox 接入、写操作、设备动作和补偿交给具名且有权限的执行面；
 \item 只有所有必需证据齐备并通过独立发布门禁时，才改变 release status。
 \end{enumerate}
@@ -125,6 +129,8 @@ gate-evidence fixtures；参数以统一入口各子命令的 \texttt{--help} �
 \textbf{综合案例的完成标准不是“程序启动了”。}
 完成意味着：书中问题能定位到唯一 package 与 scenario；输入、输出和 runtime 可复核；
 不支持的能力被阻断；事实与决定来自有权来源；旧版本回归不被静默破坏。
+Dataset 与完整资产 receipt 闭包仍只证明可复算的 RDF 执行边界；它不自动证明 OWL DL
+一致性、现实工程验收或 release。那些结论必须由各自声明的检查与有权决定提供。
 当前 ch09 仍是 partial/blocked，这个红灯本身就是可信工程的一部分。
 \end{noteblock}
 
@@ -141,6 +147,11 @@ contract、provenance 与独立的 book impact；然后按 proposed、committed�
 regression passed、release complete、promoted 顺序推进。任何阶段的 exit code、一次
 CQ 通过或一个“看起来合理”的解释都不能跳级。项目事实仍留在项目证据层，只有经过
 作用域判断、冲突裁决、旧知识回归与有权晋升的结构才进入行业 registry。
+
+若候选可能走到 release 或 promoted，project binding 必须从首次 proposal 起就包含完整
+有序生命周期上限；本轮动作再由 fresh task 收窄，commit/promote 各由独立授权收窄。
+已用短前缀登记的 proposed candidate 不能换 binding 续跑，只能保留为历史，再以非空
+successor delta 建立新候选。
 
 \section{本章资产指引}
 

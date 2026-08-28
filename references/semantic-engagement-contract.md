@@ -131,6 +131,13 @@ evidence root 之下，并带 exact SHA-256、媒体类型和带时区采集时�
 最远状态。严格解析器拒绝未知字段、未授权动作、文件路径式 evidence URI、
 backend/fallback 选择字段、无哈希证据以及 task/project/domain 不一致。
 
+上例故意只允许 proposal，因此用它首次登记的 candidate 永久只能到 `proposed`。
+Semantica 会在 immutable refinement 中保留 exact binding，后续 context 必须与其 binding
+内容等价；不能在 commit 前临时换成更宽的 binding。计划 release 的项目必须在首次
+proposal 前把 `committed/regression_passed/release_complete` 加入有序 prefix，并允许
+`commit/verify`；计划 promotion 时还要预先加入 `promoted` 与 `promote`。这只声明能力
+上限，当前调用仍由 fresh task 限制，commit/promote 仍分别需要 exact authorization。
+
 `actor_id` 是发起本任务的工程 Agent/操作者身份，不等于 fact authority。只有
 `PackageDelta.created_by` 才必须命中 binding 中的 fact authority；commit/promote 的
 actor/authority 则必须命中 decision authority。`promotion.target` 是 registry channel，

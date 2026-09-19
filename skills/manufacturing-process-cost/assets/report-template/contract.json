@@ -1,0 +1,17 @@
+{
+  "format": "ontology-engineering.manufacturing-report/v1",
+  "template_version": "1.0.0",
+  "purpose": "Render an explicit engineering snapshot and chosen decision views; no semantic inference or approval.",
+  "views": {
+    "records": "Question, selected record IDs, their objects, nature, status, sources and conditions.",
+    "relations": "Question, selected supplied relations, their explanations and sources; do not infer omitted edges.",
+    "cost": "Question, explicit quantity and fee bases; arithmetic known subtotal and visible omitted lines.",
+    "changes": "Question, explicitly recorded changes, reasons and affected record IDs; not an inferred impact closure."
+  },
+  "identity": "Report revision, product revision, project state, audience and evidence maturity are separate input fields.",
+  "unknown": "Record unknowns explicitly. Null amount or quantity remains unknown; an incomplete subtotal is never a complete price.",
+  "authority": "Use Semantica for engineering semantic execution. Rendering only checks the report transport contract and references.",
+  "source_boundary": "Sources may be provided excerpts; a source title or excerpt does not imply the original attachment was inspected.",
+  "generation": "Freeze the exact input, contract, preamble, rendering map and generator identity for each output.",
+  "quality": "Verify frozen hashes, selected-row coverage, source bindings, arithmetic display and PDF text/layout separately from engineering semantics."
+}

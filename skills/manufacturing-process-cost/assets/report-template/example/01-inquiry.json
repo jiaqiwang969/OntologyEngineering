@@ -1,0 +1,120 @@
+{
+  "format": "ontology-engineering.manufacturing-report/v1",
+  "document": {
+    "id": "DEMO-MFG",
+    "revision": "R01",
+    "title": "定位支架组件：询问与可行性",
+    "date": "2031-04-01",
+    "audience": "业务、工艺与负责人",
+    "project_state": "询问阶段，未接单",
+    "evidence_scope": "只有业务询问摘录，尚无受控图纸和费用依据。",
+    "decision": "现在能否推进可行性分析，优先补充什么资料？",
+    "footer": "合成演练 · 未作制造或价格承诺"
+  },
+  "semantic_status": "not_executed_for_this_snapshot",
+  "sources": [
+    {
+      "id": "S1",
+      "title": "初次询问",
+      "locator": "合成对话摘录 S1",
+      "excerpt": "要一批定位支架组件，用于静置台架；以前做过类似外形，但这次装配基准、数量和验收要求尚未给出。",
+      "basis": "合成教学输入；未对应真实企业、图纸或测量"
+    }
+  ],
+  "objects": [
+    {
+      "id": "P1",
+      "name": "定位支架组件",
+      "revision": "尚未取得",
+      "state": "需求描述",
+      "source_ids": [
+        "S1"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "R-CONTEXT",
+      "title": "旧经验适用性",
+      "kind": "情境差异",
+      "statement": "类似外形可作为调查起点，旧装夹与检验方案的适用性仍待本次要求核对。",
+      "nature": "工程解释",
+      "status": "开放",
+      "conditions": "不由静置用途直接取消公差或检验。",
+      "source_ids": [
+        "S1"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-NEED",
+      "title": "先补充的资料",
+      "kind": "关键缺口",
+      "statement": "先取得图纸版次、装配基准、订单数量和验收要求，再缩小路线与报价范围。",
+      "nature": "工作建议",
+      "status": "待取得资料",
+      "conditions": "可先盘点相近设备和工装，不必等全部信息齐全。",
+      "source_ids": [
+        "S1"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-PRICE",
+      "title": "报价边界",
+      "kind": "成本判断",
+      "statement": "当前没有费用明细，不能给出完整单价。",
+      "nature": "工程解释",
+      "status": "信息不足",
+      "conditions": "未知材料、工时、工装和检验费用不能按零计。",
+      "source_ids": [
+        "S1"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "L1",
+      "from": "R-NEED",
+      "to": "R-PRICE",
+      "relation": "约束核算范围",
+      "reason": "数量和验收要求将改变费用分摊与交付边界。",
+      "source_ids": [
+        "S1"
+      ]
+    }
+  ],
+  "changes": [],
+  "cost": null,
+  "views": [
+    {
+      "id": "V-DECISION",
+      "title": "当前判断与下一问",
+      "question": "已有资料支持哪些判断，还差什么？",
+      "kind": "records",
+      "items": [
+        "R-CONTEXT",
+        "R-NEED",
+        "R-PRICE"
+      ],
+      "update_triggers": "对象版次、要求、答复或能力证据改变时，重查相关记录及其条件。"
+    },
+    {
+      "id": "V-LINKS",
+      "title": "问题之间的关系",
+      "question": "为什么优先补这些资料？",
+      "kind": "relations",
+      "items": [
+        "L1"
+      ],
+      "update_triggers": "关系两端对象、来源或适用条件改变时，重新核对依赖与影响范围。"
+    }
+  ]
+}

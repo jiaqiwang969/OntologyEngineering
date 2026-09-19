@@ -1,0 +1,12 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[operation] (a) at (0,0) {OP10\quad 工序 A\\输入 S0；输出 S1};
+  \node[operation] (b) at (5,0) {OP20\quad 工序 B\\输入 S1；输出 S2};
+  \node[operation] (c) at (10,0) {OP30\quad 工序 C\\输入 S2；输出 S3};
+  \node[focus] (i) at (15,0) {IN40\quad 阶段检验\\受检状态 S3\\方法与判据待填};
+  \node[operation] (n) at (20,0) {OP50\quad 下一阶段\\进入条件待填};
+  \draw[flow] (a)--(b);
+  \draw[flow] (b)--(c);
+  \draw[flow] (c)--(i);
+  \draw[flow] (i)--node[edgenote,above=11mm]{按放行范围}(n);
+  \node[statetag] at (10,-2.1) {工序编号用于追溯；箭头表达本路线的状态先后关系。};
+\end{tikzpicture}

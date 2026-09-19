@@ -1,0 +1,387 @@
+{
+  "format": "ontology-engineering.manufacturing-report/v1",
+  "document": {
+    "id": "DEMO-MFG",
+    "revision": "R03",
+    "title": "定位支架组件：资源与条件成本",
+    "date": "2031-04-05",
+    "audience": "业务、工艺与负责人",
+    "project_state": "询问阶段，未接单",
+    "evidence_scope": "技术澄清、设备声明与成本摘录；没有首件实测。",
+    "decision": "现有设备参与小批量制造时，已知费用是多少，还缺什么？",
+    "footer": "合成演练 · 未作制造或价格承诺"
+  },
+  "semantic_status": "not_executed_for_this_snapshot",
+  "sources": [
+    {
+      "id": "S1",
+      "title": "初次询问",
+      "locator": "合成对话摘录 S1",
+      "excerpt": "要一批定位支架组件，用于静置台架；以前做过类似外形，但这次装配基准、数量和验收要求尚未给出。",
+      "basis": "合成教学输入；未对应真实企业、图纸或测量"
+    },
+    {
+      "id": "S2",
+      "title": "技术澄清",
+      "locator": "合成对话摘录 S2",
+      "excerpt": "本批18件，按R1版本；定位面相对旧R0有变化，最终加工状态按图检验；包装方式仍待确认。旧报价指向R0且不含本次包装。",
+      "basis": "合成教学输入；未对应真实企业、图纸或测量"
+    },
+    {
+      "id": "S3",
+      "title": "设备与费用补充",
+      "locator": "合成对话摘录 S3",
+      "excerpt": "现有设备E1正常且可调配；R1夹持尚未验证。R1材料46、加工30每件，专用准备720一次性，均为同币种未税估算且相互不含；本批只发生一次准备。包装与检验费用未知。旧R0报价不能作为本轮比价依据。",
+      "basis": "合成教学输入；未对应真实企业、图纸或测量"
+    }
+  ],
+  "objects": [
+    {
+      "id": "P1",
+      "name": "定位支架组件",
+      "revision": "R1",
+      "state": "待加工方案",
+      "source_ids": [
+        "S2"
+      ]
+    },
+    {
+      "id": "P0",
+      "name": "旧版报价对象",
+      "revision": "R0",
+      "state": "历史范围，非本批依据",
+      "source_ids": [
+        "S2"
+      ]
+    },
+    {
+      "id": "E1",
+      "name": "现有加工设备",
+      "revision": "当前配置",
+      "state": "可调配，R1适配未验证",
+      "source_ids": [
+        "S3"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "R-CONTEXT",
+      "title": "旧经验适用性",
+      "kind": "情境差异",
+      "statement": "旧经验保留为路线候选；R1定位面变化需要重新核查装夹与测量。",
+      "nature": "工程解释",
+      "status": "适用性重开",
+      "conditions": "不能沿用旧版工装合格结论覆盖R1。",
+      "source_ids": [
+        "S1",
+        "S2"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-NEED",
+      "title": "已明确与未明确",
+      "kind": "需求范围",
+      "statement": "本批数量18件、产品版本R1已明确；包装方式尚未回答。",
+      "nature": "来源声明",
+      "status": "部分明确",
+      "conditions": "数量不再重复询问；包装缺口保持开放。",
+      "source_ids": [
+        "S2"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-PROC",
+      "title": "拟定加工安排",
+      "kind": "工序与状态",
+      "statement": "按R1重核定位，完成最终加工后进行图纸要求的尺寸检验，再按确认要求包装。",
+      "nature": "工艺建议",
+      "status": "待复核",
+      "conditions": "检验方法、判据和装夹记录仍需形成；此处不填实物合格。",
+      "source_ids": [
+        "S2"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-INSPECT",
+      "title": "检验覆盖",
+      "kind": "检查计划",
+      "statement": "受检对象为R1完成最终加工的组件；定位面变化涉及的测量基准必须纳入检验安排。",
+      "nature": "工艺解释",
+      "status": "待方法与判据",
+      "conditions": "后续如再加工受检特性，原检验结果的适用性需要重查。",
+      "source_ids": [
+        "S2"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-PRICE",
+      "title": "旧报价范围",
+      "kind": "费用范围",
+      "statement": "旧报价对应R0且不含本次包装，当前不能据此计算R1利润。",
+      "nature": "来源声明与解释",
+      "status": "不可直接比较",
+      "conditions": "需要同版、同范围的价格或明确补项。",
+      "source_ids": [
+        "S2"
+      ],
+      "object_ids": [
+        "P0",
+        "P1"
+      ]
+    },
+    {
+      "id": "R-EQUIP",
+      "title": "设备复用",
+      "kind": "能力判断",
+      "statement": "设备E1可以调配；R1的夹持、加工和测量适配仍需首件证据。",
+      "nature": "来源声明与解释",
+      "status": "资源可用，能力待验",
+      "conditions": "设备可用不自动减少运行人时或证明质量稳定。",
+      "source_ids": [
+        "S3"
+      ],
+      "object_ids": [
+        "E1",
+        "P1"
+      ]
+    },
+    {
+      "id": "R-COST",
+      "title": "条件成本范围",
+      "kind": "核算说明",
+      "statement": "本轮仅核材料、加工与一次性准备；检验和包装未计入。",
+      "nature": "条件计算",
+      "status": "部分预算",
+      "conditions": "源加工费为估算；准备费未含在单件加工费中。",
+      "source_ids": [
+        "S3"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-NEXT",
+      "title": "首件回填",
+      "kind": "工作安排",
+      "statement": "先核R1装夹与测量覆盖，再分别记录设定、加工、检验和返工时间。",
+      "nature": "工作建议",
+      "status": "待执行",
+      "conditions": "只记录现场实际发生的数据，不预填通过或节约。",
+      "source_ids": [
+        "S3"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "L2",
+      "from": "R-CONTEXT",
+      "to": "R-PROC",
+      "relation": "触发复核",
+      "reason": "定位面变化使旧装夹适用性重新成为问题。",
+      "source_ids": [
+        "S2"
+      ]
+    },
+    {
+      "id": "L3",
+      "from": "R-PROC",
+      "to": "R-INSPECT",
+      "relation": "限定受检状态",
+      "reason": "完成相关最终加工后才能形成对应状态的尺寸检验结果。",
+      "source_ids": [
+        "S2"
+      ]
+    },
+    {
+      "id": "L4",
+      "from": "R-NEED",
+      "to": "R-PRICE",
+      "relation": "限定报价范围",
+      "reason": "本批数量已明确，包装范围仍影响可比费用。",
+      "source_ids": [
+        "S2"
+      ]
+    },
+    {
+      "id": "L5",
+      "from": "R-EQUIP",
+      "to": "R-COST",
+      "relation": "限定成本适用条件",
+      "reason": "当前预算依赖R1适配成立；适配变化需要复查工装与加工费用。",
+      "source_ids": [
+        "S3"
+      ]
+    },
+    {
+      "id": "L6",
+      "from": "R-NEXT",
+      "to": "R-COST",
+      "relation": "提供校准依据",
+      "reason": "首件记录可用于复核估算，但少量记录不直接证明批量能力。",
+      "source_ids": [
+        "S3"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "CH2",
+      "before": "缺少本版资源和费用信息。",
+      "after": "设备可调配，已有材料、加工与准备费估算；能力和费用缺项仍开放。",
+      "reason": "收到设备与费用补充，不能将声明扩展成实测结果。",
+      "affected_ids": [
+        "E1",
+        "R-EQUIP",
+        "R-COST",
+        "R-NEXT"
+      ],
+      "source_ids": [
+        "S3"
+      ]
+    }
+  ],
+  "cost": {
+    "currency": "示例币种",
+    "tax_basis": "未税；仅为教学口径",
+    "quantity": 18,
+    "quantity_basis": "同版单型号良品订单数量；当前未生产",
+    "scope": "只含本表所列项目，不是完整报价；检验、包装及其他交付补项仍待核。",
+    "assumptions": "准备发生一次；按件加工费未含准备费。设备适配尚未验证，金额均为合成估算。",
+    "source_ids": [
+      "S2",
+      "S3"
+    ],
+    "lines": [
+      {
+        "id": "C-MAT",
+        "name": "材料",
+        "basis": "per_unit",
+        "count": 1,
+        "value": "46",
+        "nature": "来源估算",
+        "source_ids": [
+          "S3"
+        ],
+        "object_ids": [
+          "P1"
+        ]
+      },
+      {
+        "id": "C-RUN",
+        "name": "加工",
+        "basis": "per_unit",
+        "count": 1,
+        "value": "30",
+        "nature": "来源估算，非测时结果",
+        "source_ids": [
+          "S3"
+        ],
+        "object_ids": [
+          "P1",
+          "E1"
+        ]
+      },
+      {
+        "id": "C-SET",
+        "name": "首次准备",
+        "basis": "one_time",
+        "count": 1,
+        "value": "720",
+        "nature": "一次性估算，未含在加工单价中",
+        "source_ids": [
+          "S3"
+        ],
+        "object_ids": [
+          "P1"
+        ]
+      },
+      {
+        "id": "C-QC",
+        "name": "检验",
+        "basis": "per_unit",
+        "count": 1,
+        "value": null,
+        "nature": "未知，待补",
+        "source_ids": [
+          "S3"
+        ],
+        "object_ids": [
+          "P1"
+        ]
+      },
+      {
+        "id": "C-PACK",
+        "name": "包装",
+        "basis": "per_unit",
+        "count": 1,
+        "value": null,
+        "nature": "未知，待补",
+        "source_ids": [
+          "S3"
+        ],
+        "object_ids": [
+          "P1"
+        ]
+      }
+    ]
+  },
+  "views": [
+    {
+      "id": "V-RESOURCES",
+      "title": "资源、边界与下一步",
+      "question": "现有设备能支持哪一步判断？",
+      "kind": "records",
+      "items": [
+        "R-EQUIP",
+        "R-COST",
+        "R-PRICE",
+        "R-NEXT"
+      ],
+      "update_triggers": "对象版次、要求、答复或能力证据改变时，重查相关记录及其条件。"
+    },
+    {
+      "id": "V-COST",
+      "title": "同范围费用小计",
+      "question": "按18件计算已知费用，哪些仍未计入？",
+      "kind": "cost",
+      "update_triggers": "数量、交付范围、费用包含项、能力条件或实测记录改变时重新核算。"
+    },
+    {
+      "id": "V-LINKS",
+      "title": "预算所依赖的判断",
+      "question": "哪个技术条件改变会影响核算？",
+      "kind": "relations",
+      "items": [
+        "L4",
+        "L5",
+        "L6"
+      ],
+      "update_triggers": "关系两端对象、来源或适用条件改变时，重新核对依赖与影响范围。"
+    },
+    {
+      "id": "V-CHANGE",
+      "title": "本轮变化",
+      "question": "取得新资料后，哪些问题关闭到什么程度？",
+      "kind": "changes",
+      "update_triggers": "收到后续答复或发现影响遗漏时，追加变化记录并核对所有受影响输出。"
+    }
+  ]
+}

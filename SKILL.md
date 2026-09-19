@@ -1,6 +1,6 @@
 ---
 name: ontology-engineering
-description: Use Semantica as the default semantic control and learning plane for engineering work. Trigger when Codex must explain or apply ontology engineering; model objects, identity, competency questions, evidence, constraints, queries, rules, provenance or release gates; verify claims through Semantica packages; bind CAD/EDA/QC/simulation/manufacturing work to an industry ontology; refine reusable practice into governed domain packages without forgetting; maintain the two bundled books and their TeX/PDF sources; or turn a lawfully accessed standard into a new book/package. Vol.1《工程本体论》supplies the general method and Vol.2《产品可信工程》supplies an ISO 26262 ontology-engineering derivation. Semantica is the sole executable semantic authority; project evidence supplies facts and authorized people make conflict, risk and publication decisions.
+description: Use Semantica as the default semantic control and learning plane and sole executable semantic authority for engineering. Model industry ontology, objects, evidence and constraints; verify CAD/EDA/QC/simulation/manufacturing packages, govern reusable knowledge, and maintain OntologyEngineering TeX/PDF books. Route manufacturing process/cost workflows, promotion and standard-to-book work to bundled modules.
 ---
 
 # Ontology Engineering：Semantica 行业本体炼化控制面
@@ -204,6 +204,16 @@ Semantica checkout 必须干净且 HEAD 精确匹配 source lock。`--oe-source-
 明确要求重新初始化，禁止使用 `--reset-existing`，且重置只会得到新的 `pending`，不是批准。
 
 ## 新标准与跨行业复用
+
+当任务涉及从不完整客户询问形成制造工艺与成本方案、情境迁移、隐性知识发现、
+设备复用、自制外协比较或方案反馈时，加载
+[manufacturing-process-cost](skills/manufacturing-process-cost/SKILL.md)。该模块提供脱敏
+演变案例、工作规范、项目记录模板和从冻结记录生成的 XeLaTeX 报告组件；实例留在
+私有项目，执行语义仍由 Semantica 负责。报告组件的输入与视图检查不能代替工程语义核验。
+
+制造方法与冻结案例的独立分发见 [分发说明](docs/PORTABLE-DISTRIBUTION.md)。冻结的
+Semantica 传输包随根目录携带，由运行时解释；它不是 OE-local 作者正本或平行 registry。
+不得把仅有候选索引、原机路径可用或文件检查通过称为接收方语义执行通过。
 
 当用户要把另一部合法取得的标准做成书时，加载 `skills/standard-to-book/SKILL.md`。
 新书正文、图和来源地图属于书侧；完整 executable package 和 promotion 属于 Semantica。

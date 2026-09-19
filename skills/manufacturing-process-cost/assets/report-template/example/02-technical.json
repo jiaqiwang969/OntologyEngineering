@@ -1,0 +1,216 @@
+{
+  "format": "ontology-engineering.manufacturing-report/v1",
+  "document": {
+    "id": "DEMO-MFG",
+    "revision": "R02",
+    "title": "定位支架组件：工艺与验证",
+    "date": "2031-04-03",
+    "audience": "业务、工艺与负责人",
+    "project_state": "询问阶段，未接单",
+    "evidence_scope": "新增技术澄清摘录；图纸、实物和试验记录均为教学描述。",
+    "decision": "新版定位面改变后，旧工装和检验安排怎样重查？",
+    "footer": "合成演练 · 未作制造或价格承诺"
+  },
+  "semantic_status": "not_executed_for_this_snapshot",
+  "sources": [
+    {
+      "id": "S1",
+      "title": "初次询问",
+      "locator": "合成对话摘录 S1",
+      "excerpt": "要一批定位支架组件，用于静置台架；以前做过类似外形，但这次装配基准、数量和验收要求尚未给出。",
+      "basis": "合成教学输入；未对应真实企业、图纸或测量"
+    },
+    {
+      "id": "S2",
+      "title": "技术澄清",
+      "locator": "合成对话摘录 S2",
+      "excerpt": "本批18件，按R1版本；定位面相对旧R0有变化，最终加工状态按图检验；包装方式仍待确认。旧报价指向R0且不含本次包装。",
+      "basis": "合成教学输入；未对应真实企业、图纸或测量"
+    }
+  ],
+  "objects": [
+    {
+      "id": "P1",
+      "name": "定位支架组件",
+      "revision": "R1",
+      "state": "待加工方案",
+      "source_ids": [
+        "S2"
+      ]
+    },
+    {
+      "id": "P0",
+      "name": "旧版报价对象",
+      "revision": "R0",
+      "state": "历史范围，非本批依据",
+      "source_ids": [
+        "S2"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "R-CONTEXT",
+      "title": "旧经验适用性",
+      "kind": "情境差异",
+      "statement": "旧经验保留为路线候选；R1定位面变化需要重新核查装夹与测量。",
+      "nature": "工程解释",
+      "status": "适用性重开",
+      "conditions": "不能沿用旧版工装合格结论覆盖R1。",
+      "source_ids": [
+        "S1",
+        "S2"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-NEED",
+      "title": "已明确与未明确",
+      "kind": "需求范围",
+      "statement": "本批数量18件、产品版本R1已明确；包装方式尚未回答。",
+      "nature": "来源声明",
+      "status": "部分明确",
+      "conditions": "数量不再重复询问；包装缺口保持开放。",
+      "source_ids": [
+        "S2"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-PROC",
+      "title": "拟定加工安排",
+      "kind": "工序与状态",
+      "statement": "按R1重核定位，完成最终加工后进行图纸要求的尺寸检验，再按确认要求包装。",
+      "nature": "工艺建议",
+      "status": "待复核",
+      "conditions": "检验方法、判据和装夹记录仍需形成；此处不填实物合格。",
+      "source_ids": [
+        "S2"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-INSPECT",
+      "title": "检验覆盖",
+      "kind": "检查计划",
+      "statement": "受检对象为R1完成最终加工的组件；定位面变化涉及的测量基准必须纳入检验安排。",
+      "nature": "工艺解释",
+      "status": "待方法与判据",
+      "conditions": "后续如再加工受检特性，原检验结果的适用性需要重查。",
+      "source_ids": [
+        "S2"
+      ],
+      "object_ids": [
+        "P1"
+      ]
+    },
+    {
+      "id": "R-PRICE",
+      "title": "旧报价范围",
+      "kind": "费用范围",
+      "statement": "旧报价对应R0且不含本次包装，当前不能据此计算R1利润。",
+      "nature": "来源声明与解释",
+      "status": "不可直接比较",
+      "conditions": "需要同版、同范围的价格或明确补项。",
+      "source_ids": [
+        "S2"
+      ],
+      "object_ids": [
+        "P0",
+        "P1"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "L2",
+      "from": "R-CONTEXT",
+      "to": "R-PROC",
+      "relation": "触发复核",
+      "reason": "定位面变化使旧装夹适用性重新成为问题。",
+      "source_ids": [
+        "S2"
+      ]
+    },
+    {
+      "id": "L3",
+      "from": "R-PROC",
+      "to": "R-INSPECT",
+      "relation": "限定受检状态",
+      "reason": "完成相关最终加工后才能形成对应状态的尺寸检验结果。",
+      "source_ids": [
+        "S2"
+      ]
+    },
+    {
+      "id": "L4",
+      "from": "R-NEED",
+      "to": "R-PRICE",
+      "relation": "限定报价范围",
+      "reason": "本批数量已明确，包装范围仍影响可比费用。",
+      "source_ids": [
+        "S2"
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "id": "CH1",
+      "before": "数量与图纸版次未知。",
+      "after": "本批18件，使用R1；旧R0只作历史范围。",
+      "reason": "技术澄清补充数量与版次，定位面发生变化。",
+      "affected_ids": [
+        "P1",
+        "R-NEED",
+        "R-PROC",
+        "R-INSPECT",
+        "R-PRICE"
+      ],
+      "source_ids": [
+        "S2"
+      ]
+    }
+  ],
+  "cost": null,
+  "views": [
+    {
+      "id": "V-PROCESS",
+      "title": "工艺、检验与报价边界",
+      "question": "哪些要求已经明确，哪些工作需要重查？",
+      "kind": "records",
+      "items": [
+        "R-CONTEXT",
+        "R-NEED",
+        "R-PROC",
+        "R-INSPECT",
+        "R-PRICE"
+      ],
+      "update_triggers": "对象版次、要求、答复或能力证据改变时，重查相关记录及其条件。"
+    },
+    {
+      "id": "V-LINKS",
+      "title": "依据与工艺关系",
+      "question": "为什么要重核装夹和检验？",
+      "kind": "relations",
+      "items": [
+        "L2",
+        "L3",
+        "L4"
+      ],
+      "update_triggers": "关系两端对象、来源或适用条件改变时，重新核对依赖与影响范围。"
+    },
+    {
+      "id": "V-CHANGE",
+      "title": "本轮变化与接续",
+      "question": "新增答复关闭了什么，又影响了什么？",
+      "kind": "changes",
+      "update_triggers": "收到后续答复或发现影响遗漏时，追加变化记录并核对所有受影响输出。"
+    }
+  ]
+}

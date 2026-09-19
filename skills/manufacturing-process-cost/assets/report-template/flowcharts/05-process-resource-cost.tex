@@ -1,0 +1,18 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[operation] (p) at (0,2) {OBJ-01\quad 产品对象\\版次、状态与要求};
+  \node[operation] (op) at (6,2) {OP-10\quad 工序或检验\\输入、输出与判据};
+  \node[focus] (c) at (12,2) {C-10\quad 费用项\\按件／按批／一次性};
+  \node[operation] (v) at (18,2) {VIEW-01\quad 条件预算\\数量、币税与范围};
+  \node[operation] (e) at (0,-2) {SRC-01\quad 证据来源\\原件位置与适用条件};
+  \node[candidate] (r) at (6,-2) {RES-01\quad 资源候选\\设备、工装或供应方};
+  \node[operation] (f) at (12,-2) {FB-01\quad 实际反馈\\节拍、返工与费用};
+  \draw[flow] (p)--node[edgenote,above]{提出需求}(op);
+  \draw[flow] (op)--node[edgenote,above]{发生费用}(c);
+  \draw[flow] (c)--node[edgenote,above]{纳入核算}(v);
+  \draw[flow] (e)--node[edgenote,left]{支持记录}(p);
+  \draw[flow] (e)--node[edgenote,above=10mm]{支持能力声明}(r);
+  \draw[conditional] (r)--node[edgenote,left,align=right]{承担工序\\待适配验证}(op);
+  \draw[flow] (op.south east)--node[edgenote,sloped,above]{执行后回填}(f.north west);
+  \draw[flow] (f)--node[edgenote,right]{修订估算}(c);
+  \node[statetag] at (9,-3.7) {本图箭头为知识关系，不表示制造顺序。};
+\end{tikzpicture}

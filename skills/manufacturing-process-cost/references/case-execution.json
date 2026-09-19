@@ -1,0 +1,1064 @@
+{
+  "record_type": "semantic_case_execution_index",
+  "method_version": "0.4.0",
+  "package_id": "semantica.manufacturing.process-cost-loop",
+  "package_version": "0.1.1",
+  "candidate_sha256": "7e3aec9896e48ff7e9e93de5a76ff85d69c49446ab297ab97ab570452c630661",
+  "package_sha256": "38d458eeea09f3a65dbfcb6f0d95a739d74bdc96782132967cd11eacde2bc635",
+  "workspace_id": "manufacturing-process-cost-native",
+  "status": "release_complete_local_technical_candidate",
+  "promotion": "not_requested",
+  "publication": "not_requested",
+  "coverage": {
+    "design_cases": 16,
+    "design_variants": 64,
+    "organization_cases": 4,
+    "organization_variants": 16,
+    "native_scenarios": 68,
+    "cq_count": 23,
+    "assets": 141
+  },
+  "native_result": {
+    "execution": "passed",
+    "regression": "passed",
+    "receipt": "verified",
+    "release": "complete"
+  },
+  "evidence_assets": {
+    "scenario_registry": "scenario-registry",
+    "design_map": "design-execution-map",
+    "contract": "package-contract"
+  },
+  "mapping": [
+    {
+      "case_id": "MFG-CASE-01",
+      "variant": "positive",
+      "asset_id": "q01-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-01-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-01",
+      "variant": "negative",
+      "asset_id": "q01-negative",
+      "expected_findings": [
+        "context:missing-transfer-basis"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "删除一个rationale关系，保留原提案",
+      "historical_meaning": null,
+      "native_scenario": "MFG-01-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-01",
+      "variant": "ambiguity",
+      "asset_id": "q01-ambiguity",
+      "expected_findings": [
+        "context:clarify-context"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-01-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-01",
+      "variant": "prior_release",
+      "asset_id": "q01-prior_release",
+      "expected_findings": [
+        "context:missing-transfer-basis"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-01-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-02",
+      "variant": "positive",
+      "asset_id": "q02-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-02-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-02",
+      "variant": "negative",
+      "asset_id": "q02-negative",
+      "expected_findings": [
+        "authority:source-role-mismatch"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅将声称的来源角色改成客户",
+      "historical_meaning": null,
+      "native_scenario": "MFG-02-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-02",
+      "variant": "ambiguity",
+      "asset_id": "q02-ambiguity",
+      "expected_findings": [
+        "authority:unresolved-conflict"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-02-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-02",
+      "variant": "prior_release",
+      "asset_id": "q02-prior_release",
+      "expected_findings": [
+        "authority:source-role-mismatch"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-02-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-03",
+      "variant": "positive",
+      "asset_id": "q03-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-03-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-03",
+      "variant": "negative",
+      "asset_id": "q03-negative",
+      "expected_findings": [
+        "mapping:missing-correspondence-evidence"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "删除唯一对应证据，编号和版次字段保持",
+      "historical_meaning": null,
+      "native_scenario": "MFG-03-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-03",
+      "variant": "ambiguity",
+      "asset_id": "q03-ambiguity",
+      "expected_findings": [
+        "mapping:identity-unknown"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-03-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-03",
+      "variant": "prior_release",
+      "asset_id": "q03-prior_release",
+      "expected_findings": [
+        "mapping:quote-version-mismatch"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-03-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-04",
+      "variant": "positive",
+      "asset_id": "q04-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-04-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-04",
+      "variant": "negative",
+      "asset_id": "q04-negative",
+      "expected_findings": [
+        "inspection:review-after-change"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅删除状态变化后的结果沿用复核证据",
+      "historical_meaning": null,
+      "native_scenario": "MFG-04-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-04",
+      "variant": "ambiguity",
+      "asset_id": "q04-ambiguity",
+      "expected_findings": [
+        "inspection:clarify-identity-and-stage"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-04-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-04",
+      "variant": "prior_release",
+      "asset_id": "q04-prior_release",
+      "expected_findings": [
+        "inspection:required-order-violated"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-04-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-05",
+      "variant": "positive",
+      "asset_id": "q05-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-05-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-05",
+      "variant": "negative",
+      "asset_id": "q05-negative",
+      "expected_findings": [
+        "resource:capability-unverified"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "删除与工序关联的试件证据，设备可用不变",
+      "historical_meaning": null,
+      "native_scenario": "MFG-05-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-05",
+      "variant": "ambiguity",
+      "asset_id": "q05-ambiguity",
+      "expected_findings": [
+        "resource:capability-unverified"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-05-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-05",
+      "variant": "prior_release",
+      "asset_id": "q05-prior_release",
+      "expected_findings": [
+        "resource:zero-operating-cost-unsupported"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-05-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-06",
+      "variant": "positive",
+      "asset_id": "q06-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-06-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-06",
+      "variant": "negative",
+      "asset_id": "q06-negative",
+      "expected_findings": [
+        "cost:unknown-has-number"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅给未知费用填入数值0",
+      "historical_meaning": null,
+      "native_scenario": "MFG-06-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-06",
+      "variant": "ambiguity",
+      "asset_id": "q06-ambiguity",
+      "expected_findings": [
+        "cost:delivery-scope-unknown"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-06-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-06",
+      "variant": "prior_release",
+      "asset_id": "q06-prior_release",
+      "expected_findings": [
+        "cost:scope-difference-needs-recalculation"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-06-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-07",
+      "variant": "positive",
+      "asset_id": "q07-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-07-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-07",
+      "variant": "negative",
+      "asset_id": "q07-negative",
+      "expected_findings": [
+        "quantity:basis-changed-without-source"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅把计算口径从总量改成每型",
+      "historical_meaning": null,
+      "native_scenario": "MFG-07-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-07",
+      "variant": "ambiguity",
+      "asset_id": "q07-ambiguity",
+      "expected_findings": [
+        "quantity:mix-needs-clarification"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-07-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-07",
+      "variant": "prior_release",
+      "asset_id": "q07-prior_release",
+      "expected_findings": [
+        "quantity:reopen-investment-comparison"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-07-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-08",
+      "variant": "positive",
+      "asset_id": "q08-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-08-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-08",
+      "variant": "negative",
+      "asset_id": "q08-negative",
+      "expected_findings": [
+        "experience:conditional-basis-incomplete"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "删除条件关系，其余经验记录保持",
+      "historical_meaning": null,
+      "native_scenario": "MFG-08-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-08",
+      "variant": "ambiguity",
+      "asset_id": "q08-ambiguity",
+      "expected_findings": [
+        "experience:clarify-distinct-meanings"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-08-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-08",
+      "variant": "prior_release",
+      "asset_id": "q08-prior_release",
+      "expected_findings": [
+        "experience:conditional-basis-incomplete"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-08-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-09",
+      "variant": "positive",
+      "asset_id": "q09-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-09-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-09",
+      "variant": "negative",
+      "asset_id": "q09-negative",
+      "expected_findings": [
+        "question:whole-closure-exceeds-answer"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅将父问题从部分关闭改为全部关闭",
+      "historical_meaning": null,
+      "native_scenario": "MFG-09-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-09",
+      "variant": "ambiguity",
+      "asset_id": "q09-ambiguity",
+      "expected_findings": [
+        "question:clarify-response-target"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-09-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-09",
+      "variant": "prior_release",
+      "asset_id": "q09-prior_release",
+      "expected_findings": [
+        "question:redundant-inquiry"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-09-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-10",
+      "variant": "positive",
+      "asset_id": "q10-positive",
+      "expected_findings": [
+        "impact:recheck:cost",
+        "impact:recheck:report",
+        "impact:recheck:route"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-10-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-10",
+      "variant": "negative",
+      "asset_id": "q10-negative",
+      "expected_findings": [
+        "impact:missing-path:report",
+        "impact:recheck:cost",
+        "impact:recheck:route"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅删去report依赖cost的边",
+      "historical_meaning": null,
+      "native_scenario": "MFG-10-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-10",
+      "variant": "ambiguity",
+      "asset_id": "q10-ambiguity",
+      "expected_findings": [
+        "impact:recheck:cost",
+        "impact:recheck:report",
+        "impact:recheck:route",
+        "view:source-snapshot-unknown"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-10-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-10",
+      "variant": "prior_release",
+      "asset_id": "q10-prior_release",
+      "expected_findings": [
+        "impact:recheck:cost",
+        "impact:recheck:report",
+        "impact:recheck:route",
+        "view:stale-snapshot"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-10-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-11",
+      "variant": "positive",
+      "asset_id": "q11-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-11-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-11",
+      "variant": "negative",
+      "asset_id": "q11-negative",
+      "expected_findings": [
+        "ai:benefit-double-counted"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅令同一工时驱动的第二份收益参与累计",
+      "historical_meaning": null,
+      "native_scenario": "MFG-11-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-11",
+      "variant": "ambiguity",
+      "asset_id": "q11-ambiguity",
+      "expected_findings": [
+        "ai:target-awaits-evidence"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-11-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-11",
+      "variant": "prior_release",
+      "asset_id": "q11-prior_release",
+      "expected_findings": [
+        "ai:actual-savings-unproved"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-11-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-12",
+      "variant": "positive",
+      "asset_id": "q12-positive",
+      "expected_findings": [
+        "model:extension-awaits-governance"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-12-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-12",
+      "variant": "negative",
+      "asset_id": "q12-negative",
+      "expected_findings": [
+        "model:unsupported-coverage-claim"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅将未覆盖的模型关系声明为已完全覆盖",
+      "historical_meaning": null,
+      "native_scenario": "MFG-12-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-12",
+      "variant": "ambiguity",
+      "asset_id": "q12-ambiguity",
+      "expected_findings": [
+        "model:clarify-identity-or-synonym"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-12-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-12",
+      "variant": "prior_release",
+      "asset_id": "q12-prior_release",
+      "expected_findings": [
+        "model:unexpressed-relation-needs-candidate"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-12-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-13",
+      "variant": "positive",
+      "asset_id": "q13-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-13-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-13",
+      "variant": "negative",
+      "asset_id": "q13-negative",
+      "expected_findings": [
+        "resume:response-not-applied"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅删去最新答复已应用到工作状态的关系",
+      "historical_meaning": null,
+      "native_scenario": "MFG-13-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-13",
+      "variant": "ambiguity",
+      "asset_id": "q13-ambiguity",
+      "expected_findings": [
+        "resume:message-target-unknown"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-13-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-13",
+      "variant": "prior_release",
+      "asset_id": "q13-prior_release",
+      "expected_findings": [
+        "resume:snapshot-missing"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-13-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-14",
+      "variant": "positive",
+      "asset_id": "q14-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-14-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-14",
+      "variant": "negative",
+      "asset_id": "q14-negative",
+      "expected_findings": [
+        "communication:delivery-evidence-missing"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅删除已接收状态的送达证据",
+      "historical_meaning": null,
+      "native_scenario": "MFG-14-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-14",
+      "variant": "ambiguity",
+      "asset_id": "q14-ambiguity",
+      "expected_findings": [
+        "communication:unsent-resume-when-channel-available"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-14-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-14",
+      "variant": "prior_release",
+      "asset_id": "q14-prior_release",
+      "expected_findings": [
+        "communication:failure-is-not-customer-silence"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-14-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-15",
+      "variant": "positive",
+      "asset_id": "q15-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-15-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-15",
+      "variant": "negative",
+      "asset_id": "q15-negative",
+      "expected_findings": [
+        "feedback:scope-overreach"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅将实际沿用的接受范围扩成所有项目",
+      "historical_meaning": null,
+      "native_scenario": "MFG-15-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-15",
+      "variant": "ambiguity",
+      "asset_id": "q15-ambiguity",
+      "expected_findings": [
+        "feedback:locate-version-and-scope"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-15-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-15",
+      "variant": "prior_release",
+      "asset_id": "q15-prior_release",
+      "expected_findings": [
+        "feedback:view-state-mismatch"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-15-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-16",
+      "variant": "positive",
+      "asset_id": "q16-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-16-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-16",
+      "variant": "negative",
+      "asset_id": "q16-negative",
+      "expected_findings": [
+        "learning:project-fact-overgeneralized"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅将已分类为项目事实的复用范围从project-only改成all-organizations",
+      "historical_meaning": null,
+      "native_scenario": "MFG-16-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-16",
+      "variant": "ambiguity",
+      "asset_id": "q16-ambiguity",
+      "expected_findings": [
+        "learning:analysis-still-open"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-16-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-16",
+      "variant": "prior_release",
+      "asset_id": "q16-prior_release",
+      "expected_findings": [
+        "learning:old-tests-do-not-verify-new-output"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-16-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-17",
+      "variant": "positive",
+      "asset_id": "q17-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-17-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-17",
+      "variant": "negative",
+      "asset_id": "q17-negative",
+      "expected_findings": [
+        "handoff:unclosed-criterion:c2"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅删除关闭证据对第二个完成条件的覆盖",
+      "historical_meaning": null,
+      "native_scenario": "MFG-17-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-17",
+      "variant": "ambiguity",
+      "asset_id": "q17-ambiguity",
+      "expected_findings": [
+        "handoff:owner-unassigned"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-17-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-17",
+      "variant": "prior_release",
+      "asset_id": "q17-prior_release",
+      "expected_findings": [
+        "handoff:acceptance-missing"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-17-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-18",
+      "variant": "positive",
+      "asset_id": "q18-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-18-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-18",
+      "variant": "negative",
+      "asset_id": "q18-negative",
+      "expected_findings": [
+        "authority:decision-outside-scope"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅将授权范围换成与本次决定无关的范围",
+      "historical_meaning": null,
+      "native_scenario": "MFG-18-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-18",
+      "variant": "ambiguity",
+      "asset_id": "q18-ambiguity",
+      "expected_findings": [
+        "authority:validity-needs-check"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-18-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-18",
+      "variant": "prior_release",
+      "asset_id": "q18-prior_release",
+      "expected_findings": [
+        "authority:decision-version-not-covered"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-18-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-19",
+      "variant": "positive",
+      "asset_id": "q19-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-19-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-19",
+      "variant": "negative",
+      "asset_id": "q19-negative",
+      "expected_findings": [
+        "adoption:use-not-covered"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅将本次使用的版本改成未获该采用记录覆盖的版本",
+      "historical_meaning": null,
+      "native_scenario": "MFG-19-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-19",
+      "variant": "ambiguity",
+      "asset_id": "q19-ambiguity",
+      "expected_findings": [
+        "adoption:adopted-awaiting-use-evidence"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-19-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-19",
+      "variant": "prior_release",
+      "asset_id": "q19-prior_release",
+      "expected_findings": [
+        "adoption:silent-version-switch"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-19-AH",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-20",
+      "variant": "positive",
+      "asset_id": "q20-positive",
+      "expected_findings": [],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-20-PN",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-20",
+      "variant": "negative",
+      "asset_id": "q20-negative",
+      "expected_findings": [
+        "outcome:scope-not-comparable"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": "仅改变实际结果的统计范围，使其不再与基准可比",
+      "historical_meaning": null,
+      "native_scenario": "MFG-20-PN",
+      "native_branch": "single_fault_negative"
+    },
+    {
+      "case_id": "MFG-CASE-20",
+      "variant": "ambiguity",
+      "asset_id": "q20-ambiguity",
+      "expected_findings": [
+        "outcome:actual-effect-unmeasured"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": null,
+      "native_scenario": "MFG-20-AH",
+      "native_branch": "positive"
+    },
+    {
+      "case_id": "MFG-CASE-20",
+      "variant": "prior_release",
+      "asset_id": "q20-prior_release",
+      "expected_findings": [
+        "outcome:metric-does-not-support-effect"
+      ],
+      "source_kind": "synthetic_execution_fixture_for_anonymized_design",
+      "negative_mutation": null,
+      "historical_meaning": "historical-pattern regression, not a claim that every fixture literally occurred",
+      "native_scenario": "MFG-20-AH",
+      "native_branch": "single_fault_negative"
+    }
+  ],
+  "bounds": [
+    "20 pairs PN and 20 pairs AH implement 80 variants; fixed runner labels are documented, not physical verdicts.",
+    "20 empty-input guards, 5 additional invariant probes, 1 SHACL pair and 1 bounded rule scenario and 1 vocabulary regression.",
+    "Manifest release_status is declarative; actual authoring and refinery evidence determine status."
+  ],
+  "scope": "Synthetic executable cases derived from anonymized method designs; no client data, physical acceptance or actual savings.",
+  "design_baseline_note": "case-designs.json preserves its earlier not_run design status; this separate versioned index records later implementation.",
+  "supersedes_candidate_reason": "0.1.0 retained; 0.1.1 corrects unintended class/property overlap and adds a native vocabulary regression.",
+  "native_result_scope": "Historical originating-workspace result; destination must replay the frozen bundle for its own execution evidence.",
+  "bundled_transport": {
+    "lock": "../../../runtime/semantic-bundles.json",
+    "runner": "../../../scripts/run_manufacturing_cases.py",
+    "documentation": "../../../docs/PORTABLE-DISTRIBUTION.md",
+    "kind": "immutable_semantica_transport_not_registry",
+    "registry_installed": false
+  }
+}

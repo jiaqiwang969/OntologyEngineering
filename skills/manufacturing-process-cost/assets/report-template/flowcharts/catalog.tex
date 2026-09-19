@@ -1,0 +1,36 @@
+\documentclass[UTF8,fontset=fandol,11pt,a4paper,landscape]{ctexart}
+\usepackage[margin=18mm,headheight=16pt]{geometry}
+\usepackage{fontspec}
+\setmainfont{texgyretermes-regular.otf}[BoldFont=texgyretermes-bold.otf]
+\usepackage{fancyhdr,hyperref}
+\input{styles.tex}
+\hypersetup{pdftitle={可复用工艺图模板},pdfauthor={},colorlinks=true,linkcolor=FlowBlue}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\color{FlowGray}制造工艺与成本管理 · 图形模板 1.0}
+\fancyhead[R]{\small\color{FlowGray}合成示例 · 按项目填写与复核}
+\fancyfoot[L]{\small\color{FlowGray}节点和连线是可编辑占位；图形不代表工艺已经采用或能力已经验证。}
+\fancyfoot[R]{\thepage}
+\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}
+\newcommand{\FlowTitle}[2]{{\LARGE\bfseries\color{FlowBlue}#1\par}\vspace{2mm}{\color{FlowGray}#2\par}\vspace{7mm}}
+\newcommand{\FlowNotes}[1]{\vfill\small\textbf{填写与复核：}#1\par\vspace{2mm}\textcolor{FlowGray}{图例：蓝框为一般节点；琥珀框为本图强调节点；灰色虚框为候选或待定项；菱形为条件判断。颜色本身不表示质量等级或批准状态。}}
+\begin{document}
+\FlowTitle{01\quad 顺序工序与产品状态}{用途：表达一条已选路线的工序先后，并明确检验面对哪一种状态。}
+\begin{center}\input{01-sequential.tex}\end{center}
+\FlowNotes{替换工序 A/B/C 及状态 S0 至 S3；登记对象版次、来源和检验阶段。后续工序改变已检特性时，重新核查检验覆盖。具体清洗、热处理或表面处理位置依项目要求填写。}
+\clearpage
+\FlowTitle{02\quad 并行加工、汇合与装配}{用途：表达多个对象分别投入，以及进入汇合工序必须满足的条件。}
+\begin{center}\input{02-parallel-merge.tex}\end{center}
+\FlowNotes{分别标识零件 A/B 的版次和输出状态；填写两个输入是否都必需、接口检查内容及装配后的新对象。根据实际路线替换“装配或连接”，不要由图形相似直接移植工艺。}
+\clearpage
+\FlowTitle{03\quad 检验、不合格处置与返工复验}{用途：把正常路径、未决处置和获准后的返工路径同时表达清楚。}
+\begin{center}\input{03-inspection-rework.tex}\end{center}
+\FlowNotes{填写受检对象、状态、阶段、方法与判据。返工须有批准路线；其他处置另行决定。复验范围按受影响特性与既定要求确定，不能把返工完成直接画成检验通过。}
+\clearpage
+\FlowTitle{04\quad 可选工序与未决分支}{用途：资料尚不齐全时保留条件路线，让已采用、候选和待澄清保持可见。}
+\begin{center}\input{04-conditional-operation.tex}\end{center}
+\FlowNotes{填写附加工序的适用条件、来源和采用记录；未确认不能自行按“不适用”执行。附加工序改变状态或特性时，检查对应的检验覆盖。虚线位置不能代替制造顺序或批准记录。}
+\clearpage
+\FlowTitle{05\quad 工序、资源、证据与成本关系}{用途：解释方案依据和费用从哪里来。\textbf{本图箭头表示知识关系，不表示制造顺序。}}
+\begin{center}\input{05-process-resource-cost.tex}\end{center}
+\FlowNotes{把节点标识对应到本项目的对象、工序、资源、费用和来源。资源可调配与工序能力分开记录；准备费是否已含、数量口径和实测范围分别填写。实际反馈支持修订估算，不自动证明已经降本。}
+\end{document}

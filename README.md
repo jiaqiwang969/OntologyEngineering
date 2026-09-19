@@ -56,6 +56,7 @@ EPS-RC17、ENV-01 和数值均为合成教学材料；精确 ISO 条款、表格
 | 理解 LLM/Agent 如何受语义约束 | 第一卷第 8 章，再看 [`SKILL.md`](SKILL.md) 的语义接入规则 |
 | 建立产品可信或功能安全证据链 | 第二卷前言与第 1–10 章，再按问题阅读第 11–20 章的本体回答 |
 | 把方法接入真实工程项目 | 先读 [`Semantic Engagement Contract`](references/semantic-engagement-contract.md) |
+| 从客户询问推进制造工艺、成本与反馈迭代 | [制造工艺与成本管理模块](skills/manufacturing-process-cost/SKILL.md)：脱敏演变案例、工作规范、记录模板与 XeLaTeX 报告组件 |
 
 ## 五分钟体验
 
@@ -83,6 +84,14 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 缺件、版本不符或哈希不符会 fail closed，不会悄悄切换到另一个 RDF/OWL 后端。
 
 </details>
+
+## 独立分发
+
+制造方法 `0.5.3` 的内容、版本与逐项公开清单见[本次更新说明](docs/releases/manufacturing-method-0.5.3.md)。
+
+完整目录可作为独立分发单元，制造模块的案例资产与运行入口均已随包携带。
+按 [独立分发与新目录验证](docs/PORTABLE-DISTRIBUTION.md) 检查、打包并重跑，
+无需访问原客户项目或作者工作区。首次安装 Python 依赖仍可能需要包源。
 
 ## 一个极简关系图
 

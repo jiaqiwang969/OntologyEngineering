@@ -1,0 +1,21 @@
+% Include in the document preamble. Native vector figures; no external artwork.
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,shapes.geometric,calc}
+\definecolor{FlowBlue}{HTML}{245B78}
+\definecolor{FlowLight}{HTML}{EDF5FA}
+\definecolor{FlowAmber}{HTML}{A46B1C}
+\definecolor{FlowWarm}{HTML}{FBF2E3}
+\definecolor{FlowGray}{HTML}{69737A}
+\tikzset{
+  operation/.style={draw=FlowBlue,fill=FlowLight,rounded corners=3mm,
+    minimum height=1.55cm,text width=3.35cm,align=center,
+    font=\small,inner sep=2.5mm,line width=.7pt},
+  focus/.style={operation,draw=FlowAmber,fill=FlowWarm},
+  candidate/.style={operation,draw=FlowGray,fill=gray!6,dashed},
+  branch/.style={diamond,aspect=1.8,draw=FlowBlue,fill=white,
+    text width=1.7cm,align=center,font=\small,inner sep=1mm,line width=.7pt},
+  flow/.style={-{Stealth[length=2.5mm]},draw=FlowGray,line width=.85pt},
+  conditional/.style={flow,dashed},
+  edgenote/.style={font=\footnotesize,fill=white,inner sep=1.2mm,align=center},
+  statetag/.style={font=\footnotesize,text=FlowGray,align=center}
+}

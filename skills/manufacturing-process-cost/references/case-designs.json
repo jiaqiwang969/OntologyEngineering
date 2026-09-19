@@ -1,0 +1,710 @@
+{
+  "document_kind": "manufacturing_method_case_designs",
+  "version": "0.1.0",
+  "status": "instructional_design_not_executable",
+  "semantic_package_created": false,
+  "case_count": 16,
+  "scenario_design_count": 64,
+  "executable_tests_passed": null,
+  "privacy": "仅保留角色、条件与关系；私有来源映射独立留在项目证据目录。",
+  "case_boundary": "抽象案例不证明现场能力，不证明跨企业有效；prior_release是待构造的历史回归设计而非已执行记录。",
+  "cases": [
+    {
+      "case_id": "MFG-CASE-01",
+      "cq_id": "MFG-CQ-01",
+      "title": "情境变化与旧经验迁移",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "哪些旧控制措施在新情境下要重新证明？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "原先对高节拍自动装配的方案，被用来回答新用途的小批量询问。",
+      "discovery_action": "询问安装、接口、关键特性、失效后果、验收和批量，不从应用名称直接推出要求。",
+      "objects": [
+        "ContextTransfer",
+        "Requirement",
+        "DecisionNeed"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-01-POS",
+          "design_and_expected_result": "原目标情境、差异、受影响控制、理由、来源和范围齐全；输出逐项迁移候选及待决条件。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-01-NEG",
+          "design_and_expected_result": "只保留产品类型相同这一条依据却声称可以直接取消检验；应识别缺少迁移理由和覆盖证据。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-01-AMB",
+          "design_and_expected_result": "目标接口方式未明确；输出待查，不推定可取消公差或可直接沿用。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-01-HIS",
+          "design_and_expected_result": "旧说明曾把情境标签直接连到删减工序；作为历史反例保留，后继结果要求补适用条件。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-02",
+      "cq_id": "MFG-CQ-02",
+      "title": "不同角色答复的范围",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "谁对哪一项说了什么，哪些回答有权确定本轮要求？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "终端使用者、转述者和制造方的技术意见混在一份资料里。",
+      "discovery_action": "问清原始发言者、所指对象、是客户要求还是内部建议及有效版本。",
+      "objects": [
+        "Response",
+        "Authority",
+        "Claim",
+        "Evidence"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-02-POS",
+          "design_and_expected_result": "同一主题的各方说法分别绑定角色与范围；可识别已批准要求和工作建议。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-02-NEG",
+          "design_and_expected_result": "仅把内部估计的来源改写为客户批准；应指出无相应权限或批准证据。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-02-AMB",
+          "design_and_expected_result": "两份同范围要求冲突，未有裁决；保留双方并生成解决任务。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-02-HIS",
+          "design_and_expected_result": "旧表曾把转述视为原始确认；可重放并定位受影响需求，而不改写旧记录。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-03",
+      "cq_id": "MFG-CQ-03",
+      "title": "产品、模型与报价对应",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "相同编号是否足以证明图纸、模型、BOM和报价适用于同一版本？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "有模型、有图纸也有价格，但未形成同版交付范围。",
+      "discovery_action": "先找版本与范围记录，不因名称接近把多个产品合并。",
+      "objects": [
+        "ProductRevision",
+        "DeliveryScope",
+        "CostScenario"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-03-POS",
+          "design_and_expected_result": "版本对应与范围有证据；输出可用于本轮情景的成本项及其限制。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-03-NEG",
+          "design_and_expected_result": "只删除版本一致性的来源，却保留同版结论；应输出版本缺口。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-03-AMB",
+          "design_and_expected_result": "同名不同材料或不同构型的资料关系未明；输出身份未知，不自动套工艺。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-03-HIS",
+          "design_and_expected_result": "历史报价对应旧版；保留当时有效性，新版缺少确认则重开范围核对。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-04",
+      "cq_id": "MFG-CQ-04",
+      "title": "处理与检验的阶段含义",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "一句“检测之前或之后”究竟指哪个对象、状态和检验？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "评审者对处理工序位置提出短句反馈，流程包含不止一种检验。",
+      "discovery_action": "先定位图纸或报告版本，展开检验项目、受检状态、判据和后续状态变化。",
+      "objects": [
+        "InspectionPlan",
+        "ProcessTransition",
+        "View"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-04-POS",
+          "design_and_expected_result": "制造后检验、处理后验收分别绑定状态与判据；输出两者并不因名称相似而矛盾。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-04-NEG",
+          "design_and_expected_result": "已验证的制造后状态被后续改变，却把旧结果直接作当前证明；应要求适用性复核。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-04-AMB",
+          "design_and_expected_result": "只有“在检测前”而没有对象阶段；输出澄清，不重排整个流程。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-04-HIS",
+          "design_and_expected_result": "历史图在完整性检验后仍有相关制造；保留该历史反例，并检查当前图是否真的复现。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-05",
+      "cq_id": "MFG-CQ-05",
+      "title": "现有设备的复用",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "设备已能调配以后，还缺什么证据才能支持这道工序？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "负责人允许调配现有设备，技术适配尚未完成。",
+      "discovery_action": "已确定可调配不再重复询问；查加工空间、夹持、工艺窗口、质量结果和节拍。",
+      "objects": [
+        "CapabilityAssessment",
+        "ProcessTransition",
+        "CostScenario"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-05-POS",
+          "design_and_expected_result": "调配决定和某工序的受控能力记录各自齐全；输出在声明条件下可用的方案。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-05-NEG",
+          "design_and_expected_result": "只拿设备清单替代该工序的能力证据；应保持能力未验证。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-05-AMB",
+          "design_and_expected_result": "规格可能足够但首件无记录；可进入条件方案并安排最小验证。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-05-HIS",
+          "design_and_expected_result": "旧估算把现有设备视为无运行费用；后继保留该假设出处并按明确成本口径重算。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-06",
+      "cq_id": "MFG-CQ-06",
+      "title": "费用与交接范围",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "哪些费用未知、已包含或重复计算，外协究竟交到哪一步？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "整件价格、工装和分工序明细先后到达，部分交接内容未写明。",
+      "discovery_action": "逐项核对范围、数量、税、时点、一次性与重复费用，找交接责任。",
+      "objects": [
+        "DeliveryScope",
+        "KnowledgeGap",
+        "CostScenario"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-06-POS",
+          "design_and_expected_result": "每项金额或未知都有范围与来源；已包含项目只计一次，输出可比较范围。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-06-NEG",
+          "design_and_expected_result": "将一个未知检验费改成零且无已含依据；应识别无依据的零值。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-06-AMB",
+          "design_and_expected_result": "价格未说明是否含后处理和运输；保持区间或条件，不输出无条件节省额。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-06-HIS",
+          "design_and_expected_result": "旧总表与后到明细范围不同；保留旧数值，明确哪些差额来自范围修正。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-07",
+      "cq_id": "MFG-CQ-07",
+      "title": "数量口径与一次性投入",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "这个批量指每型还是总量，会怎样改变自制、外协与投资比较？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "量产设备构想之后，当前订单被说明为小批，但组合仍不明。",
+      "discovery_action": "把当前订单与远期计划分开，分别计算明确组合；未知组合不偷换成每型数量。",
+      "objects": [
+        "UseContext",
+        "CostScenario",
+        "DecisionNeed"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-07-POS",
+          "design_and_expected_result": "数量、组合、良品口径、准备费和重复成本齐全；输出同口径情景对比。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-07-NEG",
+          "design_and_expected_result": "仅把总量悄悄当每型数量；应识别口径变化及摊销不可比。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-07-AMB",
+          "design_and_expected_result": "只有数量范围、没有组合；输出多个明确假设情景及仍待澄清项。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-07-HIS",
+          "design_and_expected_result": "旧投资建议依赖长期大批量；订单节奏变后重开投资比较，不宣称设备从此无价值。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-08",
+      "cq_id": "MFG-CQ-08",
+      "title": "师傅的隐性判断",
+      "source_kind": "synthetic_method_scenario_not_observed_project_event",
+      "execution_status": "not_run",
+      "competency_question": "现场经验能否被表达为观察、条件、动作、例外和结果？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "操作员根据现场情况调节动作，现有工艺卡只有工序名称。",
+      "discovery_action": "请演示具体一次，询问看到了什么、何时不能这样做，再核对解释。",
+      "objects": [
+        "DiscoveryEpisode",
+        "Claim",
+        "Evidence"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-08-POS",
+          "design_and_expected_result": "记录观察条件、动作、效果、例外及来源；形成范围受限的经验候选和验证任务。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-08-NEG",
+          "design_and_expected_result": "只留“老师傅一直这么做”就作为所有产品规则；应识别缺少条件及证据。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-08-AMB",
+          "design_and_expected_result": "两位师傅所说“调好”指不同结果；保留分歧并拆解特性，不强行合成。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-08-HIS",
+          "design_and_expected_result": "旧卡只有动作无判断；作为表达不足案例留存，后继检查必要关系是否补齐。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-09",
+      "cq_id": "MFG-CQ-09",
+      "title": "部分答复与下一问",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "答案到了以后，哪些子问题能关闭，下一步是否问了重复的问题？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "一条回复明确了资源调配，却没回答工艺适配或费用。",
+      "discovery_action": "拆分所问子问题，对照关闭证据，仅更新实际回答范围。",
+      "objects": [
+        "Inquiry",
+        "Response",
+        "KnowledgeGap"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-09-POS",
+          "design_and_expected_result": "已回答子问题有证据；未答子问题保留；下一轮只问影响当前决定的剩余项。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-09-NEG",
+          "design_and_expected_result": "因收到一条消息而把整个问题全部关闭；应识别关闭条件未满足。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-09-AMB",
+          "design_and_expected_result": "回复“可以”但指代不明；询问具体对象，不写成全部批准。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-09-HIS",
+          "design_and_expected_result": "旧清单反复追问已经确认的事实；后继通过答复范围映射避免重复，保留未决项。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-10",
+      "cq_id": "MFG-CQ-10",
+      "title": "变化影响与缺失关系",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "新证据到来后，哪些工艺、成本和输出要重算，清单可能漏了什么？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "局部报告修正后，其他控制表和成本表仍引用旧条件。",
+      "discovery_action": "用源快照和对象映射追查；依赖不完整时单列未知影响。",
+      "objects": [
+        "ChangeImpact",
+        "View",
+        "Evidence"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-10-POS",
+          "design_and_expected_result": "变更连接到声明的必需影响对象；输出应复核清单、理由与快照。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-10-NEG",
+          "design_and_expected_result": "删除一条必需依赖边，使影响清单变短；应报告追溯缺口，不能称没有影响。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-10-AMB",
+          "design_and_expected_result": "旧报告来源快照不明；保持待定位，不把当前本体测试通过当该报告已核验。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-10-HIS",
+          "design_and_expected_result": "旧版结论与当时条件一起保留；后继报告只引用自己的冻结输入和验证。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-11",
+      "cq_id": "MFG-CQ-11",
+      "title": "AI研发节省的实证",
+      "source_kind": "anonymized_project_abstraction",
+      "execution_status": "not_run",
+      "competency_question": "AI辅助改变了哪些工时和费用，是否同交付范围且没有重复计收益？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "提议用现成模块和AI设计、编程缩短开发并减少外部费用。",
+      "discovery_action": "分清基准、替代模块、AI起草、人类复核、联调试机及维护成本。",
+      "objects": [
+        "Claim",
+        "CostScenario",
+        "Evidence",
+        "Decision"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-11-POS",
+          "design_and_expected_result": "相同交付与质量范围，成本分项及实际记录齐全；输出可复算的该范围差额。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-11-NEG",
+          "design_and_expected_result": "将同一设计节省在设备差价和研发费中计两次；应标出重复。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-11-AMB",
+          "design_and_expected_result": "只有目标金额和周期承诺；记录目标或估计，不宣称已实现收益。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-11-HIS",
+          "design_and_expected_result": "旧预算按目标替换全部实际费用；保留原假设，后继待真实记录更新。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-12",
+      "cq_id": "MFG-CQ-12",
+      "title": "内核自身的缺项",
+      "source_kind": "design_extension_hypothesis",
+      "execution_status": "not_run",
+      "competency_question": "新例外无法用现有模型表达时，系统能否发现并提出最小扩展？",
+      "owner_decision": "支持本轮方案、成本或交付判断；具体决定范围由实例提供",
+      "trigger": "现场给出的新产品状态或责任关系不在原来的表中。",
+      "discovery_action": "保存原例和现有模型不能回答的问题，查是否已有同义概念，再提出关系或概念增量。",
+      "objects": [
+        "KnowledgeGap",
+        "DiscoveryEpisode",
+        "ChangeImpact"
+      ],
+      "expected_output": "有来源和范围的结果、未决项、下游影响；不自动改变事实接受或发布权限",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-12-POS",
+          "design_and_expected_result": "记录旧表达失败点、必要新关系、来源和CQ；输出待治理设计增量。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-12-NEG",
+          "design_and_expected_result": "把无法表达的新情况强塞到旧工序并声明完全覆盖；应保留未覆盖范围。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-12-AMB",
+          "design_and_expected_result": "是否为同义词或新概念尚不明；保留两种解释，先查来源与身份判据。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-12-HIS",
+          "design_and_expected_result": "旧版只有固定字段清单；用新例外证明缺口，后继增加可追溯关系并保持旧案例可回放。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-13",
+      "cq_id": "MFG-CQ-13",
+      "title": "同一项目跨轮次续办",
+      "source_kind": "design_extension_scenario_with_project_pattern_anchors",
+      "execution_status": "not_run",
+      "competency_question": "下一次调用能否按当前状态接续，识别哪些问题已经解决？",
+      "owner_decision": "支持跨轮次续办、客户反馈处理及知识采用；不改变外部沟通或发布权限",
+      "trigger": "项目中途结束一次调用，随后收到新资料；旧问题列表仍存在。",
+      "discovery_action": "启动时绑定方法版本和项目快照，读取已答子问题、未决条件与下一步，不从旧报告重建事实。",
+      "objects": [
+        "LoopRun",
+        "View",
+        "KnowledgeGap",
+        "ChangeImpact"
+      ],
+      "expected_output": "本轮输入输出、版本、真实状态、未决任务和学习结果能追溯；反馈只能改变证据支持的范围",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-13-POS",
+          "design_and_expected_result": "已有运行记录和当前快照指向相同问题身份；输出已完成、未决、可独立继续的任务及所用版本。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-13-NEG",
+          "design_and_expected_result": "只删掉新答复的状态映射，导致已解决问题重新被询问；应识别续办状态不同步。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-13-AMB",
+          "design_and_expected_result": "收到消息指向未知项目或产品；先解析归属，不能写入任意在办项目。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-13-HIS",
+          "design_and_expected_result": "旧调用仅保留一份报告而无快照与问题映射；作为续办缺口保留，后继须补最小来源对应。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-14",
+      "cq_id": "MFG-CQ-14",
+      "title": "沟通状态与渠道中断",
+      "source_kind": "design_extension_scenario_with_project_pattern_anchors",
+      "execution_status": "not_run",
+      "competency_question": "草稿、已发送、已回应和已解决是否被准确区分？",
+      "owner_decision": "支持跨轮次续办、客户反馈处理及知识采用；不改变外部沟通或发布权限",
+      "trigger": "技术问题已准备，但渠道暂不可用，或一条答复重复送达。",
+      "discovery_action": "保存发送证据及问题身份，渠道失败只改变通信状态；取得新证据后按子问题范围更新。",
+      "objects": [
+        "Inquiry",
+        "Response",
+        "LoopRun",
+        "Evidence"
+      ],
+      "expected_output": "本轮输入输出、版本、真实状态、未决任务和学习结果能追溯；反馈只能改变证据支持的范围",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-14-POS",
+          "design_and_expected_result": "问题草稿有范围，已发送有证据，回应可对应子问题；重复消息不重复改变事实。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-14-NEG",
+          "design_and_expected_result": "把没有发送证据的草稿改为客户已收到；应识别通信状态证据不足。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-14-AMB",
+          "design_and_expected_result": "渠道中断且尚无回答；输出未发送与后续触发，同时继续不依赖答复的工作。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-14-HIS",
+          "design_and_expected_result": "旧清单把发送失败写成客户未回复；作为错误状态保留，后继纠正时不得虚构客户行为。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-15",
+      "cq_id": "MFG-CQ-15",
+      "title": "方案版本与反馈回写",
+      "source_kind": "design_extension_scenario_with_project_pattern_anchors",
+      "execution_status": "not_run",
+      "competency_question": "反馈修改的是哪版方案、哪项范围，重算和新输出是否完整？",
+      "owner_decision": "支持跨轮次续办、客户反馈处理及知识采用；不改变外部沟通或发布权限",
+      "trigger": "客户对原方案的一项交付安排表示认可，之后方案费用或工艺发生变化。",
+      "discovery_action": "将反馈绑定版本、对象和确认范围；检查需求、工艺、资源、费用与输出的影响。",
+      "objects": [
+        "SolutionRevision",
+        "Response",
+        "ChangeImpact",
+        "View"
+      ],
+      "expected_output": "本轮输入输出、版本、真实状态、未决任务和学习结果能追溯；反馈只能改变证据支持的范围",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-15-POS",
+          "design_and_expected_result": "反馈指向原方案具体范围，新变更另有来源；输出受影响对象及后继方案依据，未确认部分保持原状态。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-15-NEG",
+          "design_and_expected_result": "仅将对旧版的局部认可扩展为新版所有条目已批准；应发现反馈范围越界。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-15-AMB",
+          "design_and_expected_result": "反馈只说“这一版不对”而版本或对象未知；输出定位问题，不推定当前所有方案失效。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-15-HIS",
+          "design_and_expected_result": "旧报告手改后控制表仍引用旧状态；重放差异并要求后继输出各自绑定更新后的快照。",
+          "status": "planned_not_executable"
+        }
+      ]
+    },
+    {
+      "case_id": "MFG-CASE-16",
+      "cq_id": "MFG-CQ-16",
+      "title": "项目经验返回skill",
+      "source_kind": "design_extension_scenario_with_project_pattern_anchors",
+      "execution_status": "not_run",
+      "competency_question": "本轮反馈是否产生可复用增量，哪些内容可以进入后续方法版本？",
+      "owner_decision": "支持跨轮次续办、客户反馈处理及知识采用；不改变外部沟通或发布权限",
+      "trigger": "一次成本偏差被解释，也发现了原问题模板遗漏的条件。",
+      "discovery_action": "区分项目事实、方法改进、语义规则和工具错误；分别验证，保留采用记录及版本。",
+      "objects": [
+        "LearningAssessment",
+        "LoopRun",
+        "Evidence",
+        "Decision"
+      ],
+      "expected_output": "本轮输入输出、版本、真实状态、未决任务和学习结果能追溯；反馈只能改变证据支持的范围",
+      "scenarios": [
+        {
+          "kind": "positive",
+          "scenario_id": "MFG-16-POS",
+          "design_and_expected_result": "事实留在项目，有复用价值的最小候选有边界和反例，按所属层验证后记录采用版本；下一轮读取明确版本。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "negative",
+          "scenario_id": "MFG-16-NEG",
+          "design_and_expected_result": "只将单次项目数值写成各企业默认参数；应识别不当泛化与私有信息迁移。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "ambiguity",
+          "scenario_id": "MFG-16-AMB",
+          "design_and_expected_result": "已有规则可能足够但原因未查明；记录待分析，不能以完成一次对话就改写skill。",
+          "status": "planned_not_executable"
+        },
+        {
+          "kind": "prior_release",
+          "scenario_id": "MFG-16-HIS",
+          "design_and_expected_result": "旧做法把新规则通过当全部历史报告通过；后继保留旧版本并单列受影响输出的复核状态。",
+          "status": "planned_not_executable"
+        }
+      ]
+    }
+  ],
+  "change_from_v01": "新增MFG-CASE-13至16：续办、通信状态、方案反馈与知识返回；原12案例保留。",
+  "oracle_requirement": "实现每个语义场景时另行固化输入、预期违规代码或具名结果集合，并经Semantica执行。本文件的文字预期不是oracle或通过回执。",
+  "source_note": "项目工作模式的脱敏抽象与显式标记的合成方法情境；私有来源映射不随skill导出。"
+}

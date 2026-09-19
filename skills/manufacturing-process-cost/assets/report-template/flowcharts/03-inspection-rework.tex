@@ -1,0 +1,18 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[focus] (i) at (0,0) {IN10\quad 阶段检验\\对象、状态、判据待填};
+  \node[branch] (d) at (5,0) {符合\\判据？};
+  \node[operation] (n) at (10,0) {OP20\quad 下一阶段\\按规定范围放行};
+  \node[operation] (h) at (5,-3) {NC10\quad 隔离与评审\\处置尚未确定};
+  \node[branch] (a) at (10,-3) {返工获\\批准？};
+  \node[candidate] (o) at (15,-3) {NC20\quad 其他处置\\另行决定与记录};
+  \node[operation] (r) at (10,-6) {RW10\quad 按批准路线返工\\对象与路线版次待填};
+  \node[focus] (t) at (0,-6) {IN30\quad 受影响特性复验\\范围与判据待填};
+  \draw[flow] (i)--(d);
+  \draw[flow] (d)--node[edgenote,above]{是}(n);
+  \draw[flow] (d)--node[edgenote,right]{否}(h);
+  \draw[flow] (h)--(a);
+  \draw[flow] (a)--node[edgenote,above=10mm]{否／待定}(o);
+  \draw[flow] (a)--node[edgenote,right]{是}(r);
+  \draw[flow] (r)--node[edgenote,above]{返工完成}(t);
+  \draw[flow] (t.west)--(-2.7,-6)--(-2.7,2)--node[edgenote,above]{复验结果}(5,2)--(d.north);
+\end{tikzpicture}

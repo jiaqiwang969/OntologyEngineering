@@ -1,0 +1,16 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[operation] (s) at (0,0) {OP10\quad 当前工序完成\\输出状态 S1};
+  \node[branch] (d) at (5,0) {附加工序\\是否适用？};
+  \node[candidate] (p) at (5,3.3) {OP20\quad 候选附加工序\\采用依据待确认};
+  \node[focus] (i) at (10,3.3) {IN30\quad 受影响特性检查\\受检状态、判据待填};
+  \node[operation] (st) at (10,0) {ST40\quad 登记实际输出状态\\关联已采用路线};
+  \node[operation] (n) at (15,0) {OP50\quad 后续工序\\核对进入条件};
+  \node[candidate] (q) at (5,-3) {Q10\quad 澄清或验证\\记录未决条件};
+  \draw[flow] (s)--(d);
+  \draw[conditional] (d.north)--node[edgenote,right]{适用且已采用}(p.south);
+  \draw[conditional] (p)--(i);
+  \draw[flow] (i)--(st);
+  \draw[flow] (d)--node[edgenote,above=1mm,text width=10mm,inner sep=.5mm]{确认\\不适用}(st);
+  \draw[flow] (st)--(n);
+  \draw[conditional,<->] (d.south)--node[edgenote,right]{待确认／补充依据}(q.north);
+\end{tikzpicture}

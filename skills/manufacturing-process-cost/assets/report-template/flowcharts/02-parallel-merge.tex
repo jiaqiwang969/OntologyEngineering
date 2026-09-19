@@ -1,0 +1,14 @@
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \node[operation] (a) at (0,2) {OP10A\quad 零件 A 加工\\输出 A1};
+  \node[operation] (b) at (0,-2) {OP10B\quad 零件 B 加工\\输出 B1};
+  \node[focus] (j) at (5,0) {OP20\quad 汇合准备\\核对身份、版次与接口};
+  \node[operation] (c) at (10,0) {OP30\quad 装配或连接\\A1＋B1 → AB1};
+  \node[focus] (i) at (15,0) {IN40\quad 阶段检验\\受检对象 AB1};
+  \node[operation] (n) at (20,0) {OP50\quad 下道工序\\进入条件待填};
+  \draw[flow] (a.east)--(2.7,2)--(2.7,0)--(j.west);
+  \draw[flow] (b.east)--(2.7,-2)--(2.7,0)--(j.west);
+  \draw[flow] (j)--node[edgenote,above=10mm]{输入均到位}(c);
+  \draw[flow] (c)--(i);
+  \draw[flow] (i)--(n);
+  \node[statetag] at (10,-3.1) {并行投入不代表加工节拍相同；汇合条件和对象状态分别登记。};
+\end{tikzpicture}

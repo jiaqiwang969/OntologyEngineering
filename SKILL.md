@@ -280,3 +280,7 @@ runtime/.venv/bin/python -m pytest -q tests
 
 对真实使用方式做无答案泄漏的 forward test。若涉及书稿，再运行作者、book binding、
 XeLaTeX/PDF、隐私和上述 book artifact v1 候选门禁；不得把 candidate 报告成 publication。
+
+## 工程证据适用性
+
+CAD、工艺、仿真、测量或成本结论依赖来源证据时，使用[工程证据与方法模块](skills/engineering-evidence-methods/SKILL.md)。它把数量参考态、模型保真、因果对照、观测机会、独立验证、检查覆盖、物料口径及证明适用桥交给 Semantica 检查；来源完整、支持义务满足和实物成立分别报告。

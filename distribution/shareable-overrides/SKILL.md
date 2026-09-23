@@ -20,3 +20,7 @@ description: Use Semantica as the single executable semantic authority for engin
 每次关键判断保留四类东西：输入快照及 SHA-256、对象与版本映射、证据/假设/冲突状态、决定及其反证条件。变更后沿依赖关系重开受影响的工艺、检验、费用、交期和对外答复。
 
 安装与复验见 [独立分发说明](docs/PORTABLE-DISTRIBUTION.md)。本核心包不含两卷书、客户资料、历史 CAD 案例或工作站配置；包内原生案例仅为合成方法验证。接收方的本地 CAD 软件、项目事实、许可和审批需单独提供。
+
+## 工程证据适用性
+
+CAD、工艺、仿真、测量或成本结论依赖来源证据时，使用[工程证据与方法模块](skills/engineering-evidence-methods/SKILL.md)。它把数量参考态、模型保真、因果对照、观测机会、独立验证、检查覆盖、物料口径及证明适用桥交给 Semantica 检查；来源完整、支持义务满足和实物成立分别报告。

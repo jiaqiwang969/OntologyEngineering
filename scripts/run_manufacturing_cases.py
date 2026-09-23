@@ -2,6 +2,7 @@
 """Replay bundled manufacturing fixtures using only source-locked Semantica."""
 
 import argparse
+from contextlib import redirect_stdout
 import hashlib
 import json
 from pathlib import Path
@@ -13,7 +14,7 @@ sys.path.insert(0, str(ROOT))
 from semantic_bundle_transport import load_bundle, materialized
 
 
-def main():
+def main(bundle_name="manufacturing-process-cost"):
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--list", action="store_true", help="Check transport and list declared scenarios; no semantic execution.")
@@ -21,7 +22,7 @@ def main():
     parser.add_argument("--scenario", action="append", help="Exact declared scenario ID; repeatable. Default: all.")
     parser.add_argument("--output", type=Path, help="New output directory; existing paths are never overwritten.")
     args = parser.parse_args()
-    spec, payload, report = load_bundle("manufacturing-process-cost")
+    spec, payload, report = load_bundle(bundle_name)
     if args.list:
         if args.scenario or args.output:
             parser.error("--list takes neither --scenario nor --output")
@@ -46,11 +47,12 @@ def main():
     rows = []
     with materialized(spec, payload) as manifest:
         for sid in selected:
-            result = runner.run_manifest(manifest, sid, runtime_commit=source.commit,
-                                         runtime_artifact_sha256=source.artifact_sha256,
-                                         runtime_version=source.version)
-            execution = result.as_dict()
-            verification = runner.verify(result).as_dict()
+            with redirect_stdout(sys.stderr):
+                result = runner.run_manifest(manifest, sid, runtime_commit=source.commit,
+                                             runtime_artifact_sha256=source.artifact_sha256,
+                                             runtime_version=source.version)
+                execution = result.as_dict()
+                verification = runner.verify(result).as_dict()
             evidence = json.dumps({"execution": execution, "verification": verification}, ensure_ascii=False, indent=2) + "\n"
             file = output / (sid + ".json")
             file.write_text(evidence, encoding="utf-8")

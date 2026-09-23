@@ -13,6 +13,8 @@ description: Develop and revise discrete-manufacturing process and cost proposal
 
 若制造方案依赖从图片、视频、专利或残缺模型反推的尺寸、接口或机构，按[证据驱动的重建方法](../cad-agent/references/evidence-driven-reconstruction.md)接收其观察、原理推导和候选状态。条件推导可收窄加工/检验方案；未辨识的原物结构不能充当已确认的图纸尺寸、设备能力或成本输入。
 
+涉及测量值、模型、试验或材料成本依据时，按[工程证据与方法](../engineering-evidence-methods/SKILL.md)选择相关支持义务。尤其核对模型是否保留实现功能的界面、因果对照能否排除外载和强制运动，以及有效用料与实际投料是否分清；Semantica 的适用性结论回写当前路线主张，不能由计算完成直接放行工艺。
+
 ## 每轮怎么做
 
 1. **续接当前决定。** 读取项目入口、当前快照、已采用版本、旧答复和未决项。先说明现在要判断什么，例如能否接单、哪条路线合适、预算能精确到哪一步。

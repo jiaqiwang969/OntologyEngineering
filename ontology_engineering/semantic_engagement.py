@@ -14,12 +14,14 @@ receipt, release, and learning promotion all passed.
 from __future__ import annotations
 
 import argparse
+from contextlib import redirect_stdout
 from dataclasses import dataclass
 from datetime import datetime
 import hashlib
 import json
 from pathlib import Path
 import re
+import sys
 from typing import Any, Mapping, Optional, Sequence
 
 from . import semantica_runtime as runtime
@@ -2534,7 +2536,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         args = build_argument_parser().parse_args(argv)
         command = str(args.command)
-        response = _dispatch(args)
+        # Native reasoners may emit human-readable progress. Keep the machine
+        # channel one JSON value without suppressing those diagnostics.
+        with redirect_stdout(sys.stderr):
+            response = _dispatch(args)
     except (SemanticEngagementError, RuntimeError, OSError, ValueError) as exc:
         response = _error_response(command, exc)
     print(canonical_json(response))

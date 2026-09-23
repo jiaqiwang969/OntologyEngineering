@@ -3,6 +3,18 @@
   "scope": "Exact nonsemantic CAD execution surfaces only; no backend, semantic asset, or review exemption.",
   "entries": [
     {
+      "path": "skills/cad-agent/remote/mcp_bridge.py",
+      "sha256": "d23ce25a2924ba52f6585ad646bce53c0df2198be8f53d4fcef0ac8f66ef31b1",
+      "rules": ["alternate_engine_subprocess"],
+      "purpose": "Transport one configured nonsemantic CAD MCP session over SSH or local stdio."
+    },
+    {
+      "path": "skills/cad-agent/remote/relay_server.py",
+      "sha256": "1453c65a87f769810ecf5d29afaf1f02767263db7a17cad777e54b29b0ab786c",
+      "rules": ["alternate_engine_subprocess"],
+      "purpose": "Launch a nonsemantic AutoCAD COM MCP process in the signed-in desktop session."
+    },
+    {
       "path": "skills/cad-agent/doctor.sh",
       "sha256": "b85230880dba0be4117ec1073f06b4048033b56fd68f8319a7ac0e6425da4401",
       "rules": [

@@ -34,4 +34,4 @@ skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/cad_evidence.py \
 
 输出的 `.nt` 是**项目 ABox 投影**，完整性报告只说明来源、引用和声明值的对应。`semantic_execution=not_run`、`engineering_verdict=not_assessed` 不能被改写成工程通过。要执行正式 CQ、SHACL、规则或项目决策 review，必须交给父级工程本体论绑定的 Semantica。要进入制造决策，再创建 [CAD／工艺双向交接](cad-process-integration.md)，把确切 CAD 对象 ID 链到工艺特征、功能、路线、主张或问题。CAD 包变更时重算影响范围；旧工艺、检验、报价和交期主张逐项重审。
 
-Fusion 本机只经本模块守卫调用。NX、AutoCAD 或其他 CAD 的原生回读可以进入同一合同，但公开便携包未附带远程执行桥，不能声称它在接收方机器上完成了这些软件的调用。装配动画、运动学求解和制造分析按各自专项工具执行，统一把证据和边界回写项目包。
+Fusion 本机只经本模块守卫调用。NX/AutoCAD 可使用[公开的可配置远程桥](../remote/README.md)，但接收方须自行部署商业软件与 NX sidecar，并把真实调用、保存和回读记入项目包。装配判断使用[装配与力学通用内核](assembly-and-physics-kernel.md)，可用公开的有界几何/四连杆筛查器作局部诊断；求解结果必须带声明的域和未验证项回写项目包。

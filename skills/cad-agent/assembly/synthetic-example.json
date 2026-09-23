@@ -1,0 +1,9 @@
+{
+  "schema": "cad-agent.nominal-assembly/v1",
+  "instances": [
+    {"id": "base", "initial": true, "box": {"min": [0, 0, 0], "max": [2, 2, 1]}},
+    {"id": "cover", "box": {"min": [0, 0, 1], "max": [2, 2, 2]},
+     "approaches": [[0, 0, 3], [3, 0, 0]]}
+  ],
+  "precedence": [{"before": "base", "after": "cover"}]
+}

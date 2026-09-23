@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "nx": {
+      "transport": "ssh_windows",
+      "host": "cad-host.example",
+      "python": "C:\\cad-tools\\venv\\Scripts\\python.exe",
+      "entry": {"module": "nx_mcp.server"},
+      "environment": {"NX_MCP_WORKSPACE": "C:\\cad-work"}
+    },
+    "autocad": {
+      "transport": "ssh_windows",
+      "host": "cad-host.example",
+      "python": "C:\\cad-tools\\venv\\Scripts\\python.exe",
+      "entry": {"script": "C:\\cad-bridge\\relay_client.py"}
+    }
+  }
+}

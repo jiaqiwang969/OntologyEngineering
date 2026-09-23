@@ -74,7 +74,7 @@ EPS-RC17、ENV-01 和数值均为合成教学材料；精确 ISO 条款、表格
 
 ## 制造工艺与成本：让沟通、方案和反馈形成闭环
 
-当前方法版本为 **0.5.5**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
+当前方法版本为 **0.5.6**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
 自己的证据确定；可复用的是发现问题、建立关系、比较方案和验证判断的方法。
 
 ```mermaid
@@ -155,11 +155,11 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 
 ## 独立分发
 
-制造方法 `0.5.5` 把 CAD Agent 扩展为通用 CAD 证据入口，详见[更新说明](docs/releases/manufacturing-method-0.5.5.md)；此前的因果与反证关口仍按 [0.5.4 说明](docs/releases/manufacturing-method-0.5.4.md)执行。
+制造方法 `0.5.6` 公开可配置 NX/AutoCAD 桥，并把装配与力学经验抽象成通用判断内核及有界专项工具，详见[更新说明](docs/releases/manufacturing-method-0.5.6.md)；此前的因果与反证关口仍按 [0.5.4 说明](docs/releases/manufacturing-method-0.5.4.md)执行。
 
 | 组件 | 当前版本与范围 |
 |---|---|
-| 制造方法 | `0.5.5`；通用 CAD 证据、制造工艺、成本、反馈与复用 |
+| 制造方法 | `0.5.6`；通用 CAD 证据、远程桥、装配/机构有界筛查、制造工艺与成本 |
 | 记录模板 / 评审卡 | 两份模板为 `0.2.1`、其余为 `0.2.0` / 评审卡 `1.4.1` |
 | 报告组件 / 工艺图 | `1.0.0`；XeLaTeX 与五类可编辑 TikZ 模板 |
 | 冻结制造语义包 | `0.1.1`；141 项声明资产、68 个合成场景、23 个 CQ；保留本地技术候选状态 |
@@ -169,7 +169,7 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 按 [独立分发与新目录验证](docs/PORTABLE-DISTRIBUTION.md) 检查、打包并重跑，
 无需访问原客户项目或作者工作区。首次安装 Python 依赖仍可能需要包源。
 
-[0.5.5 公开资产台账](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.5/ontology-engineering-core-v0.5.5-assets.json)、上一版制造方法的[冻结清单](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json)、
+[0.5.6 公开资产台账](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.6/ontology-engineering-core-v0.5.6-assets.json)、上一版制造方法的[冻结清单](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json)、
 [本次 README 更新清单](docs/releases/manufacturing-readme-0.5.3-r1.json)与
 [语义包 NOTICE](runtime/vendor/MANUFACTURING-NOTICE.md)分别保留。文件和合成案例检查的
 范围见分发说明；制造方法的公开授权与[两卷书整体发布状态](docs/PUBLIC-RELEASE-STATUS.md)分开记录。

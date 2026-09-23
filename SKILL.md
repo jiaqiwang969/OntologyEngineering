@@ -236,6 +236,8 @@ CAD 建模、修复、图纸/BOM、装配、机构或几何核验加载
 把确切对象链到功能、路线、主张与问题；制造模块接续功能覆盖、检验、成本与交期。
 证据转换器只核对身份与来源，不出具 Semantica 或实物放行结论。
 
+装配及相关力学任务还要使用[装配与力学通用判断内核](skills/cad-agent/references/assembly-and-physics-kernel.md)：按实例、界面、状态和外部支撑表达项目 ABox；按几何、路径、静力、局部接触和实测分别说明主张及反证。跨项目复用的是这些因果区分与证据边界，具体产品步骤、材料参数和仿真算法不是行业 TBox 正本。
+
 EDA、质检、仿真和其他制造 skill 在三个检查点调用本 skill：任务开始的语义
 接入、不可逆动作前的 preflight、任务结束后的 evidence/receipt/learning 判定。领域
 skill 继续拥有自己的工程工具，不能因语义通过而获得额外 mutation authority。

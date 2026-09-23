@@ -2,8 +2,8 @@
 
 有两种不同的本地制品，不能混用其放行范围：
 
-- **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、通用 CAD 证据、CAD／工艺交接及可移植 Fusion 执行层。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。`manufacturing-v0.5.5` 承接 [0.5.4](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.4)，增加通用 CAD 证据合同、核验器与对象到工艺的连接；对应源码以 `manufacturing-v0.5.5` 标签固定。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
-- **完整仓库快照**：`python3 scripts/package_skill.py --output ...` 按当前仓库文件清单打包两卷书、公开 CAD 核心和其余仓库资产。GitHub 的完整 Release ZIP 是固定标签的仓库快照；不包含仓外的私有 CAD 执行桥、历史案例或客户证据。[两卷书整体权利状态](PUBLIC-RELEASE-STATUS.md)与核心包的公开资产台账分开记录。文件检查通过不能当作权利放行。
+- **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、通用 CAD 证据、CAD／工艺交接、可移植 Fusion 执行层、NX/AutoCAD 可配置远程桥及有界装配/机构筛查器。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。`manufacturing-v0.5.6` 承接 [0.5.5](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.5)，增加公开 CAD 远程桥、装配/力学方法内核及有界专项筛查；对应源码以 `manufacturing-v0.5.6` 标签固定。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
+- **完整仓库快照**：`python3 scripts/package_skill.py --output ...` 按当前仓库文件清单打包两卷书、公开 CAD 核心和其余仓库资产。GitHub 的完整 Release ZIP 是固定标签的仓库快照；不包含仓外的历史私有 CAD 执行器、案例或客户证据。[两卷书整体权利状态](PUBLIC-RELEASE-STATUS.md)与核心包的公开资产台账分开记录。文件检查通过不能当作权利放行。
 
 两种制品都以单一 `ontology-engineering/` 根目录交付，接收方在新目录复验；正式语义 release 与具体客户产品放行另行判断。
 
@@ -20,6 +20,7 @@
 | 冻结的制造案例 | [案例传输锁](../runtime/semantic-bundles.json)、`runtime/vendor/` | 141 项 Semantica 原生资产、68 个可重跑场景 |
 | 运行、分发及回归检查 | [案例入口](../scripts/run_manufacturing_cases.py)、[分发工具](../scripts/package_skill.py)、`tests/` | 校验资产、执行案例、发现断链和打包遗漏 |
 | CAD 非语义运行源锁 | [CAD 源锁](../runtime/cad-operational-source-lock.json) | 逐文件约束动态加载和子进程调用，修改即重审；不豁免第二语义后端 |
+| 远程 CAD 桥与装配/机构工具 | [CAD 模块](../skills/cad-agent/SKILL.md)、[能力图](cad-agent-capability-map.md) | NX MCP SSH 传输、AutoCAD COM/relay、装配与力学通用内核、AABB 装入/顺序和四连杆位置筛查；外部 CAD 软件与真实主机验收不随包提供 |
 | Fusion 专用 wheel | [运行身份锁](../skills/cad-agent/dist/fusion-runtime-lock.json)、[检验器](../skills/cad-agent/scripts/verify_fusion_runtime_wheel.py) | 仅安装 Fusion 执行代理；打包和安装后检查 wheel 摘要、成员、入口及旧语义模块缺席 |
 
 冻结案例 ZIP 是 Semantica 已验证候选的不可变传输副本。它包含数据、查询、约束、规则和 oracle，没有作者工作区、个人路径、权限绑定或替代引擎。传输锁检查每个成员、manifest、资产摘要和运行时身份；实际语义解释和验证全部交给 Semantica。修改案例须在受控 Semantica 流程中形成后继，再更新传输包和锁。
@@ -54,12 +55,12 @@ bash runtime/setup_runtime.sh
 bash runtime/setup_runtime.sh --doctor
 bash skills/cad-agent/setup.sh
 skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/verify_fusion_runtime_wheel.py --installed
-bash skills/cad-agent/doctor.sh --json
+bash skills/cad-agent/doctor.sh
 runtime/.venv/bin/python scripts/run_manufacturing_cases.py --run \
   --output ../work/manufacturing-replay-001
 ```
 
-`--list` 是文件完整性检查；`--run` 是新环境的原生案例执行，分别保存结果。CAD doctor 是本机能力预检，工程软件与远程主机仍由接收方配置；远程地址由 `fleet` 实时解析。可用重复的 `--scenario MFG-01-PN` 参数选择部分场景，必须报告实际运行范围。全部场景通过也只证明所列合成输入与 oracle，不能替代客户方案快照、现场能力、真实成本或制造放行验证。
+`--list` 是文件完整性检查；`--run` 是新环境的原生案例执行，分别保存结果。CAD doctor 是本机能力预检。远程 CAD profile 由接收方填写其 SSH 别名与侧车路径；工程软件、许可和远程主机验收仍由接收方负责。公开桥和有界求解器可先离线运行 `python3 skills/cad-agent/scripts/test_remote_assembly_mechanism.py`。可用重复的 `--scenario MFG-01-PN` 参数选择部分场景，必须报告实际运行范围。全部场景通过也只证明所列合成输入与 oracle，不能替代客户方案快照、现场能力、真实成本或制造放行验证。
 
 Python 和 Python 依赖属于安装环境；首次安装可能访问包源，并非完整离线安装包。普通阅读、书源检索和冻结制造案例回放不需要 Semantica 源码 checkout。重新构建 Semantica、维护书稿或治理原生候选另按各自工作流提供受控输入，这些可选维护任务不作为制造方法的首次使用前提。
 

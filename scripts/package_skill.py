@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 from check_public_privacy import content_findings, path_findings
-from semantic_bundle_transport import load_bundle, safe_relative
+from semantic_bundle_transport import load_bundle, safe_relative, validate_data_archive, _regular_inside
 
 DIRECTORIES = {"agents", "demos", "docs", "examples", "ontology_engineering", "references", "runtime", "scripts", "skills", "tests", ".github"}
 ROOT_FILES = {"SKILL.md", "README.md", "README.en.md", "LICENSE", ".gitignore"}
@@ -131,6 +131,7 @@ def check(root: Path) -> tuple[dict, list[Path]]:
             elif destination.is_file() and destination.relative_to(root).as_posix() not in names:
                 issues.append({"path": relative, "reason": "link targets excluded file", "target": target})
     bundle_reports = []
+    bootstrap_reports = []
     try:
         locks = json.loads((root / "runtime/semantic-bundles.json").read_text())
         for name in locks["bundles"]:
@@ -144,13 +145,28 @@ def check(root: Path) -> tuple[dict, list[Path]]:
                         issues.append({"path": name + ":" + member, "reason": rule.name})
             bundle_reports.append({k: v for k, v in report.items() if k != "scenarios"} | {"scenario_count": len(report["scenarios"])})
         lock = json.loads((root / "runtime/semantica-source-lock.json").read_text())
+        if "ontology_engineering/method_bootstrap.py" in names:
+            bootstrap = json.loads(_regular_inside(root, "runtime/semantic-bootstrap.json").read_text())
+            if bootstrap["schema"] != "ontology-engineering.method-bootstrap-lock/v1":
+                raise ValueError("unknown bootstrap lock")
+            for name, spec in bootstrap["capsules"].items():
+                bundle = locks["bundles"][name]
+                if any(spec[k] != bundle[k] for k in ("package_id", "package_version", "package_sha256", "runtime")):
+                    raise ValueError("bootstrap and bundle configuration differ")
+                payload = validate_data_archive(_regular_inside(root, spec["path"]).read_bytes(), spec)
+                for member, value in payload.items():
+                    for rule in CONTENT_RULES:
+                        if rule.pattern.search(value.decode("utf-8")):
+                            issues.append({"path": name + ":bootstrap:" + member, "reason": rule.name})
+                bootstrap_reports.append({"name": name, "files": len(payload), "sha256": spec["sha256"],
+                                          "scope": "Data transport only; native initialization verified separately."})
         wheel = root / "runtime/vendor" / lock["artifact"]["filename"]
         if hashlib.sha256(wheel.read_bytes()).hexdigest() != lock["artifact"]["sha256"]:
             raise ValueError("vendored runtime wheel hash mismatch")
     except (OSError, ValueError, KeyError, zipfile.BadZipFile) as error:
         issues.append({"path": "runtime", "reason": str(error)})
     report = {"passed": not issues, "files": len(files), "local_links_checked": links,
-              "bundles": bundle_reports, "issues": issues,
+              "bundles": bundle_reports, "bootstrap": bootstrap_reports, "issues": issues,
               "scope": "File closure, direct-identifier scan and frozen package hashes; semantic execution and human publication authority are separate."}
     return report, files
 

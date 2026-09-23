@@ -56,6 +56,8 @@ CQ 和证据方法上；不把 ISO 派生领域规则当成跨行业普遍要求
 `scripts/judgment_review.py` 使用同一原生 `semantic_engagement.review` 入口。
 每次都需要当前项目的精确 promoted binding、workspace 与 actor；源哈希或绑定过期
 即拒绝执行。分发的包运输件与作者案例回归不能替代接收方的项目采用。
+接收方可按[初始化与单独采用](method-bootstrap.md)，仅凭锁定分发件重放精确方法链，
+产生本地原生工作区及另行采用的项目绑定；不携带原项目的批准记录。
 
 - `candidates`：从台账读取请求和原始响应，重核来源、版本、问题与候选 ID；
   将支持和反驳都作为 `model_candidate` 投影。候选审查不能代替必需工程审查。

@@ -55,8 +55,8 @@ def _regular_inside(root: Path, relative: str) -> Path:
     return path
 
 
-def validate_archive(data: bytes, spec: dict) -> tuple[dict[str, bytes], dict]:
-    """Validate container, complete inventory, manifest, and native asset hashes."""
+def validate_data_archive(data: bytes, spec: dict) -> dict[str, bytes]:
+    """Validate a bounded data-only container against its complete inventory."""
     if digest(data) != spec["sha256"]:
         raise BundleError("bundle hash mismatch")
     listed = spec["files"]
@@ -84,6 +84,12 @@ def validate_archive(data: bytes, spec: dict) -> tuple[dict[str, bytes], dict]:
             payload[name] = value
     if set(payload) != set(expected):
         raise BundleError("incomplete bundle inventory")
+    return payload
+
+
+def validate_archive(data: bytes, spec: dict) -> tuple[dict[str, bytes], dict]:
+    """Validate container, complete inventory, manifest, and native asset hashes."""
+    payload = validate_data_archive(data, spec)
     manifest_name = safe_relative(spec["manifest"])
     if digest(payload[manifest_name]) != spec["manifest_sha256"]:
         raise BundleError("manifest hash mismatch")

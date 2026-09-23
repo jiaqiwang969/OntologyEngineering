@@ -37,7 +37,7 @@
         "path": {"type": "string", "minLength": 1},
         "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "media_type": {"type": "string", "minLength": 3},
-        "role": {"enum": ["native_model", "native_readback", "drawing", "bom", "simulation_input", "simulation_result", "measurement", "process_record", "other"]},
+        "role": {"enum": ["native_model", "native_readback", "drawing", "bom", "simulation_input", "simulation_result", "measurement", "process_record", "reference_media", "patent_document", "analysis_record", "other"]},
         "embedded_source_hashes": {"type": "object", "propertyNames": {"pattern": "^/"}, "additionalProperties": {"$ref": "#/$defs/id"}}
       }
     },
@@ -48,6 +48,7 @@
         "id": {"$ref": "#/$defs/id"},
         "kind": {"type": "string", "minLength": 1},
         "statement": {"type": "string", "minLength": 1},
+        "status": {"enum": ["observed", "candidate"]},
         "identity_scope": {"enum": ["project_stable", "persistent_native", "model_revision", "provisional_import"]},
         "basis": {"$ref": "#/$defs/basis"},
         "source_id": {"$ref": "#/$defs/id"},
@@ -71,7 +72,7 @@
         "expected": {"type": "object", "minProperties": 1}
       }
     },
-    "basis": {"enum": ["native_readback", "drawing_review", "bom_review", "simulation_result", "measurement", "engineering_inference"]},
+    "basis": {"enum": ["native_readback", "drawing_review", "bom_review", "simulation_result", "measurement", "visual_review", "patent_review", "analytic_derivation", "engineering_inference"]},
     "requirement": {
       "type": "object", "additionalProperties": false,
       "required": ["id", "statement", "status", "target_ids", "source_ids"],

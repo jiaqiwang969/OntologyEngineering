@@ -115,6 +115,97 @@ class CadEvidenceTests(unittest.TestCase):
         self.assertIn("fit_candidate", impact["affected_assertion_ids"])
         self.assertIn("q_tolerance", impact["affected_question_ids"])
 
+    def test_visual_inverse_claims_keep_observation_and_derivation_separate(self) -> None:
+        media = self.root / "reference.svg"
+        media.write_text('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>')
+        analysis = self.root / "kinematics.json"
+        analysis.write_text(json.dumps({
+            "record_type": "ontology-engineering.analysis-record/v1",
+            "record_id": "synthetic_kinematics",
+            "source_hashes": {"media": digest(media)},
+            "model": {"name": "synthetic relative-motion constraint",
+                      "governing_relations": ["nonzero relative displacement requires at least one relative freedom or compliance"],
+                      "coordinate_system": "common registered image plane",
+                      "validity_domain": "two distinct bodies and correctly registered views"},
+            "inputs": [{"name": "relative_motion", "value": "nonzero", "unit": "dimensionless",
+                        "provenance": "observed", "source_id": "media"}],
+            "assumptions": ["two distinct rigid bodies", "the depicted relative displacement is real"],
+            "calculation": {"method": "analytic"},
+            "results": [{"id": "dof_lower_bound", "statement": "at least one relative freedom or compliance",
+                         "value": 1, "unit": "dimensionless",
+                         "conditional_on": ["relative displacement is real"]}],
+            "alternatives": ["relative motion may be due to compliance rather than a driven joint"],
+            "falsification_test": "compare two independently registered views",
+        }))
+        self.packet["sources"].extend([
+            {"id": "media", "path": "reference.svg", "sha256": digest(media), "media_type": "image/svg+xml", "role": "reference_media"},
+            {"id": "analysis", "path": "kinematics.json", "sha256": digest(analysis), "media_type": "application/json",
+             "role": "analysis_record", "embedded_source_hashes": {"/source_hashes/media": "media"}},
+        ])
+        self.packet["objects"].extend([
+            {"id": "visible_body", "kind": "visible_body", "statement": "bounded visible feature", "status": "observed",
+             "identity_scope": "model_revision", "basis": "visual_review", "source_id": "media", "source_locator": "view A, full frame"},
+            {"id": "hidden_joint", "kind": "joint_hypothesis", "statement": "one possible mechanism", "status": "candidate",
+             "identity_scope": "model_revision", "basis": "analytic_derivation", "source_id": "analysis",
+             "source_locator": "/results/0", "expected": {"value": 1}},
+        ])
+        self.packet["relations"].append({
+            "id": "possible_joint", "subject_id": "visible_body", "predicate": "could_use", "object_id": "hidden_joint",
+            "statement": "candidate relation", "status": "candidate", "basis": "engineering_inference",
+            "source_id": "analysis", "source_locator": "/results/0",
+        })
+        self.packet["assertions"].append({
+            "id": "conditional_motion", "statement": "conditional minimum degree of freedom", "scope": "synthetic model only",
+            "maturity": "hypothesis", "target_ids": ["hidden_joint"], "depends_on_ids": ["possible_joint"],
+            "source_ids": ["media", "analysis"], "challenge_source_ids": [],
+        })
+        self.write_packet()
+        _, audit = verify(self.path, self.root)
+        self.assertEqual(audit["engineering_verdict"], "not_assessed")
+
+        invalid = deepcopy(self.packet)
+        invalid["relations"][-1]["status"] = "observed"
+        self.packet = invalid
+        self.write_packet()
+        with self.assertRaisesRegex(CadEvidenceError, "inferred fact cannot be observed"):
+            verify(self.path, self.root)
+
+        self.packet["relations"][-1]["status"] = "candidate"
+        self.packet["objects"][-1]["expected"]["value"] = 2
+        self.write_packet()
+        with self.assertRaisesRegex(CadEvidenceError, "analytic derivation result mismatch"):
+            verify(self.path, self.root)
+
+        self.packet["objects"][-1]["expected"]["value"] = 1
+        self.packet["objects"][-2]["source_id"] = "drawing"
+        self.write_packet()
+        with self.assertRaisesRegex(CadEvidenceError, "claims visual_review from drawing"):
+            verify(self.path, self.root)
+
+        self.packet["objects"][-2]["source_id"] = "media"
+        analysis_record = json.loads(analysis.read_text())
+        del analysis_record["model"]["validity_domain"]
+        analysis.write_text(json.dumps(analysis_record))
+        self.packet["sources"][-1]["sha256"] = digest(analysis)
+        self.write_packet()
+        with self.assertRaisesRegex(CadEvidenceError, "analysis record schema"):
+            verify(self.path, self.root)
+
+        analysis_record["model"]["validity_domain"] = "two distinct bodies and correctly registered views"
+        analysis_record["calculation"]["method"] = "numerical"
+        analysis.write_text(json.dumps(analysis_record))
+        self.packet["sources"][-1]["sha256"] = digest(analysis)
+        self.write_packet()
+        with self.assertRaisesRegex(CadEvidenceError, "numerical analysis implementation not bound"):
+            verify(self.path, self.root)
+
+        analysis_record["inputs"][0]["provenance"] = "unknown"
+        analysis.write_text(json.dumps(analysis_record))
+        self.packet["sources"][-1]["sha256"] = digest(analysis)
+        self.write_packet()
+        with self.assertRaisesRegex(CadEvidenceError, "unknown analysis input has a value"):
+            verify(self.path, self.root)
+
     def test_process_link_requires_exact_project_and_real_cad_object(self) -> None:
         process = {
             "record_type": "ontology-engineering.cad-process-handoff/v1", "handoff_id": "handoff", "project": self.project,

@@ -44,7 +44,7 @@ def stage(directory: Path) -> dict:
     ledger = json.loads(ASSETS.read_text(encoding="utf-8"))
     if ledger.get("format") != "ontology-engineering.shareable-core-assets/v1":
         raise ValueError("unknown shareable asset ledger")
-    if ledger.get("distribution_scope") != "public-core-v0.5.6; owner-approved":
+    if ledger.get("distribution_scope") != "public-core-v0.5.7; owner-approved":
         raise ValueError("shareable distribution scope changed without review")
     seen: set[str] = set()
     for entry in ledger["files"]:
@@ -54,7 +54,7 @@ def stage(directory: Path) -> dict:
             raise ValueError(f"duplicate asset: {name}")
         seen.add(name)
         if (entry.get("privacy_review") != "screened_for_known_identifiers_and_direct_secrets"
-                or entry.get("rights_scope") != "public-core-v0.5.6"
+                or entry.get("rights_scope") != "public-core-v0.5.7"
                 or entry.get("public_approval") != "owner_approved"
                 or entry.get("has_personal_data") is not False
                 or not entry.get("license_or_authority")

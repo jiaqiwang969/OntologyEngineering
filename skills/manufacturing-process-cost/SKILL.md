@@ -7,9 +7,11 @@ description: Develop and revise discrete-manufacturing process and cost proposal
 
 从制造企业接到询问的时点开始，沿着“用途与要求 → 产品及状态 → 工艺与检验 → 资源与供应链 → 成本与交付”发现缺口，推进方案，把反馈和实际结果接回来。适用于离散机械制造；具体行业、材料、工艺参数和验收值由项目证据提供。
 
-这是方法、脱敏案例和工作记录模板模块，方法版本 `0.5.6`。八份 JSON 记录模板中 `solution-record`、`revision-record` 为 `0.2.1`，其余仍为 `0.2.0`；报告组件与图形模板仍为 `1.0.0`；六张评审卡为 `1.4.1`。本版把 CAD／工艺交接扩展到通用 CAD 对象：零件、图纸/BOM、装配、配合、机构状态与运动包络均可先记录来源，再关联工艺功能和方案。工艺替代时的功能覆盖与反证回退继续适用。冻结的 Semantica 制造案例仍为 `0.1.1`；新增语义只可经受控后继候选验证，不能把本文当成已发布的语义门禁。先遵守根 [ontology-engineering](../../SKILL.md) 的 source lock、发现、绑定和三联输出规则；正式语义执行仍只走 Semantica。按 [语义执行与证据范围](references/semantic-use.md) 定位候选；可执行资产存于 Semantica 工作区，不在 skill 内另建语义正本。记录模板不是 `ProjectOntologyBinding`、`SemanticTaskEnvelope` 或语义校验器。缺少绑定只阻断依赖绑定的执行；继续已授权的资料整理、条件分析和问题准备。
+这是方法、脱敏案例和工作记录模板模块，方法版本 `0.5.7`。八份 JSON 记录模板中 `solution-record`、`revision-record` 为 `0.2.1`，其余仍为 `0.2.0`；报告组件与图形模板仍为 `1.0.0`；六张评审卡为 `1.4.1`。本版把 CAD／工艺交接扩展到通用 CAD 对象：零件、图纸/BOM、装配、配合、机构状态与运动包络均可先记录来源，再关联工艺功能和方案。工艺替代时的功能覆盖与反证回退继续适用。冻结的 Semantica 制造案例仍为 `0.1.1`；新增语义只可经受控后继候选验证，不能把本文当成已发布的语义门禁。先遵守根 [ontology-engineering](../../SKILL.md) 的 source lock、发现、绑定和三联输出规则；正式语义执行仍只走 Semantica。按 [语义执行与证据范围](references/semantic-use.md) 定位候选；可执行资产存于 Semantica 工作区，不在 skill 内另建语义正本。记录模板不是 `ProjectOntologyBinding`、`SemanticTaskEnvelope` 或语义校验器。缺少绑定只阻断依赖绑定的执行；继续已授权的资料整理、条件分析和问题准备。
 
 装配或机构影响制造判断时，读取 [装配与力学通用判断内核](../cad-agent/references/assembly-and-physics-kernel.md)，把界面、临时支撑、装入路径、载荷需求与接头容量分别交接；几何可装、静力可平衡和实际连接可靠分别取证，不从一种模拟结果替另一种主张背书。
+
+若制造方案依赖从图片、视频、专利或残缺模型反推的尺寸、接口或机构，按[证据驱动的重建方法](../cad-agent/references/evidence-driven-reconstruction.md)接收其观察、原理推导和候选状态。条件推导可收窄加工/检验方案；未辨识的原物结构不能充当已确认的图纸尺寸、设备能力或成本输入。
 
 ## 每轮怎么做
 

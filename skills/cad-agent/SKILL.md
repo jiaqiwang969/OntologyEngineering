@@ -1,6 +1,6 @@
 ---
 name: cad-agent
-description: Design, repair and validate parts, drawings, assemblies and mechanisms using source-bound native CAD evidence; hand relevant features and functions to manufacturing. Use guarded local Fusion execution when available.
+description: Reconstruct, design and validate parts, drawings, assemblies and mechanisms from CAD, images, video or patents using source-bound evidence and first-principles reasoning; hand relevant features to manufacturing.
 ---
 
 # CAD Agent：通用 CAD 工程与证据交接
@@ -8,6 +8,8 @@ description: Design, repair and validate parts, drawings, assemblies and mechani
 本模块是工程本体论的 CAD 执行模块，适用于零件设计/修复、图纸和 BOM、装配、机构运动以及 CAD 到工艺的交接。按[通用 CAD 工程工作流](references/cad-engineering-workflow.md)识别对象、身份、关系、坐标系、配置、状态、来源与待判断的主张，再选择原生回读和专项检查。CAD 工具报告几何与文档状态；正式 TBox、CQ、SHACL、规则和项目语义审查由父级[工程本体论](../../SKILL.md)绑定的 Semantica 控制。项目 ABox 可由本模块投影，不是行业本体正本。
 
 原生 CAD 事实、图纸/BOM 审阅、仿真、测量和工程推断分别记录。按[通用证据合同](contracts/cad-evidence.v1.schema.json)与 `scripts/cad_evidence.py` 核对来源哈希、对象引用、原生回读指针和预期值，生成项目 ABox 与变更影响提示。装配中的定义与实例、配合与真实接触、机构轨迹与物理力、模型几何与实物性能不得混同。完整性通过不等于工程主张成立。
+
+从图片、视频、专利或残缺 CAD 反推外形和机构时，先读[证据驱动的重建方法](references/evidence-driven-reconstruction.md)：把可见内容、隐藏机理候选、物理/机构/数学推导、本方 CAD 方案和原物结论分开。用第一性原理收窄缺口，并保留现有证据无法区分的候选；不能由功能自由度直接认定原设备的电机或传动布局。
 
 装配或力学问题先读[装配与力学通用判断内核](references/assembly-and-physics-kernel.md)：辨认定义/实例、完整界面图、逐动作状态、外部支撑、装入路径、载荷路径和局部容量；把名义几何、静力、接触仿真与实物证据分层。可用[装配有界筛查器](assembly/README.md)检查给定 AABB 的候选直线装入方向，用[机构四连杆筛查器](mechanism/README.md)检查平面闭环位置；这些工具不替代方法内核、原生回读、物理求解或 Semantica。
 

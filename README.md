@@ -68,13 +68,14 @@ EPS-RC17、ENV-01 和数值均为合成教学材料；精确 ISO 条款、表格
 | 建立产品可信或功能安全证据链 | 第二卷前言与第 1–10 章，再按问题阅读第 11–20 章的本体回答 |
 | 把方法接入真实工程项目 | 先读 [`Semantic Engagement Contract`](references/semantic-engagement-contract.md) |
 | 设计或核对零件、图纸、装配、机构及制造功能 | [CAD Agent 模块](skills/cad-agent/SKILL.md)和[通用 CAD 证据工作流](skills/cad-agent/references/cad-engineering-workflow.md)：核对对象身份、原生来源、关系、主张与变化影响；需要时接入[工艺交接](skills/cad-agent/references/cad-process-integration.md) |
+| 从图片、视频或专利反推形态与机构 | [证据驱动的重建方法](skills/cad-agent/references/evidence-driven-reconstruction.md)：先辨认可见事实，再用物理、机构和数学条件推导筛选候选，并说明不能辨识的内部关系 |
 | 从客户询问推进制造工艺、成本与反馈迭代 | [制造工艺与成本管理模块](skills/manufacturing-process-cost/SKILL.md)：脱敏演变案例、工作规范、记录模板与 XeLaTeX 报告组件 |
 
 <a id="manufacturing"></a>
 
 ## 制造工艺与成本：让沟通、方案和反馈形成闭环
 
-当前方法版本为 **0.5.6**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
+当前方法版本为 **0.5.7**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
 自己的证据确定；可复用的是发现问题、建立关系、比较方案和验证判断的方法。
 
 ```mermaid
@@ -155,11 +156,11 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 
 ## 独立分发
 
-制造方法 `0.5.6` 公开可配置 NX/AutoCAD 桥，并把装配与力学经验抽象成通用判断内核及有界专项工具，详见[更新说明](docs/releases/manufacturing-method-0.5.6.md)；此前的因果与反证关口仍按 [0.5.4 说明](docs/releases/manufacturing-method-0.5.4.md)执行。
+制造方法 `0.5.7` 增加证据驱动的形态与机构重建方法和第一性原理推导记录，详见[更新说明](docs/releases/manufacturing-method-0.5.7.md)；`0.5.6` 的远程 CAD、装配与力学能力继续保留。
 
 | 组件 | 当前版本与范围 |
 |---|---|
-| 制造方法 | `0.5.6`；通用 CAD 证据、远程桥、装配/机构有界筛查、制造工艺与成本 |
+| 制造方法 | `0.5.7`；通用 CAD 证据、形态/机构逆向重建、远程桥、装配/机构有界筛查、制造工艺与成本 |
 | 记录模板 / 评审卡 | 两份模板为 `0.2.1`、其余为 `0.2.0` / 评审卡 `1.4.1` |
 | 报告组件 / 工艺图 | `1.0.0`；XeLaTeX 与五类可编辑 TikZ 模板 |
 | 冻结制造语义包 | `0.1.1`；141 项声明资产、68 个合成场景、23 个 CQ；保留本地技术候选状态 |
@@ -169,7 +170,7 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 按 [独立分发与新目录验证](docs/PORTABLE-DISTRIBUTION.md) 检查、打包并重跑，
 无需访问原客户项目或作者工作区。首次安装 Python 依赖仍可能需要包源。
 
-[0.5.6 公开资产台账](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.6/ontology-engineering-core-v0.5.6-assets.json)、上一版制造方法的[冻结清单](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json)、
+[0.5.7 公开资产台账](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.7/ontology-engineering-core-v0.5.7-assets.json)、上一版制造方法的[冻结清单](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json)、
 [本次 README 更新清单](docs/releases/manufacturing-readme-0.5.3-r1.json)与
 [语义包 NOTICE](runtime/vendor/MANUFACTURING-NOTICE.md)分别保留。文件和合成案例检查的
 范围见分发说明；制造方法的公开授权与[两卷书整体发布状态](docs/PUBLIC-RELEASE-STATUS.md)分开记录。

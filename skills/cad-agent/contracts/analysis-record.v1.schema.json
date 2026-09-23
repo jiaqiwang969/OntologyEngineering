@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ontology-engineering:analysis-record:v1",
+  "title": "Source-bound conditional engineering derivation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "record_id", "source_hashes", "model", "inputs", "assumptions", "calculation", "results", "alternatives", "falsification_test"],
+  "properties": {
+    "record_type": {"const": "ontology-engineering.analysis-record/v1"},
+    "record_id": {"$ref": "#/$defs/id"},
+    "source_hashes": {
+      "type": "object", "minProperties": 1,
+      "propertyNames": {"$ref": "#/$defs/id"},
+      "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "model": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "governing_relations", "coordinate_system", "validity_domain"],
+      "properties": {
+        "name": {"$ref": "#/$defs/text"},
+        "governing_relations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}},
+        "coordinate_system": {"$ref": "#/$defs/text"},
+        "validity_domain": {"$ref": "#/$defs/text"}
+      }
+    },
+    "inputs": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["name", "value", "unit", "provenance", "source_id"],
+        "properties": {
+          "name": {"$ref": "#/$defs/id"},
+          "value": {"type": ["number", "string", "null"]},
+          "unit": {"$ref": "#/$defs/text"},
+          "provenance": {"enum": ["observed", "measured", "assumed", "calibrated", "unknown"]},
+          "source_id": {"$ref": "#/$defs/id"}
+        }
+      }
+    },
+    "assumptions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}},
+    "calculation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["method"],
+      "properties": {
+        "method": {"enum": ["analytic", "symbolic", "numerical", "hand_check", "other"]},
+        "implementation_source_id": {"$ref": "#/$defs/id"}
+      }
+    },
+    "results": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "statement", "value", "unit", "conditional_on"],
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "statement": {"$ref": "#/$defs/text"},
+          "value": {"type": ["number", "string", "null"]},
+          "unit": {"$ref": "#/$defs/text"},
+          "conditional_on": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/text"}}
+        }
+      }
+    },
+    "alternatives": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+    "falsification_test": {"$ref": "#/$defs/text"}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "text": {"type": "string", "minLength": 1}
+  }
+}

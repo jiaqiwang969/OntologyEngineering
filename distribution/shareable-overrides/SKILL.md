@@ -13,6 +13,8 @@ description: Use Semantica as the single executable semantic authority for engin
 
 装配和力学判断另读[通用内核](skills/cad-agent/references/assembly-and-physics-kernel.md)：实例身份、完整界面图、逐动作状态、外部支撑、装入路径、载荷需求和接头容量各自取证。公开的装配/机构筛查器只对声明的有限几何域给出计算结果，不替代实物强度、动力学或 Semantica 正式语义审查。
 
+从照片、视频、专利或残缺 CAD 反推形态与机构时，另读[证据驱动的重建方法](skills/cad-agent/references/evidence-driven-reconstruction.md)。先区分看见的、推断的和本方设计的；用物理、机构学与数学补出条件约束，并保留现有证据无法区分的候选。推导结果通过来源锁定的记录交给 CAD 证据适配器，不把候选伪装成原物事实。
+
 处理不完整客户需求、工艺方案、设备复用、成本和交期时，加载 [制造工艺与成本模块](skills/manufacturing-process-cost/SKILL.md)。先复原客户目标、使用情境与功能，再把路线逐项连接到必要功能、验证方法、资源和成本；缺少的前提应标成开放问题。工艺替代须核查被原工艺顺带实现的所有功能，不能只比较主要加工效果。
 
 每次关键判断保留四类东西：输入快照及 SHA-256、对象与版本映射、证据/假设/冲突状态、决定及其反证条件。变更后沿依赖关系重开受影响的工艺、检验、费用、交期和对外答复。

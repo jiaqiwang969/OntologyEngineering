@@ -21,9 +21,11 @@
 
 先选择能改变决定的最低成本核查。来源缺失时保留开放问题；不要为了填满表格把猜测改写成原生观察。对多个候选配置或状态分别成包。工程主张需要写清支持边、挑战证据和下一步可区分观察；仿真输入要回指同版几何、材料、载荷与边界条件，仿真输出保留网格/求解范围。
 
+若任务是从图像、视频、专利或残缺模型推断隐藏形态/机构，先按[证据驱动的重建方法](evidence-driven-reconstruction.md)区分直接观察、机理候选、原理推导和本方设计。形状相似、轨迹吻合或数学自洽都不能单独证明原设备的内部结构。
+
 ## 通用交接合同
 
-使用 [`cad-evidence.v1.schema.json`](../contracts/cad-evidence.v1.schema.json) 记录来源、CAD 对象、关系、要求、有限主张和问题。`kind`、`predicate` 是本项目使用的词，不构成新的可执行 TBox。`identity_scope` 明确对象 ID 能否跨版重用；`basis` 区分原生回读、图纸/BOM 审阅、仿真、测量和推断。原生回读项的 JSON Pointer 必须指到实际字段，`expected` 用来核对提取值；其他媒介的定位仅证明引用位置已记录，仍需人工或相应原生工具检查内容。来源路径相对项目根目录，文件逐项核 SHA-256；若回读内嵌模型哈希，须核对到该模型源。
+使用 [`cad-evidence.v1.schema.json`](../contracts/cad-evidence.v1.schema.json) 记录来源、CAD 对象、关系、要求、有限主张和问题。`kind`、`predicate` 是本项目使用的词，不构成新的可执行 TBox。`identity_scope` 明确对象 ID 能否跨版重用；`basis` 区分原生回读、图纸/BOM 审阅、媒体/专利观察、解析推导、仿真、测量和推断。原生回读及解析推导项的 JSON Pointer 必须指到实际字段，`expected` 用来核对提取值；其他媒介的定位仅证明引用位置已记录，仍需人工或相应原生工具检查内容。来源路径相对项目根目录，文件逐项核 SHA-256；若回读内嵌模型哈希，须核对到该模型源。
 
 ```bash
 skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/cad_evidence.py \

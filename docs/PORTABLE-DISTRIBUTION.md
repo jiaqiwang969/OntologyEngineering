@@ -2,7 +2,7 @@
 
 有两种不同的本地制品，不能混用其放行范围：
 
-- **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、通用 CAD 证据、CAD／工艺交接、可移植 Fusion 执行层、NX/AutoCAD 可配置远程桥及有界装配/机构筛查器。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。`manufacturing-v0.5.6` 承接 [0.5.5](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.5)，增加公开 CAD 远程桥、装配/力学方法内核及有界专项筛查；对应源码以 `manufacturing-v0.5.6` 标签固定。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
+- **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、通用 CAD 证据、形态/机构重建、CAD／工艺交接、可移植 Fusion 执行层、NX/AutoCAD 可配置远程桥及有界装配/机构筛查器。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。`manufacturing-v0.5.7` 承接 [0.5.6](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.6)，增加来源绑定的第一性原理推导记录与逆向重建方法；对应源码以 `manufacturing-v0.5.7` 标签固定。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
 - **完整仓库快照**：`python3 scripts/package_skill.py --output ...` 按当前仓库文件清单打包两卷书、公开 CAD 核心和其余仓库资产。GitHub 的完整 Release ZIP 是固定标签的仓库快照；不包含仓外的历史私有 CAD 执行器、案例或客户证据。[两卷书整体权利状态](PUBLIC-RELEASE-STATUS.md)与核心包的公开资产台账分开记录。文件检查通过不能当作权利放行。
 
 两种制品都以单一 `ontology-engineering/` 根目录交付，接收方在新目录复验；正式语义 release 与具体客户产品放行另行判断。
@@ -20,7 +20,7 @@
 | 冻结的制造案例 | [案例传输锁](../runtime/semantic-bundles.json)、`runtime/vendor/` | 141 项 Semantica 原生资产、68 个可重跑场景 |
 | 运行、分发及回归检查 | [案例入口](../scripts/run_manufacturing_cases.py)、[分发工具](../scripts/package_skill.py)、`tests/` | 校验资产、执行案例、发现断链和打包遗漏 |
 | CAD 非语义运行源锁 | [CAD 源锁](../runtime/cad-operational-source-lock.json) | 逐文件约束动态加载和子进程调用，修改即重审；不豁免第二语义后端 |
-| 远程 CAD 桥与装配/机构工具 | [CAD 模块](../skills/cad-agent/SKILL.md)、[能力图](cad-agent-capability-map.md) | NX MCP SSH 传输、AutoCAD COM/relay、装配与力学通用内核、AABB 装入/顺序和四连杆位置筛查；外部 CAD 软件与真实主机验收不随包提供 |
+| 远程 CAD 桥、逆向重建与装配/机构工具 | [CAD 模块](../skills/cad-agent/SKILL.md)、[能力图](cad-agent-capability-map.md) | 图片/视频/专利到候选结构的通用方法与证据绑定、NX MCP SSH 传输、AutoCAD COM/relay、装配与力学通用内核、AABB 装入/顺序和四连杆位置筛查；媒体自动识别、外部 CAD 软件与真实主机验收不随包提供 |
 | Fusion 专用 wheel | [运行身份锁](../skills/cad-agent/dist/fusion-runtime-lock.json)、[检验器](../skills/cad-agent/scripts/verify_fusion_runtime_wheel.py) | 仅安装 Fusion 执行代理；打包和安装后检查 wheel 摘要、成员、入口及旧语义模块缺席 |
 
 冻结案例 ZIP 是 Semantica 已验证候选的不可变传输副本。它包含数据、查询、约束、规则和 oracle，没有作者工作区、个人路径、权限绑定或替代引擎。传输锁检查每个成员、manifest、资产摘要和运行时身份；实际语义解释和验证全部交给 Semantica。修改案例须在受控 Semantica 流程中形成后继，再更新传输包和锁。

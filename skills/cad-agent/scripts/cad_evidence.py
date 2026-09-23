@@ -20,6 +20,7 @@ from rdf_lines import Iri, Namespace, RdfTerms, Text, TripleLines
 
 
 SCHEMA = Path(__file__).resolve().parents[1] / "contracts" / "cad-evidence.v1.schema.json"
+ANALYSIS_SCHEMA = Path(__file__).resolve().parents[1] / "contracts" / "analysis-record.v1.schema.json"
 CE = Namespace("urn:ontology-engineering:cad-evidence:v1:")
 
 
@@ -81,10 +82,12 @@ def _check_refs(packet: dict, found: dict[str, tuple[str, dict]]) -> None:
     for key in ("objects", "relations"):
         for entry in packet[key]:
             require([entry["source_id"]], {"source"}, entry["id"])
+            if entry["basis"] in {"visual_review", "patent_review", "analytic_derivation"} and key == "objects" and "status" not in entry:
+                raise CadEvidenceError(f"{entry['id']} reconstructed object requires observed/candidate status")
+            if entry["basis"] in {"engineering_inference", "analytic_derivation"} and entry.get("status") == "observed":
+                raise CadEvidenceError(f"{entry['id']} inferred fact cannot be observed")
             if key == "relations":
                 require([entry["subject_id"], entry["object_id"]], {"object"}, entry["id"])
-                if entry["basis"] == "engineering_inference" and entry["status"] == "observed":
-                    raise CadEvidenceError(f"{entry['id']} inferred relation cannot be observed")
     for entry in packet["requirements"]:
         require(entry["source_ids"], {"source"}, entry["id"])
         require(entry["target_ids"], {"object"}, entry["id"])
@@ -147,23 +150,57 @@ def verify(packet_path: Path, project_root: Path) -> tuple[dict, dict]:
         for pointer, target in source.get("embedded_source_hashes", {}).items():
             if _pointer(source_json(source["id"]), pointer) != sources[target]["sha256"]:
                 raise CadEvidenceError(f"embedded source hash mismatch: {source['id']} {pointer}")
+        if source["role"] == "analysis_record":
+            document = source_json(source["id"])
+            analysis_schema = json.loads(ANALYSIS_SCHEMA.read_text(encoding="utf-8"))
+            problems = sorted(Draft202012Validator(analysis_schema).iter_errors(document),
+                              key=lambda error: list(map(str, error.path)))
+            if problems:
+                first = problems[0]
+                raise CadEvidenceError(f"analysis record schema: {source['id']} /{'/'.join(map(str, first.path))}: {first.message}")
+            for referenced_id, digest in document["source_hashes"].items():
+                if referenced_id == source["id"] or referenced_id not in sources or digest != sources[referenced_id]["sha256"]:
+                    raise CadEvidenceError(f"analysis source hash mismatch: {source['id']} {referenced_id}")
+            for item in document["inputs"]:
+                if item["source_id"] not in document["source_hashes"]:
+                    raise CadEvidenceError(f"analysis input source not bound: {source['id']} {item['name']}")
+                if item["provenance"] == "unknown" and item["value"] is not None:
+                    raise CadEvidenceError(f"unknown analysis input has a value: {source['id']} {item['name']}")
+                if item["provenance"] == "measured" and sources[item["source_id"]]["role"] != "measurement":
+                    raise CadEvidenceError(f"measured analysis input lacks measurement source: {source['id']} {item['name']}")
+            implementation = document["calculation"].get("implementation_source_id")
+            if document["calculation"]["method"] == "numerical" and not implementation:
+                raise CadEvidenceError(f"numerical analysis implementation not bound: {source['id']}")
+            if implementation and implementation not in document["source_hashes"]:
+                raise CadEvidenceError(f"analysis implementation source not bound: {source['id']} {implementation}")
     expected_roles = {"native_readback": "native_readback", "drawing_review": "drawing",
-                      "bom_review": "bom", "simulation_result": "simulation_result", "measurement": "measurement"}
+                      "bom_review": "bom", "simulation_result": "simulation_result", "measurement": "measurement",
+                      "visual_review": "reference_media", "patent_review": "patent_document",
+                      "analytic_derivation": "analysis_record"}
     for entry in packet["objects"] + packet["relations"]:
         basis = entry["basis"]
         role = sources[entry["source_id"]]["role"]
         if basis in expected_roles and role != expected_roles[basis]:
             raise CadEvidenceError(f"{entry['id']} claims {basis} from {role}")
+        if basis == "visual_review" and not sources[entry["source_id"]]["media_type"].startswith(("image/", "video/")):
+            raise CadEvidenceError(f"{entry['id']} visual review requires original image/video media")
         if basis == "native_readback":
             observed = _pointer(source_json(entry["source_id"]), entry["source_locator"])
             if "expected" in entry:
                 if not isinstance(observed, dict) or any(observed.get(key) != value for key, value in entry["expected"].items()):
                     raise CadEvidenceError(f"native readback value mismatch: {entry['id']}")
+        if basis == "analytic_derivation":
+            if not entry.get("expected"):
+                raise CadEvidenceError(f"{entry['id']} analytic derivation requires expected result binding")
+            observed = _pointer(source_json(entry["source_id"]), entry["source_locator"])
+            if not isinstance(observed, dict) or any(observed.get(key) != value for key, value in entry["expected"].items()):
+                raise CadEvidenceError(f"analytic derivation result mismatch: {entry['id']}")
     audit = {
         "record_type": "ontology-engineering.cad-evidence-integrity/v1",
         "packet_id": packet["packet_id"],
         "packet_sha256": _sha256(packet_path),
         "schema_sha256": _sha256(SCHEMA),
+        "analysis_schema_sha256": _sha256(ANALYSIS_SCHEMA),
         "adapter_sha256": _sha256(Path(__file__)),
         "source_integrity": "verified",
         "source_results": [{"id": entry["id"], "path": entry["path"], "sha256": entry["sha256"]} for entry in packet["sources"]],
@@ -295,7 +332,7 @@ def main() -> int:
         packet, audit = verify(args.packet, args.project_root)
         previous = verify(args.previous_packet, args.project_root)[0] if args.previous_packet else None
         abox = project_abox(packet, audit["packet_sha256"])
-        digest = f"{audit['packet_sha256'][:12]}-{audit['schema_sha256'][:8]}-{audit['adapter_sha256'][:8]}"
+        digest = f"{audit['packet_sha256'][:12]}-{audit['schema_sha256'][:8]}-{audit['analysis_schema_sha256'][:8]}-{audit['adapter_sha256'][:8]}"
         output = args.output_dir.resolve()
         output.mkdir(parents=True, exist_ok=True)
         abox_path = output / f"cad-evidence-{digest}.nt"

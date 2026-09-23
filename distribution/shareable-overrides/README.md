@@ -1,8 +1,8 @@
 # 工程本体论：通用 CAD × 工艺独立核心版
 
-本次公开制造方法版本为 **0.5.6**，承接上一版 `manufacturing-v0.5.5`；Semantica、CAD 适配器和冻结语义包各自保留独立组件版本。
+本次公开制造方法版本为 **0.5.7**，承接上一版 `manufacturing-v0.5.6`；Semantica、CAD 适配器和冻结语义包各自保留独立组件版本。
 
-这是可迁移的工程方法与执行核心，包含 Semantica 单一语义执行入口、制造工艺与成本模块、通用 CAD 证据及其工艺交接，Fusion 受保护调用、可配置 NX/AutoCAD 桥，以及装配与力学的通用判断内核和有界专项筛查器。客户图纸、对话、模型、现场参数、历史 CAD 案例和两卷书不在包内。
+这是可迁移的工程方法与执行核心，包含 Semantica 单一语义执行入口、制造工艺与成本模块、通用 CAD 证据及其工艺交接，图片/视频/专利到候选结构的重建与第一性原理推导记录，Fusion 受保护调用、可配置 NX/AutoCAD 桥，以及装配与力学的通用判断内核和有界专项筛查器。客户图纸、对话、模型、现场参数、历史 CAD 案例和两卷书不在包内。
 
 从根目录运行：
 
@@ -16,4 +16,4 @@ skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/test_cad_process_hand
 skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/test_remote_assembly_mechanism.py
 ```
 
-具体依赖、验证范围和授权边界见 [分发说明](docs/PORTABLE-DISTRIBUTION.md)。制造方法见 [manufacturing-process-cost](skills/manufacturing-process-cost/SKILL.md)，CAD 方法见 [cad-agent](skills/cad-agent/SKILL.md)、[装配与力学内核](skills/cad-agent/references/assembly-and-physics-kernel.md)和[能力边界](docs/cad-agent-capability-map.md)。
+具体依赖、验证范围和授权边界见 [分发说明](docs/PORTABLE-DISTRIBUTION.md)。制造方法见 [manufacturing-process-cost](skills/manufacturing-process-cost/SKILL.md)，CAD 方法见 [cad-agent](skills/cad-agent/SKILL.md)、[重建方法](skills/cad-agent/references/evidence-driven-reconstruction.md)、[装配与力学内核](skills/cad-agent/references/assembly-and-physics-kernel.md)和[能力边界](docs/cad-agent-capability-map.md)。

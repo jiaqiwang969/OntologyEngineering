@@ -38,7 +38,7 @@ proposal, and use customer and shop-floor feedback to revise it.
 
 The bundled [CAD Agent module](skills/cad-agent/SKILL.md) follows a [general CAD evidence workflow](skills/cad-agent/references/cad-engineering-workflow.md)
 for parts, drawings/BOMs, assemblies, mechanisms, and native readbacks. Its [bidirectional handoff](skills/cad-agent/references/cad-process-integration.md)
-connects relevant CAD objects and revisions to manufacturing decisions. The portable core guards local Fusion calls; verified NX/AutoCAD readbacks can be ingested, but remote execution bridges are not bundled. The process module then reviews required functions, failure paths, inspection, cost, and lead time; Semantica remains the formal semantic authority.
+connects relevant CAD objects and revisions to manufacturing decisions. The portable core guards local Fusion calls and provides configurable NX/AutoCAD bridges; recipients supply their own CAD software, hosts, and NX sidecar. The process module then reviews required functions, failure paths, inspection, cost, and lead time; Semantica remains the formal semantic authority.
 
 ## Two volumes, two complementary questions
 
@@ -77,13 +77,14 @@ real product.
 | Build a trustworthy-product or functional-safety evidence chain | The preface and Chapters 1–10 of Volume 2, then the paired ontology answers in Chapters 11–20 |
 | Apply the method to a live engineering project | Start with the [`Semantic Engagement Contract`](references/semantic-engagement-contract.md) |
 | Design or verify parts, drawings, assemblies, mechanisms, and manufacturing functions | Use the [CAD Agent module](skills/cad-agent/SKILL.md) and [general CAD evidence workflow](skills/cad-agent/references/cad-engineering-workflow.md) for identity, native provenance, relations, claims, and change impact; add the [manufacturing handoff](skills/cad-agent/references/cad-process-integration.md) when needed |
+| Infer shape or mechanisms from images, video, patents, or incomplete CAD | Use [evidence-driven reconstruction](skills/cad-agent/references/evidence-driven-reconstruction.md) to separate visible evidence, mechanism hypotheses, conditional physical or mathematical derivations, and a candidate CAD design |
 | Turn a customer inquiry into a process and cost proposal, then revise it from feedback | Start with the [manufacturing module](skills/manufacturing-process-cost/SKILL.md): anonymized cases, work norms, record templates, and XeLaTeX report components |
 
 <a id="manufacturing"></a>
 
 ## Manufacturing and costs: connect conversations, proposals, and feedback
 
-The current method is **0.5.5**, for discrete mechanical manufacturing. Each project supplies its own
+The current method is **0.5.7**, for discrete mechanical manufacturing. Each project supplies its own
 industry context, materials, process parameters, and acceptance criteria. The reusable part is how to
 find missing knowledge, connect evidence, compare options, and verify decisions. Detailed guides and
 example outputs are currently in Chinese.
@@ -173,11 +174,11 @@ different RDF/OWL backend.
 
 ## Portable distribution
 
-The [0.5.5 update notes](docs/releases/manufacturing-method-0.5.5.md) describe the general CAD evidence layer. The [0.5.4 notes](docs/releases/manufacturing-method-0.5.4.md) retain the causal challenge and manufacturing handoff baseline.
+The [0.5.7 update notes](docs/releases/manufacturing-method-0.5.7.md) describe source-bound reconstruction and conditional first-principles derivations. The [0.5.6 notes](docs/releases/manufacturing-method-0.5.6.md) cover the remote CAD bridges and assembly/mechanics kernel.
 
 | Component | Current version and scope |
 |---|---|
-| Manufacturing method | `0.5.5`; general CAD evidence, manufacturing processes, costs, feedback, and reuse |
+| Manufacturing method | `0.5.7`; CAD evidence, reconstruction, remote bridges, assembly/mechanics, manufacturing processes and costs |
 | Record templates / review cards | `0.2.1` for two templates, `0.2.0` for the others / cards `1.4.1` |
 | Reports / process diagrams | `1.0.0`; XeLaTeX and five editable TikZ templates |
 | Frozen manufacturing semantic package | `0.1.1`; 141 declared assets, 68 synthetic scenarios, and 23 CQs; retains its local technical candidate state |
@@ -188,7 +189,7 @@ dependencies. Follow [portable distribution and receiver checks](docs/PORTABLE-D
 check, package, and replay it without the original customer project or author workspace. Initial Python
 dependency installation may still need a package index.
 
-The [0.5.5 public asset ledger](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.5/ontology-engineering-core-v0.5.5-assets.json), the preceding manufacturing release's [frozen asset manifest](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json),
+The [0.5.7 public asset ledger](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.7/ontology-engineering-core-v0.5.7-assets.json), the preceding manufacturing release's [frozen asset manifest](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json),
 this [README update manifest](docs/releases/manufacturing-readme-0.5.3-r1.json), and the
 [semantic package NOTICE](runtime/vendor/MANUFACTURING-NOTICE.md) retain their separate scopes.
 The distribution guide explains the limits of file checks and synthetic replay. Manufacturing-method

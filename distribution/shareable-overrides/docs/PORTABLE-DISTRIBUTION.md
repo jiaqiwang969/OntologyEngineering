@@ -1,11 +1,11 @@
 # 独立核心包的安装与边界
 
-`manufacturing-v0.5.6` 是继公开制造方法 `0.5.5` 后，由仓库所有者批准发布的工程本体论独立核心包。ZIP 解压后得到单一 `ontology-engineering/` 根目录。所有随包文件由 `PORTABLE-MANIFEST.json` 逐项记录 SHA-256；没有指向作者目录的符号链接。公开资产的来源、许可依据和复核状态另见随 GitHub Release 发布的精确资产台账。本包不是公开书包或客户产品放行文件。
+`manufacturing-v0.5.7` 是继公开制造方法 `0.5.6` 后，由仓库所有者批准发布的工程本体论独立核心包。ZIP 解压后得到单一 `ontology-engineering/` 根目录。所有随包文件由 `PORTABLE-MANIFEST.json` 逐项记录 SHA-256；没有指向作者目录的符号链接。公开资产的来源、许可依据和复核状态另见随 GitHub Release 发布的精确资产台账。本包不是公开书包或客户产品放行文件。
 
 ## 内容
 
 - 根 [skill](../SKILL.md)、[制造工艺与成本模块](../skills/manufacturing-process-cost/SKILL.md)及其合成模板、报告组件；
-- [CAD 模块](../skills/cad-agent/SKILL.md)、[通用 CAD 证据合同](../skills/cad-agent/contracts/cad-evidence.v1.schema.json)、[工艺交接合同](../skills/cad-agent/contracts/cad-process-handoff.v1.schema.json)、Fusion 受保护调用、[可配置远程桥](../skills/cad-agent/remote/README.md)、[装配与力学通用内核](../skills/cad-agent/references/assembly-and-physics-kernel.md)及有界装配/机构工具；
+- [CAD 模块](../skills/cad-agent/SKILL.md)、[证据驱动的重建方法](../skills/cad-agent/references/evidence-driven-reconstruction.md)、[第一性原理推导记录合同](../skills/cad-agent/contracts/analysis-record.v1.schema.json)、[通用 CAD 证据合同](../skills/cad-agent/contracts/cad-evidence.v1.schema.json)、[工艺交接合同](../skills/cad-agent/contracts/cad-process-handoff.v1.schema.json)、Fusion 受保护调用、[可配置远程桥](../skills/cad-agent/remote/README.md)、[装配与力学通用内核](../skills/cad-agent/references/assembly-and-physics-kernel.md)及有界装配/机构工具；
 - 锁定的 Semantica wheel、合成制造案例传输包、执行脚本和验证工具；
 - [隐私与权利政策](PRIVACY-AND-RIGHTS.md)、[组件权利说明](COMPONENT-NOTICE.md)及文件清单。
 

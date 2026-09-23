@@ -116,6 +116,63 @@ def test_in_flight_caller_update_does_not_mix_snapshots(tmp_path):
     assert r['counts']['candidate']==16
 
 
+def test_late_old_configuration_cannot_overwrite_successor(tmp_path):
+    """A real delayed completion exercises separate immutable run identities."""
+    from concurrent.futures import ThreadPoolExecutor
+    entered, release = threading.Event(), threading.Event()
+    old = prepared('old-config', items=1)
+    new = prepared('new-config', items=1)
+    new['deployment']['model'] = 'jev-1.14.0'
+    new['deployment_sha256'] = digest(new['deployment'])
+
+    def delayed(payload, number):
+        entered.set()
+        assert release.wait(10)
+        return response(payload, {q: answer('not_established') for q in payload['questions']})
+
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        pending = pool.submit(execute, old, tmp_path/'old.sqlite', Fixture(delayed))
+        try:
+            assert entered.wait(10)
+            # A shared journal fails explicitly while an earlier run owns it.
+            with pytest.raises(ValueError, match='journal_already_running'):
+                execute(new, tmp_path/'old.sqlite', Fixture())
+            successor = execute(new, tmp_path/'new.sqlite', Fixture())
+            before = deepcopy(successor)
+        finally:
+            release.set()
+        previous = pending.result(timeout=10)
+    assert previous['counts']['unknown'] == 2
+    assert successor == before and successor['counts']['candidate'] == 2
+    with sqlite3.connect(tmp_path/'new.sqlite') as db:
+        assert db.execute('SELECT lock_sha FROM runs').fetchone()[0] == new['deployment_sha256']
+        assert {json.loads(r[0])['choice'] for r in db.execute('SELECT answer FROM candidates')} == {'supports'}
+    assert {a['candidate_id'] for a in previous['items'][0]['answers']}.isdisjoint(
+        a['candidate_id'] for a in successor['items'][0]['answers'])
+
+
+def test_retired_provider_allows_identified_history_but_not_new_evidence(tmp_path):
+    db = tmp_path/'jobs.sqlite'
+    execute(prepared('historical', items=1), db, Fixture())
+
+    def retired(payload, number):
+        raise TransportError('http_410', retryable=False)
+
+    unavailable = Fixture(retired)
+    replay = execute(prepared('audit-replay', items=1), db, unavailable)
+    assert replay['replays'] == 1 and not unavailable.calls
+    assert all(a['execution_kind'] == 'replay' and not a['fact_admitted'] for a in replay['items'][0]['answers'])
+    fresh = prepared('new-evidence', items=1)
+    fresh['items'][0]['state']['source_text'] = 'New observation unavailable in historical cache.'
+    fresh['items'][0]['source']['sha256'] = digest(b'new observation')
+    fresh['input_sha256'] = digest({'manifest': fresh['input'], 'items': fresh['items']})
+    failed = execute(fresh, db, unavailable)
+    assert len(unavailable.calls) == 1
+    assert failed['replays'] == 0 and failed['counts']['execution_error'] == 2
+    assert failed['status'] == 'incomplete'
+    assert failed['items'][0]['required_methods'] == ['pattern-claim', 'pattern-scope']
+
+
 def test_high_score_and_unrelated_candidates_are_audited_with_obligations(tmp_path):
     p=prepared(items=40)
     p['catalog']['questions']={q:{'type':'choice','instructions':'synthetic relation',

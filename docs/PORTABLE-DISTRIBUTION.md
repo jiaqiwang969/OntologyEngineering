@@ -2,8 +2,8 @@
 
 有两种不同的本地制品，不能混用其放行范围：
 
-- **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、CAD／工艺交接及可移植 Fusion 执行层。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。承接 `manufacturing-v0.5.3` 的 `manufacturing-v0.5.4` 已由所有者批准并在 [GitHub Release](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.4) 公开发布；对应源码已并入 `main`，并由 `manufacturing-v0.5.4` 标签固定。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
-- **完整作者工作树候选**：本页以下所述的 `python3 scripts/package_skill.py --output ...`。它保留两卷书与完整内部 CAD 模块，只适用于受控内部传输；[公开发布状态](PUBLIC-RELEASE-STATUS.md)仍为 BLOCKED。文件检查通过不能当作权利放行。
+- **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、通用 CAD 证据、CAD／工艺交接及可移植 Fusion 执行层。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。`manufacturing-v0.5.5` 承接 [0.5.4](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.4)，增加通用 CAD 证据合同、核验器与对象到工艺的连接；对应源码以 `manufacturing-v0.5.5` 标签固定。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
+- **完整仓库快照**：`python3 scripts/package_skill.py --output ...` 按当前仓库文件清单打包两卷书、公开 CAD 核心和其余仓库资产。GitHub 的完整 Release ZIP 是固定标签的仓库快照；不包含仓外的私有 CAD 执行桥、历史案例或客户证据。[两卷书整体权利状态](PUBLIC-RELEASE-STATUS.md)与核心包的公开资产台账分开记录。文件检查通过不能当作权利放行。
 
 两种制品都以单一 `ontology-engineering/` 根目录交付，接收方在新目录复验；正式语义 release 与具体客户产品放行另行判断。
 
@@ -12,7 +12,7 @@
 | 内容 | 根目录内的位置 | 作用 |
 | --- | --- | --- |
 | 总入口和制造方法 | [SKILL.md](../SKILL.md)、[制造模块](../skills/manufacturing-process-cost/SKILL.md) | 资料筛选、沟通、方案与反馈迭代 |
-| CAD 模块及交接合同 | [CAD 模块](../skills/cad-agent/SKILL.md)、[工艺交接](../skills/cad-agent/references/cad-process-integration.md) | 原生几何回读、来源校验、对象依赖与双向工艺问题；不自行执行语义规则 |
+| CAD 模块及交接合同 | [CAD 模块](../skills/cad-agent/SKILL.md)、[通用 CAD 证据](../skills/cad-agent/references/cad-engineering-workflow.md)、[工艺交接](../skills/cad-agent/references/cad-process-integration.md) | 零件、图纸/BOM、装配、机构对象的来源校验、项目 ABox 与双向工艺问题；不自行执行语义规则 |
 | 理论、案例和记录模板 | `references/`、`skills/manufacturing-process-cost/` | 书源锚点、脱敏演变案例、八类记录 |
 | 报告组件与合成演变输入 | [报告设计](../skills/manufacturing-process-cost/references/report-design.md)、[生成入口](../scripts/manufacturing_report.py)、`skills/manufacturing-process-cost/assets/report-template/` | 四类内容视图、原生 XeLaTeX、冻结与输出对应检查 |
 | 工艺图模板 | [使用说明](../skills/manufacturing-process-cost/references/process-flow-templates.md)、`skills/manufacturing-process-cost/assets/report-template/flowcharts/` | 顺序、汇合、返工、条件分支及资源成本关系；原生 TikZ 图源 |

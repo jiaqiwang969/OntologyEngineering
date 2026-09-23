@@ -17,6 +17,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from jsonschema import Draft202012Validator
+from cad_evidence import verify as verify_cad_evidence
 from rdf_lines import Iri, Namespace, RdfTerms, Text, TripleLines
 
 
@@ -144,6 +145,16 @@ def _check_refs(packet: dict) -> dict[str, dict]:
     for output in packet["downstream_outputs"]:
         expect(output["source_ids"], {"source"}, output["id"])
         expect(output["depends_on_claim_ids"], {"claim"}, output["id"])
+    if "cad_evidence" in packet:
+        evidence = packet["cad_evidence"]
+        expect([evidence["source_id"]], {"source"}, "cad_evidence")
+        linked = set()
+        for link in evidence["links"]:
+            target = link["handoff_entity_id"]
+            expect([target], (set(collections) | {"operation"}) - {"source"}, "cad_evidence")
+            if target in linked:
+                raise HandoffError(f"duplicate CAD evidence handoff link: {target}")
+            linked.add(target)
     return ids
 
 
@@ -191,6 +202,19 @@ def verify(packet_path: Path, project_root: Path) -> tuple[dict, dict]:
         for key, value in feature.get("attributes", {}).items():
             if observed.get(key) != value:
                 raise HandoffError(f"native readback attribute mismatch: {feature['id']}.{key}")
+    cad_evidence_audit = None
+    if "cad_evidence" in packet:
+        evidence = packet["cad_evidence"]
+        source = source_by_id[evidence["source_id"]]
+        if source["media_type"] != "application/json":
+            raise HandoffError("CAD evidence packet source must be application/json")
+        cad_packet, cad_evidence_audit = verify_cad_evidence(source_paths[evidence["source_id"]], project_root)
+        if cad_packet["project"] != packet["project"]:
+            raise HandoffError("CAD evidence project identity/state differs from process handoff")
+        cad_objects = {entry["id"] for entry in cad_packet["objects"]}
+        for link in evidence["links"]:
+            if not set(link["cad_object_ids"]) <= cad_objects:
+                raise HandoffError(f"CAD evidence link refers to missing object: {link['handoff_entity_id']}")
     audit = {
         "record_type": "ontology-engineering.cad-process-handoff-integrity/v1",
         "handoff_id": packet["handoff_id"],
@@ -203,6 +227,8 @@ def verify(packet_path: Path, project_root: Path) -> tuple[dict, dict]:
         "semantic_execution": "not_run",
         "engineering_verdict": "not_assessed",
     }
+    if cad_evidence_audit:
+        audit["cad_evidence_packet_sha256"] = cad_evidence_audit["packet_sha256"]
     return packet, audit
 
 
@@ -335,6 +361,20 @@ def project_abox(packet: dict, packet_sha256: str | None = None) -> bytes:
             graph.add((subject, CP.wasDerivedFrom, uri("source", source_id)))
         for claim_id in output["depends_on_claim_ids"]:
             graph.add((subject, CP.dependsOnClaim, uri("claim", claim_id)))
+    if "cad_evidence" in packet:
+        evidence = packet["cad_evidence"]
+        graph.add((snapshot, CP.hasCadEvidenceSource, uri("source", evidence["source_id"])))
+        kind_by_id = {}
+        for kind, entries in (("feature", packet["features"]), ("function", packet["functions"]),
+                              ("route", packet["routes"]), ("coverage", packet["coverage_assertions"]),
+                              ("claim", packet["claims"]), ("question", packet["questions"]),
+                              ("assumption", packet["assumptions"]), ("downstream_output", packet["downstream_outputs"]),
+                              ("operation", [op for route in packet["routes"] for op in route["operations"]])):
+            kind_by_id.update((entry["id"], kind) for entry in entries)
+        for link in evidence["links"]:
+            subject = uri(kind_by_id[link["handoff_entity_id"]], link["handoff_entity_id"])
+            for object_id in link["cad_object_ids"]:
+                graph.add((subject, CP.referencesCadObject, uri("cad_object", object_id)))
     lines = sorted(f"{s.n3()} {p.n3()} {o.n3()} .\n" for s, p, o in graph)
     return "".join(lines).encode("utf-8")
 
@@ -373,6 +413,12 @@ def compare_packets(previous: dict, current: dict) -> dict:
                 result[claim_id] = (kind, entry, dependencies | {assumption["id"]})
         for output in packet["downstream_outputs"]:
             result[output["id"]] = ("downstream_output", output, set(output["source_ids"] + output["depends_on_claim_ids"]))
+        if "cad_evidence" in packet:
+            evidence = packet["cad_evidence"]
+            for link in evidence["links"]:
+                identity = link["handoff_entity_id"]
+                kind, entry, dependencies = result[identity]
+                result[identity] = (kind, entry, dependencies | {evidence["source_id"]})
         return result
 
     old = entities(previous)

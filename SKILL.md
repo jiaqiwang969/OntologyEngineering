@@ -227,12 +227,14 @@ Semantica 传输包随根目录携带，由运行时解释；它不是 OE-local 
 当用户要把另一部合法取得的标准做成书时，加载 `skills/standard-to-book/SKILL.md`。
 新书正文、图和来源地图属于书侧；完整 executable package 和 promotion 属于 Semantica。
 
-CAD 建模、图纸、装配、机构或几何核验加载
-[CAD Agent 模块](skills/cad-agent/SKILL.md)。它负责 Fusion/NX/AutoCAD 与原生几何证据，
-不拥有第二套正式语义执行权。工艺选择依赖 CAD 特征，或候选工艺要求 CAD 核查接头、
-可达性和公差时，按[CAD／工艺双向证据交接](skills/cad-agent/references/cad-process-integration.md)
-形成带来源的项目 ABox、双向问题和版本变化影响清单；制造模块接续功能覆盖、检验、
-成本与交期。证据转换器只核对身份与来源，不出具 Semantica 或实物放行结论。
+CAD 建模、修复、图纸/BOM、装配、机构或几何核验加载
+[CAD Agent 模块](skills/cad-agent/SKILL.md)。先按其[通用 CAD 工程工作流](skills/cad-agent/references/cad-engineering-workflow.md)
+区分定义、实例、特征、界面、基准、配合、机构状态与来源，再用通用 CAD 证据合同形成
+带来源的项目 ABox 和变更影响；它不拥有第二套正式语义执行权。工艺选择依赖 CAD
+对象，或候选工艺反过来要求 CAD 核查可达性、公差、配合、运动包络等条件时，按
+[CAD／工艺双向证据交接](skills/cad-agent/references/cad-process-integration.md)
+把确切对象链到功能、路线、主张与问题；制造模块接续功能覆盖、检验、成本与交期。
+证据转换器只核对身份与来源，不出具 Semantica 或实物放行结论。
 
 EDA、质检、仿真和其他制造 skill 在三个检查点调用本 skill：任务开始的语义
 接入、不可逆动作前的 preflight、任务结束后的 evidence/receipt/learning 判定。领域

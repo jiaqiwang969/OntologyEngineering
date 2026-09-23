@@ -33,10 +33,10 @@ Ontology Engineering 用两卷书讲清观察与建模方法，用项目原生�
 用于离散机械制造：从不完整的询价、图纸、工艺总结、设备台账和报价开始，逐步澄清
 隐含条件，形成有依据的方案，再把客户和现场反馈接回下一轮。
 
-并入的 [CAD Agent 模块](skills/cad-agent/SKILL.md)读取 Fusion、NX、AutoCAD 的原生
-几何与装配证据，经 [CAD／工艺双向交接](skills/cad-agent/references/cad-process-integration.md)
-把孔、界面、焊缝可达性和版本变化送到制造判断。工艺模块据此追问必要功能、失效路径、
-检验、成本和交期；正式语义裁定仍由 Semantica 执行。
+并入的 [CAD Agent 模块](skills/cad-agent/SKILL.md)按[通用 CAD 工作流](skills/cad-agent/references/cad-engineering-workflow.md)
+处理零件、图纸/BOM、装配、机构与原生回读证据，再经[CAD／工艺双向交接](skills/cad-agent/references/cad-process-integration.md)
+把相关对象和版本变化送到制造判断。便携版提供本机 Fusion 守卫；NX/AutoCAD 等可提供经核验的回读证据，远程执行桥不随包分发。
+工艺模块接续必要功能、失效路径、检验、成本和交期；正式语义裁定仍由 Semantica 执行。
 
 ## 两卷书，各自回答一个问题
 
@@ -67,14 +67,14 @@ EPS-RC17、ENV-01 和数值均为合成教学材料；精确 ISO 条款、表格
 | 理解 LLM/Agent 如何受语义约束 | 第一卷第 8 章，再看 [`SKILL.md`](SKILL.md) 的语义接入规则 |
 | 建立产品可信或功能安全证据链 | 第二卷前言与第 1–10 章，再按问题阅读第 11–20 章的本体回答 |
 | 把方法接入真实工程项目 | 先读 [`Semantic Engagement Contract`](references/semantic-engagement-contract.md) |
-| 从 CAD 模型核对工艺与密封等功能 | [CAD Agent 模块](skills/cad-agent/SKILL.md)及[双向证据交接](skills/cad-agent/references/cad-process-integration.md)：核对原生几何、来源、功能覆盖与变化影响 |
+| 设计或核对零件、图纸、装配、机构及制造功能 | [CAD Agent 模块](skills/cad-agent/SKILL.md)和[通用 CAD 证据工作流](skills/cad-agent/references/cad-engineering-workflow.md)：核对对象身份、原生来源、关系、主张与变化影响；需要时接入[工艺交接](skills/cad-agent/references/cad-process-integration.md) |
 | 从客户询问推进制造工艺、成本与反馈迭代 | [制造工艺与成本管理模块](skills/manufacturing-process-cost/SKILL.md)：脱敏演变案例、工作规范、记录模板与 XeLaTeX 报告组件 |
 
 <a id="manufacturing"></a>
 
 ## 制造工艺与成本：让沟通、方案和反馈形成闭环
 
-当前方法版本为 **0.5.4**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
+当前方法版本为 **0.5.5**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
 自己的证据确定；可复用的是发现问题、建立关系、比较方案和验证判断的方法。
 
 ```mermaid
@@ -155,11 +155,11 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 
 ## 独立分发
 
-制造方法 `0.5.4` 承接已公开的 `0.5.3`，本次 CAD／工艺协同、因果与反证关口及分发边界见[更新说明](docs/releases/manufacturing-method-0.5.4.md)。
+制造方法 `0.5.5` 把 CAD Agent 扩展为通用 CAD 证据入口，详见[更新说明](docs/releases/manufacturing-method-0.5.5.md)；此前的因果与反证关口仍按 [0.5.4 说明](docs/releases/manufacturing-method-0.5.4.md)执行。
 
 | 组件 | 当前版本与范围 |
 |---|---|
-| 制造方法 | `0.5.4`；沟通、CAD 证据交接、工艺、成本、反馈与复用 |
+| 制造方法 | `0.5.5`；通用 CAD 证据、制造工艺、成本、反馈与复用 |
 | 记录模板 / 评审卡 | 两份模板为 `0.2.1`、其余为 `0.2.0` / 评审卡 `1.4.1` |
 | 报告组件 / 工艺图 | `1.0.0`；XeLaTeX 与五类可编辑 TikZ 模板 |
 | 冻结制造语义包 | `0.1.1`；141 项声明资产、68 个合成场景、23 个 CQ；保留本地技术候选状态 |
@@ -169,7 +169,7 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 按 [独立分发与新目录验证](docs/PORTABLE-DISTRIBUTION.md) 检查、打包并重跑，
 无需访问原客户项目或作者工作区。首次安装 Python 依赖仍可能需要包源。
 
-[0.5.4 公开资产台账](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.4/ontology-engineering-core-v0.5.4-assets.json)、上一版制造方法的[冻结清单](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json)、
+[0.5.5 公开资产台账](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.5/ontology-engineering-core-v0.5.5-assets.json)、上一版制造方法的[冻结清单](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json)、
 [本次 README 更新清单](docs/releases/manufacturing-readme-0.5.3-r1.json)与
 [语义包 NOTICE](runtime/vendor/MANUFACTURING-NOTICE.md)分别保留。文件和合成案例检查的
 范围见分发说明；制造方法的公开授权与[两卷书整体发布状态](docs/PUBLIC-RELEASE-STATUS.md)分开记录。

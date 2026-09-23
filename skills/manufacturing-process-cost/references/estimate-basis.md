@@ -1,3 +1,5 @@
+> 独立核心版说明：原书稿不随包分发；文中的章节名称只作概念来源标识。
+
 # 从报价数字形成有依据的成本估算
 
 当资料已足以做部分核算、但“总额能信到哪一步”仍不清楚时使用。接续[对象与成本关系](manufacturing-map.md)、[高价值资料](high-value-documents.md)及 [P09—P11](decision-patterns.md)；本页补足参数依据和批次条件，不另建报价台账或评分模型。
@@ -45,4 +47,4 @@
 
 ## 依据与边界
 
-[第二卷第16章](../../../references/product-trustworthiness-book/ch16-measurement-ontology/chapter.md)指导数值来源、计算链及证据支持范围；[第18章](../../../references/product-trustworthiness-book/ch18-dependency-ontology/chapter.md)指导显式依赖与共享条件。批次计费、成本情景和共同未知项的处理是制造应用设计，不能称为书中现成的成本算法。沿用既有概念，语义学习为 `no_delta`；没有新增概率模型、自动报价器或原生语义规则。
+第二卷第16章指导数值来源、计算链及证据支持范围；第18章指导显式依赖与共享条件。批次计费、成本情景和共同未知项的处理是制造应用设计，不能称为书中现成的成本算法。沿用既有概念，语义学习为 `no_delta`；没有新增概率模型、自动报价器或原生语义规则。

@@ -159,7 +159,32 @@ OE 输入名与 native DTO 有意分层，适配器执行以下确定性投影�
 | `commit` | `committed` |
 | workspace `verify` | `execute_candidate`、`derive_regression_gate`、`regression_passed`、`derive_release_gate`、`release_complete` |
 | `promote` | `promoted` |
-| `discover`、workspace `run`、`history` | 只读；不制造 transition context |
+| `discover`、workspace `run`、`review`、`history` | 只读；不制造 transition context |
+
+`review` 需在 binding 与当前 task 的 `allowed_actions/requested_actions` 中同时声明；
+task 的 `required_capabilities` 还须包含 `semantica.ontology.decision-review/v1`；
+仅接受已晋升 workspace package 的 exact version/SHA。`--evidence-file` 的原始 RDF
+字节必须匹配 task 中指定 `--source-id` 的 SHA-256，`--format` 必须匹配其媒体类型；
+`--scope`、`--focus`、`--focus-type`、`--query-asset`、`--shape-asset` 指定本轮投影和
+package 检查项。Semantica 要求 focus 在输入中具有声明类型，并且输入中该类型实例
+恰好只有一个；多项决策拆成不同的证据快照后逐项审查。
+项目 ABox 必须由 CAD、仿真、试验或受控记录生成，包含产品/工艺版本、状态、功能、
+挑战及其支持边；scope 仅是报告身份，不代替 ABox 内容审查。Semantica 返回被绑定的
+package/query/shape/input/evaluated 快照摘要和 finding/SHACL 违反项。此命令不生成
+release receipt，不证明实物可靠。候选 manifest 只能在作者测试中评估。
+
+```bash
+runtime/.venv/bin/python scripts/semantic_engagement.py review \
+  --binding /controlled/project-binding.json \
+  --workspace /controlled/semantica-registry \
+  --task /controlled/current-task.json \
+  --evidence-file /controlled/project-decision.ttl \
+  --source-id project-abox-001 --format turtle \
+  --scope project-revision-assembled \
+  --focus urn:project:claim-001 \
+  --focus-type urn:package:DecisionClaim \
+  --query-asset decision-findings --shape-asset decision-shape
+```
 
 固定字段同时投影如下：`semantic_api → semantic_api_contract`；
 `lifecycle_actions → allowed_actions`（六态有序前缀）；authority

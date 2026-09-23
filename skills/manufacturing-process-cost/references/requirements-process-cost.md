@@ -1,3 +1,5 @@
+> 独立核心版说明：原书稿不随包分发；文中的章节名称只作概念来源标识。
+
 # 顺着因果联系完善工艺与成本
 
 用于从技术沟通、既有工艺、供应商方案和现场结果中找到决定方案的条件。资料处理的落点是完善工艺链、发现可行的实现方式、估算成本；文件数量和整理程度不是成果本身。本文细化 [P01—P05、P09—P11](decision-patterns.md)，按需要填写已有[评审卡](../assets/templates/decision-review-cards.md)。
@@ -90,6 +92,6 @@ AI 降本沿任务核算：设计/制图、程序、界面、测试、技术文�
 
 ## 依据与适用边界
 
-原话、隐含条件与回读来自[第一卷第 3 章](../../../references/ontology-engineering-book/handbook/chapters/ch03.tex)；量值的对象、方法、条件与支持范围见[第二卷第 16 章](../../../references/product-trustworthiness-book/ch16-measurement-ontology/chapter.md)；改变后的影响追查见[第 18 章](../../../references/product-trustworthiness-book/ch18-dependency-ontology/chapter.md)，执行反馈见[第 19 章](../../../references/product-trustworthiness-book/ch19-field-ontology/chapter.md)。本文将这些镜头用于工艺和费用推演，公式仅为边界明确的核算方法。
+原话、隐含条件与回读来自第一卷第 3 章；量值的对象、方法、条件与支持范围见第二卷第 16 章；改变后的影响追查见第 18 章，执行反馈见第 19 章。本文将这些镜头用于工艺和费用推演，公式仅为边界明确的核算方法。
 
 这是方法增量，沿用现有身份、主张、证据、情境、能力、依赖和成本表达，语义学习 `no_delta`。没有新增因果推理器、自动排程器或 Semantica oracle；有限方法试用也不证明任何真实设备或工艺能力。

@@ -2,8 +2,7 @@
 
 This notice covers only `manufacturing-process-cost-0.1.1.sem-package.zip`
 (SHA-256 `d5d69ce20ba437bf33b4c77439b256d828b52a0120734e666901faa8e28ded6e`)
-and its explicitly listed members in the
-[publication manifest](../../docs/releases/manufacturing-method-0.5.3.json).
+and its explicitly listed members in the original repository release manifest for manufacturing-method 0.5.3, which is not part of this core package.
 
 The package contains original, AI-assisted manufacturing-method definitions and
 synthetic test fixtures developed for this repository. It contains no customer

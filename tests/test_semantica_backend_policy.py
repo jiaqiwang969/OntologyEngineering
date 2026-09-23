@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 
@@ -86,6 +88,87 @@ class SemanticaBackendNegativeTests(unittest.TestCase):
             for finding in report.findings
             if path is None or finding.path == path
         }
+
+    def lock_cad_source(self, relative: str, content: str) -> None:
+        self.repo.write("skills/cad-agent/SKILL.md", "# CAD execution module\n")
+        source_dist = REPOSITORY_ROOT / "skills/cad-agent/dist"
+        fixture_dist = self.repo.root / "skills/cad-agent/dist"
+        fixture_dist.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source_dist / "fusion-runtime-lock.json", fixture_dist / "fusion-runtime-lock.json")
+        for wheel in source_dist.glob("*.whl"):
+            shutil.copyfile(wheel, fixture_dist / wheel.name)
+        self.repo.write(relative, content)
+        self.repo.write(
+            gate.CAD_EXECUTION_LOCK,
+            json.dumps({
+                "schema_version": gate.CAD_EXECUTION_LOCK_SCHEMA,
+                "scope": "Exact nonsemantic CAD subprocess only",
+                "entries": [{
+                    "path": relative,
+                    "sha256": hashlib.sha256(content.encode("utf-8")).hexdigest(),
+                    "rules": [gate.RULE_ALTERNATE_PROCESS],
+                    "purpose": "Invoke the native CAD geometry process for evidence extraction.",
+                }],
+            }),
+        )
+
+    def test_cad_execution_lock_is_exact_and_rejects_changed_source(self) -> None:
+        self.repo.write(gate.REQUIRED_BOOTSTRAP, "import semantica\n")
+        path = "skills/cad-agent/scripts/native_call.py"
+        source = "import subprocess\n\ndef run(command):\n    return subprocess.run(command)\n"
+        self.lock_cad_source(path, source)
+        self.repo.policy()
+        clean = self.repo.evaluate("strict")
+        self.assertTrue(clean.passed, clean)
+        self.assertEqual(1, len(clean.cad_locked_findings))
+        self.repo.write(path, source + "import rdflib\n")
+        changed = self.repo.evaluate("strict")
+        self.assertFalse(changed.passed)
+        self.assertIn(gate.RULE_DIRECT_BACKEND_IMPORT, self.rules(changed, path))
+        self.assertTrue(any("source changed since review" in error for error in changed.policy_errors))
+
+    def test_cad_execution_lock_cannot_hide_explicit_ontology_engine(self) -> None:
+        self.repo.write(gate.REQUIRED_BOOTSTRAP, "import semantica\n")
+        path = "skills/cad-agent/scripts/native_call.py"
+        source = "import subprocess\nsubprocess.run(['python', '-m', 'rdflib'])\n"
+        self.lock_cad_source(path, source)
+        self.repo.policy()
+        report = self.repo.evaluate("strict")
+        self.assertFalse(report.passed)
+        self.assertIn(gate.RULE_ALTERNATE_PROCESS, self.rules(report, path))
+
+    def test_cad_runtime_wheel_hash_change_blocks_strict_gate(self) -> None:
+        self.repo.write(gate.REQUIRED_BOOTSTRAP, "import semantica\n")
+        self.lock_cad_source(
+            "skills/cad-agent/scripts/native_call.py",
+            "import subprocess\nsubprocess.run(['true'])\n",
+        )
+        self.repo.policy()
+        lock = json.loads((self.repo.root / gate.CAD_RUNTIME_LOCK).read_text())
+        wheel = self.repo.root / "skills/cad-agent/dist" / lock["wheel_filename"]
+        wheel.write_bytes(wheel.read_bytes() + b"changed")
+        report = self.repo.evaluate("strict")
+        self.assertFalse(report.passed)
+        self.assertTrue(any("wheel changed since review" in item for item in report.policy_errors))
+
+    def test_cad_runtime_wheel_rejects_semantic_package_even_if_relocked(self) -> None:
+        self.repo.write(gate.REQUIRED_BOOTSTRAP, "import semantica\n")
+        self.lock_cad_source(
+            "skills/cad-agent/scripts/native_call.py",
+            "import subprocess\nsubprocess.run(['true'])\n",
+        )
+        self.repo.policy()
+        lock_path = self.repo.root / gate.CAD_RUNTIME_LOCK
+        lock = json.loads(lock_path.read_text())
+        wheel = self.repo.root / "skills/cad-agent/dist" / lock["wheel_filename"]
+        from zipfile import ZipFile
+        with ZipFile(wheel, "a") as archive:
+            archive.writestr("cad_geometry_mcp/server.py", "import rdflib\n")
+        lock["wheel_sha256"] = hashlib.sha256(wheel.read_bytes()).hexdigest()
+        lock_path.write_text(json.dumps(lock))
+        report = self.repo.evaluate("strict")
+        self.assertFalse(report.passed)
+        self.assertTrue(any("non-Fusion package" in item for item in report.policy_errors))
 
     def test_clean_strict_repository_and_single_bootstrap_pass(self) -> None:
         self.repo.write(

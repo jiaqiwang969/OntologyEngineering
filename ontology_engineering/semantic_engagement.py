@@ -45,6 +45,7 @@ KNOWN_ACTIONS = frozenset(
         "discover",
         "open",
         "run",
+        "review",
         "propose",
         "commit",
         "verify",
@@ -1775,6 +1776,110 @@ def run(
     return response
 
 
+_RDF_EVIDENCE_FORMATS = {
+    "turtle": "text/turtle",
+    "trig": "application/trig",
+    "nt": "application/n-triples",
+    "nquads": "application/n-quads",
+    "xml": "application/rdf+xml",
+    "json-ld": "application/ld+json",
+}
+
+
+def review(
+    binding_path: Path | str,
+    *,
+    workspace: Path | str,
+    task: Path | str,
+    evidence_file: Path | str,
+    source_id: str,
+    evidence_format: str,
+    scope_id: str,
+    focus_iri: str,
+    focus_type_iri: str,
+    query_asset_id: str,
+    shape_asset_id: str,
+    recorded_at: Optional[str] = None,
+) -> dict[str, Any]:
+    """Check one hash-bound project ABox against a promoted Semantica package."""
+
+    binding, envelope, _, response = _load_context(
+        "review", binding_path, task_path=task, require_task=True
+    )
+    if binding.target_kind != "workspace" or workspace is None:
+        raise BindingValidationError(
+            "decision review requires a promoted workspace target"
+        )
+    if envelope is None:
+        raise BindingValidationError("decision review requires --task")
+    if "semantica.ontology.decision-review/v1" not in envelope.required_capabilities:
+        raise ActionNotAllowedError(
+            "task must request the Semantica decision-review/v1 capability"
+        )
+    expected_media_type = _RDF_EVIDENCE_FORMATS.get(evidence_format)
+    if expected_media_type is None:
+        raise BindingValidationError("unsupported decision review RDF format")
+    references = [item for item in envelope.evidence if item["source_id"] == source_id]
+    if len(references) != 1:
+        raise BindingValidationError(
+            "decision review source_id must occur exactly once in task evidence"
+        )
+    reference = references[0]
+    if reference["media_type"] != expected_media_type:
+        raise BindingValidationError(
+            "decision review format differs from the task evidence media_type"
+        )
+    source = Path(evidence_file).expanduser()
+    if source.is_symlink() or not source.is_file():
+        raise BindingValidationError(
+            "decision review evidence must be a regular, non-symbolic-link file"
+        )
+    payload = source.read_bytes()
+    if _sha256_bytes(payload) != reference["sha256"]:
+        raise BindingValidationError(
+            "decision review evidence file differs from the task SHA-256"
+        )
+    native = runtime.native_decision_review(
+        str(workspace),
+        binding=_native_binding(binding),
+        evidence=payload,
+        evidence_sha256=reference["sha256"],
+        evidence_format=evidence_format,
+        evidence_id=reference["source_id"],
+        evidence_uri=reference["uri"],
+        evidence_captured_at=reference["captured_at"],
+        scope_id=scope_id,
+        focus_iri=focus_iri,
+        focus_type_iri=focus_type_iri,
+        query_asset_id=query_asset_id,
+        shape_asset_id=shape_asset_id,
+        created_at=recorded_at,
+    )
+    report = native["review"]
+    response["corpus_found"] = _empty_section(
+        "found", subject=native["subject"], baseline_subject_verified=True
+    )
+    response["execution"] = _empty_section(
+        "passed" if report["status"] == "clear" else "blocked",
+        operation="native_decision_review",
+        review=report,
+        task_sha256=envelope.source_sha256,
+    )
+    response["learning"] = _learning(
+        binding=binding,
+        reason="a project review alone does not establish reusable industry knowledge",
+        signals=(
+            ["open semantic challenge in the scoped project projection"]
+            if report["status"] == "blocked"
+            else []
+        ),
+    )
+    response["command_verdict"] = (
+        "passed" if report["status"] == "clear" else "blocked"
+    )
+    return response
+
+
 def propose(
     binding_path: Path | str,
     *,
@@ -2291,6 +2396,20 @@ def build_argument_parser() -> argparse.ArgumentParser:
     command.add_argument("--task")
     command.add_argument("--recorded-at")
 
+    command = commands.add_parser("review")
+    command.add_argument("--binding", required=True)
+    command.add_argument("--workspace", required=True)
+    command.add_argument("--task", required=True)
+    command.add_argument("--evidence-file", required=True)
+    command.add_argument("--source-id", required=True)
+    command.add_argument("--format", required=True, dest="evidence_format")
+    command.add_argument("--scope", required=True)
+    command.add_argument("--focus", required=True)
+    command.add_argument("--focus-type", required=True)
+    command.add_argument("--query-asset", required=True)
+    command.add_argument("--shape-asset", required=True)
+    command.add_argument("--recorded-at")
+
     command = commands.add_parser("propose")
     command.add_argument("--binding", required=True)
     command.add_argument("--workspace", required=True)
@@ -2348,6 +2467,21 @@ def _dispatch(args: argparse.Namespace) -> dict[str, Any]:
             workspace=args.workspace,
             scenario_id=args.scenario,
             task=args.task,
+            recorded_at=args.recorded_at,
+        )
+    if args.command == "review":
+        return review(
+            args.binding,
+            workspace=args.workspace,
+            task=args.task,
+            evidence_file=args.evidence_file,
+            source_id=args.source_id,
+            evidence_format=args.evidence_format,
+            scope_id=args.scope,
+            focus_iri=args.focus,
+            focus_type_iri=args.focus_type,
+            query_asset_id=args.query_asset,
+            shape_asset_id=args.shape_asset,
             recorded_at=args.recorded_at,
         )
     if args.command == "propose":
@@ -2436,5 +2570,6 @@ __all__ = [
     "read_project_binding",
     "read_task_envelope",
     "run",
+    "review",
     "verify",
 ]

@@ -1,22 +1,30 @@
 # 独立分发与新目录验证
 
-分发单元是整个 `ontology-engineering/`。制造模块位于 `skills/manufacturing-process-cost/`，它对两卷书、公共入口及运行时的相对引用均落在同一个根目录内。不单独复制子模块，不用指向原项目或作者电脑的符号链接。
+有两种不同的本地制品，不能混用其放行范围：
+
+- **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、CAD／工艺交接及可移植 Fusion 执行层。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。承接 `manufacturing-v0.5.3` 的 `manufacturing-v0.5.4` 已由所有者批准并在 [GitHub Release](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.4) 公开发布；对应源码已并入 `main`，并由 `manufacturing-v0.5.4` 标签固定。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
+- **完整作者工作树候选**：本页以下所述的 `python3 scripts/package_skill.py --output ...`。它保留两卷书与完整内部 CAD 模块，只适用于受控内部传输；[公开发布状态](PUBLIC-RELEASE-STATUS.md)仍为 BLOCKED。文件检查通过不能当作权利放行。
+
+两种制品都以单一 `ontology-engineering/` 根目录交付，接收方在新目录复验；正式语义 release 与具体客户产品放行另行判断。
 
 ## 随目录携带什么
 
 | 内容 | 根目录内的位置 | 作用 |
 | --- | --- | --- |
 | 总入口和制造方法 | [SKILL.md](../SKILL.md)、[制造模块](../skills/manufacturing-process-cost/SKILL.md) | 资料筛选、沟通、方案与反馈迭代 |
+| CAD 模块及交接合同 | [CAD 模块](../skills/cad-agent/SKILL.md)、[工艺交接](../skills/cad-agent/references/cad-process-integration.md) | 原生几何回读、来源校验、对象依赖与双向工艺问题；不自行执行语义规则 |
 | 理论、案例和记录模板 | `references/`、`skills/manufacturing-process-cost/` | 书源锚点、脱敏演变案例、八类记录 |
 | 报告组件与合成演变输入 | [报告设计](../skills/manufacturing-process-cost/references/report-design.md)、[生成入口](../scripts/manufacturing_report.py)、`skills/manufacturing-process-cost/assets/report-template/` | 四类内容视图、原生 XeLaTeX、冻结与输出对应检查 |
 | 工艺图模板 | [使用说明](../skills/manufacturing-process-cost/references/process-flow-templates.md)、`skills/manufacturing-process-cost/assets/report-template/flowcharts/` | 顺序、汇合、返工、条件分支及资源成本关系；原生 TikZ 图源 |
 | 固定版本的 Semantica | [运行时锁](../runtime/semantica-source-lock.json)、`runtime/vendor/` | 唯一可执行语义实现及安装校验 |
 | 冻结的制造案例 | [案例传输锁](../runtime/semantic-bundles.json)、`runtime/vendor/` | 141 项 Semantica 原生资产、68 个可重跑场景 |
 | 运行、分发及回归检查 | [案例入口](../scripts/run_manufacturing_cases.py)、[分发工具](../scripts/package_skill.py)、`tests/` | 校验资产、执行案例、发现断链和打包遗漏 |
+| CAD 非语义运行源锁 | [CAD 源锁](../runtime/cad-operational-source-lock.json) | 逐文件约束动态加载和子进程调用，修改即重审；不豁免第二语义后端 |
+| Fusion 专用 wheel | [运行身份锁](../skills/cad-agent/dist/fusion-runtime-lock.json)、[检验器](../skills/cad-agent/scripts/verify_fusion_runtime_wheel.py) | 仅安装 Fusion 执行代理；打包和安装后检查 wheel 摘要、成员、入口及旧语义模块缺席 |
 
 冻结案例 ZIP 是 Semantica 已验证候选的不可变传输副本。它包含数据、查询、约束、规则和 oracle，没有作者工作区、个人路径、权限绑定或替代引擎。传输锁检查每个成员、manifest、资产摘要和运行时身份；实际语义解释和验证全部交给 Semantica。修改案例须在受控 Semantica 流程中形成后继，再更新传输包和锁。
 
-客户原件、真实对话、报价、模型、私有映射和实际运行日志不进入这个目录的通用分发包。真实企业的项目目录、输入事实和新授权由接收方提供；不会自动继承源组织的采用状态。
+客户原件、真实对话、报价、模型、私有映射和实际运行日志不进入这个目录的通用分发包。旧 CAD 本体、历史查询文件与含语义 MCP 的原 CAD wheel 留在作者侧迁移来源，不进入通用包。真实企业的项目目录、输入事实和新授权由接收方提供；不会自动继承源组织的采用状态。
 
 ## 怎样检查和打包
 
@@ -31,7 +39,7 @@ python3 scripts/package_skill.py --output ../ontology-engineering.zip
 
 检查解压后的目录时，也会核对其 `PORTABLE-MANIFEST.json`，发现交付后缺失、增加或变更的受管文件。新版本从受控作者目录重新打包；保留收到的旧包及清单，不在原交付快照里消除变更痕迹。
 
-关键词扫描不替代新案例的重识别审阅；增加客户衍生内容时还需确认少见参数组合不会暴露来源。分发包是可交付的本地候选，不会调用外部发布或发送渠道。
+关键词扫描不替代新案例的重识别审阅；增加客户衍生内容时还需确认少见参数组合不会暴露来源。作者侧打包命令只生成本地制品；是否发布及发布范围由独立的资产台账、权利说明和实际 GitHub Release 记录确定。
 
 ## 接收方最小验证
 
@@ -44,11 +52,14 @@ python3 scripts/run_manufacturing_cases.py --list
 bash runtime/setup_runtime.sh --preflight
 bash runtime/setup_runtime.sh
 bash runtime/setup_runtime.sh --doctor
+bash skills/cad-agent/setup.sh
+skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/verify_fusion_runtime_wheel.py --installed
+bash skills/cad-agent/doctor.sh --json
 runtime/.venv/bin/python scripts/run_manufacturing_cases.py --run \
   --output ../work/manufacturing-replay-001
 ```
 
-`--list` 是文件完整性检查；`--run` 是新环境的原生案例执行，分别保存结果。可用重复的 `--scenario MFG-01-PN` 参数选择部分场景，必须报告实际运行范围。全部场景通过也只证明所列合成输入与 oracle，不能替代客户方案快照、现场能力、真实成本或制造放行验证。
+`--list` 是文件完整性检查；`--run` 是新环境的原生案例执行，分别保存结果。CAD doctor 是本机能力预检，工程软件与远程主机仍由接收方配置；远程地址由 `fleet` 实时解析。可用重复的 `--scenario MFG-01-PN` 参数选择部分场景，必须报告实际运行范围。全部场景通过也只证明所列合成输入与 oracle，不能替代客户方案快照、现场能力、真实成本或制造放行验证。
 
 Python 和 Python 依赖属于安装环境；首次安装可能访问包源，并非完整离线安装包。普通阅读、书源检索和冻结制造案例回放不需要 Semantica 源码 checkout。重新构建 Semantica、维护书稿或治理原生候选另按各自工作流提供受控输入，这些可选维护任务不作为制造方法的首次使用前提。
 

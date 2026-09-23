@@ -12,6 +12,7 @@ import argparse
 import ast
 from dataclasses import dataclass, field
 import fnmatch
+import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -20,11 +21,17 @@ import shlex
 import stat
 import sys
 from typing import Any, Iterable, Iterator, Mapping, Sequence
+from zipfile import BadZipFile, ZipFile
 
 
 SCHEMA_VERSION = "ontology-engineering.semantica-backend-policy/v1"
 REQUIRED_BOOTSTRAP = "ontology_engineering/semantica_runtime.py"
 DEFAULT_POLICY = "runtime/semantica-backend-policy.json"
+CAD_EXECUTION_LOCK = "runtime/cad-operational-source-lock.json"
+CAD_EXECUTION_LOCK_SCHEMA = "ontology-engineering.cad-operational-source-lock/v1"
+CAD_EXECUTION_PREFIX = "skills/cad-agent/"
+CAD_RUNTIME_LOCK = "skills/cad-agent/dist/fusion-runtime-lock.json"
+CAD_RUNTIME_LOCK_SCHEMA = "ontology-engineering.cad-fusion-runtime-lock/v1"
 PERMITTED_LITERAL_FIXTURE_HOSTS = frozenset(
     {
         "scripts/check_semantica_backend_policy.py",
@@ -58,6 +65,7 @@ RULE_DUPLICATE_SEMANTIC_ASSET = "duplicate_semantic_asset"
 RULE_EMBEDDED_SEMANTIC_PAYLOAD = "embedded_semantic_payload"
 RULE_PARSE_FAILURE = "parse_failure"
 RULE_UNSAFE_SYMLINK = "unsafe_source_symlink"
+CAD_OPERATIONAL_RULES = frozenset({RULE_DYNAMIC_IMPORT, RULE_ALTERNATE_PROCESS})
 
 KNOWN_RULES = frozenset(
     {
@@ -175,6 +183,9 @@ class GateReport:
     stale_allowances: list[str] = field(default_factory=list)
     policy_errors: list[str] = field(default_factory=list)
     fixture_hosts: list[str] = field(default_factory=list)
+    cad_operational_lock_entries: int = 0
+    cad_locked_findings: list[Finding] = field(default_factory=list)
+    cad_fusion_wheel_verified: bool = False
 
     @property
     def passed(self) -> bool:
@@ -302,6 +313,140 @@ def _allow_entries(policy: Mapping[str, Any]) -> list[AllowEntry]:
             )
         )
     return entries
+
+
+def _read_cad_operational_lock(root: Path) -> tuple[dict[str, frozenset[str]], list[str]]:
+    """Bind CAD tool execution exceptions to exact, reviewed source bytes.
+
+    CAD must spawn native tools and sometimes load CAD-specific Python modules.
+    This lock does not permit ontology engines, semantic assets, or changes to
+    those operational files without re-review.
+    """
+
+    path = root / CAD_EXECUTION_LOCK
+    if not (root / CAD_EXECUTION_PREFIX / "SKILL.md").is_file():
+        return {}, (["CAD execution lock exists without a CAD module"] if path.exists() else [])
+    if path.is_symlink() or not path.is_file():
+        return {}, ["CAD operational source lock is missing or not a regular file"]
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError) as exc:
+        return {}, [f"cannot read CAD operational source lock: {exc}"]
+    if not isinstance(document, dict) or document.get("schema_version") != CAD_EXECUTION_LOCK_SCHEMA:
+        return {}, ["CAD operational source lock has an invalid schema"]
+    entries = document.get("entries")
+    if not isinstance(entries, list):
+        return {}, ["CAD operational source lock entries must be a list"]
+    locks: dict[str, frozenset[str]] = {}
+    errors: list[str] = []
+    for index, entry in enumerate(entries):
+        if not isinstance(entry, dict):
+            errors.append(f"CAD operational entry {index} is not an object")
+            continue
+        name = _normalise_relative_path(entry.get("path"))
+        rules = entry.get("rules")
+        digest = entry.get("sha256")
+        purpose = entry.get("purpose")
+        if name is None or not name.startswith(CAD_EXECUTION_PREFIX) or name in locks:
+            errors.append(f"CAD operational entry {index} has an invalid or duplicate path")
+            continue
+        if not isinstance(rules, list) or not rules or not all(isinstance(rule, str) for rule in rules) or set(rules) - CAD_OPERATIONAL_RULES or len(rules) != len(set(rules)):
+            errors.append(f"CAD operational entry {name} has invalid rules")
+            continue
+        if not isinstance(purpose, str) or len(purpose.strip()) < 12:
+            errors.append(f"CAD operational entry {name} needs a concrete purpose")
+            continue
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+            errors.append(f"CAD operational entry {name} has an invalid digest")
+            continue
+        candidate = root / name
+        if candidate.is_symlink() or not candidate.is_file():
+            errors.append(f"CAD operational source is missing or symbolic: {name}")
+            continue
+        if hashlib.sha256(candidate.read_bytes()).hexdigest() != digest:
+            errors.append(f"CAD operational source changed since review: {name}")
+            continue
+        locks[name] = frozenset(rules)
+    return locks, errors
+
+
+def _check_cad_runtime_wheel(root: Path) -> tuple[bool, list[str]]:
+    """Reject a bundled CAD wheel that can execute independent semantics."""
+
+    if not (root / CAD_EXECUTION_PREFIX / "SKILL.md").is_file():
+        return False, []
+    lock_path = root / CAD_RUNTIME_LOCK
+    if lock_path.is_symlink() or not lock_path.is_file():
+        return False, ["CAD Fusion runtime wheel lock is missing or symbolic"]
+    try:
+        lock = json.loads(lock_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, ValueError) as exc:
+        return False, [f"cannot read CAD Fusion runtime wheel lock: {exc}"]
+    if not isinstance(lock, dict) or lock.get("schema_version") != CAD_RUNTIME_LOCK_SCHEMA:
+        return False, ["CAD Fusion runtime wheel lock has an invalid schema"]
+    filename = lock.get("wheel_filename")
+    digest = lock.get("wheel_sha256")
+    if not isinstance(filename, str) or not re.fullmatch(r"oe_cad_fusion_runtime-[A-Za-z0-9.+_-]+-py3-none-any\.whl", filename):
+        return False, ["CAD Fusion runtime wheel filename is invalid"]
+    if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+        return False, ["CAD Fusion runtime wheel digest is invalid"]
+    dist_dir = lock_path.parent
+    wheel_names = sorted(path.name for path in dist_dir.glob("*.whl"))
+    if wheel_names != [filename]:
+        return False, [f"CAD module must contain exactly one locked Fusion-only wheel: {wheel_names}"]
+    wheel_path = dist_dir / filename
+    if wheel_path.is_symlink() or not wheel_path.is_file():
+        return False, ["CAD Fusion runtime wheel is missing or symbolic"]
+    if hashlib.sha256(wheel_path.read_bytes()).hexdigest() != digest:
+        return False, ["CAD Fusion runtime wheel changed since review"]
+    errors: list[str] = []
+    try:
+        with ZipFile(wheel_path) as archive:
+            names = archive.namelist()
+            if len(names) != len(set(names)):
+                errors.append("CAD Fusion runtime wheel has duplicate members")
+            for name in names:
+                path = PurePosixPath(name)
+                if path.is_absolute() or ".." in path.parts:
+                    errors.append(f"CAD Fusion runtime wheel has unsafe member: {name}")
+                    continue
+                if not (name.startswith("fusion_mcp_proxy/") or ".dist-info/" in name):
+                    errors.append(f"CAD Fusion runtime wheel contains non-Fusion package: {name}")
+                if path.suffix.lower() in SEMANTIC_ASSET_SUFFIXES:
+                    errors.append(f"CAD Fusion runtime wheel contains semantic asset: {name}")
+                if name.endswith(".py"):
+                    try:
+                        tree = ast.parse(archive.read(name), filename=name)
+                    except (SyntaxError, UnicodeError) as exc:
+                        errors.append(f"CAD Fusion runtime wheel Python parse failed: {name}: {exc}")
+                        continue
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.Import):
+                            modules = [alias.name.split(".", 1)[0] for alias in node.names]
+                        elif isinstance(node, ast.ImportFrom) and node.level == 0:
+                            modules = [(node.module or "").split(".", 1)[0]]
+                        else:
+                            continue
+                        if (BACKEND_MODULES | {"semantica", "cad_agent", "cad_geometry_mcp"}).intersection(modules):
+                            errors.append(f"CAD Fusion runtime wheel imports semantic backend: {name}")
+                            break
+            entries = [name for name in names if name.endswith(".dist-info/entry_points.txt")]
+            if len(entries) != 1:
+                errors.append("CAD Fusion runtime wheel needs one entry-point manifest")
+            else:
+                manifest = archive.read(entries[0]).decode("utf-8")
+                if "cad-agent" in manifest or "cad_geometry_mcp" in manifest:
+                    errors.append("CAD Fusion runtime wheel exposes legacy semantic command")
+            metadata = [name for name in names if name.endswith(".dist-info/METADATA")]
+            if len(metadata) != 1:
+                errors.append("CAD Fusion runtime wheel needs one METADATA file")
+            else:
+                manifest = archive.read(metadata[0]).decode("utf-8").lower()
+                if any(f"requires-dist: {package}" in manifest for package in BACKEND_MODULES):
+                    errors.append("CAD Fusion runtime wheel depends on an independent semantic backend")
+    except (OSError, BadZipFile, UnicodeError) as exc:
+        errors.append(f"CAD Fusion runtime wheel cannot be inspected: {exc}")
+    return not errors, errors
 
 
 def _classify_file(path: Path) -> str | None:
@@ -1036,6 +1181,32 @@ def evaluate_repository(root: Path, policy_path: Path, mode: str) -> GateReport:
         bootstrap=bootstrap,
         literal_fixture_hosts=configured_fixture_hosts,
     )
+    cad_locks, cad_errors = _read_cad_operational_lock(root)
+    policy_errors.extend(cad_errors)
+    cad_wheel_verified, cad_wheel_errors = _check_cad_runtime_wheel(root)
+    policy_errors.extend(cad_wheel_errors)
+    raw_findings = findings
+    cad_locked: list[Finding] = []
+    findings = []
+    for finding in raw_findings:
+        locked_rules = cad_locks.get(finding.path, frozenset())
+        explicit_semantic_process = finding.rule == RULE_ALTERNATE_PROCESS and any(
+            marker in finding.detail
+            for marker in (
+                "alternate ontology engine",
+                "backend-violating source",
+                "shell=True",
+            )
+        )
+        if finding.rule in locked_rules and not explicit_semantic_process:
+            cad_locked.append(finding)
+        else:
+            findings.append(finding)
+    raw_keys = {(finding.path, finding.rule) for finding in raw_findings}
+    for name, rules in cad_locks.items():
+        for rule in rules:
+            if (name, rule) not in raw_keys:
+                policy_errors.append(f"stale CAD operational lock: {name}: {rule}")
     allowlist = _allow_entries(policy)
     allowance_map = {(entry.path, rule): entry for entry in allowlist for rule in entry.rules}
     allowed: list[Finding] = []
@@ -1073,6 +1244,9 @@ def evaluate_repository(root: Path, policy_path: Path, mode: str) -> GateReport:
         stale_allowances=stale,
         policy_errors=policy_errors,
         fixture_hosts=fixture_hosts,
+        cad_operational_lock_entries=len(cad_locks),
+        cad_locked_findings=cad_locked,
+        cad_fusion_wheel_verified=cad_wheel_verified,
     )
 
 
@@ -1091,6 +1265,9 @@ def _report_as_json(report: GateReport) -> str:
         "stale_allowances": report.stale_allowances,
         "policy_errors": report.policy_errors,
         "literal_fixture_hosts": report.fixture_hosts,
+        "cad_operational_lock_entries": report.cad_operational_lock_entries,
+        "cad_locked_findings": len(report.cad_locked_findings),
+        "cad_fusion_wheel_verified": report.cad_fusion_wheel_verified,
     }
     return json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
 

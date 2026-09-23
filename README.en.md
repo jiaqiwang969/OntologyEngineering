@@ -36,6 +36,12 @@ this method to discrete mechanical manufacturing. Start with incomplete inquirie
 notes, equipment inventories, and quotations; uncover the conditions behind them, develop an evidenced
 proposal, and use customer and shop-floor feedback to revise it.
 
+The bundled [CAD Agent module](skills/cad-agent/SKILL.md) reads native Fusion,
+NX, and AutoCAD geometry and assembly evidence. Its [bidirectional handoff](skills/cad-agent/references/cad-process-integration.md)
+passes holes, interfaces, weld access, and version changes to manufacturing
+decisions. The process module then reviews required functions, failure paths,
+inspection, cost, and lead time; Semantica remains the formal semantic authority.
+
 ## Two volumes, two complementary questions
 
 | Volume | The question it answers | What you gain |
@@ -72,13 +78,14 @@ real product.
 | Understand semantics for LLMs and agents | Volume 1, Chapter 8, followed by the engagement rules in [`SKILL.md`](SKILL.md) |
 | Build a trustworthy-product or functional-safety evidence chain | The preface and Chapters 1–10 of Volume 2, then the paired ontology answers in Chapters 11–20 |
 | Apply the method to a live engineering project | Start with the [`Semantic Engagement Contract`](references/semantic-engagement-contract.md) |
+| Check manufacturing and sealing functions against CAD | Use the [CAD Agent module](skills/cad-agent/SKILL.md) and [bidirectional evidence handoff](skills/cad-agent/references/cad-process-integration.md) for native geometry, provenance, function coverage, and change impact |
 | Turn a customer inquiry into a process and cost proposal, then revise it from feedback | Start with the [manufacturing module](skills/manufacturing-process-cost/SKILL.md): anonymized cases, work norms, record templates, and XeLaTeX report components |
 
 <a id="manufacturing"></a>
 
 ## Manufacturing and costs: connect conversations, proposals, and feedback
 
-The current method is **0.5.3**, for discrete mechanical manufacturing. Each project supplies its own
+The current method is **0.5.4**, for discrete mechanical manufacturing. Each project supplies its own
 industry context, materials, process parameters, and acceptance criteria. The reusable part is how to
 find missing knowledge, connect evidence, compare options, and verify decisions. Detailed guides and
 example outputs are currently in Chinese.
@@ -168,13 +175,12 @@ different RDF/OWL backend.
 
 ## Portable distribution
 
-The [0.5.3 update notes](docs/releases/manufacturing-method-0.5.3.md) describe the method and its
-publication scope.
+The [0.5.4 update notes](docs/releases/manufacturing-method-0.5.4.md) describe the CAD/manufacturing integration, causal challenge gate, and public distribution scope. This release follows the public 0.5.3 method.
 
 | Component | Current version and scope |
 |---|---|
-| Manufacturing method | `0.5.3`; conversations, proposals, costs, feedback, and reuse |
-| Record templates / review cards | `0.2.0` / `1.4.0`; eight record types and six optional cards |
+| Manufacturing method | `0.5.4`; conversations, CAD evidence handoff, processes, costs, feedback, and reuse |
+| Record templates / review cards | `0.2.1` for two templates, `0.2.0` for the others / cards `1.4.1` |
 | Reports / process diagrams | `1.0.0`; XeLaTeX and five editable TikZ templates |
 | Frozen manufacturing semantic package | `0.1.1`; 141 declared assets, 68 synthetic scenarios, and 23 CQs; retains its local technical candidate state |
 
@@ -184,7 +190,7 @@ dependencies. Follow [portable distribution and receiver checks](docs/PORTABLE-D
 check, package, and replay it without the original customer project or author workspace. Initial Python
 dependency installation may still need a package index.
 
-The manufacturing upload's [frozen asset manifest](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json),
+The [0.5.4 public asset ledger](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.4/ontology-engineering-core-v0.5.4-assets.json), the preceding manufacturing release's [frozen asset manifest](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json),
 this [README update manifest](docs/releases/manufacturing-readme-0.5.3-r1.json), and the
 [semantic package NOTICE](runtime/vendor/MANUFACTURING-NOTICE.md) retain their separate scopes.
 The distribution guide explains the limits of file checks and synthetic replay. Manufacturing-method
@@ -272,7 +278,7 @@ authorization to publish:
 
 | Area | Current, verifiable state |
 |---|---|
-| Semantica runtime | [`0.6.5+oe.4`](runtime/semantica-source-lock.json), pinned to an exact source commit and wheel SHA-256. Doctor also verifies every package file against the wheel `RECORD` and checks the real import root |
+| Semantica runtime | [`0.6.5+oe.6`](runtime/semantica-source-lock.json), pinned to an exact source commit and wheel SHA-256. Doctor also verifies every package file against the wheel `RECORD` and checks the real import root |
 | Executable semantics | Ontologies, CQs, SHACL, queries, supported rules, cases, contracts, PROV, receipts, and lifecycle state have one executable home: Semantica. OE carries no second backend, fallback, or parallel registry |
 | Chapter packages | 29 total: 9 for Volume 1 and 20 for Volume 2. Volume 1 Chapter 6 is `absent`; the other 28 are `partial`; all 29 have `release_status=blocked` |
 | Normative-derived package | A separate `semantica.chapter_packages.vol2.normative` domain package is also `partial/blocked`. It is neither a copy of ISO text nor a compliance opinion |
@@ -314,6 +320,7 @@ references/product-...-book/     Volume 2 sources, TeX, figures, and PDF
 references/                      source maps, contracts, and release evidence
 skills/domain-ontology-loop/     governed industry-ontology outer loop
 skills/standard-to-book/         controlled standard-to-book workflow
+skills/cad-agent/                native CAD, Fusion execution, and manufacturing evidence handoff
 skills/manufacturing-process-cost/ methods, anonymized cases, records, reports, and diagrams
 docs/PORTABLE-DISTRIBUTION.md     whole-root distribution and receiver checks
 docs/releases/                   versioned update notes and public asset manifests

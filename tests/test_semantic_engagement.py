@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import redirect_stdout
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -156,6 +157,134 @@ def task_envelope(actions: list[str]) -> dict[str, object]:
         "required_capabilities": [NATIVE_CAPABILITY],
         "created_at": "2026-08-19T11:00:00Z",
     }
+
+
+class DecisionReviewAdapterTests(unittest.TestCase):
+    def _inputs(self, root: Path) -> tuple[Path, Path, Path]:
+        evidence_file = root / "project-abox.ttl"
+        evidence_file.write_bytes(b"@prefix ex: <urn:test:> .\nex:claim a ex:Claim .\n")
+        binding_value = workspace_binding("b" * 64, 1, NATIVE_PACKAGE_ID)
+        binding_value["allowed_actions"].append("review")
+        task_value = task_envelope(["review"])
+        task_value["required_capabilities"].append(
+            "semantica.ontology.decision-review/v1"
+        )
+        task_value["evidence"][0]["sha256"] = hashlib.sha256(
+            evidence_file.read_bytes()
+        ).hexdigest()
+        task_value["evidence"][0]["media_type"] = "text/turtle"
+        return (
+            write_json(root / "binding.json", binding_value),
+            write_json(root / "task.json", task_value),
+            evidence_file,
+        )
+
+    def test_review_passes_exact_task_evidence_to_semantica_and_keeps_release_separate(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            binding, task, evidence = self._inputs(Path(temporary))
+            native = {
+                "subject": {
+                    "package_id": NATIVE_PACKAGE_ID,
+                    "version": "v0001",
+                    "package_sha256": "b" * 64,
+                },
+                "review": {
+                    "status": "blocked",
+                    "findings": [{"finding": "challenge:open"}],
+                    "report_sha256": "c" * 64,
+                    "meaning": "semantic-record-consistency-only; no physical acceptance",
+                },
+            }
+            with mock.patch.object(
+                runtime, "native_decision_review", return_value=native
+            ) as execute:
+                response = engagement.review(
+                    binding,
+                    workspace=Path(temporary) / "registry",
+                    task=task,
+                    evidence_file=evidence,
+                    source_id="source:observation-001",
+                    evidence_format="turtle",
+                    scope_id="project:test:assembled",
+                    focus_iri="urn:test:claim",
+                    focus_type_iri="urn:test:Claim",
+                    query_asset_id="findings",
+                    shape_asset_id="shape",
+                )
+            self.assertEqual("blocked", response["command_verdict"])
+            self.assertEqual("blocked", response["execution"]["status"])
+            self.assertEqual("not_run", response["receipt"]["status"])
+            self.assertEqual("not_checked", response["release"]["status"])
+            self.assertEqual("c" * 64, response["execution"]["review"]["report_sha256"])
+            kwargs = execute.call_args.kwargs
+            self.assertEqual(evidence.read_bytes(), kwargs["evidence"])
+            self.assertEqual("urn:test:claim", kwargs["focus_iri"])
+            self.assertEqual("urn:test:Claim", kwargs["focus_type_iri"])
+            self.assertEqual("evidence:project-test/observation-001", kwargs["evidence_uri"])
+
+    def test_review_rejects_stale_evidence_before_semantica_execution(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            binding, task, evidence = self._inputs(Path(temporary))
+            evidence.write_bytes(evidence.read_bytes() + b"# changed\n")
+            with mock.patch.object(runtime, "native_decision_review") as execute:
+                with self.assertRaisesRegex(
+                    engagement.BindingValidationError, "task SHA-256"
+                ):
+                    engagement.review(
+                        binding,
+                        workspace=Path(temporary) / "registry",
+                        task=task,
+                        evidence_file=evidence,
+                        source_id="source:observation-001",
+                        evidence_format="turtle",
+                        scope_id="project:test:assembled",
+                        focus_iri="urn:test:claim",
+                        focus_type_iri="urn:test:Claim",
+                        query_asset_id="findings",
+                        shape_asset_id="shape",
+                    )
+            execute.assert_not_called()
+
+    def test_native_review_normalizes_semantica_input_error_for_stable_cli(self) -> None:
+        descriptor = SimpleNamespace(
+            package_id=NATIVE_PACKAGE_ID,
+            version="v0001",
+            package_sha256="b" * 64,
+        )
+        native_module = SimpleNamespace(
+            ProjectOntologyBinding=SimpleNamespace(from_dict=lambda value: value)
+        )
+        with mock.patch.object(
+            runtime, "_native_refinery_module", return_value=native_module
+        ), mock.patch.object(
+            runtime, "_native_registry", return_value=object()
+        ), mock.patch.object(
+            runtime,
+            "_native_registry_subject",
+            return_value=(descriptor, {"package_id": NATIVE_PACKAGE_ID}),
+        ), mock.patch.object(
+            runtime._decision_review.DecisionReviewRunner,
+            "evaluate_registry",
+            side_effect=runtime._decision_review.SemanticInputError("invalid ABox"),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "invalid ABox"):
+                runtime.native_decision_review(
+                    "unused-workspace",
+                    binding={},
+                    evidence=b"bad",
+                    evidence_sha256="a" * 64,
+                    evidence_format="turtle",
+                    evidence_id="source",
+                    evidence_uri="evidence:project-test/source",
+                    evidence_captured_at="2026-09-22T11:00:00Z",
+                    scope_id="project:test:assembled",
+                    focus_iri="urn:test:claim",
+                    focus_type_iri="urn:test:Claim",
+                    query_asset_id="findings",
+                    shape_asset_id="shape",
+                )
 
 
 def native_workspace_binding(empty_digest: str) -> dict[str, object]:
@@ -920,7 +1049,9 @@ class SemanticEngagementSoleControlPlaneTests(unittest.TestCase):
 
     def test_capability_output_has_no_parallel_lifecycle(self) -> None:
         capabilities = runtime.semantic_refinery_capabilities()
-        self.assertEqual({"native"}, set(capabilities))
+        self.assertEqual({"native", "decision_review"}, set(capabilities))
+        self.assertTrue(capabilities["decision_review"]["available"])
+        self.assertFalse(capabilities["decision_review"]["physical_acceptance"])
 
 
 class SemanticEngagementNativeRefineryTests(unittest.TestCase):

@@ -33,6 +33,11 @@ Ontology Engineering 用两卷书讲清观察与建模方法，用项目原生�
 用于离散机械制造：从不完整的询价、图纸、工艺总结、设备台账和报价开始，逐步澄清
 隐含条件，形成有依据的方案，再把客户和现场反馈接回下一轮。
 
+并入的 [CAD Agent 模块](skills/cad-agent/SKILL.md)读取 Fusion、NX、AutoCAD 的原生
+几何与装配证据，经 [CAD／工艺双向交接](skills/cad-agent/references/cad-process-integration.md)
+把孔、界面、焊缝可达性和版本变化送到制造判断。工艺模块据此追问必要功能、失效路径、
+检验、成本和交期；正式语义裁定仍由 Semantica 执行。
+
 ## 两卷书，各自回答一个问题
 
 | 卷 | 核心问题 | 你会得到什么 |
@@ -62,13 +67,14 @@ EPS-RC17、ENV-01 和数值均为合成教学材料；精确 ISO 条款、表格
 | 理解 LLM/Agent 如何受语义约束 | 第一卷第 8 章，再看 [`SKILL.md`](SKILL.md) 的语义接入规则 |
 | 建立产品可信或功能安全证据链 | 第二卷前言与第 1–10 章，再按问题阅读第 11–20 章的本体回答 |
 | 把方法接入真实工程项目 | 先读 [`Semantic Engagement Contract`](references/semantic-engagement-contract.md) |
+| 从 CAD 模型核对工艺与密封等功能 | [CAD Agent 模块](skills/cad-agent/SKILL.md)及[双向证据交接](skills/cad-agent/references/cad-process-integration.md)：核对原生几何、来源、功能覆盖与变化影响 |
 | 从客户询问推进制造工艺、成本与反馈迭代 | [制造工艺与成本管理模块](skills/manufacturing-process-cost/SKILL.md)：脱敏演变案例、工作规范、记录模板与 XeLaTeX 报告组件 |
 
 <a id="manufacturing"></a>
 
 ## 制造工艺与成本：让沟通、方案和反馈形成闭环
 
-当前方法版本为 **0.5.3**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
+当前方法版本为 **0.5.4**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
 自己的证据确定；可复用的是发现问题、建立关系、比较方案和验证判断的方法。
 
 ```mermaid
@@ -149,12 +155,12 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 
 ## 独立分发
 
-制造方法 `0.5.3` 的内容、版本与逐项公开清单见[本次更新说明](docs/releases/manufacturing-method-0.5.3.md)。
+制造方法 `0.5.4` 承接已公开的 `0.5.3`，本次 CAD／工艺协同、因果与反证关口及分发边界见[更新说明](docs/releases/manufacturing-method-0.5.4.md)。
 
 | 组件 | 当前版本与范围 |
 |---|---|
-| 制造方法 | `0.5.3`；沟通、方案、成本、反馈与复用 |
-| 记录模板 / 评审卡 | `0.2.0` / `1.4.0`；八类记录、六张可选卡 |
+| 制造方法 | `0.5.4`；沟通、CAD 证据交接、工艺、成本、反馈与复用 |
+| 记录模板 / 评审卡 | 两份模板为 `0.2.1`、其余为 `0.2.0` / 评审卡 `1.4.1` |
 | 报告组件 / 工艺图 | `1.0.0`；XeLaTeX 与五类可编辑 TikZ 模板 |
 | 冻结制造语义包 | `0.1.1`；141 项声明资产、68 个合成场景、23 个 CQ；保留本地技术候选状态 |
 
@@ -163,7 +169,7 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 按 [独立分发与新目录验证](docs/PORTABLE-DISTRIBUTION.md) 检查、打包并重跑，
 无需访问原客户项目或作者工作区。首次安装 Python 依赖仍可能需要包源。
 
-制造方法上传的[冻结清单](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json)、
+[0.5.4 公开资产台账](https://github.com/jiaqiwang969/OntologyEngineering/releases/download/manufacturing-v0.5.4/ontology-engineering-core-v0.5.4-assets.json)、上一版制造方法的[冻结清单](https://github.com/jiaqiwang969/OntologyEngineering/blob/b5b148333a39b69aaa8b5b521de8242805cc3838/docs/releases/manufacturing-method-0.5.3.json)、
 [本次 README 更新清单](docs/releases/manufacturing-readme-0.5.3-r1.json)与
 [语义包 NOTICE](runtime/vendor/MANUFACTURING-NOTICE.md)分别保留。文件和合成案例检查的
 范围见分发说明；制造方法的公开授权与[两卷书整体发布状态](docs/PUBLIC-RELEASE-STATUS.md)分开记录。
@@ -245,7 +251,7 @@ Semantica 与 PDF 的完整顺序见
 
 | 项目 | 当前事实 |
 |---|---|
-| Semantica 运行时 | [`0.6.5+oe.4`](runtime/semantica-source-lock.json)，由 source commit 与 wheel SHA-256 精确锁定；doctor 还逐文件核验 wheel `RECORD` 与实际 import root |
+| Semantica 运行时 | [`0.6.5+oe.6`](runtime/semantica-source-lock.json)，由 source commit 与 wheel SHA-256 精确锁定；doctor 还逐文件核验 wheel `RECORD` 与实际 import root |
 | 可执行语义 | ontology、CQ、SHACL、query、受支持 rule、cases、contract、PROV、receipt 与生命周期只在 Semantica 中保留正本；OE 没有第二 backend、fallback 或平行 registry |
 | 章节 packages | 共 29 个：第一卷 9 个、第二卷 20 个。第一卷 ch06 为 `absent`，其余 28 个为 `partial`；29 个全部 `release_status=blocked` |
 | 规范派生 package | 另有一个 `semantica.chapter_packages.vol2.normative` domain package，当前同为 `partial/blocked`；它不是 ISO 原文副本或合规意见 |
@@ -281,6 +287,7 @@ references/product-...-book/     第二卷书源、TeX、图与 PDF
 references/                      来源地图、合同与发布证据
 skills/domain-ontology-loop/     行业本体治理外环
 skills/standard-to-book/         标准到书的受控作者流程
+skills/cad-agent/                原生 CAD、Fusion 执行与制造双向证据交接
 skills/manufacturing-process-cost/ 制造方法、脱敏案例、记录与报告/工艺图模板
 docs/PORTABLE-DISTRIBUTION.md     整根分发与接收方验证
 docs/releases/                   按版本保留的更新说明与公开清单

@@ -169,7 +169,7 @@ def main() -> int:
         # Read exact bytes once: each manifest entry hashes the bytes placed in ZIP.
         payload = {f.relative_to(root).as_posix(): f.read_bytes() for f in files}
         manifest = {"format": "ontology-engineering.portable-skill/v1", "entry": "SKILL.md",
-                    "scope": "Local distributable candidate; not authorization for public release.",
+                    "scope": "Transport integrity only; release authorization is recorded separately.",
                     "files": [{"path": n, "sha256": hashlib.sha256(b).hexdigest()} for n, b in sorted(payload.items())]}
         output.parent.mkdir(parents=True, exist_ok=True)
         with zipfile.ZipFile(output, "x", zipfile.ZIP_DEFLATED) as archive:
@@ -179,7 +179,10 @@ def main() -> int:
                 member.compress_type = zipfile.ZIP_DEFLATED
                 member.external_attr = (stat.S_IFREG | modes[name]) << 16
                 archive.writestr(member, data)
-            archive.writestr("ontology-engineering/PORTABLE-MANIFEST.json", json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+            member = zipfile.ZipInfo("ontology-engineering/PORTABLE-MANIFEST.json")
+            member.compress_type = zipfile.ZIP_DEFLATED
+            member.external_attr = (stat.S_IFREG | 0o644) << 16
+            archive.writestr(member, json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
         report["archive"] = {"file": str(output), "sha256": hashlib.sha256(output.read_bytes()).hexdigest(), "bytes": output.stat().st_size}
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0 if report["passed"] else 1

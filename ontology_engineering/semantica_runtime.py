@@ -45,6 +45,11 @@ try:
 except ImportError:
     _refinery = None
 
+try:
+    from semantica.ontology import decision_review as _decision_review
+except ImportError:
+    _decision_review = None
+
 
 RUNTIME_ID = "semantica"
 SOURCE_LOCK_SCHEMA = "ontology-engineering.semantica-source-lock/v1"
@@ -715,6 +720,20 @@ def semantic_refinery_capabilities() -> Mapping[str, Any]:
         and declaration_error is None
         and declaration_matches
     )
+    review_runner = (
+        getattr(_decision_review, "DecisionReviewRunner", None)
+        if _decision_review is not None
+        else None
+    )
+    review_contract_matches = (
+        _decision_review is not None
+        and getattr(_decision_review, "GATE_CONTRACT", None)
+        == "semantica.ontology.decision-review/v1"
+    )
+    review_available = bool(
+        review_contract_matches
+        and callable(getattr(review_runner, "evaluate_registry", None))
+    )
     return {
         "native": {
             "contract": NATIVE_REFINERY_CONTRACT,
@@ -729,6 +748,13 @@ def semantic_refinery_capabilities() -> Mapping[str, Any]:
             "declaration_mismatches": declaration_mismatches,
             "declaration": dict(declaration),
             "declaration_error": declaration_error,
+        },
+        "decision_review": {
+            "contract": "semantica.ontology.decision-review/v1",
+            "available": review_available,
+            "status": "available" if review_available else "blocked",
+            "scope": "read-only promoted-package project ABox review",
+            "physical_acceptance": False,
         },
     }
 
@@ -1363,6 +1389,141 @@ def native_refinery_run_package(
         "executor": result.as_dict(),
         "release": verdict.as_dict(),
     }
+
+
+def native_decision_review(
+    workspace: str,
+    *,
+    binding: Mapping[str, Any],
+    evidence: bytes,
+    evidence_sha256: str,
+    evidence_format: str,
+    evidence_id: str,
+    evidence_uri: str,
+    evidence_captured_at: str,
+    scope_id: str,
+    focus_iri: str,
+    focus_type_iri: str,
+    query_asset_id: str,
+    shape_asset_id: str,
+    created_at: Optional[str] = None,
+) -> Mapping[str, Any]:
+    """Review one project ABox with the exact promoted, bound Semantica package.
+
+    This is a read-only projection through Semantica's native decision gate.
+    A clear report is not a refinery release or physical product acceptance.
+    """
+
+    if not semantic_refinery_capabilities()["decision_review"]["available"]:
+        raise RuntimeError("native Semantica decision review API is unavailable")
+
+    from semantica.ontology.decision_review import DecisionReviewRunner
+    from semantica.utils.exceptions import SemanticaError
+
+    module = _native_refinery_module()
+    project_binding = module.ProjectOntologyBinding.from_dict(binding)
+    registry = _native_registry(workspace, project_binding)
+    descriptor, subject = _native_registry_subject(registry, project_binding)
+    try:
+        report = DecisionReviewRunner().evaluate_registry(
+            registry,
+            descriptor.package_id,
+            expected_package_sha256=descriptor.package_sha256,
+            version=descriptor.version,
+            evidence=evidence,
+            evidence_sha256=evidence_sha256,
+            evidence_format=evidence_format,
+            evidence_id=evidence_id,
+            evidence_uri=evidence_uri,
+            evidence_captured_at=evidence_captured_at,
+            scope_id=scope_id,
+            focus_iri=focus_iri,
+            focus_type_iri=focus_type_iri,
+            query_asset_id=query_asset_id,
+            shape_asset_id=shape_asset_id,
+            created_at=created_at,
+        )
+    except SemanticaError as exc:
+        raise RuntimeError(
+            "Semantica decision review rejected the input: {}".format(exc)
+        ) from exc
+    return {"subject": dict(subject), "review": report.as_dict()}
+
+
+def native_candidate_authoring_review(
+    *,
+    delta: Mapping[str, Any],
+    evidence: bytes,
+    evidence_id: str,
+    evidence_uri: str,
+    evidence_captured_at: str,
+    scope_id: str,
+    focus_iri: str,
+    focus_type_iri: str,
+    query_asset_id: str,
+    shape_asset_id: str,
+) -> Mapping[str, Any]:
+    """Evaluate an exact proposed delta without registry adoption or project receipt.
+
+    This is the sole Semantica execution boundary for local candidate authoring.
+    The caller must still verify the proposed state and evidence snapshot.
+    """
+
+    if _decision_review is None or not callable(
+        getattr(_decision_review.DecisionReviewRunner, "evaluate_manifest", None)
+    ):
+        raise RuntimeError("native Semantica manifest review API is unavailable")
+    module = _native_refinery_module()
+    package_delta = module.PackageDelta.from_dict(delta)
+    if len(package_delta.contract) != 1 or package_delta.contract[0].content_bytes is None:
+        raise ValueError("candidate must carry one complete execution contract")
+    projection = json.loads(package_delta.contract[0].content_bytes)
+    metadata = projection["assets"]
+    assets = []
+    for category in NATIVE_REFINERY_ASSET_CATEGORIES:
+        for asset in getattr(package_delta, category):
+            if asset.operation != "add" or asset.content_bytes is None:
+                raise ValueError("authoring manifest requires a complete add-only candidate delta")
+            if asset.asset_id not in metadata:
+                raise ValueError("execution contract omits asset: " + asset.asset_id)
+            settings = metadata[asset.asset_id]
+            assets.append({
+                "asset_id": asset.asset_id,
+                "role": settings["role"],
+                "data": asset.content_bytes,
+                "sha256": asset.sha256,
+                "format": settings["format"],
+                "kind": settings["kind"],
+                "load_into_dataset": settings["load_into_dataset"],
+            })
+    if {asset["asset_id"] for asset in assets} != set(metadata):
+        raise ValueError("candidate assets differ from the execution contract")
+    manifest = {
+        "schema_version": "1.0",
+        "package_id": package_delta.package_id,
+        "version": package_delta.target_version,
+        "namespace": projection["namespace"],
+        "assets": assets,
+    }
+    runtime = SemanticRuntime(profile="ontology-runtime", backend="rdflib", cache_queries=False)
+    package_digest = runtime.load_package(manifest).identity.digest
+    evidence_digest = hashlib.sha256(evidence).hexdigest()
+    review = _decision_review.DecisionReviewRunner().evaluate_manifest(
+        manifest,
+        evidence=evidence,
+        evidence_sha256=evidence_digest,
+        evidence_format="turtle",
+        evidence_id=evidence_id,
+        evidence_uri=evidence_uri,
+        evidence_captured_at=evidence_captured_at,
+        scope_id=scope_id,
+        focus_iri=focus_iri,
+        focus_type_iri=focus_type_iri,
+        query_asset_id=query_asset_id,
+        shape_asset_id=shape_asset_id,
+        expected_package_digest=package_digest,
+    )
+    return {"delta_sha256": package_delta.delta_sha256, "review": review.as_dict()}
 
 
 def native_refinery_promote_candidate(

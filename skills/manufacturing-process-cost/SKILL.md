@@ -1,21 +1,21 @@
 ---
 name: manufacturing-process-cost
-description: Develop and revise discrete-manufacturing process and cost proposals from incomplete customer information. Use for context transfer, tacit-knowledge discovery, make-or-buy comparisons, equipment reuse, proposal feedback, and anonymized manufacturing lessons within ontology-engineering.
+description: Develop and revise discrete-manufacturing process and cost proposals from incomplete customer information, including CAD feature-to-process handoff. Use for context transfer, tacit-knowledge discovery, make-or-buy comparisons, equipment reuse, proposal feedback, and anonymized manufacturing lessons within ontology-engineering.
 ---
 
 # 生产制造工艺与成本管理
 
 从制造企业接到询问的时点开始，沿着“用途与要求 → 产品及状态 → 工艺与检验 → 资源与供应链 → 成本与交付”发现缺口，推进方案，把反馈和实际结果接回来。适用于离散机械制造；具体行业、材料、工艺参数和验收值由项目证据提供。
 
-这是方法、脱敏案例和工作记录模板模块，版本 `0.5.3`。八份 JSON 记录模板仍为 `0.2.0`，报告组件与图形模板仍为 `1.0.0`；六张评审卡为 `1.4.0`。本版补强成本参数的来源与派生、批次计费及可同时成立的估算情景。冻结的 Semantica 制造案例仍为 `0.1.1`。先遵守根 [ontology-engineering](../../SKILL.md) 的 source lock、发现、绑定和三联输出规则；正式语义执行仍只走 Semantica。通用方法已有受控语义候选，按 [语义执行与证据范围](references/semantic-use.md) 定位；可执行资产存于 Semantica 工作区，不在 skill 内另建语义正本。记录模板不是 `ProjectOntologyBinding`、`SemanticTaskEnvelope` 或语义校验器。缺少绑定只阻断依赖绑定的执行；继续已授权的资料整理、条件分析和问题准备。
+这是方法、脱敏案例和工作记录模板模块，方法版本 `0.5.4`。八份 JSON 记录模板中 `solution-record`、`revision-record` 为 `0.2.1`，其余仍为 `0.2.0`；报告组件与图形模板仍为 `1.0.0`；六张评审卡为 `1.4.1`。本版补上工艺替代时的功能覆盖与反证回退，并接入 CAD／工艺双向证据交接。冻结的 Semantica 制造案例仍为 `0.1.1`；新增语义只可经受控后继候选验证，不能把本文当成已发布的语义门禁。先遵守根 [ontology-engineering](../../SKILL.md) 的 source lock、发现、绑定和三联输出规则；正式语义执行仍只走 Semantica。按 [语义执行与证据范围](references/semantic-use.md) 定位候选；可执行资产存于 Semantica 工作区，不在 skill 内另建语义正本。记录模板不是 `ProjectOntologyBinding`、`SemanticTaskEnvelope` 或语义校验器。缺少绑定只阻断依赖绑定的执行；继续已授权的资料整理、条件分析和问题准备。
 
 ## 每轮怎么做
 
 1. **续接当前决定。** 读取项目入口、当前快照、已采用版本、旧答复和未决项。先说明现在要判断什么，例如能否接单、哪条路线合适、预算能精确到哪一步。
 2. **比较情境。** 查旧经验成立的条件与本次差异。产品相似不证明使用、装配、失效后果、数量与验收要求相同；差异也不自动支持取消工序。
-3. **顺着关系找缺口。** 用 [对象与成本关系](references/manufacturing-map.md) 定位对象、状态和下游影响，再按 [高价值资料与信息筛选](references/high-value-documents.md) 深读决定相关的原件和对话；合并重复内容，保留条件与反证。只追问会改变本轮决定的未知量。用 [工作闭环](references/operating-loop.md) 把原话、隐含条件、解释和关闭依据分开。
-4. **形成条件明确的方案。** 把已有事实、假设和待验证能力分别列出。比较自制、外协、设备复用或改造时，先统一产品版本、数量、交付与费用范围。信息不全时给条件分支或部分核算，不把未知费用当零。 多条路线待选时用[验证排序与改选界限](references/decision-patterns.md#p11-降本排序先验证能改变选择的未知量)，把下一动作的结果接到继续、改选或暂缓的具体条件。
-5. **接收反馈并修订。** 先定位反馈针对的方案版本和对象。 产品或订单已变化时，按[变更适用范围](references/decision-patterns.md#p06-证据降级下游结论一起退回)确认哪些实物切换、哪些旧结论仍有依据；对照新旧依赖后核算剩余工作。追加来源及变更事件，追踪工艺、检验、资源、成本和输出依赖；对新输出检查自身快照与结果。使用 [工作规范](references/work-norms.md)，保留旧版及改变理由。需要 PDF 时按 [报告设计](references/report-design.md) 选择本轮问题及视图，冻结输入再生成；文档版号不代替工程状态。
+3. **顺着关系找缺口。** 用 [对象与成本关系](references/manufacturing-map.md) 定位对象、状态和下游影响，再按 [高价值资料与信息筛选](references/high-value-documents.md) 深读决定相关的原件和对话；合并重复内容，保留条件与反证。只追问会改变本轮决定的未知量。用 [工作闭环](references/operating-loop.md) 把原话、隐含条件、解释和关闭依据分开。工艺替代时，按[因果与反证关口](references/causal-decision-gate.md)查旧工艺预期承担的功能如何在新路线中接续。若判断依赖孔、隔筋、贴合面、焊道可达性或装夹位置，读取[CAD／工艺双向证据交接](../cad-agent/references/cad-process-integration.md)：接收同版原生几何证据与 CAD 提问，同时把新工艺需要 CAD 核查的对象和证据写回交接包。拟议制造语义包的作者评估可按该交接说明使用本模块的 `cad_handoff_to_q21.py` 与 `run_q21_authoring_review.py`；它不代替项目正式 review。
+4. **形成条件明确的方案。** 把已有事实、假设和待验证能力分别列出；把专家路线建议作为有来源的候选主张，不把它当成产品要求豁免或工艺能力证明。比较自制、外协、设备复用或改造时，先统一产品版本、数量、交付与费用范围。信息不全时给条件分支或部分核算，不把未知费用当零。多条路线待选时用[验证排序与改选界限](references/decision-patterns.md#p11-降本排序先验证能改变选择的未知量)，把下一动作的结果接到继续、改选或暂缓的具体条件。涉及可交付、整批开工或确定交期的路线主张，先按因果与反证关口检查功能覆盖、未处置挑战及证据适用性；探索性试验仍可继续。
+5. **接收反馈并修订。** 先定位反馈针对的方案版本和对象。几何、仿真、试验或客户答复若挑战路线的必要条件，先按[因果与反证关口](references/causal-decision-gate.md)定位它反驳的是实物主张、模型假设还是一条支持边；不得从参考模型警讯直接断言实物失败。产品或订单已变化时，按[变更适用范围](references/decision-patterns.md#p06-证据降级下游结论一起退回)确认哪些实物切换、哪些旧结论仍有依据；对照新旧依赖后核算剩余工作。CAD 交接包更新时读取其依赖影响清单，逐项复核受影响的功能、路线主张、检验、成本和交期；影响清单只提示重审，不自动判实物失效。追加来源及变更事件，追踪工艺、检验、资源、成本和输出依赖；对新输出检查自身快照与结果。使用 [工作规范](references/work-norms.md)，保留旧版及改变理由。需要 PDF 时按 [报告设计](references/report-design.md) 选择本轮问题及视图，冻结输入再生成；文档版号不代替工程状态。
 6. **接上责任与下一轮。** 交付“能决定什么、改变了什么、还差什么、谁接什么工作、什么条件下继续”。按 [组织闭环](references/organization-loop.md) 记录接收、复核、决定和关闭证据；未得到接收不能代填已承办。按 [案例演变](references/case-evolution.md) 判断新事实只留在项目，还是需要方法、工具或语义变更；已有规则覆盖时说明 `no_delta`。
 7. **让经验进入下一任务。** 方法候选经过试用，采用时绑定精确版本、摘要和范围；在办任务明确切换或保留旧版。下一次实际使用另留结果，经营效果按可比实绩衡量，不能用文档数量证明降本。
 
@@ -58,4 +58,4 @@ description: Develop and revise discrete-manufacturing process and cost proposal
 
 保留因果关系、提问方法、适用条件和反例；去掉客户、供应商、人员、型号、原图、私有路径及可识别的业务组合。脱敏案例只用于学习决策方法，不能证明另一企业的能力。
 
-方法更改用实际任务验证；语义更改加载 [domain-ontology-loop](../domain-ontology-loop/SKILL.md)，形成完整 PackageDelta 与原生回归。学习层、语义执行层、项目采用和外部发布分别记录。每轮评估学习，不在每轮聊天后静默改写 skill。
+方法更改用实际任务验证；语义更改按根 skill 的 Semantica 生命周期要求，在受控作者环境形成完整 PackageDelta 与原生回归。学习层、语义执行层、项目采用和外部发布分别记录。每轮评估学习，不在每轮聊天后静默改写 skill。

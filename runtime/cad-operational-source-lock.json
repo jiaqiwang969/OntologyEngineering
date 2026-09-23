@@ -1,0 +1,62 @@
+{
+  "schema_version": "ontology-engineering.cad-operational-source-lock/v1",
+  "scope": "Exact nonsemantic CAD execution surfaces only; no backend, semantic asset, or review exemption.",
+  "entries": [
+    {
+      "path": "skills/cad-agent/doctor.sh",
+      "sha256": "b85230880dba0be4117ec1073f06b4048033b56fd68f8319a7ac0e6425da4401",
+      "rules": [
+        "dynamic_import"
+      ],
+      "purpose": "Check the local CAD runtime and optionally run a read-only Fusion preflight."
+    },
+    {
+      "path": "skills/cad-agent/scripts/_common.py",
+      "sha256": "591823f5adb9d6b76da308d5787bebf6a8194d96c17dd5fa6e0ea079c7bad1ba",
+      "rules": [
+        "alternate_engine_subprocess"
+      ],
+      "purpose": "Native CAD, Fusion, NX, or supplier tool subprocess orchestration."
+    },
+    {
+      "path": "skills/cad-agent/scripts/fusion_call.py",
+      "sha256": "ee2b96ca97b5ed0b0ca15c295ca4482c7eadcb43a562445683bfed289aba50b5",
+      "rules": [
+        "alternate_engine_subprocess"
+      ],
+      "purpose": "Native CAD, Fusion, NX, or supplier tool subprocess orchestration."
+    },
+    {
+      "path": "skills/cad-agent/scripts/fusion_ops.py",
+      "sha256": "d10642cd0e66113a842e888c12afa542e95ef8776004e82a2ec5e0282b71b5f5",
+      "rules": [
+        "alternate_engine_subprocess"
+      ],
+      "purpose": "Native CAD, Fusion, NX, or supplier tool subprocess orchestration."
+    },
+    {
+      "path": "skills/cad-agent/scripts/fusion_preflight.py",
+      "sha256": "75a684def90d0779dc317d2902a9bb9f76cb17d92d39e6d7212ef47769fbbb3a",
+      "rules": [
+        "alternate_engine_subprocess"
+      ],
+      "purpose": "Read-only Fusion runtime preflight invokes the locked wheel verifier."
+    },
+    {
+      "path": "skills/cad-agent/scripts/fusion_recovery.py",
+      "sha256": "c0c48637d57eb595c9b09e34776502800153bf1c0303c78987c2eab09155fed6",
+      "rules": [
+        "alternate_engine_subprocess"
+      ],
+      "purpose": "Native CAD, Fusion, NX, or supplier tool subprocess orchestration."
+    },
+    {
+      "path": "skills/cad-agent/setup.sh",
+      "sha256": "cc12f996c59f22176963f248a96a2c0c19b87d461605cf245e4b5cef3704ca45",
+      "rules": [
+        "dynamic_import"
+      ],
+      "purpose": "Create an isolated Python runtime and install the exact reviewed Fusion execution wheel."
+    }
+  ]
+}

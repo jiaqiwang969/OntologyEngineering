@@ -1,6 +1,6 @@
 ---
 name: ontology-engineering
-description: Use Semantica as the default semantic control and learning plane and sole executable semantic authority for engineering. Model industry ontology, objects, evidence and constraints; verify CAD/EDA/QC/simulation/manufacturing packages, govern reusable knowledge, and maintain OntologyEngineering TeX/PDF books. Route manufacturing process/cost workflows, promotion and standard-to-book work to bundled modules.
+description: Use Semantica as the default semantic control and learning plane and sole executable semantic authority for engineering. Model industry ontology, objects, evidence and constraints; verify CAD/EDA/QC/simulation/manufacturing packages, govern reusable knowledge, and maintain OntologyEngineering TeX/PDF books. Route native CAD, manufacturing process/cost, promotion and standard-to-book work to bundled modules.
 ---
 
 # Ontology Engineering：Semantica 行业本体炼化控制面
@@ -83,8 +83,17 @@ binding，也不得越过 retained lifecycle prefix。准备 release/promote 时
 binding 中声明完整有序能力上限，再由 fresh task 和独立 commit/promote authorization
 收窄当前动作。短 prefix candidate 只能保留为历史，不能原地扩权。
 
-按任务使用同一入口的 `discover`、`run`、`propose`、`commit`、`verify`、`history` 或
+按任务使用同一入口的 `discover`、`run`、`review`、`propose`、`commit`、`verify`、`history` 或
 `promote`。先读 `--help`；不要绕过入口手抄 source identity。
+
+项目决定的跨证据审查使用只读 `review`：必须有指向**已晋升 workspace package** 的
+binding、当前 task、与 task 证据 SHA/媒体类型一致的 RDF ABox 文件，以及明确的
+scope、focus IRI、focus RDF 类型、package query/shape asset ID。一个输入投影只能有一个
+所声明类型的焦点对象。入口先核对项目、证据和 promoted
+baseline，再调用 Semantica 原生 `DecisionReviewRunner`；`execution.review` 只说明该
+有界记录投影是否存在语义缺口，`receipt`/`release` 仍单独报告，`clear` 不等于焊缝密封、
+强度或产品放行。候选 package 的 manifest 模式只供受控编写与测试，不能替代项目
+`review`。见 [跨 skill 输入合同](references/semantic-engagement-contract.md)。
 
 ## 三联结果
 
@@ -218,7 +227,14 @@ Semantica 传输包随根目录携带，由运行时解释；它不是 OE-local 
 当用户要把另一部合法取得的标准做成书时，加载 `skills/standard-to-book/SKILL.md`。
 新书正文、图和来源地图属于书侧；完整 executable package 和 promotion 属于 Semantica。
 
-其他 CAD、EDA、质检、仿真或制造 skill 在三个检查点调用本 skill：任务开始的语义
+CAD 建模、图纸、装配、机构或几何核验加载
+[CAD Agent 模块](skills/cad-agent/SKILL.md)。它负责 Fusion/NX/AutoCAD 与原生几何证据，
+不拥有第二套正式语义执行权。工艺选择依赖 CAD 特征，或候选工艺要求 CAD 核查接头、
+可达性和公差时，按[CAD／工艺双向证据交接](skills/cad-agent/references/cad-process-integration.md)
+形成带来源的项目 ABox、双向问题和版本变化影响清单；制造模块接续功能覆盖、检验、
+成本与交期。证据转换器只核对身份与来源，不出具 Semantica 或实物放行结论。
+
+EDA、质检、仿真和其他制造 skill 在三个检查点调用本 skill：任务开始的语义
 接入、不可逆动作前的 preflight、任务结束后的 evidence/receipt/learning 判定。领域
 skill 继续拥有自己的工程工具，不能因语义通过而获得额外 mutation authority。
 

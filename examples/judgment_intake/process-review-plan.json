@@ -1,0 +1,97 @@
+{
+  "schema": "ontology-engineering.method-review-plan/v1",
+  "project_id": "judgment-intake-maintenance",
+  "claims": [
+    {
+      "claim": {
+        "id": "current-support",
+        "statement": "已记录当前结构支撑审阅。",
+        "subject_revision": "R2",
+        "scope": "assembly-A-R2"
+      },
+      "required_methods": [
+        "pattern-identity",
+        "pattern-claim"
+      ],
+      "records": [
+        {
+          "path": "review-current-support-identity_current.json",
+          "sha256": "7a0ce956b74af283faaf184ca9bf79f90b46c18a41346953926b98de88c9da17"
+        },
+        {
+          "path": "review-current-support-controlled_support.json",
+          "sha256": "a9576a58946a9185fba1cb5d5a94a8349bef70fc519254b92830bdf8e262fc3e"
+        }
+      ]
+    },
+    {
+      "claim": {
+        "id": "interface-verified",
+        "statement": "实际接口隔离功能已有适用验证。",
+        "subject_revision": "R2",
+        "scope": "assembly-A-R2"
+      },
+      "required_methods": [
+        "pattern-scope",
+        "pattern-claim"
+      ],
+      "records": [
+        {
+          "path": "review-interface-verified-scope_ideal.json",
+          "sha256": "e14f0fa57d01261d949b4b2f4a88876ad523f7502f7af792459c2eb9d61e2f64"
+        },
+        {
+          "path": "review-interface-verified-controlled_support.json",
+          "sha256": "fa03e5be7b3d846126accb9bd20c74fda7544fff4c0d01665a59f2d3f8cb86bb"
+        }
+      ]
+    },
+    {
+      "claim": {
+        "id": "cost-complete",
+        "statement": "物料预算已覆盖实际投料与损耗。",
+        "subject_revision": "R2",
+        "scope": "assembly-A-R2"
+      },
+      "required_methods": [
+        "pattern-scope"
+      ],
+      "records": [
+        {
+          "path": "review-cost-complete-scope_cost.json",
+          "sha256": "0224f17d591383818fe3d6ad142958a5541ce381b84e315ea13c62b729b15353"
+        }
+      ]
+    },
+    {
+      "claim": {
+        "id": "drive-capacity",
+        "statement": "该规定运动模型已证明驱动能力。",
+        "subject_revision": "R2",
+        "scope": "assembly-A-R2"
+      },
+      "required_methods": [
+        "pattern-scope"
+      ],
+      "records": [
+        {
+          "path": "review-drive-capacity-scope_motion.json",
+          "sha256": "bf84597b8adae1180e9d9289a7b37fd9e9d433af57d93fac306ac9fb9f67765a"
+        }
+      ]
+    }
+  ],
+  "coverage": {
+    "claim": {
+      "id": "process-coverage",
+      "statement": "所声明功能的证据审阅已覆盖。",
+      "subject_revision": "R2",
+      "scope": "assembly-A-R2"
+    },
+    "source": {
+      "path": "review-sources.json",
+      "sha256": "5dff70dc14e9264ba881da196b11d30ad329c1f2b6504f91d8a81fa03821d9f2",
+      "pointer": "/coverages/process"
+    }
+  }
+}

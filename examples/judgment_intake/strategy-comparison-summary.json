@@ -1,0 +1,158 @@
+{
+  "schema": "ontology-engineering.synthetic-strategy-comparison/v1",
+  "reference_status": "author_corrected_after_model_run_not_blind",
+  "source_records": 6,
+  "declared_lineage_groups": 3,
+  "independent_reference_review": false,
+  "blind_evaluation": false,
+  "measured_total_engineering_cost": null,
+  "production_adoption": false,
+  "modes": [
+    {
+      "mode": "batched-concurrent",
+      "lock_sha256": "6eb47170dbcedaadb3c13d6d4b05bb9504e3209f904162effe9d868f309a7ac7",
+      "questions": 78,
+      "counts": {
+        "candidate": 72,
+        "unknown": 6,
+        "execution_error": 0,
+        "pending": 0
+      },
+      "live_requests": 6,
+      "replays": 0,
+      "usage": {
+        "input_tokens": 19150,
+        "output_tokens": 3434,
+        "unreported_attempts": 0
+      },
+      "wall_s": 2.671682999993209,
+      "median_request_s": 0.8079984579817392,
+      "p95_request_s": 1.0942883330280893,
+      "source_relation_author_agreement": {
+        "correct": 5,
+        "n": 6,
+        "mistakes": [
+          {
+            "item_id": "mechanism_motion",
+            "reference": "not_established",
+            "choice": "contradicts"
+          }
+        ]
+      }
+    },
+    {
+      "mode": "batched-serial",
+      "lock_sha256": "39e0c053e371c4e90244cf501977c9dff3d5162a20510195754f7b8ef5075d7c",
+      "questions": 78,
+      "counts": {
+        "candidate": 72,
+        "unknown": 6,
+        "execution_error": 0,
+        "pending": 0
+      },
+      "live_requests": 6,
+      "replays": 0,
+      "usage": {
+        "input_tokens": 19150,
+        "output_tokens": 3434,
+        "unreported_attempts": 0
+      },
+      "wall_s": 4.869851499970537,
+      "median_request_s": 0.8154077914950904,
+      "p95_request_s": 0.8415912080090493,
+      "source_relation_author_agreement": {
+        "correct": 5,
+        "n": 6,
+        "mistakes": [
+          {
+            "item_id": "mechanism_motion",
+            "reference": "not_established",
+            "choice": "contradicts"
+          }
+        ]
+      }
+    },
+    {
+      "mode": "single-concurrent",
+      "lock_sha256": "e605c673dbd96cd9704dbb69aea3f6493730b85ff4b227f98ae906f6b6ad78e9",
+      "questions": 78,
+      "counts": {
+        "candidate": 72,
+        "unknown": 6,
+        "execution_error": 0,
+        "pending": 0
+      },
+      "live_requests": 78,
+      "replays": 0,
+      "usage": {
+        "input_tokens": 50806,
+        "output_tokens": 3650,
+        "unreported_attempts": 0
+      },
+      "wall_s": 31.128699583001435,
+      "median_request_s": 0.7857657915155869,
+      "p95_request_s": 0.9124600409995764,
+      "source_relation_author_agreement": {
+        "correct": 5,
+        "n": 6,
+        "mistakes": [
+          {
+            "item_id": "mechanism_motion",
+            "reference": "not_established",
+            "choice": "contradicts"
+          }
+        ]
+      }
+    },
+    {
+      "mode": "single-serial",
+      "lock_sha256": "d4a3af7cf4d38528c6cd16ad590d57bd7ed59c729c145b96f46282a6ea3ee4ab",
+      "questions": 78,
+      "counts": {
+        "candidate": 72,
+        "unknown": 6,
+        "execution_error": 0,
+        "pending": 0
+      },
+      "live_requests": 78,
+      "replays": 0,
+      "usage": {
+        "input_tokens": 50806,
+        "output_tokens": 3650,
+        "unreported_attempts": 0
+      },
+      "wall_s": 63.08097016601823,
+      "median_request_s": 0.7953853750077542,
+      "p95_request_s": 0.9291167079936713,
+      "source_relation_author_agreement": {
+        "correct": 5,
+        "n": 6,
+        "mistakes": [
+          {
+            "item_id": "mechanism_motion",
+            "reference": "not_established",
+            "choice": "contradicts"
+          }
+        ]
+      }
+    }
+  ],
+  "choice_differences_single_vs_batch": [
+    {
+      "item_id": "cad_revision",
+      "question_id": "role_observation",
+      "batched": "yes",
+      "single": "no"
+    }
+  ],
+  "usage_change": {
+    "input_token_reduction_fraction": 0.6230760146439397,
+    "request_reduction_fraction": 0.9230769230769231
+  },
+  "conclusions": [
+    "Same declared 78 questions completed under all four strategies; one source-support judgment remains disputed against the authored reference.",
+    "Candidate scope prevented the unsupported model counterclaim from becoming an adopted assertion.",
+    "Lower API input/request count observed for this six-record synthetic set, not a general accuracy or end-to-end savings guarantee.",
+    "OCR, engineering tools, expert review time, independent held-out domains and monetary pricing are not measured."
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "scope": "assembly-A-R2",
+  "revision": "R2",
+  "inventory_complete": true,
+  "nodes": [
+    {
+      "id": "geometry",
+      "revision": "R2",
+      "kind": "cad_configuration"
+    },
+    {
+      "id": "interface-claim",
+      "revision": "R2",
+      "kind": "support_claim"
+    },
+    {
+      "id": "process-choice",
+      "revision": "R2",
+      "kind": "route_recommendation"
+    },
+    {
+      "id": "quote",
+      "revision": "R2",
+      "kind": "cost_output"
+    },
+    {
+      "id": "schedule",
+      "revision": "R2",
+      "kind": "schedule_output"
+    },
+    {
+      "id": "temperature",
+      "revision": "R2",
+      "kind": "physical_hypothesis"
+    },
+    {
+      "id": "unrelated",
+      "revision": "R2",
+      "kind": "independent_output"
+    }
+  ],
+  "edges": [
+    {
+      "from": "interface-claim",
+      "to": "geometry",
+      "kind": "support_dependency"
+    },
+    {
+      "from": "process-choice",
+      "to": "interface-claim",
+      "kind": "support_dependency"
+    },
+    {
+      "from": "quote",
+      "to": "process-choice",
+      "kind": "support_dependency"
+    },
+    {
+      "from": "schedule",
+      "to": "process-choice",
+      "kind": "support_dependency"
+    },
+    {
+      "from": "temperature",
+      "to": "geometry",
+      "kind": "physical_hypothesis"
+    }
+  ],
+  "triggers": [
+    {
+      "node": "geometry",
+      "kind": "source_revision_changed"
+    }
+  ]
+}

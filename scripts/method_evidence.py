@@ -11,6 +11,7 @@ from ontology_engineering.method_evidence import profiles, project_record
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--bundle",choices=("engineering-evidence-methods","engineering-judgment-intake"),default="engineering-evidence-methods")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("list")
     p = commands.add_parser("project")
@@ -20,10 +21,10 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == "list":
-            _, value = profiles()
+            _, value = profiles(bundle_name=args.bundle)
             print(json.dumps(value, ensure_ascii=False, indent=2))
             return 0
-        rdf, audit = project_record(args.record, args.evidence_root)
+        rdf, audit = project_record(args.record, args.evidence_root,bundle_name=args.bundle)
         args.output.mkdir(parents=True, exist_ok=False)
         (args.output / "evidence.ttl").write_bytes(rdf)
         (args.output / "projection.json").write_text(json.dumps(audit, ensure_ascii=False, indent=2) + "\n")

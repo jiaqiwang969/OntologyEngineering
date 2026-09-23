@@ -1,0 +1,148 @@
+{
+  "scope": "Authored synthetic development cases; not independent evaluation or customer evidence",
+  "records": {
+    "identity_current": {
+      "method": "pattern-identity",
+      "fields": {
+        "subject_id": "assembly-A",
+        "evidence_subject_id": "assembly-A",
+        "subject_revision": "R2",
+        "evidence_revision": "R2",
+        "identity_basis": "native_identifier"
+      }
+    },
+    "identity_stale": {
+      "method": "pattern-identity",
+      "fields": {
+        "subject_id": "assembly-A",
+        "evidence_subject_id": "assembly-A",
+        "subject_revision": "R2",
+        "evidence_revision": "R1",
+        "identity_basis": "native_identifier"
+      }
+    },
+    "controlled_support": {
+      "method": "pattern-claim",
+      "fields": {
+        "assertion_kind": "engineering_claim",
+        "source_relation": "supports",
+        "admission_basis": "controlled_engineering_review",
+        "source_verified": true
+      }
+    },
+    "scope_ideal": {
+      "method": "pattern-scope",
+      "fields": {
+        "claim_scope": "assembly-A-R2",
+        "evidence_scope": "assembly-A-R2",
+        "required_conditions": [
+          "actual_interface_support"
+        ],
+        "established_conditions": [],
+        "inventory_complete": true,
+        "representation": "assumed_ideal_contact"
+      }
+    },
+    "scope_cost": {
+      "method": "pattern-scope",
+      "fields": {
+        "claim_scope": "assembly-A-R2",
+        "evidence_scope": "assembly-A-R2",
+        "required_conditions": [
+          "gross_input",
+          "scrap",
+          "lot_size"
+        ],
+        "established_conditions": [
+          "effective_quantity",
+          "lot_size"
+        ],
+        "inventory_complete": true,
+        "representation": "applicability_reviewed"
+      }
+    },
+    "scope_motion": {
+      "method": "pattern-scope",
+      "fields": {
+        "claim_scope": "assembly-A-R2",
+        "evidence_scope": "assembly-A-R2",
+        "required_conditions": [
+          "actuator_capacity"
+        ],
+        "established_conditions": [],
+        "inventory_complete": true,
+        "representation": "prescribed_motion"
+      }
+    },
+    "change_pending": {
+      "method": "pattern-change",
+      "fields": {
+        "claim_revision": "R2",
+        "review_revision": "R1",
+        "changed_dependencies": [
+          "CAD_revision"
+        ],
+        "reviewed_dependencies": [],
+        "open_challenges": [],
+        "dependency_inventory_complete": true
+      }
+    }
+  },
+  "coverages": {
+    "cad": {
+      "required_functions": [
+        "structure_support",
+        "revision_applicability",
+        "quote_revision"
+      ],
+      "realized_functions": [
+        "structure_support",
+        "revision_applicability",
+        "quote_revision"
+      ],
+      "challenged_functions": [],
+      "inventory_complete": true,
+      "function_claims": {
+        "structure_support": [
+          "current-support"
+        ],
+        "revision_applicability": [
+          "old-report"
+        ],
+        "quote_revision": [
+          "quote-current"
+        ]
+      }
+    },
+    "process": {
+      "required_functions": [
+        "structure_support",
+        "interface_isolation",
+        "material_cost_basis",
+        "drive_capacity"
+      ],
+      "realized_functions": [
+        "structure_support",
+        "interface_isolation",
+        "material_cost_basis",
+        "drive_capacity"
+      ],
+      "challenged_functions": [],
+      "inventory_complete": true,
+      "function_claims": {
+        "structure_support": [
+          "current-support"
+        ],
+        "interface_isolation": [
+          "interface-verified"
+        ],
+        "material_cost_basis": [
+          "cost-complete"
+        ],
+        "drive_capacity": [
+          "drive-capacity"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "ontology-engineering.method-evidence/v1",
+  "record_id": "quote-current-change_pending",
+  "claim": {
+    "id": "quote-current",
+    "statement": "当前报价已复核改版影响。",
+    "subject_revision": "R2",
+    "scope": "assembly-A-R2"
+  },
+  "method": "pattern-change",
+  "sources": [
+    {
+      "id": "synthetic-review-source",
+      "path": "review-sources.json",
+      "sha256": "5dff70dc14e9264ba881da196b11d30ad329c1f2b6504f91d8a81fa03821d9f2",
+      "media_type": "application/json"
+    }
+  ],
+  "facts": {
+    "claim_revision": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/change_pending/fields/claim_revision"
+    },
+    "review_revision": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/change_pending/fields/review_revision"
+    },
+    "changed_dependencies": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/change_pending/fields/changed_dependencies"
+    },
+    "reviewed_dependencies": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/change_pending/fields/reviewed_dependencies"
+    },
+    "open_challenges": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/change_pending/fields/open_challenges"
+    },
+    "dependency_inventory_complete": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/change_pending/fields/dependency_inventory_complete"
+    }
+  }
+}

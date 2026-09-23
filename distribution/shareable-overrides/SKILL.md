@@ -24,3 +24,5 @@ description: Use Semantica as the single executable semantic authority for engin
 ## 工程证据适用性
 
 CAD、工艺、仿真、测量或成本结论依赖来源证据时，使用[工程证据与方法模块](skills/engineering-evidence-methods/SKILL.md)。它把数量参考态、模型保真、因果对照、观测机会、独立验证、检查覆盖、物料口径及证明适用桥交给 Semantica 检查；来源完整、支持义务满足和实物成立分别报告。
+
+大量对话、报告或多版工程资料的初判共用[批量判断与证据审查](docs/judgment-intake.md)。Jev 的支持、反驳与模式匹配都保留为候选；Semantica 执行所选语义义务，专业工具补证。批次完成、语义覆盖与工程采用分别报告。小任务可直接走既有原生审查。

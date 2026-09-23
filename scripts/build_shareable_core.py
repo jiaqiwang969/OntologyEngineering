@@ -22,7 +22,7 @@ from package_skill import check  # noqa: E402
 
 ASSETS = ROOT / "distribution/shareable-core-assets.json"
 OVERRIDES = ROOT / "distribution/shareable-overrides"
-PUBLIC_CORE_SCOPE = "public-core-v0.5.8-candidate"
+PUBLIC_CORE_SCOPE = "public-core-jev-candidate-20260923"
 
 
 def _sha256(data: bytes) -> str:

@@ -1,0 +1,85 @@
+{
+  "schema": "ontology-engineering.method-review-plan/v1",
+  "project_id": "judgment-intake-maintenance",
+  "claims": [
+    {
+      "claim": {
+        "id": "current-support",
+        "statement": "已记录当前结构支撑审阅。",
+        "subject_revision": "R2",
+        "scope": "assembly-A-R2"
+      },
+      "required_methods": [
+        "pattern-identity",
+        "pattern-claim"
+      ],
+      "records": [
+        {
+          "path": "review-current-support-identity_current.json",
+          "sha256": "7a0ce956b74af283faaf184ca9bf79f90b46c18a41346953926b98de88c9da17"
+        },
+        {
+          "path": "review-current-support-controlled_support.json",
+          "sha256": "a9576a58946a9185fba1cb5d5a94a8349bef70fc519254b92830bdf8e262fc3e"
+        }
+      ]
+    },
+    {
+      "claim": {
+        "id": "old-report",
+        "statement": "旧版报告可支持当前配置。",
+        "subject_revision": "R2",
+        "scope": "assembly-A-R2"
+      },
+      "required_methods": [
+        "pattern-identity",
+        "pattern-claim"
+      ],
+      "records": [
+        {
+          "path": "review-old-report-identity_stale.json",
+          "sha256": "6cddebe3aafbc84ecbd144f407a5c981e65b5e1028ea7b11abdf5926eb21d7c5"
+        },
+        {
+          "path": "review-old-report-controlled_support.json",
+          "sha256": "aea06914d9e8402026be7fb20b809d05c219f50829ab046103c9a9cb9308c0b1"
+        }
+      ]
+    },
+    {
+      "claim": {
+        "id": "quote-current",
+        "statement": "当前报价已复核改版影响。",
+        "subject_revision": "R2",
+        "scope": "assembly-A-R2"
+      },
+      "required_methods": [
+        "pattern-identity",
+        "pattern-change"
+      ],
+      "records": [
+        {
+          "path": "review-quote-current-identity_current.json",
+          "sha256": "7b898778474c9aac0a26c3de4226b6f90dac33d46cc0a8eeae5c61c642678159"
+        },
+        {
+          "path": "review-quote-current-change_pending.json",
+          "sha256": "1d8f5712e4316ea148a724cadc9954bd5c4156d3d98e9facbb9e6098d682813a"
+        }
+      ]
+    }
+  ],
+  "coverage": {
+    "claim": {
+      "id": "cad-coverage",
+      "statement": "所声明功能的证据审阅已覆盖。",
+      "subject_revision": "R2",
+      "scope": "assembly-A-R2"
+    },
+    "source": {
+      "path": "review-sources.json",
+      "sha256": "5dff70dc14e9264ba881da196b11d30ad329c1f2b6504f91d8a81fa03821d9f2",
+      "pointer": "/coverages/cad"
+    }
+  }
+}

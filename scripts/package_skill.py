@@ -25,7 +25,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from check_public_privacy import content_findings, path_findings
 from semantic_bundle_transport import load_bundle, safe_relative
 
-DIRECTORIES = {"agents", "demos", "docs", "ontology_engineering", "references", "runtime", "scripts", "skills", "tests", ".github"}
+DIRECTORIES = {"agents", "demos", "docs", "examples", "ontology_engineering", "references", "runtime", "scripts", "skills", "tests", ".github"}
 ROOT_FILES = {"SKILL.md", "README.md", "README.en.md", "LICENSE", ".gitignore"}
 SKIP_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", "local-builds"}
 SKIP_SUFFIXES = {".pyc", ".aux", ".fdb_latexmk", ".fls", ".log", ".out", ".toc", ".xdv"}

@@ -9,6 +9,13 @@ description: Govern the slow outer loop that turns a reusable candidate from the
 在每次工程任务中完成快速语义接入、现有 package 验证和学习判定；只有结果为有复用
 价值的 `candidate` 时，才进入这里做治理、回归、release 和 promotion。
 
+批量候选的纠错先按[共用判断模块](../../docs/judgment-intake.md)区分：来源提取错误、
+模型误判、项目缺证、版本/条件错配、现有语义的表达或判据缺口。前四类通常修正
+项目记录或执行配置；只有已复现且可迁移的语义缺口才形成 PackageDelta。
+候选数量、模型一致或高分不构成 TBox 晋升依据。固定反例与适用范围，保留旧 CQ
+定义；当前 native 合同下新增案例可挂独立扩展 CQ，不能用替换整个 registry 资产
+来悄悄改写旧问题。
+
 两卷书只提供方法镜头：第一卷说明怎样建模与验收，第二卷示范怎样把 ISO 工程知识
 本体化。项目事实来自受控工程活动，唯一可执行语义和行业记忆都在 Semantica；有权人
 掌握冲突、替换、删除、风险、合规、提升和发布决定。

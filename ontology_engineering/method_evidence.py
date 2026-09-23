@@ -73,15 +73,15 @@ def pointer_value(document, pointer):
     return value
 
 
-def profiles(root=None):
+def profiles(root=None, *, bundle_name="engineering-evidence-methods"):
     args = {} if root is None else {"root": root}
-    spec, payload, _ = load_bundle("engineering-evidence-methods", **args)
+    spec, payload, _ = load_bundle(bundle_name, **args)
     manifest = _json(payload[spec["manifest"]])
     asset = next(x for x in manifest["assets"] if x["asset_id"] == "input-profiles")
     return spec, _json(payload[asset["path"]])
 
 
-def project_record(record_path, evidence_root, *, skill_root=None):
+def project_record(record_path, evidence_root, *, skill_root=None, bundle_name="engineering-evidence-methods"):
     record_path, evidence_root = Path(record_path), Path(evidence_root).resolve()
     raw = record_path.read_bytes()
     record = _json(raw)
@@ -92,7 +92,7 @@ def project_record(record_path, evidence_root, *, skill_root=None):
     _keys(record["claim"], {"id", "statement", "subject_revision", "scope"}, "claim")
     for key, value in record["claim"].items():
         _text(value, "claim." + key)
-    spec, registry = profiles(skill_root)
+    spec, registry = profiles(skill_root, bundle_name=bundle_name)
     if record["method"] not in registry["profiles"]:
         raise ValueError("method is not in the locked Semantica package")
     profile = registry["profiles"][record["method"]]

@@ -1,0 +1,45 @@
+{
+  "schema": "ontology-engineering.method-evidence/v1",
+  "record_id": "cost-complete-scope_cost",
+  "claim": {
+    "id": "cost-complete",
+    "statement": "物料预算已覆盖实际投料与损耗。",
+    "subject_revision": "R2",
+    "scope": "assembly-A-R2"
+  },
+  "method": "pattern-scope",
+  "sources": [
+    {
+      "id": "synthetic-review-source",
+      "path": "review-sources.json",
+      "sha256": "5dff70dc14e9264ba881da196b11d30ad329c1f2b6504f91d8a81fa03821d9f2",
+      "media_type": "application/json"
+    }
+  ],
+  "facts": {
+    "claim_scope": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/scope_cost/fields/claim_scope"
+    },
+    "evidence_scope": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/scope_cost/fields/evidence_scope"
+    },
+    "required_conditions": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/scope_cost/fields/required_conditions"
+    },
+    "established_conditions": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/scope_cost/fields/established_conditions"
+    },
+    "inventory_complete": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/scope_cost/fields/inventory_complete"
+    },
+    "representation": {
+      "source_id": "synthetic-review-source",
+      "pointer": "/records/scope_cost/fields/representation"
+    }
+  }
+}

@@ -11,6 +11,11 @@ description: Reconstruct, design and validate parts, drawings, assemblies and me
 
 CAD 或仿真结果需要支持工艺／产品结论时，使用共用[工程证据与方法](../engineering-evidence-methods/SKILL.md)，把观测量、参考态、必需特征、模型版次及相关的因果／验证义务绑定到主张。`analysis-record.v1` 保持可读，但其中的自由文字假设不会自动升级成已核对的结构化条件。
 
+批量图纸修订、回读摘要或多来源对照按[共用批量判断](../../docs/judgment-intake.md)交接对象 ID、
+实例/配置版本、原文位置和条件。原生模型与图片先由对应工具提取，再由 Jev 提出候选。
+同名对象不自动合并；候选“不相关”不取消必查方法。接口或配置变化后，把支持依赖
+传给原生影响查询，列出需重审的 CAD 主张、工艺推荐及报价。
+
 从图片、视频、专利或残缺 CAD 反推外形和机构时，先读[证据驱动的重建方法](references/evidence-driven-reconstruction.md)：把可见内容、隐藏机理候选、物理/机构/数学推导、本方 CAD 方案和原物结论分开。用第一性原理收窄缺口，并保留现有证据无法区分的候选；不能由功能自由度直接认定原设备的电机或传动布局。
 
 装配或力学问题先读[装配与力学通用判断内核](references/assembly-and-physics-kernel.md)：辨认定义/实例、完整界面图、逐动作状态、外部支撑、装入路径、载荷路径和局部容量；把名义几何、静力、接触仿真与实物证据分层。可用[装配有界筛查器](assembly/README.md)检查给定 AABB 的候选直线装入方向，用[机构四连杆筛查器](mechanism/README.md)检查平面闭环位置；这些工具不替代方法内核、原生回读、物理求解或 Semantica。

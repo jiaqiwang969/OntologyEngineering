@@ -22,6 +22,12 @@ description: Use Semantica as the default semantic control and learning plane an
 
 不存在 OE-local 可执行语义正本、第二 backend、fallback 或平行 package registry。
 
+批量对话、报告或多版工程资料需要归类和支持关系初判时，按
+[共用批量判断与证据审查](docs/judgment-intake.md)接入 Jev。两卷书指导模式与提问；
+Jev 只产生候选，Semantica 执行已实现的身份、主张、范围、功能覆盖及依赖检查。
+模型的支持与反驳都不能直接成为已采用断言；未知、失败及必查义务须保留。
+小任务直接使用专业工具与既有语义审查，无须为了调用模型而拆成批次。
+
 ## 开始任何任务
 
 1. 从本 `SKILL.md` 所在目录解析 skill root；不要写死用户主目录或依赖当前工作目录。

@@ -34,7 +34,8 @@ CQ 和证据方法上；不把 ISO 派生领域规则当成跨行业普遍要求
 3. `init-lock --model <精确版本> --output <新文件>` 固定模型、问题、分段方式、
    合批/并发策略、适配代码和语义包。生成的组合始终是未验证的影子配置。
 4. `prepare --input … --evidence-root … --lock … --output …` 验证清单；
-   `run` 另需 `--journal …` 和本地 `--credential-file …`。凭据文件须由当前用户
+   `run` 另需 `--journal …`、本地 `--credential-file …`，以及显式 `--experiment`
+   或已记录组合的 `--compatibility … --compatibility-root …`。凭据文件须由当前用户
    持有、权限为 0600；值不写进代码、配置锁、台账或分发件。
 5. 同一原文可一次多问；依赖前答的问题分阶段。超长输入要求明确重选范围，
    不静默截断。恢复使用同一批次、输入和完整配置；不同配置另开批次。
@@ -88,6 +89,23 @@ CAD 保留对象/实例、配置、接口、回读和模型条件；制造模块
 不是焊接、装配或某种机构普遍不可行的结论，也不是独立准确率基准。
 
 ## 更新、恢复与学习
+
+完整组合的操作清单由 `scripts/judgment_compatibility.py` 管理。`record --input …
+--evidence-root … --lock … --journal … --output <新目录>` 冻结所选来源、完整配置和
+台账快照，重新核对每个请求、响应与候选。它只记录实际完成的组合运行，不接收外填
+PASS、缺答或仅缓存重放。历史台账必须在其冻结代码环境中读取。
+
+清单格式为 `schema=ontology-engineering.judgment-compatibility/v1`、`catalog_id` 和
+`entries`；每项包含整份 `deployment_sha256` 与 `entry: {path, sha256}`，路径相对
+`--catalog-root`。使用 `check --input … --evidence-root … --lock … --catalog …
+--catalog-root … --output <新文件>`，或由批量 `run --compatibility` 自动核对。
+不同模型、问题、代码、策略或运行时组成的新组合，未列入时返回 `unsupported`，
+不能从单个部件的通过推导整组通过。项目、权限范围、领域、问题和必查方法也须被
+记录范围覆盖；fixture 不能支持 live，清单改变不能悄悄接续旧批次。
+
+当前清单最多支持 `supported_shadow`：允许在已记录范围继续产生候选，仍不提供独立
+准确率资格或工程事实采用。新组合可用显式 `--experiment` 开新批次开展评测，台账
+保留其未获资格的状态。清单与运行快照均为项目私有记录，不随公开 skill 分发。
 
 模型、问题、候选目录、选择范围和语义包分别定位变更。完整配置变化后旧台账不能
 继续执行；旧响应只作有版本的历史记录。重新运行需新批次和新评测，不能继承旧阈值。

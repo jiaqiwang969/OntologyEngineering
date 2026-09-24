@@ -47,6 +47,7 @@ def adapter_identity(skill_root=ROOT):
              "ontology_engineering/judgment_batch.py", "ontology_engineering/method_evidence.py",
              "ontology_engineering/semantica_runtime.py", "scripts/semantic_bundle_transport.py",
              "ontology_engineering/judgment_review.py", "scripts/judgment_batch.py", "scripts/judgment_review.py"]
+    names += ["ontology_engineering/judgment_compatibility.py", "scripts/judgment_compatibility.py"]
     return {"version":ADAPTER_VERSION, "files":{n:digest((Path(skill_root)/n).read_bytes()) for n in names}}
 
 

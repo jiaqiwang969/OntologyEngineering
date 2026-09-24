@@ -132,7 +132,8 @@ def _answers(db,run_id,item_id):
         "SELECT question_id,answer FROM candidates WHERE run_id=? AND item_id=?",(run_id,item_id))}
 
 
-def execute(prepared, journal_path, transport, *, sleeper=time.sleep):
+def execute(prepared, journal_path, transport, *, sleeper=time.sleep, experiment=False,
+            compatibility_catalog=None, compatibility_root=None):
     """Run independent questions concurrently and dependent questions in stages.
 
     Reusing a batch ID requires byte-equivalent ordered inputs and a complete
@@ -149,14 +150,17 @@ def execute(prepared, journal_path, transport, *, sleeper=time.sleep):
     identity=getattr(transport,"identity",None)
     if kind not in ("live","fixture") or not isinstance(identity,str) or not identity:
         raise ValueError("transport_identity_required")
+    from ontology_engineering.judgment_compatibility import run_admission
+    admission = run_admission(prepared, execution_kind=kind, experiment=experiment,
+                              catalog=compatibility_catalog, catalog_root=compatibility_root)
     with journal(journal_path,manifest["project_id"],manifest["access_scope"]) as db:
         expected=(prepared["input_sha256"],prepared["deployment_sha256"],identity)
-        prior=db.execute("SELECT input_sha,lock_sha,transport FROM runs WHERE id=?",(run_id,)).fetchone()
-        if prior and tuple(prior)!=expected:
+        prior=db.execute("SELECT input_sha,lock_sha,transport,manifest FROM runs WHERE id=?",(run_id,)).fetchone()
+        if prior and (tuple(prior)[:3]!=expected or strict_json(prior["manifest"]).get("run_admission") != admission):
             raise ValueError("batch_resume_identity_mismatch")
         with db:
             db.execute("INSERT OR IGNORE INTO runs VALUES (?,?,?,?,?,?)",
-                       (run_id,*expected,encoded({"input":manifest,"deployment":lock}).decode(),now()))
+                       (run_id,*expected,encoded({"input":manifest,"deployment":lock,"run_admission":admission}).decode(),now()))
         max_stage=max(len(item["stages"]) for item in prepared["items"])
         dependencies=catalog.get("dependencies",{})
         database_lock=threading.Lock()
@@ -231,6 +235,8 @@ def execute(prepared, journal_path, transport, *, sleeper=time.sleep):
 
 def report(db, prepared, *, wall_elapsed=0):
     run_id=prepared["input"]["batch_id"]
+    run_metadata = db.execute("SELECT manifest FROM runs WHERE id=?", (run_id,)).fetchone()
+    admission = strict_json(run_metadata["manifest"]).get("run_admission") if run_metadata else None
     unknowns=set(prepared["catalog"]["unknown_choices"])
     items=[]
     totals={"candidate":0,"unknown":0,"execution_error":0,"pending":0}
@@ -303,6 +309,7 @@ def report(db, prepared, *, wall_elapsed=0):
     return {"schema":"ontology-engineering.judgment-batch-result/v1","batch_id":run_id,
             "project_id":prepared["input"]["project_id"],"access_scope":prepared["input"]["access_scope"],
             "input_sha256":prepared["input_sha256"],"deployment_sha256":prepared["deployment_sha256"],
+            "run_admission":admission,
             "status":"completed" if totals["pending"]+totals["execution_error"]==0 else "incomplete",
             "counts":totals,"expected_questions":expected,"items":items,
             "attempts":len(attempts),"live_attempts":sum(a["kind"]=="live" for a in attempts),

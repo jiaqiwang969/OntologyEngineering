@@ -42,6 +42,10 @@ def main(argv=None):
             cmd.add_argument("--journal",type=Path,required=True)
         if name=="run":
             cmd.add_argument("--credential-file",type=Path,default=Path.home()/".codex/api-jev.md")
+            route=cmd.add_mutually_exclusive_group(required=True)
+            route.add_argument("--experiment",action="store_true",help="Explicit unqualified shadow experiment.")
+            route.add_argument("--compatibility",type=Path,help="Allowlist of complete observed combinations.")
+            cmd.add_argument("--compatibility-root",type=Path)
     args=parser.parse_args(argv)
     if args.command=="catalog":
         value=contracts()
@@ -62,7 +66,13 @@ def main(argv=None):
                "items":len(prepared["items"]),"questions":sum(len(i["question_ids"]) for i in prepared["items"]),
                "source_integrity":"verified","model_execution":"not_run","fact_admission":"not_performed"}
     elif args.command=="run":
-        value=execute(prepared,args.journal,JevTransport(args.credential_file))
+        if args.compatibility and not args.compatibility_root:
+            parser.error("--compatibility requires --compatibility-root")
+        if args.experiment and args.compatibility_root:
+            parser.error("--experiment does not use a compatibility root")
+        value=execute(prepared,args.journal,JevTransport(args.credential_file),experiment=args.experiment,
+            compatibility_catalog=strict_json(args.compatibility.read_bytes()) if args.compatibility else None,
+            compatibility_root=args.compatibility_root)
     else:
         if not args.journal.is_file():
             parser.error("journal missing; status cannot create a run")

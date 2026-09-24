@@ -48,6 +48,8 @@ def adapter_identity(skill_root=ROOT):
              "ontology_engineering/semantica_runtime.py", "scripts/semantic_bundle_transport.py",
              "ontology_engineering/judgment_review.py", "scripts/judgment_batch.py", "scripts/judgment_review.py"]
     names += ["ontology_engineering/judgment_compatibility.py", "scripts/judgment_compatibility.py"]
+    names += ["ontology_engineering/judgment_admission.py", "scripts/judgment_admission.py"]
+    names += ["ontology_engineering/judgment_evolution.py", "scripts/judgment_evolution.py"]
     return {"version":ADAPTER_VERSION, "files":{n:digest((Path(skill_root)/n).read_bytes()) for n in names}}
 
 
@@ -88,6 +90,35 @@ def question_stages(selected, dependencies):
     return stages
 
 
+def source_selection(source, evidence_root):
+    """Verify one exact source selection without evaluating its meaning."""
+    _keys(source, {"id", "path", "sha256", "media_type", "selection", "lineage_group", "context_status"}, "source")
+    for key in ("id", "lineage_group"):
+        _text(source[key], "source." + key)
+    if source["context_status"] not in ("complete_for_question", "partial", "unknown"):
+        raise ValueError("invalid_context_status")
+    raw = _inside(Path(evidence_root).resolve(), source["path"]).read_bytes()
+    if digest(raw) != source["sha256"]:
+        raise ValueError("source_hash_mismatch")
+    selection = source["selection"]
+    if source["media_type"] == "application/json":
+        _keys(selection, {"pointer"}, "selection")
+        text = pointer_value(strict_json(raw), selection["pointer"])
+    elif source["media_type"] == "text/plain":
+        _keys(selection, {"start", "end"}, "selection")
+        decoded = raw.decode("utf-8")
+        start, end = selection["start"], selection["end"]
+        if type(start) is not int or type(end) is not int or not 0 <= start < end <= len(decoded):
+            raise ValueError("invalid_source_range")
+        text = decoded[start:end]
+    else:
+        raise ValueError("native_or_visual_source_requires_prior_extraction")
+    _text(text, "source_text")
+    if "apikey_" in text:
+        raise ValueError("credential_material_in_source")
+    return text
+
+
 def prepare_batch(document, evidence_root, lock, *, skill_root=ROOT):
     """Read only declared local selections and preserve their exact source lineage."""
     validate_lock(lock, skill_root=skill_root)
@@ -108,30 +139,7 @@ def prepare_batch(document, evidence_root, lock, *, skill_root=ROOT):
             raise ValueError("duplicate_item_id")
         ids.add(iid)
         source, claim = item["source"], item["claim"]
-        _keys(source,{"id","path","sha256","media_type","selection","lineage_group","context_status"}, "source")
-        for key in ("id", "lineage_group"):
-            _text(source[key], "source."+key)
-        if source["context_status"] not in ("complete_for_question", "partial", "unknown"):
-            raise ValueError("invalid_context_status")
-        raw = _inside(root,source["path"]).read_bytes()
-        if digest(raw) != source["sha256"]:
-            raise ValueError("source_hash_mismatch")
-        selection = source["selection"]
-        if source["media_type"] == "application/json":
-            _keys(selection,{"pointer"},"selection")
-            text = pointer_value(strict_json(raw),selection["pointer"])
-        elif source["media_type"] == "text/plain":
-            _keys(selection,{"start","end"},"selection")
-            decoded = raw.decode("utf-8")
-            start, end = selection["start"], selection["end"]
-            if type(start) is not int or type(end) is not int or not 0 <= start < end <= len(decoded):
-                raise ValueError("invalid_source_range")
-            text = decoded[start:end]
-        else:
-            raise ValueError("native_or_visual_source_requires_prior_extraction")
-        _text(text,"source_text")
-        if "apikey_" in text:
-            raise ValueError("credential_material_in_source")
+        text = source_selection(source, root)
         _keys(claim,{"id","statement","subject_id","subject_revision","scope","domain","cq"},"claim")
         for key, value in claim.items():
             _text(value,"claim."+key)

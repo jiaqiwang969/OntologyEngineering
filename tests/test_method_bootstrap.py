@@ -35,7 +35,7 @@ def prepare(directory):
 
 def test_locked_capsule_has_exact_source_chain_and_no_publisher_decisions():
     spec, payload, capsule = bootstrap.load_capsule()
-    assert len(capsule["steps"]) == 4
+    assert [step["version"] for step in capsule["steps"]] == ["0.1.0", "0.1.2", "0.2.0", "0.2.1", "0.2.2"]
     assert capsule["target_package_sha256"] == spec["package_sha256"]
     assert all(not any(part in name for part in ("authorization", "registry-events", "engagements")) for name in payload)
     for step in capsule["steps"]:

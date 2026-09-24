@@ -55,6 +55,11 @@
       "path": "references/product-trustworthiness-book/ch18-dependency-ontology/chapter.md",
       "sha256": "31582a91d930ff24e65c6da051ca5bde41a75900c02f5d5249e55b03c94276e7",
       "role": "methodological_source_not_project_fact"
+    },
+    "vol2-ch13": {
+      "path": "references/product-trustworthiness-book/ch13-governance-ontology/chapter.md",
+      "sha256": "da998ffca902b91f2606a80943f4200be8bd5c124f46c4237dd0c816f06b8f43",
+      "role": "methodological_source_not_project_fact"
     }
   },
   "patterns": [
@@ -171,6 +176,39 @@
         "vol2-ch18"
       ],
       "boundary": "Recorded support edges only; neither causal discovery nor proof of physical failure."
+    },
+    "assertion_admission": {
+      "formal_assets": [
+        "findings-assertion-admission-review",
+        "shape-assertion-admission-review"
+      ],
+      "source_ids": [
+        "vol1-ch08",
+        "vol2-ch11",
+        "vol2-ch13"
+      ],
+      "boundary": "Exact declared source, assertion and review; no reviewer authentication. Project adoption requires a separate caller-controlled authorization and fresh required checks."
+    },
+    "pattern_evolution": {
+      "formal_assets": [
+        "pattern-evolution-catalog",
+        "findings-pattern-evolution-review",
+        "shape-pattern-evolution-review",
+        "findings-claim-reported-source",
+        "shape-claim-reported-source",
+        "findings-claim-engineering-support",
+        "shape-claim-engineering-support",
+        "findings-claim-basis-composition",
+        "shape-claim-basis-composition"
+      ],
+      "source_ids": [
+        "vol1-ch03",
+        "vol1-ch04",
+        "vol2-ch11",
+        "vol2-ch13",
+        "vol2-ch17"
+      ],
+      "boundary": "Retain source identities and exact meaning assets; explicit split/composition review does not establish equivalence or automatically migrate project applications."
     }
   },
   "not_implemented": [

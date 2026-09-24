@@ -8,6 +8,8 @@ description: Check whether engineering measurements, models, causal comparisons,
 先写清本轮主张，再检查支持它的证据。这个共用模块连接 CAD、工艺成本、仿真、实验与测量；求解、采集和材料操作仍由专业工具完成。正式 TBox、CQ、SHACL、SPARQL 和规则只由根 [ontology-engineering](../../SKILL.md) 锁定的 Semantica 执行。
 
 资料量大且问题重复时，按[共用批量判断入口](../../docs/judgment-intake.md)使用受控问题目录。
+需采用项目断言或审阅模式拆合时，按[受控采用与迁移](../../docs/judgment-governance.md)
+绑定确切来源、审阅和决定；普通只读审查与模型候选不触发采用。
 `judgment_batch.py` 保留来源、候选、未知与请求失败；`judgment_review.py` 从原始响应
 核对候选身份，并逐项调用原生 review。功能审查覆盖从本次实际执行汇总；
 导入 PASS 文件不能替代执行。`impact` 模式只沿已记录的支持依赖列出重审对象，

@@ -16,6 +16,7 @@ from ontology_engineering.jev_transport import strict_json
 from ontology_engineering.method_evidence import _inside, _keys, _text
 
 SCHEMA = "ontology-engineering.judgment-evaluation-set/v1"
+REFERENCE_SCHEMA = "ontology-engineering.judgment-reference-review/v1"
 
 
 def _strings(value, name, *, nonempty=True):
@@ -34,6 +35,49 @@ def _file(root, ref):
     return raw
 
 
+def reference_subject(item, *, catalog=None):
+    """Bind a reference to the source, claim and complete question definitions.
+
+    Labels and reviewer identities are checked separately against the review
+    artifact. Exporting this subject neither supplies labels nor authenticates
+    the reviewer. Split/exposure metadata remains the dataset controller's
+    responsibility and cannot turn used development data into unseen data.
+    """
+    questions = (catalog or contracts()["catalog"])["questions"]
+    return {"schema": "ontology-engineering.judgment-reference-subject/v1",
+            "item_id": item["id"], "source": item["source"], "claim": item["claim"],
+            "domain": item["domain"], "root_ids": sorted(item["root_ids"]),
+            "question_catalog_sha256": digest(questions)}
+
+
+def _reference_binding_issue(raw, item, catalog):
+    """Check record identity only; a hash is not proof of an actual review."""
+    try:
+        review = strict_json(raw)
+        _keys(review, {"schema", "review_id", "subject_sha256", "reviewer_ids",
+                       "origin", "labels", "rationale", "completed_at"}, "reference review")
+        if review["schema"] != REFERENCE_SCHEMA:
+            return "reference_artifact_schema_mismatch"
+        for key in ("review_id", "rationale", "completed_at"):
+            _text(review[key], "reference_review." + key)
+        reviewers = _strings(review["reviewer_ids"], "reference_reviewers")
+        if review["subject_sha256"] != digest(reference_subject(item, catalog=catalog)):
+            return "reference_artifact_subject_mismatch"
+        ref = item["reference"]
+        if sorted(reviewers) != sorted(ref["reviewer_ids"]) or review["origin"] != ref["origin"]:
+            return "reference_artifact_reviewer_mismatch"
+        labels = review["labels"]
+        if not isinstance(labels, dict) or set(labels) != set(ref["labels"]):
+            return "reference_artifact_labels_mismatch"
+        for qid, choices in labels.items():
+            _strings(choices, "reviewed_choices")
+            if sorted(choices) != sorted(ref["labels"][qid]):
+                return "reference_artifact_labels_mismatch"
+    except (TypeError, ValueError):
+        return "reference_artifact_not_bound"
+    return None
+
+
 def audit_dataset(document, evidence_root, *, catalog=None):
     """Find source-group leakage before metrics, preserving unreviewed labels.
 
@@ -48,7 +92,8 @@ their true root IDs; this checker cannot discover an undeclared origin.
     _text(document["dataset_id"], "dataset_id")
     developers = set(_strings(document["developer_ids"], "developer_ids"))
     heldout = set(_strings(document["heldout_domains"], "heldout_domains", nonempty=False))
-    questions = (catalog or contracts()["catalog"])["questions"]
+    catalog = catalog or contracts()["catalog"]
+    questions = catalog["questions"]
     if not isinstance(document["items"], list) or not document["items"]:
         raise ValueError("evaluation_inventory_empty")
     issues, ids, groups = [], set(), defaultdict(list)
@@ -87,8 +132,7 @@ their true root IDs; this checker cannot discover an undeclared origin.
         if ref["origin"] not in {"human_review", "controlled_reference", "author", "model_output", "pending"}:
             raise ValueError("invalid_reference_origin")
         reviewers = set(_strings(ref["reviewer_ids"], "reviewer_ids", nonempty=False))
-        if ref["artifact"] is not None:
-            _file(evidence_root, ref["artifact"])
+        review_raw = _file(evidence_root, ref["artifact"]) if ref["artifact"] is not None else None
         labels = ref["labels"]
         if not isinstance(labels, dict) or set(labels)-set(questions):
             raise ValueError("invalid_reference_questions")
@@ -104,7 +148,11 @@ their true root IDs; this checker cannot discover an undeclared origin.
             if not reviewers or developers & reviewers or not ref["artifact"] or ref["origin"] not in {"human_review", "controlled_reference"} or not labels:
                 issues.append({"code":"independent_reference_not_established", "items":[iid]})
             else:
-                independent.append(iid)
+                problem = _reference_binding_issue(review_raw, item, catalog)
+                if problem:
+                    issues.append({"code":problem, "items":[iid]})
+                else:
+                    independent.append(iid)
     for group, members in groups.items():
         if len({split for _, split in members}) > 1:
             issues.append({"code":"source_group_crosses_splits", "group":group, "items":sorted(i for i,_ in members)})
@@ -130,6 +178,19 @@ their true root IDs; this checker cannot discover an undeclared origin.
             "qualification":"not_assessed"}
 
 
+def reference_subjects(document, evidence_root):
+    """Export exact subjects for external review, without generating a review."""
+    catalog = contracts()["catalog"]
+    audit = audit_dataset(document, evidence_root, catalog=catalog)
+    subjects = []
+    for item in document["items"]:
+        subject = reference_subject(item, catalog=catalog)
+        subjects.append({"item_id": item["id"], "subject": subject, "subject_sha256": digest(subject)})
+    return {"schema": "ontology-engineering.judgment-reference-subjects/v1",
+            "dataset_audit": audit, "questions": catalog["questions"], "subjects": subjects,
+            "reference_review": "not_performed", "qualification": "not_assessed"}
+
+
 def evaluate(document, evidence_root, prepared, journal_path):
     """Measure the exact journal, retaining missing outputs in the denominator."""
     audit = audit_dataset(document, evidence_root, catalog=prepared["catalog"])
@@ -146,6 +207,9 @@ def evaluate(document, evidence_root, prepared, journal_path):
             raise ValueError("evaluation_source_identity_mismatch")
         if item["claim"] != {k:actual["item"]["claim"][k] for k in item["claim"]} or item["domain"] != actual["item"]["claim"]["domain"]:
             raise ValueError("evaluation_claim_identity_mismatch")
+        reference_quality = item["reference"]["status"]
+        if reference_quality == "independent_review" and item['id'] not in audit['independent_reference_items']:
+            reference_quality = "unverified_reference"
         answers = {a["question_id"]:a for a in actual["answers"]}
         for qid, accepted in item["reference"]["labels"].items():
             if qid not in actual["item"]["question_ids"]:
@@ -153,7 +217,7 @@ def evaluate(document, evidence_root, prepared, journal_path):
             candidate = answers.get(qid)
             choice = candidate["answer"]["choice"] if candidate else None
             hit = choice in accepted if choice is not None else False
-            stratum = '|'.join([item["split"], item["domain"], qid, item["reference"]["status"]])
+            stratum = '|'.join([item["split"], item["domain"], qid, reference_quality])
             count = metrics[stratum]
             count['reference_questions'] += 1
             count['answered'] += candidate is not None
@@ -169,6 +233,7 @@ def evaluate(document, evidence_root, prepared, journal_path):
                     counts['false_negative'] += choice!=label and accepted[0]==label
             rows.append({'item_id':item['id'], 'question_id':qid, 'accepted_choices':accepted,
                 'choice':choice, 'matches_reference':hit, 'reference_status':item['reference']['status'],
+                'reference_quality':reference_quality,
                 'independent_reference_eligible':item['id'] in audit['independent_reference_items'],
                 'candidate_id':candidate['candidate_id'] if candidate else None,
                 'execution_kind':candidate['execution_kind'] if candidate else 'not_completed'})

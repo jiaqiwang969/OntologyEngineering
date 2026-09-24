@@ -120,9 +120,43 @@ PASS、缺答或仅缓存重放。历史台账必须在其冻结代码环境中�
 原始候选台账。输入格式见[开发样例评测集](../examples/judgment_intake/evaluation-development.json)。
 同源根、同一文件的副本不能跨开发/校准/留出集；已用于修改系统的资料保留开发标记。
 独立参考需另有审阅记录与审阅人，模型标签和开发者自己的答案不计为独立参考。
+审阅附件必须绑定下面的确切对象、问题和标签；附件哈希一致本身不能证明审阅了它们。
 审阅人身份由外部控制面核实，此工具只检查记录关系。输出分问题、领域和参考质量的
 观察一致率、类别 precision/recall 及混淆表；未返回的判断仍计入分母，多种可接受
 答案不强改成单一真值。没有独立标签时不产生独立准确率或采用资格。
+
+先导出待审阅对象及完整问题定义：
+
+```bash
+runtime/.venv/bin/python scripts/judgment_evaluation.py reference-subjects \
+  --input /path/to/dataset.json --evidence-root /path/to/evidence \
+  --output /path/to/new-reference-subjects.json
+```
+
+该命令不生成参考答案或审阅决定。待审条目仍使用 `status=pending`、空 `labels` 与
+`artifact=null`。外部审阅完成后，每个条目单独提供如下记录，再将其路径和文件哈希
+填入条目的 `reference.artifact`。下例是字段说明，不是可用的审阅批准：
+
+```json
+{
+  "schema": "ontology-engineering.judgment-reference-review/v1",
+  "review_id": "external-review-id",
+  "subject_sha256": "exact exported subject SHA-256",
+  "reviewer_ids": ["actual-reviewer-id"],
+  "origin": "human_review",
+  "labels": {"source_relation": ["not_established"]},
+  "rationale": "The external reviewer's source-bound reasoning",
+  "completed_at": "actual timestamp with timezone"
+}
+```
+
+来源文件及选区、主张、对象修订、领域、声明血缘与问题定义共同确定 subject。
+审阅人的标识、来源类型和标签必须与数据集声明相符。任一项错配，或用无关 JSON
+代替审阅，均会在 `audit` 中形成缺口，该条目不进入独立参考集合。`origin` 可为
+`human_review` 或 `controlled_reference`；两者均依赖外部控制面提供真实依据。
+错配条目的指标归入 `unverified_reference`，不会继续显示为独立参考统计。
+新的问题定义需要重新核对参考，旧附件保留为历史，不能自动继承新资格。
+即使记录关系全部匹配，仍明确报告 `reference_authentication=external_not_performed`。
 
 `cost` 模式读取费用台账，按已声明数量与单价计算记录小计，并明确保留未知项。
 缺少人工、OCR 或专业工具费用时总成本为未知，不能用已知 API 小计冒充总成本。

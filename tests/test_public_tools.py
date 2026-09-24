@@ -48,6 +48,22 @@ class PrivacyGateTests(unittest.TestCase):
             )
             self.assertEqual(findings, [])
 
+    def test_jev_credentials_are_detected_without_echoing_the_token(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            token = "apikey_" + "0" * 32 + "_" + "1" * 64
+            (root / "accidental-note.md").write_text(token, encoding="utf-8")
+            findings, _ = PRIVACY.run(root, tracked_only=False, include_ignored=True)
+            self.assertTrue(any(item.rule == "Jev API token" for item in findings))
+            self.assertNotIn(token, repr(findings))
+
+    def test_short_jev_documentation_placeholder_is_not_a_secret(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "example.md").write_text("apikey_SYNTHETIC_TEST_ONLY", encoding="utf-8")
+            findings, _ = PRIVACY.run(root, tracked_only=False, include_ignored=True)
+            self.assertEqual(findings, [])
+
     def test_nul_byte_in_declared_text_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

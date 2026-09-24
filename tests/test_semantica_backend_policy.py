@@ -112,6 +112,35 @@ class SemanticaBackendNegativeTests(unittest.TestCase):
             }),
         )
 
+    def test_public_cad_variant_requires_both_source_lock_and_export_approval(self) -> None:
+        self.repo.write(gate.REQUIRED_BOOTSTRAP, "import semantica\n")
+        relative = gate.CAD_PUBLIC_OVERRIDE_PREFIX + "scripts/native_call.py"
+        content = "import subprocess\ndef run(command):\n    return subprocess.run(command)\n"
+        self.lock_cad_source(relative, content)
+        self.repo.policy()
+        self.assertFalse(self.repo.evaluate("strict").passed)
+        asset = {"path": "skills/cad-agent/scripts/native_call.py", "origin": "override",
+                 "sha256": hashlib.sha256(content.encode()).hexdigest(),
+                 "public_approval": "owner_approved", "has_personal_data": False}
+        self.repo.write("distribution/shareable-core-assets.json", json.dumps({"files": [asset]}))
+        self.assertTrue(self.repo.evaluate("strict").passed)
+        self.repo.write(relative, content + "# changed after review\n")
+        self.assertFalse(self.repo.evaluate("strict").passed)
+
+    def test_public_cad_variant_cannot_hide_semantic_engine_even_if_relocked(self) -> None:
+        self.repo.write(gate.REQUIRED_BOOTSTRAP, "import semantica\n")
+        relative = gate.CAD_PUBLIC_OVERRIDE_PREFIX + "scripts/native_call.py"
+        content = "import rdflib\nimport subprocess\ndef run(command):\n    return subprocess.run(command)\n"
+        self.lock_cad_source(relative, content)
+        self.repo.policy()
+        self.repo.write("distribution/shareable-core-assets.json", json.dumps({"files": [{
+            "path": "skills/cad-agent/scripts/native_call.py", "origin": "override",
+            "sha256": hashlib.sha256(content.encode()).hexdigest(),
+            "public_approval": "owner_approved", "has_personal_data": False}]}))
+        report = self.repo.evaluate("strict")
+        self.assertFalse(report.passed)
+        self.assertIn(gate.RULE_DIRECT_BACKEND_IMPORT, self.rules(report, relative))
+
     def test_cad_execution_lock_is_exact_and_rejects_changed_source(self) -> None:
         self.repo.write(gate.REQUIRED_BOOTSTRAP, "import semantica\n")
         path = "skills/cad-agent/scripts/native_call.py"

@@ -9,6 +9,35 @@ on:
   workflow_dispatch:
 
 jobs:
+  engineering-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: runtime/requirements.txt
+
+      - name: Install and verify the pinned runtime
+        run: |
+          pip install -r runtime/requirements.txt
+          python scripts/verify_runtime_source_lock.py
+
+      - name: Verify the single semantic backend
+        run: python scripts/check_semantica_backend_policy.py --mode strict
+
+      - name: Verify repository contracts and Jev integration
+        run: python -m pytest -q tests
+
+      - name: Check privacy and build both portable packages
+        run: |
+          python scripts/check_public_privacy.py
+          python scripts/package_skill.py --output "$RUNNER_TEMP/ontology-engineering-full.zip"
+          python scripts/build_shareable_core.py --output "$RUNNER_TEMP/ontology-engineering-core.zip"
+
   cad-evidence:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -55,9 +84,8 @@ jobs:
       - name: Verify both books, guides, and TeX snapshots against Semantica
         run: semantica package verify-books --book-root . --json
 
-      - name: Verify maintained book-source factories and repository contracts
+      - name: Verify maintained book-source factories
         run: |
-          python -m pytest -q tests
           python references/ontology-engineering-book/handbook/build_handbook.py
           git diff --exit-code -- \
             references/ontology-engineering-book/handbook/fragments

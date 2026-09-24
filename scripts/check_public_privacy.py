@@ -100,6 +100,10 @@ CONTENT_RULES = (
         re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b"),
     ),
     ContentRule(
+        "Jev API token",
+        re.compile(r"\bapikey_[A-Za-z0-9_-]{32,}\b"),
+    ),
+    ContentRule(
         "clipboard attachment identifier",
         re.compile(r"codex-clipboard-[A-Za-z0-9_-]+"),
     ),

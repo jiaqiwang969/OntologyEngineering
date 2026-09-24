@@ -15,7 +15,7 @@ description: Follow customer and factory discussions through prototype trials, p
 不新建事实正本或批准流程。员工反馈由 agent 写回原记录，实际材料、工时、返工和检验结果
 接回路线与成本；不要求员工填写下列整套模板。
 
-这是方法、脱敏案例和工作记录模板模块，方法版本 `0.5.7`。八份 JSON 记录模板中 `solution-record`、`revision-record` 为 `0.2.1`，其余仍为 `0.2.0`；报告组件与图形模板仍为 `1.0.0`；六张评审卡为 `1.4.1`。本版把 CAD／工艺交接扩展到通用 CAD 对象：零件、图纸/BOM、装配、配合、机构状态与运动包络均可先记录来源，再关联工艺功能和方案。工艺替代时的功能覆盖与反证回退继续适用。冻结的 Semantica 制造案例仍为 `0.1.1`；新增语义只可经受控后继候选验证，不能把本文当成已发布的语义门禁。先遵守根 [ontology-engineering](../../SKILL.md) 的 source lock、发现、绑定和三联输出规则；正式语义执行仍只走 Semantica。按 [语义执行与证据范围](references/semantic-use.md) 定位候选；可执行资产存于 Semantica 工作区，不在 skill 内另建语义正本。记录模板不是 `ProjectOntologyBinding`、`SemanticTaskEnvelope` 或语义校验器。缺少绑定只阻断依赖绑定的执行；继续已授权的资料整理、条件分析和问题准备。
+这是方法、脱敏案例和工作记录模板模块，方法版本 `0.5.8`。八份 JSON 记录模板中 `solution-record`、`revision-record` 为 `0.2.1`，其余仍为 `0.2.0`；报告组件与图形模板仍为 `1.0.0`；六张评审卡为 `1.4.1`。本版把 CAD／工艺交接扩展到通用 CAD 对象：零件、图纸/BOM、装配、配合、机构状态与运动包络均可先记录来源，再关联工艺功能和方案。工艺替代时的功能覆盖与反证回退继续适用。冻结的 Semantica 制造案例仍为 `0.1.1`；新增语义只可经受控后继候选验证，不能把本文当成已发布的语义门禁。先遵守根 [ontology-engineering](../../SKILL.md) 的 source lock、发现、绑定和三联输出规则；正式语义执行仍只走 Semantica。按 [语义执行与证据范围](references/semantic-use.md) 定位候选；可执行资产存于 Semantica 工作区，不在 skill 内另建语义正本。记录模板不是 `ProjectOntologyBinding`、`SemanticTaskEnvelope` 或语义校验器。缺少绑定只阻断依赖绑定的执行；继续已授权的资料整理、条件分析和问题准备。
 
 装配或机构影响制造判断时，读取 [装配与力学通用判断内核](../cad-agent/references/assembly-and-physics-kernel.md)，把界面、临时支撑、装入路径、载荷需求与接头容量分别交接；几何可装、静力可平衡和实际连接可靠分别取证，不从一种模拟结果替另一种主张背书。
 

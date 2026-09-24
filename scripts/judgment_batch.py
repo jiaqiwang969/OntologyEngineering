@@ -11,7 +11,7 @@ sys.path.insert(0,str(ROOT))
 
 from ontology_engineering.judgment_contracts import contracts,deployment_lock,prepare_batch
 from ontology_engineering.judgment_batch import execute,journal,report
-from ontology_engineering.jev_transport import JevTransport,strict_json
+from ontology_engineering.jev_transport import JevTransport,strict_json,resolve_credential_file
 
 
 def write_new(path,value):
@@ -41,7 +41,7 @@ def main(argv=None):
         if name!="prepare":
             cmd.add_argument("--journal",type=Path,required=True)
         if name=="run":
-            cmd.add_argument("--credential-file",type=Path,default=Path.home()/".codex/api-jev.md")
+            cmd.add_argument("--credential-file",type=Path,help="Explicit key file; otherwise use the operator's local key or the verified public trial sidecar.")
             route=cmd.add_mutually_exclusive_group(required=True)
             route.add_argument("--experiment",action="store_true",help="Explicit unqualified shadow experiment.")
             route.add_argument("--compatibility",type=Path,help="Allowlist of complete observed combinations.")
@@ -70,7 +70,8 @@ def main(argv=None):
             parser.error("--compatibility requires --compatibility-root")
         if args.experiment and args.compatibility_root:
             parser.error("--experiment does not use a compatibility root")
-        value=execute(prepared,args.journal,JevTransport(args.credential_file),experiment=args.experiment,
+        credential = resolve_credential_file(args.credential_file, skill_root=ROOT)
+        value=execute(prepared,args.journal,JevTransport(credential),experiment=args.experiment,
             compatibility_catalog=strict_json(args.compatibility.read_bytes()) if args.compatibility else None,
             compatibility_root=args.compatibility_root)
     else:
@@ -82,7 +83,10 @@ def main(argv=None):
                 parser.error("journal run identity does not match")
             value=report(db,prepared)
     write_new(args.output,value)
-    print(json.dumps({k:value[k] for k in ("status","items","counts","expected_questions","live_attempts","replays") if k in value and (k!="items" or isinstance(value[k],int))},ensure_ascii=False))
+    summary={k:value[k] for k in ("status","items","counts","expected_questions","live_attempts","replays","transport_error_counts") if k in value and (k!="items" or isinstance(value[k],int))}
+    if any(code in value.get("transport_error_counts",{}) for code in ("http_401","http_403")):
+        summary["credential_hint"]="Jev rejected the credential or its access. Supply your own --credential-file; see docs/JEV-TRIAL.md."
+    print(json.dumps(summary,ensure_ascii=False))
     return 1 if value.get("status")=="incomplete" else 0
 
 
@@ -91,5 +95,8 @@ if __name__=="__main__":
         raise SystemExit(main())
     except (ValueError,OSError) as exc:
         # Local paths and arbitrary exception text are not echoed on failure.
-        print(json.dumps({"status":"error","error_type":type(exc).__name__}),file=sys.stderr)
+        error={"status":"error","error_type":type(exc).__name__}
+        if str(exc)=="jev_credential_missing":
+            error.update(code="jev_credential_missing",hint="Provide --credential-file or see docs/JEV-TRIAL.md for the public trial package.")
+        print(json.dumps(error),file=sys.stderr)
         raise SystemExit(2)

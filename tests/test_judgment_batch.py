@@ -101,6 +101,39 @@ def test_error_is_neither_unknown_nor_unrelated(tmp_path):
     r=execute(prepared(items=1),tmp_path/"jobs.sqlite",Fixture(failure),sleeper=lambda _:None)
     assert r["counts"]==dict(candidate=0,unknown=0,execution_error=2,pending=0)
     assert r["attempts"]==2 and r["status"]=="incomplete"
+    assert r["transport_error_counts"]=={"http_529":2}
+
+
+def test_overflow_response_does_not_abort_other_sources(tmp_path, monkeypatch):
+    import io
+    from ontology_engineering.jev_transport import JevTransport
+
+    key_file = tmp_path / "credential.md"
+    key_file.write_text("apikey_SYNTHETIC_TEST_ONLY")
+    key_file.chmod(0o600)
+    transport = JevTransport(key_file)
+    transport.kind = "fixture"
+    transport.identity = "overflow-wire-fixture/v1"
+
+    class Response(io.BytesIO):
+        headers = {"x-typesafe-request-id": "synthetic-request"}
+
+    class Opener:
+        def open(self, request, **kwargs):
+            payload = json.loads(request.data)
+            raw = json.dumps(response(payload, {q: answer() for q in payload["questions"]}))
+            if payload["state"]["claim"]["id"] == "claim-0":
+                raw = raw.replace('"confidence": 1.0', '"confidence": 1e309', 1)
+            return Response(raw.encode())
+
+    monkeypatch.setattr("urllib.request.build_opener", lambda *args: Opener())
+    result = execute(prepared(items=2), tmp_path / "jobs.sqlite", transport)
+    assert result["counts"] == dict(candidate=2, unknown=0, execution_error=2, pending=0)
+    assert result["status"] == "incomplete" and result["fixture_attempts"] == 2
+    assert result["transport_error_counts"] == {"malformed_response":1}
+    assert result["items"][1]["answers"][0]["status"] == "candidate"
+    with sqlite3.connect(tmp_path / "jobs.sqlite") as db:
+        assert db.execute("SELECT error FROM attempts WHERE item_id='item-0'").fetchone()[0] == "malformed_response"
 
 
 def test_in_flight_caller_update_does_not_mix_snapshots(tmp_path):

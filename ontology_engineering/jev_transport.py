@@ -6,6 +6,7 @@ Credentials are read from an owner-only local file and never enter records.
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 import os
 from pathlib import Path
@@ -15,7 +16,8 @@ import urllib.error
 import urllib.request
 
 ENDPOINT = "https://api.typesafe.ai/v1/systemone"
-ADAPTER_VERSION = "1.0.0"
+ADAPTER_VERSION = "1.1.0"
+TRIAL_SCHEMA = "ontology-engineering.public-jev-trial/v1"
 
 
 class TransportError(RuntimeError):
@@ -34,13 +36,64 @@ def strict_json(raw):
         return result
     def invalid(_):
         raise ValueError("nonfinite_json_number")
-    return json.loads(raw, object_pairs_hook=pairs, parse_constant=invalid)
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("nonfinite_json_number")
+        return number
+    return json.loads(raw, object_pairs_hook=pairs, parse_constant=invalid, parse_float=finite_float)
 
 
 def pinned_model(model):
     if not isinstance(model, str) or not re.fullmatch(r"jev-\d+\.\d+\.\d+", model):
         raise ValueError("exact_model_version_required")
     return model
+
+
+def resolve_credential_file(explicit=None, *, skill_root=None, personal_file=None):
+    """Prefer the operator's key; use an exact, explicitly public trial sidecar last.
+
+    The sidecar stays outside the reusable skill tree. Its manifest describes
+    owner-authorized public distribution, not a signed identity attestation.
+    """
+    if explicit is not None:
+        return Path(explicit).expanduser()
+    personal = Path(personal_file) if personal_file is not None else Path.home()/".codex/api-jev.md"
+    if personal.exists() or personal.is_symlink():
+        return personal
+    root = Path(skill_root) if skill_root is not None else Path(__file__).resolve().parents[1]
+    manifest_path = root.parent/"JEV-TRIAL-MANIFEST.json"
+    if not manifest_path.exists():
+        raise ValueError("jev_credential_missing")
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise ValueError("invalid_public_trial_manifest")
+    declaration = strict_json(manifest_path.read_bytes())
+    if (not isinstance(declaration, dict) or declaration.get("schema") != TRIAL_SCHEMA
+            or declaration.get("credential_file") != "api-jev.md"
+            or declaration.get("authorization") != "owner-approved-public-temporary-credential"):
+        raise ValueError("invalid_public_trial_manifest")
+    inventory = root/"PORTABLE-MANIFEST.json"
+    if (not inventory.is_file() or inventory.is_symlink()
+            or hashlib.sha256(inventory.read_bytes()).hexdigest() != declaration.get("skill_manifest_sha256")):
+        raise ValueError("public_trial_skill_identity_mismatch")
+    path = root.parent/"api-jev.md"
+    # ZIP extractors may restore mode 0644. Tighten only this verified trial file,
+    # never an operator-supplied credential or an arbitrary parent-directory file.
+    if path.is_symlink():
+        raise ValueError("public_trial_credential_symlink")
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid():
+            raise ValueError("public_trial_credential_owner_mismatch")
+        with os.fdopen(fd, "rb", closefd=False) as stream:
+            raw = stream.read(65537)
+        if len(raw) > 65536 or hashlib.sha256(raw).hexdigest() != declaration.get("credential_sha256"):
+            raise ValueError("public_trial_credential_identity_mismatch")
+        os.fchmod(fd, 0o600)
+    finally:
+        os.close(fd)
+    return path
 
 
 def _probability(value):

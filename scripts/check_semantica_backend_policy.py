@@ -30,6 +30,7 @@ DEFAULT_POLICY = "runtime/semantica-backend-policy.json"
 CAD_EXECUTION_LOCK = "runtime/cad-operational-source-lock.json"
 CAD_EXECUTION_LOCK_SCHEMA = "ontology-engineering.cad-operational-source-lock/v1"
 CAD_EXECUTION_PREFIX = "skills/cad-agent/"
+CAD_PUBLIC_OVERRIDE_PREFIX = "distribution/shareable-overrides/" + CAD_EXECUTION_PREFIX
 CAD_RUNTIME_LOCK = "skills/cad-agent/dist/fusion-runtime-lock.json"
 CAD_RUNTIME_LOCK_SCHEMA = "ontology-engineering.cad-fusion-runtime-lock/v1"
 PERMITTED_LITERAL_FIXTURE_HOSTS = frozenset(
@@ -347,7 +348,7 @@ def _read_cad_operational_lock(root: Path) -> tuple[dict[str, frozenset[str]], l
         rules = entry.get("rules")
         digest = entry.get("sha256")
         purpose = entry.get("purpose")
-        if name is None or not name.startswith(CAD_EXECUTION_PREFIX) or name in locks:
+        if name is None or not name.startswith((CAD_EXECUTION_PREFIX, CAD_PUBLIC_OVERRIDE_PREFIX)) or name in locks:
             errors.append(f"CAD operational entry {index} has an invalid or duplicate path")
             continue
         if not isinstance(rules, list) or not rules or not all(isinstance(rule, str) for rule in rules) or set(rules) - CAD_OPERATIONAL_RULES or len(rules) != len(set(rules)):
@@ -359,6 +360,26 @@ def _read_cad_operational_lock(root: Path) -> tuple[dict[str, frozenset[str]], l
         if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
             errors.append(f"CAD operational entry {name} has an invalid digest")
             continue
+        if name.startswith(CAD_PUBLIC_OVERRIDE_PREFIX):
+            # Portable CAD variants remain scanned and separately source-locked.
+            # Also require the exact bytes in the approved public export ledger.
+            ledger_path = root / "distribution/shareable-core-assets.json"
+            try:
+                if ledger_path.is_symlink():
+                    raise ValueError("symbolic asset ledger")
+                ledger = json.loads(ledger_path.read_text(encoding="utf-8"))
+                export_path = name.removeprefix("distribution/shareable-overrides/")
+                matching = [item for item in ledger["files"]
+                            if isinstance(item, dict) and item.get("path") == export_path]
+                approved = (len(matching) == 1 and matching[0].get("origin") == "override"
+                            and matching[0].get("sha256") == digest
+                            and matching[0].get("public_approval") == "owner_approved"
+                            and matching[0].get("has_personal_data") is False)
+            except (OSError, UnicodeError, ValueError, KeyError, TypeError):
+                approved = False
+            if not approved:
+                errors.append(f"CAD public override is not an exact approved export asset: {name}")
+                continue
         candidate = root / name
         if candidate.is_symlink() or not candidate.is_file():
             errors.append(f"CAD operational source is missing or symbolic: {name}")

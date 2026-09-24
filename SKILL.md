@@ -1,6 +1,6 @@
 ---
 name: ontology-engineering
-description: Follow ongoing manufacturing discussions and field feedback to build private project ontologies and revise engineering solutions, using CAD, process, equipment, supplier and cost evidence. Use Semantica as the sole executable semantic authority; govern reusable methods and maintain the two engineering ontology books.
+description: Follow manufacturing discussions and field feedback to build private project ontologies and revise CAD, process, equipment, supplier and cost decisions. Use Semantica as the default semantic control and learning plane and sole executable semantic authority for engineering; govern reusable industry ontology and maintain the two TeX/PDF books.
 ---
 
 # Ontology Engineering：Semantica 行业本体炼化控制面

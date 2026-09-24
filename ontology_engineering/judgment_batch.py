@@ -13,6 +13,7 @@ import fcntl
 import json
 import math
 import os
+import re
 from pathlib import Path
 import sqlite3
 import statistics
@@ -290,6 +291,15 @@ def report(db, prepared, *, wall_elapsed=0):
             item["routing_reasons"].append("stratified_candidate_audit")
         item["routing"] = "review_queue" if item["routing_reasons"] else "candidate_backlog"
     attempts=list(db.execute("SELECT kind,response,error,elapsed FROM attempts WHERE run_id=?",(run_id,)))
+    transport_errors = {}
+    for row in attempts:
+        code = row["error"]
+        if isinstance(code, str) and (re.fullmatch(r"http_\d{3}", code) or code in {
+                "connection_or_timeout", "malformed_response", "unexpected_transport_error",
+                "started_unconfirmed", "resolved_model_mismatch", "unexpected_answer_identity",
+                "usage_missing", "invalid_usage", "response_too_large",
+                "credential_material_in_request", "credential_material_in_response"}):
+            transport_errors[code] = transport_errors.get(code, 0) + 1
     elapsed=[a["elapsed"] for a in attempts if a["kind"]!="replay"]
     usage={"input_tokens":0,"output_tokens":0,"unreported_attempts":0}
     for row in attempts:
@@ -316,6 +326,7 @@ def report(db, prepared, *, wall_elapsed=0):
             "unconfirmed_attempts":sum(a["error"]=="started_unconfirmed" for a in attempts),
             "fixture_attempts":sum(a["kind"]=="fixture" for a in attempts),
             "replays":sum(a["kind"]=="replay" for a in attempts),"usage":usage,
+            "transport_error_counts":transport_errors,
             "wall_elapsed_this_invocation_s":wall_elapsed,
             "attempt_latency_median_s":statistics.median(elapsed) if elapsed else None,
             "attempt_latency_p95_s":sorted(elapsed)[max(0,int(len(elapsed)*0.95+0.999999)-1)] if elapsed else None,

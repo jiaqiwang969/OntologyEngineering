@@ -1,9 +1,11 @@
 ---
 name: ontology-engineering
-description: Use Semantica as the single executable semantic authority for engineering, and connect CAD evidence with manufacturing process and cost decisions.
+description: Follow manufacturing discussions and field feedback to build private project ontologies and revise CAD, process, equipment, supplier and cost decisions, with Semantica as the single executable semantic authority.
 ---
 
 # 工程本体论（独立核心版）
+
+群聊持续讨论试制、工艺/流程、设备、供应商、质量或成本时，先用[制造协作入口](docs/MANUFACTURING-COLLABORATION.md)。续接原问题与方案，随着新证据完善项目本体并迭代方案；项目本体、对话和业务资料留在私有工作区，不进入通用 skill。员工用日常语言反馈；agent 整理依据、调用工具并给出当前判断与下一动作，不要求员工学习本体或填写 JSON。缺少项目绑定时，由 agent 准备、维护者补齐必要设置；继续不依赖绑定的资料整理和分析，正式语义执行如实记录未运行。
 
 先确认工程对象、身份、版本、状态和来源，再陈述关系、能力问题（CQ）、约束与因果假设。项目观察进入 ABox；可复用概念与关系进入 TBox；候选规则和经验未经验证不得冒充事实。对未知项维持开放世界假设（OWA）；仅在明示的局部完整范围内使用封闭世界假设（CWA）。
 

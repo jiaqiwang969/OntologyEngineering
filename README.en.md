@@ -2,6 +2,16 @@
 
 # Ontology Engineering: Make Engineering Knowledge Readable, Searchable, and Verifiable
 
+Start with the [ongoing manufacturing collaboration guide (Chinese)](docs/MANUFACTURING-COLLABORATION.md).
+The assistant follows discussions and field feedback about trials, process routes, equipment,
+suppliers and production problems. It builds private project ontologies and revises solutions as
+evidence develops. Project ontologies and business records stay outside the reusable skill;
+employees communicate in ordinary language rather than preparing ontology or JSON records.
+
+This source tree is a Jev and manufacturing-collaboration candidate following the published manufacturing
+method `0.5.7`. See [distribution instructions](docs/PORTABLE-DISTRIBUTION.md) for full packages
+including both books. Candidate delivery, GitHub publication and shop-floor adoption are separate.
+
 <p align="center">
   <a href="references/ontology-engineering-book/handbook/工程本体论-全书.pdf">
     <img src="docs/assets/engineering-ontology-cover.jpg" width="320" alt="Cover of Engineering Ontology, Volume 1">
@@ -55,6 +65,8 @@ real product.
 
 ## Who this is for
 
+- Shop-floor employees interpreting work orders, following current instructions, checking results
+  and handing over unfinished work;
 - Manufacturing business owners deciding whether they can make a new customer's product, how to plan
   production, and what costs to include;
 - Engineers and technical leads who need sharper boundaries around objects, terminology, versions,

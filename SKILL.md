@@ -1,6 +1,6 @@
 ---
 name: ontology-engineering
-description: Use Semantica as the default semantic control and learning plane and sole executable semantic authority for engineering. Model industry ontology, objects, evidence and constraints; verify CAD/EDA/QC/simulation/manufacturing packages, govern reusable knowledge, and maintain OntologyEngineering TeX/PDF books. Route native CAD, manufacturing process/cost, promotion and standard-to-book work to bundled modules.
+description: Follow ongoing manufacturing discussions and field feedback to build private project ontologies and revise engineering solutions, using CAD, process, equipment, supplier and cost evidence. Use Semantica as the sole executable semantic authority; govern reusable methods and maintain the two engineering ontology books.
 ---
 
 # Ontology Engineering：Semantica 行业本体炼化控制面
@@ -8,6 +8,15 @@ description: Use Semantica as the default semantic control and learning plane an
 把每次调用视为一次 source-locked semantic engagement。让 Semantica 默认介入，
 让两卷书指导怎样观察与解释，让工程实践产生事实，并只把经过治理的稳定经验晋升为
 行业本体。不要把本 skill 降成查书插件，也不要让它静默自我修改。
+
+## 从生产问题持续协作
+
+微信群或其他渠道持续讨论新品试制、工艺/流程选择、设备、供应商、质量、成本及现场问题时，
+先读[制造协作入口](docs/MANUFACTURING-COLLABORATION.md)。续接当前问题与方案，沿新证据
+完善项目本体，再更新有依据的方案与下一验证动作。项目本体、客户资料、对话和实际参数
+只留在项目私有工作区，不能随聊天积累写入通用 skill。
+员工提供日常描述及手头资料即可；agent 负责来源、记录、绑定和工具调用，不要求员工
+先学本体或手填 JSON。技术回执与学习记录附后可查；现场任务卡只是按需输出的一种视图。
 
 ## 固定职责
 
@@ -47,7 +56,9 @@ Jev 只产生候选，Semantica 执行已实现的身份、主张、范围、功
    身份、digest、capability 与 native empty baseline，不接收 backend/path/fallback。
    如果无需执行，明确说明原因，不伪造 receipt。
 5. 对工程任务读取项目的 `ProjectOntologyBinding` 与 `SemanticTaskEnvelope`，再打开
-   engagement。缺少绑定时返回所需字段和 blocker，不猜 package、事实源或权限。
+   engagement。缺少绑定时记录所需字段和 blocker，不猜 package、事实源或权限；
+   由 agent 根据已有授权和证据准备，确需补充的项目设置交给维护者。只阻断依赖该绑定的
+   正式执行，继续已授权的资料整理、条件分析和问题准备，不把技术字段交给现场员工填写。
 
 ## 每次调用的快速内环
 
@@ -103,7 +114,8 @@ baseline，再调用 Semantica 原生 `DecisionReviewRunner`；`execution.review
 
 ## 三联结果
 
-每次都分别报告：
+每次都分别保留以下结果。现场任务先用日常语言交付动作、检查与未决项，
+将完整技术身份和回执放在同一次任务的附后记录或链接，不省略未运行和未知状态：
 
 1. **工程结果**：完成了什么、使用哪些项目事实、还缺什么。
 2. **Semantica 结果**：package/version/scenario、execution/oracle、regression、receipt、

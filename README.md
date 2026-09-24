@@ -2,6 +2,13 @@
 
 # Ontology Engineering：让工程知识可读、可查、可验证
 
+**从[制造协作入口](docs/MANUFACTURING-COLLABORATION.md)开始，把群里的生产问题持续跟进下去。**
+员工不断提供试制、工艺、设备、供应商和现场问题，助手逐步建立私有项目本体，输出方案，
+再随实际反馈深入分析和修订。项目资料与本体留在私有工作区，通用 skill 保存可复用方法。
+
+当前源码是继公开制造方法 `0.5.7` 后的 Jev 与制造协作入口候选，包含两卷书的完整版可按
+[分发说明](docs/PORTABLE-DISTRIBUTION.md)获取或构建。候选包、GitHub 已发布版本与现场采用分别记录。
+
 <p align="center">
   <a href="references/ontology-engineering-book/handbook/工程本体论-全书.pdf">
     <img src="docs/assets/engineering-ontology-cover.jpg" width="320" alt="《工程本体论》第一卷封面">
@@ -35,7 +42,7 @@ Ontology Engineering 用两卷书讲清观察与建模方法，用项目原生�
 
 并入的 [CAD Agent 模块](skills/cad-agent/SKILL.md)按[通用 CAD 工作流](skills/cad-agent/references/cad-engineering-workflow.md)
 处理零件、图纸/BOM、装配、机构与原生回读证据，再经[CAD／工艺双向交接](skills/cad-agent/references/cad-process-integration.md)
-把相关对象和版本变化送到制造判断。便携版提供本机 Fusion 守卫；NX/AutoCAD 等可提供经核验的回读证据，远程执行桥不随包分发。
+把相关对象和版本变化送到制造判断。便携版提供本机 Fusion 守卫及可配置 NX/AutoCAD 远程桥；接收方提供自己的 CAD 软件、许可、主机及 NX sidecar，真实设备另做连接验收。
 工艺模块接续必要功能、失效路径、检验、成本和交期；正式语义裁定仍由 Semantica 执行。
 
 ## 两卷书，各自回答一个问题
@@ -51,6 +58,7 @@ EPS-RC17、ENV-01 和数值均为合成教学材料；精确 ISO 条款、表格
 
 ## 适合谁
 
+- 需要看懂工单、按当前工艺做事、核对结果和交班的现场员工；
 - 接到新客户询问，需要判断能否制造、怎样组织工艺、如何核算成本的制造企业负责人；
 - 需要澄清对象、术语、版本、证据和责任边界的工程师与技术负责人；
 - 构建企业知识图谱、行业本体、数字线程或工程知识库的团队；
@@ -62,6 +70,7 @@ EPS-RC17、ENV-01 和数值均为合成教学材料；精确 ISO 条款、表格
 
 | 你的目标 | 推荐入口 |
 |---|---|
+| 跟进群里的试制、工艺、设备、供应商及现场问题 | [制造协作入口](docs/MANUFACTURING-COLLABORATION.md)：用日常语言开始，持续建立项目本体并迭代方案 |
 | 第一次接触本体工程 | 第一卷第 1–3 章：为什么需要本体、核心概念、怎样从 CQ 开始 |
 | 解决 RDF/OWL、约束或推理问题 | 第一卷第 4–5、7 章，并结合对应 Semantica chapter package 复算 |
 | 理解 LLM/Agent 如何受语义约束 | 第一卷第 8 章，再看 [`SKILL.md`](SKILL.md) 的语义接入规则 |
@@ -193,7 +202,7 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 
 ## 深入了解
 
-下面的实现与治理内容默认折叠；普通读者可以先从两卷书开始，需要接入项目或维护仓库时再展开。
+下面的实现与治理内容默认折叠；项目实践从制造协作入口开始，学习理论可读两卷书，维护者按需展开。
 
 <details>
 <summary><strong>每次任务的快慢双循环</strong></summary>

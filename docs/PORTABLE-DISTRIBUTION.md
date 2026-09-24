@@ -1,5 +1,10 @@
 # 独立分发与新目录验证
 
+持续跟进生产问题先看[制造协作入口](MANUFACTURING-COLLABORATION.md)；以下安装和复验由部署者处理。
+当前源码包含公开制造方法 `0.5.7` 之后的 Jev 候选及制造协作入口 `0.1.0`，不是已上传的
+新 GitHub Release。独立模型质量、双模型升级对照和真实总成本评测留待后续项目实践，
+不以这些未完成的评测阻止候选分发，也不宣称准确率或降本已经得到独立验证。
+
 有两种不同的本地制品，不能混用其放行范围：
 
 - **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、通用 CAD 证据、形态/机构重建、CAD／工艺交接、可移植 Fusion 执行层、NX/AutoCAD 可配置远程桥及有界装配/机构筛查器。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。`manufacturing-v0.5.7` 承接 [0.5.6](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.6)，增加来源绑定的第一性原理推导记录与逆向重建方法；对应源码以 `manufacturing-v0.5.7` 标签固定。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
@@ -12,6 +17,7 @@
 | 内容 | 根目录内的位置 | 作用 |
 | --- | --- | --- |
 | 总入口和制造方法 | [SKILL.md](../SKILL.md)、[制造模块](../skills/manufacturing-process-cost/SKILL.md) | 资料筛选、沟通、方案与反馈迭代 |
+| 制造协作入口与任务卡 | [制造协作入口](MANUFACTURING-COLLABORATION.md)、[现场任务卡](../skills/manufacturing-process-cost/assets/templates/shop-floor-action-card.md) | 持续讨论、私有项目本体、方案修订及现场反馈；任务卡按需生成 |
 | CAD 模块及交接合同 | [CAD 模块](../skills/cad-agent/SKILL.md)、[通用 CAD 证据](../skills/cad-agent/references/cad-engineering-workflow.md)、[工艺交接](../skills/cad-agent/references/cad-process-integration.md) | 零件、图纸/BOM、装配、机构对象的来源校验、项目 ABox 与双向工艺问题；不自行执行语义规则 |
 | 理论、案例和记录模板 | `references/`、`skills/manufacturing-process-cost/` | 书源锚点、脱敏演变案例、八类记录 |
 | 报告组件与合成演变输入 | [报告设计](../skills/manufacturing-process-cost/references/report-design.md)、[生成入口](../scripts/manufacturing_report.py)、`skills/manufacturing-process-cost/assets/report-template/` | 四类内容视图、原生 XeLaTeX、冻结与输出对应检查 |

@@ -1,11 +1,19 @@
 ---
 name: manufacturing-process-cost
-description: Develop and revise discrete-manufacturing process and cost proposals from incomplete customer information, including CAD feature-to-process handoff. Use for context transfer, tacit-knowledge discovery, make-or-buy comparisons, equipment reuse, proposal feedback, and anonymized manufacturing lessons within ontology-engineering.
+description: Follow customer and factory discussions through prototype trials, process and production-route choices, equipment and supplier comparisons, inspection and cost. Maintain private project knowledge and revise solutions with field feedback, connecting CAD and manufacturing evidence within ontology-engineering.
 ---
 
 # 生产制造工艺与成本管理
 
 从制造企业接到询问的时点开始，沿着“用途与要求 → 产品及状态 → 工艺与检验 → 资源与供应链 → 成本与交付”发现缺口，推进方案，把反馈和实际结果接回来。适用于离散机械制造；具体行业、材料、工艺参数和验收值由项目证据提供。
+
+持续沟通从[制造协作入口](../../docs/MANUFACTURING-COLLABORATION.md)进入：续接群内当前问题、
+方案与未决项，把新消息、附件和实测反馈接到私有项目本体，再沿依赖关系修订路线、设备/
+供应商选择、检验、成本与交期。项目本体和实例不进入 skill。进入现场操作时，按当前已采用
+工艺给出动作、参数依据、检查办法及异常后的下一步。需要交班或打印时，
+从本项目现有记录整理[现场任务卡](assets/templates/shop-floor-action-card.md)；该卡是视图，
+不新建事实正本或批准流程。员工反馈由 agent 写回原记录，实际材料、工时、返工和检验结果
+接回路线与成本；不要求员工填写下列整套模板。
 
 这是方法、脱敏案例和工作记录模板模块，方法版本 `0.5.7`。八份 JSON 记录模板中 `solution-record`、`revision-record` 为 `0.2.1`，其余仍为 `0.2.0`；报告组件与图形模板仍为 `1.0.0`；六张评审卡为 `1.4.1`。本版把 CAD／工艺交接扩展到通用 CAD 对象：零件、图纸/BOM、装配、配合、机构状态与运动包络均可先记录来源，再关联工艺功能和方案。工艺替代时的功能覆盖与反证回退继续适用。冻结的 Semantica 制造案例仍为 `0.1.1`；新增语义只可经受控后继候选验证，不能把本文当成已发布的语义门禁。先遵守根 [ontology-engineering](../../SKILL.md) 的 source lock、发现、绑定和三联输出规则；正式语义执行仍只走 Semantica。按 [语义执行与证据范围](references/semantic-use.md) 定位候选；可执行资产存于 Semantica 工作区，不在 skill 内另建语义正本。记录模板不是 `ProjectOntologyBinding`、`SemanticTaskEnvelope` 或语义校验器。缺少绑定只阻断依赖绑定的执行；继续已授权的资料整理、条件分析和问题准备。
 

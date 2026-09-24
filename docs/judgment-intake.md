@@ -68,6 +68,9 @@ CQ 和证据方法上；不把 ISO 派生领域规则当成跨行业普遍要求
 - `impact`：读取[来源绑定的依赖记录](../examples/judgment_intake/impact-record.json)，
   由 Semantica 查询需重审的主张、推荐、报价和交期。`support_dependency` 表示结论
   依赖；`physical_hypothesis` 单独保存，不能沿它自动宣判实物失败。
+- `record --bundle engineering-evidence-methods`：沿同一原生审查入口复用数量、
+  成本口径、互证依赖及补证效果等现有方法。使用该包单独采用的绑定和源记录，
+  不能拿判断模式包的绑定代替；[示例与初始化](method-bootstrap.md)。
 
 “字段来自受控记录”仍是有来源的工程断言，不是对提供者的身份认证。
 `source_verified` 仅表示所选字节与摘要一致；`clear` 仅表示该投影未出现所查语义缺口。

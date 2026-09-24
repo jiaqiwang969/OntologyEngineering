@@ -1,7 +1,7 @@
 # 接收方初始化与单独采用
 
 使用 `scripts/method_bootstrap.py`，在明确授权的新目录重建冻结方法包的精确版本链。
-本版运输数据只覆盖 `engineering-judgment-intake`；不宣称能初始化任意方法包或恢复
+本版运输数据覆盖 `engineering-judgment-intake` 和 `engineering-evidence-methods`；不宣称能初始化任意方法包或恢复
 任意 Semantica runtime。需要先按分发说明安装锁定运行时。
 
 初始化保留方法作者的 source authority，接收方重新执行案例并生成自己的任务、
@@ -79,3 +79,25 @@ runtime/.venv/bin/python scripts/judgment_review.py plan \
 代码、运输包或 runtime 改变时，旧计划明确阻断。保留旧目录和执行记录，在另一个目录
 建立新计划，或使用经过验证的冻结环境恢复；不在恢复中混用版本。
 当前支持范围为 POSIX 本地文件系统与已锁定运行时；Windows 原生执行未验收。
+
+## 复用工程证据方法
+
+初始化时加 `--bundle engineering-evidence-methods`，在另一个目录重建已有的 19 项
+工程证据方法包，再按相同步骤单独采用。判断模式与专门证据方法保留各自精确包绑定，
+可以属于同一个项目；不能把一个包的 PASS 用作另一个包的执行回执。
+
+单项源记录使用统一审查入口，例：
+
+```bash
+runtime/.venv/bin/python scripts/judgment_review.py record \
+  --bundle engineering-evidence-methods \
+  --input examples/judgment_intake/method-review/quote-as-settled-price.json \
+  --evidence-root examples/judgment_intake/method-review \
+  --binding /path/to/evidence-method-workspace/project-binding.json \
+  --workspace /path/to/evidence-method-workspace/registry \
+  --actor recipient-operator --output /path/to/new-cost-review
+```
+
+[组合反例清单](../examples/judgment_intake/method-review/cases.json)覆盖数量及成本口径、
+同源转发、共同模型依赖、重放冒充新采集和放宽判据冒充改善。
+这些是有出处的合成输入和开发者参考，不是实际账单、独立准确率标签或物理测量。

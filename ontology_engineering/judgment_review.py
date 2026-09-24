@@ -96,9 +96,10 @@ def _binding(binding_path, project_id, bundle):
     return binding
 
 
-def execute_record(record_path, evidence_root, binding_path, workspace, actor, output, *, project_id):
+def execute_record(record_path, evidence_root, binding_path, workspace, actor, output, *, project_id,
+                   bundle_name="engineering-judgment-intake"):
     """Always execute freshly; saved result JSON cannot replace this call."""
-    rdf, audit = project_record(record_path, evidence_root, bundle_name="engineering-judgment-intake")
+    rdf, audit = project_record(record_path, evidence_root, bundle_name=bundle_name)
     return execute_projection(rdf, audit, binding_path, workspace, actor, output, project_id=project_id)
 
 

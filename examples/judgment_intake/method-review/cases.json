@@ -1,0 +1,144 @@
+{
+  "schema": "ontology-engineering.synthetic-method-review-cases/v1",
+  "bundle": "engineering-evidence-methods",
+  "scope": "Authored integration cases; labels are developer references, not independent accuracy or real measurements.",
+  "cases": [
+    {
+      "record": "quote-kept-as-estimate.json",
+      "sha256": "ce1eba9e11d0dd357041f583441dede21963e8775f791955a5c523e99ed1cd3e",
+      "expected_status": "clear",
+      "expected_reason": null,
+      "acceptance": [
+        "A04"
+      ]
+    },
+    {
+      "record": "budget-kept-as-estimate.json",
+      "sha256": "809b9836e894a02818cf698bb1960738ee717af7c4af1a19c9c0253e8b2311ac",
+      "expected_status": "clear",
+      "expected_reason": null,
+      "acceptance": [
+        "A04"
+      ]
+    },
+    {
+      "record": "gross-versus-net.json",
+      "sha256": "faafe1b761cc66fef6ba1cd9965cb78520d2290aa51abb619bc0754f695fe910",
+      "expected_status": "blocked",
+      "expected_reason": "material_cost_quantity_basis_mismatch",
+      "acceptance": [
+        "A04"
+      ]
+    },
+    {
+      "record": "budget-as-actual.json",
+      "sha256": "0756342d50f5323f33cd71bddd6f9d8afd4e665d89d2d31bb618b1ef98d8de74",
+      "expected_status": "blocked",
+      "expected_reason": "estimated_quantity_cannot_establish_actual_cost",
+      "acceptance": [
+        "A04"
+      ]
+    },
+    {
+      "record": "quote-as-settled-price.json",
+      "sha256": "446fbd1de5313e199a819aff4b22d5ad06244f129c404d2e222876d7deaa1f75",
+      "expected_status": "blocked",
+      "expected_reason": "nonactual_price_cannot_establish_actual_cost",
+      "acceptance": [
+        "A04"
+      ]
+    },
+    {
+      "record": "measured-invoiced-actual.json",
+      "sha256": "894076aa47980e83dc4c2347d92946d6a1e3d99ad0f1258610e5e917675d6e35",
+      "expected_status": "clear",
+      "expected_reason": null,
+      "acceptance": [
+        "A04"
+      ]
+    },
+    {
+      "record": "net-volume-is-not-mass.json",
+      "sha256": "ff880d92a7c371201d8cd361c1a7c584f9cdaa32b31891a6b69141289ea75291",
+      "expected_status": "blocked",
+      "expected_reason": "quantity_kind_mismatch",
+      "acceptance": [
+        "A04"
+      ]
+    },
+    {
+      "record": "forwarded-same-event.json",
+      "sha256": "4215592d02157e086be2605920fa4b032db166cc7291c2f9de36c54785ffcd01",
+      "expected_status": "blocked",
+      "expected_reason": "same_execution_is_not_independent_corroboration",
+      "acceptance": [
+        "A18",
+        "A41"
+      ]
+    },
+    {
+      "record": "different-files-shared-model.json",
+      "sha256": "a296bb3868325e0004785033bbe379b7cb5eec41ea83a8df4be14c9d29fa1e81",
+      "expected_status": "blocked",
+      "expected_reason": "shared_material_dependency_for_failure_mode",
+      "acceptance": [
+        "A18",
+        "A41"
+      ]
+    },
+    {
+      "record": "unknown-dependency-inventory.json",
+      "sha256": "5380aae7bc1ce1c1f84b7ed035f54838ea4ab787858b93fcae0c43616fccbfdd",
+      "expected_status": "blocked",
+      "expected_reason": "dependency_inventory_not_closed",
+      "acceptance": [
+        "A18"
+      ]
+    },
+    {
+      "record": "bounded-distinct-evidence.json",
+      "sha256": "7282123b4d8a6303832da930fcf4236a0110cd042cf6ec25f4a23aacd6eba59e",
+      "expected_status": "clear",
+      "expected_reason": null,
+      "acceptance": [
+        "A18"
+      ]
+    },
+    {
+      "record": "replay-claimed-live.json",
+      "sha256": "e3b4614485c71e01610a3e441e3236c616ba77ac7a266439162c71f0798b8dd2",
+      "expected_status": "blocked",
+      "expected_reason": "acquisition_mode_claim_mismatch",
+      "acceptance": [
+        "A32"
+      ]
+    },
+    {
+      "record": "planned-not-executed.json",
+      "sha256": "8f3ad4a837d311b30c4128d9cea2187070207e6eb75b717151a80cc6cdbde670",
+      "expected_status": "blocked",
+      "expected_reason": "acquisition_not_completed",
+      "acceptance": [
+        "A32"
+      ]
+    },
+    {
+      "record": "looser-criterion.json",
+      "sha256": "cf4f2bbef3d95608c50060b2cbee3221958f9e53b37f54e9f754ade5251f8f72",
+      "expected_status": "blocked",
+      "expected_reason": "comparison_policy_changed",
+      "acceptance": [
+        "A32"
+      ]
+    },
+    {
+      "record": "unchanged-data-claimed-improved.json",
+      "sha256": "5f85d09049f58d628a0664214cdb1a45506e675d15efdc89718ce58d0da593bd",
+      "expected_status": "blocked",
+      "expected_reason": "claimed_improvement_not_observed",
+      "acceptance": [
+        "A32"
+      ]
+    }
+  ]
+}

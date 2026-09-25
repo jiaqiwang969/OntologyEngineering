@@ -23,8 +23,8 @@ jobs:
 
       - name: Install and verify the pinned runtime
         run: |
-          pip install -r runtime/requirements.txt
-          python scripts/verify_runtime_source_lock.py
+          bash runtime/setup_runtime.sh
+          echo "$GITHUB_WORKSPACE/runtime/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Verify the single semantic backend
         run: python scripts/check_semantica_backend_policy.py --mode strict
@@ -72,8 +72,8 @@ jobs:
 
       - name: Install runtime (pinned)
         run: |
-          pip install -r runtime/requirements.txt
-          python scripts/verify_runtime_source_lock.py
+          bash runtime/setup_runtime.sh
+          echo "$GITHUB_WORKSPACE/runtime/.venv/bin" >> "$GITHUB_PATH"
 
       - name: Semantica unique-runtime gate (zero exceptions)
         run: python scripts/check_semantica_backend_policy.py --mode strict

@@ -24,6 +24,9 @@ class ShareableCoreDistributionTests(unittest.TestCase):
             workspace = Path(temporary).resolve()
             stage = workspace / "installed skill"
             builder.stage(stage)
+            self.assertEqual((stage / "VERSION").read_bytes(), (ROOT / "VERSION").read_bytes())
+            self.assertEqual((stage / "VERSION").read_text().strip(),
+                             json.loads(builder.ASSETS.read_text())["release_version"])
             for name in (
                 "ontology_engineering/context_routing.py",
                 "ontology_engineering/jev_transport.py",

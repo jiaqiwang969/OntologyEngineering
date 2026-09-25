@@ -1,5 +1,7 @@
 ---
 name: ontology-engineering
+metadata:
+  version: "0.5.9"
 description: Interpret engineering requests in context and coordinate the needed CAD, manufacturing, evidence, ontology modeling and Semantica workflows. Develop ideas, compare candidates and revise decisions from source-bound evidence and feedback. Use for engineering-ontology requests, cross-skill engineering collaboration, domain knowledge modeling or Semantica integration. Source-locked Semantica remains the sole executable semantic authority; the two engineering books guide the method.
 ---
 

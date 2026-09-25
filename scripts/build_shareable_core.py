@@ -22,7 +22,7 @@ from package_skill import check  # noqa: E402
 
 ASSETS = ROOT / "distribution/shareable-core-assets.json"
 OVERRIDES = ROOT / "distribution/shareable-overrides"
-PUBLIC_CORE_SCOPE = "public-core-v0.5.8"
+PUBLIC_CORE_SCOPE = "public-core-v0.5.9"
 
 
 def _sha256(data: bytes) -> str:
@@ -67,6 +67,10 @@ def stage(directory: Path) -> dict:
             raise ValueError(f"unknown origin for {name}")
         origin_root = ROOT if origin == "source" else OVERRIDES
         source = origin_root / relative
+        # Distribution entry templates must not be discovered as active skills.
+        # The approved target path and byte hash remain unchanged in the ledger.
+        if origin == "override" and relative.name == "SKILL.md":
+            source = source.with_name("SKILL.md.in")
         if (source.is_symlink() or not source.is_file()
                 or not source.resolve().is_relative_to(origin_root.resolve())
                 or any(parent.is_symlink() for parent in source.parents if parent != origin_root)):

@@ -1,9 +1,9 @@
 # 独立核心包的安装与边界
 
-另有[附带公开实验密钥的体验包装](JEV-TRIAL.md)，由所有者明确授权提供。密钥放在 skill
-目录旁，普通核心包和源码仍不含凭据；使用自有密钥时优先采用自有配置。
+日常调用和 Jev 凭据准备见[使用说明](USAGE.md)。普通核心包和源码不含凭据；
+既有可选体验包装的规则另见[历史说明](JEV-TRIAL.md)。
 
-当前分发版本为 `0.5.8`，新增 Jev 批量候选判断与制造协作入口，见[更新说明](releases/manufacturing-method-0.5.8.md)。
+当前分发版本为 `0.5.9`，包含默认 Jev 情景路由、预写 instruct 与项目方法融合，见[更新说明](releases/manufacturing-method-0.5.9.md)。
 ZIP 解压后得到单一 `ontology-engineering/` 根目录。所有随包文件由 `PORTABLE-MANIFEST.json`
 逐项记录 SHA-256；没有指向作者目录的符号链接。资产来源、许可依据与公开授权保存在作者侧
 精确资产台账，正式发布时另随 Release 提供。本核心包不含两卷书或客户产品放行文件。
@@ -15,6 +15,8 @@ ZIP 解压后得到单一 `ontology-engineering/` 根目录。所有随包文件
 
 ## 内容
 
+- [默认情景路由](../references/context-routing.md)、[预写 instruct](../references/context-routing-instructions.json)、能力说明及调用代码；
+- [行业本体治理](../skills/domain-ontology-loop/SKILL.md)、[新书编写](../skills/standard-to-book/SKILL.md)及配套合同；
 - 根 [skill](../SKILL.md)、[制造工艺与成本模块](../skills/manufacturing-process-cost/SKILL.md)及其合成模板、报告组件；
 - [CAD 模块](../skills/cad-agent/SKILL.md)、[证据驱动的重建方法](../skills/cad-agent/references/evidence-driven-reconstruction.md)、[第一性原理推导记录合同](../skills/cad-agent/contracts/analysis-record.v1.schema.json)、[通用 CAD 证据合同](../skills/cad-agent/contracts/cad-evidence.v1.schema.json)、[工艺交接合同](../skills/cad-agent/contracts/cad-process-handoff.v1.schema.json)、Fusion 受保护调用、[可配置远程桥](../skills/cad-agent/remote/README.md)、[装配与力学通用内核](../skills/cad-agent/references/assembly-and-physics-kernel.md)及有界装配/机构工具；
 - 锁定的 Semantica wheel、合成制造案例传输包、执行脚本和验证工具；

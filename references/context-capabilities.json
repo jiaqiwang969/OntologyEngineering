@@ -1,0 +1,52 @@
+{
+  "schema": "ontology-engineering.context-capabilities/v1",
+  "model": "jev-1.13.0",
+  "purpose": "operational route candidates, not semantic verdicts or permissions",
+  "capabilities": [
+    {
+      "id": "cad",
+      "source": "skills/cad-agent/SKILL.md",
+      "capability": "零件、图纸、装配、机构或原生 CAD 的创建、编辑、回读与几何关系检查；不因出现 CAD 字样而把纯文字改写当建模。"
+    },
+    {
+      "id": "manufacturing",
+      "source": "skills/manufacturing-process-cost/SKILL.md",
+      "capability": "本轮需要制定或修改制造路线、工序、设备供应商选择、检验实施方案、费用或交期安排。仅检查现成资料、解释测量不确定度、运行现成语义审查或核对来源版本，不自动需要重新做制造方案。"
+    },
+    {
+      "id": "evidence",
+      "source": "skills/engineering-evidence-methods/SKILL.md",
+      "capability": "本轮需要判断测量、模型、对照、来源、报价或时段承诺是否支持某项工程结论，或因新条件而重审相关支持依据。单纯读取原生属性或解释概念时按实际需要，不强制加入。"
+    },
+    {
+      "id": "project_modeling",
+      "source": "references/semantic-engagement-contract.md",
+      "capability": "本轮需要建立或维护项目中的对象身份、角色、关系、功能、主张、证据支持或工作依赖表示，包括实例、别名和活动状态的有依据更新。只运行已经准备好的RDF检查，或原样提取几何属性，不自动需要新建或修改知识表示。"
+    },
+    {
+      "id": "semantic_review",
+      "source": "references/semantic-engagement-contract.md",
+      "capability": "在现有受控包上运行正式语义查询、约束、案例或有范围的项目证据审查；仅只读检查运行时和能力目录不算执行了项目审查。"
+    },
+    {
+      "id": "semantic_integration",
+      "source": "docs/method-bootstrap.md",
+      "capability": "本轮需要安装或修复source-locked Semantica入口、初始化工作区、准备或修正项目binding，或者因证据变化而重新准备当前task和证据摘要。只用已有匹配输入运行审查不需要重新接入。"
+    },
+    {
+      "id": "ontology_evolution",
+      "source": "skills/domain-ontology-loop/SKILL.md",
+      "capability": "本轮明确要处理可复用的概念、关系、CQ或规则表达缺口，形成行业语义包候选、回归或治理。必须区别于建立一个新项目、记录项目事实、维护别名、补齐数据或修复task；这些本身不需要行业本体演化。"
+    },
+    {
+      "id": "book",
+      "source": "SKILL.md",
+      "capability": "本轮明确要求编写或修订工程书、教材或章节，包括更新书内示例与来源引用。新书使用standard-to-book，已有书稿沿相应作者工作流维护。解释一个术语、普通方案报告、补项目事实或修改语义包本身不要求编书。"
+    },
+    {
+      "id": "external_specialist",
+      "source": "session skill inventory",
+      "capability": "当前任务明确需要工程本体内部以外的现有专门工具或 skill，如电子设计、Abaqus 实际求解、视频感知、PDF 提取；普通文字讨论、内部 CAD 或已有证据分析不自动需要外部专业执行。"
+    }
+  ]
+}

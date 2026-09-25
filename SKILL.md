@@ -1,13 +1,91 @@
 ---
 name: ontology-engineering
-description: Follow manufacturing discussions and field feedback to build private project ontologies and revise CAD, process, equipment, supplier and cost decisions. Use Semantica as the default semantic control and learning plane and sole executable semantic authority for engineering; govern reusable industry ontology and maintain the two TeX/PDF books.
+description: Interpret engineering requests in context and coordinate the needed CAD, manufacturing, evidence, ontology modeling and Semantica workflows. Develop ideas, compare candidates and revise decisions from source-bound evidence and feedback. Use for engineering-ontology requests, cross-skill engineering collaboration, domain knowledge modeling or Semantica integration. Source-locked Semantica remains the sole executable semantic authority; the two engineering books guide the method.
 ---
 
-# Ontology Engineering：Semantica 行业本体炼化控制面
+# 工程本体：按情景组织工程推理与协同
 
-把每次调用视为一次 source-locked semantic engagement。让 Semantica 默认介入，
+从功能和物理约束推导设计与制造方案，再用原生证据和现场反馈校正：
+
+- **功能本体**：服务对象、使用情境、必要功能、输入输出、功能之间的依赖与失效后果；
+  明确由哪个结构、界面或系统实现，以及怎样判断功能成立。
+- **第一性原理**：按问题选用守恒关系、受力与变形、传热流动、材料行为和几何约束，
+  显式写出边界条件、假设、量纲与可检验的推导，再确定需要的精度、裕量和验证。
+- **工艺本体**：毛坯与中间态、工序前后条件、基准与装夹、设备刀具、连接与表面处理、
+  检验及成本；关联每道工序实现或影响的功能，追踪顺序、余量和变形的后果。
+
+主线是“功能要求 → 物理机理与约束 → 结构与公差 → 工艺与装夹 → 检验与成本”，
+现场结果沿依赖关系反馈到上游。按本轮问题选择必要的分析、仿真或试验；已明确停止的
+仿真不因方法讨论重新启动。上述是建模与推理方法；具体可执行本体、规则和覆盖范围
+须经 Semantica 发现、绑定和验证，缺失项保留为候选，不能宣称全部已实现。
+
+## 先理解情景，再组织工作
+
+用户说“调用工程本体”时，先续接当前目标、待决问题、对象版本、已有结果、资料、
+约束和已授权范围，再判断本轮需要什么产出与能力。显式点名的 skill 纳入工作，
+其他模块按实际需要选择；保留此前的停止指令及尚未解除的条件。
+
+按[情景分析与能力协同](references/context-routing.md)匹配内部模块、可用外部 skill
+和工具。可单项执行，也可围绕共同对象和证据联动；用输入、输出和前置依赖解释
+为什么需要它们。概念解释、项目记录、本体建模、现有语义审查、Semantica 接入和
+行业本体演化分别判断，不把一次调用展开成全部流程。小任务可由根入口直接完成。
+
+Jev 的判断必须使用预先维护的[工程本体 instruct](references/context-routing-instructions.json)：
+意图与 CQ、对象身份、功能机理、条件证据、ABox/TBox 和交接依赖共同约束能力选择。
+每次用户触发本 skill，都先按[情景路由调用](references/context-routing.md#默认调用)
+运行 `scripts/route_engineering_task.py`，让 Jev 对本轮能力需求作出候选判断，再实际
+读取结果来选择模块和组织协同。输入由 agent 从上下文整理，用户无需填写；保留先前
+状态、最新请求和明确约束，只发送本轮已授权向服务提供的必要情景。简单任务也运行
+这一步，不因为已有主观判断而省略。Jev 不能用分数增加权限或替代正式语义审查。
+
+主 agent 核对候选与实际输入、来源、能力和授权后继续执行。分歧或模型漏选须按证据
+修正并简记理由；不能只保存路由报告而不使用。服务失败、用户禁止外发或必要上下文
+不可提供时，记录 `unavailable`／未调用的原因并由主 agent 接续，不能冒充 Jev 已判断。
+这是默认的 Jev 辅助编排；[资料批量判断](docs/judgment-intake.md)按实际材料规模另行使用。
+
+新反馈到来时，重审受影响的选择和交接，续用项目身份与历史；只有任务本身不明确时
+才补最小澄清，不让用户先挑内部模块或填写技术合同。
+
+本 skill 内含完整的 [cad-agent CAD 模块](skills/cad-agent/SKILL.md)，负责零件、装配、
+机构、夹具、STEP、图纸及 Fusion／NX／AutoCAD 原生建模与回读。用户仍可直接说
+“用 cad-agent 设计夹具”或“检查 STEP”；从本入口进入 CAD 模块执行。
+
+融合让 CAD 与[制造工艺和成本](skills/manufacturing-process-cost/SKILL.md)共享对象、
+版本、功能要求和证据：设计中的壁厚、公差、孔位与连接决定装夹、加工、焊接和检验；
+制造能力、变形、刀具可达性及现场反馈反过来推动结构调整。涉及这些相互影响时，按
+[CAD／工艺双向交接](skills/cad-agent/references/cad-process-integration.md)联动两个模块。
+单项 CAD 任务直接用 CAD 工具；Semantica 负责正式语义检查，原生模型和加工验证各自取证。
+
+把每次调用视为一次 source-locked semantic engagement。Semantica 默认以锁感知发现介入，
+正式执行取决于本轮问题、证据及绑定是否适用；发现、接入配置和正式审查分别报告。
 让两卷书指导怎样观察与解释，让工程实践产生事实，并只把经过治理的稳定经验晋升为
 行业本体。不要把本 skill 降成查书插件，也不要让它静默自我修改。
+
+## 从想法持续推进工程决定
+
+收到工程设想、研究课题或尚未定型的方案时，先续接用户原始意图、当前待决问题、
+对象版本与已有记录。沿“必要功能 → 物理机制 → 实现条件 → 候选 → 证据缺口 →
+验证活动 → 有范围的决定”展开；根据已有证据往返修订，活动顺序由依赖决定。
+按[共用方法中的决定与验证关系](skills/engineering-evidence-methods/references/method-internalization.md)
+把功能要求、反例和下一步投入连接起来：
+
+- 对每个候选说明它在什么条件下实现哪些功能，哪些主张已有支持、受反驳或仍未知。
+  优选、暂缓和排除都绑定决定、对象版本、适用范围与理由，保留替代路线。
+- 下一次查资料、计算、仿真或试验应回答会改变决定的问题；明确输入、对照、输出、
+  有效条件及不同结果后的动作。资源已列出、能预约、能力已验证和获准使用分别取证。
+- 用这些活动的前置条件、人员设备占用、等待时间和费用形成计划；需求、预算或资源
+  变化后只重审有关系的工作，同时列出依赖尚未查清的范围。
+- 把方案书、试验计划、预算和进度作为同一项目记录的视图。工程支持状态、活动完成、
+  文件发布与 Semantica 生命周期分别记录，不用一个项目总状态代替。
+
+已有项目使用原来的台账、来源、事件和稳定 ID；尚无记录时，按需要复用
+[缺口、方案与组织记录](skills/manufacturing-process-cost/references/organization-loop.md)，
+无需先建立整套数据库。用户提供日常描述，agent 负责记录与来源关联。新消息先区分
+需求、观察、建议、假说、决定或表达偏好；只有有依据的变化才更新相应对象。
+小任务只处理当前决定，不强制生成预算、排期、正式报告或新本体版本。
+
+历史 `build-engineering-project/1.0` 项目按[记录接续与迁移说明](docs/project-method-integration.md)
+保留来源和快照；当前工作直接从本入口继续，不调用旧状态机或旧独立本体检查器。
 
 ## 从生产问题持续协作
 
@@ -31,6 +109,10 @@ description: Follow manufacturing discussions and field feedback to build privat
 
 不存在 OE-local 可执行语义正本、第二 backend、fallback 或平行 package registry。
 
+用户要求配置 CAD 接入时，读取 CAD 模块的[执行与连接说明](skills/cad-agent/references/fusion-execution.md)。
+语义模式只转交本 skill 的 source-locked Semantica 入口；不要恢复已退役的独立
+`cad-agent-semantic` 后端。
+
 批量对话、报告或多版工程资料需要归类和支持关系初判时，按
 [共用批量判断与证据审查](docs/judgment-intake.md)接入 Jev。两卷书指导模式与提问；
 Jev 只产生候选，Semantica 执行已实现的身份、主张、范围、功能覆盖及依赖检查。
@@ -40,7 +122,8 @@ Jev 只产生候选，Semantica 执行已实现的身份、主张、范围、功
 ## 开始任何任务
 
 1. 从本 `SKILL.md` 所在目录解析 skill root；不要写死用户主目录或依赖当前工作目录。
-2. 读取 `references/semantic-engagement-contract.md`，如果任务涉及工程应用、跨 skill
+2. 续接情景并运行上述默认 Jev 路由，读取 `routing.json` 后安排本轮工作；随后读取
+   `references/semantic-engagement-contract.md`，如果任务涉及工程应用、跨 skill
    调用、验证、学习、内化或发布。
 3. 运行只读 preflight/doctor，核对 source lock、vendored wheel、Python/platform 和
    已安装 Semantica 身份：
@@ -65,7 +148,8 @@ Jev 只产生候选，Semantica 执行已实现的身份、主张、范围、功
 按以下顺序工作：
 
 ```text
-task + project binding
+当前情景 → 本轮产出与所需能力 → 必要模块及交接
+  → task + project binding（正式执行需要时）
   → 两卷书的方法镜头与来源锚点
   → Semantica package / baseline / capability 发现
   → 对象、身份、CQ、证据与权限归一化
@@ -254,9 +338,9 @@ CAD 建模、修复、图纸/BOM、装配、机构或几何核验加载
 把确切对象链到功能、路线、主张与问题；制造模块接续功能覆盖、检验、成本与交期。
 证据转换器只核对身份与来源，不出具 Semantica 或实物放行结论。
 
-装配及相关力学任务还要使用[装配与力学通用判断内核](skills/cad-agent/references/assembly-and-physics-kernel.md)：按实例、界面、状态和外部支撑表达项目 ABox；按几何、路径、静力、局部接触和实测分别说明主张及反证。跨项目复用的是这些因果区分与证据边界，具体产品步骤、材料参数和仿真算法不是行业 TBox 正本。
+装配及相关力学任务另读[装配与力学通用判断内核](skills/cad-agent/references/assembly-and-physics-kernel.md)：区分实例、界面、逐动作状态、外部支撑、装入路径、载荷需求、接头容量和实物证据。具体项目的搭建步骤、材料数值与仿真算法保留在项目 ABox；可迁移的是主张之间的因果关系及反证边界。
 
-从照片、视频、专利或残缺 CAD 反推形态和机构时，使用[证据驱动的重建方法](skills/cad-agent/references/evidence-driven-reconstruction.md)。它把观察、机理候选、第一性原理推导、本方 CAD 方案及原物结论分层；条件推导用于收窄信息缺口，欠定的隐藏结构保留候选与下一项可区分证据。
+从照片、视频、专利或残缺 CAD 反推外形、零件关系和工作原理时，另读[证据驱动的形态与机构重建](skills/cad-agent/references/evidence-driven-reconstruction.md)。可见内容、机理候选、第一性原理推导、本方 CAD 方案和原物/实物结论分层；条件推导用于收窄缺口，不把欠定的隐藏结构伪装成观察事实。
 
 EDA、质检、仿真和其他制造 skill 在三个检查点调用本 skill：任务开始的语义
 接入、不可逆动作前的 preflight、任务结束后的 evidence/receipt/learning 判定。领域

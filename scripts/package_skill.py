@@ -25,7 +25,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from check_public_privacy import content_findings, path_findings
 from semantic_bundle_transport import load_bundle, safe_relative, validate_data_archive, _regular_inside
 
-DIRECTORIES = {"agents", "demos", "docs", "examples", "ontology_engineering", "references", "runtime", "scripts", "skills", "tests", ".github"}
+DIRECTORIES = {"agents", "demos", "distribution", "docs", "examples", "ontology_engineering", "references", "runtime", "scripts", "skills", "tests", ".github"}
 ROOT_FILES = {"SKILL.md", "README.md", "README.en.md", "LICENSE", ".gitignore"}
 SKIP_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", ".ruff_cache", "node_modules", "local-builds"}
 SKIP_SUFFIXES = {".pyc", ".aux", ".fdb_latexmk", ".fls", ".log", ".out", ".toc", ".xdv"}
@@ -123,7 +123,17 @@ def check(root: Path) -> tuple[dict, list[Path]]:
             if parsed.scheme or target.startswith("//") or not parsed.path:
                 continue
             links += 1
-            destination = (file.parent / unquote(parsed.path)).resolve()
+            # Override documents are authored for their declared staged location.
+            # Carrying the distribution sources makes a full delivery rebuildable;
+            # the core builder still checks the exact staged inventory and bytes.
+            location = file
+            try:
+                override = file.relative_to(root / "distribution/shareable-overrides")
+            except ValueError:
+                pass
+            else:
+                location = root / override
+            destination = (location.parent / unquote(parsed.path)).resolve()
             if not destination.is_relative_to(root):
                 issues.append({"path": relative, "reason": "link escapes skill root", "target": target})
             elif not destination.exists():

@@ -14,9 +14,6 @@ class SkillControlPlaneContractTests(unittest.TestCase):
         frontmatter = skill.split("---", 2)[1]
         for required in (
             "Semantica",
-            "default semantic control and learning plane",
-            "industry ontology",
-            "TeX/PDF",
             "sole executable semantic authority",
         ):
             self.assertIn(required, frontmatter)

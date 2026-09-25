@@ -1,6 +1,6 @@
 {
   "record_type": "organization_run",
-  "template_version": "0.2.0",
+  "template_version": "0.3.0",
   "schema_status": "record_template_not_semantic_schema",
   "usage": "按本次范围填写，null保持未知；角色/权限/时间均需来源，不能凭模板制造接受、关闭或实际效果。",
   "organization_scope_id": null,
@@ -29,6 +29,42 @@
     {
       "id": null,
       "question_or_decision_refs": [],
+      "engineering_activity": {
+        "kind": null,
+        "object_revision_refs": [],
+        "claim_refs": [],
+        "gap_refs": [],
+        "input_condition_refs": [],
+        "planned_method_ref": null,
+        "result_artifact_refs": [],
+        "result_validity_review_ref": null,
+        "outcome_branches": [
+          {
+            "observed_outcome_and_criterion_ref": null,
+            "allowed_conclusion": null,
+            "next_action_or_stop_condition": null
+          }
+        ]
+      },
+      "resource_requirements": [
+        {
+          "resource_ref": null,
+          "required_capability_ref": null,
+          "capability_evidence_refs": [],
+          "availability_and_reservation_refs": [],
+          "use_authority_ref": null
+        }
+      ],
+      "schedule_basis": {
+        "planned_start": null,
+        "planned_finish": null,
+        "calendar_ref": null,
+        "labor_effort_and_unit": null,
+        "equipment_occupancy_and_unit": null,
+        "waiting_time_and_unit": null,
+        "assumption_refs": []
+      },
+      "cost_item_refs": [],
       "requester_assignment": null,
       "owner_assignment": null,
       "reviewer_assignment": null,
@@ -45,6 +81,12 @@
       "closed_scope": [],
       "remaining_scope": [],
       "dependencies": [],
+      "dependency_review": {
+        "inventory_scope": null,
+        "completeness": "unknown",
+        "basis_refs": [],
+        "findings_and_unchecked_scope": []
+      },
       "waiting_reason": null,
       "independent_work": [],
       "agreed_due_at": null,

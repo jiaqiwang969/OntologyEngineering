@@ -1,15 +1,19 @@
 # 独立分发与新目录验证
 
 持续跟进生产问题先看[制造协作入口](MANUFACTURING-COLLABORATION.md)；以下安装和复验由部署者处理。
-需要免申请密钥试用 Jev 时，使用[附带公开实验凭据的完整体验包](JEV-TRIAL.md)。密钥和
-试用声明位于 skill 目录之外，与完整目录一同解压；它是本次所有者明确授权的分发例外。
-当前分发版本为 `0.5.8`，包含 Jev 批量候选判断及制造协作入口 `0.1.0`，见[更新说明](releases/manufacturing-method-0.5.8.md)。独立模型质量、双模型升级对照和真实总成本评测留待后续项目实践，
+日常调用与 Jev 凭据准备见[使用说明](USAGE.md)。v0.5.9 的普通完整包和核心包均不附凭据；
+已有可选体验包装的绑定规则见[历史说明](JEV-TRIAL.md)。
+当前分发版本为 `0.5.9`，两种包均包含默认 Jev 情景路由、预写 instruct、项目方法融合及制造协作入口 `0.1.0`，见[更新说明](releases/manufacturing-method-0.5.9.md)。独立模型质量、双模型升级对照和真实总成本评测留待后续项目实践，
 不以这些未完成的评测阻止候选分发，也不宣称准确率或降本已经得到独立验证。
 
 有两种不同的本地制品，不能混用其放行范围：
 
-- **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、通用 CAD 证据、形态/机构重建、CAD／工艺交接、可移植 Fusion 执行层、NX/AutoCAD 可配置远程桥及有界装配/机构筛查器。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。`manufacturing-v0.5.7` 承接 [0.5.6](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.6)，增加来源绑定的第一性原理推导记录与逆向重建方法；对应源码以 `manufacturing-v0.5.7` 标签固定。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
-- **完整仓库快照**：`python3 scripts/package_skill.py --output ...` 按当前仓库文件清单打包两卷书、公开 CAD 核心和其余仓库资产。GitHub 的完整 Release ZIP 是固定标签的仓库快照；不包含仓外的历史私有 CAD 执行器、案例或客户证据。[两卷书整体权利状态](PUBLIC-RELEASE-STATUS.md)与核心包的公开资产台账分开记录。文件检查通过不能当作权利放行。
+作者侧 `distribution/shareable-overrides` 中的入口模板保存为 `SKILL.md.in`，避免被本机
+当成同名活动 skill。核心构建器只在 staging 中恢复白名单的 `SKILL.md` 目标名，并继续
+校验原批准字节摘要；重命名不批准新内容，也不把本地工作版当成冻结公开版。
+
+- **独立核心版**：`python3 scripts/build_shareable_core.py --output /path/to/new.zip`。作者侧的精确资产白名单 `distribution/shareable-core-assets.json` 逐文件锁定来源和 SHA-256，只导出 Semantica、制造方法、通用 CAD 证据、形态/机构重建、CAD／工艺交接、可移植 Fusion 执行层、NX/AutoCAD 可配置远程桥及有界装配/机构筛查器。两卷书、未审历史 CAD 案例、工作站配置和真实项目均不进入该 ZIP。`manufacturing-v0.5.7` 承接 [0.5.6](https://github.com/jiaqiwang969/OntologyEngineering/releases/tag/manufacturing-v0.5.6)，增加来源绑定的第一性原理推导记录与逆向重建方法；该历史版本以 `manufacturing-v0.5.7` 标签固定。当前 `0.5.9` 使用 `manufacturing-v0.5.9` 标签，补齐情景路由、项目方法与治理入口。新目录安装、组件权利和工程边界以 ZIP 内的 `docs/PORTABLE-DISTRIBUTION.md`、`docs/COMPONENT-NOTICE.md` 及随 Release 上传的公开资产台账为准。
+- **完整仓库快照**：`python3 scripts/package_skill.py --output ...` 按当前仓库文件清单打包两卷书、公开 CAD 核心和其余仓库资产，包含 `distribution/` 构建清单及不参与 skill 发现的入口模板，便于复验和重建核心包。GitHub 的完整 Release ZIP 是固定标签的仓库快照；不包含仓外的历史私有 CAD 执行器、案例或客户证据。[两卷书整体权利状态](PUBLIC-RELEASE-STATUS.md)与核心包的公开资产台账分开记录。文件检查通过不能当作权利放行。
 
 两种制品都以单一 `ontology-engineering/` 根目录交付，接收方在新目录复验；正式语义 release 与具体客户产品放行另行判断。
 
@@ -17,6 +21,7 @@
 
 | 内容 | 根目录内的位置 | 作用 |
 | --- | --- | --- |
+| 情景路由与工程本体 instruct | [路由说明](../references/context-routing.md)、[固定指令](../references/context-routing-instructions.json)、`scripts/route_engineering_task.py` | 从当前情景判断能力需求，由 agent 复核并组织实际工作；两种包携带相同实现 |
 | 总入口和制造方法 | [SKILL.md](../SKILL.md)、[制造模块](../skills/manufacturing-process-cost/SKILL.md) | 资料筛选、沟通、方案与反馈迭代 |
 | 制造协作入口与任务卡 | [制造协作入口](MANUFACTURING-COLLABORATION.md)、[现场任务卡](../skills/manufacturing-process-cost/assets/templates/shop-floor-action-card.md) | 持续讨论、私有项目本体、方案修订及现场反馈；任务卡按需生成 |
 | CAD 模块及交接合同 | [CAD 模块](../skills/cad-agent/SKILL.md)、[通用 CAD 证据](../skills/cad-agent/references/cad-engineering-workflow.md)、[工艺交接](../skills/cad-agent/references/cad-process-integration.md) | 零件、图纸/BOM、装配、机构对象的来源校验、项目 ABox 与双向工艺问题；不自行执行语义规则 |

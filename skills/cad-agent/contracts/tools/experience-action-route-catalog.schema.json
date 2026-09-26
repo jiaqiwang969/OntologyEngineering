@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cad-agent.experience-action-route-catalog.schema.v1",
+  "title": "Experience-to-action language and tool binding catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema", "status", "profiles"],
+  "properties": {
+    "$schema": {
+      "const": "contracts/tools/experience-action-route-catalog.schema.json"
+    },
+    "schema": {
+      "const": "cad-agent.experience-action-route-catalog.v1"
+    },
+    "status": {
+      "const": "Active"
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/profile" }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nonEmptyUniqueStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "uniqueStrings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "stringMap": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "aliasGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group_id", "aliases"],
+      "properties": {
+        "group_id": { "$ref": "#/$defs/nonEmptyString" },
+        "aliases": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "context_field": { "$ref": "#/$defs/nonEmptyString" },
+        "alternate_surface_bypass": { "type": "boolean", "default": false }
+      }
+    },
+    "parameterExtractor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parameter", "pattern", "normalizer", "required"],
+      "properties": {
+        "parameter": { "$ref": "#/$defs/nonEmptyString" },
+        "pattern": { "$ref": "#/$defs/nonEmptyString" },
+        "normalizer": { "enum": ["identity", "uppercase", "lowercase"] },
+        "required": { "type": "boolean" }
+      }
+    },
+    "toolAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool",
+        "action",
+        "confirmation",
+        "argument_fields",
+        "purpose"
+      ],
+      "properties": {
+        "tool": { "$ref": "#/$defs/nonEmptyString" },
+        "action": { "$ref": "#/$defs/nonEmptyString" },
+        "confirmation": { "$ref": "#/$defs/nonEmptyString" },
+        "argument_fields": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "purpose": { "$ref": "#/$defs/nonEmptyString" },
+        "conditional_on": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "guidanceStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["step", "purpose"],
+      "properties": {
+        "step": { "$ref": "#/$defs/nonEmptyString" },
+        "purpose": { "$ref": "#/$defs/nonEmptyString" },
+        "parameter_fields": { "$ref": "#/$defs/uniqueStrings" },
+        "include_context_facets": { "type": "boolean", "default": false }
+      }
+    },
+    "guidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state_observation",
+        "missing_action_context",
+        "invalid_action_input",
+        "surface_probe",
+        "fallback_context"
+      ],
+      "properties": {
+        "state_observation": { "$ref": "#/$defs/guidanceStep" },
+        "missing_action_context": { "$ref": "#/$defs/guidanceStep" },
+        "invalid_action_input": { "$ref": "#/$defs/guidanceStep" },
+        "surface_probe": { "$ref": "#/$defs/guidanceStep" },
+        "fallback_context": { "$ref": "#/$defs/guidanceStep" }
+      }
+    },
+    "fallbackContextPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_fields", "any_of_fields"],
+      "properties": {
+        "required_fields": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "any_of_fields": { "$ref": "#/$defs/uniqueStrings" }
+      }
+    },
+    "recognition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_alias_groups",
+        "parameter_extractors",
+        "subject_aliases",
+        "information_intent_aliases",
+        "alternate_surface_aliases",
+        "alternate_surface_rejection_aliases",
+        "conflicting_aliases"
+      ],
+      "properties": {
+        "required_alias_groups": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/aliasGroup" }
+        },
+        "parameter_extractors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/parameterExtractor" }
+        },
+        "subject_aliases": { "$ref": "#/$defs/uniqueStrings" },
+        "information_intent_aliases": { "$ref": "#/$defs/uniqueStrings" },
+        "alternate_surface_aliases": { "$ref": "#/$defs/uniqueStrings" },
+        "alternate_surface_rejection_aliases": { "$ref": "#/$defs/uniqueStrings" },
+        "conflicting_aliases": { "$ref": "#/$defs/uniqueStrings" }
+      }
+    },
+    "normalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "problem_classification",
+        "operation_semantics",
+        "current_conditions",
+        "surface_condition",
+        "goal_conditions",
+        "context_conditions",
+        "interaction_surface",
+        "context_facets",
+        "static_parameters"
+      ],
+      "properties": {
+        "problem_classification": { "$ref": "#/$defs/nonEmptyString" },
+        "operation_semantics": { "$ref": "#/$defs/nonEmptyString" },
+        "current_conditions": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "surface_condition": { "$ref": "#/$defs/nonEmptyString" },
+        "goal_conditions": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "context_conditions": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "interaction_surface": { "$ref": "#/$defs/nonEmptyString" },
+        "context_facets": { "$ref": "#/$defs/stringMap" },
+        "static_parameters": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "stateGate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_field",
+        "required_value",
+        "unknown_value",
+        "satisfied_values",
+        "missing_assertion_aliases",
+        "unknown_status",
+        "satisfied_status"
+      ],
+      "properties": {
+        "context_field": { "$ref": "#/$defs/nonEmptyString" },
+        "required_value": { "$ref": "#/$defs/nonEmptyString" },
+        "unknown_value": { "$ref": "#/$defs/nonEmptyString" },
+        "satisfied_values": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "missing_assertion_aliases": { "$ref": "#/$defs/uniqueStrings" },
+        "unknown_status": { "$ref": "#/$defs/nonEmptyString" },
+        "satisfied_status": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["problem_statement"],
+      "properties": {
+        "problem_statement": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pattern_uri",
+        "capability_uri",
+        "tool_operation_uri",
+        "preparation_action",
+        "execution_action",
+        "canonical_input_fields",
+        "canonical_output_fields",
+        "tool_context_fields",
+        "tool_contract_ref",
+        "fallback_exclusion_condition",
+        "fallback_context_policy",
+        "production_routing_eligible"
+      ],
+      "properties": {
+        "pattern_uri": { "$ref": "#/$defs/nonEmptyString" },
+        "capability_uri": { "$ref": "#/$defs/nonEmptyString" },
+        "tool_operation_uri": { "$ref": "#/$defs/nonEmptyString" },
+        "preparation_action": { "$ref": "#/$defs/toolAction" },
+        "execution_action": { "$ref": "#/$defs/toolAction" },
+        "canonical_input_fields": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "canonical_output_fields": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "tool_context_fields": { "$ref": "#/$defs/nonEmptyUniqueStrings" },
+        "tool_contract_ref": { "$ref": "#/$defs/nonEmptyString" },
+        "fallback_exclusion_condition": { "$ref": "#/$defs/nonEmptyString" },
+        "fallback_context_policy": {
+          "$ref": "#/$defs/fallbackContextPolicy"
+        },
+        "production_routing_eligible": { "const": false }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "priority",
+        "recognition",
+        "normalization",
+        "state_gate",
+        "review",
+        "guidance",
+        "binding"
+      ],
+      "properties": {
+        "profile_id": { "$ref": "#/$defs/nonEmptyString" },
+        "priority": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "recognition": { "$ref": "#/$defs/recognition" },
+        "normalization": { "$ref": "#/$defs/normalization" },
+        "state_gate": { "$ref": "#/$defs/stateGate" },
+        "review": { "$ref": "#/$defs/review" },
+        "guidance": { "$ref": "#/$defs/guidance" },
+        "binding": { "$ref": "#/$defs/binding" }
+      }
+    }
+  }
+}

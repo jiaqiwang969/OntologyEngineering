@@ -1,0 +1,472 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-preflight-request-v1.json",
+  "title": "CAD Agent semantic preflight request",
+  "description": "Domain-neutral, non-authorizing request for context closure and multi-pattern planning from one hash-bound shadow semantic build.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "request_id",
+    "evaluation_time",
+    "build_report",
+    "observation_context_digest",
+    "current_subject_revisions",
+    "problem_nodes",
+    "observation_assertions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-preflight-request.v1"
+    },
+    "request_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "evaluation_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "build_report": {
+      "$ref": "#/$defs/assetRef"
+    },
+    "action_link_result": {
+      "description": "Optional content-addressed candidate action-link result for the exact semantic build. The preflight reproduces it from fixed repository bytes and binds it into the plan, but it cannot authorize activation or execution.",
+      "$ref": "#/$defs/assetRef"
+    },
+    "current_adapter_snapshot": {
+      "description": "Optional content-addressed JSON snapshot of current adapter implementations and their own hash-bound registry evidence. When a validation envelope names an adapter and this snapshot or the named adapter is absent, compatibility remains UNKNOWN.",
+      "$ref": "#/$defs/assetRef"
+    },
+    "observation_context_digest": {
+      "$ref": "#/$defs/sha256"
+    },
+    "current_subject_revisions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/subjectRevision"
+      }
+    },
+    "problem_nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/problemNode"
+      }
+    },
+    "observation_assertions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/observationAssertion"
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^(https://|urn:)"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "adapterSnapshotEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adapter_semantics",
+        "adapter_version",
+        "implementation_sha256",
+        "registry_evidence"
+      ],
+      "properties": {
+        "adapter_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "adapter_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "implementation_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "registry_evidence": {
+          "$ref": "#/$defs/assetRef"
+        }
+      }
+    },
+    "adapterSnapshotDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "snapshot_id",
+        "captured_at",
+        "adapters",
+        "activation_authorized",
+        "execution_authorized",
+        "runtime_routing_changed"
+      ],
+      "properties": {
+        "schema": {
+          "const": "cad-agent.semantic-adapter-snapshot.v1"
+        },
+        "snapshot_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "captured_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "adapters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/adapterSnapshotEntry"
+          }
+        },
+        "activation_authorized": {
+          "const": false
+        },
+        "execution_authorized": {
+          "const": false
+        },
+        "runtime_routing_changed": {
+          "const": false
+        }
+      }
+    },
+    "adapterRegistryEvidenceDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "registry_entry_id",
+        "adapter_semantics",
+        "adapter_version",
+        "implementation_sha256",
+        "activation_authorized",
+        "execution_authorized",
+        "runtime_routing_changed"
+      ],
+      "properties": {
+        "schema": {
+          "const": "cad-agent.semantic-adapter-registry-evidence.v1"
+        },
+        "registry_entry_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "adapter_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "adapter_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "implementation_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "activation_authorized": {
+          "const": false
+        },
+        "execution_authorized": {
+          "const": false
+        },
+        "runtime_routing_changed": {
+          "const": false
+        }
+      }
+    },
+    "uniqueIris": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "nonEmptyUniqueIris": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "uniqueIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stableId"
+      }
+    },
+    "scalar": {
+      "type": [
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "parameterBindings": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/stableId"
+      },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/scalar"
+          },
+          {
+            "$ref": "#/$defs/assetRef"
+          }
+        ]
+      }
+    },
+    "contextCoordinate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coordinate_semantics"
+      ],
+      "properties": {
+        "coordinate_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "value_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "literal_value": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ]
+        },
+        "asset_value": {
+          "$ref": "#/$defs/assetRef"
+        },
+        "unit_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "value_semantics"
+          ]
+        },
+        {
+          "required": [
+            "literal_value"
+          ]
+        },
+        {
+          "required": [
+            "asset_value"
+          ]
+        }
+      ]
+    },
+    "subjectRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject_identity",
+        "subject_revision"
+      ],
+      "properties": {
+        "subject_identity": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "subject_revision": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "problemNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "problem_id",
+        "problem_type_semantics",
+        "goal_semantics",
+        "context_facet_semantics",
+        "transfer_mode_semantics",
+        "retrieval_match_profile",
+        "selected_package_id",
+        "depends_on_problem_ids",
+        "parameter_bindings",
+        "context_coordinates",
+        "current_observation_assertion_ids"
+      ],
+      "properties": {
+        "problem_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "problem_type_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "goal_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "context_facet_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "transfer_mode_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "retrieval_match_profile": {
+          "description": "Fixed bounded matching semantics: any problem-type intersection; every package goal and context facet must be present in the problem; at least one exact transfer-mode term must intersect and both sides must belong to one shared transfer family.",
+          "const": "ProblemAny-GoalAll-ContextAll-TransferAnySameFamily-v1"
+        },
+        "selected_package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "depends_on_problem_ids": {
+          "$ref": "#/$defs/uniqueIds"
+        },
+        "parameter_bindings": {
+          "$ref": "#/$defs/parameterBindings"
+        },
+        "context_coordinates": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/contextCoordinate"
+          }
+        },
+        "current_observation_assertion_ids": {
+          "$ref": "#/$defs/uniqueIds"
+        }
+      }
+    },
+    "observationAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assertion_id",
+        "package_id",
+        "observation_id",
+        "subject_semantics",
+        "property_semantics",
+        "value",
+        "evidence_class",
+        "subject_identity",
+        "scope_bindings",
+        "observer_identity",
+        "observer_implementation",
+        "operation_semantics",
+        "capability_semantics",
+        "observation_context_digest",
+        "observed_at",
+        "raw_evidence",
+        "derivation_activity",
+        "observer_link_evidence"
+      ],
+      "properties": {
+        "assertion_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "observation_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "subject_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "property_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "value": {},
+        "unit_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "evidence_class": {
+          "enum": [
+            "NativeReadback",
+            "ExternalAuthority",
+            "RepositoryArtifact",
+            "DerivedFromGroundedEvidence",
+            "UserAssertion"
+          ]
+        },
+        "subject_identity": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "subject_revision": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "scope_bindings": {
+          "$ref": "#/$defs/parameterBindings"
+        },
+        "observer_identity": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "observer_implementation": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "operation_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "capability_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "observation_context_digest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "raw_evidence": {
+          "$ref": "#/$defs/assetRef"
+        },
+        "derivation_activity": {
+          "$ref": "#/$defs/assetRef"
+        },
+        "observer_link_evidence": {
+          "$ref": "#/$defs/assetRef"
+        }
+      }
+    }
+  }
+}

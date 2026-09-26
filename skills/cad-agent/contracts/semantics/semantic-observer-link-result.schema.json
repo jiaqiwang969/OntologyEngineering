@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-observer-link-result-v1.json",
+  "title": "CAD Agent semantic observer link result",
+  "description": "Hash-bound, non-authorizing linker result connecting one ObservationSpecification to one versioned observer implementation and its registry evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "link_id",
+    "link_status",
+    "observation_binding",
+    "implementation",
+    "registry_evidence",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-observer-link-result.v1"
+    },
+    "link_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "link_status": {
+      "const": "CandidateLinked"
+    },
+    "observation_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "package_version",
+        "observation_id",
+        "operation_semantics"
+      ],
+      "properties": {
+        "package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "package_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "observation_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "operation_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implementation_identity",
+        "implementation_version",
+        "capability_semantics"
+      ],
+      "properties": {
+        "implementation_identity": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "implementation_version": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "capability_semantics": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/semanticIri"
+          }
+        }
+      }
+    },
+    "registry_evidence": {
+      "$ref": "#/$defs/assetRef"
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "runtime_routing_changed": {
+      "const": false
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^(https://|urn:)"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "application/json"
+        }
+      }
+    }
+  }
+}

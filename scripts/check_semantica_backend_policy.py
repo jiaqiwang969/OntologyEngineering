@@ -33,6 +33,8 @@ CAD_EXECUTION_PREFIX = "skills/cad-agent/"
 CAD_PUBLIC_OVERRIDE_PREFIX = "distribution/shareable-overrides/" + CAD_EXECUTION_PREFIX
 CAD_RUNTIME_LOCK = "skills/cad-agent/dist/fusion-runtime-lock.json"
 CAD_RUNTIME_LOCK_SCHEMA = "ontology-engineering.cad-fusion-runtime-lock/v1"
+CAD_DIRECT_POLICY = "skills/cad-agent/data/execution-policy.json"
+SUPPLIER_TOOL_LAUNCHERS = frozenset({"scripts/jev_browser.py"})
 PERMITTED_LITERAL_FIXTURE_HOSTS = frozenset(
     {
         "scripts/check_semantica_backend_policy.py",
@@ -348,7 +350,8 @@ def _read_cad_operational_lock(root: Path) -> tuple[dict[str, frozenset[str]], l
         rules = entry.get("rules")
         digest = entry.get("sha256")
         purpose = entry.get("purpose")
-        if name is None or not name.startswith((CAD_EXECUTION_PREFIX, CAD_PUBLIC_OVERRIDE_PREFIX)) or name in locks:
+        if (name is None or not (name.startswith((CAD_EXECUTION_PREFIX, CAD_PUBLIC_OVERRIDE_PREFIX))
+                                or name in SUPPLIER_TOOL_LAUNCHERS) or name in locks):
             errors.append(f"CAD operational entry {index} has an invalid or duplicate path")
             continue
         if not isinstance(rules, list) or not rules or not all(isinstance(rule, str) for rule in rules) or set(rules) - CAD_OPERATIONAL_RULES or len(rules) != len(set(rules)):
@@ -396,6 +399,30 @@ def _check_cad_runtime_wheel(root: Path) -> tuple[bool, list[str]]:
 
     if not (root / CAD_EXECUTION_PREFIX / "SKILL.md").is_file():
         return False, []
+    direct_policy = root / CAD_DIRECT_POLICY
+    if direct_policy.exists() or direct_policy.is_symlink():
+        # NX is source-based. Do not require or restore the retired executable wheel.
+        try:
+            if direct_policy.is_symlink() or not direct_policy.is_file():
+                raise ValueError("direct CAD policy is not a regular file")
+            policy = json.loads(direct_policy.read_text())
+            expected = {"schema": "cad-agent.operational-execution-policy/v1",
+                        "default_cad": "NXDirect", "cad_mcp_enabled": False,
+                        "legacy_cad_reactivation_allowed": False,
+                        "automatic_legacy_fallback": False,
+                        "semantic_authority": "parent-source-locked-Semantica"}
+            if any(policy.get(k) != v for k, v in expected.items()) or "Fusion" not in policy.get("removed_cad_systems", []):
+                raise ValueError("direct CAD policy permits unsupported or retired execution")
+            entry = root / CAD_EXECUTION_PREFIX / "scripts/nx_direct.py"
+            if entry.is_symlink() or not entry.is_file():
+                raise ValueError("direct NX source entrypoint is missing or symbolic")
+            cad = root / CAD_EXECUTION_PREFIX
+            retired = list((cad / "dist").glob("*.whl")) + list((cad / "scripts").glob("fusion_*.py"))
+            if retired or (root / CAD_RUNTIME_LOCK).exists():
+                raise ValueError("retired CAD runtime assets remain in direct NX distribution")
+        except (OSError, ValueError, TypeError) as exc:
+            return False, [str(exc)]
+        return False, []  # No Fusion wheel verified; ordinary source scanning still applies.
     lock_path = root / CAD_RUNTIME_LOCK
     if lock_path.is_symlink() or not lock_path.is_file():
         return False, ["CAD Fusion runtime wheel lock is missing or symbolic"]
@@ -570,8 +597,13 @@ def _semantic_payload_kind(value: str) -> str | None:
         r"(?im)^\s*(?:SubClassOf|EquivalentTo):", value
     ):
         return "Manchester OWL axioms"
-    if re.search(r"(?im)^\s*IF\s+.+\s+THEN\s+.+$", value):
-        return "forward-rule program"
+    for rule in re.finditer(r"(?im)^\s*IF\s+(.+?)\s+THEN\s+(.+)$", value):
+        # IF/THEN is also ordinary AppleScript/prose. A predicate or rule variable
+        # distinguishes the supported forward-rule syntax; other semantic forms
+        # above remain checked even when wrapped in an AppleScript literal.
+        clauses = rule.group(1) + " " + rule.group(2)
+        if re.search(r"\?[A-Za-z_]\w*|[A-Za-z_]\w*\s*\(", clauses):
+            return "forward-rule program"
     return None
 
 

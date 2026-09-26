@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/host-runtime-bootstrap-v1.json",
+  "title": "Host-only runtime authority and application-clock bootstrap descriptor",
+  "description": "An owner-protected, repository-external descriptor containing an authority data root, public verification pin, and optionally one paired set of content-addressed consumption/feedback clock-event references. Private signing material is forbidden and the descriptor is never an Agent task input.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "authority_data_root",
+    "pointer_sha256",
+    "root_key_id",
+    "root_public_key_base64",
+    "minimum_generation"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.host-runtime-bootstrap.v1"},
+    "authority_data_root": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "pointer_sha256": {"$ref": "#/$defs/sha256"},
+    "root_key_id": {"$ref": "#/$defs/stableId"},
+    "root_public_key_base64": {
+      "type": "string",
+      "minLength": 44,
+      "maxLength": 44,
+      "pattern": "^[A-Za-z0-9+/]{43}=$"
+    },
+    "minimum_generation": {"type": "integer", "minimum": 0},
+    "consumption_clock_observation": {"$ref": "#/$defs/assetRef"},
+    "feedback_clock_observation": {"$ref": "#/$defs/assetRef"}
+  },
+  "dependentRequired": {
+    "consumption_clock_observation": ["feedback_clock_observation"],
+    "feedback_clock_observation": ["consumption_clock_observation"]
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "projectPath": {
+      "type": "string", "minLength": 1, "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "schema", "media_type"],
+      "properties": {
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "schema": {"const": "cad-agent.attested-runtime-event.v1"},
+        "media_type": {"const": "application/json"}
+      }
+    }
+  }
+}

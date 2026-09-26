@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cad-agent.semantic-mcp-tool-contract.schema.v1",
+  "title": "CAD semantic MCP static tool contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "contract_id",
+    "contract_version",
+    "status",
+    "owner",
+    "software_version",
+    "captured_on",
+    "mcp_namespace",
+    "routing_scope",
+    "tools"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../../contracts/tools/semantic-mcp-tool-contract.schema.json"
+    },
+    "schema": {
+      "const": "cad-agent.tool-contract.v1"
+    },
+    "contract_id": {
+      "const": "cad-geometry-mcp-runtime-20260722"
+    },
+    "contract_version": {
+      "const": "1.0.0"
+    },
+    "status": {
+      "const": "Active"
+    },
+    "owner": {
+      "const": "cad-geometry-mcp"
+    },
+    "software_version": {
+      "const": "0.1.0"
+    },
+    "captured_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "mcp_namespace": {
+      "const": "cad-geometry-mcp"
+    },
+    "routing_scope": {
+      "const": "operation_routing"
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "mode",
+          "read_only"
+        ],
+        "properties": {
+          "name": {
+            "enum": [
+              "ontology_info",
+              "validate_graph",
+              "run_competency_question",
+              "validate_operation_proposal",
+              "validate_operation_plan",
+              "list_tool_capabilities",
+              "trace_evidence"
+            ]
+          },
+          "mode": {
+            "const": "read"
+          },
+          "read_only": {
+            "const": true
+          }
+        }
+      }
+    }
+  }
+}

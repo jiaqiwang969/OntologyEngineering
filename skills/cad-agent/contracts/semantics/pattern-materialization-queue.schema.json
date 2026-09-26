@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/pattern-materialization-queue-v1.json",
+  "title": "Candidate pattern materialization queue target",
+  "description": "Append-only queue containing only hash-verified candidate/reviewable pattern artifacts. Queue membership does not perform compilation, index mutation, activation, or routing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assessor_version",
+    "queue_id",
+    "queue_version",
+    "generation",
+    "predecessor_committed_snapshot_sha256",
+    "state_kind",
+    "committed",
+    "status",
+    "queue_state",
+    "source_intake_registry_sha256",
+    "entries",
+    "queue_snapshot_sha256",
+    "append_plan",
+    "candidate_only",
+    "materialization_performed",
+    "index_update_performed",
+    "activation_authorized",
+    "runtime_routing_changed",
+    "issues"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.pattern-materialization-queue.v1"},
+    "assessor_version": {"const": "0.1.0"},
+    "queue_id": {"$ref": "#/$defs/stableId"},
+    "queue_version": {"$ref": "#/$defs/stableId"},
+    "generation": {"type": "integer", "minimum": 1},
+    "predecessor_committed_snapshot_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "state_kind": {"const": "PLANNED_TARGET"},
+    "committed": {"const": false},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "queue_state": {
+      "enum": ["APPEND_PLAN_READY", "APPEND_PLAN_REJECTED", "NO_CHANGES"]
+    },
+    "source_intake_registry_sha256": {"$ref": "#/$defs/sha256"},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "queue_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+    "append_plan": {"$ref": "#/$defs/appendPlan"},
+    "candidate_only": {"const": true},
+    "materialization_performed": {"const": false},
+    "index_update_performed": {"const": false},
+    "activation_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {
+      "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "schema", "media_type"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "schema": {"type": "string", "minLength": 1},
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "materialization_id",
+        "intake_id",
+        "record_id",
+        "candidate",
+        "source_intake_entry_sha256",
+        "queue_state",
+        "materialization_performed",
+        "index_update_performed",
+        "promotion_authorized",
+        "entry_sha256"
+      ],
+      "properties": {
+        "materialization_id": {"$ref": "#/$defs/stableId"},
+        "intake_id": {"$ref": "#/$defs/stableId"},
+        "record_id": {"$ref": "#/$defs/stableId"},
+        "candidate": {"$ref": "#/$defs/assetRef"},
+        "source_intake_entry_sha256": {"$ref": "#/$defs/sha256"},
+        "queue_state": {"const": "CANDIDATE_REVIEW_REQUIRED"},
+        "materialization_performed": {"const": false},
+        "index_update_performed": {"const": false},
+        "promotion_authorized": {"const": false},
+        "entry_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "appendPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "expected_prior_queue_sha256",
+        "observed_prior_queue_sha256",
+        "target_queue_snapshot_sha256",
+        "added_materialization_ids",
+        "already_queued_materialization_ids",
+        "ineligible_intake_ids",
+        "eligible",
+        "performed"
+      ],
+      "properties": {
+        "mode": {"const": "CompareAndSwapAppendPlanOnly"},
+        "expected_prior_queue_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "observed_prior_queue_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "target_queue_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "added_materialization_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "already_queued_materialization_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "ineligible_intake_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "eligible": {"type": "boolean"},
+        "performed": {"const": false}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "path", "message"],
+      "properties": {
+        "code": {"type": "string", "minLength": 2},
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "path": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

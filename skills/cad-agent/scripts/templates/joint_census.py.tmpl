@@ -1,0 +1,73 @@
+import adsk.core
+import adsk.fusion
+import json
+import traceback
+
+DOC_NAME = __DOC_NAME__
+EXPECTED_LINEAGE = __LINEAGE__
+
+def _items(collection):
+    return [collection.item(index) for index in range(collection.count)]
+
+result = {"success": False, "stage": "all_components_joint_census"}
+try:
+    app = adsk.core.Application.get()
+    doc = app.activeDocument
+    if doc is None or str(doc.name) != DOC_NAME:
+        raise RuntimeError("active document is not " + DOC_NAME + ": " + str(getattr(doc, "name", None)))
+    data_file = doc.dataFile
+    if data_file is None or str(data_file.id) != EXPECTED_LINEAGE:
+        raise RuntimeError("lineage mismatch")
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    root = design.rootComponent
+    per_component = {}
+    joint_names = []
+    rigid_names = []
+    total_joints = 0
+    total_rigid = 0
+    revolute = 0
+    suppressed = 0
+    # Joints created against imported STEP chunks live INSIDE the chunk wrapper
+    # components, so a root-only count is misleading: walk design.allComponents.
+    for comp in _items(design.allComponents):
+        as_built = comp.asBuiltJoints.count
+        assembled = comp.joints.count
+        groups = comp.rigidGroups.count
+        if as_built or assembled or groups:
+            per_component[str(comp.name)] = {"as_built_joints": as_built, "joints": assembled, "rigid_groups": groups}
+            joint_names.extend(str(j.name) for j in _items(comp.asBuiltJoints))
+            rigid_names.extend(str(g.name) for g in _items(comp.rigidGroups))
+        total_joints = total_joints + as_built + assembled
+        total_rigid = total_rigid + groups
+        for j in _items(comp.asBuiltJoints):
+            if int(j.jointMotion.jointType) == 1:
+                revolute = revolute + 1
+            if j.isSuppressed:
+                suppressed = suppressed + 1
+    occs = _items(root.allOccurrences)
+    result.update({
+        "success": True,
+        "document_name": str(doc.name),
+        "version": int(data_file.versionNumber),
+        "is_saved": bool(doc.isSaved),
+        "is_modified": bool(doc.isModified),
+        "components": design.allComponents.count,
+        "occurrences": len(occs),
+        "user_parameters": design.userParameters.count,
+        "root_as_built_joints": root.asBuiltJoints.count,
+        "root_joints": root.joints.count,
+        "total_as_built_joints_all_components": total_joints,
+        "total_rigid_groups_all_components": total_rigid,
+        "revolute_joints": revolute,
+        "suppressed_joints": suppressed,
+        "grounded": [str(o.component.name) for o in occs if o.isGrounded],
+        "per_component": per_component,
+        "joint_names": sorted(joint_names),
+        "rigid_group_names": sorted(rigid_names),
+    })
+except Exception as exc:
+    result.update({"success": False, "error": str(exc), "trace": traceback.format_exc()[-1500:]})
+print(json.dumps(result))
+
+def run(context):
+    pass

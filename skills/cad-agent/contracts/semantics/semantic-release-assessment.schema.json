@@ -1,0 +1,1024 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-release-assessment-v1.json",
+  "title": "Semantic release assessment",
+  "description": "Deterministic, fail-closed, non-authorizing assessment derived from a release candidate and a semantic build report.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assessor_version",
+    "assessment_mode",
+    "candidate_identity",
+    "input_digests",
+    "candidate_claims",
+    "derived_build_status",
+    "recomputed_build_id",
+    "bindings",
+    "derived_validation",
+    "derived_release_state",
+    "derived_activation_review_eligible",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed",
+    "limitations",
+    "issues",
+    "assessment_id"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-release-assessment.v1"
+    },
+    "assessor_version": {
+      "const": "0.1.0"
+    },
+    "assessment_mode": {
+      "const": "read_only_fail_closed"
+    },
+    "candidate_identity": {
+      "$ref": "#/$defs/candidateIdentity"
+    },
+    "input_digests": {
+      "$ref": "#/$defs/inputDigests"
+    },
+    "candidate_claims": {
+      "$ref": "#/$defs/candidateClaims"
+    },
+    "derived_build_status": {
+      "$ref": "#/$defs/triStateStatus"
+    },
+    "recomputed_build_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "bindings": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/buildIdBinding"
+        },
+        {
+          "$ref": "#/$defs/buildReportAuthorityBinding"
+        },
+        {
+          "$ref": "#/$defs/buildReportDigestBinding"
+        },
+        {
+          "$ref": "#/$defs/candidateAuthorityBinding"
+        },
+        {
+          "$ref": "#/$defs/compilerVersionBinding"
+        },
+        {
+          "$ref": "#/$defs/deterministicBuildBinding"
+        },
+        {
+          "$ref": "#/$defs/releasePolicyBinding"
+        },
+        {
+          "$ref": "#/$defs/sourceAssetSetBinding"
+        },
+        {
+          "$ref": "#/$defs/sourceManifestBinding"
+        }
+      ],
+      "items": false
+    },
+    "derived_validation": {
+      "$ref": "#/$defs/derivedValidation"
+    },
+    "derived_release_state": {
+      "$ref": "#/$defs/releaseState"
+    },
+    "derived_activation_review_eligible": {
+      "type": "boolean"
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "runtime_routing_changed": {
+      "const": false
+    },
+    "limitations": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/checkPolicyLimitation"
+        },
+        {
+          "$ref": "#/$defs/compilerBindingLimitation"
+        },
+        {
+          "$ref": "#/$defs/projectionBindingLimitation"
+        }
+      ],
+      "items": false
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issue"
+      }
+    },
+    "assessment_id": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8192
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "triStateStatus": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN"
+      ]
+    },
+    "releaseState": {
+      "enum": [
+        "BuiltCandidate",
+        "ValidatedCandidate",
+        "RejectedCandidate"
+      ]
+    },
+    "nullableString": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stringSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "candidateIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_id",
+        "release_version"
+      ],
+      "properties": {
+        "release_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "release_version": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/semver"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "inputDigests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_release_sha256",
+        "semantic_build_report_sha256"
+      ],
+      "properties": {
+        "candidate_release_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "semantic_build_report_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "candidateClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_state",
+        "activation_review_eligible",
+        "failed_check_ids",
+        "unknown_check_ids",
+        "check_statuses"
+      ],
+      "properties": {
+        "release_state": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/releaseState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activation_review_eligible": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "failed_check_ids": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "unknown_check_ids": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "check_statuses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "check_id",
+              "status"
+            ],
+            "properties": {
+              "check_id": {
+                "$ref": "#/$defs/nonEmptyString"
+              },
+              "status": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          }
+        }
+      }
+    },
+    "bindingCore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "expected": {},
+        "observed": {},
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "buildIdBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "const": "build_id"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "build_report",
+            "release_candidate"
+          ],
+          "properties": {
+            "build_report": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "release_candidate": {
+              "$ref": "#/$defs/nullableString"
+            }
+          }
+        },
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "buildReportAuthorityBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "const": "build_report_authority_boundary"
+        },
+        "expected": {
+          "$ref": "#/$defs/nonAuthorizingBuildFlags"
+        },
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "activation_authorized",
+            "execution_authorized",
+            "runtime_routing_changed"
+          ],
+          "properties": {
+            "activation_authorized": {},
+            "execution_authorized": {},
+            "runtime_routing_changed": {}
+          }
+        },
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "buildReportDigestBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "const": "build_report_sha256"
+        },
+        "expected": {
+          "$ref": "#/$defs/sha256"
+        },
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bound_required_check_ids",
+            "required_check_report_sha256"
+          ],
+          "properties": {
+            "bound_required_check_ids": {
+              "$ref": "#/$defs/stringSet"
+            },
+            "required_check_report_sha256": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/sha256"
+              }
+            }
+          }
+        },
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "candidateAuthorityBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "const": "candidate_authority_boundary"
+        },
+        "expected": {
+          "$ref": "#/$defs/nonAuthorizingCandidateFlags"
+        },
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "self_authorizing",
+            "automatic_activation"
+          ],
+          "properties": {
+            "self_authorizing": {},
+            "automatic_activation": {}
+          }
+        },
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "compilerVersionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "const": "compiler_version"
+        },
+        "expected": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "observed": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "deterministicBuildBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "const": "deterministic_build"
+        },
+        "expected": {
+          "const": true
+        },
+        "observed": {},
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "sourceAssetSetBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "const": "source_asset_set"
+        },
+        "expected": {
+          "type": "array",
+          "items": {}
+        },
+        "observed": {
+          "type": "array",
+          "items": {}
+        },
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "releasePolicyBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "const": "release_policy"
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy_id",
+            "policy_version",
+            "policy_sha256"
+          ],
+          "properties": {
+            "policy_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "policy_version": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "policy_sha256": {
+              "$ref": "#/$defs/sha256"
+            }
+          }
+        },
+        "observed": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "policy_id": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "policy_version": {
+              "$ref": "#/$defs/nullableString"
+            },
+            "policy_sha256": {
+              "$ref": "#/$defs/sha256"
+            }
+          }
+        },
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "sourceManifestBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "expected",
+        "observed",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {
+          "const": "source_manifest_sha256"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "matches": {
+          "type": "boolean"
+        }
+      }
+    },
+    "nonAuthorizingBuildFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_authorized",
+        "execution_authorized",
+        "runtime_routing_changed"
+      ],
+      "properties": {
+        "activation_authorized": {
+          "const": false
+        },
+        "execution_authorized": {
+          "const": false
+        },
+        "runtime_routing_changed": {
+          "const": false
+        }
+      }
+    },
+    "nonAuthorizingCandidateFlags": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "self_authorizing",
+        "automatic_activation"
+      ],
+      "properties": {
+        "self_authorizing": {
+          "const": false
+        },
+        "automatic_activation": {
+          "const": false
+        }
+      }
+    },
+    "derivedValidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "declared_required_check_ids",
+        "derived_required_check_ids",
+        "missing_check_ids",
+        "duplicate_check_ids",
+        "undeclared_check_ids_promoted_to_required",
+        "required_check_refs",
+        "pass_check_ids",
+        "fail_check_ids",
+        "unknown_check_ids"
+      ],
+      "properties": {
+        "declared_required_check_ids": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "derived_required_check_ids": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "missing_check_ids": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "duplicate_check_ids": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "undeclared_check_ids_promoted_to_required": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "required_check_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/requiredCheckRef"
+          }
+        },
+        "pass_check_ids": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "fail_check_ids": {
+          "$ref": "#/$defs/stringSet"
+        },
+        "unknown_check_ids": {
+          "$ref": "#/$defs/stringSet"
+        }
+      }
+    },
+    "requiredCheckRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "resolution",
+        "claimed_status",
+        "evidence_binding",
+        "derived_status",
+        "reason_codes"
+      ],
+      "properties": {
+        "check_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "resolution": {
+          "enum": [
+            "MISSING",
+            "AMBIGUOUS",
+            "RESOLVED"
+          ]
+        },
+        "check_kind": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "claimed_status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/nullableString"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          ]
+        },
+        "evidence_binding": {
+          "enum": [
+            "NONE",
+            "CanonicalSemanticBuildReport",
+            "UNBOUND",
+            "UNSUPPORTED_CHECK_ASSESSOR"
+          ]
+        },
+        "derived_status": {
+          "$ref": "#/$defs/triStateStatus"
+        },
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "resolution": {
+                "const": "MISSING"
+              }
+            },
+            "required": [
+              "resolution"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "check_kind"
+              ]
+            },
+            "properties": {
+              "claimed_status": {
+                "type": "null"
+              },
+              "evidence_binding": {
+                "const": "NONE"
+              },
+              "derived_status": {
+                "const": "UNKNOWN"
+              },
+              "reason_codes": {
+                "const": [
+                  "RequiredCheckMissing"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "resolution": {
+                "const": "AMBIGUOUS"
+              }
+            },
+            "required": [
+              "resolution"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "check_kind"
+              ]
+            },
+            "properties": {
+              "claimed_status": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "$ref": "#/$defs/nonEmptyString"
+                }
+              },
+              "evidence_binding": {
+                "const": "NONE"
+              },
+              "derived_status": {
+                "const": "UNKNOWN"
+              },
+              "reason_codes": {
+                "const": [
+                  "DuplicateCheckIdentity"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "resolution": {
+                "const": "RESOLVED"
+              }
+            },
+            "required": [
+              "resolution"
+            ]
+          },
+          "then": {
+            "required": [
+              "check_kind"
+            ],
+            "properties": {
+              "claimed_status": {
+                "$ref": "#/$defs/nullableString"
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "check_kind": {
+                    "const": "SemanticBuild"
+                  },
+                  "evidence_binding": {
+                    "const": "CanonicalSemanticBuildReport"
+                  },
+                  "reason_codes": {
+                    "const": [
+                      "SemanticBuildReportStatusDerived"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "check_kind": {
+                    "const": "SemanticBuild"
+                  },
+                  "evidence_binding": {
+                    "const": "UNBOUND"
+                  },
+                  "derived_status": {
+                    "const": "UNKNOWN"
+                  },
+                  "reason_codes": {
+                    "const": [
+                      "CheckReportDigestNotSuppliedBuildReport"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "check_kind": {
+                    "not": {
+                      "const": "SemanticBuild"
+                    }
+                  },
+                  "evidence_binding": {
+                    "const": "UNSUPPORTED_CHECK_ASSESSOR"
+                  },
+                  "derived_status": {
+                    "const": "UNKNOWN"
+                  },
+                  "reason_codes": {
+                    "const": [
+                      "CheckKindRequiresIndependentAssessor"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "limitationCore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks_review_eligibility"
+      ],
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "blocks_review_eligibility": {
+          "type": "boolean"
+        }
+      }
+    },
+    "checkPolicyLimitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks_review_eligibility"
+      ],
+      "properties": {
+        "code": {
+          "const": "SR-LIM-CHECK-POLICY-EXTERNAL"
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "blocks_review_eligibility": {
+          "type": "boolean"
+        }
+      }
+    },
+    "compilerBindingLimitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks_review_eligibility"
+      ],
+      "properties": {
+        "code": {
+          "const": "SR-LIM-COMPILER-IMPLEMENTATION-UNBOUND"
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "blocks_review_eligibility": {
+          "const": false
+        }
+      }
+    },
+    "projectionBindingLimitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message",
+        "blocks_review_eligibility"
+      ],
+      "properties": {
+        "code": {
+          "const": "SR-LIM-PROJECTION-DIGEST-TRANSITIVE"
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "blocks_review_eligibility": {
+          "const": false
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "severity",
+        "path",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^SR-[A-Z0-9-]+$"
+        },
+        "severity": {
+          "enum": [
+            "ERROR",
+            "WARNING"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8192,
+          "pattern": "^\\$"
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    }
+  }
+}

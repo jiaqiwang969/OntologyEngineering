@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/runtime-authority-registry-release-v1.json",
+  "title": "Runtime authority registry release candidate",
+  "description": "A hash-bound inventory of identity-bearing principals and contextual runtime role registrations. The registry cannot make itself active; only an externally pinned active-authority pointer may select its exact bytes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "registry_id",
+    "registry_version",
+    "document_role",
+    "issued_at",
+    "previous_registry",
+    "principals",
+    "role_registrations",
+    "separation_rules",
+    "self_activating",
+    "execution_authorized",
+    "fusion_write_authorized"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.runtime-authority-registry-release.v1"},
+    "registry_id": {"$ref": "#/$defs/stableId"},
+    "registry_version": {"$ref": "#/$defs/semver"},
+    "document_role": {"const": "RuntimeAuthorityRegistryReleaseCandidate"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "previous_registry": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/registryRef"}
+      ]
+    },
+    "principals": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/principal"}
+    },
+    "role_registrations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {"$ref": "#/$defs/roleRegistration"}
+    },
+    "separation_rules": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {"$ref": "#/$defs/separationRule"}
+    },
+    "self_activating": {"const": false},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false}
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "schema", "media_type"],
+      "properties": {
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "schema": {"type": "string", "minLength": 2, "maxLength": 256},
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "registryRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registry_id", "registry_version", "sha256"],
+      "properties": {
+        "registry_id": {"$ref": "#/$defs/stableId"},
+        "registry_version": {"$ref": "#/$defs/semver"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "credential": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "credential_id",
+        "issuer_id",
+        "algorithm",
+        "public_key_base64",
+        "public_key_sha256"
+      ],
+      "properties": {
+        "credential_id": {"$ref": "#/$defs/stableId"},
+        "issuer_id": {"$ref": "#/$defs/stableId"},
+        "algorithm": {"const": "Ed25519"},
+        "public_key_base64": {
+          "type": "string",
+          "minLength": 43,
+          "maxLength": 48,
+          "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+        },
+        "public_key_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principal_id",
+        "principal_kind",
+        "subject_id",
+        "independence_domain",
+        "valid_from",
+        "valid_until",
+        "revoked",
+        "credentials"
+      ],
+      "properties": {
+        "principal_id": {"$ref": "#/$defs/stableId"},
+        "principal_kind": {
+          "enum": ["HumanPrincipal", "SoftwareService", "OrganizationPrincipal"]
+        },
+        "subject_id": {"$ref": "#/$defs/stableId"},
+        "independence_domain": {"$ref": "#/$defs/stableId"},
+        "valid_from": {"type": "string", "format": "date-time"},
+        "valid_until": {"type": "string", "format": "date-time"},
+        "revoked": {"type": "boolean"},
+        "credentials": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": {"$ref": "#/$defs/credential"}
+        }
+      }
+    },
+    "implementationRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity", "version", "path", "sha256"],
+      "properties": {
+        "identity": {"$ref": "#/$defs/stableId"},
+        "version": {"$ref": "#/$defs/semver"},
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "clockPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "time_scale",
+        "max_uncertainty_ms",
+        "monotonic_sequence_required"
+      ],
+      "properties": {
+        "time_scale": {"const": "UTC"},
+        "max_uncertainty_ms": {"type": "integer", "minimum": 0, "maximum": 60000},
+        "monotonic_sequence_required": {"const": true}
+      }
+    },
+    "roleRegistration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registration_id",
+        "principal_id",
+        "role",
+        "scope_id",
+        "credential_id",
+        "valid_from",
+        "valid_until",
+        "revoked"
+      ],
+      "properties": {
+        "registration_id": {"$ref": "#/$defs/stableId"},
+        "principal_id": {"$ref": "#/$defs/stableId"},
+        "role": {
+          "enum": [
+            "ReleaseAcceptanceReviewer",
+            "ActivationReviewer",
+            "PointerActuator",
+            "ReopenVerifier",
+            "TrustedClockProvider",
+            "ActiveMemorySelector"
+          ]
+        },
+        "scope_id": {"$ref": "#/$defs/stableId"},
+        "credential_id": {"$ref": "#/$defs/stableId"},
+        "valid_from": {"type": "string", "format": "date-time"},
+        "valid_until": {"type": "string", "format": "date-time"},
+        "revoked": {"type": "boolean"},
+        "implementation": {"$ref": "#/$defs/implementationRef"},
+        "clock_policy": {"$ref": "#/$defs/clockPolicy"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"role": {"const": "TrustedClockProvider"}}},
+          "then": {"required": ["implementation", "clock_policy"]},
+          "else": {"not": {"required": ["clock_policy"]}}
+        },
+        {
+          "if": {"properties": {"role": {"const": "ActiveMemorySelector"}}},
+          "then": {"required": ["implementation"]}
+        }
+      ]
+    },
+    "separationRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "role_a",
+        "role_b",
+        "distinct_principal_required",
+        "distinct_credential_required",
+        "distinct_independence_domain_required"
+      ],
+      "properties": {
+        "rule_id": {"$ref": "#/$defs/stableId"},
+        "role_a": {"$ref": "#/$defs/roleRegistration/properties/role"},
+        "role_b": {"$ref": "#/$defs/roleRegistration/properties/role"},
+        "distinct_principal_required": {"type": "boolean"},
+        "distinct_credential_required": {"type": "boolean"},
+        "distinct_independence_domain_required": {"type": "boolean"}
+      }
+    }
+  }
+}

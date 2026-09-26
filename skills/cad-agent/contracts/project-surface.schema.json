@@ -1,0 +1,355 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cad-agent.project-surface.schema.v2",
+  "title": "CAD Agent project surface contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "governance_entry",
+    "human_map",
+    "checker",
+    "contract_gate",
+    "required_text_links",
+    "validated_contracts",
+    "top_level_exclusions",
+    "closed_directories",
+    "multi_owner_closed_directories",
+    "curriculum_memory_index",
+    "components",
+    "active_governance_files",
+    "forbidden_active_terms",
+    "forbidden_paths",
+    "legacy_evidence_policy",
+    "compatibility_wrappers",
+    "commands"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.project-surface.v2"
+    },
+    "status": {
+      "const": "Active"
+    },
+    "governance_entry": {
+      "$ref": "#/$defs/projectPath"
+    },
+    "human_map": {
+      "$ref": "#/$defs/projectPath"
+    },
+    "checker": {
+      "$ref": "#/$defs/projectPath"
+    },
+    "contract_gate": {
+      "$ref": "#/$defs/projectPath"
+    },
+    "required_text_links": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source",
+          "targets"
+        ],
+        "properties": {
+          "source": {
+            "$ref": "#/$defs/projectPath"
+          },
+          "targets": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/projectPath"
+            }
+          }
+        }
+      }
+    },
+    "validated_contracts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "instance",
+          "schema",
+          "text_links_required"
+        ],
+        "properties": {
+          "instance": {
+            "$ref": "#/$defs/projectPath"
+          },
+          "schema": {
+            "$ref": "#/$defs/projectPath"
+          },
+          "text_links_required": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "top_level_exclusions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/projectPath"
+      }
+    },
+    "closed_directories": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/projectPath"
+      }
+    },
+    "multi_owner_closed_directories": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/projectPath"
+      }
+    },
+    "curriculum_memory_index": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "skill",
+        "index",
+        "directory",
+        "patterns"
+      ],
+      "properties": {
+        "skill": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "index": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "directory": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "patterns": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "responsibility",
+          "authority",
+          "owned_roots",
+          "required_files"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "responsibility": {
+            "type": "string",
+            "minLength": 1
+          },
+          "authority": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owned_roots": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "description": "Existing files or directories that define component ownership; compatibility_wrappers may further qualify authority.",
+            "items": {
+              "$ref": "#/$defs/projectPath"
+            }
+          },
+          "required_files": {
+            "type": "array",
+            "uniqueItems": true,
+            "description": "Mandatory files contained by this component's owned roots.",
+            "items": {
+              "$ref": "#/$defs/projectPath"
+            }
+          }
+        }
+      }
+    },
+    "active_governance_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/projectPath"
+      }
+    },
+    "forbidden_active_terms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "forbidden_paths": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/projectPath"
+      }
+    },
+    "legacy_evidence_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "roots",
+        "rule"
+      ],
+      "properties": {
+        "roots": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/projectPath"
+          }
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "compatibility_wrappers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "wrapper",
+          "target_module",
+          "target_path",
+          "retention_reason",
+          "sunset_condition"
+        ],
+        "properties": {
+          "wrapper": {
+            "$ref": "#/$defs/projectPath"
+          },
+          "target_module": {
+            "type": "string",
+            "pattern": "^[a-z_][a-z0-9_]*(\\.[a-z_][a-z0-9_]*)+$"
+          },
+          "target_path": {
+            "$ref": "#/$defs/projectPath"
+          },
+          "retention_reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sunset_condition": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "commands": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "agent",
+        "semantic_sidecar",
+        "fusion_proxy",
+        "experience_route",
+        "semantic_build",
+        "semantic_preflight",
+        "semantic_runtime_route",
+        "runtime_reopen_canary",
+        "curriculum_memory_retrospective",
+        "git_change_set",
+        "semantic_engagement",
+        "semantica_shadow",
+        "current_state",
+        "repository_contracts"
+      ],
+      "properties": {
+        "agent": {
+          "$ref": "#/$defs/command"
+        },
+        "semantic_sidecar": {
+          "$ref": "#/$defs/command"
+        },
+        "fusion_proxy": {
+          "$ref": "#/$defs/command"
+        },
+        "experience_route": {
+          "$ref": "#/$defs/command"
+        },
+        "semantic_build": {
+          "$ref": "#/$defs/command"
+        },
+        "semantic_preflight": {
+          "$ref": "#/$defs/command"
+        },
+        "semantic_runtime_route": {
+          "$ref": "#/$defs/command"
+        },
+        "runtime_reopen_canary": {
+          "$ref": "#/$defs/command"
+        },
+        "curriculum_memory_retrospective": {
+          "$ref": "#/$defs/command"
+        },
+        "git_change_set": {
+          "$ref": "#/$defs/command"
+        },
+        "semantic_engagement": {
+          "$ref": "#/$defs/command"
+        },
+        "semantica_shadow": {
+          "$ref": "#/$defs/command"
+        },
+        "current_state": {
+          "$ref": "#/$defs/command"
+        },
+        "repository_contracts": {
+          "$ref": "#/$defs/command"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "projectPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "command": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

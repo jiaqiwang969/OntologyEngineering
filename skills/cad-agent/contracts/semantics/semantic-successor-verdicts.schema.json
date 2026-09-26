@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-successor-verdicts-v1.json",
+  "title": "Manifest-bound additive semantic successor verdicts",
+  "description": "Explicit, candidate-only dispositions for new ontology or SHACL assertions that touch predecessor named terms or shapes. Replacement is intentionally unsupported by the additive-only gate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "verdict_set_id",
+    "verdict_set_version",
+    "status",
+    "predecessor_manifest_sha256",
+    "candidate_wrapper_sha256",
+    "prospective_bundle_sha256",
+    "verdicts"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.semantic-successor-verdicts.v1"},
+    "verdict_set_id": {"$ref": "#/$defs/stableId"},
+    "verdict_set_version": {"$ref": "#/$defs/semver"},
+    "status": {"const": "Candidate"},
+    "predecessor_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "candidate_wrapper_sha256": {"$ref": "#/$defs/sha256"},
+    "prospective_bundle_sha256": {"$ref": "#/$defs/sha256"},
+    "verdicts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/verdict"}
+    }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "cqId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"
+    },
+    "verdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_kind",
+        "target_id",
+        "verdict",
+        "reason",
+        "impact_cq_ids"
+      ],
+      "properties": {
+        "target_kind": {"enum": ["OntologyTerm", "ShaclShape"]},
+        "target_id": {"$ref": "#/$defs/semanticIri"},
+        "verdict": {
+          "enum": ["CompatibleRefinement", "IntentionalDeprecation"]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": ".*\\S.*"
+        },
+        "impact_cq_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/cqId"}
+        }
+      }
+    }
+  }
+}

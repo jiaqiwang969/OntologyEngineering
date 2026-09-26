@@ -1,0 +1,54 @@
+import adsk.core
+import adsk.fusion
+import json
+import traceback
+
+DOC_NAME = __DOC_NAME__
+
+def _items(collection):
+    return [collection.item(index) for index in range(collection.count)]
+
+result = {"success": False, "stage": "readback_geometry"}
+try:
+    app = adsk.core.Application.get()
+    doc = app.activeDocument
+    if doc is None or str(doc.name) != DOC_NAME:
+        raise RuntimeError("active document is not " + DOC_NAME + ": " + str(getattr(doc, "name", None)))
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    root = design.rootComponent
+    occs = _items(root.allOccurrences)
+    solids = 0
+    volume = 0.0
+    per_component = {}
+    for occ in occs:
+        count = 0
+        for body in _items(occ.bRepBodies):
+            if body.isSolid:
+                solids = solids + 1
+                volume = volume + body.volume * 1000.0
+                count = count + 1
+        per_component[str(occ.component.name)] = count
+    data_file = doc.dataFile
+    bbox = root.boundingBox
+    result.update({
+        "success": True,
+        "document_name": str(doc.name),
+        "is_saved": bool(doc.isSaved),
+        "is_modified": bool(doc.isModified),
+        "version": int(data_file.versionNumber) if data_file is not None else None,
+        "lineage": str(data_file.id) if data_file is not None else None,
+        "occurrences": len(occs),
+        "solid_bodies": solids,
+        "total_volume_mm3": volume,
+        "bounding_box_mm": {"min": [bbox.minPoint.x * 10.0, bbox.minPoint.y * 10.0, bbox.minPoint.z * 10.0], "max": [bbox.maxPoint.x * 10.0, bbox.maxPoint.y * 10.0, bbox.maxPoint.z * 10.0]} if bbox is not None else None,
+        "user_parameters": design.userParameters.count,
+        "joints": root.asBuiltJoints.count + root.joints.count,
+        "components_with_zero_solids": [k for k, v in per_component.items() if v == 0][:40],
+        "component_solid_counts": per_component,
+    })
+except Exception as exc:
+    result.update({"success": False, "error": str(exc), "trace": traceback.format_exc()[-1500:]})
+print(json.dumps(result))
+
+def run(context):
+    pass

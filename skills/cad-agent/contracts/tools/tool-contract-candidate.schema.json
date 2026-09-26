@@ -1,0 +1,334 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cad-agent.tool-contract-candidate.schema.v1",
+  "title": "Fusion MCP tool capability candidate compatibility profile",
+  "type": "object",
+  "required": [
+    "schema",
+    "status"
+  ],
+  "properties": {
+    "schema": {
+      "enum": [
+        "cad-agent.tool-contract-candidate.v1",
+        "cad-agent.tool-contract.v1",
+        "fusion-mcp.tool-contract-candidate.v1"
+      ]
+    },
+    "status": {
+      "const": "Candidate"
+    },
+    "candidate_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "captured_on": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "candidate_id"
+      ]
+    },
+    {
+      "required": [
+        "contract_id"
+      ]
+    }
+  ],
+  "oneOf": [
+    {
+      "$ref": "#/$defs/assemblyContext"
+    },
+    {
+      "$ref": "#/$defs/directionPersistence"
+    },
+    {
+      "$ref": "#/$defs/supplierAdapter"
+    },
+    {
+      "$ref": "#/$defs/persistence"
+    },
+    {
+      "$ref": "#/$defs/runtimeCompatibility"
+    },
+    {
+      "$ref": "#/$defs/experienceSnapshot"
+    },
+    {
+      "$ref": "#/$defs/uiProxy"
+    }
+  ],
+  "$defs": {
+    "nonEmptyArray": {
+      "type": "array",
+      "minItems": 1
+    },
+    "inactiveLifecycle": {
+      "type": "object",
+      "required": [
+        "active_for_next_iteration"
+      ],
+      "properties": {
+        "active_for_next_iteration": {
+          "const": false
+        }
+      }
+    },
+    "semanticOperationBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_operation_uri",
+        "tool",
+        "action",
+        "confirmation",
+        "interaction_surface",
+        "production_routing_eligible"
+      ],
+      "properties": {
+        "tool_operation_uri": {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confirmation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interaction_surface": {
+          "type": "string",
+          "minLength": 1
+        },
+        "production_routing_eligible": {
+          "const": false
+        }
+      }
+    },
+    "assemblyContext": {
+      "required": [
+        "candidate_id",
+        "fusion_release",
+        "runtime_contract",
+        "trigger_lesson",
+        "trigger_attempt",
+        "contracts",
+        "required_before_activation",
+        "promotion_eligible"
+      ],
+      "properties": {
+        "contracts": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "required_before_activation": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "promotion_eligible": {
+          "const": false
+        }
+      }
+    },
+    "directionPersistence": {
+      "required": [
+        "candidate_id",
+        "baseline",
+        "observed_contract_gaps",
+        "proposed_read_only_capabilities",
+        "proposed_transport_requirements",
+        "activation_gates",
+        "active"
+      ],
+      "properties": {
+        "observed_contract_gaps": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "proposed_read_only_capabilities": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "proposed_transport_requirements": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "activation_gates": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "active": {
+          "const": false
+        }
+      }
+    },
+    "supplierAdapter": {
+      "required": [
+        "contract_id",
+        "captured_on",
+        "parent_contract",
+        "proxy",
+        "supplier",
+        "candidate_tools",
+        "semantic_operation_bindings",
+        "provenance_contract",
+        "forbidden_actions",
+        "observed_live_boundary",
+        "lifecycle"
+      ],
+      "properties": {
+        "candidate_tools": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "semantic_operation_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/semanticOperationBinding"
+          }
+        },
+        "forbidden_actions": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/inactiveLifecycle"
+        }
+      }
+    },
+    "persistence": {
+      "required": [
+        "contract_id",
+        "captured_on",
+        "evidence_lesson",
+        "runtime",
+        "capabilities",
+        "identifier_semantics",
+        "response_contract_findings",
+        "not_equivalent_to",
+        "evidence",
+        "lifecycle"
+      ],
+      "properties": {
+        "capabilities": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "response_contract_findings": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "not_equivalent_to": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/inactiveLifecycle"
+        }
+      }
+    },
+    "runtimeCompatibility": {
+      "required": [
+        "candidate_id",
+        "target_tool",
+        "fusion_release",
+        "runtime_contract_baseline",
+        "observations",
+        "routing_rule_candidate",
+        "evidence",
+        "activation_requirements",
+        "accepted_for_routing",
+        "active_for_next_iteration",
+        "production_routable"
+      ],
+      "properties": {
+        "observations": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "activation_requirements": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "accepted_for_routing": {
+          "const": false
+        },
+        "active_for_next_iteration": {
+          "const": false
+        },
+        "production_routable": {
+          "const": false
+        }
+      }
+    },
+    "experienceSnapshot": {
+      "required": [
+        "candidate_id",
+        "captured_on",
+        "source",
+        "fusion_release",
+        "proxy",
+        "candidate_tools",
+        "snapshot_contract",
+        "identity_contract",
+        "forbidden_claims",
+        "activation_requirements",
+        "observed_live_boundary",
+        "evidence",
+        "lifecycle"
+      ],
+      "properties": {
+        "candidate_tools": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "snapshot_contract": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "identity_contract": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "forbidden_claims": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "activation_requirements": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "evidence": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/inactiveLifecycle"
+        }
+      }
+    },
+    "uiProxy": {
+      "required": [
+        "contract_id",
+        "captured_on",
+        "source",
+        "fusion_release",
+        "proxy",
+        "upstream",
+        "ui_stack",
+        "candidate_tools",
+        "forbidden_actions",
+        "lifecycle"
+      ],
+      "properties": {
+        "candidate_tools": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "forbidden_actions": {
+          "$ref": "#/$defs/nonEmptyArray"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/inactiveLifecycle"
+        }
+      }
+    }
+  }
+}

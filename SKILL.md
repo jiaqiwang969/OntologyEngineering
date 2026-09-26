@@ -1,7 +1,7 @@
 ---
 name: ontology-engineering
 metadata:
-  version: "0.5.9"
+  version: "0.6.0"
 description: Interpret engineering requests in context and coordinate the needed CAD, manufacturing, evidence, ontology modeling and Semantica workflows. Develop ideas, compare candidates and revise decisions from source-bound evidence and feedback. Use for engineering-ontology requests, cross-skill engineering collaboration, domain knowledge modeling or Semantica integration. Source-locked Semantica remains the sole executable semantic authority; the two engineering books guide the method.
 ---
 
@@ -27,10 +27,26 @@ description: Interpret engineering requests in context and coordinate the needed
 约束和已授权范围，再判断本轮需要什么产出与能力。显式点名的 skill 纳入工作，
 其他模块按实际需要选择；保留此前的停止指令及尚未解除的条件。
 
+按[本轮目标与工程迭代](references/engineering-iteration.md)，默认由本体根据背景提出
+本轮要解决的问题、交付物与验收条件，与用户对齐后推进。已有明确任务即作为已对齐目标，
+普通执行步骤自主继续；实质改变目标、验收或范围时再对齐。
+
 按[情景分析与能力协同](references/context-routing.md)匹配内部模块、可用外部 skill
 和工具。可单项执行，也可围绕共同对象和证据联动；用输入、输出和前置依赖解释
 为什么需要它们。概念解释、项目记录、本体建模、现有语义审查、Semantica 接入和
 行业本体演化分别判断，不把一次调用展开成全部流程。小任务可由根入口直接完成。
+
+网页子任务可使用内置的 [Jev Ultrafast 工具](references/jev-browser-tool.md)：固定源码、
+独立运行环境和可调用入口，由 Jev 多轮选择观察到的网页动作。按用户指定的浏览器方式
+和账号范围接入，结果回到当前工程目标验收；不以网页循环代替整体工程循环。
+供应商资料取得时，把当前用途、已有证据、剩余缺口和页面实际选项交给 Jev；由它选择
+下一项模型、图纸、规格或采购资料。不得在适配器里把目标固定成 STEP/AP203。
+文件与内容核验后再反馈下一轮选择，执行详情见 CAD 模块的 MISUMI 指南。
+
+用户纠正、重复失败或任务检查点出现有价值的新经验时，按
+[经验复盘与做梦式整理](references/practice-consolidation.md)回看证据、请 Jev 提出处置、
+由主 agent 复核后维护对应指南，并验证下一任务能否实际采用。操作经验更新与正式
+本体晋升分别报告；当前是任务内执行方法，没有自动启用夜间常驻调度。
 
 Jev 的判断必须使用预先维护的[工程本体 instruct](references/context-routing-instructions.json)：
 意图与 CQ、对象身份、功能机理、条件证据、ABox/TBox 和交接依赖共同约束能力选择。
@@ -49,8 +65,10 @@ Jev 的判断必须使用预先维护的[工程本体 instruct](references/conte
 才补最小澄清，不让用户先挑内部模块或填写技术合同。
 
 本 skill 内含完整的 [cad-agent CAD 模块](skills/cad-agent/SKILL.md)，负责零件、装配、
-机构、夹具、STEP、图纸及 Fusion／NX／AutoCAD 原生建模与回读。用户仍可直接说
+机构、夹具、STEP、图纸及 NX 原生建模与回读。CAD 默认通过 NXOpen/Journal 直接执行，
+不使用 CAD MCP；标准件首选米思米中国。机械工程、装配、仿真及证据方法保留。用户仍可直接说
 “用 cad-agent 设计夹具”或“检查 STEP”；从本入口进入 CAD 模块执行。
+Fusion 已退出当前工具范围，不作为备用执行器；历史教材只用于机械方法与来源追溯。
 
 融合让 CAD 与[制造工艺和成本](skills/manufacturing-process-cost/SKILL.md)共享对象、
 版本、功能要求和证据：设计中的壁厚、公差、孔位与连接决定装夹、加工、焊接和检验；
@@ -111,8 +129,8 @@ Jev 的判断必须使用预先维护的[工程本体 instruct](references/conte
 
 不存在 OE-local 可执行语义正本、第二 backend、fallback 或平行 package registry。
 
-用户要求配置 CAD 接入时，读取 CAD 模块的[执行与连接说明](skills/cad-agent/references/fusion-execution.md)。
-语义模式只转交本 skill 的 source-locked Semantica 入口；不要恢复已退役的独立
+CAD 操作按 [NX 直连执行](skills/cad-agent/references/nx-execution.md)，不启动旧 CAD MCP。
+正式语义仍只转交本 skill 的 source-locked Semantica 入口；不恢复已退役的独立
 `cad-agent-semantic` 后端。
 
 批量对话、报告或多版工程资料需要归类和支持关系初判时，按

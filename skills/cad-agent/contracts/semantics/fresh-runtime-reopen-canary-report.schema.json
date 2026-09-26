@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/fresh-runtime-reopen-canary-report-v1.json",
+  "title": "Fresh-process runtime reopen canary report",
+  "description": "A read-only parent/child process-boundary check. It proves a fresh process reloaded public host bootstrap and recomputed active-memory selection; it does not prove organizational independence, authorize execution, or mutate a pointer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "canary_version",
+    "status",
+    "resolution",
+    "task_sha256",
+    "descriptor_sha256",
+    "authority",
+    "selection",
+    "active_bundle_manifest_sha256",
+    "process_boundary",
+    "fresh_descriptor_reload",
+    "fresh_authority_resolution",
+    "fresh_selection_reproduction",
+    "organizational_independence_proven",
+    "private_key_loaded",
+    "absolute_paths_disclosed",
+    "active_memory_consumed",
+    "pointer_change_performed",
+    "activation_performed",
+    "execution_authorized",
+    "fusion_write_authorized",
+    "runtime_routing_changed",
+    "issues",
+    "report_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.fresh-runtime-reopen-canary-report.v1"},
+    "canary_version": {"const": "0.1.0"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "resolution": {
+      "enum": [
+        "FRESH_RUNTIME_REOPEN_VERIFIED",
+        "HOST_BOOTSTRAP_INVALID",
+        "PARENT_AUTHORITY_OR_SELECTION_FAILED",
+        "WORKER_START_FAILED",
+        "WORKER_TIMEOUT",
+        "WORKER_OUTPUT_INVALID",
+        "PROCESS_BOUNDARY_MISMATCH",
+        "CHILD_AUTHORITY_OR_SELECTION_FAILED",
+        "REOPEN_SELECTION_DRIFT"
+      ]
+    },
+    "task_sha256": {"$ref": "#/$defs/sha256"},
+    "descriptor_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pointer_sha256", "registry_sha256", "pointer_generation"],
+      "properties": {
+        "pointer_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "registry_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "pointer_generation": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parent_sha256", "child_sha256", "matched"],
+      "properties": {
+        "parent_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "child_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "matched": {"type": "boolean"}
+      }
+    },
+    "active_bundle_manifest_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "process_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parent_pid",
+        "spawned_child_pid",
+        "reported_child_pid",
+        "reported_child_parent_pid",
+        "child_exit_code",
+        "isolated_python_mode",
+        "challenge_sha256",
+        "worker_stdout_sha256",
+        "worker_implementation_sha256",
+        "verified"
+      ],
+      "properties": {
+        "parent_pid": {"type": "integer", "minimum": 1},
+        "spawned_child_pid": {"type": ["integer", "null"], "minimum": 1},
+        "reported_child_pid": {"type": ["integer", "null"], "minimum": 1},
+        "reported_child_parent_pid": {"type": ["integer", "null"], "minimum": 1},
+        "child_exit_code": {"type": ["integer", "null"]},
+        "isolated_python_mode": {"type": "boolean"},
+        "challenge_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "worker_stdout_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "worker_implementation_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "verified": {"type": "boolean"}
+      }
+    },
+    "fresh_descriptor_reload": {"type": "boolean"},
+    "fresh_authority_resolution": {"type": "boolean"},
+    "fresh_selection_reproduction": {"type": "boolean"},
+    "organizational_independence_proven": {"const": false},
+    "private_key_loaded": {"const": false},
+    "absolute_paths_disclosed": {"const": false},
+    "active_memory_consumed": {"const": false},
+    "pointer_change_performed": {"const": false},
+    "activation_performed": {"const": false},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "report_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "resolution": {"const": "FRESH_RUNTIME_REOPEN_VERIFIED"}
+        },
+        "required": ["resolution"]
+      },
+      "then": {"properties": {"status": {"const": "PASS"}}}
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "PASS"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "resolution": {"const": "FRESH_RUNTIME_REOPEN_VERIFIED"},
+          "descriptor_sha256": {"$ref": "#/$defs/sha256"},
+          "authority": {
+            "properties": {
+              "pointer_sha256": {"$ref": "#/$defs/sha256"},
+              "registry_sha256": {"$ref": "#/$defs/sha256"},
+              "pointer_generation": {"type": "integer", "minimum": 0}
+            }
+          },
+          "selection": {
+            "properties": {
+              "parent_sha256": {"$ref": "#/$defs/sha256"},
+              "child_sha256": {"$ref": "#/$defs/sha256"},
+              "matched": {"const": true}
+            }
+          },
+          "active_bundle_manifest_sha256": {"$ref": "#/$defs/sha256"},
+          "process_boundary": {
+            "properties": {
+              "spawned_child_pid": {"type": "integer", "minimum": 1},
+              "reported_child_pid": {"type": "integer", "minimum": 1},
+              "reported_child_parent_pid": {"type": "integer", "minimum": 1},
+              "child_exit_code": {"const": 0},
+              "isolated_python_mode": {"const": true},
+              "challenge_sha256": {"$ref": "#/$defs/sha256"},
+              "worker_stdout_sha256": {"$ref": "#/$defs/sha256"},
+              "worker_implementation_sha256": {"$ref": "#/$defs/sha256"},
+              "verified": {"const": true}
+            }
+          },
+          "fresh_descriptor_reload": {"const": true},
+          "fresh_authority_resolution": {"const": true},
+          "fresh_selection_reproduction": {"const": true},
+          "issues": {"maxItems": 0}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "FAIL"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "resolution": {
+            "not": {"const": "FRESH_RUNTIME_REOPEN_VERIFIED"}
+          },
+          "process_boundary": {
+            "properties": {"verified": {"const": false}}
+          },
+          "issues": {"minItems": 1}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["severity", "code", "message"],
+      "properties": {
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "code": {"type": "string", "minLength": 2, "maxLength": 128},
+        "message": {"type": "string", "minLength": 1, "maxLength": 2048}
+      }
+    }
+  }
+}

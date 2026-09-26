@@ -1,0 +1,466 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-batch-audit-report-v1.json",
+  "title": "Explicit semantic batch audit report",
+  "description": "Deterministic, read-only inventory of explicitly declared and hash-bound shadow semantic candidates. Build readiness, release-review eligibility, and activation authority remain separate. A policy supplied by the audited manifest has no independent authority, so a passing conditional assessment remains UNRESOLVED for release-review eligibility; the report never authorizes review, activation, or execution.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "auditor_version",
+    "audit_mode",
+    "manifest",
+    "status",
+    "summary",
+    "items",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed",
+    "issues",
+    "audit_id"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-batch-audit-report.v1"
+    },
+    "auditor_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "audit_mode": {
+      "const": "explicit_manifest_shadow_read_only"
+    },
+    "manifest": {
+      "$ref": "#/$defs/manifestSummary"
+    },
+    "status": {
+      "$ref": "#/$defs/status"
+    },
+    "summary": {
+      "$ref": "#/$defs/summary"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "runtime_routing_changed": {
+      "const": false
+    },
+    "issues": {
+      "$ref": "#/$defs/issues"
+    },
+    "audit_id": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN",
+        "UNRESOLVED"
+      ]
+    },
+    "reasonCodes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stableId"
+      }
+    },
+    "manifestSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_id",
+        "manifest_version",
+        "normalized_manifest_sha256",
+        "declared_item_count",
+        "audited_item_count"
+      ],
+      "properties": {
+        "manifest_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "manifest_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "normalized_manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "declared_item_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "audited_item_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "statusCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN",
+        "UNRESOLVED"
+      ],
+      "properties": {
+        "PASS": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "FAIL": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "UNKNOWN": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "UNRESOLVED": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_status_counts",
+        "build_readiness_counts",
+        "release_review_eligibility_counts",
+        "activation_authority_counts"
+      ],
+      "properties": {
+        "item_status_counts": {
+          "$ref": "#/$defs/statusCounts"
+        },
+        "build_readiness_counts": {
+          "$ref": "#/$defs/statusCounts"
+        },
+        "release_review_eligibility_counts": {
+          "$ref": "#/$defs/statusCounts"
+        },
+        "activation_authority_counts": {
+          "$ref": "#/$defs/statusCounts"
+        }
+      }
+    },
+    "inputBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "asset_id",
+        "path",
+        "declared_sha256",
+        "observed_sha256",
+        "media_type",
+        "status",
+        "reason_codes"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "OperationalPatternPackage",
+            "RecognitionAdapterPackage",
+            "CompetencyQuestionContract",
+            "SemanticRoleRegistry",
+            "OperationalKnowledgeReleaseCandidate",
+            "SemanticReleasePolicy"
+          ]
+        },
+        "asset_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "declared_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "observed_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "media_type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNRESOLVED"
+          ]
+        },
+        "reason_codes": {
+          "$ref": "#/$defs/reasonCodes"
+        }
+      }
+    },
+    "buildReadiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "build_id",
+        "build_report_sha256",
+        "package_count",
+        "recognition_adapter_count",
+        "cq_count",
+        "reason_codes"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "build_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "build_report_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "package_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "recognition_adapter_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "cq_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "reason_codes": {
+          "$ref": "#/$defs/reasonCodes"
+        }
+      }
+    },
+    "releaseReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "assessment_id",
+        "assessment_sha256",
+        "derived_release_state",
+        "reason_codes"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "FAIL",
+            "UNKNOWN",
+            "UNRESOLVED"
+          ]
+        },
+        "assessment_id": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "assessment_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "derived_release_state": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "BuiltCandidate",
+            "ValidatedCandidate",
+            "RejectedCandidate",
+            null
+          ]
+        },
+        "reason_codes": {
+          "$ref": "#/$defs/reasonCodes"
+        }
+      }
+    },
+    "activationAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "authorized",
+        "reason_codes"
+      ],
+      "properties": {
+        "status": {
+          "const": "UNRESOLVED"
+        },
+        "authorized": {
+          "const": false
+        },
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "severity",
+        "path",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/stableId"
+        },
+        "severity": {
+          "enum": [
+            "ERROR",
+            "WARNING"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issue"
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "status",
+        "input_set_sha256",
+        "input_bindings",
+        "build_readiness",
+        "release_review_eligibility",
+        "activation_authority",
+        "activation_authorized",
+        "execution_authorized",
+        "runtime_routing_changed",
+        "issues",
+        "item_audit_sha256"
+      ],
+      "properties": {
+        "item_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "input_set_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "input_bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inputBinding"
+          }
+        },
+        "build_readiness": {
+          "$ref": "#/$defs/buildReadiness"
+        },
+        "release_review_eligibility": {
+          "$ref": "#/$defs/releaseReview"
+        },
+        "activation_authority": {
+          "$ref": "#/$defs/activationAuthority"
+        },
+        "activation_authorized": {
+          "const": false
+        },
+        "execution_authorized": {
+          "const": false
+        },
+        "runtime_routing_changed": {
+          "const": false
+        },
+        "issues": {
+          "$ref": "#/$defs/issues"
+        },
+        "item_audit_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

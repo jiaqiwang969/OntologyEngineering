@@ -1,0 +1,456 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-observer-adapter-registry-assessment-v1.json",
+  "title": "CAD Agent candidate observer/adapter registry assessment",
+  "description": "Reproducible integrity and requirement-binding assessment for a candidate registry. Candidate verification remains UNKNOWN for trust closure until a separate fixed active trust bundle binds its digests.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assessor_version",
+    "assessment_id",
+    "status",
+    "candidate_integrity_status",
+    "registry_status",
+    "eligible_for_trust_bundle_review",
+    "expected_registry_identity",
+    "manifest",
+    "verified_source_set_sha256",
+    "candidate_registry_binding_sha256",
+    "entries",
+    "binding_decisions",
+    "issues",
+    "trust_boundary",
+    "assessment_sha256",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-observer-adapter-registry-assessment.v1"
+    },
+    "assessor_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "assessment_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "status": {
+      "enum": [
+        "UNKNOWN",
+        "FAIL"
+      ]
+    },
+    "candidate_integrity_status": {
+      "$ref": "#/$defs/triStatus"
+    },
+    "registry_status": {
+      "enum": [
+        "CANDIDATE_VERIFIED",
+        "UNKNOWN",
+        "FAIL"
+      ]
+    },
+    "eligible_for_trust_bundle_review": {
+      "type": "boolean"
+    },
+    "expected_registry_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_id",
+        "registry_version"
+      ],
+      "properties": {
+        "registry_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "registry_version": {
+          "$ref": "#/$defs/semver"
+        }
+      }
+    },
+    "manifest": {
+      "$ref": "#/$defs/manifestAssessment"
+    },
+    "verified_source_set_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "candidate_registry_binding_sha256": {
+      "$ref": "#/$defs/nullableSha256"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entryAssessment"
+      }
+    },
+    "binding_decisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/bindingDecision"
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issue"
+      }
+    },
+    "trust_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_cannot_close_preflight",
+        "fixed_active_trust_bundle_required",
+        "request_supplied_status_is_ignored",
+        "trust_closure_status"
+      ],
+      "properties": {
+        "candidate_cannot_close_preflight": {
+          "const": true
+        },
+        "fixed_active_trust_bundle_required": {
+          "const": true
+        },
+        "request_supplied_status_is_ignored": {
+          "const": true
+        },
+        "trust_closure_status": {
+          "const": "UNKNOWN"
+        }
+      }
+    },
+    "assessment_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "runtime_routing_changed": {
+      "const": false
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^(https://|urn:)"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableString": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "triStatus": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN"
+      ]
+    },
+    "uniqueIris": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "manifestAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "media_type",
+        "presented_sha256",
+        "observed_sha256",
+        "observed_canonical_sha256",
+        "registry_id",
+        "registry_version",
+        "declared_inventory_sha256",
+        "observed_inventory_sha256",
+        "integrity_status"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "media_type": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "presented_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "observed_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "observed_canonical_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "registry_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "registry_version": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "declared_inventory_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "observed_inventory_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "integrity_status": {
+          "$ref": "#/$defs/triStatus"
+        }
+      }
+    },
+    "entryAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_id",
+        "entry_kind",
+        "registry_semantics",
+        "entry_path",
+        "presented_entry_sha256",
+        "observed_entry_sha256",
+        "implementation_identity",
+        "implementation_version",
+        "implementation_path",
+        "presented_implementation_sha256",
+        "observed_implementation_sha256",
+        "declared_implementation_summary_sha256",
+        "observed_implementation_summary_sha256",
+        "capability_semantics",
+        "operation_semantics",
+        "authority_boundary_status",
+        "integrity_status"
+      ],
+      "properties": {
+        "entry_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "entry_kind": {
+          "enum": [
+            "Observer",
+            "Adapter",
+            null
+          ]
+        },
+        "registry_semantics": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "entry_path": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "presented_entry_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "observed_entry_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "implementation_identity": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "implementation_version": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "implementation_path": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "presented_implementation_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "observed_implementation_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "declared_implementation_summary_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "observed_implementation_summary_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "capability_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "operation_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "authority_boundary_status": {
+          "$ref": "#/$defs/triStatus"
+        },
+        "integrity_status": {
+          "$ref": "#/$defs/triStatus"
+        }
+      }
+    },
+    "bindingRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "entry_id",
+        "entry_kind",
+        "registry_semantics",
+        "implementation_identity",
+        "implementation_version",
+        "implementation_sha256",
+        "required_capability_semantics",
+        "required_operation_semantics"
+      ],
+      "properties": {
+        "binding_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "entry_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "entry_kind": {
+          "enum": [
+            "Observer",
+            "Adapter"
+          ]
+        },
+        "registry_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "implementation_identity": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "implementation_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "implementation_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "required_capability_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "required_operation_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        }
+      },
+      "anyOf": [
+        {
+          "properties": {
+            "required_capability_semantics": {
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "required_operation_semantics": {
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
+    "bindingDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement",
+        "entry_integrity_status",
+        "identity_status",
+        "version_status",
+        "implementation_status",
+        "capability_status",
+        "operation_status",
+        "decision"
+      ],
+      "properties": {
+        "requirement": {
+          "$ref": "#/$defs/bindingRequirement"
+        },
+        "entry_integrity_status": {
+          "$ref": "#/$defs/triStatus"
+        },
+        "identity_status": {
+          "$ref": "#/$defs/triStatus"
+        },
+        "version_status": {
+          "$ref": "#/$defs/triStatus"
+        },
+        "implementation_status": {
+          "$ref": "#/$defs/triStatus"
+        },
+        "capability_status": {
+          "$ref": "#/$defs/triStatus"
+        },
+        "operation_status": {
+          "$ref": "#/$defs/triStatus"
+        },
+        "decision": {
+          "enum": [
+            "CANDIDATE_MATCH",
+            "UNKNOWN",
+            "FAIL"
+          ]
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "severity",
+        "code",
+        "path",
+        "message"
+      ],
+      "properties": {
+        "severity": {
+          "enum": [
+            "ERROR",
+            "WARNING"
+          ]
+        },
+        "code": {
+          "$ref": "#/$defs/stableId"
+        },
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,446 @@
+diff --git a/src/nx_mcp/experimental.py b/src/nx_mcp/experimental.py
+index f0f5100..f43392c 100644
+--- a/src/nx_mcp/experimental.py
++++ b/src/nx_mcp/experimental.py
+@@ -11,10 +11,12 @@ from collections.abc import Awaitable, Callable
+ from functools import wraps
+ from typing import Any
+ 
+-from mcp.server.fastmcp import FastMCP
+-from mcp.server.fastmcp.exceptions import ToolError as MCPToolError
++from typing import TYPE_CHECKING
+ 
+ from nx_mcp.response import ToolError, ToolResult
++
++if TYPE_CHECKING:  # the ``mcp`` package exists only in the sidecar interpreter, never inside NX
++    from mcp.server.fastmcp import FastMCP
+ from nx_mcp.runtime import NXToolError
+ from nx_mcp.tools.registry import ToolRegistry
+ from nx_mcp.workspace import Workspace, WorkspaceViolation
+@@ -67,6 +69,21 @@ async def _run_legacy_handler(
+     return await handler(**params)
+ 
+ 
++def _run_sync(coroutine: Awaitable[Any]) -> Any:
++    """Run a legacy coroutine to completion on the NX journal thread.
++
++    ``asyncio.run()`` builds a ProactorEventLoop whose constructor calls ``signal.set_wakeup_fd``;
++    NX executes journals outside the main interpreter thread, so that raises
++    "set_wakeup_fd only works in main thread of the main interpreter". A selector loop has no such
++    requirement, and the legacy handlers never await real I/O.
++    """
++    loop = asyncio.SelectorEventLoop()
++    try:
++        return loop.run_until_complete(coroutine)
++    finally:
++        loop.close()
++
++
+ def _secure_params(
+     method: str,
+     params: dict[str, Any],
+@@ -110,6 +127,10 @@ def add_experimental_tools(
+     *,
+     enable_journal: bool,
+ ) -> None:
++    # Imported lazily: this function only runs in the sidecar. The NX-side executor imports this
++    # module too (execute_legacy) and NX's embedded Python has no ``mcp`` package.
++    from mcp.server.fastmcp.exceptions import ToolError as MCPToolError
++
+     for name, handler in load_legacy_handlers().items():
+         if name in certified_names or (name in JOURNAL_TOOL_NAMES and not enable_journal):
+             continue
+@@ -158,7 +179,7 @@ def execute_legacy(
+     if handler is None:
+         raise NXToolError("NX_TOOL_NOT_FOUND", f"Unsupported bridge command: {method}")
+     secured = _secure_params(method, params, workspace, already_resolved=True)
+-    result: Any = asyncio.run(_run_legacy_handler(handler, secured))
++    result: Any = _run_sync(_run_legacy_handler(handler, secured))
+     if isinstance(result, ToolError):
+         raise NXToolError(
+             result.error_code,
+diff --git a/src/nx_mcp/tools/assembly.py b/src/nx_mcp/tools/assembly.py
+index d2e1495..78bb959 100644
+--- a/src/nx_mcp/tools/assembly.py
++++ b/src/nx_mcp/tools/assembly.py
+@@ -187,6 +187,36 @@ async def nx_list_components() -> ToolResult | ToolError:
+                     else getattr(child, "Name", "unknown")
+                 )
+                 child_data: dict[str, Any] = {"name": str(child_name)}
++                try:
++                    child_data["display_name"] = child.DisplayName
++                except Exception:
++                    pass
++                try:
++                    import NXOpen
++
++                    proto = child.Prototype
++                    part = proto if isinstance(proto, NXOpen.BasePart) else proto.OwningPart
++                    child_data["part"] = part.Leaf
++                    child_data["path"] = part.FullPath
++                except Exception:
++                    pass
++                try:
++                    child_data["suppressed"] = child.IsSuppressed
++                except Exception:
++                    pass
++                try:
++                    child_data["reference_set"] = child.ReferenceSet
++                except Exception:
++                    pass
++                try:
++                    child_data["children"] = len(child.GetChildren())
++                except Exception:
++                    pass
++                try:
++                    origin, _matrix = child.GetPosition()
++                    child_data["origin"] = [origin.X, origin.Y, origin.Z]
++                except Exception:
++                    pass
+                 components_list.append(child_data)
+ 
+         return ToolResult.success(
+diff --git a/src/nx_mcp/tools/drawing.py b/src/nx_mcp/tools/drawing.py
+index ced351a..3d802be 100644
+--- a/src/nx_mcp/tools/drawing.py
++++ b/src/nx_mcp/tools/drawing.py
+@@ -129,7 +129,7 @@ async def nx_add_base_view(drawing: str, body: str, view: str) -> ToolResult | T
+ 
+         work_part = NXSession.get_instance().require_work_part()
+ 
+-        sheets = work_part.DrawingSheets.ToArray()
++        sheets = list(work_part.DrawingSheets)
+         target_sheet = None
+         for s in sheets:
+             if s.Name == drawing:
+@@ -199,7 +199,7 @@ async def nx_add_projection_view(base_view: str, direction: str) -> ToolResult |
+ 
+         work_part = NXSession.get_instance().require_work_part()
+ 
+-        views = work_part.DrawingViews.ToArray()
++        views = list(work_part.DrawingViews)
+         parent_view = None
+         for v in views:
+             if v.Name == base_view:
+@@ -290,7 +290,7 @@ async def nx_add_dimension(
+ 
+         work_part = NXSession.get_instance().require_work_part()
+ 
+-        views = work_part.DrawingViews.ToArray()
++        views = list(work_part.DrawingViews)
+         target_view = None
+         for v in views:
+             if v.Name == view:
+diff --git a/src/nx_mcp/tools/feature_tree.py b/src/nx_mcp/tools/feature_tree.py
+index 3a99bd2..f15f4ec 100644
+--- a/src/nx_mcp/tools/feature_tree.py
++++ b/src/nx_mcp/tools/feature_tree.py
+@@ -7,6 +7,45 @@ from nx_mcp.response import ToolError, ToolResult
+ from nx_mcp.tools.registry import mcp_tool
+ 
+ 
++def _merge_box(box: list[float] | None, other: list[float]) -> list[float]:
++    if box is None:
++        return list(other)
++    return [
++        min(box[0], other[0]), min(box[1], other[1]), min(box[2], other[2]),
++        max(box[3], other[3]), max(box[4], other[4]), max(box[5], other[5]),
++    ]
++
++
++def _body_bounding_box(body) -> tuple[list[float] | None, str]:
++    """Return ([xmin, ymin, zmin, xmax, ymax, zmax], method) for an NXOpen.Body.
++
++    The NX Python binding has no Body.GetBoundingBox and no UF_MODL_ask_bounding_box, so union the
++    per-face boxes reported by UF_MODL_ask_face_data; fall back to edge vertices (approximate for
++    curved faces) when that call is unavailable.
++    """
++    box: list[float] | None = None
++    try:
++        import NXOpen.UF
++
++        ask_face_data = getattr(NXOpen.UF.UFSession.GetUFSession().Modl, "AskFaceData", None)
++    except Exception:
++        ask_face_data = None
++    if ask_face_data is not None:
++        try:
++            for face in body.GetFaces():
++                data = ask_face_data(face.Tag)  # (type, point, dir, box[6], radius, rad_data, norm_dir)
++                face_box = data[3]
++                box = _merge_box(box, [face_box[i] for i in range(6)])
++            if box is not None:
++                return box, "uf_face_data"
++        except Exception:
++            box = None
++    for edge in body.GetEdges():
++        for point in edge.GetVertices():
++            box = _merge_box(box, [point.X, point.Y, point.Z, point.X, point.Y, point.Z])
++    return box, "edge_vertices_approx"
++
++
+ @mcp_tool(
+     name="nx_list_features",
+     description="List all features in the current work part.",
+@@ -18,7 +57,7 @@ async def nx_list_features() -> ToolResult | ToolError:
+         session = NXSession.get_instance()
+         work_part = session.require_work_part()
+ 
+-        features = work_part.Features.ToArray()
++        features = list(work_part.Features)
+         feature_list = []
+         for f in features:
+             feature_list.append(
+@@ -54,7 +93,7 @@ async def nx_get_feature_info(name: str) -> ToolResult | ToolError:
+         session = NXSession.get_instance()
+         work_part = session.require_work_part()
+ 
+-        features = work_part.Features.ToArray()
++        features = list(work_part.Features)
+         target = None
+         for f in features:
+             if f.Name.lower() == name.lower():
+@@ -108,7 +147,7 @@ async def nx_get_bounding_box(body: str | None = None) -> ToolResult | ToolError
+         session = NXSession.get_instance()
+         work_part = session.require_work_part()
+ 
+-        bodies = work_part.Bodies.ToArray()
++        bodies = list(work_part.Bodies)
+         if not bodies:
+             return ToolError(
+                 error_code="NX_NOT_FOUND",
+@@ -131,7 +170,12 @@ async def nx_get_bounding_box(body: str | None = None) -> ToolResult | ToolError
+         else:
+             target = bodies[0]
+ 
+-        bbox = target.GetBoundingBox()
++        bbox, method = _body_bounding_box(target)
++        if bbox is None:
++            return ToolError(
++                error_code="NX_INTERNAL_ERROR",
++                message=f"Could not compute a bounding box for body '{target.Name}'.",
++            )
+ 
+         min_point = {"x": bbox[0], "y": bbox[1], "z": bbox[2]}
+         max_point = {"x": bbox[3], "y": bbox[4], "z": bbox[5]}
+@@ -148,8 +192,9 @@ async def nx_get_bounding_box(body: str | None = None) -> ToolResult | ToolError
+                 "min": min_point,
+                 "max": max_point,
+                 "dimensions": dimensions,
++                "method": method,
+             },
+-            message=f"Bounding box for body '{target.Name}'.",
++            message=f"Bounding box for body '{target.Name}' ({method}).",
+         )
+     except Exception as exc:
+         return ToolResult.from_exception(exc)
+diff --git a/src/nx_mcp/tools/file_ops.py b/src/nx_mcp/tools/file_ops.py
+index eb2e3e0..0737b60 100644
+--- a/src/nx_mcp/tools/file_ops.py
++++ b/src/nx_mcp/tools/file_ops.py
+@@ -328,7 +328,7 @@ async def nx_list_open_parts() -> ToolResult | ToolError:
+     try:
+         session = NXSession.get_instance().require()
+ 
+-        parts_array = session.Parts.ToArray()
++        parts_array = list(session.Parts)
+         work_name = session.Parts.Work.Name if session.Parts.Work is not None else None
+         parts_list = []
+         for p in parts_array:
+diff --git a/src/nx_mcp/tools/measure.py b/src/nx_mcp/tools/measure.py
+index 059e619..e608000 100644
+--- a/src/nx_mcp/tools/measure.py
++++ b/src/nx_mcp/tools/measure.py
+@@ -6,6 +6,32 @@ from nx_mcp.nx_session import NXSession
+ from nx_mcp.response import ToolError, ToolResult
+ from nx_mcp.tools.registry import mcp_tool
+ 
++
++_MASS_UNIT_NAMES = ["SquareMilliMeter", "CubicMilliMeter", "Kilogram", "MilliMeter", "MilliMeter", "Newton"]
++
++
++def _body_mass_properties(work_part, body) -> tuple[float, float | None]:
++    """(volume_mm3, mass_kg or None) via MeasureManager.NewMassProperties.
++
++    NXOpen.Body has no GetMassProperties in the Python binding. Mass uses the density NX assigns to
++    the body (a default when no material is assigned), so treat it as indicative only.
++    """
++    units = [work_part.UnitCollection.FindObject(name) for name in _MASS_UNIT_NAMES]
++    measure = work_part.MeasureManager.NewMassProperties(units, 0.99, [body])
++    try:
++        volume = float(measure.Volume)
++        try:
++            mass = float(measure.Mass)
++        except Exception:
++            mass = None
++        return volume, mass
++    finally:
++        try:
++            measure.Dispose()
++        except Exception:
++            pass
++
++
+ # ---------------------------------------------------------------------------
+ # 1. nx_measure_distance
+ # ---------------------------------------------------------------------------
+@@ -161,7 +187,7 @@ async def nx_measure_volume(body: str | None = None) -> ToolResult | ToolError:
+     try:
+         work_part = NXSession.get_instance().require_work_part()
+ 
+-        bodies = work_part.Bodies.ToArray()
++        bodies = list(work_part.Bodies)
+ 
+         if not bodies:
+             return ToolError(
+@@ -193,8 +219,7 @@ async def nx_measure_volume(body: str | None = None) -> ToolResult | ToolError:
+         total_volume_mm3 = 0.0
+ 
+         for b in target_bodies:
+-            mass_props = b.GetMassProperties()
+-            volume_mm3 = mass_props.Volume
++            volume_mm3, mass_kg = _body_mass_properties(work_part, b)
+             volume_cm3 = volume_mm3 / 1000.0
+             total_volume_mm3 += volume_mm3
+             results.append(
+@@ -202,6 +227,7 @@ async def nx_measure_volume(body: str | None = None) -> ToolResult | ToolError:
+                     "body": b.Name,
+                     "volume_mm3": volume_mm3,
+                     "volume_cm3": volume_cm3,
++                    "mass_kg_nx_density": mass_kg,
+                 }
+             )
+ 
+diff --git a/src/nx_mcp/tools/modeling.py b/src/nx_mcp/tools/modeling.py
+index 2ab8abf..186839c 100644
+--- a/src/nx_mcp/tools/modeling.py
++++ b/src/nx_mcp/tools/modeling.py
+@@ -89,7 +89,7 @@ async def nx_extrude(
+         # Resolve sketch if name provided
+         sketch = None
+         if sketch_name:
+-            for sk in work_part.Sketches.ToArray():
++            for sk in list(work_part.Sketches):
+                 if sk.Name == sketch_name or sk.Name.endswith(sketch_name):
+                     sketch = sk
+                     break
+@@ -170,7 +170,7 @@ async def nx_revolve(
+         # Resolve sketch if name provided
+         sketch = None
+         if sketch_name:
+-            for sk in work_part.Sketches.ToArray():
++            for sk in list(work_part.Sketches):
+                 if sk.Name == sketch_name or sk.Name.endswith(sketch_name):
+                     sketch = sk
+                     break
+@@ -566,7 +566,7 @@ async def nx_delete_feature(name: str) -> ToolResult | ToolError:
+ 
+         found = None
+         available: list[str] = []
+-        for feat in work_part.Features.ToArray():
++        for feat in list(work_part.Features):
+             feat_name = feat.Name
+             available.append(feat_name)
+             if feat_name == name:
+@@ -613,7 +613,7 @@ async def nx_edit_feature(
+         work_part = NXSession.get_instance().require_work_part()
+ 
+         found = None
+-        for feat in work_part.Features.ToArray():
++        for feat in list(work_part.Features):
+             if feat.Name == name:
+                 found = feat
+                 break
+diff --git a/src/nx_mcp/tools/utility.py b/src/nx_mcp/tools/utility.py
+index e0540b8..ab6b61d 100644
+--- a/src/nx_mcp/tools/utility.py
++++ b/src/nx_mcp/tools/utility.py
+@@ -13,14 +13,14 @@ from nx_mcp.tools.registry import mcp_tool
+ # Orientation map for nx_set_view
+ # ---------------------------------------------------------------------------
+ _ORIENTATION_MAP: dict[str, str] = {
+-    "front": "kFront",
+-    "back": "kBack",
+-    "top": "kTop",
+-    "bottom": "kBottom",
+-    "left": "kLeft",
+-    "right": "kRight",
+-    "isometric": "kIsometric",
+-    "trimetric": "kTrimetric",
++    "front": "Front",
++    "back": "Back",
++    "top": "Top",
++    "bottom": "Bottom",
++    "left": "Left",
++    "right": "Right",
++    "isometric": "Isometric",
++    "trimetric": "Trimetric",
+ }
+ 
+ 
+@@ -78,8 +78,8 @@ async def nx_set_view(orientation: str) -> ToolResult | ToolError:
+                 suggestion=f"Use one of: {valid}.",
+             )
+ 
+-        nx_orient = getattr(NXOpen.View.ViewOrientation, _ORIENTATION_MAP[key])
+-        work_part.ModelingViews.WorkView.Orient(nx_orient)
++        canned = getattr(NXOpen.View.Canned, _ORIENTATION_MAP[key])
++        work_part.ModelingViews.WorkView.Orient(canned, NXOpen.View.ScaleAdjustment.Fit)
+ 
+         return ToolResult.success(
+             data={"orientation": key},
+@@ -131,13 +131,20 @@ async def nx_undo() -> ToolResult | ToolError:
+ async def nx_screenshot(path: str) -> ToolResult | ToolError:
+     """Export the viewport as a PNG screenshot."""
+     try:
+-        import NXOpen.UF
+-
+-        uf_session = NXOpen.UF.UFSession.GetUFSession()
+-        image_builder = uf_session.Disp.CreateImageExportBuilder()
+-        image_builder.FileName = path
+-        image_builder.FileFormat = NXOpen.UF.ImageExportBuilder.FileFormatType.Png
+-        image_builder.Commit()
++        import NXOpen
++        import NXOpen.Gateway
++
++        # Needs an interactive NX GUI (graphics window); the batch bridge has no display.
++        ui = NXOpen.UI.GetUI()
++        image_builder = ui.CreateImageExportBuilder()
++        try:
++            image_builder.FileName = path
++            image_builder.FileFormat = NXOpen.Gateway.ImageExportBuilder.FileFormats.Png
++            image_builder.EnhanceEdges = True
++            image_builder.RegionMode = False
++            image_builder.Commit()
++        finally:
++            image_builder.Destroy()
+ 
+         return ToolResult.success(
+             data={"path": path},
+@@ -180,13 +187,23 @@ async def nx_run_journal(path: str) -> ToolResult | ToolError:
+                 suggestion="Provide a path ending in .py.",
+             )
+ 
+-        session = NXSession.get_instance().require()
++        NXSession.get_instance().require()
+ 
+-        session.ExecuteJournal(path)
++        # NXOpen.Session exposes no journal runner to Python, so execute the file in-process the
++        # way the journal player would (same interpreter, same live session) and return its stdout.
++        import contextlib
++        import io
++        import runpy
++
++        buffer = io.StringIO()
++        with contextlib.redirect_stdout(buffer):
++            runpy.run_path(path, run_name="__main__")
++        output = buffer.getvalue()
++        limit = 60000
+ 
+         return ToolResult.success(
+-            data={"path": path},
+-            message=f"Journal executed: {path}",
++            data={"path": path, "stdout": output[:limit], "truncated": len(output) > limit},
++            message=f"Journal executed in-process: {path}",
+         )
+ 
+     except Exception as exc:

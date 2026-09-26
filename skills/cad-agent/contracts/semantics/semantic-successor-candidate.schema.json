@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-successor-candidate-v1.json",
+  "title": "Additive-only semantic successor candidate wrapper",
+  "description": "Candidate-only wrapper that binds one exact active predecessor and embeds a production-schema-valid prospective semantic bundle. The prospective bundle uses status Active only because it is the exact future bundle shape; this wrapper grants no activation or execution authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidate_id",
+    "candidate_version",
+    "status",
+    "predecessor",
+    "prospective_bundle",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.semantic-successor-candidate.v1"},
+    "candidate_id": {"$ref": "#/$defs/stableId"},
+    "candidate_version": {"$ref": "#/$defs/semver"},
+    "status": {"const": "Candidate"},
+    "predecessor": {"$ref": "#/$defs/predecessor"},
+    "prospective_bundle": {
+      "$ref": "https://w3id.org/cad-geometry/schema/semantic-asset-bundle-v1.json"
+    },
+    "activation_authorized": {"const": false},
+    "execution_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false}
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bundle_id",
+        "bundle_version",
+        "manifest_path",
+        "manifest_sha256"
+      ],
+      "properties": {
+        "bundle_id": {"$ref": "#/$defs/stableId"},
+        "bundle_version": {"$ref": "#/$defs/semver"},
+        "manifest_path": {"const": "data/semantic-assets/active-bundle.json"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

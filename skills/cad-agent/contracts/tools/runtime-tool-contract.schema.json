@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cad-agent.runtime-tool-contract.schema.v1",
+  "title": "Observed Fusion MCP runtime tool contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "contract_id",
+    "source",
+    "captured_on",
+    "mcp_namespace",
+    "tools"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.tool-contract.v1"
+    },
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "captured_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "mcp_namespace": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "mode",
+          "read_only"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^fusion_mcp_[a-z0-9_]+$"
+          },
+          "mode": {
+            "enum": [
+              "read",
+              "execute",
+              "update"
+            ]
+          },
+          "read_only": {
+            "type": "boolean"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "mode": {
+                  "const": "read"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "read_only": {
+                  "const": true
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "read_only": {
+                  "const": false
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

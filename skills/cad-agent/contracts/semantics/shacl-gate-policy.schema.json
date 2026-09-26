@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/shacl-gate-policy-v1.json",
+  "title": "CAD Agent SHACL gate policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "policy_version",
+    "unknown_severity",
+    "severity_levels",
+    "phases",
+    "shape_modules"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.shacl-gate-policy.v1"
+    },
+    "policy_id": {
+      "const": "cad-agent-active-shacl-gates"
+    },
+    "policy_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "unknown_severity": {
+      "const": "block"
+    },
+    "severity_levels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Violation",
+        "Warning",
+        "Info"
+      ],
+      "properties": {
+        "Violation": {
+          "$ref": "#/$defs/violationLevel"
+        },
+        "Warning": {
+          "$ref": "#/$defs/warningLevel"
+        },
+        "Info": {
+          "$ref": "#/$defs/infoLevel"
+        }
+      }
+    },
+    "phases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inspection",
+        "planning",
+        "execution",
+        "evolution",
+        "release",
+        "abox_ingestion"
+      ],
+      "properties": {
+        "inspection": {
+          "$ref": "#/$defs/violationOnlyPhase"
+        },
+        "planning": {
+          "$ref": "#/$defs/violationOnlyPhase"
+        },
+        "execution": {
+          "$ref": "#/$defs/violationAndWarningPhase"
+        },
+        "evolution": {
+          "$ref": "#/$defs/violationAndWarningPhase"
+        },
+        "release": {
+          "$ref": "#/$defs/violationAndWarningPhase"
+        },
+        "abox_ingestion": {
+          "$ref": "#/$defs/violationAndWarningPhase"
+        }
+      }
+    },
+    "shape_modules": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/shapeModule"
+      }
+    }
+  },
+  "$defs": {
+    "severityIri": {
+      "type": "string",
+      "pattern": "^http://www\\.w3\\.org/ns/shacl#(?:Violation|Warning|Info)$"
+    },
+    "violationLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "iri",
+        "disposition"
+      ],
+      "properties": {
+        "iri": {
+          "const": "http://www.w3.org/ns/shacl#Violation"
+        },
+        "disposition": {
+          "const": "reject"
+        }
+      }
+    },
+    "warningLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "iri",
+        "disposition"
+      ],
+      "properties": {
+        "iri": {
+          "const": "http://www.w3.org/ns/shacl#Warning"
+        },
+        "disposition": {
+          "const": "allow_only_where_phase_policy_permits_and_record_action"
+        }
+      }
+    },
+    "infoLevel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "iri",
+        "disposition"
+      ],
+      "properties": {
+        "iri": {
+          "const": "http://www.w3.org/ns/shacl#Info"
+        },
+        "disposition": {
+          "const": "diagnostic_only"
+        }
+      }
+    },
+    "violationOnlyPhase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blocking_severities"
+      ],
+      "properties": {
+        "blocking_severities": {
+          "const": [
+            "Violation"
+          ]
+        }
+      }
+    },
+    "violationAndWarningPhase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blocking_severities"
+      ],
+      "properties": {
+        "blocking_severities": {
+          "const": [
+            "Violation",
+            "Warning"
+          ]
+        }
+      }
+    },
+    "shapeModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "coverage",
+        "node_semantics",
+        "undeclared_severity",
+        "closed_shape_exceptions"
+      ],
+      "properties": {
+        "asset_id": {
+          "type": "string",
+          "pattern": "^shacl/[a-z0-9][a-z0-9-]*$"
+        },
+        "coverage": {
+          "const": "all_shapes"
+        },
+        "node_semantics": {
+          "const": "open_completeness"
+        },
+        "undeclared_severity": {
+          "const": "Violation"
+        },
+        "closed_shape_exceptions": {
+          "type": "array",
+          "maxItems": 0
+        }
+      }
+    }
+  }
+}

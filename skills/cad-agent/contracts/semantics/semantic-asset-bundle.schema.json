@@ -1,0 +1,478 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-asset-bundle-v1.json",
+  "title": "CAD Agent active semantic asset bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "bundle_id",
+    "bundle_version",
+    "status",
+    "namespace",
+    "schema_path",
+    "schema_sha256",
+    "governance",
+    "policy",
+    "shacl_gate_contract",
+    "abox_ingestion_contract",
+    "assets",
+    "routing_control"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-asset-bundle.v1"
+    },
+    "bundle_id": {
+      "const": "cad-agent-active-semantics"
+    },
+    "bundle_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {
+      "const": "Active"
+    },
+    "namespace": {
+      "const": "https://w3id.org/cad-geometry#"
+    },
+    "schema_path": {
+      "const": "contracts/semantics/semantic-asset-bundle.schema.json"
+    },
+    "schema_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner",
+        "change_control",
+        "activation_basis",
+        "governance_entry",
+        "project_surface"
+      ],
+      "properties": {
+        "owner": {
+          "const": "semantic_sidecar"
+        },
+        "change_control": {
+          "const": "repository_review"
+        },
+        "activation_basis": {
+          "const": "hash_bound_manifest"
+        },
+        "governance_entry": {
+          "const": "AGENTS.md"
+        },
+        "project_surface": {
+          "const": "contracts/project-surface.json"
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "discovery",
+        "digest_algorithm",
+        "network_imports",
+        "symlinks",
+        "unlisted_assets",
+        "examples"
+      ],
+      "properties": {
+        "discovery": {
+          "const": "manifest_only"
+        },
+        "digest_algorithm": {
+          "const": "sha256"
+        },
+        "network_imports": {
+          "const": "forbidden"
+        },
+        "symlinks": {
+          "const": "forbidden"
+        },
+        "unlisted_assets": {
+          "const": "not_loaded"
+        },
+        "examples": {
+          "const": "fixtures_only"
+        }
+      }
+    },
+    "shacl_gate_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_path",
+        "schema_sha256",
+        "policy_path",
+        "policy_sha256",
+        "validation_profile"
+      ],
+      "properties": {
+        "schema_path": {
+          "const": "contracts/semantics/shacl-gate-policy.schema.json"
+        },
+        "schema_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "policy_path": {
+          "const": "data/semantic-assets/shacl-gate-policy.json"
+        },
+        "policy_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "validation_profile": {
+          "const": "cad-agent.shacl-gates.v1"
+        }
+      }
+    },
+    "abox_ingestion_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_path",
+        "schema_sha256",
+        "validation_profile"
+      ],
+      "properties": {
+        "schema_path": {
+          "const": "contracts/semantics/abox-ingestion-receipt.schema.json"
+        },
+        "schema_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "validation_profile": {
+          "const": "cad-agent.abox-ingestion.v1"
+        }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ontology_modules",
+        "shacl_modules",
+        "competency_queries",
+        "released_abox",
+        "tool_projection"
+      ],
+      "properties": {
+        "ontology_modules": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/ontologyAsset"
+          }
+        },
+        "shacl_modules": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/rdfAsset"
+          }
+        },
+        "competency_queries": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/queryAsset"
+          }
+        },
+        "released_abox": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/releasedAboxAsset"
+          }
+        },
+        "tool_projection": {
+          "$ref": "#/$defs/toolProjection"
+        }
+      }
+    },
+    "routing_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_registry",
+        "tool_contracts"
+      ],
+      "properties": {
+        "tool_registry": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/controlAsset"
+            },
+            {
+              "properties": {
+                "authority": {
+                  "const": "routing_authority"
+                }
+              }
+            }
+          ]
+        },
+        "tool_contracts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/controlAsset"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "assetId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._/-]{1,127}$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "rdfAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/assetId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "text/turtle"
+        }
+      }
+    },
+    "ontologyAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type",
+        "ontology_iri",
+        "version_info",
+        "semantic_layers"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/assetId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "text/turtle"
+        },
+        "ontology_iri": {
+          "type": "string",
+          "pattern": "^https://w3id.org/cad-geometry/ontology/[a-z0-9-]+$"
+        },
+        "version_info": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "semantic_layers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "contains": {
+            "const": "tbox"
+          },
+          "items": {
+            "enum": [
+              "tbox",
+              "controlled_reference_abox"
+            ]
+          }
+        }
+      }
+    },
+    "queryAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "cq_id",
+        "path",
+        "sha256",
+        "media_type",
+        "query_form"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/assetId"
+        },
+        "cq_id": {
+          "type": "string",
+          "pattern": "^cq[0-9]{2}-[a-z0-9][a-z0-9-]*$"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "application/sparql-query"
+        },
+        "query_form": {
+          "enum": [
+            "SELECT",
+            "ASK"
+          ]
+        }
+      }
+    },
+    "releasedAboxAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type",
+        "trust_basis",
+        "graph_iri",
+        "graph_version",
+        "ingestion_receipt"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/assetId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "text/turtle"
+        },
+        "trust_basis": {
+          "const": "controlled_release_ingestion"
+        },
+        "graph_iri": {
+          "type": "string",
+          "maxLength": 2048,
+          "pattern": "^(?:https://|urn:)[^\\s]+$"
+        },
+        "graph_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "ingestion_receipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "sha256",
+            "media_type"
+          ],
+          "properties": {
+            "path": {
+              "$ref": "#/$defs/projectPath"
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "media_type": {
+              "const": "application/json"
+            }
+          }
+        }
+      }
+    },
+    "toolProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type",
+        "authority"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/assetId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "text/turtle"
+        },
+        "authority": {
+          "const": "projection_only"
+        }
+      }
+    },
+    "controlAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type",
+        "authority"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/assetId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "application/json"
+        },
+        "authority": {
+          "enum": [
+            "routing_authority",
+            "operation_routing",
+            "tool_name_discovery_only"
+          ]
+        }
+      }
+    }
+  }
+}

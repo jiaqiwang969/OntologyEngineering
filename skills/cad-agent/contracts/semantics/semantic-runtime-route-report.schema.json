@@ -1,0 +1,949 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-runtime-route-report-v1.json",
+  "title": "CAD Agent semantic runtime route report",
+  "description": "Deterministic shadow report for candidate-only recognition, full compiled-package retrieval, and optional grounded semantic preflight. PASS is not action linkage, activation, or execution authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "request_id",
+    "evaluation_time",
+    "status",
+    "build_report",
+    "raw_task_sha256",
+    "recognition",
+    "retrieval",
+    "memory_review",
+    "preflight",
+    "agent_handoff",
+    "issues",
+    "action_binding_performed",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed",
+    "route_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-runtime-route-report.v1"
+    },
+    "request_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "evaluation_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "$ref": "#/$defs/verdict"
+    },
+    "build_report": {
+      "$ref": "#/$defs/buildBinding"
+    },
+    "raw_task_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "recognition": {
+      "$ref": "#/$defs/recognition"
+    },
+    "retrieval": {
+      "$ref": "#/$defs/retrieval"
+    },
+    "memory_review": {
+      "$ref": "#/$defs/memoryReview"
+    },
+    "preflight": {
+      "$ref": "#/$defs/preflight"
+    },
+    "agent_handoff": {
+      "$ref": "#/$defs/agentHandoff"
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issue"
+      }
+    },
+    "action_binding_performed": {
+      "const": false
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "runtime_routing_changed": {
+      "const": false
+    },
+    "route_sha256": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "uniqueIris": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "nonEmptyUniqueIris": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN"
+      ]
+    },
+    "nullableString": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "application/json"
+        }
+      }
+    },
+    "nullableAssetRef": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/assetRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "buildBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "build_id",
+        "compiler_version"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "build_id": {
+          "$ref": "#/$defs/sha256"
+        },
+        "compiler_version": {
+          "$ref": "#/$defs/semver"
+        }
+      }
+    },
+    "parameterCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extractor_id",
+        "parameter_semantics",
+        "values",
+        "status",
+        "required"
+      ],
+      "properties": {
+        "extractor_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "parameter_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "values": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "enum": [
+            "MATCHED",
+            "NOT_FOUND",
+            "UNSUPPORTED",
+            "AMBIGUOUS"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "problemCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "problem_type_semantics",
+        "goal_semantics",
+        "context_facet_semantics",
+        "transfer_mode_semantics",
+        "diagnostic_aspect_semantics",
+        "classification_basis"
+      ],
+      "properties": {
+        "problem_type_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "goal_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "context_facet_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "transfer_mode_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "diagnostic_aspect_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "classification_basis": {
+          "const": "LexicalProfileCandidate"
+        }
+      }
+    },
+    "recognitionCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adapter_id",
+        "adapter_version",
+        "profile_id",
+        "target_requirement_semantics",
+        "problem_candidate",
+        "parameter_candidates",
+        "candidate_sha256"
+      ],
+      "properties": {
+        "adapter_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "adapter_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "target_requirement_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "problem_candidate": {
+          "$ref": "#/$defs/problemCandidate"
+        },
+        "parameter_candidates": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/parameterCandidate"
+          }
+        },
+        "candidate_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "profileAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adapter_id",
+        "adapter_version",
+        "profile_id",
+        "target_requirement_semantics",
+        "problem_candidate",
+        "status",
+        "positive_cue_matches",
+        "negative_cue_matches",
+        "reasons"
+      ],
+      "properties": {
+        "adapter_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "adapter_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "target_requirement_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "problem_candidate": {
+          "$ref": "#/$defs/problemCandidate"
+        },
+        "status": {
+          "enum": [
+            "MATCH",
+            "REJECTED"
+          ]
+        },
+        "positive_cue_matches": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "negative_cue_matches": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "recognition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "adapter_count_considered",
+        "profile_count_considered",
+        "candidates",
+        "profile_assessments",
+        "action_binding_performed"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "ZERO_CANDIDATES",
+            "UNIQUE_CANDIDATE",
+            "MULTIPLE_CANDIDATES"
+          ]
+        },
+        "adapter_count_considered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "profile_count_considered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/recognitionCandidate"
+          }
+        },
+        "profile_assessments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/profileAssessment"
+          }
+        },
+        "action_binding_performed": {
+          "const": false
+        }
+      }
+    },
+    "packageAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "package_version",
+        "projection_sha256",
+        "operational_form",
+        "requirement_semantics",
+        "requirement_match",
+        "retrieval_status",
+        "issues"
+      ],
+      "properties": {
+        "package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "package_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "projection_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "operational_form": {
+          "enum": [
+            "ExecutablePlan",
+            "ValidationPlan",
+            "GuidanceOnly",
+            "WarningOnly"
+          ]
+        },
+        "requirement_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "requirement_match": {
+          "type": "boolean"
+        },
+        "retrieval_status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN",
+            "NOT_EVALUATED"
+          ]
+        },
+        "transfer_mode_family": {
+          "enum": [
+            "ExactReuse",
+            "Adaptation",
+            "Guidance",
+            "Unresolved"
+          ]
+        },
+        "issues": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      }
+    },
+    "selectedPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "package_version",
+        "package_source_sha256",
+        "operational_form",
+        "requirement_semantics",
+        "pattern_iri",
+        "pattern_version",
+        "advisory_statement",
+        "retrieval_signature",
+        "parameter_definitions",
+        "projection_sha256"
+      ],
+      "properties": {
+        "package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "package_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "package_source_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "operational_form": {
+          "enum": [
+            "ExecutablePlan",
+            "ValidationPlan",
+            "GuidanceOnly",
+            "WarningOnly"
+          ]
+        },
+        "requirement_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "pattern_iri": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "pattern_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "advisory_statement": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "retrieval_signature": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "problem_type_semantics",
+            "goal_semantics",
+            "context_facet_semantics",
+            "transfer_mode_semantics"
+          ],
+          "properties": {
+            "problem_type_semantics": {
+              "$ref": "#/$defs/nonEmptyUniqueIris"
+            },
+            "goal_semantics": {
+              "$ref": "#/$defs/nonEmptyUniqueIris"
+            },
+            "context_facet_semantics": {
+              "$ref": "#/$defs/uniqueIris"
+            },
+            "transfer_mode_semantics": {
+              "$ref": "#/$defs/nonEmptyUniqueIris"
+            }
+          }
+        },
+        "parameter_definitions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "parameter_id",
+              "parameter_semantics",
+              "value_type",
+              "required",
+              "unit_semantics"
+            ],
+            "properties": {
+              "parameter_id": {
+                "$ref": "#/$defs/stableId"
+              },
+              "parameter_semantics": {
+                "$ref": "#/$defs/semanticIri"
+              },
+              "value_type": {
+                "enum": [
+                  "string",
+                  "integer",
+                  "number",
+                  "boolean",
+                  "semantic_iri",
+                  "object_identity",
+                  "asset_reference"
+                ]
+              },
+              "required": {
+                "type": "boolean"
+              },
+              "unit_semantics": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/semanticIri"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "projection_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "nullableSelectedPackage": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/selectedPackage"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "retrieval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "retrieval_match_profile",
+        "package_count_considered",
+        "assessments",
+        "selected_package",
+        "matching_packages",
+        "caller_selected_package_trusted"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "BLOCKED_ZERO_RECOGNITION",
+            "BLOCKED_MULTIPLE_RECOGNITION",
+            "ZERO_MATCHES",
+            "UNIQUE_MATCH",
+            "MULTIPLE_MATCHES"
+          ]
+        },
+        "retrieval_match_profile": {
+          "const": "ProblemAny-GoalAll-ContextAll-TransferAnySameFamily-v1"
+        },
+        "package_count_considered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "assessments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/packageAssessment"
+          }
+        },
+        "selected_package": {
+          "$ref": "#/$defs/nullableSelectedPackage"
+        },
+        "matching_packages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/selectedPackage"
+          }
+        },
+        "caller_selected_package_trusted": {
+          "const": false
+        }
+      }
+    },
+    "preflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "source_request",
+        "caller_selected_package_id",
+        "normalized_request_sha256",
+        "recognized_parameter_bindings_sha256",
+        "recognized_parameter_bindings_verified",
+        "report_sha256",
+        "report"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "NOT_REQUESTED",
+            "BLOCKED_BY_RETRIEVAL",
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        },
+        "source_request": {
+          "$ref": "#/$defs/nullableAssetRef"
+        },
+        "caller_selected_package_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "normalized_request_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "recognized_parameter_bindings_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "recognized_parameter_bindings_verified": {
+          "type": "boolean"
+        },
+        "report_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "report": {
+          "oneOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "memoryReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "review_scope",
+        "problem_candidate_sha256",
+        "diagnostic_aspect_semantics",
+        "package_dispositions",
+        "next_probe",
+        "current_observation_grounded",
+        "hard_guard_eligible",
+        "active_memory_consumed",
+        "action_authorized",
+        "review_sha256"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "CLASSIFICATION_REQUIRED",
+            "CLASSIFICATION_AMBIGUOUS",
+            "NO_REUSABLE_PATTERN",
+            "PATTERN_AMBIGUOUS",
+            "UNIQUE_PATTERN_CANDIDATE"
+          ]
+        },
+        "review_scope": {
+          "const": "COMPILED_CANDIDATE_RECALL"
+        },
+        "problem_candidate_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "diagnostic_aspect_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "package_dispositions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "package_id",
+              "disposition",
+              "reason"
+            ],
+            "properties": {
+              "package_id": {
+                "$ref": "#/$defs/stableId"
+              },
+              "disposition": {
+                "enum": [
+                  "NOT_EVALUATED_NO_CLASSIFICATION",
+                  "NOT_EVALUATED_AMBIGUOUS_CLASSIFICATION",
+                  "REJECTED_LIFECYCLE",
+                  "REJECTED_REQUIREMENT",
+                  "REJECTED_CONTEXT",
+                  "RETAINED_CANDIDATE",
+                  "COMPETING_CANDIDATE"
+                ]
+              },
+              "reason": {
+                "$ref": "#/$defs/nonEmptyString"
+              }
+            }
+          }
+        },
+        "next_probe": {
+          "enum": [
+            "OBTAIN_TYPED_PROBLEM_CLASSIFICATION",
+            "DISCRIMINATE_COMPETING_CLASSIFICATIONS",
+            "REVIEW_UNCOVERED_REQUIREMENT",
+            "DISCRIMINATE_COMPETING_PATTERNS",
+            "GROUND_APPLICABILITY_AND_CURRENT_STATE"
+          ]
+        },
+        "current_observation_grounded": {
+          "const": false
+        },
+        "hard_guard_eligible": {
+          "const": false
+        },
+        "active_memory_consumed": {
+          "const": false
+        },
+        "action_authorized": {
+          "const": false
+        },
+        "review_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "agentHandoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "requirement_candidate_sha256",
+        "selected_package_id",
+        "operational_form",
+        "memory_use_mode",
+        "advisory_statement",
+        "package_projection_sha256",
+        "semantic_preflight_sha256",
+        "memory_review_sha256",
+        "next_probe",
+        "action_linkage_required",
+        "guidance_consumer_required",
+        "policy_gate_required",
+        "executor_recheck_required",
+        "activation_authorized",
+        "execution_authorized",
+        "runtime_routing_changed"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "BLOCKED_BY_AMBIGUITY_OR_ABSENCE",
+            "ROUTE_IDENTIFIED_PREFLIGHT_REQUIRED",
+            "ROUTE_IDENTIFIED_PREFLIGHT_NOT_PASSING",
+            "PREFLIGHT_EVIDENCE_READY",
+            "GUIDANCE_REVIEW_REQUIRED",
+            "GUIDANCE_EVIDENCE_READY",
+            "WARNING_REVIEW_REQUIRED",
+            "WARNING_EVIDENCE_READY"
+          ]
+        },
+        "requirement_candidate_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "selected_package_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "operational_form": {
+          "oneOf": [
+            {
+              "enum": [
+                "ExecutablePlan",
+                "ValidationPlan",
+                "GuidanceOnly",
+                "WarningOnly"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "memory_use_mode": {
+          "enum": [
+            "NO_SELECTION",
+            "EXECUTION_CANDIDATE",
+            "VALIDATION_CANDIDATE",
+            "GUIDANCE",
+            "WARNING"
+          ]
+        },
+        "advisory_statement": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "package_projection_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "semantic_preflight_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "memory_review_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "next_probe": {
+          "enum": [
+            "OBTAIN_TYPED_PROBLEM_CLASSIFICATION",
+            "DISCRIMINATE_COMPETING_CLASSIFICATIONS",
+            "REVIEW_UNCOVERED_REQUIREMENT",
+            "DISCRIMINATE_COMPETING_PATTERNS",
+            "GROUND_APPLICABILITY_AND_CURRENT_STATE"
+          ]
+        },
+        "action_linkage_required": {
+          "type": "boolean"
+        },
+        "guidance_consumer_required": {
+          "type": "boolean"
+        },
+        "policy_gate_required": {
+          "type": "boolean"
+        },
+        "executor_recheck_required": {
+          "type": "boolean"
+        },
+        "activation_authorized": {
+          "const": false
+        },
+        "execution_authorized": {
+          "const": false
+        },
+        "runtime_routing_changed": {
+          "const": false
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "severity",
+        "code",
+        "path",
+        "message"
+      ],
+      "properties": {
+        "severity": {
+          "enum": [
+            "INFO",
+            "WARNING",
+            "ERROR"
+          ]
+        },
+        "code": {
+          "$ref": "#/$defs/stableId"
+        },
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    }
+  }
+}

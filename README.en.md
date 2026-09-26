@@ -8,7 +8,7 @@ suppliers and production problems. It builds private project ontologies and revi
 evidence develops. Project ontologies and business records stay outside the reusable skill;
 employees communicate in ordinary language rather than preparing ontology or JSON records.
 
-Version **0.5.9** includes default Jev context routing, prewritten engineering-ontology instructions, and integrated project decision methods. Both the full and core packages carry the same routing code and instructions. Invoke the root skill with the current task; the assistant reviews the candidates and coordinates the required capabilities. See [usage](docs/USAGE.md), [release notes](docs/releases/manufacturing-method-0.5.9.md) and [distribution](docs/PORTABLE-DISTRIBUTION.md). Ordinary packages contain no credentials. Independent model accuracy and real project benefits remain unestablished.
+Version **0.6.0** moves CAD execution to direct NXOpen/Journal and supplier acquisition to MISUMI China, with purpose-driven Jev choices and evidence-bounded practice consolidation. Both the full and core packages carry the same routing code and instructions. Invoke the root skill with the current task; the assistant reviews the candidates and coordinates the required capabilities. See [usage](docs/USAGE.md), [release notes](docs/releases/manufacturing-method-0.6.0.md) and [distribution](docs/PORTABLE-DISTRIBUTION.md). Ordinary packages contain no credentials. Independent model accuracy and real project benefits remain unestablished.
 
 <p align="center">
   <a href="references/ontology-engineering-book/handbook/工程本体论-全书.pdf">
@@ -46,7 +46,7 @@ proposal, and use customer and shop-floor feedback to revise it.
 
 The bundled [CAD Agent module](skills/cad-agent/SKILL.md) follows a [general CAD evidence workflow](skills/cad-agent/references/cad-engineering-workflow.md)
 for parts, drawings/BOMs, assemblies, mechanisms, and native readbacks. Its [bidirectional handoff](skills/cad-agent/references/cad-process-integration.md)
-connects relevant CAD objects and revisions to manufacturing decisions. The portable core guards local Fusion calls and provides configurable NX/AutoCAD bridges; recipients supply their own CAD software, hosts, and NX sidecar. The process module then reviews required functions, failure paths, inspection, cost, and lead time; Semantica remains the formal semantic authority.
+connects relevant CAD objects and revisions to manufacturing decisions. The portable core uses direct NXOpen/Journal with MISUMI China supplier resources; recipients provide their own CAD software, license and hosts. Fusion is retired and CAD does not default to MCP. The process module then reviews required functions, failure paths, inspection, cost, and lead time; Semantica remains the formal semantic authority.
 
 ## Two volumes, two complementary questions
 
@@ -94,7 +94,7 @@ real product.
 
 ## Manufacturing and costs: connect conversations, proposals, and feedback
 
-The current method is **0.5.9**, for discrete mechanical manufacturing. Each project supplies its own
+The current method is **0.6.0**, for discrete mechanical manufacturing. Each project supplies its own
 industry context, materials, process parameters, and acceptance criteria. The reusable part is how to
 find missing knowledge, connect evidence, compare options, and verify decisions. Detailed guides and
 example outputs are currently in Chinese.
@@ -188,7 +188,7 @@ The [0.5.7 update notes](docs/releases/manufacturing-method-0.5.7.md) describe s
 
 | Component | Current version and scope |
 |---|---|
-| Manufacturing method | `0.5.9`; CAD evidence, reconstruction, remote bridges, assembly/mechanics, manufacturing processes and costs |
+| Manufacturing method | `0.6.0`; CAD evidence, reconstruction, remote bridges, assembly/mechanics, manufacturing processes and costs |
 | Record templates / review cards | `0.2.1` for two templates, `0.2.0` for the others / cards `1.4.1` |
 | Reports / process diagrams | `1.0.0`; XeLaTeX and five editable TikZ templates |
 | Frozen manufacturing semantic package | `0.1.1`; 141 declared assets, 68 synthetic scenarios, and 23 CQs; retains its local technical candidate state |
@@ -329,7 +329,7 @@ references/product-...-book/     Volume 2 sources, TeX, figures, and PDF
 references/                      source maps, contracts, and release evidence
 skills/domain-ontology-loop/     governed industry-ontology outer loop
 skills/standard-to-book/         controlled standard-to-book workflow
-skills/cad-agent/                native CAD, Fusion execution, and manufacturing evidence handoff
+skills/cad-agent/                direct NX, MISUMI acquisition, and manufacturing evidence handoff
 skills/manufacturing-process-cost/ methods, anonymized cases, records, reports, and diagrams
 docs/PORTABLE-DISTRIBUTION.md     whole-root distribution and receiver checks
 docs/releases/                   versioned update notes and public asset manifests

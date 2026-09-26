@@ -1,0 +1,69 @@
+import adsk.core
+import adsk.fusion
+import json
+import traceback
+
+DOC_NAME = __DOC_NAME__
+EXPECTED_LINEAGE = __LINEAGE__
+STEP_PATH = __STEP_PATH__
+CHUNK_KEY = __CHUNK_KEY__
+EXPECTED_BEFORE = __EXPECTED_BEFORE__
+EXPECTED_ADDED = __EXPECTED_ADDED__
+SAVE_COMMENT = __SAVE_COMMENT__
+
+def _items(collection):
+    return [collection.item(index) for index in range(collection.count)]
+
+result = {"success": False, "stage": "import_chunk", "chunk": CHUNK_KEY}
+try:
+    app = adsk.core.Application.get()
+    doc = app.activeDocument
+    if doc is None or str(doc.name) != DOC_NAME:
+        raise RuntimeError("active document is not " + DOC_NAME + ": " + str(getattr(doc, "name", None)))
+    data_file_before = doc.dataFile
+    if data_file_before is None or str(data_file_before.id) != EXPECTED_LINEAGE:
+        raise RuntimeError("lineage mismatch: " + str(data_file_before.id if data_file_before is not None else None))
+    if not doc.isSaved or doc.isModified:
+        raise RuntimeError("document must be saved and unmodified before import: saved=" + str(doc.isSaved) + " modified=" + str(doc.isModified))
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    root = design.rootComponent
+    before_occs = _items(root.allOccurrences)
+    before_names = set(str(o.component.name) for o in before_occs)
+    if EXPECTED_BEFORE >= 0 and len(before_occs) != EXPECTED_BEFORE:
+        raise RuntimeError("occurrence count before import is " + str(len(before_occs)) + ", expected " + str(EXPECTED_BEFORE))
+    manager = app.importManager
+    options = manager.createSTEPImportOptions(STEP_PATH)
+    options.isViewFit = False
+    imported = manager.importToTarget(options, root)
+    if not imported:
+        raise RuntimeError("importToTarget returned False")
+    after_occs = _items(root.allOccurrences)
+    added = [str(o.component.name) for o in after_occs if str(o.component.name) not in before_names]
+    leaf_added = [o for o in after_occs if str(o.component.name) not in before_names and o.bRepBodies.count > 0]
+    bodies_total = root.bRepBodies.count + sum(o.bRepBodies.count for o in after_occs)
+    if len(leaf_added) < EXPECTED_ADDED:
+        result.update({"warning": "fewer solid occurrences added than expected", "leaf_added": len(leaf_added)})
+    saved = doc.save(SAVE_COMMENT)
+    data_file = doc.dataFile
+    result.update({
+        "success": True,
+        "document_name": str(doc.name),
+        "occurrences_before": len(before_occs),
+        "occurrences_after": len(after_occs),
+        "added_occurrences": len(added),
+        "added_solid_occurrences": len(leaf_added),
+        "expected_added": EXPECTED_ADDED,
+        "added_names": sorted(added),
+        "body_count_total": bodies_total,
+        "save_returned": bool(saved),
+        "is_saved": bool(doc.isSaved),
+        "is_modified": bool(doc.isModified),
+        "version": int(data_file.versionNumber) if data_file is not None else None,
+        "lineage": str(data_file.id) if data_file is not None else None,
+    })
+except Exception as exc:
+    result.update({"success": False, "error": str(exc), "trace": traceback.format_exc()[-1500:]})
+print(json.dumps(result))
+
+def run(context):
+    pass

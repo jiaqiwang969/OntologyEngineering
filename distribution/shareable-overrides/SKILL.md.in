@@ -1,11 +1,11 @@
 ---
 name: ontology-engineering
 metadata:
-  version: "0.5.9"
+  version: "0.6.0"
 description: Interpret engineering requests in context and coordinate the needed CAD, manufacturing, evidence, ontology modeling and Semantica workflows. Develop ideas, compare candidates and revise decisions from source-bound evidence and feedback. Use for engineering-ontology requests, cross-skill engineering collaboration, domain knowledge modeling or Semantica integration. Source-locked Semantica remains the sole executable semantic authority; the two engineering books guide the method.
 ---
 
-# 工程本体：按情景组织工程推理与协同（核心版）
+# 工程本体：按情景组织工程推理与协同
 
 从功能和物理约束推导设计与制造方案，再用原生证据和现场反馈校正：
 
@@ -27,10 +27,26 @@ description: Interpret engineering requests in context and coordinate the needed
 约束和已授权范围，再判断本轮需要什么产出与能力。显式点名的 skill 纳入工作，
 其他模块按实际需要选择；保留此前的停止指令及尚未解除的条件。
 
+按[本轮目标与工程迭代](references/engineering-iteration.md)，默认由本体根据背景提出
+本轮要解决的问题、交付物与验收条件，与用户对齐后推进。已有明确任务即作为已对齐目标，
+普通执行步骤自主继续；实质改变目标、验收或范围时再对齐。
+
 按[情景分析与能力协同](references/context-routing.md)匹配内部模块、可用外部 skill
 和工具。可单项执行，也可围绕共同对象和证据联动；用输入、输出和前置依赖解释
 为什么需要它们。概念解释、项目记录、本体建模、现有语义审查、Semantica 接入和
 行业本体演化分别判断，不把一次调用展开成全部流程。小任务可由根入口直接完成。
+
+网页子任务可使用内置的 [Jev Ultrafast 工具](references/jev-browser-tool.md)：固定源码、
+独立运行环境和可调用入口，由 Jev 多轮选择观察到的网页动作。按用户指定的浏览器方式
+和账号范围接入，结果回到当前工程目标验收；不以网页循环代替整体工程循环。
+供应商资料取得时，把当前用途、已有证据、剩余缺口和页面实际选项交给 Jev；由它选择
+下一项模型、图纸、规格或采购资料。不得在适配器里把目标固定成 STEP/AP203。
+文件与内容核验后再反馈下一轮选择，执行详情见 CAD 模块的 MISUMI 指南。
+
+用户纠正、重复失败或任务检查点出现有价值的新经验时，按
+[经验复盘与做梦式整理](references/practice-consolidation.md)回看证据、请 Jev 提出处置、
+由主 agent 复核后维护对应指南，并验证下一任务能否实际采用。操作经验更新与正式
+本体晋升分别报告；当前是任务内执行方法，没有自动启用夜间常驻调度。
 
 Jev 的判断必须使用预先维护的[工程本体 instruct](references/context-routing-instructions.json)：
 意图与 CQ、对象身份、功能机理、条件证据、ABox/TBox 和交接依赖共同约束能力选择。
@@ -49,8 +65,10 @@ Jev 的判断必须使用预先维护的[工程本体 instruct](references/conte
 才补最小澄清，不让用户先挑内部模块或填写技术合同。
 
 本 skill 内含完整的 [cad-agent CAD 模块](skills/cad-agent/SKILL.md)，负责零件、装配、
-机构、夹具、STEP、图纸及 Fusion／NX／AutoCAD 原生建模与回读。用户仍可直接说
+机构、夹具、STEP、图纸及 NX 原生建模与回读。CAD 默认通过 NXOpen/Journal 直接执行，
+不使用 CAD MCP；标准件首选米思米中国。机械工程、装配、仿真及证据方法保留。用户仍可直接说
 “用 cad-agent 设计夹具”或“检查 STEP”；从本入口进入 CAD 模块执行。
+Fusion 已退出当前工具范围，不作为备用执行器；历史教材只用于机械方法与来源追溯。
 
 融合让 CAD 与[制造工艺和成本](skills/manufacturing-process-cost/SKILL.md)共享对象、
 版本、功能要求和证据：设计中的壁厚、公差、孔位与连接决定装夹、加工、焊接和检验；
@@ -98,26 +116,293 @@ Jev 的判断必须使用预先维护的[工程本体 instruct](references/conte
 员工提供日常描述及手头资料即可；agent 负责来源、记录、绑定和工具调用，不要求员工
 先学本体或手填 JSON。技术回执与学习记录附后可查；现场任务卡只是按需输出的一种视图。
 
-## 语义接入与方法治理
+## 固定职责
 
-正式本体查询、SHACL、规则和项目审查只由本包 source lock 固定的 Semantica 执行。
-按[统一合同](references/semantic-engagement-contract.md)进行只读发现、task/binding 准备、
-适用的正式审查和学习判定。接入缺口按[初始化与采用](docs/method-bootstrap.md)处理。
-每次分别报告工程结果、实际语义执行状态及 `no_delta` 或候选，语义通过不构成产品放行。
+- 用第一卷《工程本体论》指导对象、身份、关系、CQ、OWA/CWA、约束、推理、来源、
+  PROV 和 ontology-guided Agent 方法。
+- 用第二卷《产品可信工程》指导 ISO 本体化推演，以及主张、身份、治理、情境危害、
+  需求、测量、变化、依赖、现场和保证十类跨行业观察镜头。
+- 只通过 Semantica 执行 ontology、CQ、SHACL、SPARQL、rule、case、contract、版本、
+  diff、receipt 和 release verification。
+- 把项目工具与受控记录视为事实源；把有权人视为冲突、删除、风险、合规、晋升和
+  发布决定源。语义通过不增加任何工具或决策权限。
 
-证据支持范围由[工程证据模块](skills/engineering-evidence-methods/SKILL.md)检查；
-可复用表达或判据缺口才进入[行业本体治理](skills/domain-ontology-loop/SKILL.md)。
-新的工程书使用[编书模块](skills/standard-to-book/SKILL.md)。核心版未附两卷书源码，
-其方法已体现在上述工作流和 Jev instruct 中；需要书内检索或修改时使用完整版或受控书源。
-原生语义仍由随包 Semantica 实现，不在 skill 内另建本体执行器。
+不存在 OE-local 可执行语义正本、第二 backend、fallback 或平行 package registry。
 
-## 安装与调用
+CAD 操作按 [NX 直连执行](skills/cad-agent/references/nx-execution.md)，不启动旧 CAD MCP。
+正式语义仍只转交本 skill 的 source-locked Semantica 入口；不恢复已退役的独立
+`cad-agent-semantic` 后端。
 
-分发版本为 `0.5.9`。日常调用直接说“请调用 $ontology-engineering，结合当前情况推进任务”。
-agent 先从上下文准备必要情景，再调用 `scripts/route_engineering_task.py` 并消费结果。
-路由仅需 Python 标准库；Jev 凭据由接收方配置，不能打入通用源码。具体见
-[安装与分发](docs/PORTABLE-DISTRIBUTION.md)和[情景调用](references/context-routing.md#默认调用)。
+批量对话、报告或多版工程资料需要归类和支持关系初判时，按
+[共用批量判断与证据审查](docs/judgment-intake.md)接入 Jev。两卷书指导模式与提问；
+Jev 只产生候选，Semantica 执行已实现的身份、主张、范围、功能覆盖及依赖检查。
+模型的支持与反驳都不能直接成为已采用断言；未知、失败及必查义务须保留。
+小任务直接使用专业工具与既有语义审查，无须为了调用模型而拆成批次。
 
-这个核心目录带有 CAD、制造、证据、项目方法、本体治理、编书入口和 source-locked
-Semantica；外部 CAD 软件、许可、真实设备和项目资料由接收方提供。全部项目记录留在
-私有工作区，包内合成案例不能替代实际工程验证。
+## 开始任何任务
+
+1. 从本 `SKILL.md` 所在目录解析 skill root；不要写死用户主目录或依赖当前工作目录。
+2. 续接情景并运行上述默认 Jev 路由，读取 `routing.json` 后安排本轮工作；随后读取
+   `references/semantic-engagement-contract.md`，如果任务涉及工程应用、跨 skill
+   调用、验证、学习、内化或发布。
+3. 运行只读 preflight/doctor，核对 source lock、vendored wheel、Python/platform 和
+   已安装 Semantica 身份：
+
+   ```bash
+   bash runtime/setup_runtime.sh --preflight
+   bash runtime/setup_runtime.sh --doctor
+   runtime/.venv/bin/python scripts/semantic_engagement.py doctor
+   ```
+
+4. 对概念或方法问题也至少完成只读 package/capability 发现；尚未选择 package ID 时先运行
+   `runtime/.venv/bin/python scripts/semantic_engagement.py discover`。它只返回 registry
+   身份、digest、capability 与 native empty baseline，不接收 backend/path/fallback。
+   如果无需执行，明确说明原因，不伪造 receipt。
+5. 对工程任务读取项目的 `ProjectOntologyBinding` 与 `SemanticTaskEnvelope`，再打开
+   engagement。缺少绑定时记录所需字段和 blocker，不猜 package、事实源或权限；
+   由 agent 根据已有授权和证据准备，确需补充的项目设置交给维护者。只阻断依赖该绑定的
+   正式执行，继续已授权的资料整理、条件分析和问题准备，不把技术字段交给现场员工填写。
+
+## 每次调用的快速内环
+
+按以下顺序工作：
+
+```text
+当前情景 → 本轮产出与所需能力 → 必要模块及交接
+  → task + project binding（正式执行需要时）
+  → 两卷书的方法镜头与来源锚点
+  → Semantica package / baseline / capability 发现
+  → 对象、身份、CQ、证据与权限归一化
+  → 已有 query / shape / rule / oracle 的适用执行
+  → 获授权的工程工作或只读审查
+  → 原生证据 + receipt + release 状态
+  → 工程结果 + Semantica 结果 + learning verdict
+```
+
+运行统一入口；它必须自动注入 `runtime/semantica-source-lock.json` 中的 runtime commit、
+version 和 wheel SHA-256：
+
+```bash
+runtime/.venv/bin/python scripts/semantic_engagement.py open \
+  --binding /path/to/workspace-binding.json \
+  --task /path/to/task-envelope.json \
+  --workspace /path/to/semantica-managed-registry
+```
+
+Native `open/propose/commit/verify/history/promote` 使用 `kind=workspace` 的 binding 和显式
+`--workspace`；`kind=package` 只用于内置 package 的只读 `run/verify`。
+
+所有 workspace 写入使用本次调用的 `--task`。将它按动作投影为 exact 单 action native
+envelope/context：`propose` 产生 `candidate` 与 `proposed`；`commit` 产生 `committed`；
+`verify` 产生 `execute_candidate`、两类 gate 推导、`regression_passed` 与
+`release_complete`；`promote` 产生 `promoted`。不得用较早 task/context 预授权未来迁移，
+也不得给 workspace `verify` 提交外部 pass/fail gate evidence。崩溃恢复与幂等重放必须从
+immutable event/CAS 恢复原 context，并逐项比对；不得把新 context 报成已经发生的迁移。
+
+首次 proposal 会把 exact binding 永久保留在 candidate 中；后续 transition 不得换用更宽
+binding，也不得越过 retained lifecycle prefix。准备 release/promote 时，从一开始就在
+binding 中声明完整有序能力上限，再由 fresh task 和独立 commit/promote authorization
+收窄当前动作。短 prefix candidate 只能保留为历史，不能原地扩权。
+
+按任务使用同一入口的 `discover`、`run`、`review`、`propose`、`commit`、`verify`、`history` 或
+`promote`。先读 `--help`；不要绕过入口手抄 source identity。
+
+项目决定的跨证据审查使用只读 `review`：必须有指向**已晋升 workspace package** 的
+binding、当前 task、与 task 证据 SHA/媒体类型一致的 RDF ABox 文件，以及明确的
+scope、focus IRI、focus RDF 类型、package query/shape asset ID。一个输入投影只能有一个
+所声明类型的焦点对象。入口先核对项目、证据和 promoted
+baseline，再调用 Semantica 原生 `DecisionReviewRunner`；`execution.review` 只说明该
+有界记录投影是否存在语义缺口，`receipt`/`release` 仍单独报告，`clear` 不等于焊缝密封、
+强度或产品放行。候选 package 的 manifest 模式只供受控编写与测试，不能替代项目
+`review`。见 [跨 skill 输入合同](references/semantic-engagement-contract.md)。
+
+## 三联结果
+
+每次都分别保留以下结果。现场任务先用日常语言交付动作、检查与未决项，
+将完整技术身份和回执放在同一次任务的附后记录或链接，不省略未运行和未知状态：
+
+1. **工程结果**：完成了什么、使用哪些项目事实、还缺什么。
+2. **Semantica 结果**：package/version/scenario、execution/oracle、regression、receipt、
+   PROV、release 和各自 blocker。
+3. **本体学习结果**：`no_delta` 及理由，或 candidate ID、范围、证据、冲突和下一步。
+
+不得用进程退出码、一次 oracle 通过、`committed` 或 CQ passed 冒充 release complete。
+
+## 自动介入与受控内化
+
+默认自动执行只读 source/package/baseline 发现、已有语义验证和学习判定。允许自动形成
+非权威 candidate；没有新知识时必须返回 `no_delta`，不得制造空版本。
+
+只有用户已授权 `build/change/internalize` 的目标工作区时，才提交有来源、纯新增、
+无冲突的候选版本。以下动作永不静默执行：
+
+- 同名异义、replace、merge、keep-old 或 remove 判决；
+- 把一个项目实例提升成行业规律；
+- 接受事实、风险、合规或产品放行；
+- promotion、修改两卷书、push 或公开发布。
+
+Promotion 只返回未自动应用的 successor binding 投影；没有控制面批准并另存新 binding
+之前，不得原地改旧 binding 或把新 registry baseline 当作项目已采用。
+
+当学习判定产生 candidate 时，加载 `skills/domain-ontology-loop/SKILL.md`，并把它作为
+本快速内环的治理外环，不建立独立实现。完整 delta 必须覆盖 ontology、CQ、SHACL、
+named queries、支持的 rules、positive/single-fault-negative/ambiguity/prior-release
+cases、contract、provenance 与 book impact；只积累类名和属性名不算炼化完成。
+
+按以下状态逐级报告，禁止跳级：
+
+```text
+candidate → proposed → committed → regression_passed
+          → release_complete → promoted → published
+```
+
+`published` 始终由外部有权人决定。
+
+## 书源指导
+
+先读相应来源地图：
+
+- 第一卷：`references/source-map.md`
+- 第二卷：`references/product-trustworthiness-source-map.md`
+
+从固定仓内两卷检索，不能让外部环境变量遮蔽书源：
+
+```bash
+python3 scripts/search_ontology_sources.py --scope book \
+  "能力问题 competency question"
+```
+
+读取最相关的章节 README、`chapter.md`、TeX 正本、术语表、命题索引或 PDF 页面。
+用具体卷/章/路径作为指导依据；证据不足时如实说明，附加常识必须标为推断。
+
+第二卷的 EPS-RC17、ENV-01、人物、事故和数值都是合成教学材料。精确 ISO 条款、
+表格和原文必须回用户合法持有的受控来源核对；书中转述与 Semantica package 都不能
+冒充标准原文、认证或真实产品结论。
+
+## 两卷书维护
+
+当用户要求重写、校正或重新出版两卷书时，读取
+`references/book-authoring-workflow.md`。保留以下边界：
+
+- 第一卷的人写正本包括卷根/九章/resources README 与 handbook TeX/figures/author tools；
+  同一个卷根作者锁覆盖这些输入，fragment 来自 source-locked Semantica。
+- 第二卷的人写内容正本是 preface、20 个 `chapter.md` 和 4 个 appendix Markdown；
+  TeX 工厂和生成 fragments 必须保持可复现。
+- PDF 是构建产物，不替代 TeX、Markdown、图源与作者锁。
+- 同时改变书与可执行语义时，把 Semantica candidate、书源、book binding、wheel、
+  source lock 和 PDF 作为一个跨仓候选收敛。
+
+使用显式工具检查或更新作者锁：
+
+```bash
+runtime/.venv/bin/python scripts/update_book_authoring_locks.py
+runtime/.venv/bin/python scripts/update_book_authoring_locks.py --write
+```
+
+只有完成审阅后的作者修改才可使用 `--write`。
+
+### 两卷 book artifact v1
+
+两卷跨仓收敛后，读取 `references/release-evidence/README.md`，形成可重放的**技术候选**。
+v1 的 `artifact_status` 永远是 `candidate`：无签名 JSON 不能授权 rights/publication，治理
+状态只接受 `pending`/`blocked`，两项 blocker 也不能被技术门禁消除。不要调用保留的
+`--claim-release` 企图升级状态。
+
+package inventory 只复验 exact locked wheel 中 29 个章节 manifest 的
+`status`/`release_status` 与声明资产；book artifact v1 不包含 receipt 或 gate verdict。
+Semantica package 自身的 receipt/gate/release lifecycle 与两卷静态候选是两个发布面。
+
+从 OE 根执行：
+
+```bash
+runtime/.venv/bin/python scripts/collect_book_release_evidence.py governance
+runtime/.venv/bin/python scripts/collect_book_release_evidence.py static
+runtime/.venv/bin/python scripts/collect_book_release_evidence.py book-bindings
+runtime/.venv/bin/python scripts/collect_book_release_evidence.py regressions \
+  --semantica-root /controlled/semantica/checkout
+runtime/.venv/bin/python scripts/collect_book_release_evidence.py pdf-qa \
+  --visual-review references/release-evidence/pdf-visual-review.json
+runtime/.venv/bin/python scripts/book_release_artifacts.py create \
+  --oe-source-commit 0123456789abcdef0123456789abcdef01234567 \
+  --semantica-root /controlled/semantica/checkout
+runtime/.venv/bin/python scripts/book_release_artifacts.py verify \
+  --semantica-root /controlled/semantica/checkout
+```
+
+Semantica checkout 必须干净且 HEAD 精确匹配 source lock。`--oe-source-commit` 之后只能出现
+脚本固定允许的 PDF/证据/日志/manifest 生成物；其他 tracked/untracked 漂移必须阻断。
+`create` 和 `verify` 都重放固定测试。`governance` 默认保留完整合法的现有记录；除非用户
+明确要求重新初始化，禁止使用 `--reset-existing`，且重置只会得到新的 `pending`，不是批准。
+
+## 新标准与跨行业复用
+
+当任务涉及从不完整客户询问形成制造工艺与成本方案、情境迁移、隐性知识发现、
+设备复用、自制外协比较或方案反馈时，加载
+[manufacturing-process-cost](skills/manufacturing-process-cost/SKILL.md)。该模块提供脱敏
+演变案例、工作规范、项目记录模板和从冻结记录生成的 XeLaTeX 报告组件；实例留在
+私有项目，执行语义仍由 Semantica 负责。报告组件的输入与视图检查不能代替工程语义核验。
+
+制造方法与冻结案例的独立分发见 [分发说明](docs/PORTABLE-DISTRIBUTION.md)。冻结的
+Semantica 传输包随根目录携带，由运行时解释；它不是 OE-local 作者正本或平行 registry。
+不得把仅有候选索引、原机路径可用或文件检查通过称为接收方语义执行通过。
+
+当用户要把另一部合法取得的标准做成书时，加载 `skills/standard-to-book/SKILL.md`。
+新书正文、图和来源地图属于书侧；完整 executable package 和 promotion 属于 Semantica。
+
+CAD 建模、修复、图纸/BOM、装配、机构或几何核验加载
+[CAD Agent 模块](skills/cad-agent/SKILL.md)。先按其[通用 CAD 工程工作流](skills/cad-agent/references/cad-engineering-workflow.md)
+区分定义、实例、特征、界面、基准、配合、机构状态与来源，再用通用 CAD 证据合同形成
+带来源的项目 ABox 和变更影响；它不拥有第二套正式语义执行权。工艺选择依赖 CAD
+对象，或候选工艺反过来要求 CAD 核查可达性、公差、配合、运动包络等条件时，按
+[CAD／工艺双向证据交接](skills/cad-agent/references/cad-process-integration.md)
+把确切对象链到功能、路线、主张与问题；制造模块接续功能覆盖、检验、成本与交期。
+证据转换器只核对身份与来源，不出具 Semantica 或实物放行结论。
+
+装配及相关力学任务另读[装配与力学通用判断内核](skills/cad-agent/references/assembly-and-physics-kernel.md)：区分实例、界面、逐动作状态、外部支撑、装入路径、载荷需求、接头容量和实物证据。具体项目的搭建步骤、材料数值与仿真算法保留在项目 ABox；可迁移的是主张之间的因果关系及反证边界。
+
+从照片、视频、专利或残缺 CAD 反推外形、零件关系和工作原理时，另读[证据驱动的形态与机构重建](skills/cad-agent/references/evidence-driven-reconstruction.md)。可见内容、机理候选、第一性原理推导、本方 CAD 方案和原物/实物结论分层；条件推导用于收窄缺口，不把欠定的隐藏结构伪装成观察事实。
+
+EDA、质检、仿真和其他制造 skill 在三个检查点调用本 skill：任务开始的语义
+接入、不可逆动作前的 preflight、任务结束后的 evidence/receipt/learning 判定。领域
+skill 继续拥有自己的工程工具，不能因语义通过而获得额外 mutation authority。
+
+## 能力与失败边界
+
+Semantica 当前声明支持 RDF Dataset、SPARQL query/update、SHACL、受限正向规则、
+snapshot/diff、PROV、receipt 和 release verification。不要暗示已有完整 DL/tableau、
+一般 SWRL built-ins、非单调/默认、时序或概率推理。
+
+稳定 JSON 不制造平行 alias。分别检查并报告实际 section：
+
+```text
+runtime_source.installed_version_matches / installed_wheel_matches
+binding + task（存在即已通过严格解析；失败见 execution.error_type）
+corpus_found.status + corpus_found.packages/selected
+execution.status + execution.oracle_checks
+regression.status + receipt.status + release.status
+learning.status + learning.verdict(no_delta|candidate)
+learning.promotion.status + learning.publication.status
+```
+
+`missing`、`unknown`、`unsupported`、`partial`、`placeholder`、`absent`、hash mismatch、
+冲突未判决或 release blocked 都必须阻断相应阶段。不得 fallback、静默换后端、空结果
+冒充成功，或直接调用 RDFLib、pySHACL、PyOxigraph、owlready2、Jena 和私有 backend。
+
+## 变更后门禁
+
+修改本 skill、检索、入口、书源、Semantica binding 或炼化流程后，至少运行：
+
+```bash
+python3 scripts/eval_ontology_skill.py
+python3 scripts/eval_ontology_skill.py --split test
+runtime/.venv/bin/python scripts/check_semantica_backend_policy.py \
+  --root . --policy runtime/semantica-backend-policy.json --mode strict --json
+runtime/.venv/bin/python -m pytest -q tests
+```
+
+对真实使用方式做无答案泄漏的 forward test。若涉及书稿，再运行作者、book binding、
+XeLaTeX/PDF、隐私和上述 book artifact v1 候选门禁；不得把 candidate 报告成 publication。
+
+## 工程证据适用性
+
+CAD、工艺、仿真、测量或成本结论依赖来源证据时，使用[工程证据与方法模块](skills/engineering-evidence-methods/SKILL.md)。它把数量参考态、模型保真、因果对照、观测机会、独立验证、检查覆盖、物料口径及证明适用桥交给 Semantica 检查；来源完整、支持义务满足和实物成立分别报告。

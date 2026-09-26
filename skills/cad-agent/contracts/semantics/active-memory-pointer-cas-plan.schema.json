@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-memory-pointer-cas-plan-v1.json",
+  "title": "Host-pinned isolated active-memory pointer CAS plan",
+  "description": "A non-authorizing exact before/after plan for the single fixed non-production live pointer basename. No caller-controlled path is accepted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "mode",
+    "slot_basename",
+    "pointer_id",
+    "scope_id",
+    "transition_kind",
+    "expected_before",
+    "after_state",
+    "after_raw_sha256",
+    "rollback_target",
+    "execution_authorized",
+    "fusion_write_authorized"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.active-memory-pointer-cas-plan.v1"},
+    "plan_id": {"$ref": "#/$defs/stableId"},
+    "mode": {"const": "HostPinnedIsolatedFileCAS"},
+    "slot_basename": {"const": "active-memory-pointer-state.json"},
+    "pointer_id": {"$ref": "#/$defs/stableId"},
+    "scope_id": {"$ref": "#/$defs/stableId"},
+    "transition_kind": {"enum": ["Activation", "Rollback"]},
+    "expected_before": {"$ref": "#/$defs/beforeState"},
+    "after_state": {"$ref": "#/$defs/pointerState"},
+    "after_raw_sha256": {
+      "description": "SHA-256 of the complete canonical after-state file bytes, including its logical digest member and terminal newline.",
+      "$ref": "#/$defs/sha256"
+    },
+    "rollback_target": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/rollbackTarget"}
+      ]
+    },
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"transition_kind": {"const": "Activation"}}},
+      "then": {"properties": {"rollback_target": {"type": "null"}}},
+      "else": {"properties": {"rollback_target": {"$ref": "#/$defs/rollbackTarget"}}}
+    }
+  ],
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "memoryClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_id",
+        "release_version",
+        "release_sha256",
+        "semantic_build_id",
+        "semantic_build_sha256",
+        "selection_id",
+        "selection_sha256"
+      ],
+      "properties": {
+        "release_id": {"$ref": "#/$defs/stableId"},
+        "release_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+        },
+        "release_sha256": {"$ref": "#/$defs/sha256"},
+        "semantic_build_id": {"$ref": "#/$defs/stableId"},
+        "semantic_build_sha256": {"$ref": "#/$defs/sha256"},
+        "selection_id": {"$ref": "#/$defs/stableId"},
+        "selection_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "beforeState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_sha256",
+        "pointer_state_sha256",
+        "generation",
+        "current_closure"
+      ],
+      "properties": {
+        "raw_sha256": {
+          "description": "SHA-256 of the exact canonical before-state file bytes.",
+          "$ref": "#/$defs/sha256"
+        },
+        "pointer_state_sha256": {
+          "description": "Logical before-state digest excluding its derived digest member.",
+          "$ref": "#/$defs/sha256"
+        },
+        "generation": {"type": "integer", "minimum": 0},
+        "current_closure": {"$ref": "#/$defs/memoryClosure"}
+      }
+    },
+    "rollbackTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prior_pointer_state_sha256", "prior_generation", "closure"],
+      "properties": {
+        "prior_pointer_state_sha256": {
+          "description": "Logical digest of the historic target state, not its raw canonical-file digest.",
+          "$ref": "#/$defs/sha256"
+        },
+        "prior_generation": {"type": "integer", "minimum": 0},
+        "closure": {"$ref": "#/$defs/memoryClosure"}
+      }
+    },
+    "pointerState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "pointer_id",
+        "scope_id",
+        "generation",
+        "previous_pointer_state_sha256",
+        "transition_kind",
+        "current_closure",
+        "pointer_state_sha256",
+        "execution_authorized",
+        "fusion_write_authorized"
+      ],
+      "properties": {
+        "schema": {"const": "cad-agent.active-memory-pointer-state.v1"},
+        "pointer_id": {"$ref": "#/$defs/stableId"},
+        "scope_id": {"$ref": "#/$defs/stableId"},
+        "generation": {"type": "integer", "minimum": 1},
+        "previous_pointer_state_sha256": {
+          "description": "Logical digest of expected_before; this predecessor is distinct from expected_before.raw_sha256.",
+          "$ref": "#/$defs/sha256"
+        },
+        "transition_kind": {"enum": ["Activation", "Rollback"]},
+        "current_closure": {"$ref": "#/$defs/memoryClosure"},
+        "pointer_state_sha256": {
+          "description": "Logical after-state digest excluding its derived digest member.",
+          "$ref": "#/$defs/sha256"
+        },
+        "execution_authorized": {"const": false},
+        "fusion_write_authorized": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-operational-memory-pointer-v1.json",
+  "title": "Active operational-memory pointer evidence view",
+  "description": "An immutable view of one selected operational-knowledge release plus its separately attested activation, transition, and reopen event digests. It selects read-only memory and never grants CAD execution.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "pointer_id", "generation", "previous_pointer_state_sha256",
+    "current_target", "pointer_state_sha256", "release_acceptance_event_sha256",
+    "activation_decision_event_sha256",
+    "transition_receipt_event_sha256", "reopen_verification_event_sha256",
+    "execution_authorized", "fusion_write_authorized"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.active-operational-memory-pointer.v1"},
+    "pointer_id": {"$ref": "#/$defs/stableId"},
+    "generation": {"type": "integer", "minimum": 1},
+    "previous_pointer_state_sha256": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+    },
+    "current_target": {"$ref": "#/$defs/currentTarget"},
+    "pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+    "release_acceptance_event_sha256": {"$ref": "#/$defs/sha256"},
+    "activation_decision_event_sha256": {"$ref": "#/$defs/sha256"},
+    "transition_receipt_event_sha256": {"$ref": "#/$defs/sha256"},
+    "reopen_verification_event_sha256": {"$ref": "#/$defs/sha256"},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false}
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string", "minLength": 1, "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "projectPath": {
+      "type": "string", "minLength": 1, "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "schema", "media_type"],
+      "properties": {
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "schema": {"type": "string", "minLength": 2, "maxLength": 256},
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "releaseRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["release_id", "release_version", "artifact"],
+      "properties": {
+        "release_id": {"$ref": "#/$defs/stableId"},
+        "release_version": {"$ref": "#/$defs/semver"},
+        "artifact": {"$ref": "#/$defs/artifactRef"}
+      }
+    },
+    "currentTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["release", "semantic_build_report"],
+      "properties": {
+        "release": {"$ref": "#/$defs/releaseRef"},
+        "semantic_build_report": {"$ref": "#/$defs/artifactRef"}
+      }
+    }
+  }
+}

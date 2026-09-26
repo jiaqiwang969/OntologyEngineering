@@ -25,7 +25,7 @@
 
 ## 通用交接合同
 
-使用 [`cad-evidence.v1.schema.json`](../contracts/cad-evidence.v1.schema.json) 记录来源、CAD 对象、关系、要求、有限主张和问题。`kind`、`predicate` 是本项目使用的词，不构成新的可执行 TBox。`identity_scope` 明确对象 ID 能否跨版重用；`basis` 区分原生回读、图纸/BOM 审阅、媒体/专利观察、解析推导、仿真、测量和推断。原生回读及解析推导项的 JSON Pointer 必须指到实际字段，`expected` 用来核对提取值；其他媒介的定位仅证明引用位置已记录，仍需人工或相应原生工具检查内容。来源路径相对项目根目录，文件逐项核 SHA-256；若回读内嵌模型哈希，须核对到该模型源。
+使用 [`cad-evidence.v1.schema.json`](../contracts/cad-evidence.v1.schema.json) 记录来源、CAD 对象、关系、要求、有限主张和问题。`kind`、`predicate` 是本项目使用的词，不构成新的可执行 TBox。`identity_scope` 明确对象 ID 能否跨版重用；`basis` 区分原生回读、图纸/BOM 审阅、仿真、测量和推断。原生回读项的 JSON Pointer 必须指到实际字段，`expected` 用来核对提取值；其他媒介的定位仅证明引用位置已记录，仍需人工或相应原生工具检查内容。来源路径相对项目根目录，文件逐项核 SHA-256；若回读内嵌模型哈希，须核对到该模型源。
 
 ```bash
 skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/cad_evidence.py \
@@ -36,4 +36,4 @@ skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/cad_evidence.py \
 
 输出的 `.nt` 是**项目 ABox 投影**，完整性报告只说明来源、引用和声明值的对应。`semantic_execution=not_run`、`engineering_verdict=not_assessed` 不能被改写成工程通过。要执行正式 CQ、SHACL、规则或项目决策 review，必须交给父级工程本体论绑定的 Semantica。要进入制造决策，再创建 [CAD／工艺双向交接](cad-process-integration.md)，把确切 CAD 对象 ID 链到工艺特征、功能、路线、主张或问题。CAD 包变更时重算影响范围；旧工艺、检验、报价和交期主张逐项重审。
 
-Fusion 本机只经本模块守卫调用。NX/AutoCAD 可使用[公开的可配置远程桥](../remote/README.md)，但接收方须自行部署商业软件与 NX sidecar，并把真实调用、保存和回读记入项目包。装配判断使用[装配与力学通用内核](assembly-and-physics-kernel.md)，可用公开的有界几何/四连杆筛查器作局部诊断；求解结果必须带声明的域和未验证项回写项目包。
+默认采用 NXOpen/Journal 直连 NX，按 `nx-execution.md` 核实接收方的软件、授权和原生回读。其他 CAD 的可追溯原生回读也可以进入同一合同；本模块不把它们自动切入当前执行链。装配动画、运动学求解和制造分析按各自专项工具执行，统一把证据和边界回写项目包。

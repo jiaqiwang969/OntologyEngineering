@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/pattern-application-consumption-receipt-v2.json",
+  "title": "PatternApplication active-memory consumption receipt",
+  "description": "Content-addressed evidence emitted after a preflight-bound PatternApplication closes one exact active-memory use. This receipt records an occurrence; it does not self-validate, activate knowledge, authorize execution, or mutate a pointer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "receipt_version", "receipt_id", "consumer_id",
+    "consumer_version", "consumer_implementation_sha256", "generated_at",
+    "application_id", "application_sha256", "active_memory_use_sha256",
+    "binding_sha256", "task_sha256", "host_descriptor_sha256",
+    "authority_resolution_sha256", "active_bundle_summary_sha256",
+    "runtime_scope", "selection_sha256", "route_sha256",
+    "selection_clock_event_sha256", "consumption_clock_event_sha256",
+    "consumed_at", "consumer_observation_id", "feedback_clock_event_sha256",
+    "feedback_clock",
+    "applied_pattern", "self_validating", "application_evidence_verified",
+    "feedback_queue_persisted", "active_memory_consumed",
+    "selector_report_claimed_consumed", "pointer_change_performed",
+    "activation_performed", "execution_authorized",
+    "fusion_write_authorized", "runtime_routing_changed", "receipt_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.pattern-application-consumption-receipt.v2"},
+    "receipt_version": {"const": "0.2.0"},
+    "receipt_id": {"$ref": "#/$defs/semanticIri"},
+    "consumer_id": {"const": "cad-agent-active-memory-application-consumer"},
+    "consumer_version": {"const": "0.2.0"},
+    "consumer_implementation_sha256": {"$ref": "#/$defs/sha256"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "application_id": {"$ref": "#/$defs/stableId"},
+    "application_sha256": {"$ref": "#/$defs/sha256"},
+    "active_memory_use_sha256": {"$ref": "#/$defs/sha256"},
+    "binding_sha256": {"$ref": "#/$defs/sha256"},
+    "task_sha256": {"$ref": "#/$defs/sha256"},
+    "host_descriptor_sha256": {"$ref": "#/$defs/sha256"},
+    "authority_resolution_sha256": {"$ref": "#/$defs/sha256"},
+    "active_bundle_summary_sha256": {"$ref": "#/$defs/sha256"},
+    "runtime_scope": {"$ref": "#/$defs/stableId"},
+    "selection_sha256": {"$ref": "#/$defs/sha256"},
+    "route_sha256": {"$ref": "#/$defs/sha256"},
+    "selection_clock_event_sha256": {"$ref": "#/$defs/sha256"},
+    "consumption_clock_event_sha256": {"$ref": "#/$defs/sha256"},
+    "consumed_at": {"type": "string", "format": "date-time"},
+    "consumer_observation_id": {"$ref": "#/$defs/stableId"},
+    "feedback_clock_event_sha256": {"$ref": "#/$defs/sha256"},
+    "feedback_clock": {"$ref": "#/$defs/clock"},
+    "applied_pattern": {"$ref": "#/$defs/appliedPattern"},
+    "self_validating": {"const": false},
+    "application_evidence_verified": {"const": false},
+    "feedback_queue_persisted": {"const": false},
+    "active_memory_consumed": {"const": true},
+    "selector_report_claimed_consumed": {"const": false},
+    "pointer_change_performed": {"const": false},
+    "activation_performed": {"const": false},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "receipt_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stableId": {
+      "type": "string", "minLength": 1, "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "semanticIri": {
+      "type": "string", "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "clock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_sha256", "observed_at", "sequence", "uncertainty_ms",
+        "nonce_sha256", "principal_id", "role_registration_id"
+      ],
+      "properties": {
+        "event_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "sequence": {"type": "integer", "minimum": 0},
+        "uncertainty_ms": {"type": "integer", "minimum": 0, "maximum": 60000},
+        "nonce_sha256": {"$ref": "#/$defs/sha256"},
+        "principal_id": {"$ref": "#/$defs/stableId"},
+        "role_registration_id": {"$ref": "#/$defs/stableId"}
+      }
+    },
+    "appliedPattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pattern_uri", "pattern_version", "package_id", "package_version",
+        "package_source_sha256"
+      ],
+      "properties": {
+        "pattern_uri": {"$ref": "#/$defs/semanticIri"},
+        "pattern_version": {"$ref": "#/$defs/semver"},
+        "package_id": {"$ref": "#/$defs/stableId"},
+        "package_version": {"$ref": "#/$defs/semver"},
+        "package_source_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

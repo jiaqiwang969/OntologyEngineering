@@ -1,0 +1,47 @@
+FUSION_MCP_UNTITLED_PRESERVATION_ROLE = "readback"
+import adsk.core
+import adsk.fusion
+import json
+
+NEW_NAME = __DOC_NAME__
+CREATION_ID_BEFORE_SAVE = __CREATION_ID__
+
+app = adsk.core.Application.get()
+document = app.activeDocument
+if document is None:
+    raise RuntimeError("no active document")
+data_file = document.dataFile
+design = adsk.fusion.Design.cast(app.activeProduct)
+root = design.rootComponent if design is not None else None
+open_documents = []
+unsaved_count = 0
+for index in range(app.documents.count):
+    candidate = app.documents.item(index)
+    open_documents.append({"name": str(candidate.name), "is_saved": bool(candidate.isSaved), "is_modified": bool(candidate.isModified)})
+    if not candidate.isSaved:
+        unsaved_count = unsaved_count + 1
+print(json.dumps({
+    "success": True,
+    "stage": "readback_identity",
+    "document_name": str(document.name),
+    "name_matches": str(document.name) == NEW_NAME,
+    "creation_id": str(document.creationId),
+    "creation_id_before_save": CREATION_ID_BEFORE_SAVE,
+    "creation_id_changed": str(document.creationId) != CREATION_ID_BEFORE_SAVE,
+    "is_saved": bool(document.isSaved),
+    "is_modified": bool(document.isModified),
+    "data_file_id": str(data_file.id) if data_file is not None else None,
+    "data_file_name": str(data_file.name) if data_file is not None else None,
+    "version": int(data_file.versionNumber) if data_file is not None else None,
+    "version_id": str(data_file.versionId) if data_file is not None else None,
+    "parent_folder": str(data_file.parentFolder.name) if data_file is not None else None,
+    "parent_project": str(data_file.parentProject.name) if data_file is not None else None,
+    "occurrences": int(root.allOccurrences.count) if root is not None else None,
+    "bodies": int(root.bRepBodies.count) if root is not None else None,
+    "documents_open": app.documents.count,
+    "unsaved_documents": unsaved_count,
+    "open_documents": open_documents,
+}))
+
+def run(context):
+    pass

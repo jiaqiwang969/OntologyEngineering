@@ -1,5 +1,27 @@
-# CAD Agent core
+# CAD Agent
 
-本目录包含通用 CAD 证据合同、CAD／工艺交接合同、完整性转换器、Fusion 一次性受保护调用、可配置 NX/AutoCAD 远程桥及装配/机构有界筛查器。[证据驱动的重建方法](references/evidence-driven-reconstruction.md)用于从图片、视频、专利等资料提出形态和机构候选，并用有来源的物理/机构/数学推导收窄缺口；[装配与力学方法](references/assembly-and-physics-kernel.md)区分实例、界面、逐状态支撑、载荷路径、局部容量和证据边界。它们随 `ontology-engineering/` 根目录一同分发；不依赖作者工作站、旧 CAD checkout 或历史案例。
+Canonical CAD module inside `ontology-engineering/skills/cad-agent`.
+Default: direct Siemens NXOpen/Journal, no CAD MCP; purchased parts: MISUMI China.
+Mechanical methods, A0–A8 authoring, S0–S11 assembly, kinematics, physics/evidence
+boundaries and manufacturing handoff remain. Formal semantics use parent Semantica.
 
-安装：`bash setup.sh`。离线通用证据、工艺交接与公开专项工具测试：`.venv/bin/python scripts/test_cad_evidence.py`、`.venv/bin/python scripts/test_cad_process_handoff.py`、`.venv/bin/python scripts/test_remote_assembly_mechanism.py`。本机 Fusion 预检：`bash doctor.sh --fusion`。远程桥的外部 CAD 依赖与实际验证范围见 [remote/README.md](remote/README.md)。使用前阅读 [SKILL.md](SKILL.md)。
+Read [SKILL.md](SKILL.md), [NX execution](references/nx-execution.md),
+[MISUMI guide](references/misumi-cn-guide.md) and
+[method migration](references/nx-method-migration.md) as relevant.
+
+```bash
+bash setup.sh
+bash doctor.sh --json
+python3 scripts/semantic_query.py capabilities
+python3 scripts/nx_direct.py --help
+```
+
+Setup installs shared engineering helpers, not commercial CAD or NXOpen. Configure
+an SSH profile and licensed NX host separately. Doctor is local by default and does
+not certify native modeling or license availability. Legacy Fusion/MCP/McMaster
+files and the prior entrypoint are preserved as historical sources; they are not
+active installation or routing defaults. Explicit legacy CLI use is guarded.
+
+The canonical digest in BUILD_INFO covers this module; its historical wheel
+identity does not describe the new direct executor. See CONTRIBUTING.md for checks.
+No public package publication, production release or purchasing is implied.

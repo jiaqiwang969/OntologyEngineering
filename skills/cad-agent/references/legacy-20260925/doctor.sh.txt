@@ -1,0 +1,164 @@
+#!/bin/bash
+# Environment self-check for the cad-agent skill. Run after setup.sh (and any
+# time something misbehaves) to see in one shot whether this machine can run
+# the skill: bundled runtime, Peekaboo, Fusion's MCP endpoint, the guard's own
+# state for the live Fusion PID, and the dell-nb NX/AutoCAD executors.
+#
+#   doctor.sh                 checks only, no Fusion request at all
+#   doctor.sh --smoke         + exactly ONE read-only fusion_mcp_read projects call
+#   doctor.sh --smoke-dell    + one status call against each dell-nb executor
+#   doctor.sh --json          machine-readable preflight block (implies no smoke)
+#
+# --smoke is refused when the preflight found a blocker: a retired PID must
+# never receive another MCP request, not even a health probe.
+set -u
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+hard_fail=0
+do_smoke=0
+do_smoke_dell=0
+do_json=0
+for arg in "$@"; do
+  case "$arg" in
+    --smoke)      do_smoke=1 ;;
+    --smoke-dell) do_smoke_dell=1 ;;
+    --json)       do_json=1 ;;
+    -h|--help)    sed -n '2,14p' "$0"; exit 0 ;;
+    *) echo "unknown option: $arg" >&2; exit 3 ;;
+  esac
+done
+
+# --json is a pure machine-readable preflight: no banner, no other section.
+if [ "$do_json" -eq 1 ]; then
+  if [ -f "$SKILL_DIR/scripts/fusion_preflight.py" ]; then
+    exec python3 "$SKILL_DIR/scripts/fusion_preflight.py" --json
+  fi
+  echo '{"error": "scripts/fusion_preflight.py is not installed in this skill"}' >&2
+  exit 3
+fi
+
+say()  { printf '%s\n' "$*"; }
+pass() { say "PASS  $*"; }
+warn() { say "WARN  $*"; }
+fail() { say "FAIL  $*"; hard_fail=1; }
+
+if [ -f "$SKILL_DIR/BUILD_INFO" ]; then
+  say "---- build ----"
+  sed 's/^/      /' "$SKILL_DIR/BUILD_INFO"
+fi
+
+say "---- runtime (hard requirements) ----"
+VENV_PY="$SKILL_DIR/.venv/bin/python"
+if [ ! -x "$VENV_PY" ] && [ -n "${CAD_AGENT_ROOT:-}" ]; then
+  VENV_PY="$CAD_AGENT_ROOT/.venv/bin/python"
+  say "      canonical venv missing; using explicit CAD_AGENT_ROOT fallback: $CAD_AGENT_ROOT"
+fi
+if [ ! -x "$VENV_PY" ]; then
+  fail "venv python missing: $VENV_PY (run $SKILL_DIR/setup.sh)"
+else
+  if "$VENV_PY" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)'; then
+    pass "python $("$VENV_PY" -c 'import platform; print(platform.python_version())') at $VENV_PY"
+  else
+    fail "venv python older than 3.11"
+  fi
+  if "$VENV_PY" "$SKILL_DIR/scripts/verify_fusion_runtime_wheel.py" --installed >/dev/null 2>&1; then
+    pass "locked Fusion-only runtime installed; no legacy semantic module"
+  else
+    fail "Fusion runtime identity or semantic isolation failed (run setup.sh)"
+  fi
+  if [ -f "$SKILL_DIR/mechanism/wiper-kinematics/pyproject.toml" ]; then
+    if PYTHONPATH="$SKILL_DIR/mechanism/wiper-kinematics" \
+      "$VENV_PY" -c 'import numpy, wiper_kinematics' 2>/dev/null; then
+      pass "mechanism runtime numpy + wiper_kinematics import"
+    else
+      fail "mechanism runtime missing (re-run setup.sh)"
+    fi
+  fi
+fi
+
+# ==========================================================================
+# Fusion job preflight: port ownership, guard markers for the LIVE pid,
+# Peekaboo mode probe & recommendation, window census, power, disk.
+# Delegated to scripts/fusion_preflight.py, which sends no MCP request.
+# ==========================================================================
+say "---- Fusion job preflight ----"
+PREFLIGHT="$SKILL_DIR/scripts/fusion_preflight.py"
+preflight_blocked=0
+if [ ! -f "$PREFLIGHT" ]; then
+  warn "scripts/fusion_preflight.py missing; falling back to the legacy shallow checks"
+  PEEKABOO="${FUSION_CAD_PEEKABOO:-/opt/homebrew/bin/peekaboo}"
+  if [ -x "$PEEKABOO" ]; then pass "peekaboo at $PEEKABOO"; else
+    warn "peekaboo not found at $PEEKABOO; Fusion calls will fail closed"; fi
+  UPSTREAM="${FUSION_CAD_UPSTREAM:-http://127.0.0.1:27182/mcp}"
+  host_port="${UPSTREAM#*://}"; host_port="${host_port%%/*}"
+  host="${host_port%%:*}"; port="${host_port##*:}"
+  if [ -x "$VENV_PY" ] && "$VENV_PY" -c "import socket,sys; socket.create_connection(('$host', int('$port')), 2).close()" 2>/dev/null; then
+    pass "Fusion MCP endpoint listening at $host:$port"
+  else
+    warn "nothing listening at $host:$port -- start Fusion (with its MCP enabled) before calls"
+  fi
+  preflight_blocked=1
+else
+  # keep doctor.sh's own PASS/WARN/FAIL vocabulary
+  preflight_out="$(python3 "$PREFLIGHT" --health-probe tcp 2>&1)"
+  preflight_rc=$?
+  printf '%s\n' "$preflight_out" | sed '/^----$/,$d'
+  case "$preflight_rc" in
+    0) pass "preflight: no blockers" ;;
+    3) fail "preflight found blockers (see the FAIL lines above)"; preflight_blocked=1 ;;
+    *) warn "preflight could not run (exit $preflight_rc)"; preflight_blocked=1 ;;
+  esac
+fi
+
+say "---- dell-nb executors: NX 2412 / AutoCAD 2024 (soft requirements) ----"
+DELL_MAC_RE='^28:0?0:af:d2:b6:b6$'
+if arp -a 2>/dev/null | awk -v re="$DELL_MAC_RE" 'tolower($4) ~ re {found=1} END {exit !found}'; then
+  if "$SKILL_DIR/scripts/dell_ssh.sh" hostname >/dev/null 2>&1; then
+    pass "dell-nb reachable over SSH (scripts/dell_ssh.sh)"
+    if "$SKILL_DIR/scripts/nx_bridge.sh" status 2>/dev/null | grep -q "port answers: True"; then
+      pass "NX_MCP bridge answering on the Dell (scripts/nx_call.py usable)"
+    else
+      warn "NX_MCP bridge not running -- scripts/nx_bridge.sh start (references/nx-execution.md)"
+    fi
+    if "$SKILL_DIR/scripts/autocad_service.sh" status 2>/dev/null | grep -q "relay: listening"; then
+      pass "AutoCAD relay listening in the Dell's interactive session (scripts/autocad_call.py usable)"
+    else
+      warn "AutoCAD relay not running -- scripts/autocad_service.sh start (references/autocad-execution.md)"
+    fi
+  else
+    warn "dell-nb is in the ARP cache but SSH failed -- check DELL_NB_IP / host key (references/nx-execution.md)"
+  fi
+else
+  warn "dell-nb not in the ARP cache (not on this LAN?) -- NX/AutoCAD executors are unavailable from here"
+fi
+
+if [ "$do_smoke_dell" -eq 1 ]; then
+  say "---- live smoke (dell-nb executors) ----"
+  if "$SKILL_DIR/scripts/nx_call.py" --status >/dev/null 2>&1; then pass "nx_call.py --status round-trip"; else warn "nx_call.py --status failed"; fi
+  if "$SKILL_DIR/scripts/autocad_call.py" --status >/dev/null 2>&1; then pass "autocad_call.py --status round-trip"; else warn "autocad_call.py --status failed"; fi
+fi
+
+if [ "$do_smoke" -eq 1 ]; then
+  say "---- live smoke (exactly one read-only guarded call) ----"
+  if [ "$preflight_blocked" -eq 1 ]; then
+    fail "--smoke refused: the preflight found a blocker. A retired or quarantined PID must never receive another MCP request, including a health probe (references/fusion-execution.md rule 2)."
+  elif pgrep -f 'fusion_mcp_proxy\.(cell_server|acceptance_client)' >/dev/null 2>&1; then
+    warn "--smoke skipped: another guarded cell is running; never run two drivers against one Fusion PID"
+  else
+    smoke_out="$(python3 "$SKILL_DIR/scripts/fusion_call.py" fusion_mcp_read '{"queryType": "projects"}' 2>&1)"
+    if [ $? -eq 0 ] && printf '%s' "$smoke_out" | grep -q '"delivered"' \
+       && ! printf '%s' "$smoke_out" | grep -q '"isError": true'; then
+      pass "guarded fusion_mcp_read projects round-trip (read-only, no document touched)"
+    else
+      warn "live read failed -- do NOT retry blindly; triage with external evidence only (references/runbooks/fusion-mcp-ambiguity-triage.md)"
+      printf '%s\n' "$smoke_out" | tail -5 | sed 's/^/      /'
+    fi
+  fi
+fi
+
+say "----"
+if [ "$hard_fail" -eq 0 ]; then
+  say "doctor: OK -- skill runtime is healthy"
+else
+  say "doctor: BROKEN -- fix FAIL items above"
+fi
+exit "$hard_fail"

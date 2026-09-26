@@ -1,0 +1,493 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cad-agent:schema:experience-pattern-ingestion:v1",
+  "title": "CAD Agent workflow-experience pattern-ingestion request",
+  "description": "A domain-neutral, hash-bound curation request that turns one validated WorkflowExperienceRecord insight into a shadow-only operational-pattern Candidate. It is not an activation, routing, or execution contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "ingestion_id",
+    "source_record",
+    "advisory_extension_artifact",
+    "candidate_identity",
+    "selected_insight_id",
+    "problem_classification",
+    "retrieval_signature",
+    "applicability",
+    "failure_recovery",
+    "validation_claims",
+    "feedback",
+    "provenance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.experience-pattern-ingestion.v1"
+    },
+    "ingestion_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "source_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "media_type",
+        "expected_workflow_id"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "application/json"
+        },
+        "expected_workflow_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "advisory_extension_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extension_id",
+        "extension_version",
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "extension_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "extension_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "application/json"
+        }
+      }
+    },
+    "candidate_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "package_version",
+        "pattern_iri",
+        "pattern_version",
+        "pattern_kind_semantics"
+      ],
+      "properties": {
+        "package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "package_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "pattern_iri": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "pattern_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "pattern_kind_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        }
+      }
+    },
+    "selected_insight_id": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "problem_classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "problem_type_semantics",
+        "classification_evidence_conditions",
+        "diagnostic_aspect_semantics",
+        "rationale"
+      ],
+      "properties": {
+        "problem_type_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "classification_evidence_conditions": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "diagnostic_aspect_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "rationale": {
+          "$ref": "#/$defs/informativeString"
+        }
+      }
+    },
+    "retrieval_signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "goal_semantics",
+        "context_facet_semantics",
+        "transfer_mode_semantics"
+      ],
+      "properties": {
+        "goal_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "context_facet_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "transfer_mode_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        }
+      }
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_condition_semantics",
+        "excluded_condition_semantics"
+      ],
+      "properties": {
+        "required_condition_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "excluded_condition_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        }
+      }
+    },
+    "failure_recovery": {
+      "$ref": "#/$defs/failureRecovery"
+    },
+    "validation_claims": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/validationClaim"
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "application_record_semantics",
+        "capture_field_semantics",
+        "maintenance_trigger_semantics"
+      ],
+      "properties": {
+        "application_record_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "capture_field_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "maintenance_trigger_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind_semantics",
+        "curation_activity_id",
+        "authored_at"
+      ],
+      "properties": {
+        "source_kind_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "curation_activity_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "authored_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "informativeString": {
+      "type": "string",
+      "minLength": 24,
+      "maxLength": 4096
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "uniqueIris": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "nonEmptyUniqueIris": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "uniqueStrings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "uniqueOrdinals": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10000
+      }
+    },
+    "fileEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+$"
+        }
+      }
+    },
+    "failureRecovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "failure_event_ordinals",
+        "recovery_event_ordinals",
+        "failure_insight_ids",
+        "recovery_insight_ids",
+        "rationale"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "ObservedAndRecovered",
+            "ObservedUnresolved",
+            "NoFailureObserved"
+          ]
+        },
+        "failure_event_ordinals": {
+          "$ref": "#/$defs/uniqueOrdinals"
+        },
+        "recovery_event_ordinals": {
+          "$ref": "#/$defs/uniqueOrdinals"
+        },
+        "failure_insight_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "recovery_insight_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "rationale": {
+          "$ref": "#/$defs/informativeString"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ObservedAndRecovered"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "failure_insight_ids": {
+                "minItems": 1
+              },
+              "recovery_event_ordinals": {
+                "minItems": 1
+              },
+              "recovery_insight_ids": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ObservedUnresolved"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "failure_insight_ids": {
+                "minItems": 1
+              },
+              "recovery_event_ordinals": {
+                "maxItems": 0
+              },
+              "recovery_insight_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "NoFailureObserved"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "failure_event_ordinals": {
+                "maxItems": 0
+              },
+              "recovery_event_ordinals": {
+                "maxItems": 0
+              },
+              "failure_insight_ids": {
+                "maxItems": 0
+              },
+              "recovery_insight_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "validationClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verification_id",
+        "observation_id",
+        "pass_guard_id",
+        "claim_semantics",
+        "method_semantics",
+        "observation_operation_semantics",
+        "required_capability_semantics",
+        "scope_binding_keys",
+        "supporting_insight_id",
+        "evidence_refs",
+        "limitation"
+      ],
+      "properties": {
+        "verification_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "observation_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "pass_guard_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "claim_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "method_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "observation_operation_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "required_capability_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "scope_binding_keys": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "supporting_insight_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/fileEvidence"
+          }
+        },
+        "limitation": {
+          "$ref": "#/$defs/informativeString"
+        }
+      }
+    }
+  }
+}

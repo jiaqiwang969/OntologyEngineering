@@ -1,0 +1,570 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/competency-question-contract-v1.json",
+  "title": "CAD Agent competency-question executable contract",
+  "description": "Traceable acceptance contract binding a natural-language competency question to a query, bounded scope, machine oracle, fixtures, consumers, and release context.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "cq_id",
+    "cq_version",
+    "status",
+    "requirement",
+    "query",
+    "scope",
+    "oracle",
+    "fixtures",
+    "consumers",
+    "release"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.competency-question-contract.v1"
+    },
+    "cq_id": {
+      "$ref": "#/$defs/stableId",
+      "description": "A stable project CQ identifier. The core contract does not impose one domain's numbering convention."
+    },
+    "cq_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "status": {
+      "enum": [
+        "Draft",
+        "Candidate",
+        "Released",
+        "Deprecated"
+      ]
+    },
+    "requirement": {
+      "$ref": "#/$defs/requirement"
+    },
+    "query": {
+      "$ref": "#/$defs/query"
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "oracle": {
+      "$ref": "#/$defs/oracle"
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/fixture"
+      }
+    },
+    "consumers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/consumer"
+      }
+    },
+    "release": {
+      "$ref": "#/$defs/releaseContext"
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+$"
+        }
+      }
+    },
+    "releaseRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_id",
+        "release_version",
+        "manifest_sha256"
+      ],
+      "properties": {
+        "release_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "release_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "localizedStatement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "language",
+        "text"
+      ],
+      "properties": {
+        "language": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$"
+        },
+        "text": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_statement",
+        "translations",
+        "rationale",
+        "decision_effect"
+      ],
+      "properties": {
+        "primary_statement": {
+          "$ref": "#/$defs/localizedStatement"
+        },
+        "translations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/localizedStatement"
+          }
+        },
+        "rationale": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "decision_effect": {
+          "enum": [
+            "Informational",
+            "CandidateDiscovery",
+            "PlanValidation",
+            "ExecutionBlocking",
+            "ReleaseBlocking",
+            "Audit"
+          ]
+        }
+      }
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "query_id",
+        "asset",
+        "language",
+        "form"
+      ],
+      "properties": {
+        "query_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "asset": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/assetRef"
+            },
+            {
+              "properties": {
+                "media_type": {
+                  "const": "application/sparql-query"
+                }
+              }
+            }
+          ]
+        },
+        "language": {
+          "const": "SPARQL-1.1"
+        },
+        "form": {
+          "enum": [
+            "ASK",
+            "SELECT",
+            "CONSTRUCT"
+          ]
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_modules",
+        "named_graph_policy",
+        "graph_iris",
+        "world_assumption",
+        "inference_profile",
+        "boundary_statement"
+      ],
+      "properties": {
+        "semantic_modules": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetRef"
+          }
+        },
+        "named_graph_policy": {
+          "enum": [
+            "ExplicitGraphSet",
+            "ActiveReleaseClosure",
+            "FixtureDatasetOnly"
+          ]
+        },
+        "graph_iris": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/semanticIri"
+          }
+        },
+        "world_assumption": {
+          "enum": [
+            "OpenWorld",
+            "LocalClosedWorld"
+          ]
+        },
+        "inference_profile": {
+          "enum": [
+            "None",
+            "RDFS",
+            "OWL-RL"
+          ]
+        },
+        "boundary_statement": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "named_graph_policy": {
+                "const": "ExplicitGraphSet"
+              }
+            },
+            "required": [
+              "named_graph_policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "graph_iris": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "booleanOracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "oracle_type",
+        "expected_boolean",
+        "unknown_policy",
+        "explanation"
+      ],
+      "properties": {
+        "oracle_type": {
+          "const": "BooleanExpected"
+        },
+        "expected_boolean": {
+          "type": "boolean"
+        },
+        "unknown_policy": {
+          "$ref": "#/$defs/oracleUnknownPolicy"
+        },
+        "explanation": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "rowCountOracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "oracle_type",
+        "comparator",
+        "expected_count",
+        "unknown_policy",
+        "explanation"
+      ],
+      "properties": {
+        "oracle_type": {
+          "const": "RowCount"
+        },
+        "comparator": {
+          "enum": [
+            "Equal",
+            "NotEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual",
+            "LessThan",
+            "LessThanOrEqual"
+          ]
+        },
+        "expected_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unknown_policy": {
+          "$ref": "#/$defs/oracleUnknownPolicy"
+        },
+        "explanation": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "resultDigestOracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "oracle_type",
+        "canonicalization",
+        "expected_sha256",
+        "unknown_policy",
+        "explanation"
+      ],
+      "properties": {
+        "oracle_type": {
+          "const": "ResultDigest"
+        },
+        "canonicalization": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "expected_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "unknown_policy": {
+          "$ref": "#/$defs/oracleUnknownPolicy"
+        },
+        "explanation": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "violationSetOracle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "oracle_type",
+        "maximum_violation_count",
+        "allowed_violation_codes",
+        "unknown_policy",
+        "explanation"
+      ],
+      "properties": {
+        "oracle_type": {
+          "const": "ViolationSet"
+        },
+        "maximum_violation_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "allowed_violation_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "unknown_policy": {
+          "$ref": "#/$defs/oracleUnknownPolicy"
+        },
+        "explanation": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "oracleUnknownPolicy": {
+      "enum": [
+        "Fail",
+        "Block",
+        "AllowWithExplicitUnknown"
+      ]
+    },
+    "oracle": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/booleanOracle"
+        },
+        {
+          "$ref": "#/$defs/rowCountOracle"
+        },
+        {
+          "$ref": "#/$defs/resultDigestOracle"
+        },
+        {
+          "$ref": "#/$defs/violationSetOracle"
+        }
+      ]
+    },
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixture_id",
+        "role",
+        "dataset",
+        "expected_outcome"
+      ],
+      "properties": {
+        "fixture_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "role": {
+          "enum": [
+            "Positive",
+            "Negative",
+            "Ambiguity",
+            "Boundary",
+            "PriorRelease"
+          ]
+        },
+        "dataset": {
+          "$ref": "#/$defs/assetRef"
+        },
+        "expected_outcome": {
+          "enum": [
+            "SatisfiesOracle",
+            "ViolatesOracle",
+            "ExplicitUnknownAllowed"
+          ]
+        }
+      }
+    },
+    "consumer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consumer_id",
+        "consumer_kind",
+        "execution_stage",
+        "blocking",
+        "on_failure"
+      ],
+      "properties": {
+        "consumer_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "consumer_kind": {
+          "enum": [
+            "SemanticCompiler",
+            "ContinuousIntegration",
+            "RuntimePreflight",
+            "ReleaseReview",
+            "AuditReport"
+          ]
+        },
+        "execution_stage": {
+          "enum": [
+            "Build",
+            "Link",
+            "Regression",
+            "ActivationReview",
+            "Runtime",
+            "Maintenance"
+          ]
+        },
+        "blocking": {
+          "type": "boolean"
+        },
+        "on_failure": {
+          "enum": [
+            "RejectBuild",
+            "RejectActivation",
+            "BlockPlan",
+            "RequestReview",
+            "ReportOnly"
+          ]
+        }
+      }
+    },
+    "releaseContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "introduced_in",
+        "validated_against",
+        "compatibility_policy"
+      ],
+      "properties": {
+        "introduced_in": {
+          "$ref": "#/$defs/releaseRef"
+        },
+        "validated_against": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/releaseRef"
+          }
+        },
+        "compatibility_policy": {
+          "enum": [
+            "RevalidateEveryRelease",
+            "CompatibleUntilSemanticChange",
+            "PinnedReleaseOnly"
+          ]
+        },
+        "supersedes_cq_version": {
+          "$ref": "#/$defs/semver"
+        }
+      }
+    }
+  }
+}

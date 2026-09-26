@@ -22,7 +22,7 @@ from package_skill import check  # noqa: E402
 
 ASSETS = ROOT / "distribution/shareable-core-assets.json"
 OVERRIDES = ROOT / "distribution/shareable-overrides"
-PUBLIC_CORE_SCOPE = "public-core-v0.5.9"
+PUBLIC_CORE_SCOPE = "public-core-v0.6.0"
 
 
 def _sha256(data: bytes) -> str:
@@ -47,6 +47,17 @@ def stage(directory: Path) -> dict:
         raise ValueError("unknown shareable asset ledger")
     if ledger.get("distribution_scope") != PUBLIC_CORE_SCOPE + "; owner-approved":
         raise ValueError("shareable distribution scope changed without review")
+    policy_path = ROOT / 'skills/cad-agent/data/execution-policy.json'
+    if policy_path.is_file():
+        policy = json.loads(policy_path.read_text())
+        if 'Fusion' in policy.get('removed_cad_systems', []):
+            forbidden = [entry['path'] for entry in ledger['files']
+                         if entry['path'].startswith('skills/cad-agent/')
+                         and (('/scripts/fusion_' in entry['path'] and entry['path'].endswith('.py'))
+                              or entry['path'].endswith('/dist/fusion-runtime-lock.json')
+                              or ('cad_fusion_runtime' in entry['path'] and entry['path'].endswith('.whl')))]
+            if forbidden:
+                raise ValueError('Historical distribution contains retired Fusion execution assets; prepare a separately reviewed NX distribution ledger')
     seen: set[str] = set()
     for entry in ledger["files"]:
         name = entry["path"]

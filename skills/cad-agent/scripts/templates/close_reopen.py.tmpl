@@ -1,0 +1,81 @@
+import adsk.core
+import adsk.fusion
+import json
+import traceback
+
+DOC_NAME = __DOC_NAME__
+EXPECTED_LINEAGE = __LINEAGE__
+
+def _items(collection):
+    return [collection.item(index) for index in range(collection.count)]
+
+def _active_target(app):
+    doc = app.activeDocument
+    if doc is None or str(doc.name) != DOC_NAME:
+        raise RuntimeError("active document is not " + DOC_NAME + ": " + str(getattr(doc, "name", None)))
+    data_file = doc.dataFile
+    if data_file is None or str(data_file.id) != EXPECTED_LINEAGE:
+        raise RuntimeError("lineage mismatch: " + str(data_file.id if data_file is not None else None))
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    if design is None:
+        raise RuntimeError("active product is not a Design")
+    return doc, design, data_file
+
+result = {"success": False, "stage": "close_reopen_readback"}
+try:
+    app = adsk.core.Application.get()
+    doc, design, data_file = _active_target(app)
+    if doc.isModified or not doc.isSaved:
+        raise RuntimeError("document has unsaved changes; refusing to close")
+    unsaved_others = [str(d.name) for d in _items(app.documents) if not d.isSaved]
+    if unsaved_others:
+        raise RuntimeError("other unsaved documents present; refusing lifecycle operation: " + ", ".join(unsaved_others))
+    root_before = design.rootComponent
+    before = {
+        "name": str(doc.name),
+        "version": int(data_file.versionNumber),
+        "lineage": str(data_file.id),
+        "documents_open": app.documents.count,
+        "occurrences": root_before.allOccurrences.count,
+        "user_parameters": design.userParameters.count,
+        "as_built_joints": root_before.asBuiltJoints.count,
+        "joints": root_before.joints.count,
+        "rigid_groups": root_before.rigidGroups.count,
+    }
+    doc.close(False)
+    reopened = app.documents.open(data_file, True)
+    if reopened is None:
+        raise RuntimeError("documents.open returned None")
+    doc2, design2, df2 = _active_target(app)
+    root = design2.rootComponent
+    occs = _items(root.allOccurrences)
+    bodies = root.bRepBodies.count + sum(o.bRepBodies.count for o in occs)
+    joints = [{"name": str(j.name), "type": int(j.jointMotion.jointType), "suppressed": bool(j.isSuppressed)} for j in _items(root.asBuiltJoints)]
+    result.update({
+        "success": True,
+        "before": before,
+        "after": {
+            "name": str(doc2.name),
+            "version": int(df2.versionNumber),
+            "lineage": str(df2.id),
+            "is_saved": bool(doc2.isSaved),
+            "is_modified": bool(doc2.isModified),
+            "documents_open": app.documents.count,
+            "occurrences": len(occs),
+            "bodies": bodies,
+            "as_built_joints": len(joints),
+            "joints": root.joints.count,
+            "rigid_groups": root.rigidGroups.count,
+            "user_parameters": design2.userParameters.count,
+            "grounded": [str(o.component.name) for o in occs if o.isGrounded][:20],
+        },
+        "joint_names": [j["name"] for j in joints][:80],
+        "lineage_stable": before["lineage"] == str(df2.id),
+        "counts_stable": before["occurrences"] == len(occs) and before["user_parameters"] == design2.userParameters.count and before["as_built_joints"] == len(joints),
+    })
+except Exception as exc:
+    result.update({"success": False, "error": str(exc), "trace": traceback.format_exc()[-1500:]})
+print(json.dumps(result))
+
+def run(context):
+    pass

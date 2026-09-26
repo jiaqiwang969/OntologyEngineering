@@ -1,0 +1,289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/recognition-adapter-package-v2.json",
+  "title": "CAD Agent recognition adapter source package",
+  "description": "Language- and surface-adapter contract that can emit typed problem, SemanticRequirement, and parameter candidates, but cannot select an operational Pattern, Capability, ToolOperation, public action, verdict, or execution route.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "adapter_id",
+    "adapter_version",
+    "adapter_status",
+    "authority_model",
+    "input_modality_semantics",
+    "target_requirement_semantics",
+    "profiles",
+    "provenance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.recognition-adapter-package.v2"
+    },
+    "adapter_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "adapter_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "adapter_status": {
+      "enum": [
+        "Draft",
+        "Candidate",
+        "Reviewed",
+        "Deprecated"
+      ]
+    },
+    "authority_model": {
+      "const": "problem_requirement_candidates_only"
+    },
+    "input_modality_semantics": {
+      "$ref": "#/$defs/nonEmptyUniqueIris"
+    },
+    "target_requirement_semantics": {
+      "$ref": "#/$defs/nonEmptyUniqueIris"
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/profile"
+      }
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "uniqueStrings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "nonEmptyUniqueStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "uniqueIris": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "nonEmptyUniqueIris": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+$"
+        }
+      }
+    },
+    "parameterExtractor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extractor_id",
+        "parameter_semantics",
+        "extractor_semantics",
+        "expression",
+        "normalizer_semantics",
+        "required"
+      ],
+      "properties": {
+        "extractor_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "parameter_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "extractor_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "expression": {
+          "$ref": "#/$defs/nonEmptyString",
+          "maxLength": 512,
+          "description": "Candidate extractor expression. Runtime consumers support only a conservative linear-time subset and must reject nested groups, alternation, backreferences, or stacked quantifiers."
+        },
+        "normalizer_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "target_requirement_semantics",
+        "problem_candidate",
+        "positive_cues",
+        "negative_cues",
+        "context_cue_semantics",
+        "parameter_extractors",
+        "output_scope"
+      ],
+      "properties": {
+        "profile_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "language": {
+          "type": "string",
+          "pattern": "^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$"
+        },
+        "target_requirement_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "problem_candidate": {
+          "$ref": "#/$defs/problemCandidate"
+        },
+        "positive_cues": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "negative_cues": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "context_cue_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "parameter_extractors": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/parameterExtractor"
+          }
+        },
+        "output_scope": {
+          "const": "SemanticProblemRequirementAndParametersOnly"
+        }
+      }
+    },
+    "problemCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "problem_type_semantics",
+        "goal_semantics",
+        "context_facet_semantics",
+        "transfer_mode_semantics",
+        "diagnostic_aspect_semantics",
+        "classification_basis"
+      ],
+      "properties": {
+        "problem_type_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "goal_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "context_facet_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "transfer_mode_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "diagnostic_aspect_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "classification_basis": {
+          "const": "LexicalProfileCandidate"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_evidence_refs",
+        "source_kind_semantics",
+        "curation_activity_id",
+        "authored_at"
+      ],
+      "properties": {
+        "source_evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetRef"
+          }
+        },
+        "source_kind_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "curation_activity_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "authored_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

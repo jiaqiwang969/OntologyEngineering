@@ -1,0 +1,769 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-preflight-report-v1.json",
+  "title": "CAD Agent semantic preflight report",
+  "description": "Deterministic shadow report for context closure, problem-DAG composition, and executor digest binding. PASS is not execution authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "request_id",
+    "evaluation_time",
+    "status",
+    "build_report",
+    "observation_snapshot_sha256",
+    "problem_results",
+    "composed_plan",
+    "plan_sha256",
+    "issues",
+    "preflight_sha256",
+    "handoff_binding",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-preflight-report.v1"
+    },
+    "request_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "evaluation_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "$ref": "#/$defs/verdict"
+    },
+    "build_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "build_id",
+        "compiler_version",
+        "status"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "build_id": {
+          "$ref": "#/$defs/sha256"
+        },
+        "compiler_version": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        }
+      }
+    },
+    "observation_snapshot_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "problem_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/problemResult"
+      }
+    },
+    "composed_plan": {
+      "$ref": "#/$defs/composedPlan"
+    },
+    "plan_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issue"
+      }
+    },
+    "preflight_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "handoff_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preflight_sha256",
+        "plan_sha256",
+        "action_handoff_required",
+        "guidance_consumer_required",
+        "executor_must_recheck",
+        "policy_gate_still_required"
+      ],
+      "properties": {
+        "preflight_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "plan_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "action_handoff_required": {
+          "type": "boolean"
+        },
+        "guidance_consumer_required": {
+          "type": "boolean"
+        },
+        "executor_must_recheck": {
+          "type": "boolean"
+        },
+        "policy_gate_still_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "runtime_routing_changed": {
+      "const": false
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "candidateAssetRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "sha256",
+            "media_type"
+          ],
+          "properties": {
+            "path": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "media_type": {
+              "const": "application/json"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "actionLinkageBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_result",
+        "assessment_sha256",
+        "link_set_sha256",
+        "source_build_id",
+        "independent_activation_required"
+      ],
+      "properties": {
+        "candidate_result": {
+          "$ref": "#/$defs/candidateAssetRef"
+        },
+        "assessment_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "link_set_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "source_build_id": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "independent_activation_required": {
+          "const": true
+        }
+      }
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN"
+      ]
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "severity",
+        "code",
+        "path",
+        "message"
+      ],
+      "properties": {
+        "severity": {
+          "enum": [
+            "ERROR",
+            "WARNING"
+          ]
+        },
+        "code": {
+          "$ref": "#/$defs/stableId"
+        },
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "problemResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "problem_id",
+        "selected_package_id",
+        "status",
+        "retrieval_status",
+        "retrieval_match_profile",
+        "transfer_mode_family",
+        "parameter_status",
+        "observation_status",
+        "applicability_status",
+        "validation_context_status",
+        "adapter_compatibility_status",
+        "dependency_status",
+        "advisory_extension_status",
+        "advisory_constraint_bindings",
+        "current_guard_status",
+        "deferred_guard_ids",
+        "missing_observation_ids"
+      ],
+      "properties": {
+        "problem_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "selected_package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "retrieval_status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "retrieval_match_profile": {
+          "const": "ProblemAny-GoalAll-ContextAll-TransferAnySameFamily-v1"
+        },
+        "transfer_mode_family": {
+          "enum": [
+            "ExactReuse",
+            "Adaptation",
+            "Guidance",
+            "Unresolved"
+          ]
+        },
+        "parameter_status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "observation_status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "applicability_status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "validation_context_status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "adapter_compatibility_status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "dependency_status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "advisory_extension_status": {
+          "enum": [
+            "NOT_DECLARED",
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        },
+        "advisory_constraint_bindings": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/advisoryConstraintBinding"
+          }
+        },
+        "current_guard_status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "deferred_guard_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "missing_observation_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        }
+      }
+    },
+    "stageInstance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_instance_id",
+        "problem_id",
+        "package_id",
+        "stage_id",
+        "action_semantics",
+        "stage_kind_semantics",
+        "mutation_mode",
+        "required_capability_semantics",
+        "input_parameter_ids",
+        "output_ids",
+        "depends_on_stage_instance_ids",
+        "pre_guard_ids",
+        "post_guard_ids",
+        "observation_ids",
+        "verification_ids",
+        "failure_transition",
+        "execution_authority"
+      ],
+      "properties": {
+        "stage_instance_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "problem_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "stage_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "action_semantics": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "stage_kind_semantics": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "mutation_mode": {
+          "enum": [
+            "ReadOnly",
+            "ReversibleMutation",
+            "PrivilegedMutation",
+            "ExternalSideEffect"
+          ]
+        },
+        "required_capability_semantics": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "input_parameter_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "output_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "depends_on_stage_instance_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "pre_guard_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "post_guard_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "observation_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "verification_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "failure_transition": {
+          "$ref": "#/$defs/failureTransition"
+        },
+        "execution_authority": {
+          "const": "separate_runtime_policy_required"
+        }
+      }
+    },
+    "composedPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_model",
+        "problem_order",
+        "problem_bindings",
+        "stage_instances",
+        "runtime_transitions",
+        "unresolved_prerequisites",
+        "entry_stage_instance_ids",
+        "exit_stage_instance_ids",
+        "action_linkage_status",
+        "action_linkage_binding"
+      ],
+      "properties": {
+        "plan_model": {
+          "const": "ProblemDAG"
+        },
+        "problem_order": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "problem_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/problemBinding"
+          }
+        },
+        "stage_instances": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/stageInstance"
+          }
+        },
+        "runtime_transitions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/runtimeTransition"
+          }
+        },
+        "unresolved_prerequisites": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/unresolvedPrerequisite"
+          }
+        },
+        "entry_stage_instance_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "exit_stage_instance_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "action_linkage_status": {
+          "enum": [
+            "NOT_REQUIRED",
+            "UNRESOLVED_SHADOW",
+            "CANDIDATE_LINKED",
+            "FAIL"
+          ]
+        },
+        "action_linkage_binding": {
+          "$ref": "#/$defs/actionLinkageBinding"
+        }
+      }
+    },
+    "problemBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "problem_id",
+        "selected_package_id",
+        "request_binding_sha256",
+        "source_contract_sha256",
+        "source_plan_model",
+        "recipe_sha256",
+        "advisory_constraints_sha256s"
+      ],
+      "properties": {
+        "problem_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "selected_package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "request_binding_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "source_contract_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "source_plan_model": {
+          "oneOf": [
+            {
+              "enum": [
+                "DirectedAcyclicGraph",
+                "PartialOrder",
+                "Sequential",
+                "BoundedStateMachine"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recipe_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "advisory_constraints_sha256s": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sha256"
+          }
+        }
+      }
+    },
+    "advisoryConstraintBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extension_id",
+        "extension_version",
+        "advisory_constraints_sha256",
+        "advisory_constraints",
+        "integrity_property_semantics",
+        "availability_condition_semantics",
+        "build_binding_status",
+        "integrity_assertion_status",
+        "availability_derivation_status"
+      ],
+      "properties": {
+        "extension_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "extension_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "advisory_constraints_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "advisory_constraints": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "integrity_property_semantics": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "availability_condition_semantics": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "build_binding_status": {
+          "const": "PASS"
+        },
+        "integrity_assertion_status": {
+          "$ref": "#/$defs/verdict"
+        },
+        "availability_derivation_status": {
+          "$ref": "#/$defs/verdict"
+        }
+      }
+    },
+    "unresolvedPrerequisite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "problem_id",
+        "prerequisite_problem_id",
+        "prerequisite_package_id",
+        "operational_form",
+        "reason",
+        "status"
+      ],
+      "properties": {
+        "problem_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "prerequisite_problem_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "prerequisite_package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "operational_form": {
+          "enum": [
+            "GuidanceOnly",
+            "WarningOnly"
+          ]
+        },
+        "reason": {
+          "const": "UPSTREAM_ADVISORY_HAS_NO_STAGE_PLAN"
+        },
+        "status": {
+          "const": "UNRESOLVED"
+        }
+      }
+    },
+    "failureTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "target_stage_instance_ids",
+        "when_guard_ids"
+      ],
+      "properties": {
+        "policy": {
+          "enum": [
+            "StopPlan",
+            "RunRecoveryStage",
+            "SelectAlternateBranch",
+            "RequestReview",
+            "RecordAndContinue"
+          ]
+        },
+        "target_stage_instance_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "when_guard_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        }
+      }
+    },
+    "runtimeTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transition_instance_id",
+        "problem_id",
+        "transition_kind",
+        "from_stage_instance_id",
+        "to_stage_instance_id",
+        "when_guard_ids"
+      ],
+      "properties": {
+        "transition_instance_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "problem_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "transition_kind": {
+          "enum": [
+            "Success",
+            "Failure",
+            "ConditionalBranch",
+            "Retry",
+            "Repeat",
+            "Compensation"
+          ]
+        },
+        "from_stage_instance_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "to_stage_instance_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "when_guard_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "maximum_traversals": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "time_budget_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    }
+  }
+}

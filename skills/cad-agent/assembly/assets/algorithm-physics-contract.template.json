@@ -1,0 +1,496 @@
+{
+  "$schema": "cad-agent.assembly-algorithm-physics-contract/v1",
+  "contract_id": "REPLACE_WITH_STABLE_CONTRACT_ID",
+  "operation_id": "REPLACE_WITH_STABLE_OPERATION_ID",
+  "captured_at": "REPLACE_WITH_ISO_8601_TIMESTAMP",
+  "policy_pin": {
+    "policy_id": "cad-agent-assembly-algorithm-physics-routing-2026-08-27",
+    "version": "1.0.0",
+    "sha256": "c62948a83a16ce339fba8fc8ce776de0fb917b386623824a17d15d3ad9fad1a2"
+  },
+  "target_claims": [],
+  "evidence_registry": [
+    {
+      "evidence_id": "EVIDENCE_001",
+      "kind": "OTHER",
+      "path": "REPLACE_WITH_EVIDENCE_PATH",
+      "sha256": "REPLACE_WITH_SHA256",
+      "captured_at": "REPLACE_WITH_ISO_8601_TIMESTAMP"
+    }
+  ],
+  "authority": {
+    "cad_pose": {
+      "system": "FUSION",
+      "authoritative": true,
+      "source_document_id": "REPLACE_WITH_FUSION_DOCUMENT_ID",
+      "source_document_sha256": "REPLACE_WITH_SHA256",
+      "evidence_ids": [
+        "EVIDENCE_001"
+      ]
+    },
+    "physics": {
+      "system": "UNSELECTED",
+      "authoritative": false,
+      "claim_ceiling": "MODELED_PHYSICS_ONLY",
+      "evidence_ids": []
+    },
+    "presentation": {
+      "system": "BLENDER",
+      "read_only": true,
+      "claim_ceiling": "DELIVERY_VERIFIED",
+      "evidence_ids": []
+    },
+    "physical": {
+      "system": "FIXTURE_TRIAL",
+      "authoritative": false,
+      "claim_ceiling": "PHYSICAL_RELEASE_VALIDATED",
+      "evidence_ids": []
+    }
+  },
+  "coordinate_contract": {
+    "length_unit": "m",
+    "angle_unit": "rad",
+    "transform_convention": "ROW_MAJOR_PARENT_TO_WORLD",
+    "transform_application_count": 1,
+    "q0_state_id": "REPLACE_WITH_Q0_STATE_ID",
+    "q0_state_sha256": "REPLACE_WITH_SHA256",
+    "geometry_set_sha256": "REPLACE_WITH_SHA256",
+    "world_pose_set_sha256": "REPLACE_WITH_SHA256",
+    "evidence_ids": [
+      "EVIDENCE_001"
+    ]
+  },
+  "operation_profile": {
+    "operation_class": "UNSELECTED",
+    "mover_occurrence_ids": [],
+    "fixed_occurrence_ids": [],
+    "rigid_subassembly_declared": false,
+    "deformable_occurrence_ids": [],
+    "thread_engagement": "UNKNOWN",
+    "force_or_capacity_claim": "UNKNOWN",
+    "physical_release_claim": "UNKNOWN",
+    "evidence_ids": []
+  },
+  "parameter_records": [],
+  "planning": {
+    "method": {
+      "method_id": "UNSELECTED",
+      "method_class": "UNSELECTED",
+      "capability_status": "NOT_EXECUTED",
+      "implementation_identity": "UNSELECTED",
+      "applicability_status": "HOLD",
+      "claim_ceiling": "CANDIDATE_ONLY",
+      "evidence_ids": []
+    },
+    "pab_checks": [
+      {
+        "id": "PAB-01",
+        "status": "HOLD",
+        "rationale": "Authoritative q0 is not yet bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-02",
+        "status": "HOLD",
+        "rationale": "Identity, units, frames, and hashes are not yet closed.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-03",
+        "status": "HOLD",
+        "rationale": "Mover and deformable partitions are not yet closed.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-04",
+        "status": "HOLD",
+        "rationale": "Ordered absolute states are not yet persisted.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-05",
+        "status": "HOLD",
+        "rationale": "Continuous-model checks are not yet recorded.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-06",
+        "status": "HOLD",
+        "rationale": "Terminal goal is not yet persisted.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-07",
+        "status": "HOLD",
+        "rationale": "Reversal semantics are not yet checked.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-08",
+        "status": "HOLD",
+        "rationale": "Connector-path applicability is not yet decided.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-09",
+        "status": "HOLD",
+        "rationale": "SBDP reproduction boundary is not yet classified.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-10",
+        "status": "HOLD",
+        "rationale": "Partition updates are not yet recorded.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-11",
+        "status": "HOLD",
+        "rationale": "Saved-scene readback is not yet recorded.",
+        "evidence_ids": []
+      },
+      {
+        "id": "PAB-12",
+        "status": "HOLD",
+        "rationale": "Claim caps and canonical hashes are not yet closed.",
+        "evidence_ids": []
+      }
+    ],
+    "state_ledger": {
+      "initial_state_id": "REPLACE_WITH_Q0_STATE_ID",
+      "ordered_absolute_state_ids": [],
+      "state_count": 0,
+      "canonical_state_digest": "REPLACE_WITH_SHA256",
+      "mover_occurrence_ids": [],
+      "fixed_occurrence_ids": [],
+      "terminal_state_id": "REPLACE_WITH_TERMINAL_STATE_ID",
+      "terminal_goal_class": "UNKNOWN",
+      "edge_check_class": "UNKNOWN",
+      "saved_scene_readback_status": "HOLD",
+      "evidence_ids": []
+    },
+    "reversal": {
+      "used": false,
+      "mode": "NOT_USED",
+      "connector_path_status": "HOLD",
+      "evidence_ids": []
+    }
+  },
+  "route_plan": {
+    "s7_geometry": {
+      "status": "HOLD",
+      "rationale": "Geometry route not yet decided."
+    },
+    "s9_direction_probe": {
+      "status": "HOLD",
+      "rationale": "Directional ambiguity not yet assessed."
+    },
+    "p_contact_physics": {
+      "status": "HOLD",
+      "rationale": "Contact-physics applicability not yet assessed."
+    },
+    "threaded_contact": {
+      "status": "HOLD",
+      "rationale": "Thread engagement not yet assessed."
+    },
+    "s11_physical": {
+      "status": "HOLD",
+      "rationale": "Physical-release intent not yet assessed."
+    }
+  },
+  "directional_probe": {
+    "execution_status": "NOT_RUN",
+    "fairness_checks": [
+      {
+        "id": "S9-FC-01",
+        "status": "HOLD",
+        "rationale": "Candidate set not yet bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "S9-FC-02",
+        "status": "HOLD",
+        "rationale": "Initial state and environment not yet bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "S9-FC-03",
+        "status": "HOLD",
+        "rationale": "Proxy and parameter profile not yet bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "S9-FC-04",
+        "status": "HOLD",
+        "rationale": "First discriminating feature not yet defined.",
+        "evidence_ids": []
+      },
+      {
+        "id": "S9-FC-05",
+        "status": "HOLD",
+        "rationale": "No-feature disposition not yet defined.",
+        "evidence_ids": []
+      },
+      {
+        "id": "S9-FC-06",
+        "status": "HOLD",
+        "rationale": "Paired controls not yet bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "S9-FC-07",
+        "status": "HOLD",
+        "rationale": "Repeatability and noise policy not yet bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "S9-FC-08",
+        "status": "HOLD",
+        "rationale": "Promotion guard not yet bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "S9-FC-09",
+        "status": "HOLD",
+        "rationale": "Symmetric stop rule not yet bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "S9-FC-10",
+        "status": "HOLD",
+        "rationale": "Tie and contradiction handling not yet bound.",
+        "evidence_ids": []
+      }
+    ],
+    "candidates": [],
+    "first_discriminating_feature_id": "UNSELECTED",
+    "zero_contact_only_basis": false,
+    "result": "INCONCLUSIVE",
+    "stop_action": "HOLD",
+    "evidence_ids": []
+  },
+  "contact_physics": {
+    "execution_status": "NOT_RUN",
+    "solver_name": "UNSELECTED",
+    "solver_version": "UNSELECTED",
+    "drive_mode": "NOT_APPLICABLE",
+    "checks": [
+      {
+        "id": "CP-01",
+        "status": "HOLD",
+        "rationale": "World transform and SI units are not yet closed.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-02",
+        "status": "HOLD",
+        "rationale": "Body roles and contact pairs are not yet closed.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-03",
+        "status": "HOLD",
+        "rationale": "Geometry roles are not yet separated.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-04",
+        "status": "HOLD",
+        "rationale": "Proxy error is not yet bounded.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-05",
+        "status": "HOLD",
+        "rationale": "Parameter provenance is not yet bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-06",
+        "status": "HOLD",
+        "rationale": "Deformable feed causality is not yet checked.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-07",
+        "status": "HOLD",
+        "rationale": "Drive mode is not yet declared.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-08",
+        "status": "HOLD",
+        "rationale": "Staged canaries are not yet complete.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-09",
+        "status": "HOLD",
+        "rationale": "Matched counterfactual is not yet complete.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-10",
+        "status": "HOLD",
+        "rationale": "Force recovery convention is not yet version-bound.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-11",
+        "status": "HOLD",
+        "rationale": "Action-reaction, torque, and work are not yet closed.",
+        "evidence_ids": []
+      },
+      {
+        "id": "CP-12",
+        "status": "HOLD",
+        "rationale": "Convergence and sensitivity are not yet closed.",
+        "evidence_ids": []
+      }
+    ],
+    "staged_runs": {
+      "geometry_placement": "NOT_RUN",
+      "static_initialization": "NOT_RUN",
+      "two_step_smoke": "NOT_RUN",
+      "ten_step_smoke": "NOT_RUN",
+      "loaded_contact_canary": "NOT_RUN",
+      "guide_passage_canary": "NOT_RUN",
+      "matched_control": "NOT_RUN",
+      "full_continuous_solve": "NOT_RUN"
+    },
+    "force_recovery_convention": "UNSELECTED",
+    "action_reaction_status": "HOLD",
+    "convergence_status": "HOLD",
+    "capacity_model": {
+      "inertia": "HOLD",
+      "torque_speed_or_current_curve": "HOLD",
+      "losses": "HOLD",
+      "controller_and_saturation": "HOLD",
+      "stall_slip_backdrive": "HOLD",
+      "evidence_ids": []
+    },
+    "result_ladder": "INCONCLUSIVE",
+    "evidence_ids": []
+  },
+  "threaded_contact": {
+    "execution_status": "NOT_RUN",
+    "dedicated_model": false,
+    "model_identity": "UNSELECTED",
+    "result": "INCONCLUSIVE",
+    "evidence_ids": []
+  },
+  "endpoint_validation": {
+    "geometric_reclosure": {
+      "status": "HOLD",
+      "feature_relation_method": "UNSELECTED",
+      "evidence_ids": []
+    },
+    "mechanical_relock": {
+      "status": "HOLD",
+      "retention_or_pullout_test": "NOT_RUN",
+      "evidence_ids": []
+    }
+  },
+  "physical_falsification": {
+    "execution_status": "NOT_RUN",
+    "fixture_calibration": "HOLD",
+    "reclamp_repeatability": "HOLD",
+    "machine_observable_completion": "HOLD",
+    "load_transfer_and_clamp_release": "HOLD",
+    "fixture_and_tool_withdrawal": "HOLD",
+    "minimal_high_risk_trial": "HOLD",
+    "result": "INCONCLUSIVE",
+    "evidence_ids": []
+  },
+  "outputs": {
+    "blender_media": {
+      "execution_status": "NOT_RUN",
+      "readback_status": "HOLD",
+      "result": "NOT_CLAIMED",
+      "evidence_ids": []
+    }
+  },
+  "claim_ledger": [
+    {
+      "claim": "ORDERED_PLANNING",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "GEOMETRIC_PATH",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "DIRECTION_RANKING",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "CONTACT_TRANSFER",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "PASSAGE",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "MOTOR_CAPACITY",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "ENDPOINT_RECLOSURE",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "MECHANICAL_RELOCK",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "THREADED_CONTACT",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "MEDIA",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    },
+    {
+      "claim": "PHYSICAL_RELEASE",
+      "result": "NOT_CLAIMED",
+      "basis_authorities": [],
+      "evidence_ids": [],
+      "rationale": "No claim selected."
+    }
+  ],
+  "known_unknowns": [
+    "Template is not a completed engineering contract."
+  ],
+  "declared_verdict": "HOLD"
+}

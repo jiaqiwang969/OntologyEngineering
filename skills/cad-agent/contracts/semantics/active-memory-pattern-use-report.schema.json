@@ -1,0 +1,312 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-memory-pattern-use-report-v2.json",
+  "title": "Active-memory pattern-use report",
+  "description": "A task-bound runtime consumer report proving that a freshly revalidated host-selected semantic build, rather than a caller-selected build, produced one exact operational package for reasoning and later PatternApplication feedback. It never grants execution or mutates the active pointer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "consumer_version", "status", "resolution", "request_id",
+    "task_sha256", "raw_task_sha256", "host",
+    "authority_resolution_sha256", "active_bundle", "runtime_scope",
+    "selection", "selection_clock", "consumption_clock", "consumed_at",
+    "consumer_observation", "route",
+    "active_memory_consumed", "pattern_application_binding_ready",
+    "selector_report_claimed_consumed", "selection_revalidated",
+    "pointer_change_performed", "activation_performed",
+    "execution_authorized", "fusion_write_authorized",
+    "runtime_routing_changed", "issues", "use_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.active-memory-pattern-use-report.v2"},
+    "consumer_version": {"const": "0.2.0"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "resolution": {
+      "enum": [
+        "CONSUMED_EXACT_ACTIVE_PATTERN",
+        "HOST_DESCRIPTOR_REQUIRED",
+        "ACTIVE_SELECTION_NOT_AVAILABLE",
+        "ACTIVE_SELECTION_REVALIDATION_FAILED",
+        "CALLER_BUILD_OVERRIDE_REJECTED",
+        "ACTIVE_BUILD_ROUTE_FAILED",
+        "CLASSIFICATION_REQUIRED",
+        "PATTERN_ABSENT_OR_AMBIGUOUS",
+        "CONSUMPTION_CLOCK_INVALID"
+      ]
+    },
+    "request_id": {"$ref": "#/$defs/stableId"},
+    "task_sha256": {"$ref": "#/$defs/sha256"},
+    "raw_task_sha256": {"$ref": "#/$defs/sha256"},
+    "host": {"$ref": "#/$defs/host"},
+    "authority_resolution_sha256": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+    },
+    "active_bundle": {"$ref": "#/$defs/activeBundle"},
+    "runtime_scope": {"type": ["string", "null"], "minLength": 1},
+    "selection": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/selection"}
+      ]
+    },
+    "route": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/route"}
+      ]
+    },
+    "selection_clock": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/clock"}]
+    },
+    "consumption_clock": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/clock"}]
+    },
+    "consumed_at": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "format": "date-time"}
+      ]
+    },
+    "consumer_observation": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/observation"}]
+    },
+    "active_memory_consumed": {"type": "boolean"},
+    "pattern_application_binding_ready": {"type": "boolean"},
+    "selector_report_claimed_consumed": {"const": false},
+    "selection_revalidated": {"type": "boolean"},
+    "pointer_change_performed": {"const": false},
+    "activation_performed": {"const": false},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "use_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASS"}}},
+      "then": {
+        "properties": {
+          "resolution": {"const": "CONSUMED_EXACT_ACTIVE_PATTERN"},
+          "authority_resolution_sha256": {"$ref": "#/$defs/sha256"},
+          "host": {
+            "allOf": [
+              {"$ref": "#/$defs/host"},
+              {
+                "properties": {
+                  "consumption_clock_event_sha256": {"$ref": "#/$defs/sha256"},
+                  "feedback_clock_event_sha256": {"$ref": "#/$defs/sha256"}
+                }
+              }
+            ]
+          },
+          "runtime_scope": {"type": "string", "minLength": 1},
+          "selection": {"$ref": "#/$defs/selection"},
+          "selection_clock": {"$ref": "#/$defs/clock"},
+          "consumption_clock": {"$ref": "#/$defs/clock"},
+          "consumed_at": {"type": "string", "format": "date-time"},
+          "consumer_observation": {"$ref": "#/$defs/observation"},
+          "route": {
+            "allOf": [
+              {"$ref": "#/$defs/route"},
+              {"properties": {"selected_package": {"$ref": "#/$defs/selectedPackage"}}}
+            ]
+          },
+          "active_memory_consumed": {"const": true},
+          "pattern_application_binding_ready": {"const": true},
+          "selection_revalidated": {"const": true},
+          "issues": {"maxItems": 0}
+        }
+      },
+      "else": {
+        "properties": {
+          "active_memory_consumed": {"const": false},
+          "pattern_application_binding_ready": {"const": false}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stableId": {
+      "type": "string", "minLength": 1, "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "semanticIri": {
+      "type": "string", "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance", "descriptor_sha256", "descriptor_security_verified",
+        "authority_data_root_external", "minimum_generation",
+        "consumption_clock_event_sha256", "feedback_clock_event_sha256"
+      ],
+      "properties": {
+        "provenance": {"const": "HostDescriptor"},
+        "descriptor_sha256": {"$ref": "#/$defs/sha256"},
+        "descriptor_security_verified": {"const": true},
+        "authority_data_root_external": {"const": true},
+        "minimum_generation": {"type": "integer", "minimum": 0},
+        "consumption_clock_event_sha256": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+        },
+        "feedback_clock_event_sha256": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+        }
+      }
+    },
+    "activeBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bundle_id", "bundle_version", "manifest_path", "manifest_sha256",
+        "summary_sha256"
+      ],
+      "properties": {
+        "bundle_id": {"$ref": "#/$defs/stableId"},
+        "bundle_version": {"type": "string", "minLength": 1},
+        "manifest_path": {"$ref": "#/$defs/projectPath"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "summary_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "projectPath": {
+      "type": "string", "minLength": 1, "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "clock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_sha256", "observed_at", "sequence", "uncertainty_ms",
+        "nonce_sha256", "principal_id", "role_registration_id"
+      ],
+      "properties": {
+        "event_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "sequence": {"type": "integer", "minimum": 0},
+        "uncertainty_ms": {"type": "integer", "minimum": 0, "maximum": 60000},
+        "nonce_sha256": {"$ref": "#/$defs/sha256"},
+        "principal_id": {"$ref": "#/$defs/stableId"},
+        "role_registration_id": {"$ref": "#/$defs/stableId"}
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id", "window_started_at", "window_ended_at", "implementation_id",
+        "implementation_version", "implementation_sha256"
+      ],
+      "properties": {
+        "observation_id": {"$ref": "#/$defs/stableId"},
+        "window_started_at": {"type": "string", "format": "date-time"},
+        "window_ended_at": {"type": "string", "format": "date-time"},
+        "implementation_id": {"$ref": "#/$defs/stableId"},
+        "implementation_version": {"$ref": "#/$defs/semver"},
+        "implementation_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_id", "selection_sha256", "authority_pointer_sha256",
+        "authority_registry_sha256", "selection_root_sha256", "pointer_id",
+        "pointer_generation", "pointer_state_sha256", "release_id",
+        "release_version", "release_sha256", "semantic_build_id",
+        "semantic_build_raw_sha256", "semantic_build_canonical_sha256",
+        "semantic_build_compiler_version"
+      ],
+      "properties": {
+        "selection_id": {"$ref": "#/$defs/stableId"},
+        "selection_sha256": {"$ref": "#/$defs/sha256"},
+        "authority_pointer_sha256": {"$ref": "#/$defs/sha256"},
+        "authority_registry_sha256": {"$ref": "#/$defs/sha256"},
+        "selection_root_sha256": {"$ref": "#/$defs/sha256"},
+        "pointer_id": {"$ref": "#/$defs/stableId"},
+        "pointer_generation": {"type": "integer", "minimum": 1},
+        "pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "release_id": {"$ref": "#/$defs/stableId"},
+        "release_version": {"$ref": "#/$defs/semver"},
+        "release_sha256": {"$ref": "#/$defs/sha256"},
+        "semantic_build_id": {"$ref": "#/$defs/sha256"},
+        "semantic_build_raw_sha256": {"$ref": "#/$defs/sha256"},
+        "semantic_build_canonical_sha256": {"$ref": "#/$defs/sha256"},
+        "semantic_build_compiler_version": {"$ref": "#/$defs/semver"}
+      }
+    },
+    "selectedPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id", "package_version", "package_source_sha256",
+        "pattern_iri", "pattern_version", "operational_form",
+        "projection_sha256"
+      ],
+      "properties": {
+        "package_id": {"$ref": "#/$defs/stableId"},
+        "package_version": {"$ref": "#/$defs/semver"},
+        "package_source_sha256": {"$ref": "#/$defs/sha256"},
+        "pattern_iri": {"$ref": "#/$defs/semanticIri"},
+        "pattern_version": {"$ref": "#/$defs/semver"},
+        "operational_form": {
+          "enum": ["ExecutablePlan", "ValidationPlan", "GuidanceOnly", "WarningOnly"]
+        },
+        "projection_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route_sha256", "build_report_sha256", "build_id",
+        "recognition_status", "problem_candidate_sha256",
+        "retrieval_status", "retrieval_match_profile", "memory_review_sha256",
+        "semantic_preflight_sha256", "selected_package"
+      ],
+      "properties": {
+        "route_sha256": {"$ref": "#/$defs/sha256"},
+        "build_report_sha256": {"$ref": "#/$defs/sha256"},
+        "build_id": {"$ref": "#/$defs/sha256"},
+        "recognition_status": {
+          "enum": ["UNIQUE_CANDIDATE", "ZERO_CANDIDATES", "MULTIPLE_CANDIDATES"]
+        },
+        "problem_candidate_sha256": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+        },
+        "retrieval_status": {
+          "enum": [
+            "BLOCKED_ZERO_RECOGNITION", "BLOCKED_MULTIPLE_RECOGNITION",
+            "ZERO_MATCHES", "UNIQUE_MATCH", "MULTIPLE_MATCHES"
+          ]
+        },
+        "retrieval_match_profile": {"type": "string", "minLength": 1},
+        "memory_review_sha256": {"$ref": "#/$defs/sha256"},
+        "semantic_preflight_sha256": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+        },
+        "selected_package": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/selectedPackage"}]
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["severity", "code", "message"],
+      "properties": {
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "code": {"type": "string", "minLength": 2},
+        "message": {"type": "string", "minLength": 1, "maxLength": 512}
+      }
+    }
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-memory-selection-report-v1.json",
+  "title": "Read-only active memory selection report",
+  "description": "Task-bound result of resolving a fixed, externally governed operational-memory pointer. PASS selects exact read-only build bytes but never grants execution or mutates routing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "resolver_version", "status", "resolution", "task_sha256",
+    "authority", "selection_root", "pointer", "release", "semantic_build",
+    "active_bundle_binding_status", "active_memory_consumed", "pointer_change_performed",
+    "activation_performed", "execution_authorized", "fusion_write_authorized",
+    "runtime_routing_changed", "issues", "selection_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.active-memory-selection-report.v1"},
+    "resolver_version": {"const": "0.1.0"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "resolution": {
+      "enum": [
+        "RESOLVED_ACTIVE_BUILD",
+        "ACTIVE_AUTHORITY_NOT_CONFIGURED",
+        "ACTIVE_AUTHORITY_INVALID",
+        "ACTIVE_MEMORY_ROOT_NOT_CONFIGURED",
+        "ZERO_ACTIVE_POINTERS",
+        "MULTIPLE_ACTIVE_MEMORY_ROOTS",
+        "MULTIPLE_ACTIVE_POINTERS",
+        "INVALID_POINTER_EVIDENCE",
+        "STALE_POINTER_GENERATION",
+        "POINTER_REOPEN_DRIFT",
+        "TARGET_RELEASE_MISMATCH",
+        "RELEASE_BUILD_CARDINALITY_ERROR",
+        "BUILD_INTEGRITY_OR_REPRODUCTION_FAILURE",
+        "ACTIVE_BUNDLE_MISMATCH",
+        "TASK_BINDING_MISMATCH",
+        "UNVERIFIED_ROLLBACK_TRANSITION"
+      ]
+    },
+    "task_sha256": {"$ref": "#/$defs/sha256"},
+    "authority": {"$ref": "#/$defs/authoritySummary"},
+    "selection_root": {"$ref": "#/$defs/selectionRootSummary"},
+    "pointer": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/pointerSummary"}]},
+    "release": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/releaseSummary"}]},
+    "semantic_build": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/buildSummary"}]},
+    "active_bundle_binding_status": {"enum": ["NOT_EVALUATED", "MATCHED", "FAILED"]},
+    "active_memory_consumed": {"const": false},
+    "pointer_change_performed": {"const": false},
+    "activation_performed": {"const": false},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "selection_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stableId": {
+      "type": "string", "minLength": 1, "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"},
+    "nullableSha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+    "authoritySummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "pointer_sha256", "registry_sha256", "pointer_generation"],
+      "properties": {
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "pointer_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "registry_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "pointer_generation": {"type": ["integer", "null"], "minimum": 0}
+      }
+    },
+    "selectionRootSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "first_read_sha256", "reopened_read_sha256"],
+      "properties": {
+        "path": {"type": ["string", "null"]},
+        "first_read_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "reopened_read_sha256": {"$ref": "#/$defs/nullableSha256"}
+      }
+    },
+    "pointerSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pointer_id", "generation", "pointer_state_sha256", "release_acceptance_event_sha256", "activation_event_sha256", "receipt_event_sha256", "reopen_event_sha256"],
+      "properties": {
+        "pointer_id": {"$ref": "#/$defs/stableId"},
+        "generation": {"type": "integer", "minimum": 1},
+        "pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "release_acceptance_event_sha256": {"$ref": "#/$defs/sha256"},
+        "activation_event_sha256": {"$ref": "#/$defs/sha256"},
+        "receipt_event_sha256": {"$ref": "#/$defs/sha256"},
+        "reopen_event_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "releaseSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["release_id", "release_version", "path", "sha256"],
+      "properties": {
+        "release_id": {"$ref": "#/$defs/stableId"},
+        "release_version": {"$ref": "#/$defs/semver"},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "buildSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "raw_sha256", "canonical_sha256", "build_id", "compiler_version"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "raw_sha256": {"$ref": "#/$defs/sha256"},
+        "canonical_sha256": {"$ref": "#/$defs/sha256"},
+        "build_id": {"$ref": "#/$defs/sha256"},
+        "compiler_version": {"$ref": "#/$defs/semver"}
+      }
+    },
+    "issue": {
+      "type": "object", "additionalProperties": false,
+      "required": ["severity", "code", "message"],
+      "properties": {
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "code": {"type": "string", "minLength": 2},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

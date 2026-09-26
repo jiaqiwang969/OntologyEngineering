@@ -1,5 +1,7 @@
 # NX / AutoCAD 可配置远程桥
 
+> Historical MCP transport package only. The current supported CAD execution entry is ../scripts/nx_direct.py with ../references/nx-execution.md. No bridge service is required; do not start this transport as a fallback.
+
 `mcp_bridge.py` 是一次性 MCP stdio 客户端。它通过用户明确配置的 SSH 别名把 JSON-RPC 发到 Windows 主机；没有配置就不会连接。每个业务调用只发送一次，超时表示执行状态未知，不自动重试。调用结果仍需按 [CAD 证据合同](../contracts/cad-evidence.v1.schema.json)保存来源、模型版次、原生回读与适用范围。
 
 复制 `profiles.example.json` 到仓库外的私有配置文件，填入接收方自己的 SSH 别名、Python 路径及工作目录。保留 SSH 正常主机密钥验证；该 JSON 不放密码或客户数据。客户端仅需 Python 3.11+；Windows 端应安装其自行许可的 CAD 软件及依赖。

@@ -1,0 +1,43 @@
+{
+  "schema": "cad-agent.operational-execution-policy/v1",
+  "default_cad": "NXDirect",
+  "default_supplier": "MISUMI_CN",
+  "cad_mcp_enabled": false,
+  "removed_cad_systems": [
+    "Fusion"
+  ],
+  "legacy_cad_reactivation_allowed": false,
+  "semantic_authority": "parent-source-locked-Semantica",
+  "automatic_legacy_fallback": false,
+  "historical_experience_activation": false,
+  "records": [
+    {
+      "tool_id": "NXDirect",
+      "entrypoint": "scripts/nx_direct.py",
+      "tools": [
+        "prepare",
+        "probe",
+        "stage",
+        "run",
+        "status",
+        "fetch"
+      ],
+      "transport": "direct NXOpen Journal over configured SSH; no MCP",
+      "capability_boundary": "Reviewed journals only; per-operation NX version/license/native tests required"
+    },
+    {
+      "tool_id": "MISUMI_CN",
+      "entrypoint": "references/misumi-cn-guide.md",
+      "tools": [
+        "complete-configuration",
+        "official-browser-cad-generation",
+        "observed-public-2d-archive",
+        "native-import-check",
+        "quantity-specific-quote"
+      ],
+      "download_entrypoint": "scripts/misumi_acquire.py",
+      "capability_boundary": "Purpose-driven resource selection and bounded file acquisition; current session identity required. Native readback, unattended reauthentication and cold-restart reliability remain separate checks. No purchase authorization follows from acquisition."
+    }
+  ],
+  "historical_inventory_distributed": false
+}

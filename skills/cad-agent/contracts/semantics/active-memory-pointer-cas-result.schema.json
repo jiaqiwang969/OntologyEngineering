@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-memory-pointer-cas-result-v1.json",
+  "title": "Non-production active-memory pointer CAS mechanism result",
+  "description": "A mechanism-level result. APPLIED proves only a host-pinned isolated local-file CAS plus same-process readback; no signature, receipt, independent reopen, selection publication, Agent routing, execution, or Fusion authority is created.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "actuator_version",
+    "status",
+    "slot_basename",
+    "plan_sha256",
+    "before",
+    "after",
+    "durability",
+    "pointer_change_outcome",
+    "posix_only_proof",
+    "cooperative_lock_protocol_only",
+    "windows_semantics_proven",
+    "noncooperative_writers_covered",
+    "signed_receipt_created",
+    "independent_reopen_performed",
+    "selection_updated",
+    "authority_updated",
+    "agent_updated",
+    "execution_authorized",
+    "fusion_write_authorized",
+    "issues",
+    "result_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.active-memory-pointer-cas-result.v1"},
+    "actuator_version": {"const": "0.1.0"},
+    "status": {
+      "enum": [
+        "APPLIED",
+        "CAS_MISMATCH",
+        "BUSY",
+        "PRECONDITION_FAILED",
+        "COMMITTED_UNATTESTED",
+        "OUTCOME_UNKNOWN"
+      ]
+    },
+    "slot_basename": {"const": "active-memory-pointer-state.json"},
+    "plan_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "before": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/stateSummary"}]},
+    "after": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/stateSummary"}]},
+    "durability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lock_acquired",
+        "temporary_file_fsynced",
+        "atomic_replace_attempted",
+        "directory_fsynced",
+        "same_process_readback_verified"
+      ],
+      "properties": {
+        "lock_acquired": {"type": "boolean"},
+        "temporary_file_fsynced": {"type": "boolean"},
+        "atomic_replace_attempted": {"type": "boolean"},
+        "directory_fsynced": {"type": "boolean"},
+        "same_process_readback_verified": {"type": "boolean"}
+      }
+    },
+    "pointer_change_outcome": {"enum": ["NOT_PERFORMED", "PERFORMED", "UNKNOWN"]},
+    "posix_only_proof": {"const": true},
+    "cooperative_lock_protocol_only": {"const": true},
+    "windows_semantics_proven": {"const": false},
+    "noncooperative_writers_covered": {"const": false},
+    "signed_receipt_created": {"const": false},
+    "independent_reopen_performed": {"const": false},
+    "selection_updated": {"const": false},
+    "authority_updated": {"const": false},
+    "agent_updated": {"const": false},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "result_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "APPLIED"}}},
+      "then": {
+        "properties": {
+          "plan_sha256": {"$ref": "#/$defs/sha256"},
+          "before": {"$ref": "#/$defs/stateSummary"},
+          "after": {"$ref": "#/$defs/stateSummary"},
+          "durability": {
+            "properties": {
+              "lock_acquired": {"const": true},
+              "temporary_file_fsynced": {"const": true},
+              "atomic_replace_attempted": {"const": true},
+              "directory_fsynced": {"const": true},
+              "same_process_readback_verified": {"const": true}
+            }
+          },
+          "pointer_change_outcome": {"const": "PERFORMED"},
+          "issues": {"maxItems": 0}
+        }
+      },
+      "else": {
+        "properties": {
+          "issues": {"minItems": 1}
+        },
+        "not": {
+          "properties": {
+            "before": {"$ref": "#/$defs/stateSummary"},
+            "after": {"$ref": "#/$defs/stateSummary"},
+            "durability": {
+              "properties": {
+                "lock_acquired": {"const": true},
+                "temporary_file_fsynced": {"const": true},
+                "atomic_replace_attempted": {"const": true},
+                "directory_fsynced": {"const": true},
+                "same_process_readback_verified": {"const": true}
+              }
+            },
+            "pointer_change_outcome": {"const": "PERFORMED"},
+            "issues": {"maxItems": 0}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": ["CAS_MISMATCH", "BUSY", "PRECONDITION_FAILED"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "after": {"type": "null"},
+          "durability": {
+            "properties": {
+              "atomic_replace_attempted": {"const": false},
+              "directory_fsynced": {"const": false},
+              "same_process_readback_verified": {"const": false}
+            }
+          },
+          "pointer_change_outcome": {"const": "NOT_PERFORMED"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "COMMITTED_UNATTESTED"}}},
+      "then": {
+        "properties": {
+          "before": {"$ref": "#/$defs/stateSummary"},
+          "durability": {
+            "properties": {
+              "lock_acquired": {"const": true},
+              "temporary_file_fsynced": {"const": true},
+              "atomic_replace_attempted": {"const": true},
+              "directory_fsynced": {"const": true},
+              "same_process_readback_verified": {"const": false}
+            }
+          },
+          "pointer_change_outcome": {"const": "PERFORMED"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+    },
+    "stateSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generation", "pointer_state_sha256", "raw_sha256", "closure_sha256"],
+      "properties": {
+        "generation": {"type": "integer", "minimum": 0},
+        "pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_sha256": {"$ref": "#/$defs/sha256"},
+        "closure_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^AMPCAS-[A-Z0-9-]+$"},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

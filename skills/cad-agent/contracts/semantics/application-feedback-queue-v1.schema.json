@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/application-feedback-queue-v1.json",
+  "title": "Legacy append-only application feedback maintenance queue",
+  "description": "Read-only compatibility contract for legacy v1 planned queues. V1 accepted arbitrary self-declared feedback JSON and therefore cannot establish verified PatternApplication or active-memory binding; new plans must use v2.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assessor_version",
+    "queue_id",
+    "queue_version",
+    "generation",
+    "predecessor_committed_snapshot_sha256",
+    "state_kind",
+    "committed",
+    "status",
+    "queue_state",
+    "source_manifest_id",
+    "source_manifest_sha256",
+    "entries",
+    "queue_snapshot_sha256",
+    "append_plan",
+    "automatic_promotion",
+    "revalidation_performed",
+    "activation_authorized",
+    "active_pointer_changed",
+    "runtime_routing_changed",
+    "issues"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.application-feedback-queue.v1"},
+    "assessor_version": {"const": "0.1.0"},
+    "queue_id": {"$ref": "#/$defs/stableId"},
+    "queue_version": {"$ref": "#/$defs/stableId"},
+    "generation": {"type": "integer", "minimum": 1},
+    "predecessor_committed_snapshot_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "state_kind": {"const": "PLANNED_TARGET"},
+    "committed": {"const": false},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "queue_state": {
+      "enum": ["APPEND_PLAN_READY", "APPEND_PLAN_REJECTED", "NO_CHANGES"]
+    },
+    "source_manifest_id": {"$ref": "#/$defs/stableId"},
+    "source_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "queue_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+    "append_plan": {"$ref": "#/$defs/appendPlan"},
+    "automatic_promotion": {"const": false},
+    "revalidation_performed": {"const": false},
+    "activation_authorized": {"const": false},
+    "active_pointer_changed": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {
+      "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+    },
+    "nullableString": {"type": ["string", "null"]},
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "assetVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "declared_sha256",
+        "observed_sha256",
+        "declared_schema",
+        "observed_schema",
+        "media_type",
+        "status"
+      ],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "declared_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "declared_schema": {"type": "string", "minLength": 1},
+        "observed_schema": {"$ref": "#/$defs/nullableString"},
+        "media_type": {"const": "application/json"},
+        "status": {
+          "enum": [
+            "VERIFIED",
+            "MISSING",
+            "UNSAFE_PATH",
+            "UNREADABLE",
+            "INVALID_JSON",
+            "DIGEST_MISMATCH",
+            "SCHEMA_MISMATCH"
+          ]
+        }
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feedback_id",
+        "application_id",
+        "pattern_id",
+        "feedback",
+        "feedback_outcome",
+        "maintenance_action",
+        "queue_state",
+        "automatic_promotion",
+        "revalidation_performed",
+        "activation_authorized",
+        "active_pointer_changed",
+        "entry_sha256"
+      ],
+      "properties": {
+        "feedback_id": {"$ref": "#/$defs/stableId"},
+        "application_id": {"$ref": "#/$defs/stableId"},
+        "pattern_id": {"$ref": "#/$defs/stableId"},
+        "feedback": {"$ref": "#/$defs/assetVerification"},
+        "feedback_outcome": {"$ref": "#/$defs/nullableString"},
+        "maintenance_action": {
+          "enum": [
+            "REVALIDATION_REQUIRED",
+            "REVALIDATION_MONITORING",
+            "CURATION_REVIEW_REQUIRED",
+            "EVIDENCE_REPAIR_REQUIRED"
+          ]
+        },
+        "queue_state": {"const": "PENDING_REVIEW"},
+        "automatic_promotion": {"const": false},
+        "revalidation_performed": {"const": false},
+        "activation_authorized": {"const": false},
+        "active_pointer_changed": {"const": false},
+        "entry_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "appendPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "expected_prior_queue_sha256",
+        "observed_prior_queue_sha256",
+        "target_queue_snapshot_sha256",
+        "added_feedback_ids",
+        "rejected_feedback_ids",
+        "eligible",
+        "performed"
+      ],
+      "properties": {
+        "mode": {"const": "CompareAndSwapAppendPlanOnly"},
+        "expected_prior_queue_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "observed_prior_queue_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "target_queue_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "added_feedback_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "rejected_feedback_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "eligible": {"type": "boolean"},
+        "performed": {"const": false}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "path", "message"],
+      "properties": {
+        "code": {"type": "string", "minLength": 2},
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "path": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

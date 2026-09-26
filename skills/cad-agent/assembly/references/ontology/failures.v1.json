@@ -1,0 +1,1271 @@
+{
+  "$schema": "assembly.engineering-ontology.failure-catalog/v1",
+  "record_id": "AEO-FAILURES-20260823-V001",
+  "purpose": "每一条都是真实发生过的失效，按『症状 → 根因 → 该由哪条判据拦住 → 证据』记录。未标 project 的来自 Orbita（150-云台设计）；跨项目复用时新踩的坑标出项目名。这是本体里最该被直接复用的部分：换一套装配，判据要重新标定，失效模式往往原样重现。",
+  "id_convention": "F-<域>-<序号>。域与判据库一致，另加 ALG 算法接入域。origin_label 保留在《装配动画方法论 v2》失效目录里的旧编号，便于回溯。",
+  "failures": [
+    {
+      "id": "F-ID-01",
+      "origin_label": "A1",
+      "domain": "ID",
+      "symptom": "六颗螺钉被分到错误的 BOT/MID/TOP 组",
+      "root_cause": "按文件名编号顺序分配实例",
+      "blocked_by": [
+        "K-ID-05",
+        "K-IF-01",
+        "K-ID-01"
+      ],
+      "impact": "六颗螺钉同 referred_label、体积相同，是可互换标准件。错配影响的是记录与状态链的自洽（动画会把螺钉飞向错误的孔、证据链按实例编号索引错位），不是人手实际拧哪一颗。夸大成『照着装会拧错螺钉』是不诚实的。真正对人有用的改动是工步标题现在点名了 BOT/MID/TOP。",
+      "evidence": "装配工艺/B13-fastener-assignment-correction.v1.json"
+    },
+    {
+      "id": "F-ID-02",
+      "origin_label": "A2",
+      "domain": "ID",
+      "symptom": "三个 Moon↔平台转轴整体循环错位，并带错两片垫片，共 5 处",
+      "root_cause": "用『最近邻』启发式配对铰链件",
+      "blocked_by": [
+        "K-IF-01",
+        "K-IF-02",
+        "K-ID-01",
+        "K-ID-05"
+      ],
+      "impact": "旧证据自身即自相矛盾：某条链标注的转轴与它标注的垫片在几何上不相配。",
+      "evidence": "装配工艺/A8-hinge-instance-correction.v1.json"
+    },
+    {
+      "id": "F-ID-03",
+      "origin_label": "A3",
+      "domain": "ID",
+      "symptom": "轴承族 5 个叶子拼错（40×50 = inner(1)+outer(1)+Part4(1)+Part5(1)+middle(2)）",
+      "root_cause": "假设变体号跨基名对齐",
+      "blocked_by": [
+        "K-ID-02"
+      ],
+      "impact": "求解单元划分错误，下游整条链失真。",
+      "evidence": "外部算法/ata_cases/global_interface_scan/runs/occt793-all-rigid-v001/v4-occurrence-resolution.json"
+    },
+    {
+      "id": "F-ID-04",
+      "origin_label": "A4",
+      "domain": "ID",
+      "symptom": "A5-N 与 A6-N 被当成同一条臂",
+      "root_cause": "假设编号对应",
+      "blocked_by": [
+        "K-ID-05",
+        "K-ID-01"
+      ],
+      "impact": "分组由状态链证据定，不由编号定。",
+      "evidence": "装配工艺/assembly-film-plan.v1.json 中 C4a/C4b/C4c 的实际配对（竖臂1+月牙臂2 等）"
+    },
+    {
+      "id": "F-ID-05",
+      "origin_label": "A5",
+      "domain": "ID",
+      "symptom": "36 件关节硬件在场景里成孤儿",
+      "root_cause": "只测了 v 轴（moon↔ring），漏掉整条 u 轴",
+      "blocked_by": [
+        "K-ID-01"
+      ],
+      "impact": "逐腿硬件清单应从状态链取，不自己枚举。",
+      "evidence": "本体/装配动画方法论.v2.md#A5"
+    },
+    {
+      "id": "F-KIN-01",
+      "origin_label": "B1",
+      "domain": "KIN",
+      "symptom": "假设闭合是『臂绕臂↔月牙轴转、月牙不动』的单参数运动",
+      "root_cause": "方法制定者自己的成见——因为那样最符合论文的单刚体规则",
+      "blocked_by": [
+        "K-KIN-02"
+      ],
+      "impact": "零容差校验直接否掉：θ 偏 2° 臂脚压进 Crown 凸台 1.58 mm，5° 时 7.03 mm，±θ 完全对称。修正后结论反而更符合单刚体规则，也正好对应工艺卡原文『三臂外扩绕过盘缘→逐臂收拢对位盘凸台』。",
+      "evidence": "工具/装配动画/b13_closure_map.py"
+    },
+    {
+      "id": "F-KIN-02",
+      "origin_label": "B2",
+      "domain": "KIN",
+      "symptom": "用通用路径规划器去搜球面并联机构的路径",
+      "root_cause": "没先做机构识别",
+      "blocked_by": [
+        "K-KIN-01",
+        "K-IF-03"
+      ],
+      "impact": "范畴错误：机构运动是闭式的。全量扫描后更进一步——58 个 B 类工步的插入轴由几何直接给定，同样不需要通用路径搜索。",
+      "evidence": "工具/装配动画/orbita_spherical_kinematics.py"
+    },
+    {
+      "id": "F-DIR-01",
+      "origin_label": "C3",
+      "domain": "DIR",
+      "symptom": "A5-*/B8.1 共 12 个轴承中，两个叠在同一侧飞入",
+      "root_cause": "多叶单元的轴被『整件同动』假设摊平成一条",
+      "blocked_by": [
+        "K-ID-02"
+      ],
+      "impact": "unit_size>1 只在该工步恰好只有一个多叶单元时才等于整件同动。",
+      "evidence": "工具/装配动画/b_class_insertion_pipeline.py"
+    },
+    {
+      "id": "F-DIR-04",
+      "origin_label": "C4",
+      "domain": "DIR",
+      "symptom": "三个层盘章的第一步（内齿圈压入盘）方向整个反了",
+      "root_cause": "两向都能脱离时按『脱离距离短者胜』选，这是任意规则",
+      "blocked_by": [
+        "K-DIR-01",
+        "K-DIR-02",
+        "K-DEL-02"
+      ],
+      "impact": "该错误在成片里才被看出来；粗端判据引入后自动纠正。",
+      "evidence": "外部算法/ata_cases/global_interface_scan/runs/b-class-trajectories-v001/insertion-A2-1.1.json"
+    },
+    {
+      "id": "F-DIR-05",
+      "origin_label": "C5",
+      "domain": "DIR",
+      "symptom": "16 个单元方向仍不定",
+      "root_cause": "件轴对称，几何确实给不出方向",
+      "blocked_by": [
+        "K-DIR-03",
+        "K-DIR-01"
+      ],
+      "impact": "这不是 bug 而是诚实的规模：占 97 个单元的 16.5%。处置是标注为未定，不得声称已确定。",
+      "evidence": "外部算法/ata_cases/global_interface_scan/runs/b-class-trajectories-v001/"
+    },
+    {
+      "id": "F-DIR-06",
+      "origin_label": "5d",
+      "domain": "DIR",
+      "symptom": "同工步共轴的未定级件（如垫片）目前靠碰巧和它的螺栓方向一致",
+      "root_cause": "缺少『共轴未定件跟随已定向件』规则",
+      "blocked_by": [
+        "K-DIR-04"
+      ],
+      "impact": "当前输出正确是偶然；换一套装配大概率复现为错误。",
+      "evidence": "本体/装配动画方法论.v2.md#5d"
+    },
+    {
+      "id": "F-PATH-01",
+      "origin_label": "C1",
+      "domain": "PATH",
+      "symptom": "9 个工步的件从 14 mm 外飞进来时穿模",
+      "root_cause": "扫掠在首次脱离处停，认证区间窄于实际播放区间",
+      "blocked_by": [
+        "K-PATH-02",
+        "K-PATH-03"
+      ],
+      "impact": "A7.1 的认证接近距离只有 0.50 mm，用 14 mm 全局常数即穿模。",
+      "evidence": "外部算法/ata_cases/global_interface_scan/runs/b-class-trajectories-v001/insertion-A7.1.json"
+    },
+    {
+      "id": "F-PATH-02",
+      "origin_label": "C2",
+      "domain": "PATH",
+      "symptom": "A6-1 的窄干涉带被跳过（2.75 mm 被读成 19.5 mm）",
+      "root_cause": "脱离后改用粗步长提速",
+      "blocked_by": [
+        "K-PATH-01"
+      ],
+      "impact": "省不得；提速只能靠压低扫掠上限。",
+      "evidence": "工具/装配动画/b_class_insertion_pipeline.py#profile"
+    },
+    {
+      "id": "F-PATH-03",
+      "origin_label": "6c",
+      "domain": "PATH",
+      "symptom": "手工圈定的接触白名单把真错误一起放过",
+      "root_cause": "许可界面靠人工列举而不是自动导出",
+      "blocked_by": [
+        "K-IF-04"
+      ],
+      "impact": "装配态基线自动涵盖 24 件轴承/转轴/垫片界面。",
+      "evidence": "工具/装配动画/b_class_insertion_pipeline.py"
+    },
+    {
+      "id": "F-PATH-04",
+      "origin_label": "6d",
+      "domain": "PATH",
+      "symptom": "用碰撞深度判断配合是过盈还是间隙",
+      "root_cause": "同心互穿的碰撞深度量的是重叠量，不是径向过盈",
+      "blocked_by": [
+        "K-IF-05"
+      ],
+      "impact": "配合性质必须从 B-Rep 半径判。",
+      "evidence": "外部算法/ata_cases/global_interface_scan/runs/b-class-trajectories-v001/b-class-summary.json"
+    },
+    {
+      "id": "F-TOOL-01",
+      "origin_label": "F1",
+      "domain": "TOOL",
+      "symptom": "起子被指进旁边的电机件，3 颗顶丝里错 2 颗",
+      "root_cause": "无头螺钉两端等粗，『更粗那端是头』对它无效",
+      "blocked_by": [
+        "K-TOOL-02",
+        "K-TOOL-01",
+        "K-TOOL-04"
+      ],
+      "impact": "改为两端都放一次，取几何上通得过的一侧。",
+      "evidence": "外部算法/ata_cases/global_interface_scan/runs/tool-reach-v001/"
+    },
+    {
+      "id": "F-TOOL-02",
+      "origin_label": "F2",
+      "domain": "TOOL",
+      "symptom": "净空量出来全是 0.316 mm 且高度一致",
+      "root_cause": "刀头本来就贴着工件表面，量的是它",
+      "blocked_by": [
+        "K-TOOL-03"
+      ],
+      "impact": "跳过刀头前 6 mm 后，真实杆身净空最小 3.081 mm、中位 7.635 mm。",
+      "evidence": "外部算法/ata_cases/global_interface_scan/runs/tool-reach-v001/"
+    },
+    {
+      "id": "F-SCN-01",
+      "origin_label": "D1",
+      "domain": "SCN",
+      "symptom": "件在它该出现的工步之前就在画面里",
+      "root_cause": "出场时机没按工步给。同一毛病在四个层级各犯一次：单工步作用域 / 台钳组 / 时序静止全集 / 章节分组",
+      "blocked_by": [
+        "K-SCN-01"
+      ],
+      "impact": "画面主张了未发生的在场事实。",
+      "evidence": "本体/装配动画方法论.v2.md#D1"
+    },
+    {
+      "id": "F-SCN-02",
+      "origin_label": "D2",
+      "domain": "SCN",
+      "symptom": "开场『中心管压入基座』时整个臂平台已挂在机器上",
+      "root_cause": "静止件从第 1 帧就在场——它们不动，但不等于从第一帧就该在场",
+      "blocked_by": [
+        "K-SCN-01"
+      ],
+      "impact": "静止件应按『首次进入该工步静止集』出场。",
+      "evidence": "本体/装配动画方法论.v2.md#D2"
+    },
+    {
+      "id": "F-SCN-03",
+      "origin_label": "D3",
+      "domain": "SCN",
+      "symptom": "B14.C10 把臂平台拽进了更早的章节",
+      "root_cause": "章节顺序与静止集蕴含的先后不一致——它的静止集已含臂平台，说明它在 B13 之后",
+      "blocked_by": [
+        "K-SCN-02"
+      ],
+      "impact": "静止集可反过来用作章节排序的判据。",
+      "evidence": "装配工艺/assembly-film-plan.v1.json#split_note"
+    },
+    {
+      "id": "F-SCN-04",
+      "origin_label": "D4",
+      "domain": "SCN",
+      "symptom": "A7.1 的碟片一动就撞月牙臂；层 2 的轴承撞层 1 的 Crown",
+      "root_cause": "把互相独立的台钳子装配合成了一章",
+      "blocked_by": [
+        "K-SCN-02",
+        "K-PATH-04"
+      ],
+      "impact": "分章判据不是『看着像』，而是合章后时序校验会失败。",
+      "evidence": "装配工艺/assembly-film-plan.v1.json#split_note"
+    },
+    {
+      "id": "F-SCN-05",
+      "origin_label": "D5",
+      "domain": "SCN",
+      "symptom": "三条臂掉出画面下边缘",
+      "root_cause": "相机用『1.5×包围盒最大边』经验系数，且只看就位姿态",
+      "blocked_by": [
+        "K-SCN-04"
+      ],
+      "impact": "按视锥反解距离，并把接近位一并计入。",
+      "evidence": "本体/装配动画方法论.v2.md#D5"
+    },
+    {
+      "id": "F-SCN-06",
+      "origin_label": "D6",
+      "domain": "SCN",
+      "symptom": "整章渲成空画面，相机退到 158 米外",
+      "root_cause": "隐藏物体不进 depsgraph，matrix_world 停在单位阵",
+      "blocked_by": [
+        "K-SCN-06"
+      ],
+      "impact": "取样前须把 hide 曲线静音；只改属性没用，动画下一次求值就覆盖回去。",
+      "evidence": "本体/装配动画方法论.v2.md#D6"
+    },
+    {
+      "id": "F-SCN-07",
+      "origin_label": "PAB-11",
+      "domain": "SCN",
+      "symptom": "生成器在 Blender Python 异常时仍返回零退出码，坏场景被当成通过",
+      "root_cause": "场景编译没有存盘后重开回读作为准入条件",
+      "blocked_by": [
+        "K-SCN-05",
+        "K-GOV-01"
+      ],
+      "impact": "B2 v001 因此被 v002 取代。",
+      "evidence": "工具/装配动画/runs/README.md"
+    },
+    {
+      "id": "F-DEL-01",
+      "origin_label": "E1",
+      "domain": "DEL",
+      "symptom": "视频『不动』",
+      "root_cause": "moov 原子在文件尾",
+      "blocked_by": [
+        "K-DEL-01"
+      ],
+      "impact": "需 -movflags +faststart。",
+      "evidence": "本体/装配动画方法论.v2.md#E1"
+    },
+    {
+      "id": "F-DEL-02",
+      "origin_label": "E2",
+      "domain": "DEL",
+      "symptom": "打开成片没有画面",
+      "root_cause": "拼接直接往成片路径写，-y 先截断；那几秒文件残缺，播放器还会缓存住",
+      "blocked_by": [
+        "K-DEL-01"
+      ],
+      "impact": "先写临时文件 → 自检 → 原子换名；自检不过保留旧文件。",
+      "evidence": "工具/装配动画/assemble_film.py"
+    },
+    {
+      "id": "F-DEL-03",
+      "origin_label": "E3",
+      "domain": "DEL",
+      "symptom": "临时文件用 .part 后缀导致 ffmpeg 认不出封装",
+      "root_cause": "把原子写入的临时名后缀也改了",
+      "blocked_by": [
+        "K-DEL-01"
+      ],
+      "impact": "临时名后缀仍须是目标封装格式。",
+      "evidence": "工具/装配动画/assemble_film.py"
+    },
+    {
+      "id": "F-DEL-04",
+      "origin_label": "E4",
+      "domain": "DEL",
+      "symptom": "成品里没有工装、扭矩、螺纹胶、验收判据",
+      "root_cause": "只写了工步号和标题",
+      "blocked_by": [
+        "K-SCN-03"
+      ],
+      "impact": "工艺卡里 59/76 有 tool、36 有 torque、27 有 threadlocker，一整版全丢了才被发现。",
+      "evidence": "本体/装配动画方法论.v2.md#E4"
+    },
+    {
+      "id": "F-DEL-05",
+      "origin_label": "D7-D9",
+      "domain": "DEL",
+      "symptom": "长字幕越界被裁成半句；每章第一工步插入过程中字幕是空的；标注卡被裁掉下半截",
+      "root_cause": "分别是：只定了左边距；标签窗口写死为工步时长而比它自己的运动还短（运动要等开场停顿后才起步）；行距按写死的行数算",
+      "blocked_by": [
+        "K-SCN-03"
+      ],
+      "impact": "文本层的排版参数必须由内容反算，不能写死。",
+      "evidence": "本体/装配动画方法论.v2.md#D7-D9"
+    },
+    {
+      "id": "F-ALG-01",
+      "domain": "ALG",
+      "symptom": "整轮实验结论作废：『约 22.3 mm 刚性挡路』与 2 s 的求解成功都是错误输入上的结果",
+      "root_cause": "把 occurrence-local STL 直接合并，未施加 occurrence 世界变换，却把结果标成产品世界坐标",
+      "blocked_by": [
+        "K-ID-03"
+      ],
+      "impact": "该运行被判 INVALID_INPUT_FRAME，只保留为负面回归案例。修正后原来的两个『电机挡块』在 q0 与基座分别相距约 20.65 mm 和 14.06 mm，根本不是干涉。",
+      "evidence": "外部算法/sbdp_pilot/runs/B2_TOP_direction_guided_20260821_v001/"
+    },
+    {
+      "id": "F-ALG-02",
+      "domain": "ALG",
+      "symptom": "六方向探测选出错误的 +Y，引导求解 60.787 s 超时",
+      "root_cause": "电机机械核心、12 个引线实体和 38 个端子/连接器体被当成一个变换锁定刚体",
+      "blocked_by": [
+        "K-ID-04"
+      ],
+      "impact": "改为 12 刚性核心 + 12 引线 + 38 端子体后，方向探测自动选中 -Z，求解 1.271 s 得约 50.5 mm 无旋转候选，倒序即工艺声明的自下 +Z。『把 STEP 整组盲喂进去』由此被证伪。",
+      "evidence": "外部算法/sbdp_pilot/runs/B2_TOP_pose_corrected_20260821_v002/"
+    },
+    {
+      "id": "F-ALG-03",
+      "domain": "ALG",
+      "symptom": "旧 B13 案例判 COMPLETE_REJECT",
+      "root_cause": "把三条臂与平台错误锁成一个刚体，且起始状态 q0 无效",
+      "blocked_by": [
+        "K-KIN-04",
+        "K-ID-04"
+      ],
+      "impact": "201 个复核状态中 162 个干涉且发生碰撞重入。",
+      "evidence": "外部算法/sbdp_pilot/runs/B13_legacy_case_20260821_v001/"
+    },
+    {
+      "id": "F-ALG-04",
+      "domain": "ALG",
+      "symptom": "把求解器的 Success 当作路径证据",
+      "root_cause": "Success 只表示到达了实现自己的分离目标，不是独立的连续零干涉证书；该实现还可自动抬高碰撞阈值以容忍初始穿透",
+      "blocked_by": [
+        "K-PATH-08",
+        "K-DIR-05"
+      ],
+      "impact": "必须放回全分辨率原始网格独立连续复核。",
+      "evidence": "本体/paper-algorithm-correction-benchmark.v1.json#authority.assemble_them_all.implementation_audit"
+    },
+    {
+      "id": "F-ALG-05",
+      "domain": "ALG",
+      "symptom": "把拆卸轨迹直接当成装配轨迹放行",
+      "root_cause": "时间倒放不使不可逆动作变成合法装配动作；且绝对变换被取负而不是按序倒排",
+      "blocked_by": [
+        "K-PATH-06"
+      ],
+      "impact": "当前审计仍为 BLOCKER：24 个工步未分类、8 类不可逆动作未隔离。",
+      "evidence": "本体/reverse-path-applicability-audit.v1.json"
+    },
+    {
+      "id": "F-ALG-06",
+      "domain": "ALG",
+      "symptom": "把密集采样通过说成连续证明",
+      "root_cause": "0.05 mm 间隔的 82 次精确采样全过，被读作『该段已证明无干涉』",
+      "blocked_by": [
+        "K-PATH-10"
+      ],
+      "impact": "状态保持 HOLD_ALLOWED_INTERFACE_WINDOW_DENSE_SAMPLED_ONLY。",
+      "evidence": "外部算法/sbdp_pilot/runs/B2_TOP_rigid_contact_sweep_20260821_v006/"
+    },
+    {
+      "id": "F-ALG-07",
+      "domain": "ALG",
+      "symptom": "把 STEP 里相隔 119.3 mm 的引线体与端子体凭空刚性绑定成一根完整线缆",
+      "root_cause": "为了让柔性求解器有输入而虚构拓扑",
+      "blocked_by": [
+        "K-ID-04",
+        "K-GOV-05"
+      ],
+      "impact": "端子体保持 DEFERRED；只允许对 12 个 lead-stub 做两步起始方向探针。",
+      "evidence": "外部算法/sbdp_pilot/README.md"
+    },
+    {
+      "id": "F-ALG-08",
+      "domain": "ALG",
+      "symptom": "老 C++/pybind 科研代码在 ARM 上反复崩溃，排障耗时最久的一轮",
+      "root_cause": "真凶是 numpy>=2；此外还踩了 Python 版本与 wheel 矩阵不匹配、Eigen 混用系统 3.4 而非仓库自带、cython>=3",
+      "blocked_by": [],
+      "impact": "排障剧本已沉淀，可复用于任何老科研代码上 ARM：双镜像 → py 版本按 wheel 矩阵选 → conda-forge 补系统库 → Eigen 用仓库自带 → cython<3 → numpy<2 → PYTHONFAULTHANDLER 定位。",
+      "evidence": "研究/07-下一步-SBDP试点.md"
+    },
+    {
+      "id": "F-GOV-01",
+      "domain": "GOV",
+      "symptom": "用『动画看起来到了』『反向路径算出来了』『短仿真没撞上』代替实体装配成功",
+      "root_cause": "跨级晋升：低保真度结论被当作高主张",
+      "blocked_by": [
+        "K-GOV-01",
+        "K-PHY-03"
+      ],
+      "impact": "v5 门禁保持 physical_release=false；五个专项 BLOCKER 各自封住一条晋升路径。",
+      "evidence": "装配工艺/Orbita-装配快速纠错报告.v5.md"
+    },
+    {
+      "id": "F-GOV-02",
+      "domain": "GOV",
+      "symptom": "静态资产和几何门禁过了，就宣称该子项通过",
+      "root_cause": "数值 runner 实际未执行",
+      "blocked_by": [
+        "K-PHY-04"
+      ],
+      "impact": "正确处置是失败关闭为 INCONCLUSIVE_NO_NUMERICAL_EXECUTION——这一条是方法自己拦住自己的正面例子。",
+      "evidence": "外部算法/sbdp_pilot/README.md"
+    },
+    {
+      "id": "F-GOV-03",
+      "domain": "GOV",
+      "symptom": "表达层发明源头给不出的事实（通用飞入模板、离体展示位姿、伪造运动）",
+      "root_cause": "把观感需求当成可以在末端自行补足的东西",
+      "blocked_by": [
+        "K-SCN-07",
+        "K-DEL-03",
+        "K-GOV-05"
+      ],
+      "impact": "旧 v6 管线的 B2/B3/B4 都因通用 fly() 模板从上方落入，B12 移动裸球，B13 整组落装，B14 把板组折叠为刚体。",
+      "evidence": "本体/animation-direction-screen-audit.v1.json"
+    },
+    {
+      "id": "F-GOV-04",
+      "domain": "GOV",
+      "symptom": "两条独立实现的比对结论无法解释",
+      "root_cause": "两侧对静止集/许可界面/脱离的定义不一致，分歧与一致都失去意义",
+      "blocked_by": [
+        "K-GOV-02"
+      ],
+      "impact": "当前 FCL 与 GPU 两条链在 10/97 个单元上脱离距离不一致，尚未裁决——见未闭合项 O-03。",
+      "evidence": "外部算法/ata_cases/global_interface_scan/runs/gpu-sweep-fine-v001/ 对比 b-class-trajectories-v001/"
+    },
+    {
+      "id": "F-GOV-05",
+      "domain": "GOV",
+      "symptom": "把不同口径的计数合成一个数对外报",
+      "root_cause": "口径没有各自定义",
+      "blocked_by": [
+        "K-GOV-04"
+      ],
+      "impact": "177（历史唯一根因）不是当前开放数；全局当前开放数为 null（未重算）。",
+      "evidence": "装配工艺/Orbita-装配快速纠错报告.v5.md#数字怎么读"
+    },
+    {
+      "id": "F-PHY-01",
+      "domain": "PHY",
+      "symptom": "把单方向、零接触的短前缀结果当成该方向已通过",
+      "root_cause": "没有同初态、同代理、同参数的多候选对照，也没有预注册『第一个要看的方向性特征』与无特征时的处置",
+      "blocked_by": [
+        "K-PHY-01",
+        "K-PHY-02",
+        "K-PHY-03"
+      ],
+      "impact": "零接触只说明这一小段没碰上，不构成方向排序依据；无特征应记 AMBIGUOUS。当前比较合同缺 10 类要素，故所有探针结论只能排序候选。",
+      "evidence": "本体/directional-probe-comparison-audit.v1.json"
+    },
+    {
+      "id": "F-GEO-01",
+      "domain": "GEO",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "网格派生的体积与精确体积对不上，187 件里 70 件误差 >1%，最严重一件 471%",
+      "root_cause": "网格挠度写死为 0.5mm 常数；小件（中位体积约 1000mm³）根本撑不住，其上算出的三阶矩符号也就不可信",
+      "blocked_by": [
+        "K-IF-07"
+      ],
+      "impact": "手性判定全线失真。改为按包围盒对角线自适应、并以精确体积自检加密后，不达标件降到 17。",
+      "evidence": "../104-灵犀x2/本体/S1-零件几何指纹.v1.json"
+    },
+    {
+      "id": "F-GEO-02",
+      "domain": "GEO",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "8 个零件的『体积』是假的，误差最高 89%，且怎么加密网格都不收敛",
+      "root_cause": "这些形状根本不是水密实体，只有开壳（415/98/54/51/47/25/7 个 shell，0 个 solid）——全部是采购模块：执行器 R52/R86-2、OmniPicker 夹爪、推杆、D435 相机、缓启动板、控制单元",
+      "blocked_by": [
+        "K-IF-07",
+        "K-ID-02"
+      ],
+      "impact": "BRepGProp 在非实体上返回的数没有意义；刚体扫掠对它们不成立，必须建 RIGID_CORE_PROXY。占 30/1558 个实例（1.9%），有界，全是采购件——与 Orbita 的 A 类同构。",
+      "evidence": "../104-灵犀x2/本体/X1-S1身份绑定报告.v1.md#五"
+    },
+    {
+      "id": "F-ALG-09",
+      "domain": "ALG",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "STEP 解出的 1558 个 occurrence 世界位姿全部是错的，但清单本身完全自洽、看不出任何异常",
+      "root_cause": "装配变换取错了参数：按常见写法取 ITEM_DEFINED_TRANSFORMATION 的 M(item_2)·M(item_1)⁻¹，而该文件里 item_2 恒为单位阵、位姿全在 item_1 上",
+      "blocked_by": [
+        "K-GOV-02"
+      ],
+      "impact": "单跑这一条链查不出来——1444 条边一条不缺变换、树能走通、叶子数与 BOM 对得上。只有与 OCCT/XCAF 独立比对才暴露：位置零重合、最近邻最大差 137mm。改正后 1558/1558 一致。教训是：自洽不等于正确，交叉验证不能省。",
+      "evidence": "../104-灵犀x2/本体/S1-位姿交叉验证.v1.json"
+    },
+    {
+      "id": "F-ID-06",
+      "domain": "ID",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "7 个 product 的 SolidWorks 配置后缀与基名规格互相矛盾（如 圆柱销4×10 的配置写 4×20）",
+      "root_cause": "配置名过期未同步。按 SolidWorks 惯例配置才是权威，照常规读会把 5 种销的规格读错",
+      "blocked_by": [
+        "K-ID-06",
+        "K-ID-01"
+      ],
+      "impact": "用单件几何裁定：7 处中 6 处**基名为准**（销的实测包围盒与括号内规格精确一致），1 处不确定。BOM 用的正是基名，所以 BOM 没错；错的是 CAD 的配置名。涉及 118 个实例。",
+      "evidence": "../104-灵犀x2/本体/X1-S1身份绑定报告.v1.md#六"
+    },
+    {
+      "id": "F-ID-07",
+      "domain": "ID",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "同一份输入、同一份代码，两次运行解出的实例化圆柱面数不同（31741 / 31570）",
+      "root_cause": "候选键放在 set 里迭代取第一个命中；集合迭代顺序随 PYTHONHASHSEED 变",
+      "blocked_by": [
+        "K-ID-09"
+      ],
+      "impact": "结论不可复现，哈希锚定失去意义。改成有序列表后固定为 31586。",
+      "evidence": "../104-灵犀x2/本体/X1-S2界面配对报告.v1.md#41"
+    },
+    {
+      "id": "F-ID-08",
+      "domain": "ID",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "144 个 occurrence 取到了别的零件的圆柱面，图看起来完全正常",
+      "root_cause": "『去配置后缀』规则无条件 rsplit('_',1)，而零件名里下划线也用作词分隔——`6DUUED_手臂_关节01固定法兰1` 被切出键 `手臂`，38 个键冲突",
+      "blocked_by": [
+        "K-ID-09"
+      ],
+      "impact": "宽松键只能用于查询侧、不能用于建键；且要先判后缀『长得像配置名』（含规格）才去。修正后键冲突 38→2。",
+      "evidence": "../104-灵犀x2/本体/X1-S2界面配对报告.v1.md#42"
+    },
+    {
+      "id": "F-ID-09",
+      "domain": "ID",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "460 个 occurrence 的名字与零件名一模一样，却查不到几何",
+      "root_cause": "查询侧做了 NFKC 与 ╱→/，建键侧用原始字符串——两侧归一化口径不一致",
+      "blocked_by": [
+        "K-ID-09"
+      ],
+      "impact": "静默失去 30% 的几何，图照样建得出来。归一化必须是两侧共用的同一个函数。",
+      "evidence": "../104-灵犀x2/本体/X1-S2界面配对报告.v1.md#43"
+    },
+    {
+      "id": "F-ID-10",
+      "domain": "ID",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "侧别过滤对最需要它的件完全失效——左件和右件都被判成『居中』",
+      "root_cause": "用 occurrence 的世界原点当位置。原点是建模坐标系的产物：1558 个实例里 103 个原点就落在矢状对称面上，`手臂_关节02外壳左` 与 `…右` 的原点只差 0.3mm",
+      "blocked_by": [
+        "K-ID-10"
+      ],
+      "impact": "改用世界质心后镜像成对率 77.8%→81.6%、居中件 103→60、工序绑定实例 251→311。原点不是位置。",
+      "evidence": "../104-灵犀x2/本体/X1-S3实例绑定报告.v1.md#一"
+    },
+    {
+      "id": "F-ID-11",
+      "domain": "ID",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "想用零件名给整机定左右，锚出来的符号没有意义（偏移 0.01mm），而且照名字读会反",
+      "root_cause": "零件名不是可靠的方位锚：带左/右/镜的 9 个件原点几乎都在对称面上，且『镜向左侧小腿-1』实际位于右侧",
+      "blocked_by": [
+        "K-ID-11",
+        "K-ID-10"
+      ],
+      "impact": "改用 CAD 声明左右的 4 个子装配节点作锚，四锚一致判定 左=+x。语义朝向必须来自受控来源且多锚一致。",
+      "evidence": "../104-灵犀x2/本体/X1-S3实例绑定报告.v1.md#一"
+    },
+    {
+      "id": "F-GOV-06",
+      "domain": "GOV",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "唯一性检验判定 41/47 组指派『并列不可用』，结论是这条路走不通",
+      "root_cause": "检验粒度比结论粒度更细：在『槽位×实例』上检验，而结论本来是集合级的（哪颗螺钉是第几颗无意义）",
+      "blocked_by": [
+        "K-GOV-10"
+      ],
+      "impact": "改到工序粒度后 40/47 组 ROBUST，新增 197 个确定绑定——只改粒度，可用结论差 6.7 倍。粒度选错会把正确结论判成不可用。",
+      "evidence": "../104-灵犀x2/本体/X1-S3实例绑定报告.v1.md#a3-检验粒度必须与结论粒度一致--这是本轮最值得留的一条"
+    },
+    {
+      "id": "F-ID-12",
+      "domain": "ID",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "夹爪的侧别判到了躯干中部，与它在手臂末端的真实位置差 230mm",
+      "root_cause": "无实体件退回用包围盒中心当质心；OmniPicker 的开壳几何含游离面，局部包围盒达 276×424×1114mm，中心不在几何上",
+      "blocked_by": [
+        "K-ID-10"
+      ],
+      "impact": "改用面积加权表面质心后落在 ±251/257，两侧对称。187 件里只有它有这个病态包围盒——一个就够把侧别判错。",
+      "evidence": "../104-灵犀x2/本体/X1-质检片交付说明.v1.md#34-无实体件用包围盒中心当位置会落到几何之外"
+    },
+    {
+      "id": "F-SCN-08",
+      "domain": "SCN",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "渲出来的机器人是躺着的，且只占画面 1/4",
+      "root_cause": "① Blender 的 to_track_quat(track, up) 里 up 指『对象自身哪根轴对齐世界 +Z』，而该 CAD 的世界上方向是 +Y；② 视锥反解用了包围球，细长体框得很松",
+      "blocked_by": [
+        "K-SCN-04",
+        "K-ID-11"
+      ],
+      "impact": "改为用基底显式构造相机旋转矩阵 + 把顶点投到相机右/上基底分别反解距离取大者。上方向也从数据锚（最大跨度轴 + 脚掌/头部质心符号）。",
+      "evidence": "../104-灵犀x2/本体/X1-质检片交付说明.v1.md#三渲染这一步踩的四个坑"
+    },
+    {
+      "id": "F-DEL-06",
+      "domain": "DEL",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "打算用 ffmpeg drawtext 烧字幕，滤镜不存在",
+      "root_cause": "本机 Homebrew 的 ffmpeg 构建没有编入 freetype，`ffmpeg -filters | grep drawtext` 为 0",
+      "blocked_by": [
+        "K-DEL-01"
+      ],
+      "impact": "改用 Pillow 叠加（系统有 CJK 字体 Hiragino Sans GB / STHeiti）。字幕后端要先验证再用，不能假设。",
+      "evidence": "../104-灵犀x2/本体/X1-质检片交付说明.v1.md#四交付纪律"
+    },
+    {
+      "id": "F-DIR-07",
+      "domain": "DIR",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "粗端方向判据全局吻合率只有 74.6%，按 K-DIR-02 的『不过关就不能用』本该整体禁用",
+      "root_cause": "只验了全局吻合率，没验适用域。壳件的『粗端』是壳体曲率而非螺钉头/台肩，判据的语义前提不成立",
+      "blocked_by": [
+        "K-GOV-11",
+        "K-DIR-02"
+      ],
+      "impact": "分域后 紧固件/销 94.6% 可用（217 个动件保住）、壳/盖 31.2% 禁用、结构/其他 71.4% 禁用（9 个降级为未定）。整体禁用会白白丢掉 217 个本可确定的方向。",
+      "evidence": "../104-灵犀x2/本体/S7-扫掠认证.v2.json#thick_end_domain_validation"
+    },
+    {
+      "id": "F-SCN-09",
+      "domain": "SCN",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "1558 个件全用半透明渲染，画面糊成一片均匀的雾，就位件与运动件全被压没",
+      "root_cause": "EEVEE 的混合（BLENDED）面不写深度；千件量级层层叠加后画面被平均掉",
+      "blocked_by": [
+        "K-SCN-06"
+      ],
+      "impact": "改为全部不透明，并按 K-SCN-01『件从它自己的工步起出场』隐藏未装件——内部零件这才看得见。半透明在大装配上不是可选项。",
+      "evidence": "../104-灵犀x2/本体/X1-装配动画交付说明.v1.md"
+    },
+    {
+      "id": "F-SCN-10",
+      "domain": "SCN",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "章节顺序错乱：『下肢…』排到了『手臂…』前面",
+      "root_cause": "合并 45 个分布式结果时按**文件名**排序，不是按 SOP 工序顺序",
+      "blocked_by": [
+        "K-SCN-02"
+      ],
+      "impact": "与 Orbita 的 D3（章节顺序须与工艺一致）同类。合并器现在强制按 SOP 顺序排，遇到不在顺序表里的工序直接拒绝出结果。",
+      "evidence": "../104-灵犀x2/tools/merge_s7.py"
+    },
+    {
+      "id": "F-SCN-11",
+      "domain": "SCN",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "腿的下缘掉出画面",
+      "root_cause": "为了压住个别含游离面的零件（OmniPicker 局部跨 1114mm），构图用了 95 分位而不是最大值——统计裁剪把正常零件也裁了",
+      "blocked_by": [
+        "K-SCN-04"
+      ],
+      "impact": "与 Orbita 的 D5『三条臂掉出画面下边缘』同类。统计裁剪治不了个别件的几何缺陷：正确做法是把已记录几何不可靠的 8 个采购模块排除在构图之外，其余用最大值全覆盖。",
+      "evidence": "../104-灵犀x2/本体/X1-装配动画交付说明.v1.md"
+    },
+    {
+      "id": "F-DEL-07",
+      "domain": "DEL",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "事后遍历 fcurve 改关键帧插值，直接 AttributeError",
+      "root_cause": "Blender 5.x 的 Action 改成 slotted，没有 action.fcurves 了",
+      "blocked_by": [
+        "K-SCN-05"
+      ],
+      "impact": "改为插入关键帧时设 keyframe_new_interpolation_type。另：靠这个偏好设 CONSTANT 也不可靠（实测相机仍在帧间平移），要压平一段就用两个同姿态关键帧。",
+      "evidence": "../104-灵犀x2/tools/build_assembly_animation.py"
+    },
+    {
+      "id": "F-PATH-11",
+      "domain": "PATH",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "装配动画里 41.5% 的动件穿模——与 Orbita 的 F-PATH-01 症状相同，但根因不同",
+      "root_cause": "扫掠的『脱离』判据是『不再碰到任何东西』。这个状态可以靠**从别的件里穿过去**达到：M3×25 螺钉退出 11mm 就撞进邻近执行器，一路穿过去，到 36.5mm 才彻底自由，36.5 就被记成了脱离距离。**路径上从没查过非基线接触**（K-IF-04 只用在了终点上）。",
+      "blocked_by": [
+        "K-PATH-02",
+        "K-IF-04"
+      ],
+      "impact": "Orbita 的表述『自首次脱离点起连续无接触的最远处』在 Orbita 上正确（动件退入自由空间），在密集装配上不成立。完整形态是『自就位点起连续只有基线接触的最远处』。X1 实测：首次非基线接触中位 3.25mm，全部 < 20mm 的起始偏移；修正后 206 保持 / 101 收短 / 45 不可播，复验 307/307 通过。",
+      "evidence": "../104-灵犀x2/本体/S7-可播接近距离.v1.json"
+    },
+    {
+      "id": "F-GOV-07",
+      "domain": "GOV",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "同一批动件的穿模审计结论在两版之间漂了（v002 通过、v003 报 5 个穿模）",
+      "root_cause": "审计的『本工序动件』排除集取自**这一版的可播列表**，而不是工艺定义的本工序动件；上一版剔掉的件在下一版变成了场景障碍物",
+      "blocked_by": [
+        "K-GOV-04",
+        "K-PATH-05"
+      ],
+      "impact": "口径必须钉在工艺（本工序装什么），不能钉在这一版播什么。改用 S7 的 per_mover 全集后 307/307 通过。",
+      "evidence": "../104-灵犀x2/tools/audit_path_penetration.py"
+    },
+    {
+      "id": "F-PATH-12",
+      "domain": "PATH",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "用凸包代理审穿模，7/8 个螺钉报穿模，实际画面里没有",
+      "root_cause": "代理是**保守碰撞**的器具，凸包填平了执行器上给螺钉让位的孔；而画面渲的是真几何",
+      "blocked_by": [
+        "K-ID-02",
+        "K-PATH-05"
+      ],
+      "impact": "判『画面里有没有穿模』必须用真几何；判『物理上装不装得进』才用保守代理。两个问题两套几何，混用会把假阻挡当穿模、或把真穿模漏掉。X1 实测：代理口径 7/8 穿模，真几何口径 7/8 穿模——**这次两者结论碰巧一致，但撞到的件和位置都不同**（代理 8.0mm 撞基线件、真几何 11.25mm 撞另一实例），说明不能互相替代。",
+      "evidence": "../104-灵犀x2/本体/S7-穿模审计/"
+    },
+    {
+      "id": "F-DIR-08",
+      "domain": "DIR",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "D 类多轴候选的插入轴按『共享面最多』选，未经任何验证就用了 89 个动件",
+      "root_cause": "把一个可以直接计算的量（沿该轴能走多远）替换成了一个便宜的代理（共享面数），且没验证代理的保真度",
+      "blocked_by": [
+        "K-GOV-11",
+        "K-DIR-02"
+      ],
+      "impact": "验下来只有 65.6%（42/64）选中最优轴；22 个换轴能改善，最大 +20mm；13 个任何轴都走不动（属多自由度问题）。改用直接量后这批动件的可播距离显著改善。",
+      "evidence": "../104-灵犀x2/本体/S7-轴选取验证/"
+    },
+    {
+      "id": "F-GOV-08",
+      "domain": "GOV",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "穿模审计报 19 个动件仍穿模，但单独测其中任意一个都完全没有非基线接触",
+      "root_cause": "审计从 S7 取插入轴、从状态链取起始偏移。19 个动件的轴在下游被换过，于是被拼成『旧轴 + 新偏移』——一个从未存在过的组合",
+      "blocked_by": [
+        "K-GOV-12",
+        "K-GOV-04"
+      ],
+      "impact": "把轴与偏移同组落盘、审计只消费状态链那一份之后，复验 297/316 → 316/316 全通过。两份记录各自自洽，拼起来才错。",
+      "evidence": "../104-灵犀x2/tools/audit_path_penetration.py"
+    },
+    {
+      "id": "F-PATH-14",
+      "domain": "PATH",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "105 个动件（21%）被判为『无共轴界面』，据此推断方法缺了平面/锥面抽取",
+      "root_cause": "扫掠的静止集把**本工序的全部动件**一律排除；子装配整体在一道工序装完时，内部紧固件只跟同为动件的件共轴，于是全被判 E",
+      "blocked_by": [
+        "K-PATH-13"
+      ],
+      "impact": "S2 里全机真正零共轴的实例只有 10 个——绝大多数 E 类是口径造成的假象，不是几何缺失。这个误判还差点把一整块方法扩展（平面界面抽取）建立在错误前提上。",
+      "evidence": "../104-灵犀x2/本体/排查-下肢.v1.md"
+    },
+    {
+      "id": "F-DEL-08",
+      "domain": "DEL",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "两个轴承挡圈动件被静默剔出动画，查不出原因",
+      "root_cause": "过滤条件写成 `not m.get(\"certified_approach_mm\")`，认证接近距离正好是 0.0 时被当成缺失",
+      "blocked_by": [
+        "K-GOV-01"
+      ],
+      "impact": "数值字段的存在性判断必须用 `is None`，不能用 falsy——0 是合法值。改正后这两件回到候选池并经直接量换轴恢复到 20mm。",
+      "evidence": "../104-灵犀x2/tools/build_assembly_animation.py"
+    },
+    {
+      "id": "F-IF-01",
+      "domain": "IF",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "成片第 1 秒螺钉即整根从所拧入的支架实体里穿出，而穿模审计报 303/303 全绿；用户肉眼当场抓出，同类问题多处",
+      "root_cause": "K-IF-04 移植到 X1 时只实现了『基线之外接触即失败』半条，丢了『基线实例接触超过许可深度即过度侵入』半条——基线豁免退化成零件级白名单。轴级直接量选轴又在同一盲区上优化：sense 翻转后从自己基线件里隧道穿越，一路只碰基线件，clear_run 反而拿满分，7 颗 M3×25 被系统性翻向；且 v1 时代 S7 自己选的 occ_0561 隧道向早已在片中播了三版",
+      "blocked_by": [
+        "K-IF-04"
+      ],
+      "impact": "fcl 的 mesh-mesh contact depth 不可用（0.1mm 重叠报整件尺寸），『许可深度』最终以区域+体积级等价实现（tools/baseline_region.py，audit 与 validate 强制同口径）：t=0 接触区邻域外的基线件接触记嫌疑，由射线含入仲裁——动件采样点进入基线件材料内部超过 t=0 本底才判穿模。中途试过两版都错：纯邻域规则把接触斑随动件沿深孔/座面移动的合法滑动冤枉成穿模（52/248 误报）；加法向启发式仍误伤球面配合与卡槽边缘掠过。体积级双向验证：已知隧道 8/8 被抓、滑动误报 6/6 洗清、合法方向行程不受影响；v006 全量回验挖出 4 个真隐患（2 个自 v1 起就在播）。后续第二课：射线奇偶含入（trimesh.contains）在 CAD 开壳网格上**双向撒谎**（把分离件判全含、把真隧道的 t=0 本底撑满预算），且依赖 rtree 缺失时静默兜底——v006 真实入材 36 处只报出 4 处。定稿改**广义绕数**（纯 numpy 立体角，开壳退化分数值仍稳健），裕度 max(3, 5% 采样点)容忍贴合曲面的网格化擦碰（1–2%）、必抓隧道（10–30%+）。教训：含入测试用绕数不用射线奇偶；选轴与验收同一把量具；改判据必须全量回验旧版",
+      "evidence": "../104-灵犀x2/tools/audit_path_penetration.py; ../104-灵犀x2/tools/validate_axis_choice.py; ../104-灵犀x2/本体/X1-装配动画交付说明.v3.md"
+    },
+    {
+      "id": "F-SCN-12",
+      "domain": "SCN",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "主穿模审计归零后成片仍有大件互穿：输出转轴穿腰部连杆、缓启动板穿自己的支架、外壳穿外壳（用户第二轮指出'非螺钉件也穿模'）",
+      "root_cause": "S7 认证与主审计的场景按工艺口径排除**本工序全部动件**（F-GOV-07 的正确刻度），但成片里同工序逐件就位——后飞入的件路径扫过已就位兄弟件时，两道审计结构性看不见。『动画在场集是认证静止集的子集，碰撞结论仍成立』这句话对同工序先装件不成立",
+      "blocked_by": [
+        "K-SCN-01",
+        "K-PATH-14"
+      ],
+      "impact": "成片视觉口径需要第三道审计：动件 vs 同工序先装件（v008 实测 24 处路径违规）。修复=工序内播放序（贪心：每件飞入不穿已就位兄弟，8 工序重排/9 件收短/12 件如实不播）+ 独立兄弟路径复验。就位态含入只作数据质量报告不判缺陷（就位姿态来自 CAD 装配态；小紧固件穿薄板的合法配合占位可达自身采样 25%+）　终解（2026-08-24）：认证口径整体切换为**序列感知逆向拆卸行走**（sweep_sequence_reverse.py：整机起步按装配序倒序移出，每件在真实剩余集内沿全候选轴认证；轴/行程/工序内顺序三者同源）。一次行走同时消灭本失效与 K-PATH-05 假阻挡：X1 实测救回 99 个被后装件冤枉的动件、38 个行程延长，并暴露 59 个真实序内真卡死（对开外壳/球面铰/电子件插装/席位问题四类，如实不播）。主审计增设 --scene film（审计场景=成片场景）。用户裁定已入库：拆卸逆向过程不能不走，顺序无关的保守认证藏问题",
+      "evidence": "../104-灵犀x2/tools/order_within_op.py; ../104-灵犀x2/tools/audit_sibling_paths.py; ../104-灵犀x2/本体/X1-装配动画交付说明.v4.md"
+    },
+    {
+      "id": "F-IF-02",
+      "domain": "IF",
+      "project": "灵犀 X1（104-灵犀x2）",
+      "symptom": "成片 0:35 摆臂径直穿过站在原位的自家螺钉群,双审计仍全绿（用户第三次肉眼抓出）",
+      "root_cause": "两个类级缺陷叠加：①含入检测**单向**——只数动件采样点进对方材料,大件吞小件时穿透量相对小件 100%、相对动件 0.x%,5% 裕度天然漏；②夹本动件的未绑定紧固件按连接拓扑必然后装,却作为上下文从章首站在画面里",
+      "blocked_by": [
+        "K-IF-08",
+        "K-SCN-08"
+      ],
+      "impact": "①修在共享量具:嫌疑仲裁双向绕数,裕度各按自身采样数计——全量重审 31 件同类现形(11 收短 20 退场,含四件贴合曲面摆臂全部如实退场)；②修在场景时序:夹持件出场推迟到被夹件就位后,全片 435 件次、34 章。三次用户抓盲区的共性教训:审计报绿≠画面无错,人眼抽验成片是不可撤销的流程门",
+      "evidence": "../104-灵犀x2/tools/baseline_region.py; ../104-灵犀x2/本体/X1-装配动画交付说明.v8.md"
+    },
+    {
+      "id": "F-ALG-10",
+      "domain": "ALG",
+      "project": "算法整合审计（2026-08-27）",
+      "symptom": "规划器返回 Success，但无法重放、反向装配或判断每一步谁在动、谁已固定",
+      "root_cause": "只保存相对动作或成功布尔，未钉住 q0、mover/fixed、按序绝对状态、remaining set、终止与失败账本",
+      "blocked_by": [
+        "K-PATH-16"
+      ],
+      "impact": "拆卸反推装配会在坐标系、状态顺序或静止集上二次解释，规划候选无法进入 S7 连续几何门禁。",
+      "evidence": "../algorithm-physics-routing.md#planning-admission-invariants"
+    },
+    {
+      "id": "F-ALG-11",
+      "domain": "ALG",
+      "project": "论文算法回溯（2026-08-27）",
+      "symptom": "论文方法、无官方代码的思想适配器和本地案例脚本被统称为『算法已验证』",
+      "root_cause": "没有分别记录方法身份、实现身份、版本钉住、适用 operation class、反向适用性和 claim ceiling",
+      "blocked_by": [
+        "K-PATH-17"
+      ],
+      "impact": "论文基准结果会被错误转述为目标装配的成功率，未执行路线也可能被当作本地能力。",
+      "evidence": "../algorithm-physics-routing.md#paper-derived-methods"
+    },
+    {
+      "id": "F-ALG-12",
+      "domain": "ALG",
+      "project": "算法整合审计（2026-08-27）",
+      "symptom": "无碰装配序被直接标为可逐步释放或重力下稳定",
+      "root_cause": "把几何路径可行与 ASAP 类重力、支撑、有限夹持稳定性混成同一主张",
+      "blocked_by": [
+        "K-KIN-05"
+      ],
+      "impact": "中间状态可能在松手后坠落或翻转，后续路径与工具验收建立在不存在的稳定状态上。",
+      "evidence": "../algorithm-physics-routing.md#paper-derived-methods"
+    },
+    {
+      "id": "F-SCN-13",
+      "domain": "SCN",
+      "project": "算法整合审计（2026-08-27）",
+      "symptom": "爆炸图或动作图排得顺眼后，画面顺序被当作装配依赖和路径证据",
+      "root_cause": "Agrawala/Li 表达算法未被限制为只消费已认证状态与偏序，表现层反向发明工程事实",
+      "blocked_by": [
+        "K-SCN-09"
+      ],
+      "impact": "连接树、工具顺序或阻挡关系会被视觉布局覆盖，渲染通过掩盖上游 HOLD。",
+      "evidence": "../algorithm-physics-routing.md#paper-derived-methods"
+    },
+    {
+      "id": "F-PHY-02",
+      "domain": "PHY",
+      "project": "B14 方向探针方法审计",
+      "symptom": "短前缀方向探针的零接触/低阻结果被写成完整路径或实体可装",
+      "root_cause": "S9 方向排序路线与 P 级完整接触传力路线没有分开，PROMISING 被越级解释",
+      "blocked_by": [
+        "K-PHY-06"
+      ],
+      "impact": "未跑完的候选可绕过连续几何、工具与实体试验门禁。",
+      "evidence": "../algorithm-physics-routing.md#physics-route-selection"
+    },
+    {
+      "id": "F-PHY-03",
+      "domain": "PHY",
+      "project": "Y-Zipper 接触驱动案例",
+      "symptom": "显示/规划代理被直接当作柔性求解网格，或仿真/渲染反写 CAD 权威位姿",
+      "root_cause": "CAD pose authority、规划代理、solver mesh 和 Blender 表达层没有分权并分别哈希",
+      "blocked_by": [
+        "K-PHY-07"
+      ],
+      "impact": "开放壳、断裂拓扑或重复施加世界变换会制造伪接触；成片无法追溯到冻结装配态。",
+      "evidence": "../algorithm-physics-routing.md#p-level-contact-physics"
+    },
+    {
+      "id": "F-PHY-04",
+      "domain": "PHY",
+      "project": "Y-Zipper 接触驱动案例",
+      "symptom": "接触计数或 servo effort 被当作体对传力、扭矩和功率证据",
+      "root_cause": "未钉住 libuipc/IPC 版本与力符号约定，也未闭合作用反作用、参考点力矩和功账本",
+      "blocked_by": [
+        "K-PHY-08"
+      ],
+      "impact": "力的方向、归属和尺度不可复核，接触传动效率与驱动负载主张失去物理意义。",
+      "evidence": "../algorithm-physics-routing.md#p-level-contact-physics"
+    },
+    {
+      "id": "F-PHY-05",
+      "domain": "PHY",
+      "project": "Y-Zipper 接触驱动案例",
+      "symptom": "单次正式仿真有运动便宣称接触驱动成立",
+      "root_cause": "缺静态/无接触/接触开启金丝雀、matched counterfactual、重复性与离散化收敛检查",
+      "blocked_by": [
+        "K-PHY-09"
+      ],
+      "impact": "运动可能来自伺服强制、数值漂移或边界条件，而不是目标接触的因果传力。",
+      "evidence": "../algorithm-physics-routing.md#p-level-contact-physics"
+    },
+    {
+      "id": "F-PHY-06",
+      "domain": "PHY",
+      "project": "接触物理主张审计（2026-08-27）",
+      "symptom": "角度伺服成功走完轨迹即被解释为所选电机扭矩足够",
+      "root_cause": "prescribed motion 与 torque-limited drive 的可回答问题被混同，未建功率曲线和控制饱和",
+      "blocked_by": [
+        "K-PHY-10"
+      ],
+      "impact": "无限强伺服可强行穿过真实电机无法驱动的阻力区，motor capacity 主张无效。",
+      "evidence": "../algorithm-physics-routing.md#p-level-contact-physics"
+    },
+    {
+      "id": "F-PHY-07",
+      "domain": "PHY",
+      "project": "论文/工具路线审计（2026-08-27）",
+      "symptom": "螺纹、压装或卡扣动作只跑通用刚体碰撞便声称旋合、预紧、压入力或锁止通过",
+      "root_cause": "缺专用几何、本构、摩擦、驱动和失效模型，却用几何不穿透代理替代过程物理",
+      "blocked_by": [
+        "K-PHY-11"
+      ],
+      "impact": "最关键的弹性、过盈、螺旋约束和跃迁事件没有进入模型，结果最多是几何候选。",
+      "evidence": "../algorithm-physics-routing.md#threaded-contact-route"
+    },
+    {
+      "id": "F-PHY-08",
+      "domain": "PHY",
+      "project": "Y-Zipper 回闭合审计",
+      "symptom": "零件回到 CAD 外观位置就被标为已经重新锁住并可实体放行",
+      "root_cause": "geometric reclosure、mechanical relock 与 physical release 三个层级被合并",
+      "blocked_by": [
+        "K-PHY-12"
+      ],
+      "impact": "缺少保持力、卡扣/螺纹状态和反向证伪时，外观闭合掩盖真实未锁止。",
+      "evidence": "../algorithm-physics-routing.md#claims-and-transfer-limits"
+    },
+    {
+      "id": "F-REAL-01",
+      "domain": "REAL",
+      "project": "B13/B14 实体释放审计",
+      "symptom": "仿真方向映射到真实工位后无法证明仍是同一方向，重夹后结果漂移",
+      "root_cause": "CAD 世界系、工件、夹具与测量系未标定，且没有完全松夹重装的复现记录",
+      "blocked_by": [
+        "K-REAL-01"
+      ],
+      "impact": "实体试验的方向、间隙和位姿测量不可跨次比较。",
+      "evidence": "../algorithm-physics-routing.md#s11-physical-falsification"
+    },
+    {
+      "id": "F-REAL-02",
+      "domain": "REAL",
+      "project": "B13/B14 实体释放审计",
+      "symptom": "完成状态只由目测或操作者手感判断，37 项验收未运行却可能被口头视为到位",
+      "root_cause": "没有带单位、基准、阈值、不确定度和采样方法的机器可判定验收合同",
+      "blocked_by": [
+        "K-REAL-02"
+      ],
+      "impact": "装配完成不可重复判定，NOT_RUN 容易被静默升级为 PASS。",
+      "evidence": "../algorithm-physics-routing.md#s11-physical-falsification"
+    },
+    {
+      "id": "F-REAL-03",
+      "domain": "REAL",
+      "project": "B13/B14 实体释放审计",
+      "symptom": "临时夹具一松开组件即偏移，但无法定位是哪一步承载没有转移",
+      "root_cause": "未逐夹记录承载转移、按序松夹及每步位姿/力变化",
+      "blocked_by": [
+        "K-REAL-03"
+      ],
+      "impact": "最终姿态即使偶然正确，也无法证明目标连接已接管载荷。",
+      "evidence": "../algorithm-physics-routing.md#s11-physical-falsification"
+    },
+    {
+      "id": "F-REAL-04",
+      "domain": "REAL",
+      "project": "B13/B14 实体释放审计",
+      "symptom": "装件到位后压头、定位销或夹具被困，撤出时碰件或撤后失位",
+      "root_cause": "实体试验合同只验证装件终态，没有把工装撤出路径与撤出后保持纳入放行",
+      "blocked_by": [
+        "K-REAL-04"
+      ],
+      "impact": "工序在真实工位不可完成，即使装配路径本身成立也不能生产放行。",
+      "evidence": "../algorithm-physics-routing.md#s11-physical-falsification"
+    },
+    {
+      "id": "F-REAL-05",
+      "domain": "REAL",
+      "project": "实体试验方法审计（2026-08-27）",
+      "symptom": "为验证算法直接尝试整套装配，失败晚、损伤风险高且不能区分候选",
+      "root_cause": "没有选择风险最高、最早失效、最能区分候选的最小动作，也未预置停止/回退条件",
+      "blocked_by": [
+        "K-REAL-05"
+      ],
+      "impact": "实体成本和安全风险扩大，失败证据仍不足以定位算法或工艺根因。",
+      "evidence": "../algorithm-physics-routing.md#s11-physical-falsification"
+    },
+    {
+      "id": "F-IF-03",
+      "domain": "IF",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "机架衬板沿认证轴滑进横梁壁 27.8%，审计 CLEAR 0/431",
+      "root_cause": "含入采样用网格顶点，贴合面顶点绕数≈0.5 被计为内，t=0 本底虚高 25%，本底+5% 裕度吞掉了真穿模",
+      "blocked_by": [
+        "K-IF-09",
+        "K-IF-04"
+      ],
+      "impact": "30 条真穿模被放行，观众看到的正是这些；用户实看即报穿模。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-GOV-09",
+      "domain": "GOV",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "穿模审计与行走同报 0 穿模，画面口径扫描报 30 条 PATH",
+      "root_cause": "认证与验证共用 PathChecker 与基线豁免；BVH 交叉验证共享豁免语义",
+      "blocked_by": [
+        "K-GOV-15",
+        "K-GOV-02"
+      ],
+      "impact": "验收包『穿模 0』是自我印证，无独立口径。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-PATH-15",
+      "domain": "PATH",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "磁铁行程被审计收短到 2 mm，成片里弹入且仍嵌在型材里",
+      "root_cause": "审计回灌只收短不改道；行走不重跑；无最小可见行程下限",
+      "blocked_by": [
+        "K-PATH-18"
+      ],
+      "impact": "穿模以『弹入』形式残留，且不可读。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-PATH-16",
+      "domain": "PATH",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "431 个动件行程全部 20 mm，12 帧，2.5 m 画面里看不到位移",
+      "root_cause": "行走上限、帧数沿用 X1/Poppy 人形参数，无按机器尺度反解步骤",
+      "blocked_by": [
+        "K-PATH-19"
+      ],
+      "impact": "十段审片一致报『弹入无位移』，成片读成幻灯片。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-SCN-14",
+      "domain": "SCN",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "面板高亮动件而画面无任何橙色；动件 6–25 px；管内衬板全程不可见",
+      "root_cause": "一章一机位、固定视向、上下文半径 2.2×rad 把整机框入；无像素级可读性门",
+      "blocked_by": [
+        "K-SCN-10",
+        "K-SCN-04"
+      ],
+      "impact": "约三分之一抽样动件在成片中不可见。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-SCN-15",
+      "domain": "SCN",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "遮挡者 α 在章内从 0.12 渐变回 1.0，就位色从橙渐变到灰，动件前半窗几乎不动",
+      "root_cause": "Blender 5.2 的 keyframe_new_interpolation_type 偏好对 Python keyframe_insert 不生效，全部关键帧为贝塞尔",
+      "blocked_by": [
+        "K-SCN-11",
+        "K-SCN-05"
+      ],
+      "impact": "『X 光到章末才收敛』『动作后半段才动』全部由此产生。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-SCN-16",
+      "domain": "SCN",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "CNC 铝件就位瞬间近黑『消失』，窗玻璃纯黑，导轨信号绿",
+      "root_cause": "Aluminum-Polished（metallic 1.0, roughness 0.15）映射 0.10 的暗世界；透明外观未按 alpha 渲染；供应商外观未声明覆盖",
+      "blocked_by": [
+        "K-SCN-12",
+        "K-SCN-07"
+      ],
+      "impact": "装配进度不可读，材质被误读为白模/调试色。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-SCN-17",
+      "domain": "SCN",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "单章 33–85 件被虚化，整机成毛玻璃，脚轮也被虚化",
+      "root_cause": "遮挡者按整章半径而非动件足迹挑选，无数量上限，α 0.12",
+      "blocked_by": [
+        "K-SCN-13"
+      ],
+      "impact": "观众把重叠的半透明轮廓读成穿模。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-SCN-18",
+      "domain": "SCN",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "机器右端被右栏面板盖住；右下角露出未覆盖的三维画面；长紧固件副标题压在面板上",
+      "root_cause": "渲染 1600 宽、面板从 1280 起覆盖、面板只画到 720、副标题不截断",
+      "blocked_by": [
+        "K-SCN-14"
+      ],
+      "impact": "动件出画、HUD 不可读。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-DEL-09",
+      "domain": "DEL",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "验收合同机器门全 PASS 的成片被用户实看判为不可用",
+      "root_cause": "表达层质量只有人工回执门且放在最后，交付前无逐帧审片；执行者用缩略图拼板代替审片",
+      "blocked_by": [
+        "K-DEL-04"
+      ],
+      "impact": "用户成为第一个真正的审片人。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-DEL-10",
+      "domain": "DEL",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "372 对就位态重叠在成片里被读成穿模，验收包无记载",
+      "root_cause": "基线豁免把 CAD 态重叠当许可界面静默放行，无台账",
+      "blocked_by": [
+        "K-DEL-05",
+        "K-IF-09"
+      ],
+      "impact": "真实 CAD 缺陷与表达缺陷混在一起无法分辨。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-GOV-10",
+      "domain": "GOV",
+      "project": "OLSK Large CNC V3 v004 十段审片与量具复核（2026-09-03）",
+      "symptom": "逆向行走本机跑十余小时；dell 上 xargs -P 96 只并发 25",
+      "root_cause": "流程无算力放置步骤；并发未核实",
+      "blocked_by": [
+        "K-GOV-16"
+      ],
+      "impact": "迭代周期以天计，用户两次追问服务器为何不用。",
+      "evidence": "../../tools/CHANGELOG.md#2026-09-03"
+    },
+    {
+      "id": "F-PATH-17",
+      "domain": "PATH",
+      "project": "OLSK Large CNC V3 v009（2026-09-05）",
+      "symptom": "几何门全 PASS 的成片里垫圈先于丝杠、脚轮先于底梁、盖板先于被夹垫片、刀柄先于刀位座；用户：'看似对的、实际顺序不对'",
+      "root_cause": "工序内序只由几何可拆序 + 结构件前/紧固件后决定，没有承载/支撑/安装方式约束；无功能属性手册",
+      "blocked_by": [
+        "K-PATH-20",
+        "K-PATH-21",
+        "K-DEL-06"
+      ],
+      "impact": "48 条高置信顺序约束被违反；成片不能作装配指导。",
+      "evidence": "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md"
+    },
+    {
+      "id": "F-SCN-19",
+      "domain": "SCN",
+      "project": "OLSK Large CNC V3 v009（2026-09-05）",
+      "symptom": "肩部上龙门、Z 挂 X、顶梁吊装、窗框上机全部没有动作，结合章 0 动件 0.8 s",
+      "root_cause": "结合工序做成 presence-only 在场汇合，未认证单元整体位移",
+      "blocked_by": [
+        "K-SCN-15"
+      ],
+      "impact": "22 条 SAME_BENCH 约束违反；台架语义丢失。",
+      "evidence": "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md"
+    },
+    {
+      "id": "F-SCN-20",
+      "domain": "SCN",
+      "project": "OLSK Large CNC V3 v009（2026-09-05）",
+      "symptom": "十段审片 264 条/48 条三级：整机 α=0.02 成雾、动件半透明、就位帧被恢复不透明的遮挡件盖住、动件 5–30 px、沿视线接近读作弹入",
+      "root_cause": "台架件极淡在场、遮挡虚化 0.25、恢复键在组末/就位帧、构图按上下文半径、候选视向不排除平行插入轴",
+      "blocked_by": [
+        "K-SCN-16"
+      ],
+      "impact": "v009 表达层比 v008 更差（三级 28→48）。",
+      "evidence": "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md"
+    },
+    {
+      "id": "F-KIN-07",
+      "domain": "KIN",
+      "project": "OLSK Large CNC V3 v009（2026-09-05）",
+      "symptom": "三只回零传感器、带轮、线槽、线夹从未出场，WB-17/WB-44 整章消失",
+      "root_cause": "柔性词表 (?i)tube|pipe|hose|cable|wire|chain|duct 与 HTD|MGT 误判 67 件为柔性并静默不作动画",
+      "blocked_by": [
+        "K-KIN-06"
+      ],
+      "impact": "传动链、限位、走线在影片里全断。",
+      "evidence": "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md"
+    }
+  ]
+}

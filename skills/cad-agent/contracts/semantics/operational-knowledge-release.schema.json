@@ -1,0 +1,456 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/operational-knowledge-release-v1.json",
+  "title": "CAD Agent operational knowledge release candidate",
+  "description": "Hash-bound, reproducible release candidate for operational knowledge. This document records what was built and what independent activation would require; it cannot authorize its own activation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "release_id",
+    "release_version",
+    "document_role",
+    "release_state",
+    "self_authorizing",
+    "created_at",
+    "build",
+    "lineage",
+    "assets",
+    "validation",
+    "activation_requirements"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.operational-knowledge-release.v1"
+    },
+    "release_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "release_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "document_role": {
+      "const": "ReleaseCandidate"
+    },
+    "release_state": {
+      "enum": [
+        "BuiltCandidate",
+        "ValidatedCandidate",
+        "RejectedCandidate"
+      ]
+    },
+    "self_authorizing": {
+      "const": false
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "build": {
+      "$ref": "#/$defs/build"
+    },
+    "lineage": {
+      "$ref": "#/$defs/lineage"
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/releaseAsset"
+      }
+    },
+    "validation": {
+      "$ref": "#/$defs/validation"
+    },
+    "activation_requirements": {
+      "$ref": "#/$defs/activationRequirements"
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+$"
+        }
+      }
+    },
+    "releaseRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_id",
+        "release_version",
+        "manifest_sha256"
+      ],
+      "properties": {
+        "release_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "release_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "releasePolicyRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "policy_version",
+        "policy_sha256"
+      ],
+      "properties": {
+        "policy_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "policy_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "policy_sha256": {
+          "$ref": "#/$defs/sha256",
+          "description": "SHA-256 of the canonical JSON release-policy payload supplied to the independent assessor."
+        }
+      }
+    },
+    "compiler": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "compiler_id",
+        "compiler_version",
+        "implementation_sha256"
+      ],
+      "properties": {
+        "compiler_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "compiler_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "implementation_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "build_id",
+        "compiler",
+        "deterministic",
+        "source_assets",
+        "source_manifest_sha256",
+        "produced_at"
+      ],
+      "properties": {
+        "build_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "compiler": {
+          "$ref": "#/$defs/compiler"
+        },
+        "deterministic": {
+          "const": true
+        },
+        "source_assets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetRef"
+          }
+        },
+        "source_manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "produced_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "genesisLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "genesis"
+      ],
+      "properties": {
+        "genesis": {
+          "const": true
+        }
+      }
+    },
+    "rollbackPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_release",
+        "procedure",
+        "canary_suite_ids"
+      ],
+      "properties": {
+        "target_release": {
+          "$ref": "#/$defs/releaseRef"
+        },
+        "procedure": {
+          "$ref": "#/$defs/assetRef"
+        },
+        "canary_suite_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        }
+      }
+    },
+    "successorLineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "genesis",
+        "previous_release",
+        "rollback_plan"
+      ],
+      "properties": {
+        "genesis": {
+          "const": false
+        },
+        "previous_release": {
+          "$ref": "#/$defs/releaseRef"
+        },
+        "rollback_plan": {
+          "$ref": "#/$defs/rollbackPlan"
+        }
+      }
+    },
+    "lineage": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/genesisLineage"
+        },
+        {
+          "$ref": "#/$defs/successorLineage"
+        }
+      ]
+    },
+    "releaseAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "asset"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "OperationalPatternPackage",
+            "RecognitionAdapterPackage",
+            "SemanticRoleRegistry",
+            "CompetencyQuestionContract",
+            "OntologyGraph",
+            "ShapeGraph",
+            "SemanticSourceIR",
+            "TraceMatrix",
+            "SemanticBuildReport",
+            "SemanticRoleAssessment",
+            "CompetencyQuestionExecutionReport",
+            "SemanticReleasePolicy",
+            "SemanticReleaseAssessment",
+            "ActionProjection",
+            "ObservationProjection",
+            "ToolBindingProjection",
+            "RegressionManifest",
+            "GeneratedDocumentationIndex"
+          ]
+        },
+        "asset": {
+          "$ref": "#/$defs/assetRef"
+        },
+        "derived_from_asset_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        }
+      }
+    },
+    "validationCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "check_kind",
+        "status",
+        "report"
+      ],
+      "properties": {
+        "check_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "check_kind": {
+          "enum": [
+            "SemanticBuild",
+            "SchemaValidation",
+            "DependencyClosure",
+            "LayerPurity",
+            "BindingIntegrity",
+            "SemanticRoleClosure",
+            "SourceTraceability",
+            "Determinism",
+            "ObservationLinkage",
+            "ActionLinkage",
+            "ToolAbiCompatibility",
+            "CompetencyQuestionRegression",
+            "PositiveRegression",
+            "NegativeRegression",
+            "AmbiguityRegression",
+            "PriorReleaseRegression",
+            "RollbackCanary"
+          ]
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        },
+        "report": {
+          "$ref": "#/$defs/assetRef"
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checks",
+        "failed_check_ids",
+        "unknown_check_ids",
+        "activation_review_eligible"
+      ],
+      "properties": {
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/validationCheck"
+          }
+        },
+        "failed_check_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "unknown_check_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "activation_review_eligible": {
+          "type": "boolean",
+          "description": "Eligibility to request independent review, never activation authorization."
+        }
+      }
+    },
+    "activationRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_model",
+        "decision_contract",
+        "release_policy",
+        "required_review_roles",
+        "required_check_ids",
+        "automatic_activation"
+      ],
+      "properties": {
+        "decision_model": {
+          "const": "IndependentDecisionReferenceRequired"
+        },
+        "decision_contract": {
+          "$ref": "#/$defs/assetRef"
+        },
+        "release_policy": {
+          "$ref": "#/$defs/releasePolicyRef"
+        },
+        "required_review_roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "required_check_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "automatic_activation": {
+          "const": false
+        }
+      }
+    }
+  }
+}

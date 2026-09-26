@@ -1,0 +1,213 @@
+{
+  "$schema": "assembly-ontology.hard-film-acceptance-contract/v1",
+  "contract_id": "X1-PLUS-ASSEMBLY-FILM-20260827-V001",
+  "status": "AUDIT_PROPOSAL_NOT_SKILL_AUTHORITY",
+  "decision_rule": {
+    "accepted": "Every applicable check is PASS.",
+    "hold_unknown": "No check is FAIL and at least one applicable check is UNKNOWN.",
+    "rejected": "At least one applicable check is FAIL.",
+    "fail_closed": true
+  },
+  "profiles": {
+    "engineering-film": "A claim-bounded, occurrence-level assembly film at or above the X1 method, without claiming manufacturing release.",
+    "physical-release": "engineering-film plus tool access, torque/process, harness and release-rights closure."
+  },
+  "packet_schema": "assembly-ontology.acceptance-packet/v1",
+  "gates": [
+    {
+      "id": "A0_SOURCE_PROVENANCE",
+      "purpose": "Freeze a named source and prove that rendering geometry has not silently replaced engineering authority.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A0.1", "path": "source.native_brep_authority", "operator": "eq", "expected": true},
+        {"id": "A0.2", "path": "source.source_hash_frozen", "operator": "eq", "expected": true},
+        {"id": "A0.3", "path": "source.render_geometry_traceable_to_source", "operator": "eq", "expected": true},
+        {"id": "A0.4", "path": "source.proxy_substitutions", "operator": "empty"},
+        {
+          "id": "A0.5",
+          "path": "artifacts",
+          "operator": "artifact_hashes_valid",
+          "required_roles": ["source", "frozen_state", "connection_graph", "motion_audit", "save_readback", "video", "media_qc", "human_review"]
+        }
+      ]
+    },
+    {
+      "id": "A1_OCCURRENCE_IDENTITY",
+      "purpose": "One stable occurrence universe with complete world transforms and BOM binding.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A1.1", "path": "identity.stable_occurrence_ids", "operator": "eq", "expected": true},
+        {"id": "A1.2", "path": "identity.total_occurrences", "operator": "gt", "expected": 0},
+        {"id": "A1.3", "path": "identity.unique_occurrence_ids", "operator": "same_as", "expected_path": "identity.total_occurrences"},
+        {"id": "A1.4", "path": "identity.world_transforms_resolved", "operator": "same_as", "expected_path": "identity.total_occurrences"},
+        {"id": "A1.5", "path": "identity.world_transforms_independently_cross_validated", "operator": "same_as", "expected_path": "identity.total_occurrences"},
+        {"id": "A1.6", "path": "identity.full_matrix_cross_validation", "operator": "eq", "expected": true},
+        {"id": "A1.7", "path": "identity.bom_bound_occurrences", "operator": "same_as", "expected_path": "identity.total_occurrences"},
+        {"id": "A1.8", "path": "identity.unresolved_identity_conflicts", "operator": "eq", "expected": 0}
+      ]
+    },
+    {
+      "id": "A2_COMPLETENESS",
+      "purpose": "Mechanical parts, fasteners, standard parts and declared harnesses are accounted for without silent omission.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A2.1", "path": "completeness.accounted_occurrences", "operator": "same_as", "expected_path": "identity.total_occurrences"},
+        {"id": "A2.2", "path": "completeness.fastener_occurrences", "operator": "same_as", "expected_path": "completeness.fasteners_bound"},
+        {"id": "A2.3", "path": "completeness.standard_part_occurrences", "operator": "same_as", "expected_path": "completeness.standard_parts_bound"},
+        {"id": "A2.4", "path": "completeness.silent_omissions", "operator": "eq", "expected": 0},
+        {"id": "A2.5", "path": "completeness.exceptions", "operator": "empty"}
+      ]
+    },
+    {
+      "id": "A3_CONNECTION_GRAPH",
+      "purpose": "The connection graph is complete, provenance-bound and used by order, visibility and the on-screen panel.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A3.1", "path": "connection_graph.nodes", "operator": "same_as", "expected_path": "identity.total_occurrences"},
+        {"id": "A3.2", "path": "connection_graph.edges", "operator": "gt", "expected": 0},
+        {"id": "A3.3", "path": "connection_graph.edge_provenance_complete", "operator": "eq", "expected": true},
+        {"id": "A3.4", "path": "connection_graph.fastener_clamp_links_complete", "operator": "eq", "expected": true},
+        {"id": "A3.5", "path": "connection_graph.unresolved_cross_operation_anomalies", "operator": "eq", "expected": 0},
+        {"id": "A3.6", "path": "connection_graph.panel_uses_exact_presence_frames", "operator": "eq", "expected": true},
+        {"id": "A3.7", "path": "connection_graph.panel_realized_edge_count_matches_visible_graph", "operator": "eq", "expected": true}
+      ]
+    },
+    {
+      "id": "A4_MOTION_AUTHORITY",
+      "purpose": "Every target occurrence has exactly one disposition and every animated motion is occurrence-level, immutable and explicit.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A4.1", "path": "motion.target_occurrences", "operator": "sum_fields_eq", "sum_paths": ["motion.animated_occurrences", "motion.not_animated_occurrences"]},
+        {"id": "A4.2", "path": "motion.disposition_records", "operator": "same_as", "expected_path": "motion.target_occurrences"},
+        {"id": "A4.3", "path": "motion.unique_animated_occurrence_ids", "operator": "same_as", "expected_path": "motion.animated_occurrences"},
+        {"id": "A4.4", "path": "motion.duplicate_motion_ids", "operator": "eq", "expected": 0},
+        {"id": "A4.5", "path": "motion.group_translation_batches", "operator": "eq", "expected": 0},
+        {"id": "A4.6", "path": "motion.per_occurrence_tuples_complete", "operator": "eq", "expected": true},
+        {"id": "A4.7", "path": "motion.axes_normalized", "operator": "eq", "expected": true},
+        {"id": "A4.8", "path": "motion.authority_bound_before_scene_build", "operator": "eq", "expected": true},
+        {"id": "A4.9", "path": "motion.not_animated_have_explicit_reason", "operator": "eq", "expected": true}
+      ]
+    },
+    {
+      "id": "A5_SEQUENCE_TREE",
+      "purpose": "Connection constraints refine the certified order; pure tree breadth-first order is never used as a substitute for path evidence.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A5.1", "path": "sequence.pure_tree_bfs_used", "operator": "eq", "expected": false},
+        {"id": "A5.2", "path": "sequence.ordering_violations", "operator": "eq", "expected": 0},
+        {"id": "A5.3", "path": "sequence.fastener_before_clamped_violations", "operator": "eq", "expected": 0},
+        {"id": "A5.4", "path": "sequence.no_edge_entry_alarms", "operator": "eq", "expected": 0},
+        {"id": "A5.5", "path": "sequence.tree_alarms", "operator": "eq", "expected": 0},
+        {"id": "A5.6", "path": "sequence.pair_windows_certified", "operator": "eq", "expected": true}
+      ]
+    },
+    {
+      "id": "A6_PATH_INTERFERENCE",
+      "purpose": "Motion is certified on the real occurrence geometry over the full interval, with sibling and pair effects included.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A6.1", "path": "path_audit.authority_geometry_is_native_brep_or_bounded_equivalent", "operator": "eq", "expected": true},
+        {"id": "A6.2", "path": "path_audit.full_interval_checked", "operator": "eq", "expected": true},
+        {"id": "A6.3", "path": "path_audit.audited_occurrences", "operator": "same_as", "expected_path": "motion.animated_occurrences"},
+        {"id": "A6.4", "path": "path_audit.interference_violations", "operator": "eq", "expected": 0},
+        {"id": "A6.5", "path": "path_audit.sibling_violations", "operator": "eq", "expected": 0},
+        {"id": "A6.6", "path": "path_audit.run_local_hash_bound", "operator": "eq", "expected": true}
+      ]
+    },
+    {
+      "id": "A7_TIMELINE",
+      "purpose": "Chapter, occurrence and media timelines close exactly and the finale makes no motion claim.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A7.1", "path": "timeline.contiguous", "operator": "eq", "expected": true},
+        {"id": "A7.2", "path": "timeline.finale_count", "operator": "eq", "expected": 1},
+        {"id": "A7.3", "path": "timeline.finale_motion_claimed", "operator": "eq", "expected": false},
+        {"id": "A7.4", "path": "timeline.per_occurrence_windows_complete", "operator": "eq", "expected": true},
+        {"id": "A7.5", "path": "timeline.frozen_frames", "operator": "same_as", "expected_path": "timeline.rendered_frames"},
+        {"id": "A7.6", "path": "timeline.frozen_frames", "operator": "same_as", "expected_path": "timeline.encoded_frames"},
+        {"id": "A7.7", "path": "timeline.fps", "operator": "gt", "expected": 0}
+      ]
+    },
+    {
+      "id": "A8_ON_SCREEN_EVIDENCE",
+      "purpose": "The viewer can identify the active occurrence, its partners and the realized connection without guessing.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A8.1", "path": "visual.chapter_local_connection_graph", "operator": "eq", "expected": true},
+        {"id": "A8.2", "path": "visual.active_occurrence_identity_visible", "operator": "eq", "expected": true},
+        {"id": "A8.3", "path": "visual.partner_identity_visible", "operator": "eq", "expected": true},
+        {"id": "A8.4", "path": "visual.edge_activation_matches_presence", "operator": "eq", "expected": true},
+        {"id": "A8.5", "path": "visual.context_deferred_fasteners_reflected", "operator": "eq", "expected": true},
+        {"id": "A8.6", "path": "visual.occlusion_policy_reflected", "operator": "eq", "expected": true},
+        {"id": "A8.7", "path": "visual.every_motion_readable", "operator": "eq", "expected": true}
+      ]
+    },
+    {
+      "id": "A9_SAVE_READBACK",
+      "purpose": "The named CAD/scene artifact is saved by the guarded tool and independently reopened after save.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A9.1", "path": "persistence.named_save", "operator": "eq", "expected": true},
+        {"id": "A9.2", "path": "persistence.guarded_save_receipt", "operator": "eq", "expected": true},
+        {"id": "A9.3", "path": "persistence.fresh_reopen_readback", "operator": "eq", "expected": true},
+        {"id": "A9.4", "path": "persistence.scene_hash_matches", "operator": "eq", "expected": true},
+        {"id": "A9.5", "path": "persistence.occurrence_counts_match", "operator": "eq", "expected": true},
+        {"id": "A9.6", "path": "persistence.exhaustive_motion_tuple_readback", "operator": "eq", "expected": true}
+      ]
+    },
+    {
+      "id": "A10_MEDIA_HUMAN_REVIEW",
+      "purpose": "The exact frame sequence, encoded media and durable full-film review all refer to the same candidate.",
+      "applies_to": ["engineering-film", "physical-release"],
+      "checks": [
+        {"id": "A10.1", "path": "media.full_decode_pass", "operator": "eq", "expected": true},
+        {"id": "A10.2", "path": "media.frame_manifest_complete", "operator": "eq", "expected": true},
+        {"id": "A10.3", "path": "media.faststart", "operator": "eq", "expected": true},
+        {"id": "A10.4", "path": "media.video_hash_bound", "operator": "eq", "expected": true},
+        {"id": "A10.5", "path": "review.full_film_review_complete", "operator": "eq", "expected": true},
+        {"id": "A10.6", "path": "review.reviewer_receipt_hash_bound", "operator": "eq", "expected": true},
+        {"id": "A10.7", "path": "review.unreadable_motion_count", "operator": "eq", "expected": 0}
+      ]
+    },
+    {
+      "id": "A11_CLAIM_BOUNDARY",
+      "purpose": "The decision is fail-closed and visual acceptance never silently becomes physical release.",
+      "applies_to": ["engineering-film"],
+      "checks": [
+        {"id": "A11.1", "path": "claims.core_engineering_holds", "operator": "empty"},
+        {"id": "A11.2", "path": "claims.unknown_core_facts", "operator": "empty"},
+        {"id": "A11.3", "path": "claims.physical_release_claimed", "operator": "eq", "expected": false}
+      ]
+    },
+    {
+      "id": "A11_PHYSICAL_CLAIM_BOUNDARY",
+      "purpose": "Physical release remains fail-closed and may be claimed only after every core and process gate passes.",
+      "applies_to": ["physical-release"],
+      "checks": [
+        {"id": "A11R.1", "path": "claims.core_engineering_holds", "operator": "empty"},
+        {"id": "A11R.2", "path": "claims.unknown_core_facts", "operator": "empty"},
+        {"id": "A11R.3", "path": "claims.physical_release_claimed", "operator": "eq", "expected": true}
+      ]
+    },
+    {
+      "id": "R1_PHYSICAL_PROCESS_RELEASE",
+      "purpose": "Additional requirements when the film is claimed as executable manufacturing instruction.",
+      "applies_to": ["physical-release"],
+      "checks": [
+        {"id": "R1.1", "path": "release.tool_access_certified", "operator": "eq", "expected": true},
+        {"id": "R1.2", "path": "release.torque_process_complete", "operator": "eq", "expected": true},
+        {"id": "R1.3", "path": "release.harness_routes_complete", "operator": "eq", "expected": true},
+        {"id": "R1.4", "path": "release.rights_cleared", "operator": "eq", "expected": true},
+        {"id": "R1.5", "path": "claims.physical_release_claimed", "operator": "eq", "expected": true}
+      ]
+    }
+  ],
+  "known_x1_v015_closures_required_before_reuse": [
+    "Bind the frozen motion authority by hash instead of relying on legacy unbound lineage.",
+    "Resolve eight fastener-before-clamped order violations and thirteen S10 tree alarms.",
+    "Reconcile all 432 S7 targets in one disposition ledger; the current play table has 429 rows while the final chain accounts for 394 animated plus 38 not animated.",
+    "Use stable occurrence IDs and independently cross-validate complete world matrices, not only origins.",
+    "Make the connection-panel realized-edge clock consume context_deferred_fasteners, not chapter-start context time.",
+    "Perform exhaustive reopened-scene motion tuple readback and issue a durable full-film human-review receipt."
+  ]
+}

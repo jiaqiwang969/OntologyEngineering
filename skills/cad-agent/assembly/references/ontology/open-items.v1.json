@@ -1,0 +1,370 @@
+{
+  "$schema": "assembly.engineering-ontology.open-items/v1",
+  "record_id": "AEO-OPEN-20260823-V001",
+  "purpose": "本体的诚实性靠这份台账维持：凡是判据说要做而没做、或两处记录互相矛盾的，逐条列出。没有列出的不等于已闭合，只等于当前没发现。",
+  "items": [
+    {
+      "id": "O-01",
+      "title": "16 个求解单元方向未定",
+      "kind": "METHOD_LIMIT",
+      "detail": "97 个单元中 16 个为③级 UNDETERMINED，全部是轴对称件（顶丝、光面轴承、磁铁、垫片、球）。当前输出取『脱离距离短者』，这是任意规则。",
+      "criteria": [
+        "K-DIR-03"
+      ],
+      "next": "轴对称件的方向若在工艺上确实无关，应在工艺卡里显式声明『方向无关』，把它从未闭合项转为已判定；若有关（如带极性的磁铁），须另找非几何依据。",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "O-02",
+      "title": "共轴未定件跟随规则未实现",
+      "kind": "NOT_IMPLEMENTED",
+      "detail": "同工步中与已定向件共轴的③级件（典型为垫片）目前靠碰巧与其螺栓方向一致。",
+      "criteria": [
+        "K-DIR-04"
+      ],
+      "next": "在 b_class_insertion_pipeline 里加一条继承规则，并回归比对现有 16 个③级单元中有多少被自动定向。",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "O-03",
+      "title": "双实现交叉验证存在 10/97 未裁决分歧",
+      "kind": "CONTRADICTION",
+      "detail": "本次整理时复算：FCL(CPU) 与 Warp(GPU) 两条独立扫掠链在 97 个求解单元上方向 97/97 一致，脱离距离 87/97 在 0.30 mm 内一致；其余 10 个 GPU 侧一律更大——B12 的 88 叶螺钉组 42.6 vs 33.0、六个铰接工步的垫片 3.32 vs 0.5、B5-1/2 的 Crown 组 25.1/14.1 vs 3.25、A7.1 的球 8.48 vs 0.0。抽查 A7.1 发现两侧的静止集不同：FCL 侧 scene_occurrence_count=1（只有 Plate_Ring），GPU 侧把同工步的其他动件也放进了静止集。这不是随机误差，是两侧对『同工步其他动件』和『装配态基线』的定义不一致。",
+      "criteria": [
+        "K-GOV-02"
+      ],
+      "next": "先统一两侧的静止集与许可界面定义再重跑比对。在裁决前，交叉验证对这 10 个单元不成立——不能拿它当作这些单元已双向验证的依据。方法论 v2 文档目前也未记录这次比对。",
+      "severity": "HIGH",
+      "discovered": "2026-08-23 本体整理时复算发现"
+    },
+    {
+      "id": "O-04",
+      "title": "两个门禁互不引用，且语义门禁消费的是过期工艺版本",
+      "kind": "CONTRADICTION",
+      "detail": "工具/本体生成/门禁.py 重建并校验的是 assembly_process.v1.json（76 工步 / 312 实例闭合），而装配侧的权威候选是 assembly_process.v4.json（94 工步），总裁决在 verify_assembly_migration_v5.py。两条门禁没有互相引用，gate-report 绿不代表 v5 通过，反之亦然。",
+      "criteria": [
+        "K-GOV-08",
+        "K-GOV-04"
+      ],
+      "next": "要么让语义门禁改消费 v4 并重算闭合，要么显式声明两个门禁各自的作用域，避免『门禁绿了』被当成整体通过。",
+      "severity": "HIGH",
+      "discovered": "2026-08-23 本体整理时核对发现"
+    },
+    {
+      "id": "O-05",
+      "title": "特性链的断线报告引用的是已被取代的工具可达结论",
+      "kind": "STALE_RECORD",
+      "detail": "本体/特性链.json 的断线报告里有两条是『N 个实现工步工具可达 BLOCKED』，依据是 本体/tool-access-report.v2.json（21 CLEAR / 15 BLOCKED）。但 2026-08-23 的新工具可达运行结论是 39 颗紧固件全部 REACHABLE（含进刀通道与回转净空，判据严格得多）。两份结论并存，下游读到哪份取决于读的是哪个文件。",
+      "criteria": [
+        "K-GOV-04",
+        "K-TOOL-01"
+      ],
+      "next": "把 tool-reach-v001 的结论回填进特性链，并把 v2 报告标为已取代（保留作对照，按 K-GOV-03）。",
+      "severity": "HIGH",
+      "discovered": "2026-08-23 本体整理时核对发现"
+    },
+    {
+      "id": "O-06",
+      "title": "工步分类计数在文档与数据之间不一致",
+      "kind": "STALE_RECORD",
+      "detail": "本体/装配纠错方法论.v1.md 记『消歧后 B 53 / A 35 / C 3 / E 3』；现行 operation-classification.json 的分布是 A17 / B58 / C3 / D13 / E3。方法论 v2 的『77 个有 CAD 几何 + 17 个柔性』与后者一致。v1 文档的数字未回填。",
+      "criteria": [
+        "K-GOV-04"
+      ],
+      "next": "v1 已被 v2 取代，可只在 v1 顶部加一句『计数以分类文件为准』，不必改正文。",
+      "severity": "LOW",
+      "discovered": "2026-08-23 本体整理时核对发现"
+    },
+    {
+      "id": "O-07",
+      "title": "压装工装（13 个 TLG）未入场景、未验证",
+      "kind": "METHOD_LIMIT",
+      "detail": "手工具位姿是同轴配对的退化情形，已可推出并验证；压装工装不是同轴插入，位姿要从压头与被压件的贴合面反推，还必须连『工装本身让不让得开』一起验。",
+      "criteria": [
+        "K-TOOL-06"
+      ],
+      "next": "这是工具可达性方法唯一未覆盖的一类，也是离体压装工位（工位 A）的主要风险。",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "O-08",
+      "title": "17 个柔性/无 CAD 工步只有标注，没有方法",
+      "kind": "METHOD_LIMIT",
+      "detail": "线缆改制、接插件对接、点胶、检验门等。刚体方法不适用；这些恰恰是实际装配中最易出错的部分。STEP 中 12 个引线体与 38 个端子体在世界 Z 上有 119.3 mm 严格空档，不存在可直接交给柔性求解器的连续线缆拓扑。",
+      "criteria": [
+        "K-DEL-03"
+      ],
+      "next": "要么补建连续线缆拓扑（需另找来源，不得虚构），要么承认这一段只能靠人工工艺卡。",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "O-09",
+      "title": "运动模型只有单自由度平移，绕轴转动未覆盖",
+      "kind": "METHOD_LIMIT",
+      "detail": "轨迹契约的 motion_model 是 PER_MOVER_SINGLE_DOF_TRANSLATION_ALONG_ITS_OWN_PRINCIPAL_AXIS。需要边转边落、拧入、相位对准的动作不在其中——而齿圈过小齿轮明确需要对齿相位，错半齿即卡死。",
+      "criteria": [
+        "K-PATH-09"
+      ],
+      "next": "相位对准目前靠工艺卡文字（『预对准三个开窗与三个小齿轮』）承担，几何侧未验证。",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "O-10",
+      "title": "v5 五个专项 BLOCKER 全部未闭合",
+      "kind": "GATE_BLOCKED",
+      "detail": "撤夹完整性（B13/B14 缺 7 类承载转移/按序松夹/撤出/撤夹后保持合同）、夹具坐标标定与重夹复现（两个范围各缺 8 类）、完成状态可观测性（37 项验收全部 NOT_RUN，机器可判定项为 0）、方向探测公平比较（缺 10 类合同）、反向路径适用性（24 工步未分类、20 个范围-特性缺口、8 类不可逆动作未隔离）。",
+      "criteria": [
+        "K-GOV-01",
+        "K-PHY-02",
+        "K-PATH-06",
+        "K-REAL-01",
+        "K-REAL-02",
+        "K-REAL-03",
+        "K-REAL-04",
+        "K-REAL-05"
+      ],
+      "next": "这五项决定 physical_release；它们不是仿真问题，是记录合同问题，可以在不跑大仿真的情况下先补。",
+      "severity": "BLOCKER"
+    },
+    {
+      "id": "O-11",
+      "title": "CAB00042 两个受控来源冲突待授权",
+      "kind": "AUTHORIZATION",
+      "detail": "原连接器按官方指南 8 端子还是按图纸 10 位壳体用 2/3 针；PicoBlade 端接用预接线尾线焊接还是散触点直接压接。两项均为 OPEN_QUARANTINED，未实体执行。",
+      "criteria": [
+        "K-GOV-01"
+      ],
+      "next": "需要有权限的人按受控来源作互斥选择并记录未选来源的处置。算法不能替人授权。",
+      "severity": "BLOCKER"
+    },
+    {
+      "id": "O-12",
+      "title": "24 处扭矩官方留空",
+      "kind": "SOURCE_GAP",
+      "detail": "官方图纸即为空白，工艺卡显式标 UNKNOWN。",
+      "criteria": [
+        "K-SCN-03"
+      ],
+      "next": "自制首台需实验定值并回填；SHACL 门禁的 UNKNOWN 计数应随之递减。",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "O-13",
+      "title": "接近段只保证无接触，不表示这是实际取放路径",
+      "kind": "METHOD_LIMIT",
+      "detail": "认证接近距离很短的工步（A7.1 只有 0.50 mm），其取放路径本方法给不出。",
+      "criteria": [
+        "K-PATH-02",
+        "K-PATH-03"
+      ],
+      "next": "这类工步需要人工工艺说明或另建取放路径模型。",
+      "severity": "LOW"
+    },
+    {
+      "id": "O-14",
+      "title": "两个分发脚本对『渲染能否放到远端做』说法相反",
+      "kind": "CONTRADICTION",
+      "detail": "工具/装配动画/render_on_fleet.sh 的注释是『渲染这一步是纯算力，放远端更快也不占本机……产物回传后与本地渲染完全等价』；工具/装配动画/fleet_batch.sh（更晚一天）的注释是『渲染不走这条路——远端 Blender 版本与本地不一致，画面会不同』。两者并存且互相否定。当前成片 FILM_v001 是本机 assemble_film.py 调用本地 blender 渲染的。",
+      "criteria": [
+        "K-GOV-03",
+        "K-GOV-04"
+      ],
+      "next": "确认远端 Blender 版本是否已对齐：若已对齐，修正 fleet_batch.sh 的注释；若未对齐，把 render_on_fleet.sh 标为不可用于成片（只能用于草稿预览），并在脚本里打印版本对比。",
+      "severity": "MEDIUM",
+      "discovered": "2026-08-23 工具清单整理时核对发现"
+    },
+    {
+      "id": "O-15",
+      "title": "本体首次跨项目复用（灵犀 X1）：已走通 S0→S7→S10，出片",
+      "kind": "CROSS_PROJECT",
+      "detail": "2026-08-23 把本体应用到 104-灵犀x2（灵犀 X1 人形机器人，1572 实例，是 Orbita 的 5 倍）。S0 已完成。结论：12 阶段骨架原样成立；11 条带数值阈值的判据全部要按 X1 的尺度重标（最要紧的是 K-PATH-01 扫掠上限 60/16mm 与 K-PATH-02 接近上限 14mm——不重标就跑会得到『全部通过』，因为根本没扫到会撞的地方）；另发现 4 个 Orbita 没有的结构性问题，已作为 K-ID-06/07/08 与 K-PATH-11 加入判据库，状态 PLANNED。  【S1 已完成】1558 个 occurrence 世界位姿解出，四个口径对平（差额 8 逐条解释）。K-ID-08 的预判被证伪并按实测收窄（见判据库）；新增 K-IF-07 与失效 F-GEO-01/02。X1 侧另查出两处数据缺陷（重复螺钉定义 5 个实例 BOM 未计；R86-2 STEP 9 件 vs BOM 6 件）。  【S1 完成】双实现交叉验证 1558/1558 位置一致（并抓到 A 链变换取反的真 bug，见 F-ALG-09）；身份链覆盖率 23.7%→86.3%（国标号对照表是关键一跳）；K-ID-06/07 升为 VALIDATED，K-GOV-02 与 K-DIR-02 补入实证。  【S2 完成】31586 个实例化圆柱面 → 2783 个 occurrence 配合对，2.7 秒，0 未匹配。规模担心不成立（关键是按零件定义提、按变换实例化）。阈值敏感性实测：K-IF-01 在精确 CAD 装配态上不是敏感参数（±2%），可跨装配搬用；真正要重标的是扫掠类 K-PATH-01/02。另新增 K-ID-09 与失效 F-ID-07/08/09（三个静默的身份解析 bug）。　【S3 完成】工序→实例绑定：SOP 声明 1080 件，身份链可达 871（80.6%），已确定绑定 311（可达的 35.7%），0 个实例被两道工序争用。　【S3b】序列内跨工序指派 + 工序粒度唯一性检验：合计已绑定 508 件（可达的 58.3%、声明的 47.0%、整机的 32.6%），78 件判为任意不计入。新增 K-GOV-10。　【质检片】45 章 / 110.4s，源场景回读 PASS。表达取舍 FINAL_POSE_HIGHLIGHT_ONLY：S7 未做，片中不主张任何运动。片子替我们抓到 CAD 命名不一致（`关节02外壳右` 在左侧、`外壳左` 在右侧），以及四个渲染层的坑（相机 up 语义、包围球构图、无实体件包围盒中心、ffmpeg 无 drawtext）。　【S5/S7/S10 完成】8 个无实体采购模块建凸包刚体代理；S7 扫掠按工序分发三台 DGX（1833s 串行 → 约 5 分钟墙钟），494 动件中 356 有认证轨迹；双实现交叉验证 494/494 判定一致（4 处零距离贴合的接触语义差异未裁决，同 O-03）；粗端判据分域验证后只对紧固件启用（94.6% vs 壳件 31.2%），9 个动件降级为未定；装配动画 41 章 / 124.2s 出片。新增 K-GOV-11 与失效 F-DIR-07 / F-SCN-09/10/11 / F-DEL-07。",
+      "criteria": [
+        "K-ID-06",
+        "K-ID-07",
+        "K-ID-08",
+        "K-PATH-11",
+        "K-PATH-01",
+        "K-PATH-02"
+      ],
+      "next": "X1 剩下的：33 个 NO_RELEASE 需人工确认是否为最保守场景造成的假阻挡；105 个无共轴界面的动件需另判（平面贴合/锥面配合本方法未提）；142 个不可播动件与 1064 个工序归属未定的实例仍未进画面；运动模型只有沿轴平移，拧入与相位对准未覆盖。",
+      "severity": "MEDIUM",
+      "discovered": "2026-08-23 跨项目复用时发现"
+    },
+    {
+      "id": "O-16",
+      "title": "只提圆柱面的代价被高估了：21% 里绝大多数是口径问题",
+      "kind": "METHOD_LIMIT",
+      "detail": "原判断：494 个动件里 105 个（21%）判为 E_无共轴界面，据此推断需要补平面/锥面抽取。**这个判断错了**：S2 共轴界面图里全机真正零共轴配合的实例只有 **10 个**；105 里绝大多数是扫掠静止集口径造成的（把本工序全部动件一律排除，见 F-PATH-14 / K-PATH-13）。平面与锥面抽取仍然值得做——深沟球轴承、鱼眼轴承、锥面沉头件确实靠端面定位——但收益口径要按真实数重算。",
+      "criteria": [
+        "K-IF-01",
+        "K-IF-02",
+        "K-IF-03"
+      ],
+      "next": "按 K-PATH-13 重跑 S7 后重新统计 E 类；平面界面的目标群体缩小到真正零共轴的那批加端面定位的轴承类。",
+      "severity": "MEDIUM",
+      "discovered": "2026-08-24 X1 出片时量化"
+    },
+    {
+      "id": "O-17",
+      "title": "单轴平移的运动模型对结构支架不够",
+      "kind": "METHOD_LIMIT",
+      "detail": "X1 的 33 个 NO_RELEASE 里 30 个是结构件（手腕主支架、下肢大腿支架、大腿转接件、第二关节输出支架…），25 个属 D_多轴候选。在最保守场景下它们沿任一单轴都出不来——**这不是假阻挡，是运动模型不够**：真实工艺是多自由度机动或整组落装（Orbita 的 B13 就是这种）。",
+      "criteria": [
+        "K-KIN-01",
+        "K-PATH-06"
+      ],
+      "next": "对这 33 个做机构识别（K-KIN-01）：属于已知机构的走闭式解，不属于的才考虑多段路径。Orbita 的 3-RRR 闭合就是这么处理的。",
+      "severity": "HIGH",
+      "discovered": "2026-08-24 X1 出片时量化"
+    },
+    {
+      "id": "O-18",
+      "title": "论文算法路线并非都已有本地钉住执行器",
+      "kind": "METHOD_LIMIT",
+      "detail": "2026-08-27 回溯恢复了 Aameri 边界实体/配合语义、Agrawala 动作图、Li 偏序 DAG、ATA、ASAP、SBDP/DBG 和 Factory/Isaac 螺纹路线的职责。但只有 ATA 有明确上游 commit，本地 SBDP 只是思想适配器；ASAP、动作图统一适配器与 Factory/Isaac 螺纹执行器仍是 LITERATURE_ONLY。论文存在、论文报告成功率、案例脚本存在都不等于本地可执行或目标装配已验证。",
+      "criteria": [
+        "K-PATH-17",
+        "K-KIN-05",
+        "K-SCN-09",
+        "K-PHY-11"
+      ],
+      "next": "按 operation class 逐个选择真正需要的路线；为每个本地执行器钉住仓库/commit、输入输出合同和 answer-blind 无关装配回归。未完成前保持 LITERATURE_ONLY/NOT_EXECUTED。",
+      "severity": "HIGH",
+      "discovered": "2026-08-27 论文与历史会话综合回溯"
+    },
+    {
+      "id": "O-19",
+      "title": "完整 libuipc 接触传力路线只在 Y-Zipper 形成案例证据",
+      "kind": "CROSS_PROJECT_GAP",
+      "detail": "CAD pose authority、solver mesh 分离、分阶段 canary、matched counterfactual、版本绑定接触力/力矩/功账本等 P 级方法已在 Y-Zipper 接触驱动条带案例形成先例，但尚未在第二个无关柔性/接触驱动装配上复现。该案例最多支持 CASE_PROVEN_NOT_GENERALIZED；Y-Zipper 参数与 B14 方向探针数值都不得成为新装配默认值。",
+      "criteria": [
+        "K-PHY-07",
+        "K-PHY-08",
+        "K-PHY-09",
+        "K-PHY-10",
+        "K-PHY-12"
+      ],
+      "next": "选择一个与 Y-Zipper 不同的接触 operation class 做 answer-blind 回归，验证单位/网格/参数来源、力符号、作用反作用、功账本、对照和收敛合同；在此之前不提升成熟度。",
+      "severity": "HIGH",
+      "discovered": "2026-08-27 libuipc 方法固化审计"
+    },
+    {
+      "id": "O-20",
+      "title": "历史论文算法 benchmark 的 canonical hash 已漂移",
+      "kind": "SOURCE_INTEGRITY",
+      "detail": "历史文件 <historical-project>/本体/paper-algorithm-correction-benchmark.v1.json 当前文件 SHA-256 为 467e620c2266c0c44844291bae34277d713b2ba1a283e8c042d7cf8aa27e09e9；其声明 canonical SHA-256 为 142549acdc43b770804aa2d0a984f959000a8d3f6196bb654073fd6e1b5bdffa，而按声明规则（删除 canonical_sha256、键排序、紧凑 JSON、无尾换行）重算为 676b6607169728b03f9eb6a73233020b2b9e3f4e4c380b2b4479694003123df7。当前有两个 profile 的 physical_release 与 rendered_media_authorized 共四个布尔值为 true，但旧 validator PAB-12 明确要求全部为 false。该受控历史源不在本次正本改写范围内，不能静默修复或继续作为通过证据。",
+      "criteria": [
+        "K-GOV-03",
+        "K-GOV-04",
+        "K-PATH-17",
+        "K-PHY-06"
+      ],
+      "next": "把该文件保留为 canonical-hash drift 负回归；新算法/物理合同改用逐主张 ledger 与 claim ceiling。若未来修复历史源，必须由有权者生成新版本、完整哈希与迁移记录，不覆盖旧文件。",
+      "severity": "HIGH",
+      "discovered": "2026-08-27 source-lock 复算"
+    },
+    {
+      "id": "O-21",
+      "title": "K-SCN-10 像素级可读性测量已实现，与审片相关性待核",
+      "kind": "METHOD_LIMIT",
+      "detail": "tools/measure_readability.py（Cryptomatte 可见像素/投影凸包/屏幕位移）已进入链路并写入验收包 readability 块；OLSK v008：383/419 可读。尚未把测量结果与十段审片的逐件发现做相关性核对，阈值（24 px / 12 px / 0.25）仍是经验值。",
+      "criteria": [
+        "K-SCN-10"
+      ],
+      "next": "用 v007/v008 审片 findings 与 readability 行逐件对齐，报召回/误报，再定阈值并转 VALIDATED。",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "O-22",
+      "title": "K-PATH-18 逐件『审计→重跑行走→换轴』闭环未自动化",
+      "kind": "NOT_IMPLEMENTED",
+      "detail": "v005 靠全量重跑行走实现改道；逐件闭环与 min_visible_mm 下限尚未进入 build_playable_from_seqwalk。",
+      "criteria": [
+        "K-PATH-18"
+      ],
+      "next": "build_playable 增加 replan 步：对审计 PENETRATES 件重跑 sweep_sequence_reverse（单实体分片）后再取 best。",
+      "severity": "HIGH"
+    },
+    {
+      "id": "O-23",
+      "title": "2026-09-03 新增 9 条 APPLIED_UNVALIDATED 判据待 FILM_v005 证据转正",
+      "kind": "GATE_BLOCKED",
+      "detail": "2026-09-04 已按 FILM_v005–v008 证据转正 K-IF-09、K-GOV-15、K-PATH-19、K-SCN-11、K-SCN-14、K-DEL-04、K-GOV-16；K-SCN-12/13、K-DEL-05、K-SCN-10、K-PATH-18 仍 APPLIED_UNVALIDATED（审片仍报材质/虚化二级问题；装配态重叠根因分类未实现；逐件改道闭环未实现）。",
+      "criteria": [
+        "K-IF-09",
+        "K-GOV-15",
+        "K-PATH-19",
+        "K-SCN-11",
+        "K-SCN-12",
+        "K-SCN-13",
+        "K-SCN-14",
+        "K-DEL-04",
+        "K-DEL-05",
+        "K-GOV-16"
+      ],
+      "next": "v008 审片后复核 K-SCN-12/13；实现 K-DEL-05 根因分类与 K-PATH-18 逐件改道后再转正。",
+      "severity": "HIGH"
+    },
+    {
+      "id": "O-24",
+      "title": "工具链正本已收进 skill，但跨案例回归夹具未建",
+      "kind": "CROSS_PROJECT_GAP",
+      "detail": "assembly/tools/ 来自 OLSK 2026-09-03 版本（X1 30 工具的超集 + 18 新工具）；X1/Poppy 零差异回归尚未在 skill 内固化，只有 regress/cases.json 登记。",
+      "criteria": [
+        "K-GOV-13",
+        "K-GOV-16"
+      ],
+      "next": "为 X1、Poppy、OLSK 各录一组关键产物摘要（可播表/状态链/验收包）作回归基线，tools/regress/regress.py 跑通。",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "O-25",
+      "title": "台架语义的两个表达缺口：准备件台架章空场、跨台架配合的前驱缺失",
+      "kind": "METHOD_LIMIT",
+      "detail": "OLSK v007 审片三级缺陷中 6 条来自单件/小件的准备台架章（WB-07 丝杠准备、WB-13 角型材、WB-53.2 电磁阀）：闭包只有本章件，画面是空场；另有 WB-71.2 快插接头的配合对象在另一台架（WB-53.2）上，S3 predecessors 未含该依赖，接头在画面里悬空就位。",
+      "criteria": [
+        "K-SCN-01",
+        "K-SCN-02",
+        "K-SCN-07",
+        "K-ID-10"
+      ],
+      "next": "S3 台架 DAG：准备件章若闭包 ≤3 件且无宿主，并入其结合章或按 K-SCN-07 落盘一个宿主参照呈现；从 S2 配合图自动核对跨工序配合对手是否在前驱闭包内，缺失即报 HOLD 而不是默默悬空。",
+      "severity": "HIGH"
+    },
+    {
+      "id": "O-26",
+      "title": "STEP 无紧固件几何、BOM 缺行：成片无法表达 2474 件紧固件",
+      "kind": "DATA_LIMIT",
+      "detail": "OLSK STEP 里绝大多数螺钉/垫圈/螺母没有几何（S3 holds NO_STEP_GEOMETRY 99 条），手册 GLB 有；BOM 缺 622 件紧固件行与 92 件连接板/角件。影片只能以紧固件清单（HUD）陈述，不能动画。",
+      "criteria": [
+        "K-REAL-01",
+        "K-DEL-06"
+      ],
+      "next": "S1 增补：从手册 GLB 抽取紧固件网格与位姿作为'手册几何'层（标明来源），或按 BOM 规格参数化生成标准件；验收包声明紧固件表达边界。",
+      "severity": "MEDIUM"
+    },
+    {
+      "id": "O-27",
+      "title": "824 个从未出场的叶子件：外购件内部子体应折叠为单元，真实缺失需绑定",
+      "kind": "METHOD_LIMIT",
+      "detail": "718 件为电磁阀/接头/连接器的内部子体（COMPOUND/SOLID/弹簧/O 圈），不应逐件动画；Housing 49、Tool Changer 14、气动面板与电气基板（Electric Plate）等为真实缺失，导致器件悬空落位。",
+      "criteria": [
+        "K-ID-10",
+        "K-SCN-07"
+      ],
+      "next": "S5 折叠规则扩展到外购件族（H 线家族表）；S3 v3 按功能线的 coverage 清单补绑定并核对跨工序错位绑定（WB-38 吞 23 件、WB-53.2 五通阀）。",
+      "severity": "HIGH"
+    },
+    {
+      "id": "O-28",
+      "title": "农场并发上限要按实测单进程峰值内存反算",
+      "kind": "OPS",
+      "detail": "dell-7920 第二次因 80 个行走进程吃满 503 GB 而 sshd 失联；MemAvailable 守卫只挡起新作业。",
+      "criteria": [
+        "K-GOV-16"
+      ],
+      "next": "farm_launcher 启动前先跑 1 个作业测峰值 RSS，n ≤ 0.8×MemTotal/RSS；运行中 MemAvailable < 10% 时暂停（SIGSTOP）最新作业而不是任其增长。",
+      "severity": "HIGH"
+    }
+  ]
+}

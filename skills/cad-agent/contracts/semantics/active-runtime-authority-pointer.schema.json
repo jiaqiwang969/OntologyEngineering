@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-runtime-authority-pointer-v1.json",
+  "title": "Externally bootstrapped active runtime authority pointer",
+  "description": "A signed fixed-path pointer to one exact authority registry release. A repository file alone is insufficient: the host must independently pin these exact bytes and the signing public key.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "pointer_id",
+    "generation",
+    "bootstrap_mode",
+    "previous_pointer_sha256",
+    "registry",
+    "active_memory_selection_roots",
+    "activated_at",
+    "root_key_id",
+    "signature_algorithm",
+    "signature_base64",
+    "execution_authorized",
+    "fusion_write_authorized"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.active-runtime-authority-pointer.v1"},
+    "pointer_id": {"$ref": "#/$defs/stableId"},
+    "generation": {"type": "integer", "minimum": 0},
+    "bootstrap_mode": {"enum": ["ExternalGenesis", "ExternalSuccessor"]},
+    "previous_pointer_sha256": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+    },
+    "registry": {"$ref": "#/$defs/registryAsset"},
+    "active_memory_selection_roots": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {"$ref": "#/$defs/assetRef"}
+    },
+    "activated_at": {"type": "string", "format": "date-time"},
+    "root_key_id": {"$ref": "#/$defs/stableId"},
+    "signature_algorithm": {"const": "Ed25519"},
+    "signature_base64": {
+      "type": "string",
+      "minLength": 86,
+      "maxLength": 92,
+      "pattern": "^[A-Za-z0-9+/]+={0,2}$"
+    },
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"bootstrap_mode": {"const": "ExternalGenesis"}}},
+      "then": {
+        "properties": {
+          "generation": {"const": 0},
+          "previous_pointer_sha256": {"type": "null"}
+        }
+      },
+      "else": {
+        "properties": {
+          "generation": {"minimum": 1},
+          "previous_pointer_sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "registryAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registry_id",
+        "registry_version",
+        "path",
+        "sha256",
+        "schema",
+        "media_type"
+      ],
+      "properties": {
+        "registry_id": {"$ref": "#/$defs/stableId"},
+        "registry_version": {"$ref": "#/$defs/semver"},
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "schema": {"const": "cad-agent.runtime-authority-registry-release.v1"},
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "schema", "media_type"],
+      "properties": {
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "schema": {"type": "string", "minLength": 2, "maxLength": 256},
+        "media_type": {"const": "application/json"}
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+FUSION_MCP_UNTITLED_PRESERVATION_ROLE = "save-as"
+import adsk.core
+import adsk.fusion
+import json
+
+NEW_NAME = __DOC_NAME__
+EXPECTED_CREATION_ID = __CREATION_ID__
+PROJECT_NAME = __PROJECT_NAME__
+DESCRIPTION = __DESCRIPTION__
+
+app = adsk.core.Application.get()
+document = app.activeDocument
+if document is None:
+    raise RuntimeError("no active document")
+if document.isSaved:
+    raise RuntimeError("active document is already saved: " + str(document.name))
+if str(document.creationId) != EXPECTED_CREATION_ID:
+    raise RuntimeError("active document creation id mismatch: " + str(document.creationId))
+unsaved_count = 0
+for index in range(app.documents.count):
+    candidate = app.documents.item(index)
+    if not candidate.isSaved:
+        unsaved_count = unsaved_count + 1
+if unsaved_count != 1:
+    raise RuntimeError("expected exactly one unsaved document, found " + str(unsaved_count))
+design = adsk.fusion.Design.cast(app.activeProduct)
+if design is None:
+    raise RuntimeError("active product is not a Design")
+root = design.rootComponent
+if root.allOccurrences.count != 0 or root.bRepBodies.count != 0:
+    raise RuntimeError("new document is not empty: occurrences=" + str(root.allOccurrences.count) + " bodies=" + str(root.bRepBodies.count))
+projects = app.data.dataProjects
+project = None
+for index in range(projects.count):
+    candidate = projects.item(index)
+    if str(candidate.name) == PROJECT_NAME:
+        project = candidate
+if project is None:
+    raise RuntimeError("target project not found: " + PROJECT_NAME)
+folder = project.rootFolder
+pre = {
+    "stage": "save_as",
+    "document_name_before": str(document.name),
+    "creation_id": str(document.creationId),
+    "project_name": str(project.name),
+    "project_id": str(project.id),
+    "folder_name": str(folder.name),
+    "folder_id": str(folder.id),
+    "new_name": NEW_NAME,
+    "documents_open": app.documents.count,
+}
+saved = document.saveAs(NEW_NAME, folder, DESCRIPTION, "")
+print(json.dumps({"success": bool(saved), "stage": "save_as", "save_returned": bool(saved), "pre": pre}))
+
+def run(context):
+    pass

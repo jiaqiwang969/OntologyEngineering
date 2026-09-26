@@ -1,0 +1,71 @@
+{
+  "schema": "cad-agent.fusion-intent-mode-routing-policy.v1",
+  "status": "controlled_application",
+  "fusion_release_scope": "2704.1.23",
+  "source_delta": {
+    "schema": "cad-agent.fusion-intent-mode-routing-delta-candidate.v1",
+    "path": "runs/fusion-practice/00_official_2026_intent_driven/lesson-01/attempt-0002/full_follow_in_progress/self-evolution-candidate/deltas/fusion-intent-mode-routing.json",
+    "sha256": "fd560c85f29b32c7bb78ef48d7eefd1e3263e0a461cbc2ccb40c478411f347cb",
+    "technical_review_verdict_sha256": "1fba92f4b573f72a60f2c12f65ed950a62a824c79ab870256d62a61f2e6c5096"
+  },
+  "routes": [
+    {
+      "route_id": "new-part-through-course-chooser",
+      "intent": "Part",
+      "required_ui_path": ["New Design", "Part Design", "Create"],
+      "corroborating_readback": "design_intent=0",
+      "api_creation_substitution_allowed": false
+    },
+    {
+      "route_id": "new-assembly-through-course-chooser",
+      "intent": "Assembly",
+      "required_ui_path": ["New Design", "Assembly Design", "Create"],
+      "corroborating_readback": "design_intent=1",
+      "api_creation_substitution_allowed": false
+    },
+    {
+      "route_id": "new-hybrid-through-course-chooser",
+      "intent": "Hybrid",
+      "required_ui_path": ["New Design", "Hybrid Design", "Create"],
+      "corroborating_readback": "design_intent=2",
+      "api_creation_substitution_allowed": false
+    },
+    {
+      "route_id": "part-add-to-existing-assembly",
+      "intent": "external-reference insertion from Part",
+      "required_ui_path": ["File", "Add To Assembly", "Existing Assembly", "Insert", "Initial Position", "OK"],
+      "required_postcondition": "target Assembly advances version and contains a linked source occurrence",
+      "local_copy_substitution_allowed": false
+    },
+    {
+      "route_id": "assembly-associative-edit-in-place",
+      "intent": "linked component context edit",
+      "required_ui_path": ["Edit In Place", "associativity enabled", "Finish Edit In Place"],
+      "required_postcondition": "same parent Assembly lineage/version restored",
+      "local_component_edit_substitution_allowed": false
+    },
+    {
+      "route_id": "convert-design-type",
+      "intent": "Part-to-Hybrid or Hybrid-to-Assembly",
+      "command_id": "FusionChangeDesignDocTypeCmd",
+      "required_evidence": ["populated prestate", "conversion dialog", "same lineage", "version transition", "reopen"],
+      "direct_property_assignment_allowed": false
+    },
+    {
+      "route_id": "assembly-insert-component",
+      "intent": "saved Part external-reference insertion",
+      "command_id": "FusionImportCommandFromToolbar",
+      "required_ui_path": ["Insert Component", "saved Part row", "Insert", "Initial Position", "OK"],
+      "api_occurrence_creation_substitution_allowed": false
+    }
+  ],
+  "generalization_boundary": {
+    "other_fusion_releases_automatically_supported": false,
+    "ontology_vocabulary_additions": [],
+    "controlled_application_authorized": true,
+    "controlled_application_performed": true,
+    "semantic_promotion_eligible": false,
+    "runtime_load_verified": false,
+    "lesson_02_hands_on_unlocked": false
+  }
+}

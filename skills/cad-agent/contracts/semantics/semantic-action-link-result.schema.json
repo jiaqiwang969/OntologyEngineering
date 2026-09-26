@@ -1,0 +1,755 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-action-link-result-v1.json",
+  "title": "CAD Agent semantic action link result",
+  "description": "A hash-bound, candidate-only assessment linking compiled semantic action stages to exact active registry records, ToolOperation identities, and canonical tool ABI digests. It never authorizes activation or invocation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "link_id",
+    "status",
+    "link_status",
+    "candidate_only",
+    "source_build",
+    "registry_manifest",
+    "verified_registry_records",
+    "stage_assessments",
+    "stage_bindings",
+    "link_set_sha256",
+    "issues",
+    "assessment_sha256",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_invocation_authorized",
+    "runtime_routing_changed",
+    "tool_invocation_performed"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-action-link-result.v1"
+    },
+    "link_id": {
+      "type": "string",
+      "pattern": "^semantic-action-link-[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": ["PASS", "FAIL"]
+    },
+    "link_status": {
+      "enum": ["LINKED", "Rejected"]
+    },
+    "candidate_only": {
+      "const": true
+    },
+    "source_build": {
+      "$ref": "#/$defs/sourceBuild"
+    },
+    "registry_manifest": {
+      "$ref": "#/$defs/registryManifest"
+    },
+    "verified_registry_records": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/registryRecord"
+      }
+    },
+    "stage_assessments": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stageAssessment"
+      }
+    },
+    "stage_bindings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stageBinding"
+      }
+    },
+    "link_set_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "issues": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/issue"
+      }
+    },
+    "assessment_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "runtime_invocation_authorized": {
+      "const": false
+    },
+    "runtime_routing_changed": {
+      "const": false
+    },
+    "tool_invocation_performed": {
+      "const": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PASS"
+          }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "link_status": {
+            "const": "LINKED"
+          },
+          "verified_registry_records": {
+            "minItems": 1
+          },
+          "stage_assessments": {
+            "minItems": 1,
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/stageAssessment"
+                },
+                {
+                  "properties": {
+                    "binding_status": {
+                      "const": "LINKED"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "stage_bindings": {
+            "minItems": 1
+          },
+          "issues": {
+            "maxItems": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "link_status": {
+            "const": "Rejected"
+          },
+          "issues": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    },
+    "assetVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "declared_sha256",
+        "verified_sha256",
+        "verified",
+        "media_type"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "declared_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "verified_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified": {
+          "type": "boolean"
+        },
+        "media_type": {
+          "const": "application/json"
+        }
+      }
+    },
+    "schemaAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "media_type"],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "const": "application/schema+json"
+        }
+      }
+    },
+    "sourceBuild": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "build_report",
+        "build_report_schema",
+        "build_report_canonical_sha256",
+        "build_id",
+        "build_status",
+        "package_count",
+        "stage_count"
+      ],
+      "properties": {
+        "build_report": {
+          "$ref": "#/$defs/assetVerification"
+        },
+        "build_report_schema": {
+          "$ref": "#/$defs/schemaAsset"
+        },
+        "build_report_canonical_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "build_id": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "build_status": {
+          "type": ["string", "null"]
+        },
+        "package_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stage_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "registryManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest",
+        "manifest_schema",
+        "manifest_canonical_sha256",
+        "registry_status",
+        "eligible_record_ids",
+        "verified_record_set_sha256"
+      ],
+      "properties": {
+        "manifest": {
+          "$ref": "#/$defs/assetVerification"
+        },
+        "manifest_schema": {
+          "$ref": "#/$defs/schemaAsset"
+        },
+        "manifest_canonical_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "registry_status": {
+          "type": ["string", "null"]
+        },
+        "eligible_record_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "verified_record_set_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "registryRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id",
+        "entry_sha256",
+        "tool_id",
+        "contract",
+        "payload_schema",
+        "binding_count"
+      ],
+      "properties": {
+        "record_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "entry_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "tool_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "contract": {
+          "$ref": "#/$defs/assetVerification"
+        },
+        "payload_schema": {
+          "$ref": "#/$defs/schemaAsset"
+        },
+        "binding_count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "mutationMode": {
+      "enum": [
+        "ReadOnly",
+        "ReversibleMutation",
+        "PrivilegedMutation",
+        "ExternalSideEffect"
+      ]
+    },
+    "stageIdentity": {
+      "type": "object",
+      "required": [
+        "package_id",
+        "package_version",
+        "package_source_sha256",
+        "stage_id",
+        "operation_semantics",
+        "mutation_mode",
+        "required_capability_semantics",
+        "input_parameter_ids",
+        "output_ids",
+        "output_definitions"
+      ],
+      "properties": {
+        "package_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "package_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "package_source_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "stage_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "operation_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "mutation_mode": {
+          "$ref": "#/$defs/mutationMode"
+        },
+        "required_capability_semantics": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/semanticIri"
+          }
+        },
+        "input_parameter_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        },
+        "output_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        },
+        "output_definitions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sourceOutputDefinition"
+          }
+        }
+      }
+    },
+    "stageAssessment": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/stageIdentity"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "package_id",
+            "package_version",
+            "package_source_sha256",
+            "stage_id",
+            "operation_semantics",
+            "mutation_mode",
+            "required_capability_semantics",
+            "input_parameter_ids",
+            "output_ids",
+            "output_definitions",
+            "binding_status",
+            "candidate_registry_record_ids",
+            "candidate_tool_operation_iris",
+            "issue_codes"
+          ],
+          "properties": {
+            "package_id": true,
+            "package_version": true,
+            "package_source_sha256": true,
+            "stage_id": true,
+            "operation_semantics": true,
+            "mutation_mode": true,
+            "required_capability_semantics": true,
+            "input_parameter_ids": true,
+            "output_ids": true,
+            "output_definitions": true,
+            "binding_status": {
+              "enum": ["LINKED", "MISSING", "AMBIGUOUS", "CONFLICT"]
+            },
+            "candidate_registry_record_ids": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/stableId"
+              }
+            },
+            "candidate_tool_operation_iris": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/semanticIri"
+              }
+            },
+            "issue_codes": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^SAL-[A-Z0-9-]+$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "toolOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tool_operation_iri",
+        "semantic_role",
+        "tool_name",
+        "capability_semantics",
+        "read_only",
+        "input_schema_sha256",
+        "input_parameter_bindings",
+        "output_schema_sha256",
+        "output_bindings",
+        "abi_sha256"
+      ],
+      "properties": {
+        "tool_operation_iri": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "semantic_role": {
+          "const": "ToolOperation"
+        },
+        "tool_name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "capability_semantics": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/semanticIri"
+          }
+        },
+        "read_only": {
+          "type": "boolean"
+        },
+        "input_schema_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "input_parameter_bindings": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/inputParameterBinding"
+          }
+        },
+        "output_schema_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "output_bindings": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/outputBinding"
+          }
+        },
+        "abi_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "semanticValueType": {
+      "enum": [
+        "string",
+        "integer",
+        "number",
+        "boolean",
+        "semantic_iri",
+        "object_identity",
+        "asset_reference"
+      ]
+    },
+    "numericUnitCompatibility": {
+      "if": {
+        "properties": {
+          "value_type": {
+            "not": {
+              "enum": ["integer", "number"]
+            }
+          }
+        },
+        "required": ["value_type"]
+      },
+      "then": {
+        "properties": {
+          "unit_semantics": {"type": "null"}
+        }
+      }
+    },
+    "inputParameterBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_parameter_id",
+        "parameter_semantics",
+        "value_type",
+        "unit_semantics",
+        "tool_field",
+        "required"
+      ],
+      "properties": {
+        "stage_parameter_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "parameter_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "value_type": {
+          "$ref": "#/$defs/semanticValueType"
+        },
+        "unit_semantics": {
+          "oneOf": [
+            {"$ref": "#/$defs/semanticIri"},
+            {"type": "null"}
+          ]
+        },
+        "tool_field": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "required": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {"$ref": "#/$defs/numericUnitCompatibility"}
+      ]
+    },
+    "outputBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_output_id",
+        "output_semantics",
+        "value_type",
+        "unit_semantics",
+        "tool_field",
+        "required"
+      ],
+      "properties": {
+        "stage_output_id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "output_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "value_type": {
+          "$ref": "#/$defs/semanticValueType"
+        },
+        "unit_semantics": {
+          "oneOf": [
+            {"$ref": "#/$defs/semanticIri"},
+            {"type": "null"}
+          ]
+        },
+        "tool_field": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "required": {"type": "boolean"}
+      },
+      "allOf": [
+        {"$ref": "#/$defs/numericUnitCompatibility"}
+      ]
+    },
+    "sourceOutputDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage_output_id",
+        "output_semantics",
+        "value_type",
+        "required",
+        "unit_semantics"
+      ],
+      "properties": {
+        "stage_output_id": {"$ref": "#/$defs/nonEmptyString"},
+        "output_semantics": {"$ref": "#/$defs/semanticIri"},
+        "value_type": {"$ref": "#/$defs/semanticValueType"},
+        "required": {"type": "boolean"},
+        "unit_semantics": {
+          "oneOf": [
+            {"$ref": "#/$defs/semanticIri"},
+            {"type": "null"}
+          ]
+        }
+      },
+      "allOf": [
+        {"$ref": "#/$defs/numericUnitCompatibility"}
+      ]
+    },
+    "stageBinding": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/stageIdentity"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "package_id",
+            "package_version",
+            "package_source_sha256",
+            "stage_id",
+            "operation_semantics",
+            "mutation_mode",
+            "required_capability_semantics",
+            "input_parameter_ids",
+            "output_ids",
+            "output_definitions",
+            "registry_record",
+            "tool_operation"
+          ],
+          "properties": {
+            "package_id": true,
+            "package_version": true,
+            "package_source_sha256": true,
+            "stage_id": true,
+            "operation_semantics": true,
+            "mutation_mode": true,
+            "required_capability_semantics": true,
+            "input_parameter_ids": true,
+            "output_ids": true,
+            "output_definitions": true,
+            "registry_record": {
+              "$ref": "#/$defs/registryRecord"
+            },
+            "tool_operation": {
+              "$ref": "#/$defs/toolOperation"
+            }
+          }
+        }
+      ]
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "path", "message"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^SAL-[A-Z0-9-]+$"
+        },
+        "severity": {
+          "enum": ["ERROR", "WARNING"]
+        },
+        "path": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "message": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    }
+  }
+}

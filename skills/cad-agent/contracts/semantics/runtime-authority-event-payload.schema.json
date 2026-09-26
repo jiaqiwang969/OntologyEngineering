@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/runtime-authority-event-payload-v1.json",
+  "title": "Runtime authority event payloads",
+  "description": "Closed payload variants signed through an attested-runtime-event envelope.",
+  "oneOf": [
+    {"$ref": "#/$defs/clockObservation"},
+    {"$ref": "#/$defs/memoryReleaseAcceptanceDecision"},
+    {"$ref": "#/$defs/memoryActivationDecision"},
+    {"$ref": "#/$defs/memoryPointerTransitionReceipt"},
+    {"$ref": "#/$defs/memoryPointerReopenVerification"}
+  ],
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "releaseTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["release_id", "release_version", "sha256"],
+      "properties": {
+        "release_id": {"$ref": "#/$defs/stableId"},
+        "release_version": {"$ref": "#/$defs/semver"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "clockObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "time_scale", "observed_at", "sequence", "uncertainty_ms",
+        "nonce_sha256",
+        "execution_authorized", "fusion_write_authorized"
+      ],
+      "properties": {
+        "schema": {"const": "cad-agent.clock-observation.v1"},
+        "time_scale": {"const": "UTC"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "sequence": {"type": "integer", "minimum": 0},
+        "uncertainty_ms": {"type": "integer", "minimum": 0, "maximum": 60000},
+        "nonce_sha256": {"$ref": "#/$defs/sha256"},
+        "execution_authorized": {"const": false},
+        "fusion_write_authorized": {"const": false}
+      }
+    },
+    "memoryActivationDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "decision_id", "outcome", "scope_id", "pointer_id",
+        "expected_generation", "target_pointer_state_sha256", "target_release",
+        "release_acceptance_event_sha256",
+        "execution_authorized", "fusion_write_authorized"
+      ],
+      "properties": {
+        "schema": {"const": "cad-agent.active-memory-activation-decision.v1"},
+        "decision_id": {"$ref": "#/$defs/stableId"},
+        "outcome": {"enum": ["Approved", "Rejected"]},
+        "scope_id": {"$ref": "#/$defs/stableId"},
+        "pointer_id": {"$ref": "#/$defs/stableId"},
+        "expected_generation": {"type": "integer", "minimum": 0},
+        "target_pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "target_release": {"$ref": "#/$defs/releaseTarget"},
+        "release_acceptance_event_sha256": {"$ref": "#/$defs/sha256"},
+        "execution_authorized": {"const": false},
+        "fusion_write_authorized": {"const": false}
+      }
+    },
+    "memoryReleaseAcceptanceDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "decision_id", "outcome", "scope_id", "target_release",
+        "execution_authorized", "fusion_write_authorized"
+      ],
+      "properties": {
+        "schema": {"const": "cad-agent.operational-memory-release-acceptance-decision.v1"},
+        "decision_id": {"$ref": "#/$defs/stableId"},
+        "outcome": {"enum": ["Approved", "Rejected"]},
+        "scope_id": {"$ref": "#/$defs/stableId"},
+        "target_release": {"$ref": "#/$defs/releaseTarget"},
+        "execution_authorized": {"const": false},
+        "fusion_write_authorized": {"const": false}
+      }
+    },
+    "memoryPointerTransitionReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "receipt_id", "transition_kind", "decision_event_sha256",
+        "pointer_id", "before_pointer_state_sha256", "after_pointer_state_sha256",
+        "before_generation", "after_generation", "performed",
+        "execution_authorized", "fusion_write_authorized"
+      ],
+      "properties": {
+        "schema": {"const": "cad-agent.active-memory-pointer-transition-receipt.v1"},
+        "receipt_id": {"$ref": "#/$defs/stableId"},
+        "transition_kind": {"enum": ["Activation", "Rollback"]},
+        "decision_event_sha256": {"$ref": "#/$defs/sha256"},
+        "pointer_id": {"$ref": "#/$defs/stableId"},
+        "before_pointer_state_sha256": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+        },
+        "after_pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "before_generation": {"type": "integer", "minimum": 0},
+        "after_generation": {"type": "integer", "minimum": 1},
+        "performed": {"const": true},
+        "execution_authorized": {"const": false},
+        "fusion_write_authorized": {"const": false}
+      }
+    },
+    "memoryPointerReopenVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema", "verification_id", "receipt_event_sha256", "pointer_id",
+        "reopened_pointer_state_sha256", "reopened_generation", "conforms",
+        "execution_authorized", "fusion_write_authorized"
+      ],
+      "properties": {
+        "schema": {"const": "cad-agent.active-memory-pointer-reopen-verification.v1"},
+        "verification_id": {"$ref": "#/$defs/stableId"},
+        "receipt_event_sha256": {"$ref": "#/$defs/sha256"},
+        "pointer_id": {"$ref": "#/$defs/stableId"},
+        "reopened_pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "reopened_generation": {"type": "integer", "minimum": 1},
+        "conforms": {"const": true},
+        "execution_authorized": {"const": false},
+        "fusion_write_authorized": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,523 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-runtime-acceptance-matrix-v1.json",
+  "title": "Experience-to-Agent semantic runtime acceptance matrix",
+  "description": "Non-authorizing trace matrix for candidate, shadow, and explicitly isolated non-production canary competency questions, executable pytest oracles, verified runtime consumers, four-axis acceptance coverage, falsification evidence, and explicit authority boundaries.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "matrix_id",
+    "matrix_version",
+    "status",
+    "authority_boundary",
+    "source_documents",
+    "competency_questions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-runtime-acceptance-matrix.v1"
+    },
+    "matrix_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "matrix_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "status": {
+      "const": "Candidate"
+    },
+    "authority_boundary": {
+      "$ref": "#/$defs/authorityBoundary"
+    },
+    "source_documents": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/projectPath"
+      }
+    },
+    "competency_questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/competencyQuestion"
+      }
+    }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "pytestNode": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 768,
+      "pattern": "^tests/[A-Za-z0-9._/-]+\\.py::[A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)?$"
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reference",
+        "proof_scope"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "PytestNode",
+            "ContractPath",
+            "SchemaPath"
+          ]
+        },
+        "reference": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/projectPath"
+            },
+            {
+              "$ref": "#/$defs/pytestNode"
+            }
+          ]
+        },
+        "proof_scope": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "PytestNode"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "reference": {
+                "$ref": "#/$defs/pytestNode"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "reference": {
+                "$ref": "#/$defs/projectPath"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "pytestEvidenceRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/evidenceRef"
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "PytestNode"
+            },
+            "reference": {
+              "$ref": "#/$defs/pytestNode"
+            }
+          }
+        }
+      ]
+    },
+    "runtimeConsumer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "implementation",
+        "entrypoint",
+        "verification"
+      ],
+      "properties": {
+        "implementation": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/projectPath"
+            },
+            {
+              "pattern": "^src/[A-Za-z0-9._/-]+\\.py$"
+            }
+          ]
+        },
+        "entrypoint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_][A-Za-z0-9_]*)?$"
+        },
+        "verification": {
+          "$ref": "#/$defs/pytestEvidenceRef"
+        }
+      }
+    },
+    "acceptanceCoverageDimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "disposition",
+        "reason",
+        "evidence_refs"
+      ],
+      "properties": {
+        "disposition": {
+          "enum": [
+            "COVERED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/pytestEvidenceRef"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "COVERED"
+              }
+            },
+            "required": [
+              "disposition"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence_refs": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "evidence_refs": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "acceptanceCoverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "positive",
+        "negative",
+        "ambiguity",
+        "prior_release"
+      ],
+      "properties": {
+        "positive": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/acceptanceCoverageDimension"
+            },
+            {
+              "properties": {
+                "disposition": {
+                  "const": "COVERED"
+                }
+              }
+            }
+          ]
+        },
+        "negative": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/acceptanceCoverageDimension"
+            },
+            {
+              "properties": {
+                "disposition": {
+                  "const": "COVERED"
+                }
+              }
+            }
+          ]
+        },
+        "ambiguity": {
+          "$ref": "#/$defs/acceptanceCoverageDimension"
+        },
+        "prior_release": {
+          "$ref": "#/$defs/acceptanceCoverageDimension"
+        }
+      }
+    },
+    "authorityBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_scope",
+        "execution_authorized",
+        "activation_authorized",
+        "active_pointer_mutation_authorized",
+        "runtime_routing_changed"
+      ],
+      "properties": {
+        "evidence_scope": {
+          "enum": [
+            "CandidateContract",
+            "ShadowEvaluation",
+            "IsolatedNonProductionCanary"
+          ]
+        },
+        "execution_authorized": {
+          "const": false
+        },
+        "activation_authorized": {
+          "const": false
+        },
+        "active_pointer_mutation_authorized": {
+          "const": false
+        },
+        "runtime_routing_changed": {
+          "const": false
+        }
+      }
+    },
+    "falsification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "fixture_families",
+        "coverage_status",
+        "evidence_refs",
+        "failure_condition"
+      ],
+      "properties": {
+        "required": {
+          "const": true
+        },
+        "fixture_families": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "negative",
+              "ambiguity",
+              "tamper",
+              "prior-release",
+              "authority-escalation",
+              "domain-transfer",
+              "runtime-drift"
+            ]
+          }
+        },
+        "coverage_status": {
+          "enum": [
+            "COVERED",
+            "PARTIAL",
+            "MISSING"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidenceRef"
+          }
+        },
+        "failure_condition": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "competencyQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cq_id",
+        "source_clause",
+        "requirement",
+        "question",
+        "lifecycle_phase",
+        "oracle_type",
+        "evidence_status",
+        "evidence_refs",
+        "authority_boundary",
+        "falsification",
+        "unproven_gaps"
+      ],
+      "properties": {
+        "cq_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "source_clause": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "document",
+            "anchor"
+          ],
+          "properties": {
+            "document": {
+              "$ref": "#/$defs/projectPath"
+            },
+            "anchor": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          }
+        },
+        "requirement": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "question": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "lifecycle_phase": {
+          "enum": [
+            "Specification",
+            "Conceptualization",
+            "Formalization",
+            "Implementation",
+            "Evaluation",
+            "Maintenance",
+            "ReleaseAcceptance",
+            "Activation",
+            "RuntimeExecution"
+          ]
+        },
+        "oracle_type": {
+          "enum": [
+            "SchemaValidation",
+            "DeterministicUnit",
+            "ContractInvariant",
+            "ShadowIntegration",
+            "AgentEndToEnd",
+            "ReleaseGovernance",
+            "RuntimeExecutor",
+            "PointerTransition",
+            "MaintenanceQueue"
+          ]
+        },
+        "evidence_status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNPROVEN"
+          ]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/evidenceRef"
+          }
+        },
+        "runtime_consumers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/runtimeConsumer"
+          }
+        },
+        "acceptance_coverage": {
+          "$ref": "#/$defs/acceptanceCoverage"
+        },
+        "authority_boundary": {
+          "$ref": "#/$defs/authorityBoundary"
+        },
+        "falsification": {
+          "$ref": "#/$defs/falsification"
+        },
+        "unproven_gaps": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonEmptyString"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "evidence_status": {
+                "const": "PASS"
+              }
+            },
+            "required": [
+              "evidence_status"
+            ]
+          },
+          "then": {
+            "required": [
+              "runtime_consumers",
+              "acceptance_coverage"
+            ],
+            "properties": {
+              "evidence_refs": {
+                "contains": {
+                  "$ref": "#/$defs/pytestEvidenceRef"
+                },
+                "minContains": 1
+              },
+              "unproven_gaps": {
+                "maxItems": 0
+              },
+              "falsification": {
+                "properties": {
+                  "coverage_status": {
+                    "const": "COVERED"
+                  },
+                  "evidence_refs": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "unproven_gaps": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

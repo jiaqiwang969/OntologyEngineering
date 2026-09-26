@@ -1,0 +1,442 @@
+{
+  "$schema": "assembly.engineering-ontology.pipeline/v1",
+  "record_id": "AEO-PIPELINE-20260823-V001",
+  "purpose": "把工具、判据、产出物按执行顺序绑成一条链。这是本体里回答『如何匹配协调』的部分：每个阶段声明它消费谁、产出什么契约、由哪些判据把关、不过关时停在哪个状态。",
+  "invariant": "流水线是真序列不是分类：前一环不过不进下一环。任一箭头缺证据就停在 HOLD/BLOCKED，不得用下游的『看起来对』回补上游。",
+  "conditional_branches": [
+    {
+      "id": "R-PLAN-PAPER",
+      "name": "论文规划/稳定性/表达算法候选路线",
+      "trigger": "S4 认定不是可直接闭式求解机构，或已有连接图/偏序需要候选路径、稳定性或表达适配；每个子路线仍按 operation class 单独触发",
+      "entry_after": "S5",
+      "returns_to": "S6_OR_S7_OR_S10",
+      "tools": [
+        "T-ata",
+        "T-sbdp-adapter",
+        "T-asap-adapter",
+        "T-action-graph-adapter"
+      ],
+      "criteria": [
+        "K-PATH-16",
+        "K-PATH-17",
+        "K-KIN-05",
+        "K-SCN-09"
+      ],
+      "claim_ceiling": "PLANNER_OUTPUT_IS_CANDIDATE; ACTION_GRAPH_IS_PRESENTATION_ONLY",
+      "completion_rule": "规划候选必须回到 S7 做连续/代理几何门禁；ASAP 只增加逐步稳定性证据；动作图只能消费已认证状态与偏序。未执行的子路线记录 NOT_APPLICABLE 或 NOT_EXECUTED，不能假装通过。"
+    },
+    {
+      "id": "R-P-CONTACT-VALIDATION",
+      "name": "P 级完整接触传力验证",
+      "trigger": "operation class 涉及柔性接触驱动、接触因果传力、压装/卡扣专用模型，或主张包含 passage、force、torque、work；绝非因为 S9 结果不理想而自动延长",
+      "entry_after": "S7",
+      "returns_to": "S11",
+      "tools": [
+        "T-libuipc-contact-validation"
+      ],
+      "criteria": [
+        "K-PHY-06",
+        "K-PHY-07",
+        "K-PHY-08",
+        "K-PHY-09",
+        "K-PHY-10",
+        "K-PHY-12"
+      ],
+      "claim_ceiling": "CASE_SCOPED_PASSAGE_AND_CONTACT_TRANSFER_ONLY; NEVER_PHYSICAL_RELEASE",
+      "completion_rule": "必须有冻结世界位姿、专用 solver mesh、参数来源、分阶段 canary、matched counterfactual、版本绑定力恢复与收敛；任何缺项都返回 S6/S7 修模或 INCONCLUSIVE。"
+    },
+    {
+      "id": "R-P-THREADED-CONTACT",
+      "name": "P 级螺纹专用接触路线",
+      "trigger": "operation class 为 THREADED_NUT_BOLT_ASSEMBLY 且主张超过几何轴向候选，涉及旋合、预紧或拧紧扭矩",
+      "entry_after": "S7",
+      "returns_to": "S11",
+      "tools": [
+        "T-factory-thread-contact"
+      ],
+      "criteria": [
+        "K-PHY-09",
+        "K-PHY-10",
+        "K-PHY-11",
+        "K-PHY-12"
+      ],
+      "claim_ceiling": "DEDICATED_THREADED_ASSEMBLY_CANDIDATE_ONLY; NEVER_PHYSICAL_RELEASE",
+      "completion_rule": "本地执行器、版本、螺纹几何/接触/摩擦/驱动模型未钉住时只能 LITERATURE_ONLY/NOT_EXECUTED；通用刚体碰撞不可代替。"
+    }
+  ],
+  "stages": [
+    {
+      "id": "S0",
+      "name": "备料与冻结",
+      "question": "我们在对什么东西下结论？",
+      "inputs": [
+        "源 STEP/B-Rep",
+        "受控工艺卡（工步号、标题、parts、tool、torque、threadlocker、check、direction）"
+      ],
+      "outputs": [
+        "源文件 SHA-256 锚点",
+        "工艺记录 schema（本项目为 assembly_process.v4：roles / path / grasp / support / tool / parameters / acceptance / preconditions / postconditions / release_status / evidence）"
+      ],
+      "tools": [
+        "T-occt-xcaf",
+        "T-fusion"
+      ],
+      "criteria": [
+        "K-GOV-03",
+        "K-GOV-04",
+        "K-PATH-11"
+      ],
+      "hold_state": "无锚点即不得进入 S1",
+      "orbita_status": "DONE"
+    },
+    {
+      "id": "S1",
+      "name": "身份绑定",
+      "question": "工艺记录里的每个件，对应哪个 CAD 实例？",
+      "inputs": [
+        "S0"
+      ],
+      "outputs": [
+        "identity-evidence.json"
+      ],
+      "tools": [
+        "T-occt-xcaf"
+      ],
+      "criteria": [
+        "K-ID-01",
+        "K-ID-05",
+        "K-ID-06",
+        "K-ID-07",
+        "K-ID-08",
+        "K-ID-09",
+        "K-ID-10",
+        "K-ID-11"
+      ],
+      "hold_state": "有多候选或缺候选即停",
+      "orbita_status": "DONE（B13 33/33；全量 167 刚性实例已解析）"
+    },
+    {
+      "id": "S2",
+      "name": "界面配对与全局共轴界面图",
+      "question": "谁和谁真的配合？沿哪条轴？",
+      "inputs": [
+        "S1"
+      ],
+      "outputs": [
+        "joint-port-evidence.json",
+        "global-interface-graph.json",
+        "operation-classification.json"
+      ],
+      "tools": [
+        "T-occt-xcaf"
+      ],
+      "criteria": [
+        "K-IF-01",
+        "K-IF-02",
+        "K-IF-03",
+        "K-IF-06",
+        "K-IF-07",
+        "K-ID-09",
+        "K-ID-12"
+      ],
+      "hold_state": "多轴候选未消歧即停",
+      "orbita_status": "DONE（5445 圆柱面 → 132 轴线；94 工步分为 A17/B58/C3/D13/E3）"
+    },
+    {
+      "id": "S3",
+      "name": "身份链",
+      "question": "工艺卡里的具名身份，怎么一跳一跳接到几何上？",
+      "inputs": [
+        "S1",
+        "S2"
+      ],
+      "outputs": [
+        "formal-identity-binding.json"
+      ],
+      "tools": [
+        "T-occt-xcaf"
+      ],
+      "criteria": [
+        "K-ID-01",
+        "K-ID-10",
+        "K-ID-11",
+        "K-PATH-20",
+        "K-DEL-06"
+      ],
+      "hold_state": "缺受控记录不等于身份挂起——先找纯几何传递路径；确实找不到才挂起",
+      "orbita_status": "DONE（B13：工艺卡 → 小齿轮 → 齿段窗口 → 唯一齿圈 → 唯一盘 → 螺纹孔同轴 → 唯一臂）"
+    },
+    {
+      "id": "S4",
+      "name": "机构识别",
+      "question": "这段运动是不是某个已知机构？",
+      "inputs": [
+        "S2"
+      ],
+      "outputs": [
+        "闭式解 + 结构不变量自检"
+      ],
+      "tools": [
+        "T-spherical-kin"
+      ],
+      "criteria": [
+        "K-KIN-01",
+        "K-KIN-02",
+        "K-KIN-03",
+        "K-KIN-06"
+      ],
+      "hold_state": "是机构却去搜路径 = 范畴错误；不是机构才考虑 S6 的搜索路线",
+      "orbita_status": "DONE（3-RRR 球面并联，自检 14/14）"
+    },
+    {
+      "id": "S5",
+      "name": "求解单元归并",
+      "question": "一次该动的是哪一坨？",
+      "inputs": [
+        "S1",
+        "S2"
+      ],
+      "outputs": [
+        "occurrence-resolution.json（叶子 → 采购件）",
+        "运动分区（刚性核心 / 柔性 / 端子）"
+      ],
+      "tools": [
+        "T-occt-xcaf"
+      ],
+      "criteria": [
+        "K-ID-02",
+        "K-ID-03",
+        "K-ID-04",
+        "K-KIN-04",
+        "K-ID-09"
+      ],
+      "hold_state": "分区错则 S6 与 S7 的一切结论无效——这是本项目代价最高的一类错误",
+      "orbita_status": "DONE（167 实例 → 97 求解单元）"
+    },
+    {
+      "id": "S6",
+      "name": "方向判定",
+      "question": "沿这条轴，往哪边装？",
+      "inputs": [
+        "S5",
+        "S2"
+      ],
+      "outputs": [
+        "逐单元 direction_rule + withdraw_sense"
+      ],
+      "tools": [
+        "T-trimesh-fcl",
+        "T-sbdp-adapter",
+        "T-ata"
+      ],
+      "criteria": [
+        "K-DIR-01",
+        "K-DIR-02",
+        "K-DIR-03",
+        "K-DIR-04",
+        "K-DIR-05",
+        "K-PATH-17"
+      ],
+      "hold_state": "③级标注未定，不得声称已确定",
+      "orbita_status": "DONE_WITH_GAPS（54 唯一 / 27 粗端 / 16 未定；K-DIR-04 未实现）"
+    },
+    {
+      "id": "S7",
+      "name": "认证轨迹与时序",
+      "question": "这条路真的走得通吗？走得通到多远？",
+      "inputs": [
+        "S5",
+        "S6"
+      ],
+      "outputs": [
+        "orbita3d.b-class-insertion-trajectory/v2 轨迹契约",
+        "state-chain.json"
+      ],
+      "tools": [
+        "T-trimesh-fcl",
+        "T-warp-gpu",
+        "T-fleet"
+      ],
+      "criteria": [
+        "K-IF-04",
+        "K-PATH-01",
+        "K-PATH-02",
+        "K-PATH-03",
+        "K-PATH-04",
+        "K-PATH-05",
+        "K-PATH-09",
+        "K-PATH-10",
+        "K-GOV-02",
+        "K-IF-05",
+        "K-PATH-06",
+        "K-PATH-07",
+        "K-PATH-08",
+        "K-IF-07",
+        "K-PATH-13",
+        "K-PATH-14",
+        "K-PATH-15",
+        "K-PATH-16",
+        "K-IF-09",
+        "K-PATH-18",
+        "K-GOV-15",
+        "K-PATH-21"
+      ],
+      "hold_state": "报通过必须同报覆盖区间；密集采样不得升级为连续证明",
+      "orbita_status": "DONE_WITH_GAPS（74 工步 / 97 单元全部 RELEASES；13 条状态链零容差通过；双实现 10/97 分歧未裁决）"
+    },
+    {
+      "id": "S8",
+      "name": "工具可达性",
+      "question": "工艺卡点名的工具，够不够得到它要拧的那颗紧固件？",
+      "inputs": [
+        "S7",
+        "S0 的 tool 字段"
+      ],
+      "outputs": [
+        "tool-reachability-summary/v1"
+      ],
+      "tools": [
+        "T-warp-gpu"
+      ],
+      "criteria": [
+        "K-TOOL-01",
+        "K-TOOL-02",
+        "K-TOOL-03",
+        "K-TOOL-04",
+        "K-TOOL-05",
+        "K-TOOL-06"
+      ],
+      "hold_state": "压装工装不在覆盖内，须显式声明",
+      "orbita_status": "DONE_FOR_HAND_TOOLS（39/39 紧固件可达，最小连续可转角 165°）"
+    },
+    {
+      "id": "S9",
+      "name": "方向物理探针（可选）",
+      "question": "几何给不出方向、或存在多个几何可行候选时，哪个方向更顺？",
+      "trigger": "仅当 S6/S7 留下两个或以上同等几何可行方向，且 first-discriminating-feature 比较合同能在共同 q0/环境/代理/参数上成立",
+      "not_triggered_state": "NOT_APPLICABLE_WITH_RATIONALE",
+      "return_stage": "S6_OR_S7",
+      "claim_ceiling": "DIRECTION_RANKING_ONLY",
+      "inputs": [
+        "S6 的多候选",
+        "共同 q0、mover/fixed 与候选全集",
+        "同一代理几何与参数",
+        "每候选 matched contact/control 与对称停止规则"
+      ],
+      "outputs": [
+        "directional-probe-summary + 停止动作"
+      ],
+      "tools": [
+        "T-libuipc"
+      ],
+      "criteria": [
+        "K-PHY-01",
+        "K-PHY-02",
+        "K-PHY-03",
+        "K-PHY-04",
+        "K-PHY-05",
+        "K-PHY-06"
+      ],
+      "hold_state": "公平比较合同未闭合、候选未跑齐、没有 first discriminating feature、只有零接触或结论矛盾时一律 AMBIGUOUS/INCONCLUSIVE；S9 永远不能 physical release",
+      "orbita_status": "BLOCKED（比较合同 10 类缺口；lead-stub 数值 runner 未执行）"
+    },
+    {
+      "id": "S10",
+      "name": "表达与交付",
+      "question": "怎么把已认证的东西变成人能照着装的东西？",
+      "inputs": [
+        "S7",
+        "S0 的可执行字段"
+      ],
+      "outputs": [
+        "分章计划 + .blend 源场景 + 回读清单 + 成片 / 工艺卡发布版"
+      ],
+      "tools": [
+        "T-blender",
+        "T-ffmpeg",
+        "T-action-graph-adapter",
+        "T-visual-overlap-scan",
+        "T-film-review"
+      ],
+      "criteria": [
+        "K-SCN-01",
+        "K-SCN-02",
+        "K-SCN-03",
+        "K-SCN-04",
+        "K-SCN-05",
+        "K-SCN-06",
+        "K-SCN-07",
+        "K-DEL-01",
+        "K-DEL-02",
+        "K-DEL-03",
+        "K-PATH-11",
+        "K-IF-08",
+        "K-SCN-08",
+        "K-GOV-13",
+        "K-GOV-14",
+        "K-SCN-09",
+        "K-PATH-19",
+        "K-SCN-10",
+        "K-SCN-11",
+        "K-SCN-12",
+        "K-SCN-13",
+        "K-SCN-14",
+        "K-DEL-04",
+        "K-DEL-05",
+        "K-SCN-15",
+        "K-SCN-16"
+      ],
+      "hold_state": "回读不过不得渲染；未覆盖工步如实标注，不伪造运动；画面口径 PATH≠0 或三级审片缺陷≠0 不得交付",
+      "orbita_status": "DONE（14 章 / 146.8 s / 76 工步；17 个柔性工步以标注卡列出）"
+    },
+    {
+      "id": "S11",
+      "name": "夹具、验收与实体最小证伪",
+      "question": "同一条方向在真实工位上还是同一条方向吗？装到位了吗？松手会不会移位？工装撤得出来吗？",
+      "claim_ceiling": "PHYSICAL_RELEASE_WITHIN_EXECUTED_AND_ACCEPTED_TEST_SCOPE_ONLY",
+      "inputs": [
+        "S7",
+        "S9（仅在触发过时消费；未触发必须记录 NOT_APPLICABLE 理由）",
+        "P 接触物理分支（仅在对应 operation class/claim 触发时消费；否则记录 NOT_APPLICABLE）",
+        "夹具标定记录",
+        "验收合同"
+      ],
+      "outputs": [
+        "夹具坐标标定 + 重夹复现记录",
+        "机器可判定的完成验收",
+        "承载转移 / 按序松夹 / 撤夹路径记录"
+      ],
+      "tools": [
+        "T-physical-trial"
+      ],
+      "criteria": [
+        "K-GOV-01",
+        "K-REAL-01",
+        "K-REAL-02",
+        "K-REAL-03",
+        "K-REAL-04",
+        "K-REAL-05",
+        "K-DEL-06"
+      ],
+      "hold_state": "这是唯一可授予实体放行的阶段：夹具标定/重夹、机器验收、承载转移/松夹、工装撤出、最小高风险证伪任一未闭合即 HOLD；仿真、规划、动画均不能替代",
+      "orbita_status": "BLOCKED（撤夹完整性 / 夹具标定与重夹复现 / 完成状态可观测性 / 方向公平比较 / 反向路径准入，五项均为 NEW_UNIQUE_ROOT）"
+    }
+  ],
+  "cross_cutting": {
+    "治理": [
+      "K-GOV-01",
+      "K-GOV-03",
+      "K-GOV-04",
+      "K-GOV-05",
+      "K-GOV-06",
+      "K-GOV-08",
+      "K-GOV-07",
+      "K-GOV-10",
+      "K-GOV-11",
+      "K-GOV-12",
+      "K-GOV-15",
+      "K-GOV-16"
+    ],
+    "说明": "治理判据不属于任何单一阶段，每个阶段的产出都要满足它们。"
+  }
+}

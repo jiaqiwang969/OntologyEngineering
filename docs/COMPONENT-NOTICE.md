@@ -1,20 +1,16 @@
 # Component and distribution notice
 
-This notice covers the owner-approved independent core ZIP for
-`manufacturing-v0.5.6`. The separate full repository archive also contains the
-two books; their rights status remains recorded in
-[PUBLIC-RELEASE-STATUS](https://github.com/jiaqiwang969/OntologyEngineering/blob/manufacturing-v0.5.6/docs/PUBLIC-RELEASE-STATUS.md). Neither archive releases
-customer work or any physical product.
+This notice covers the reviewed 0.6.0 code/method release and its independent core package.
+Existing book sources retain their separately recorded [rights status](PUBLIC-RELEASE-STATUS.md).
+No customer work, credentials, private history or physical product is released.
 
-| Component | Included terms and source |
-| --- | --- |
-| Ontology-engineering core code and authored manufacturing method | Root [MIT license](../LICENSE); the frozen synthetic manufacturing package has its own [notice](../runtime/vendor/MANUFACTURING-NOTICE.md). |
-| Semantica 0.6.5+oe.6 wheel | The upstream code is MIT licensed; the wheel includes the upstream license. Exact source and artifact hash are in the [source lock](../runtime/semantica-source-lock.json). Its book-derived chapter packages carry a separate `semantica/chapter_packages/NOTICE.md` inside the wheel: this owner's fork is authorized for publication, but downstream reuse of affected book-derived assets requires independent rights review. |
-| Fusion execution adapter wheel | The repository owner authorizes public distribution of this owner-controlled CAD adapter in `manufacturing-v0.5.6` under the root MIT license for its authored code. Its exact wheel is pinned in the [CAD source lock](../runtime/cad-operational-source-lock.json). Autodesk Fusion and any other external software remain separately licensed and are not included. |
-| CAD remote bridges and bounded assembly/mechanism tools | Owner-authored or AI-assisted general code and synthetic examples under the root MIT license. NX/AutoCAD, external NX MCP sidecar and pywin32 are separately provided; no restricted historical project data or source is bundled. |
-| Customer data, books and historical CAD cases | Excluded from the independent core ZIP. The full repository archive contains its existing books under their separate rights status; customer data and private CAD cases are not included. |
+| Component | Terms and provenance |
+|---|---|
+| Owner-authored engineering methods and operational code | Root [MIT license](../LICENSE). |
+| Semantica 0.6.5+oe.6 | Unchanged [source lock](../runtime/semantica-source-lock.json); upstream MIT license and book-derived chapter-package NOTICE remain inside the wheel. Downstream rights for book-derived assets require their own review. |
+| Frozen manufacturing package | Existing [notice](../runtime/vendor/MANUFACTURING-NOTICE.md); synthetic cases only. |
+| Jev Ultrafast snapshot | Upstream MIT, exact commit and files in [source lock](../runtime/jev-ultrafast/source-lock.json); [license](../runtime/jev-ultrafast/upstream/LICENSE). Browser Harness and other Python dependencies retain their own licenses. |
+| NX orchestration and general CAD methods | Owner-authored or AI-assisted code/templates under root MIT. Siemens NX, its license, host and native acceptance are supplied separately. Retired Fusion runtime is absent. |
 
-The root MIT license does not relicense third-party components or book material.
-The core release asset ledger records the public decision for each bundled
-file; the package manifest proves transport integrity. Neither is an engineering
-acceptance or a promotion of candidate semantic packages.
+The root license does not relicense third-party or book material. Asset hashes prove bytes,
+not engineering fitness, semantic package promotion or a user's authorization to purchase.

@@ -30,7 +30,12 @@ jobs:
         run: python scripts/check_semantica_backend_policy.py --mode strict
 
       - name: Verify repository contracts and Jev integration
-        run: python -m pytest -q tests
+        run: python -m pytest -q tests --ignore=tests/test_jev_browser_tool.py
+
+      - name: Verify isolated browser tooling without a live browser
+        run: |
+          bash runtime/jev-ultrafast/setup.sh
+          runtime/jev-ultrafast/.venv/bin/python -m unittest discover -s tests -p test_jev_browser_tool.py
 
       - name: Check privacy and build both portable packages
         run: |

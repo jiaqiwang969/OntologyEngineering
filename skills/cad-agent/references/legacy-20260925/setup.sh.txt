@@ -1,0 +1,40 @@
+#!/bin/bash
+# One-time setup for the engineering-ontology CAD module: creates a private venv
+# inside the skill directory and installs the Fusion-only execution wheel.
+# After this, skill calls never read the development repository.
+set -euo pipefail
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
+PY="${FUSION_CAD_PYTHON:-python3}"
+if ! "$PY" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)'; then
+  echo "cad-agent skill setup: need python3 >= 3.11 (set FUSION_CAD_PYTHON)" >&2
+  exit 1
+fi
+
+wheel="$SKILL_DIR/dist/oe_cad_fusion_runtime-0.1.0+oe.9-py3-none-any.whl"
+mechanism_package="$SKILL_DIR/mechanism/wiper-kinematics"
+"$PY" "$SKILL_DIR/scripts/verify_fusion_runtime_wheel.py"
+
+if command -v uv >/dev/null 2>&1; then
+  uv venv --quiet --allow-existing --python "$PY" "$SKILL_DIR/.venv"
+  uv pip install --quiet --python "$SKILL_DIR/.venv/bin/python" "$wheel"
+  uv pip install --quiet --python "$SKILL_DIR/.venv/bin/python" websocket-client
+  if [ -f "$mechanism_package/pyproject.toml" ]; then
+    uv pip install --quiet --python "$SKILL_DIR/.venv/bin/python" 'numpy>=1.24,<3'
+  fi
+else
+  "$PY" -m venv "$SKILL_DIR/.venv"
+  "$SKILL_DIR/.venv/bin/pip" install --quiet "$wheel"
+  "$SKILL_DIR/.venv/bin/pip" install --quiet websocket-client
+  if [ -f "$mechanism_package/pyproject.toml" ]; then
+    "$SKILL_DIR/.venv/bin/pip" install --quiet 'numpy>=1.24,<3'
+  fi
+fi
+"$SKILL_DIR/.venv/bin/python" "$SKILL_DIR/scripts/verify_fusion_runtime_wheel.py" --installed \
+  || { echo "cad-agent skill setup: Fusion-only runtime verification failed" >&2; exit 1; }
+if [ -f "$mechanism_package/pyproject.toml" ]; then
+  PYTHONPATH="$mechanism_package" \
+    "$SKILL_DIR/.venv/bin/python" -c "import numpy, wiper_kinematics" \
+    || { echo "cad-agent skill setup: mechanism install verification failed" >&2; exit 1; }
+fi
+echo "cad-agent skill setup: ready ($SKILL_DIR/.venv)"

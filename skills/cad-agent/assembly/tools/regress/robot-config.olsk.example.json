@@ -1,0 +1,98 @@
+{
+ "$schema": "assembly-ontology.rebuild-robot-config/v1",
+ "case": "OLSK-Large-CNC-V3",
+ "rebuild_root": ".",
+ "name_encoding": "utf-8",
+ "source": {
+  "whole_machine_step": "<source-root>/01_输入原件/2026-09-01_GitHub上游_OLSK-Large-CNC仓库/cad/Step/extracted/Large CNC V3.step",
+  "step_sha256": "b0e03698785adbe168a666a4f3bd28b5b80b747377183f0c89c76802b871ad56"
+ },
+ "paths": {
+  "s0_freeze": "evidence/s0-freeze.v1.json",
+  "s0_records": "evidence/s0-controlled-records.v1.json",
+  "s1_manifest": "本体/S1-occurrence清单-体展开.v2.json",
+  "s1_channel_b": "evidence/s1-xcaf-channel-b.v1.json",
+  "s1_crosscheck": "evidence/s1-world-crosscheck.v1.json",
+  "s2_definition_geometry": "本体/S2-零件解析面.v1.json",
+  "s2_coax_graph": "本体/S2-共轴界面图-体展开.v1.json",
+  "s2_plane_graph": "本体/S2-平面界面图-体展开.v1.json",
+  "mesh_dir": "网格导出-体展开",
+  "s3_operations": "装配工艺/sop-olsk-workbook.v1.json",
+  "s3_binding": "本体/S3-工序实例绑定.v1.json",
+  "s7_runs": "本体/S7-runs",
+  "s7_seq_cert": "本体/S7-序列感知认证",
+  "s8_graph": "本体/S8-连接关系图.v1.json",
+  "stage_ledger": "stage-ledger.json",
+  "s1_body_view_note": "S7/S8 消费体展开视图；权威在 paths_authority",
+  "s1_bodies": "本体/S1-定义体清单.v1.json",
+  "s3_bridge": "本体/S3-GLB桥接.v1.json",
+  "s3_sop_record": "装配工艺/sop-olsk-workbook.v1.json",
+  "s3_bench_groups": "装配工艺/manual-bench-groups.v1.json"
+ },
+ "operations_basis": {
+  "structure": "STEP 根下 10 个子装配（Bed/Electrics/Frame/Gantry/Housing/Pneumatics/Tool Changer/X axis/Y axis/Z Axis）；SOP 为 Workbook.csv 78 章 114 步，逐步列物料与数量",
+  "order_evidence": "受控 SOP 步序（Workbook.csv）+ 手册 GLB 114 步骤根节点分组作旁证；无扭矩/胶粘/验收字段",
+  "claim": "过程车道可用（STEP+BOM+SOP），但 SOP 无版本号与签发人，工序证据级逐章落盘"
+ },
+ "fastener_lexicon": {
+  "note": "词表由 BOM Fasteners 组 68 行归纳（见 s0-freeze.fastener_records_in_bom）；S8 冻结前须人工终审；轴承/带轮/联轴器不是紧固件",
+  "patterns": [
+   "(?i)\\bDIN ?912",
+   "(?i)\\bISO ?7380",
+   "(?i)\\bDIN ?985",
+   "(?i)\\bISO ?3780",
+   "(?i)ISO ?7045",
+   "(?i)countersunk",
+   "(?i)(?<!ball )(?<!lead )\\bscrew(?! ?nut)(?=\\b|_)",
+   "(?i)\\bbolt",
+   "(?i)(?<!ball screw )(?<!driven )(?<!screw )\\bnut(?=\\b|_)",
+   "(?i)washer",
+   "(?i)^(?!.*(fitting|pipe|hose|connector))(?=.*\\bM\\d+[-xX×]\\d+)",
+   "(?i)\\bT[- ]?nut",
+   "(?i)threaded insert",
+   "(?i)HF-screw|B-screw|C-screw"
+  ],
+  "status": "v002 修正：排除 Ball Screw / Lead Screw / Screw Nut / Ball Screw Nut / Driven Nut（机构件，K-KIN），保留 Attachment Nut；对 919 定义词面核过（见 evidence/fastener-lexicon-check.v2.json）"
+ },
+ "part_class_lexicon": {
+  "note": "merge_s7 分域验证用；THICK_END 判据只在验证吻合率>=0.90 的类上启用",
+  "fastener_pin_patterns": [
+   "(?i)\\bDIN ?912",
+   "(?i)\\bISO ?7380",
+   "(?i)\\bDIN ?985",
+   "(?i)ISO ?7045",
+   "(?i)(?<!ball )(?<!lead )\\bscrew(?! ?nut)(?=\\b|_)",
+   "(?i)\\bbolt",
+   "(?i)(?<!ball screw )(?<!driven )(?<!screw )\\bnut(?=\\b|_)",
+   "(?i)washer",
+   "(?i)\\bpin\\b",
+   "(?i)dowel"
+  ],
+  "shell_cover_patterns": [
+   "(?i)cover",
+   "(?i)panel",
+   "(?i)door",
+   "(?i)window",
+   "(?i)housing",
+   "(?i)cap\\b",
+   "(?i)plate"
+  ]
+ },
+ "paths_authority": {
+  "s1_manifest": "本体/S1-occurrence清单-体展开.v2.json",
+  "mesh_dir": "网格导出-体展开",
+  "s2_coax_graph": "本体/S2-共轴界面图.v1.json",
+  "s2_plane_graph": "本体/S2-平面界面图.v1.json"
+ },
+ "coordinates": {
+  "length_unit": "mm",
+  "up_axis": "+Y",
+  "up_axis_index": 1,
+  "up_axis_sign": 1,
+  "evidence": "上轴 = STEP +Y。证据：①几何桥帧拟合 R_step_to_glb 第二行 = (0,1,0)，即 glTF（Y-up）的 +Y 对应 STEP +Y，拟合到 mm 级（主轴/丝杠框重合，UNIQUE 质心中位差 0.9 mm）；②STEP 叶网格并集 AABB：x 3354 / y 1933 / z 2150 mm，1933 mm 与整机高度一致；③脚轮（Caster 子装配）在 y 最低端。"
+ },
+ "coordinate_semantics": {
+  "+Y": "上",
+  "basis": "S3 几何桥帧拟合实测（见 coordinates.evidence）"
+ }
+}

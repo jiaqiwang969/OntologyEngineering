@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-activation-assessment-v1.json",
+  "title": "Read-only semantic activation and rollback assessment",
+  "description": "Deterministic audit of separated release acceptance, activation decision, exact runtime trust closure, and rollback readiness. PASS only makes a compare-and-swap plan eligible for a separate actuator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assessor_version",
+    "assessment_mode",
+    "status",
+    "input_digests",
+    "derived_states",
+    "checks",
+    "bindings",
+    "pointer_change_plan",
+    "rollback_plan",
+    "release_acceptance_is_activation",
+    "activation_authorized",
+    "activation_performed",
+    "active_pointer_changed",
+    "rollback_performed",
+    "execution_authorized",
+    "runtime_routing_changed",
+    "issues",
+    "assessment_id"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.semantic-activation-assessment.v1"},
+    "assessor_version": {"const": "0.1.0"},
+    "assessment_mode": {"const": "read_only_fail_closed_plan_only"},
+    "status": {"$ref": "#/$defs/status"},
+    "input_digests": {"$ref": "#/$defs/inputDigests"},
+    "derived_states": {"$ref": "#/$defs/derivedStates"},
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/check"}
+    },
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/binding"}
+    },
+    "pointer_change_plan": {"$ref": "#/$defs/pointerChangePlan"},
+    "rollback_plan": {"$ref": "#/$defs/rollbackPlan"},
+    "release_acceptance_is_activation": {"const": false},
+    "activation_authorized": {"const": false},
+    "activation_performed": {"const": false},
+    "active_pointer_changed": {"const": false},
+    "rollback_performed": {"const": false},
+    "execution_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/issue"}
+    },
+    "assessment_id": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "stage": {"enum": ["release", "activation", "rollback"]},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {
+      "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+    },
+    "nullableString": {
+      "type": ["string", "null"]
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+    "inputDigests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_trust_bundle_sha256",
+        "activation_policy_sha256",
+        "reviewer_registry_sha256",
+        "release_acceptance_decision_sha256",
+        "activation_decision_sha256"
+      ],
+      "properties": {
+        "runtime_trust_bundle_sha256": {"$ref": "#/$defs/sha256"},
+        "activation_policy_sha256": {"$ref": "#/$defs/sha256"},
+        "reviewer_registry_sha256": {"$ref": "#/$defs/sha256"},
+        "release_acceptance_decision_sha256": {"$ref": "#/$defs/sha256"},
+        "activation_decision_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "stageState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "state"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "state": {
+          "enum": [
+            "RELEASE_ACCEPTED",
+            "RELEASE_REJECTED",
+            "RELEASE_UNRESOLVED",
+            "POINTER_CHANGE_PLAN_READY",
+            "ACTIVATION_PLAN_REJECTED",
+            "ACTIVATION_PLAN_UNRESOLVED",
+            "ROLLBACK_PLAN_READY",
+            "ROLLBACK_PLAN_REJECTED",
+            "ROLLBACK_PLAN_UNRESOLVED"
+          ]
+        }
+      }
+    },
+    "derivedStates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["release", "activation", "rollback"],
+      "properties": {
+        "release": {"$ref": "#/$defs/stageState"},
+        "activation": {"$ref": "#/$defs/stageState"},
+        "rollback": {"$ref": "#/$defs/stageState"}
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check_id", "stage", "status", "reason_codes"],
+      "properties": {
+        "check_id": {"type": "string", "minLength": 2},
+        "stage": {"$ref": "#/$defs/stage"},
+        "status": {"$ref": "#/$defs/status"},
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 2}
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_id",
+        "stage",
+        "declared_sha256",
+        "observed_sha256",
+        "declared_schema",
+        "observed_schema",
+        "matches"
+      ],
+      "properties": {
+        "binding_id": {"type": "string", "minLength": 2},
+        "stage": {"$ref": "#/$defs/stage"},
+        "declared_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "observed_sha256": {"$ref": "#/$defs/sha256"},
+        "declared_schema": {"$ref": "#/$defs/nullableString"},
+        "observed_schema": {"$ref": "#/$defs/nullableString"},
+        "matches": {"type": "boolean"}
+      }
+    },
+    "pointerChangePlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eligible",
+        "mode",
+        "expected_current_bundle_sha256",
+        "target_bundle_sha256",
+        "precondition",
+        "postcondition",
+        "performed"
+      ],
+      "properties": {
+        "eligible": {"type": "boolean"},
+        "mode": {"const": "CompareAndSwapPlanOnly"},
+        "expected_current_bundle_sha256": {"$ref": "#/$defs/sha256"},
+        "target_bundle_sha256": {"$ref": "#/$defs/sha256"},
+        "precondition": {"const": "RevalidateExactBindingsAndCurrentPointer"},
+        "postcondition": {"const": "SeparateActuatorReceiptAndCanaryRequired"},
+        "performed": {"const": false}
+      }
+    },
+    "releaseTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["release_id", "release_version", "sha256"],
+      "properties": {
+        "release_id": {"$ref": "#/$defs/nullableString"},
+        "release_version": {
+          "anyOf": [{"$ref": "#/$defs/semver"}, {"type": "null"}]
+        },
+        "sha256": {"$ref": "#/$defs/nullableSha256"}
+      }
+    },
+    "bundleTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_id", "bundle_version", "sha256"],
+      "properties": {
+        "bundle_id": {"$ref": "#/$defs/nullableString"},
+        "bundle_version": {
+          "anyOf": [{"$ref": "#/$defs/semver"}, {"type": "null"}]
+        },
+        "sha256": {"$ref": "#/$defs/nullableSha256"}
+      }
+    },
+    "disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["failed_release", "evidence", "active_pointer"],
+      "properties": {
+        "failed_release": {"type": ["string", "null"]},
+        "evidence": {"type": ["string", "null"]},
+        "active_pointer": {"type": ["string", "null"]}
+      }
+    },
+    "rollbackPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_id",
+        "target_release",
+        "target_bundle",
+        "canary_suite_ids",
+        "trigger_conditions",
+        "disposition",
+        "eligible",
+        "performed"
+      ],
+      "properties": {
+        "plan_id": {"type": ["string", "null"]},
+        "target_release": {"$ref": "#/$defs/releaseTarget"},
+        "target_bundle": {"$ref": "#/$defs/bundleTarget"},
+        "canary_suite_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "trigger_conditions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "disposition": {"$ref": "#/$defs/disposition"},
+        "eligible": {"type": "boolean"},
+        "performed": {"const": false}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "stage", "path", "message"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^SA-[A-Z0-9-]+$"},
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "stage": {"$ref": "#/$defs/stage"},
+        "path": {"type": "string", "pattern": "^\\$"},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

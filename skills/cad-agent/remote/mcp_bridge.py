@@ -179,4 +179,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    import os as _cad_policy_os
+    if _cad_policy_os.environ.get("CAD_AGENT_LEGACY_CAD") != "explicit":
+        raise SystemExit("Retired CAD MCP entrypoint. Use scripts/nx_direct.py. Historical use needs explicit legacy scope and CAD_AGENT_LEGACY_CAD=explicit.")
     raise SystemExit(main())

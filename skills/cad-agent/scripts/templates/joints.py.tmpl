@@ -1,0 +1,136 @@
+import adsk.core
+import adsk.fusion
+import json
+import math
+import traceback
+
+DOC_NAME = __DOC_NAME__
+EXPECTED_LINEAGE = __LINEAGE__
+SAVE_COMMENT = __SAVE_COMMENT__
+PLAN = __PLAN__
+RIGID = __RIGID__
+GROUND = __GROUND__
+
+def _items(collection):
+    return [collection.item(index) for index in range(collection.count)]
+
+def _index(root):
+    table = {}
+    for occ in _items(root.allOccurrences):
+        table.setdefault(str(occ.component.name), occ)
+    return table
+
+def _cyl_faces(occ, cx_mm, cy_mm, radius_mm, axis, tol_mm):
+    out = []
+    for body in _items(occ.bRepBodies):
+        for face in _items(body.faces):
+            geom = face.geometry
+            if geom.surfaceType != adsk.core.SurfaceTypes.CylinderSurfaceType:
+                continue
+            cyl = adsk.core.Cylinder.cast(geom)
+            direction = cyl.axis
+            component = direction.z if axis == "z" else direction.x
+            if abs(abs(component) - 1.0) > 1e-6:
+                continue
+            if abs(cyl.radius * 10.0 - radius_mm) > tol_mm:
+                continue
+            origin = cyl.origin
+            if axis == "z":
+                if math.hypot(origin.x * 10.0 - cx_mm, origin.y * 10.0 - cy_mm) > tol_mm:
+                    continue
+            out.append(face)
+    return out
+
+def _revolute(root, occ_a, occ_b, face, name, axis):
+    geo = adsk.fusion.JointGeometry.createByNonPlanarFace(face, adsk.fusion.JointKeyPointTypes.MiddleKeyPoint)
+    inp = root.asBuiltJoints.createInput(occ_a, occ_b, geo)
+    direction = adsk.fusion.JointDirections.ZAxisJointDirection if axis == "z" else adsk.fusion.JointDirections.XAxisJointDirection
+    inp.setAsRevoluteJointMotion(direction)
+    joint = root.asBuiltJoints.add(inp)
+    joint.name = name
+    return joint
+
+result = {"success": False, "stage": "as_built_joints", "joints": [], "failures": [], "rigid_groups": [], "grounded": []}
+try:
+    app = adsk.core.Application.get()
+    doc = app.activeDocument
+    if doc is None or str(doc.name) != DOC_NAME:
+        raise RuntimeError("active document is not " + DOC_NAME + ": " + str(getattr(doc, "name", None)))
+    data_file = doc.dataFile
+    if data_file is None or str(data_file.id) != EXPECTED_LINEAGE:
+        raise RuntimeError("lineage mismatch")
+    if not doc.isSaved or doc.isModified:
+        raise RuntimeError("document must be saved and unmodified before adding joints")
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    root = design.rootComponent
+    if root.asBuiltJoints.count or root.joints.count:
+        raise RuntimeError("document already has joints; refusing to add duplicates")
+    table = _index(root)
+    for row in PLAN:
+        name = row[0]
+        moving = row[1]
+        fixed = row[2]
+        cx = row[3]
+        cy = row[4]
+        radius = row[5]
+        axis = row[6]
+        tol = row[7]
+        owner = row[8]
+        try:
+            occ_a = table.get(moving)
+            occ_b = table.get(fixed)
+            if occ_a is None or occ_b is None:
+                raise RuntimeError("occurrence not found: " + (moving if occ_a is None else fixed))
+            source = occ_b if owner == "b" else occ_a
+            faces = _cyl_faces(source, cx, cy, radius, axis, tol)
+            if not faces:
+                raise RuntimeError("no cylindrical face r=" + str(radius) + " at (" + str(cx) + ", " + str(cy) + ") on " + str(source.component.name))
+            joint = _revolute(root, occ_a, occ_b, faces[0], name, axis)
+            result["joints"].append({"name": str(joint.name), "a": moving, "b": fixed, "candidate_faces": len(faces)})
+        except Exception as inner:
+            result["failures"].append({"name": name, "a": moving, "b": fixed, "error": str(inner)})
+    existing_groups = set(str(g.name) for g in _items(root.rigidGroups))
+    for row in RIGID:
+        gname = row[0]
+        members = row[1]
+        if gname in existing_groups:
+            continue
+        try:
+            collection = adsk.core.ObjectCollection.create()
+            for member in members:
+                occ = table.get(member)
+                if occ is None:
+                    raise RuntimeError("occurrence not found: " + member)
+                collection.add(occ)
+            group = root.rigidGroups.add(collection, True)
+            group.name = gname
+            result["rigid_groups"].append({"name": gname, "members": len(members)})
+        except Exception as inner:
+            result["failures"].append({"name": gname, "error": str(inner)})
+    for member in GROUND:
+        occ = table.get(member)
+        if occ is None:
+            result["failures"].append({"name": member, "error": "ground target not found"})
+            continue
+        occ.isGrounded = True
+        result["grounded"].append(member)
+    saved = doc.save(SAVE_COMMENT)
+    df = doc.dataFile
+    result.update({
+        "success": True,
+        "planned_joints": len(PLAN),
+        "created_joints": len(result["joints"]),
+        "planned_rigid_groups": len(RIGID),
+        "created_rigid_groups": len(result["rigid_groups"]),
+        "failure_count": len(result["failures"]),
+        "save_returned": bool(saved),
+        "is_saved": bool(doc.isSaved),
+        "is_modified": bool(doc.isModified),
+        "version": int(df.versionNumber) if df is not None else None,
+    })
+except Exception as exc:
+    result.update({"success": False, "error": str(exc), "trace": traceback.format_exc()[-1500:]})
+print(json.dumps(result))
+
+def run(context):
+    pass

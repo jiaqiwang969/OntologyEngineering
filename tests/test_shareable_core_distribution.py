@@ -105,6 +105,13 @@ class ShareableCoreDistributionTests(unittest.TestCase):
             self.assertIn("skills/cad-agent/assembly/README.md", names)
             self.assertFalse(any(name.startswith("skills/cad-agent/assembly/cases/") for name in names))
 
+    def test_retired_fusion_executor_cannot_reenter_current_core(self):
+        ledger = self.modified_ledger(lambda document: document["files"].append({
+            "path": "skills/cad-agent/dist/oe_cad_fusion_runtime-0.0.0-py3-none-any.whl"}))
+        with patch.object(builder, "ASSETS", ledger), tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaisesRegex(ValueError, "retired Fusion execution assets"):
+                builder.stage(Path(temporary))
+
     def test_changed_source_bytes_fail_closed(self):
         ledger = self.modified_ledger(lambda document: document["files"][0].update(sha256="0" * 64))
         with patch.object(builder, "ASSETS", ledger), tempfile.TemporaryDirectory() as temporary:

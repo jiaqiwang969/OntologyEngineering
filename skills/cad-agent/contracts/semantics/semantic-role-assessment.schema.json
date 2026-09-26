@@ -1,0 +1,443 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-role-assessment-v1.json",
+  "title": "CAD Agent reproducible semantic-role closure assessment",
+  "description": "Deterministic, non-authorizing assessment of recognition targets against a release-bound closed RDF source set and freshly reproduced role derivation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "registry",
+    "recognition_adapter",
+    "targets",
+    "issues",
+    "activation_authorized",
+    "execution_authorized",
+    "assessment_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-role-assessment.v1"
+    },
+    "status": {
+      "$ref": "#/$defs/status"
+    },
+    "registry": {
+      "$ref": "#/$defs/registryAssessment"
+    },
+    "recognition_adapter": {
+      "$ref": "#/$defs/recognitionAdapterAssessment"
+    },
+    "targets": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/targetAssessment"
+      }
+    },
+    "issues": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/issue"
+      }
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "assessment_sha256": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PASS"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "registry": {
+            "properties": {
+              "source_closure": {
+                "properties": {
+                  "verified": {
+                    "const": true
+                  }
+                }
+              },
+              "derivation_report": {
+                "properties": {
+                  "verified": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          },
+          "targets": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "status": {
+                  "const": "PASS"
+                }
+              }
+            }
+          },
+          "issues": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "UNRESOLVED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "targets": {
+            "minItems": 1,
+            "contains": {
+              "properties": {
+                "status": {
+                  "const": "UNRESOLVED"
+                }
+              },
+              "required": [
+                "status"
+              ]
+            }
+          },
+          "issues": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "FAIL"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "issues": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "nullableString": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableSha256": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "semanticRole": {
+      "enum": [
+        "SemanticRequirement",
+        "Pattern",
+        "Capability",
+        "ToolOperation"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNRESOLVED"
+      ]
+    },
+    "reportedAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "path": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "sha256": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "media_type": {
+          "$ref": "#/$defs/nullableString"
+        }
+      }
+    },
+    "verifiedJsonAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "declared_sha256",
+        "verified_sha256",
+        "media_type",
+        "verified"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "path": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "declared_sha256": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "verified_sha256": {
+          "$ref": "#/$defs/nullableSha256"
+        },
+        "media_type": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "sourceClosureAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "closure_id",
+        "closure_version",
+        "world_assumption",
+        "completeness_scope",
+        "inference_profile",
+        "governed_bundle",
+        "source_assets",
+        "declared_source_set_sha256",
+        "verified_source_set_sha256",
+        "verified"
+      ],
+      "properties": {
+        "closure_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "closure_version": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "world_assumption": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "completeness_scope": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "inference_profile": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "governed_bundle": {},
+        "source_assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/reportedAsset"
+          }
+        },
+        "declared_source_set_sha256": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "verified_source_set_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "roleAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_iri",
+        "role"
+      ],
+      "properties": {
+        "semantic_iri": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "role": {
+          "$ref": "#/$defs/semanticRole"
+        }
+      }
+    },
+    "registryAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "registry_id",
+        "registry_version",
+        "source_closure",
+        "derivation_report",
+        "role_assertions",
+        "registry_snapshot_sha256"
+      ],
+      "properties": {
+        "schema": {
+          "const": "cad-agent.semantic-role-registry.v1"
+        },
+        "registry_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "registry_version": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "source_closure": {
+          "$ref": "#/$defs/sourceClosureAssessment"
+        },
+        "derivation_report": {
+          "$ref": "#/$defs/verifiedJsonAsset"
+        },
+        "role_assertions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/roleAssertion"
+          }
+        },
+        "registry_snapshot_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "recognitionAdapterAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adapter_id",
+        "adapter_version",
+        "target_requirement_semantics"
+      ],
+      "properties": {
+        "adapter_id": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "adapter_version": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "target_requirement_semantics": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/semanticIri"
+          }
+        }
+      }
+    },
+    "targetAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_requirement_semantics",
+        "trusted_roles",
+        "status",
+        "issue_codes"
+      ],
+      "properties": {
+        "target_requirement_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "trusted_roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/semanticRole"
+          }
+        },
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "issue_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^SRR-"
+          }
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "path",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "pattern": "^SRR-"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

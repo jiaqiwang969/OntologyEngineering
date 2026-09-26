@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-memory-pointer-state-v1.json",
+  "title": "Isolated active-memory live pointer state",
+  "description": "A pure, monotonically versioned live pointer state for a host-pinned non-production CAS slot. It contains no receipt, reopen, selection-publication, signature, authority, execution, or Fusion-write claim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "pointer_id",
+    "scope_id",
+    "generation",
+    "previous_pointer_state_sha256",
+    "transition_kind",
+    "current_closure",
+    "pointer_state_sha256",
+    "execution_authorized",
+    "fusion_write_authorized"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.active-memory-pointer-state.v1"},
+    "pointer_id": {"$ref": "#/$defs/stableId"},
+    "scope_id": {"$ref": "#/$defs/stableId"},
+    "generation": {"type": "integer", "minimum": 0},
+    "previous_pointer_state_sha256": {
+      "description": "Logical digest of the preceding pointer state, computed over that state's members except its derived pointer_state_sha256; this is not the raw canonical-file digest.",
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/sha256"}
+      ]
+    },
+    "transition_kind": {"enum": ["Genesis", "Activation", "Rollback"]},
+    "current_closure": {"$ref": "#/$defs/memoryClosure"},
+    "pointer_state_sha256": {
+      "description": "Logical digest of this state with the derived pointer_state_sha256 member excluded; the exact canonical live-file bytes have a separate raw SHA-256 in transition evidence.",
+      "$ref": "#/$defs/sha256"
+    },
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"transition_kind": {"const": "Genesis"}}},
+      "then": {
+        "properties": {
+          "generation": {"const": 0},
+          "previous_pointer_state_sha256": {"type": "null"}
+        }
+      },
+      "else": {
+        "properties": {
+          "generation": {"minimum": 1},
+          "previous_pointer_state_sha256": {"$ref": "#/$defs/sha256"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "memoryClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "release_id",
+        "release_version",
+        "release_sha256",
+        "semantic_build_id",
+        "semantic_build_sha256",
+        "selection_id",
+        "selection_sha256"
+      ],
+      "properties": {
+        "release_id": {"$ref": "#/$defs/stableId"},
+        "release_version": {"$ref": "#/$defs/semver"},
+        "release_sha256": {"$ref": "#/$defs/sha256"},
+        "semantic_build_id": {"$ref": "#/$defs/stableId"},
+        "semantic_build_sha256": {"$ref": "#/$defs/sha256"},
+        "selection_id": {"$ref": "#/$defs/stableId"},
+        "selection_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

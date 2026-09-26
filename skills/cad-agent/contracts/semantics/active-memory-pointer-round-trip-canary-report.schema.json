@@ -1,0 +1,552 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-memory-pointer-round-trip-canary-report-v1.json",
+  "title": "Isolated active-memory pointer fresh-process round-trip canary report",
+  "description": "Evidence for one predeclared activation and rollback in a host-pinned non-production slot, each reopened by a distinct exec'd read-only Python worker. This report proves no organizational independence, deployed authority, receipt, selection publication, Agent or routing update, execution authority, or Fusion-write authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "canary_version",
+    "status",
+    "mode",
+    "pointer_id",
+    "scope_id",
+    "slot_basename",
+    "historic_before",
+    "final_after",
+    "residual_state",
+    "recovery",
+    "activation",
+    "rollback",
+    "lineage",
+    "processes",
+    "challenges",
+    "module_summaries",
+    "transport",
+    "proof_boundary",
+    "issues",
+    "report_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.active-memory-pointer-round-trip-canary-report.v1"
+    },
+    "canary_version": {"const": "0.1.0"},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "mode": {"const": "IsolatedNonProductionRoundTripOnly"},
+    "pointer_id": {"$ref": "#/$defs/stableId"},
+    "scope_id": {"$ref": "#/$defs/stableId"},
+    "slot_basename": {"const": "active-memory-pointer-state.json"},
+    "historic_before": {"$ref": "#/$defs/nullableStateSummary"},
+    "final_after": {"$ref": "#/$defs/nullableStateSummary"},
+    "residual_state": {"$ref": "#/$defs/residualState"},
+    "recovery": {"$ref": "#/$defs/recovery"},
+    "activation": {"$ref": "#/$defs/transitionEvidence"},
+    "rollback": {"$ref": "#/$defs/transitionEvidence"},
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "historic_generation",
+        "activation_generation",
+        "rollback_generation",
+        "generations_contiguous",
+        "activation_predecessor_exact",
+        "rollback_predecessor_exact",
+        "predecessor_chain_exact",
+        "historic_closure_sha256",
+        "rollback_closure_sha256",
+        "rollback_closure_exact",
+        "rollback_raw_differs_from_historic"
+      ],
+      "properties": {
+        "historic_generation": {"$ref": "#/$defs/nullableGeneration"},
+        "activation_generation": {"$ref": "#/$defs/nullableGeneration"},
+        "rollback_generation": {"$ref": "#/$defs/nullableGeneration"},
+        "generations_contiguous": {"type": "boolean"},
+        "activation_predecessor_exact": {"type": "boolean"},
+        "rollback_predecessor_exact": {"type": "boolean"},
+        "predecessor_chain_exact": {"type": "boolean"},
+        "historic_closure_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "rollback_closure_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "rollback_closure_exact": {"type": "boolean"},
+        "rollback_raw_differs_from_historic": {"type": "boolean"}
+      }
+    },
+    "processes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parent_pid",
+        "activation_child_pid",
+        "rollback_child_pid",
+        "child_pids_distinct",
+        "fresh_processes_verified"
+      ],
+      "properties": {
+        "parent_pid": {"type": "integer", "minimum": 1},
+        "activation_child_pid": {"$ref": "#/$defs/nullablePid"},
+        "rollback_child_pid": {"$ref": "#/$defs/nullablePid"},
+        "child_pids_distinct": {"type": "boolean"},
+        "fresh_processes_verified": {"type": "boolean"}
+      }
+    },
+    "challenges": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_challenge_sha256",
+        "rollback_challenge_sha256",
+        "challenge_hashes_distinct"
+      ],
+      "properties": {
+        "activation_challenge_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "rollback_challenge_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "challenge_hashes_distinct": {"type": "boolean"}
+      }
+    },
+    "module_summaries": {"$ref": "#/$defs/moduleSummaries"},
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request_via_stdin",
+        "absolute_root_in_argv",
+        "absolute_root_in_worker_stdout",
+        "absolute_root_in_report",
+        "worker_environment_empty",
+        "worker_repository_or_task_discovery",
+        "worker_read_only"
+      ],
+      "properties": {
+        "request_via_stdin": {"const": true},
+        "absolute_root_in_argv": {"const": false},
+        "absolute_root_in_worker_stdout": {"const": false},
+        "absolute_root_in_report": {"const": false},
+        "worker_environment_empty": {"const": true},
+        "worker_repository_or_task_discovery": {"const": false},
+        "worker_read_only": {"const": true}
+      }
+    },
+    "proof_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "isolated_nonproduction_only",
+        "posix_only_proof",
+        "cooperative_lock_protocol_only",
+        "windows_semantics_proven",
+        "noncooperative_writers_covered",
+        "organizational_independence_proven",
+        "deployed_authority_proven",
+        "signed_receipt_created",
+        "selection_published",
+        "active_memory_consumed",
+        "agent_updated",
+        "routing_changed",
+        "execution_authorized",
+        "fusion_write_authorized"
+      ],
+      "properties": {
+        "isolated_nonproduction_only": {"const": true},
+        "posix_only_proof": {"const": true},
+        "cooperative_lock_protocol_only": {"const": true},
+        "windows_semantics_proven": {"const": false},
+        "noncooperative_writers_covered": {"const": false},
+        "organizational_independence_proven": {"const": false},
+        "deployed_authority_proven": {"const": false},
+        "signed_receipt_created": {"const": false},
+        "selection_published": {"const": false},
+        "active_memory_consumed": {"const": false},
+        "agent_updated": {"const": false},
+        "routing_changed": {"const": false},
+        "execution_authorized": {"const": false},
+        "fusion_write_authorized": {"const": false}
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/issue"}
+    },
+    "report_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASS"}}},
+      "then": {
+        "properties": {
+          "historic_before": {"$ref": "#/$defs/stateSummary"},
+          "final_after": {"$ref": "#/$defs/stateSummary"},
+          "residual_state": {
+            "properties": {
+              "observation_status": {"const": "NOT_APPLICABLE"},
+              "observation": {"type": "null"},
+              "matches_historic_before": {"type": "null"},
+              "matches_activation_after": {"type": "null"},
+              "matches_rollback_after": {"type": "null"}
+            }
+          },
+          "recovery": {
+            "properties": {
+              "status": {"const": "NOT_REQUIRED"},
+              "operator_action": {"type": "null"}
+            }
+          },
+          "activation": {"$ref": "#/$defs/appliedTransitionEvidence"},
+          "rollback": {"$ref": "#/$defs/appliedTransitionEvidence"},
+          "lineage": {
+            "properties": {
+              "historic_generation": {"type": "integer", "minimum": 0},
+              "activation_generation": {"type": "integer", "minimum": 1},
+              "rollback_generation": {"type": "integer", "minimum": 2},
+              "generations_contiguous": {"const": true},
+              "activation_predecessor_exact": {"const": true},
+              "rollback_predecessor_exact": {"const": true},
+              "predecessor_chain_exact": {"const": true},
+              "historic_closure_sha256": {"$ref": "#/$defs/sha256"},
+              "rollback_closure_sha256": {"$ref": "#/$defs/sha256"},
+              "rollback_closure_exact": {"const": true},
+              "rollback_raw_differs_from_historic": {"const": true}
+            }
+          },
+          "processes": {
+            "properties": {
+              "activation_child_pid": {"type": "integer", "minimum": 1},
+              "rollback_child_pid": {"type": "integer", "minimum": 1},
+              "child_pids_distinct": {"const": true},
+              "fresh_processes_verified": {"const": true}
+            }
+          },
+          "challenges": {
+            "properties": {
+              "activation_challenge_sha256": {"$ref": "#/$defs/sha256"},
+              "rollback_challenge_sha256": {"$ref": "#/$defs/sha256"},
+              "challenge_hashes_distinct": {"const": true}
+            }
+          },
+          "issues": {"maxItems": 0}
+        }
+      },
+      "else": {
+        "properties": {
+          "residual_state": {
+            "properties": {
+              "observation_status": {"enum": ["OBSERVED", "UNKNOWN"]}
+            }
+          },
+          "recovery": {
+            "properties": {
+              "status": {"const": "OPERATOR_ACTION_REQUIRED"},
+              "operator_action": {
+                "const": "Inspect the isolated pointer and apply a separately reviewed exact recovery plan."
+              }
+            }
+          },
+          "issues": {"minItems": 1}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]
+    },
+    "nullableGeneration": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "integer", "minimum": 0}
+      ]
+    },
+    "nullablePid": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "integer", "minimum": 1}
+      ]
+    },
+    "stateSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generation",
+        "pointer_state_sha256",
+        "raw_sha256",
+        "closure_sha256"
+      ],
+      "properties": {
+        "generation": {"type": "integer", "minimum": 0},
+        "pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_sha256": {"$ref": "#/$defs/sha256"},
+        "closure_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "nullableStateSummary": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/stateSummary"}
+      ]
+    },
+    "residualObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generation",
+        "pointer_state_sha256",
+        "raw_sha256",
+        "closure_sha256",
+        "previous_pointer_state_sha256",
+        "transition_kind"
+      ],
+      "properties": {
+        "generation": {"type": "integer", "minimum": 0},
+        "pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_sha256": {"$ref": "#/$defs/sha256"},
+        "closure_sha256": {"$ref": "#/$defs/sha256"},
+        "previous_pointer_state_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "transition_kind": {"enum": ["Genesis", "Activation", "Rollback"]}
+      }
+    },
+    "residualState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_status",
+        "same_process_read_only",
+        "observation",
+        "matches_historic_before",
+        "matches_activation_after",
+        "matches_rollback_after"
+      ],
+      "properties": {
+        "observation_status": {"enum": ["NOT_APPLICABLE", "OBSERVED", "UNKNOWN"]},
+        "same_process_read_only": {"const": true},
+        "observation": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/residualObservation"}
+          ]
+        },
+        "matches_historic_before": {"type": ["boolean", "null"]},
+        "matches_activation_after": {"type": ["boolean", "null"]},
+        "matches_rollback_after": {"type": ["boolean", "null"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"observation_status": {"const": "OBSERVED"}}},
+          "then": {
+            "properties": {
+              "observation": {"$ref": "#/$defs/residualObservation"},
+              "matches_historic_before": {"type": "boolean"},
+              "matches_activation_after": {"type": "boolean"},
+              "matches_rollback_after": {"type": "boolean"}
+            }
+          },
+          "else": {
+            "properties": {
+              "observation": {"type": "null"},
+              "matches_historic_before": {"type": "null"},
+              "matches_activation_after": {"type": "null"},
+              "matches_rollback_after": {"type": "null"}
+            }
+          }
+        }
+      ]
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recovery_attempted",
+        "automatic_rollback_performed",
+        "status",
+        "operator_action"
+      ],
+      "properties": {
+        "recovery_attempted": {"const": false},
+        "automatic_rollback_performed": {"const": false},
+        "status": {"enum": ["NOT_REQUIRED", "OPERATOR_ACTION_REQUIRED"]},
+        "operator_action": {"type": ["string", "null"], "maxLength": 256}
+      }
+    },
+    "moduleSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module_name", "module_sha256"],
+      "properties": {
+        "module_name": {
+          "type": "string",
+          "pattern": "^cad_agent\\.active_memory_pointer_(?:canary|cas)$"
+        },
+        "module_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "moduleSummaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canary", "cas"],
+      "properties": {
+        "canary": {"$ref": "#/$defs/moduleSummary"},
+        "cas": {"$ref": "#/$defs/moduleSummary"}
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_sha256_exact",
+        "pointer_state_sha256_exact",
+        "generation_exact",
+        "closure_exact",
+        "predecessor_exact"
+      ],
+      "properties": {
+        "raw_sha256_exact": {"const": true},
+        "pointer_state_sha256_exact": {"const": true},
+        "generation_exact": {"const": true},
+        "closure_exact": {"const": true},
+        "predecessor_exact": {"const": true}
+      }
+    },
+    "workerObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generation",
+        "pointer_state_sha256",
+        "raw_sha256",
+        "closure_sha256",
+        "previous_pointer_state_sha256"
+      ],
+      "properties": {
+        "generation": {"type": "integer", "minimum": 1},
+        "pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_sha256": {"$ref": "#/$defs/sha256"},
+        "closure_sha256": {"$ref": "#/$defs/sha256"},
+        "previous_pointer_state_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "workerEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "status",
+        "worker_protocol",
+        "slot_basename",
+        "python_isolated",
+        "posix_runtime",
+        "request_via_stdin",
+        "challenge_sha256",
+        "request_sha256",
+        "expected_sha256",
+        "spawned_child_pid",
+        "child_pid",
+        "parent_pid",
+        "observed",
+        "comparison",
+        "read_only",
+        "cooperative_lock_only",
+        "execution_authorized",
+        "fusion_write_authorized",
+        "module_summaries",
+        "issues",
+        "stdout_sha256",
+        "stderr_sha256"
+      ],
+      "properties": {
+        "schema": {
+          "const": "cad-agent.active-memory-pointer-reopen-worker-result.v1"
+        },
+        "status": {"const": "PASS"},
+        "worker_protocol": {"const": "exec-stdin-read-only-v1"},
+        "slot_basename": {"const": "active-memory-pointer-state.json"},
+        "python_isolated": {"const": true},
+        "posix_runtime": {"const": true},
+        "request_via_stdin": {"const": true},
+        "challenge_sha256": {"$ref": "#/$defs/sha256"},
+        "request_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_sha256": {"$ref": "#/$defs/sha256"},
+        "spawned_child_pid": {"type": "integer", "minimum": 1},
+        "child_pid": {"type": "integer", "minimum": 1},
+        "parent_pid": {"type": "integer", "minimum": 1},
+        "observed": {"$ref": "#/$defs/workerObservation"},
+        "comparison": {"$ref": "#/$defs/comparison"},
+        "read_only": {"const": true},
+        "cooperative_lock_only": {"const": true},
+        "execution_authorized": {"const": false},
+        "fusion_write_authorized": {"const": false},
+        "module_summaries": {"$ref": "#/$defs/moduleSummaries"},
+        "issues": {"type": "array", "maxItems": 0},
+        "stdout_sha256": {"$ref": "#/$defs/sha256"},
+        "stderr_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "transitionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_sha256",
+        "cas_result_sha256",
+        "cas_status",
+        "worker"
+      ],
+      "properties": {
+        "plan_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "cas_result_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "cas_status": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "enum": [
+                "APPLIED",
+                "CAS_MISMATCH",
+                "BUSY",
+                "PRECONDITION_FAILED",
+                "COMMITTED_UNATTESTED",
+                "OUTCOME_UNKNOWN"
+              ]
+            }
+          ]
+        },
+        "worker": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/workerEvidence"}
+          ]
+        }
+      }
+    },
+    "appliedTransitionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_sha256",
+        "cas_result_sha256",
+        "cas_status",
+        "worker"
+      ],
+      "properties": {
+        "plan_sha256": {"$ref": "#/$defs/sha256"},
+        "cas_result_sha256": {"$ref": "#/$defs/sha256"},
+        "cas_status": {"const": "APPLIED"},
+        "worker": {"$ref": "#/$defs/workerEvidence"}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": {"type": "string", "pattern": "^AMPCAN-[A-Z0-9-]+$"},
+        "message": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    }
+  }
+}

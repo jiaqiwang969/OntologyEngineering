@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cad-agent.external-mcp-runtime-tool-contract.schema.v1",
+  "title": "Observed runtime tool contract of an external CAD MCP executor (NX, AutoCAD, ...)",
+  "description": "Same shape as runtime-tool-contract.schema.json but for executors whose tool names do not carry the fusion_mcp_ prefix. A record validated by this schema is a tool-name discovery snapshot only; it authorizes no routing, mutation, or production use.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "contract_id",
+    "source",
+    "captured_on",
+    "mcp_namespace",
+    "tools"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.tool-contract.v1"
+    },
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "captured_on": {
+      "type": "string",
+      "format": "date"
+    },
+    "mcp_namespace": {
+      "type": "string",
+      "minLength": 1
+    },
+    "executor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "application": { "type": "string" },
+        "application_version": { "type": "string" },
+        "host": { "type": "string" },
+        "entrypoint": { "type": "string" },
+        "reference": { "type": "string" }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "mode",
+          "read_only"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "mode": {
+            "enum": [
+              "read",
+              "execute",
+              "update"
+            ]
+          },
+          "read_only": {
+            "type": "boolean"
+          },
+          "verified": {
+            "enum": ["verified", "verified_with_caveat", "fails", "untested", "gui_only"]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "mode": {
+                  "const": "read"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "read_only": {
+                  "const": true
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "read_only": {
+                  "const": false
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

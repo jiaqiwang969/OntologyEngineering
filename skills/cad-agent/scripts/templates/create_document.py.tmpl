@@ -1,0 +1,43 @@
+import adsk.core
+import adsk.fusion
+import json
+import traceback
+
+result = {"success": False, "stage": "create_new_design_document"}
+try:
+    app = adsk.core.Application.get()
+    before = app.documents.count
+    unsaved = []
+    for index in range(app.documents.count):
+        candidate = app.documents.item(index)
+        if not candidate.isSaved:
+            unsaved.append(str(candidate.name))
+    if unsaved:
+        raise RuntimeError("an unsaved document already exists; refusing to create another: " + ", ".join(unsaved))
+    doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
+    if doc is None:
+        raise RuntimeError("documents.add returned None")
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    if design is None:
+        raise RuntimeError("active product is not a Design")
+    root = design.rootComponent
+    result.update({
+        "success": True,
+        "document_name": str(doc.name),
+        "creation_id": str(doc.creationId),
+        "is_saved": bool(doc.isSaved),
+        "is_modified": bool(doc.isModified),
+        "documents_before": before,
+        "documents_after": app.documents.count,
+        "active_document_is_new": bool(app.activeDocument.creationId == doc.creationId),
+        "root_component_name": str(root.name),
+        "occurrences": root.allOccurrences.count,
+        "bodies": root.bRepBodies.count,
+        "design_type": int(design.designType),
+    })
+except Exception as exc:
+    result.update({"success": False, "error": str(exc), "trace": traceback.format_exc()[-1500:]})
+print(json.dumps(result))
+
+def run(context):
+    pass

@@ -1,0 +1,43 @@
+import adsk.core
+import adsk.fusion
+import json
+import traceback
+
+DOC_NAME = __DOC_NAME__
+EXPECTED_LINEAGE = __LINEAGE__
+
+def _items(collection):
+    return [collection.item(index) for index in range(collection.count)]
+
+result = {"success": False, "stage": "activate_document"}
+try:
+    app = adsk.core.Application.get()
+    target = None
+    for candidate in _items(app.documents):
+        if str(candidate.name) == DOC_NAME:
+            target = candidate
+    if target is None:
+        raise RuntimeError("document not open: " + DOC_NAME)
+    data_file = target.dataFile
+    if data_file is None or str(data_file.id) != EXPECTED_LINEAGE:
+        raise RuntimeError("lineage mismatch for " + DOC_NAME)
+    unsaved = [str(d.name) for d in _items(app.documents) if not d.isSaved or d.isModified]
+    if unsaved:
+        raise RuntimeError("unsaved/modified documents present, refusing to switch: " + ", ".join(unsaved))
+    was_active = bool(app.activeDocument is not None and str(app.activeDocument.name) == DOC_NAME)
+    if not was_active:
+        target.activate()
+    result.update({
+        "success": True,
+        "was_active": was_active,
+        "active_now": str(app.activeDocument.name),
+        "documents_open": app.documents.count,
+        "version": int(data_file.versionNumber),
+        "lineage": str(data_file.id),
+    })
+except Exception as exc:
+    result.update({"success": False, "error": str(exc), "trace": traceback.format_exc()[-1500:]})
+print(json.dumps(result))
+
+def run(context):
+    pass

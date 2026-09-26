@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/committed-memory-snapshot-v1.json",
+  "title": "Externally committed operational-memory snapshot",
+  "description": "A candidate-only, read-only assessment envelope stating that supplied evidence reports a separately actuated append plan and a readback under a distinct verifier identifier. It checks structure, digests, and lineage only; without an active actor/verifier trust registry it does not prove real-world identity or organizational independence. The envelope never performs persistence, promotion, activation, or routing changes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assessor_version",
+    "status",
+    "state_schema",
+    "generation",
+    "predecessor_committed_snapshot_sha256",
+    "state",
+    "state_sha256",
+    "commit_receipt",
+    "readback_verification",
+    "committed",
+    "persistence_performed",
+    "activation_authorized",
+    "promotion_authorized",
+    "runtime_routing_changed",
+    "issues",
+    "committed_snapshot_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.committed-memory-snapshot.v1"},
+    "assessor_version": {"const": "0.1.0"},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "state_schema": {
+      "enum": [
+        "cad-agent.experience-intake-registry.v1",
+        "cad-agent.pattern-materialization-queue.v1",
+        "cad-agent.application-feedback-queue.v1",
+        "cad-agent.application-feedback-queue.v2"
+      ]
+    },
+    "generation": {"type": "integer", "minimum": 1},
+    "predecessor_committed_snapshot_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "state": {"type": "object"},
+    "state_sha256": {"$ref": "#/$defs/sha256"},
+    "commit_receipt": {"$ref": "#/$defs/commitReceipt"},
+    "readback_verification": {"$ref": "#/$defs/readbackVerification"},
+    "committed": {"type": "boolean"},
+    "persistence_performed": {"const": false},
+    "activation_authorized": {"const": false},
+    "promotion_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "committed_snapshot_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASS"}}},
+      "then": {
+        "properties": {
+          "committed": {"const": true},
+          "issues": {"maxItems": 0}
+        }
+      },
+      "else": {"properties": {"committed": {"const": false}}}
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {
+      "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "commitReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "receipt_id",
+        "state_schema",
+        "target_state_sha256",
+        "target_generation",
+        "predecessor_committed_snapshot_sha256",
+        "actor_id",
+        "committed_at",
+        "commit_performed"
+      ],
+      "properties": {
+        "schema": {"const": "cad-agent.memory-state-commit-receipt.v1"},
+        "receipt_id": {"$ref": "#/$defs/stableId"},
+        "state_schema": {"type": "string", "minLength": 1},
+        "target_state_sha256": {"$ref": "#/$defs/sha256"},
+        "target_generation": {"type": "integer", "minimum": 1},
+        "predecessor_committed_snapshot_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "actor_id": {"$ref": "#/$defs/stableId"},
+        "committed_at": {"type": "string", "format": "date-time"},
+        "commit_performed": {"const": true}
+      }
+    },
+    "readbackVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "verification_id",
+        "status",
+        "commit_receipt_sha256",
+        "reopened_state_sha256",
+        "verifier_id",
+        "verification_method",
+        "verified_at",
+        "readback_performed"
+      ],
+      "properties": {
+        "schema": {"const": "cad-agent.memory-state-readback-verification.v1"},
+        "verification_id": {"$ref": "#/$defs/stableId"},
+        "status": {"const": "PASS"},
+        "commit_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "reopened_state_sha256": {"$ref": "#/$defs/sha256"},
+        "verifier_id": {"$ref": "#/$defs/stableId"},
+        "verification_method": {"const": "IndependentReadback"},
+        "verified_at": {"type": "string", "format": "date-time"},
+        "readback_performed": {"const": true}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "path", "message"],
+      "properties": {
+        "code": {"type": "string", "minLength": 2},
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "path": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

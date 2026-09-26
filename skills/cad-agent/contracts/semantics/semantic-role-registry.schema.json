@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-role-registry-v1.json",
+  "title": "CAD Agent derived semantic-role registry",
+  "description": "A repository-contained controlled-role projection whose assertions must exactly match a reproducible RDF/RDFS derivation over an explicitly closed, release-bound source set.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "registry_id",
+    "registry_version",
+    "source_closure",
+    "derivation_report",
+    "role_assertions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-role-registry.v1"
+    },
+    "registry_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "registry_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "source_closure": {
+      "$ref": "#/$defs/sourceClosure"
+    },
+    "derivation_report": {
+      "$ref": "#/$defs/jsonAssetRef"
+    },
+    "role_assertions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/roleAssertion"
+      }
+    }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "semanticRole": {
+      "enum": [
+        "SemanticRequirement",
+        "Pattern",
+        "Capability",
+        "ToolOperation"
+      ]
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+$"
+        }
+      }
+    },
+    "jsonAssetRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/assetRef"
+        },
+        {
+          "properties": {
+            "media_type": {
+              "const": "application/json"
+            }
+          }
+        }
+      ]
+    },
+    "turtleAssetRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/assetRef"
+        },
+        {
+          "properties": {
+            "media_type": {
+              "enum": [
+                "text/turtle",
+                "application/turtle",
+                "application/x-turtle"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "governedBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bundle_id",
+        "bundle_version",
+        "manifest_path",
+        "manifest_sha256"
+      ],
+      "properties": {
+        "bundle_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "bundle_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "manifest_path": {
+          "const": "data/semantic-assets/active-bundle.json"
+        },
+        "manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "sourceClosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "closure_id",
+        "closure_version",
+        "world_assumption",
+        "completeness_scope",
+        "inference_profile",
+        "governed_bundle",
+        "source_assets",
+        "source_set_sha256"
+      ],
+      "properties": {
+        "closure_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "closure_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "world_assumption": {
+          "const": "LocalClosedWorld"
+        },
+        "completeness_scope": {
+          "const": "ControlledSemanticRoleProjection"
+        },
+        "inference_profile": {
+          "const": "rdf-type-rdfs-subclass-named-equivalent-class-v1"
+        },
+        "governed_bundle": {
+          "$ref": "#/$defs/governedBundle"
+        },
+        "source_assets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/turtleAssetRef"
+          }
+        },
+        "source_set_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "roleAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_iri",
+        "role"
+      ],
+      "properties": {
+        "semantic_iri": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "role": {
+          "$ref": "#/$defs/semanticRole"
+        }
+      }
+    }
+  }
+}

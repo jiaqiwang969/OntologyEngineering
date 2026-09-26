@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/memory-intake-ingestion-v1.json",
+  "title": "Operational-memory intake ingestion envelope",
+  "description": "Fail-closed lineage envelope binding one validated experience-pattern ingestion report to the exact reviewed workflow record, independent gate, and candidate bytes. It remains shadow-only and non-authorizing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "ingestion_id",
+    "status",
+    "record_id",
+    "record_sha256",
+    "gate_sha256",
+    "ingestion_report",
+    "ingestion_report_sha256",
+    "candidate_file_sha256",
+    "candidate_canonical_sha256",
+    "shadow_only",
+    "activation_authorized",
+    "promotion_authorized",
+    "runtime_routing_changed"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.memory-intake-ingestion.v1"},
+    "ingestion_id": {"$ref": "#/$defs/stableId"},
+    "status": {"const": "PASS"},
+    "record_id": {"type": "string", "minLength": 1, "maxLength": 256},
+    "record_sha256": {"$ref": "#/$defs/sha256"},
+    "gate_sha256": {"$ref": "#/$defs/sha256"},
+    "ingestion_report": {"$ref": "#/$defs/assetRef"},
+    "ingestion_report_sha256": {"$ref": "#/$defs/sha256"},
+    "candidate_file_sha256": {"$ref": "#/$defs/sha256"},
+    "candidate_canonical_sha256": {"$ref": "#/$defs/sha256"},
+    "shadow_only": {"const": true},
+    "activation_authorized": {"const": false},
+    "promotion_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "schema", "media_type"],
+      "properties": {
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "schema": {"const": "cad-agent.experience-pattern-ingestion-report.v1"},
+        "media_type": {"const": "application/json"}
+      }
+    }
+  }
+}

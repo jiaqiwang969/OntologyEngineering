@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-observer-adapter-registry-entry-v1.json",
+  "title": "CAD Agent candidate observer/adapter registry entry",
+  "description": "Non-authorizing candidate identity and operation/capability projection for one repository-contained implementation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "entry_id",
+    "entry_kind",
+    "registry_semantics",
+    "candidate_status",
+    "implementation_identity",
+    "implementation_version",
+    "implementation_asset",
+    "implementation_sha256",
+    "implementation_summary_sha256",
+    "capability_semantics",
+    "operation_semantics",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-observer-adapter-registry-entry.v1"
+    },
+    "entry_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "entry_kind": {
+      "enum": [
+        "Observer",
+        "Adapter"
+      ]
+    },
+    "registry_semantics": {
+      "$ref": "#/$defs/semanticIri"
+    },
+    "candidate_status": {
+      "const": "Candidate"
+    },
+    "implementation_identity": {
+      "$ref": "#/$defs/nonEmptyString"
+    },
+    "implementation_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "implementation_asset": {
+      "$ref": "#/$defs/assetRef"
+    },
+    "implementation_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "implementation_summary_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "capability_semantics": {
+      "$ref": "#/$defs/uniqueIris"
+    },
+    "operation_semantics": {
+      "$ref": "#/$defs/uniqueIris"
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "runtime_routing_changed": {
+      "const": false
+    }
+  },
+  "anyOf": [
+    {
+      "properties": {
+        "capability_semantics": {
+          "minItems": 1
+        }
+      }
+    },
+    {
+      "properties": {
+        "operation_semantics": {
+          "minItems": 1
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^(https://|urn:)"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "uniqueIris": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    }
+  }
+}

@@ -23,7 +23,7 @@
 
 日常调用与首次准备见[使用说明](docs/USAGE.md)。普通分发包不含凭据，Jev 使用接收者的本地配置。
 
-当前版本 **0.5.9** 将预写工程本体 instruct、默认 Jev 情景路由与项目方法融合纳入完整分发，见[更新说明](docs/releases/manufacturing-method-0.5.9.md)。完整版和核心版都从根 skill 调用，包的区别见[分发说明](docs/PORTABLE-DISTRIBUTION.md)。Jev 的独立质量和真实收益仍需项目实践验证。
+当前版本 **0.6.0** 转向 NX 直连与米思米中国，加入按用途取得资料、Jev 网页子循环及有证据的经验复盘，见[更新说明](docs/releases/manufacturing-method-0.6.0.md)。完整版和核心版都从根 skill 调用，包的区别见[分发说明](docs/PORTABLE-DISTRIBUTION.md)。Jev 的独立质量和真实收益仍需项目实践验证。
 
 <p align="center">
   <a href="references/ontology-engineering-book/handbook/工程本体论-全书.pdf">
@@ -58,7 +58,7 @@ Ontology Engineering 用两卷书讲清观察与建模方法，用项目原生�
 
 并入的 [CAD Agent 模块](skills/cad-agent/SKILL.md)按[通用 CAD 工作流](skills/cad-agent/references/cad-engineering-workflow.md)
 处理零件、图纸/BOM、装配、机构与原生回读证据，再经[CAD／工艺双向交接](skills/cad-agent/references/cad-process-integration.md)
-把相关对象和版本变化送到制造判断。便携版提供本机 Fusion 守卫及可配置 NX/AutoCAD 远程桥；接收方提供自己的 CAD 软件、许可、主机及 NX sidecar，真实设备另做连接验收。
+把相关对象和版本变化送到制造判断。便携版以 NXOpen/Journal 直接执行 NX，标准件优先米思米中国；接收方配置自己的软件、许可和主机，原生结果另做保存/重开验收。Fusion 不再是执行工具，CAD 默认不使用 MCP。
 工艺模块接续必要功能、失效路径、检验、成本和交期；正式语义裁定仍由 Semantica 执行。
 
 ## 两卷书，各自回答一个问题
@@ -101,7 +101,7 @@ EPS-RC17、ENV-01 和数值均为合成教学材料；精确 ISO 条款、表格
 
 ## 制造工艺与成本：让沟通、方案和反馈形成闭环
 
-当前方法版本为 **0.5.9**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
+当前方法版本为 **0.6.0**，适用于离散机械制造。行业、材料、工艺参数与验收值由各项目
 自己的证据确定；可复用的是发现问题、建立关系、比较方案和验证判断的方法。
 
 ```mermaid
@@ -186,7 +186,7 @@ runtime/.venv/bin/python scripts/semantic_engagement.py discover
 
 | 组件 | 当前版本与范围 |
 |---|---|
-| 制造方法 | `0.5.9`；通用 CAD 证据、形态/机构逆向重建、远程桥、装配/机构有界筛查、制造工艺与成本 |
+| 制造方法 | `0.6.0`；通用 CAD 证据、形态/机构逆向重建、远程桥、装配/机构有界筛查、制造工艺与成本 |
 | 记录模板 / 评审卡 | 两份模板为 `0.2.1`、其余为 `0.2.0` / 评审卡 `1.4.1` |
 | 报告组件 / 工艺图 | `1.0.0`；XeLaTeX 与五类可编辑 TikZ 模板 |
 | 冻结制造语义包 | `0.1.1`；141 项声明资产、68 个合成场景、23 个 CQ；保留本地技术候选状态 |
@@ -314,7 +314,7 @@ references/product-...-book/     第二卷书源、TeX、图与 PDF
 references/                      来源地图、合同与发布证据
 skills/domain-ontology-loop/     行业本体治理外环
 skills/standard-to-book/         标准到书的受控作者流程
-skills/cad-agent/                原生 CAD、Fusion 执行与制造双向证据交接
+skills/cad-agent/                NX 原生 CAD、米思米资料与制造双向证据交接
 skills/manufacturing-process-cost/ 制造方法、脱敏案例、记录与报告/工艺图模板
 docs/PORTABLE-DISTRIBUTION.md     整根分发与接收方验证
 docs/releases/                   按版本保留的更新说明与公开清单

@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-memory-pointer-v1.json",
+  "title": "Non-mutating active memory pointer view",
+  "description": "Represents the current active memory target and, optionally, a pending externally actuated compare-and-swap plan. Planning binds an approved activation decision, explicit expected old state, and target before any transition receipt exists. The nested transition-assessment contract applies only to a later actuator receipt plus independent reopen verification. Neither contract mutates a pointer or routing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assessor_version",
+    "pointer_id",
+    "generation",
+    "current_target",
+    "pointer_state_sha256",
+    "status",
+    "pending_change_plan",
+    "activation_receipt_consumed",
+    "pointer_change_performed",
+    "runtime_routing_changed",
+    "issues"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.active-memory-pointer.v1"},
+    "assessor_version": {"const": "0.1.0"},
+    "pointer_id": {"$ref": "#/$defs/stableId"},
+    "generation": {"type": "integer", "minimum": 0},
+    "current_target": {"$ref": "#/$defs/memoryTarget"},
+    "pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "pending_change_plan": {
+      "anyOf": [{"$ref": "#/$defs/pendingPlan"}, {"type": "null"}]
+    },
+    "activation_receipt_consumed": {"const": false},
+    "pointer_change_performed": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "memoryTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["memory_id", "version", "sha256"],
+      "properties": {
+        "memory_id": {"$ref": "#/$defs/stableId"},
+        "version": {"$ref": "#/$defs/stableId"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "pendingPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plan_id",
+        "mode",
+        "eligible",
+        "activation_decision_id",
+        "activation_decision_sha256",
+        "activation_reviewer_id",
+        "expected_pointer_id",
+        "expected_generation",
+        "expected_current_target",
+        "expected_pointer_state_sha256",
+        "observed_pointer_state_sha256",
+        "target",
+        "target_generation",
+        "external_actuator_required",
+        "post_transition_receipt_required",
+        "independent_reopen_verification_required",
+        "performed"
+      ],
+      "properties": {
+        "plan_id": {"$ref": "#/$defs/stableId"},
+        "mode": {"const": "ExternalCompareAndSwapPlanOnly"},
+        "eligible": {"type": "boolean"},
+        "activation_decision_id": {"$ref": "#/$defs/stableId"},
+        "activation_decision_sha256": {"$ref": "#/$defs/sha256"},
+        "activation_reviewer_id": {"$ref": "#/$defs/stableId"},
+        "expected_pointer_id": {"$ref": "#/$defs/stableId"},
+        "expected_generation": {"type": "integer", "minimum": 0},
+        "expected_current_target": {"$ref": "#/$defs/memoryTarget"},
+        "expected_pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "target": {"$ref": "#/$defs/memoryTarget"},
+        "target_generation": {"type": "integer", "minimum": 1},
+        "external_actuator_required": {"const": true},
+        "post_transition_receipt_required": {"const": true},
+        "independent_reopen_verification_required": {"const": true},
+        "performed": {"const": false}
+      }
+    },
+    "transitionAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "assessor_version",
+        "status",
+        "plan_sha256",
+        "activation_receipt_sha256",
+        "receipt_verification_sha256",
+        "expected_before_pointer_state_sha256",
+        "expected_after_pointer_state_sha256",
+        "observed_reopened_pointer_state_sha256",
+        "receipt_reports_pointer_change",
+        "receipt_bound_to_plan",
+        "independent_reopen_verified",
+        "activation_receipt_consumed",
+        "pointer_change_performed",
+        "activation_authorized",
+        "execution_authorized",
+        "runtime_routing_changed",
+        "issues",
+        "assessment_sha256"
+      ],
+      "properties": {
+        "schema": {
+          "const": "cad-agent.active-memory-pointer-transition-assessment.v1"
+        },
+        "assessor_version": {"const": "0.1.0"},
+        "status": {"enum": ["PASS", "FAIL"]},
+        "plan_sha256": {"$ref": "#/$defs/sha256"},
+        "activation_receipt_sha256": {"$ref": "#/$defs/sha256"},
+        "receipt_verification_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_before_pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "expected_after_pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_reopened_pointer_state_sha256": {"$ref": "#/$defs/sha256"},
+        "receipt_reports_pointer_change": {"type": "boolean"},
+        "receipt_bound_to_plan": {"type": "boolean"},
+        "independent_reopen_verified": {"type": "boolean"},
+        "activation_receipt_consumed": {"const": false},
+        "pointer_change_performed": {"const": false},
+        "activation_authorized": {"const": false},
+        "execution_authorized": {"const": false},
+        "runtime_routing_changed": {"const": false},
+        "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+        "assessment_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "path", "message"],
+      "properties": {
+        "code": {"type": "string", "minLength": 2},
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "path": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-successor-gate-report-v1.json",
+  "title": "Additive-only semantic successor structural report",
+  "description": "Deterministic non-authorizing structural assessment. STRUCTURAL_PASS does not mean that inherited or new competency queries were executed and does not authorize activation, routing, execution, or Fusion mutation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "gate_version",
+    "gate_mode",
+    "status",
+    "regression_execution_status",
+    "predecessor",
+    "candidate",
+    "verdicts_source",
+    "input_manifest",
+    "input_manifest_sha256",
+    "inherited_inventory",
+    "new_assets",
+    "touched_targets",
+    "issues",
+    "summary",
+    "summary_sha256",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed",
+    "active_bundle_write_attempted",
+    "active_pointer_write_attempted",
+    "limitations",
+    "assessment_id"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.semantic-successor-gate-report.v1"},
+    "gate_version": {"const": "0.2.0"},
+    "gate_mode": {"const": "additive-only-candidate"},
+    "status": {"enum": ["STRUCTURAL_PASS", "STRUCTURAL_FAIL"]},
+    "regression_execution_status": {"const": "NOT_RUN"},
+    "predecessor": {"$ref": "#/$defs/predecessorRef"},
+    "candidate": {"$ref": "#/$defs/candidateRef"},
+    "verdicts_source": {
+      "oneOf": [
+        {"$ref": "#/$defs/fileRef"},
+        {"type": "null"}
+      ]
+    },
+    "input_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/inputRef"}
+    },
+    "input_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "inherited_inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ontology_modules",
+        "shacl_modules",
+        "competency_queries",
+        "released_abox"
+      ],
+      "properties": {
+        "ontology_modules": {"$ref": "#/$defs/inheritedAssetSet"},
+        "shacl_modules": {"$ref": "#/$defs/inheritedAssetSet"},
+        "competency_queries": {"$ref": "#/$defs/inheritedAssetSet"},
+        "released_abox": {"$ref": "#/$defs/inheritedAssetSet"}
+      }
+    },
+    "new_assets": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/newAsset"}
+    },
+    "touched_targets": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/touchedTarget"}
+    },
+    "issues": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/issue"}
+    },
+    "summary": {"$ref": "#/$defs/summary"},
+    "summary_sha256": {"$ref": "#/$defs/sha256"},
+    "activation_authorized": {"const": false},
+    "execution_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "active_bundle_write_attempted": {"const": false},
+    "active_pointer_write_attempted": {"const": false},
+    "limitations": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/nonEmptyString"}
+    },
+    "assessment_id": {"$ref": "#/$defs/sha256"}
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "fileRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "inputRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "sha256"],
+      "properties": {
+        "kind": {"$ref": "#/$defs/nonEmptyString"},
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "predecessorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_id", "bundle_version", "manifest_path", "manifest_sha256"],
+      "properties": {
+        "bundle_id": {"$ref": "#/$defs/stableId"},
+        "bundle_version": {"$ref": "#/$defs/semver"},
+        "manifest_path": {"const": "data/semantic-assets/active-bundle.json"},
+        "manifest_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "candidateRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "candidate_version",
+        "wrapper_path",
+        "wrapper_sha256",
+        "bundle_id",
+        "bundle_version",
+        "prospective_bundle_sha256"
+      ],
+      "properties": {
+        "candidate_id": {"$ref": "#/$defs/stableId"},
+        "candidate_version": {"$ref": "#/$defs/semver"},
+        "wrapper_path": {"$ref": "#/$defs/projectPath"},
+        "wrapper_sha256": {"$ref": "#/$defs/sha256"},
+        "bundle_id": {"$ref": "#/$defs/stableId"},
+        "bundle_version": {"$ref": "#/$defs/semver"},
+        "prospective_bundle_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "inheritedAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity_kind", "identity", "asset_id", "path", "sha256", "successor_state", "regression_execution_status"],
+      "properties": {
+        "identity_kind": {"enum": ["asset_id", "cq_id"]},
+        "identity": {"$ref": "#/$defs/stableId"},
+        "asset_id": {"$ref": "#/$defs/stableId"},
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "successor_state": {"const": "PRESENT_UNCHANGED"},
+        "regression_execution_status": {"const": "NOT_RUN"}
+      }
+    },
+    "inheritedAssetSet": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/inheritedAsset"}
+    },
+    "newAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["category", "identity", "asset_id", "path", "sha256"],
+      "properties": {
+        "category": {"enum": ["ontology_modules", "shacl_modules", "competency_queries", "released_abox"]},
+        "identity": {"$ref": "#/$defs/stableId"},
+        "asset_id": {"$ref": "#/$defs/stableId"},
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "touchedTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_kind", "target_id", "assertion_count", "assertions_sha256", "verdict", "reason", "impact_cq_ids"],
+      "properties": {
+        "target_kind": {"enum": ["OntologyTerm", "ShaclShape"]},
+        "target_id": {
+          "type": "string",
+          "pattern": "^(?:https://|urn:)[^\\s]+$"
+        },
+        "assertion_count": {"type": "integer", "minimum": 1},
+        "assertions_sha256": {"$ref": "#/$defs/sha256"},
+        "verdict": {"enum": ["MISSING", "CompatibleRefinement", "IntentionalDeprecation"]},
+        "reason": {"type": "string", "maxLength": 4096},
+        "impact_cq_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["severity", "code", "source_path", "location", "message"],
+      "properties": {
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "code": {"$ref": "#/$defs/stableId"},
+        "source_path": {"$ref": "#/$defs/nonEmptyString"},
+        "location": {"$ref": "#/$defs/nonEmptyString"},
+        "message": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inherited_ontology_module_count",
+        "inherited_shacl_module_count",
+        "inherited_cq_count",
+        "inherited_released_abox_count",
+        "new_asset_count",
+        "touched_predecessor_target_count",
+        "missing_verdict_count",
+        "error_count",
+        "warning_count"
+      ],
+      "properties": {
+        "inherited_ontology_module_count": {"type": "integer", "minimum": 0},
+        "inherited_shacl_module_count": {"type": "integer", "minimum": 0},
+        "inherited_cq_count": {"type": "integer", "minimum": 0},
+        "inherited_released_abox_count": {"type": "integer", "minimum": 0},
+        "new_asset_count": {"type": "integer", "minimum": 0},
+        "touched_predecessor_target_count": {"type": "integer", "minimum": 0},
+        "missing_verdict_count": {"type": "integer", "minimum": 0},
+        "error_count": {"type": "integer", "minimum": 0},
+        "warning_count": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

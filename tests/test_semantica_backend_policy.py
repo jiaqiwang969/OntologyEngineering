@@ -91,12 +91,19 @@ class SemanticaBackendNegativeTests(unittest.TestCase):
 
     def lock_cad_source(self, relative: str, content: str) -> None:
         self.repo.write("skills/cad-agent/SKILL.md", "# CAD execution module\n")
-        source_dist = REPOSITORY_ROOT / "skills/cad-agent/dist"
         fixture_dist = self.repo.root / "skills/cad-agent/dist"
         fixture_dist.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source_dist / "fusion-runtime-lock.json", fixture_dist / "fusion-runtime-lock.json")
-        for wheel in source_dist.glob("*.whl"):
-            shutil.copyfile(wheel, fixture_dist / wheel.name)
+        # Synthetic inert legacy archive keeps historical rejection tests without
+        # shipping or installing a retired CAD executor.
+        from zipfile import ZipFile
+        wheel = fixture_dist / "oe_cad_fusion_runtime-0.0.0-py3-none-any.whl"
+        with ZipFile(wheel, "w") as archive:
+            archive.writestr("fusion_mcp_proxy/__init__.py", "# inert fixture\n")
+            archive.writestr("fixture.dist-info/entry_points.txt", "[console_scripts]\n")
+            archive.writestr("fixture.dist-info/METADATA", "Name: fixture\nVersion: 0.0.0\n")
+        (fixture_dist / "fusion-runtime-lock.json").write_text(json.dumps({
+            "schema_version": gate.CAD_RUNTIME_LOCK_SCHEMA,
+            "wheel_filename": wheel.name, "wheel_sha256": hashlib.sha256(wheel.read_bytes()).hexdigest()}))
         self.repo.write(relative, content)
         self.repo.write(
             gate.CAD_EXECUTION_LOCK,
@@ -198,6 +205,44 @@ class SemanticaBackendNegativeTests(unittest.TestCase):
         report = self.repo.evaluate("strict")
         self.assertFalse(report.passed)
         self.assertTrue(any("non-Fusion package" in item for item in report.policy_errors))
+
+    def direct_nx_fixture(self):
+        self.repo.write(gate.REQUIRED_BOOTSTRAP, "import semantica\n")
+        self.repo.write("skills/cad-agent/SKILL.md", "# NX direct\n")
+        self.repo.write("skills/cad-agent/scripts/nx_direct.py", "# inert test source\n")
+        self.repo.write(gate.CAD_EXECUTION_LOCK, json.dumps({
+            "schema_version": gate.CAD_EXECUTION_LOCK_SCHEMA, "entries": []}))
+        policy = {"schema": "cad-agent.operational-execution-policy/v1",
+                  "default_cad": "NXDirect", "cad_mcp_enabled": False,
+                  "removed_cad_systems": ["Fusion"], "legacy_cad_reactivation_allowed": False,
+                  "automatic_legacy_fallback": False,
+                  "semantic_authority": "parent-source-locked-Semantica"}
+        self.repo.write(gate.CAD_DIRECT_POLICY, json.dumps(policy))
+        self.repo.policy()
+        return policy
+
+    def test_direct_nx_needs_no_retired_wheel_and_still_scans_source(self):
+        self.direct_nx_fixture()
+        self.assertTrue(self.repo.evaluate("strict").passed)
+        self.repo.write("skills/cad-agent/scripts/nx_direct.py", "import rdflib\n")
+        report = self.repo.evaluate("strict")
+        self.assertFalse(report.passed)
+        self.assertIn(gate.RULE_DIRECT_BACKEND_IMPORT, self.rules(report))
+
+    def test_direct_nx_rejects_reintroduced_retired_assets_and_policy(self):
+        policy = self.direct_nx_fixture()
+        self.repo.write("skills/cad-agent/scripts/fusion_call.py", "# retired\n")
+        self.assertFalse(self.repo.evaluate("strict").passed)
+        (self.repo.root/"skills/cad-agent/scripts/fusion_call.py").unlink()
+        policy["automatic_legacy_fallback"] = True
+        self.repo.write(gate.CAD_DIRECT_POLICY, json.dumps(policy))
+        self.assertFalse(self.repo.evaluate("strict").passed)
+
+    def test_applescript_control_is_not_a_forward_rule_but_predicates_are(self):
+        script = 'if application "Chrome" is not running then error "closed"'
+        self.assertIsNone(gate._semantic_payload_kind(script))
+        self.assertEqual(gate._semantic_payload_kind(script + "\nif Equipment(?x) then Asset(?x)"),
+                         "forward-rule program")
 
     def test_clean_strict_repository_and_single_bootstrap_pass(self) -> None:
         self.repo.write(

@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-release-policy-v1.json",
+  "title": "Independent semantic release policy",
+  "description": "External, domain-neutral minimum requirements for assessing semantic release candidates. A candidate cannot reduce these requirements by declaring a smaller local check set, and this policy never authorizes automatic activation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "policy_id",
+    "version",
+    "applies_to_release_ids",
+    "required_check_kinds",
+    "required_asset_roles",
+    "lineage_policy",
+    "unknown_policy",
+    "review_model",
+    "automatic_activation"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.semantic-release-policy.v1"
+    },
+    "policy_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "version": {
+      "$ref": "#/$defs/semver"
+    },
+    "applies_to_release_ids": {
+      "description": "Release identifiers governed by this policy. An empty array denotes a general policy.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stableId"
+      }
+    },
+    "required_check_kinds": {
+      "description": "Minimum externally imposed check coverage; it is not derived from candidate-declared required check identifiers.",
+      "$ref": "#/$defs/checkKindRequirements"
+    },
+    "required_asset_roles": {
+      "description": "Asset roles that must each occur at least once in the assessed release closure.",
+      "$ref": "#/$defs/assetRoleSet"
+    },
+    "lineage_policy": {
+      "$ref": "#/$defs/lineagePolicy"
+    },
+    "unknown_policy": {
+      "const": "Block"
+    },
+    "review_model": {
+      "const": "IndependentReviewRequired"
+    },
+    "automatic_activation": {
+      "const": false
+    },
+    "risk_profile_extensions": {
+      "description": "Optional additive requirements selected by external risk-profile policy. Extensions may add checks or asset roles but cannot weaken the base policy invariants.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/riskProfileExtension"
+      }
+    }
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 200,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "checkKindRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_kind",
+        "min_count"
+      ],
+      "properties": {
+        "check_kind": {
+          "$ref": "#/$defs/stableId"
+        },
+        "min_count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "checkKindRequirements": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/checkKindRequirement"
+      }
+    },
+    "assetRoleSet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/stableId"
+      }
+    },
+    "lineagePolicy": {
+      "enum": [
+        "GenesisOrPreviousWithRollback",
+        "GenesisOnly",
+        "PreviousWithRollbackRequired"
+      ]
+    },
+    "riskProfileExtension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk_profile_id",
+        "additional_required_check_kinds",
+        "additional_required_asset_roles"
+      ],
+      "properties": {
+        "risk_profile_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "additional_required_check_kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/checkKindRequirement"
+          }
+        },
+        "additional_required_asset_roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/stableId"
+          }
+        }
+      },
+      "anyOf": [
+        {
+          "properties": {
+            "additional_required_check_kinds": {
+              "minItems": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "additional_required_asset_roles": {
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    }
+  }
+}

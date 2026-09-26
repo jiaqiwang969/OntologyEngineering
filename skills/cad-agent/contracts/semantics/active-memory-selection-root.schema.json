@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/active-memory-selection-root-v1.json",
+  "title": "Manifest-only active memory selection root",
+  "description": "An explicit zero-or-more inventory used to distinguish absence from ambiguity. The active authority registry binds the exact root bytes; tasks and directory discovery cannot choose it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "root_id", "authority_registry_sha256", "scope_id", "selections",
+    "pointer_change_performed", "execution_authorized", "fusion_write_authorized"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.active-memory-selection-root.v1"},
+    "root_id": {"$ref": "#/$defs/stableId"},
+    "authority_registry_sha256": {"$ref": "#/$defs/sha256"},
+    "scope_id": {"$ref": "#/$defs/stableId"},
+    "selections": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {"$ref": "#/$defs/selection"}
+    },
+    "pointer_change_performed": {"const": false},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false}
+  },
+  "$defs": {
+    "stableId": {
+      "type": "string", "minLength": 1, "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "projectPath": {
+      "type": "string", "minLength": 1, "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "schema", "media_type"],
+      "properties": {
+        "path": {"$ref": "#/$defs/projectPath"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "schema": {"type": "string", "minLength": 2, "maxLength": 256},
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "selection_id", "transition_kind", "pointer", "release_acceptance_event",
+        "activation_decision_event",
+        "transition_receipt_event", "reopen_verification_event"
+      ],
+      "properties": {
+        "selection_id": {"$ref": "#/$defs/stableId"},
+        "transition_kind": {"enum": ["Activation", "Rollback"]},
+        "pointer": {"$ref": "#/$defs/assetRef"},
+        "release_acceptance_event": {"$ref": "#/$defs/assetRef"},
+        "activation_decision_event": {"$ref": "#/$defs/assetRef"},
+        "transition_receipt_event": {"$ref": "#/$defs/assetRef"},
+        "reopen_verification_event": {"$ref": "#/$defs/assetRef"}
+      }
+    }
+  }
+}

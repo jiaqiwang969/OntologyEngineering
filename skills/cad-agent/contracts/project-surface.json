@@ -1,0 +1,1087 @@
+{
+  "schema": "cad-agent.project-surface.v2",
+  "status": "Active",
+  "governance_entry": "AGENTS.md",
+  "human_map": "docs/project-map.md",
+  "checker": "src/cad_agent/project_surface.py",
+  "contract_gate": "src/cad_agent/repository_contracts.py",
+  "required_text_links": [
+    {
+      "source": "AGENTS.md",
+      "targets": [
+        "contracts/authority-precedence.json",
+        "contracts/project-surface.json",
+        "docs/fusion-runtime-safety-incidents.md",
+        "docs/project-map.md"
+      ]
+    },
+    {
+      "source": "docs/project-map.md",
+      "targets": [
+        "AGENTS.md",
+        "contracts/authority-precedence.json",
+        "contracts/evidence-retention.json",
+        "contracts/lifecycle/registry.json",
+        "contracts/project-surface.json",
+        "contracts/semantics/abox-ingestion-receipt.schema.json",
+        "contracts/semantics/shacl-gate-policy.schema.json",
+        "data/semantic-assets/active-bundle.json",
+        "data/semantic-assets/shacl-gate-policy.json",
+        "data/semantica-integration/deltas/cad-problem-memory-v1/source-spec.v1.json",
+        "data/semantica-integration/package-delta-registry.v1.json",
+        "data/semantica-integration/project-ontology-binding.v2.json",
+        "data/semantica-integration/shadow-cutover-rehearsal.plan.v1.json",
+        "data/semantica-integration/shadow-cutover-rehearsal.plan.v2.json",
+        "data/tool-contracts/experience-action-routes-v1.json",
+        "data/tool-contracts/registry.json",
+        "docs/semantica-integration.md",
+        "curriculum-learning/S25/attempt-0002/semantica/migration-coverage.report.v1.json",
+        "curriculum-learning/S25/attempt-0002/semantica/proposal-history.snapshot.v1.json",
+        "curriculum-learning/S25/attempt-0003/semantica/shadow-cutover-rehearsal.report.v1.json",
+        "curriculum-learning/S25/attempt-0004/semantica/shadow-cutover-rehearsal.report.v2.json",
+        "docs/fusion-runtime-safety-incidents.md",
+        "contracts/tools/experience-action-route-catalog.schema.json",
+        "src/cad_agent/repository_contracts.py"
+      ]
+    },
+    {
+      "source": "contracts/authority-precedence.json",
+      "targets": [
+        "AGENTS.md",
+        "contracts/authority-precedence.schema.json",
+        "contracts/project-surface.json"
+      ]
+    },
+    {
+      "source": "contracts/evidence-retention.json",
+      "targets": [
+        "AGENTS.md",
+        "contracts/evidence-retention.schema.json",
+        "contracts/project-surface.json"
+      ]
+    },
+    {
+      "source": "contracts/lifecycle/registry.json",
+      "targets": [
+        "AGENTS.md",
+        "contracts/lifecycle/registry.schema.json",
+        "contracts/project-surface.json"
+      ]
+    },
+    {
+      "source": "data/semantic-assets/active-bundle.json",
+      "targets": [
+        "AGENTS.md",
+        "contracts/project-surface.json",
+        "contracts/semantics/abox-ingestion-receipt.schema.json",
+        "contracts/semantics/shacl-gate-policy.schema.json",
+        "contracts/semantics/semantic-asset-bundle.schema.json",
+        "data/semantic-assets/shacl-gate-policy.json"
+      ]
+    },
+    {
+      "source": "data/tool-contracts/registry.json",
+      "targets": [
+        "AGENTS.md",
+        "contracts/project-surface.json",
+        "contracts/tools/tool-contract-registry.schema.json",
+        "src/cad_agent/tool_contract_registry.py"
+      ]
+    }
+  ],
+  "validated_contracts": [
+    {
+      "instance": "contracts/authority-precedence.json",
+      "schema": "contracts/authority-precedence.schema.json",
+      "text_links_required": true
+    },
+    {
+      "instance": "contracts/evidence-retention.json",
+      "schema": "contracts/evidence-retention.schema.json",
+      "text_links_required": true
+    },
+    {
+      "instance": "contracts/lifecycle/registry.json",
+      "schema": "contracts/lifecycle/registry.schema.json",
+      "text_links_required": true
+    },
+    {
+      "instance": "contracts/repository-change-classification-policy.json",
+      "schema": "contracts/repository-change-classification-policy.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/knowledge/candidates/curriculum-memory-retrospective.s01-s23.v1.json",
+      "schema": "contracts/semantics/curriculum-memory-retrospective-index.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantic-assets/active-bundle.json",
+      "schema": "contracts/semantics/semantic-asset-bundle.schema.json",
+      "text_links_required": true
+    },
+    {
+      "instance": "data/semantic-assets/shacl-gate-policy.json",
+      "schema": "contracts/semantics/shacl-gate-policy.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/bootstrap-open.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/migration-inventory.v1.json",
+      "schema": "contracts/semantica-integration/migration-inventory.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/package-delta-registry.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-registry.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/s17-functional-pose-v1/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/s17-functional-pose-v2/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/s17-functional-pose-v3/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/s17-functional-pose-v4/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/cad-core-query-gates-v1/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/cad-agent-governance-v1/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/cad-reverse-assembly-v1/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0018/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0018/semantica/package-preflight.report.v1.json",
+      "schema": "contracts/semantica-integration/package-preflight-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0018/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0018/semantica/propose.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0018/semantica/proposal-history.snapshot.v1.json",
+      "schema": "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0020/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0020/semantica/package-preflight.report.v1.json",
+      "schema": "contracts/semantica-integration/package-preflight-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0020/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0020/semantica/propose.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0020/semantica/proposal-history.snapshot.v1.json",
+      "schema": "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0021/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0021/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0021/semantica/governance-readiness.report.v1.json",
+      "schema": "contracts/semantica-integration/governance-readiness-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0021/semantica/binding-transition.proposal.v1.json",
+      "schema": "contracts/semantica-integration/binding-transition-proposal.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0021/semantica/book-authoring-sync.report.v1.json",
+      "schema": "contracts/semantica-integration/book-authoring-sync-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0022/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0022/semantica/package-preflight.authoring.v1.json",
+      "schema": "contracts/semantica-integration/package-preflight-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0022/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0022/semantica/propose.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0022/semantica/proposal-history.snapshot.v1.json",
+      "schema": "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0022/semantica/binding-materialization.receipt.v1.json",
+      "schema": "contracts/semantica-integration/binding-materialization-receipt.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0022/semantica/workspace-replay-resolution.report.v1.json",
+      "schema": "contracts/semantica-integration/workspace-replay-resolution-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0022/semantica/migration-coverage.report.v1.json",
+      "schema": "contracts/semantica-integration/migration-coverage-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0023/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0023/semantica/package-preflight.authoring.v1.json",
+      "schema": "contracts/semantica-integration/package-preflight-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0023/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0023/semantica/propose.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0023/semantica/proposal-history.snapshot.v1.json",
+      "schema": "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0023/semantica/migration-coverage.report.v1.json",
+      "schema": "contracts/semantica-integration/migration-coverage-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0024/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0024/semantica/package-preflight.authoring.v1.json",
+      "schema": "contracts/semantica-integration/package-preflight-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0024/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0024/semantica/propose.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0024/semantica/proposal-history.snapshot.v1.json",
+      "schema": "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0024/semantica/migration-coverage.report.v1.json",
+      "schema": "contracts/semantica-integration/migration-coverage-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0025/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0025/semantica/package-preflight.authoring.v1.json",
+      "schema": "contracts/semantica-integration/package-preflight-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0025/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0025/semantica/propose.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0025/semantica/proposal-history.snapshot.v1.json",
+      "schema": "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S17/attempt-0025/semantica/migration-coverage.report.v1.json",
+      "schema": "contracts/semantica-integration/migration-coverage-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/cad-rendering-provenance-v1/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/cad-workflow-memory-v1/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/deltas/cad-problem-memory-v1/source-spec.v1.json",
+      "schema": "contracts/semantica-integration/package-delta-source-spec.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/shadow-cutover-rehearsal.plan.v1.json",
+      "schema": "contracts/semantica-integration/shadow-cutover-rehearsal-plan.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/semantica-integration/shadow-cutover-rehearsal.plan.v2.json",
+      "schema": "contracts/semantica-integration/shadow-cutover-rehearsal-plan-v2.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S18/attempt-0002/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S18/attempt-0002/semantica/package-preflight.authoring.v1.json",
+      "schema": "contracts/semantica-integration/package-preflight-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S18/attempt-0002/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S18/attempt-0002/semantica/propose.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S18/attempt-0002/semantica/proposal-history.snapshot.v1.json",
+      "schema": "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S18/attempt-0002/semantica/migration-coverage.report.v1.json",
+      "schema": "contracts/semantica-integration/migration-coverage-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S20/attempt-0002/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S20/attempt-0002/semantica/package-preflight.authoring.v1.json",
+      "schema": "contracts/semantica-integration/package-preflight-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S20/attempt-0002/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S20/attempt-0002/semantica/propose.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S20/attempt-0002/semantica/proposal-history.snapshot.v1.json",
+      "schema": "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S20/attempt-0002/semantica/migration-coverage.report.v1.json",
+      "schema": "contracts/semantica-integration/migration-coverage-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0002/semantica/task.request.v1.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0002/semantica/package-preflight.authoring.v1.json",
+      "schema": "contracts/semantica-integration/package-preflight-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0002/semantica/open.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0002/semantica/propose.engagement.request.v1.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0002/semantica/proposal-history.snapshot.v1.json",
+      "schema": "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0002/semantica/migration-coverage.report.v1.json",
+      "schema": "contracts/semantica-integration/migration-coverage-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0003/semantica/task.request.v2.json",
+      "schema": "contracts/semantica-integration/semantic-task-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0003/semantica/open.engagement.request.v2.json",
+      "schema": "contracts/semantica-integration/engagement-evidence-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0003/semantica/shadow-cutover-rehearsal.report.v1.json",
+      "schema": "contracts/semantica-integration/shadow-cutover-rehearsal-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0004/semantica/shadow-cutover-rehearsal.report.v2.json",
+      "schema": "contracts/semantica-integration/shadow-cutover-rehearsal-report-v2.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0005/semantica/lifecycle-readiness.request.v1.json",
+      "schema": "contracts/semantica-integration/lifecycle-readiness-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0005/semantica/lifecycle-readiness.report.v1.json",
+      "schema": "contracts/semantica-integration/lifecycle-readiness-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0005/semantica/lifecycle-readiness.request.v2.json",
+      "schema": "contracts/semantica-integration/lifecycle-readiness-request-v2.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0005/semantica/lifecycle-readiness.report.v2.json",
+      "schema": "contracts/semantica-integration/lifecycle-readiness-report-v2.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0005/semantica/post-engagement.shadow-observation.report.v2.json",
+      "schema": "contracts/semantica-integration/shadow-cutover-rehearsal-report-v2.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0006/semantica/lifecycle-readiness.request.v3.json",
+      "schema": "contracts/semantica-integration/lifecycle-readiness-request-v3.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0006/semantica/lifecycle-readiness.report.v3.json",
+      "schema": "contracts/semantica-integration/lifecycle-readiness-report-v3.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0007/semantica/promoted-payload-adapter.request.v1.json",
+      "schema": "contracts/semantica-integration/promoted-payload-adapter-request.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "curriculum-learning/S25/attempt-0007/semantica/promoted-payload-adapter.report.v1.json",
+      "schema": "contracts/semantica-integration/promoted-payload-adapter-report.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/tool-contracts/registry.json",
+      "schema": "contracts/tools/tool-contract-registry.schema.json",
+      "text_links_required": true
+    },
+    {
+      "instance": "data/tool-contracts/experience-action-routes-v1.json",
+      "schema": "contracts/tools/experience-action-route-catalog.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/tool-contracts/fusion-mcp-runtime-20260720.json",
+      "schema": "contracts/tools/runtime-tool-contract.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/tool-contracts/cad-geometry-mcp-runtime-20260722.json",
+      "schema": "contracts/tools/semantic-mcp-tool-contract.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/tool-contracts/fusion-mcp-assembly-context-candidate-20260722.json",
+      "schema": "contracts/tools/tool-contract-candidate.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/tool-contracts/fusion-mcp-direction-persistence-candidate-20260722.json",
+      "schema": "contracts/tools/tool-contract-candidate.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/tool-contracts/fusion-mcp-mcmaster-candidate-20260722.json",
+      "schema": "contracts/tools/tool-contract-candidate.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/tool-contracts/fusion-mcp-persistence-candidate-20260722.json",
+      "schema": "contracts/tools/tool-contract-candidate.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/tool-contracts/fusion-mcp-runtime-compatibility-candidate-20260722.json",
+      "schema": "contracts/tools/tool-contract-candidate.schema.json",
+      "text_links_required": false
+    },
+    {
+      "instance": "data/tool-contracts/fusion-mcp-ui-proxy-candidate-20260720.json",
+      "schema": "contracts/tools/tool-contract-candidate.schema.json",
+      "text_links_required": false
+    }
+  ],
+  "top_level_exclusions": [
+    ".git",
+    ".venv",
+    ".codex",
+    "output"
+  ],
+  "closed_directories": [
+    "commands",
+    "prompts",
+    "examples",
+    "scripts"
+  ],
+  "multi_owner_closed_directories": [
+    "scripts"
+  ],
+  "curriculum_memory_index": {
+    "skill": ".agents/skills/cad-agent/SKILL.md",
+    "index": ".agents/skills/cad-agent/references/curriculum-working-memory-index.md",
+    "directory": ".agents/skills/cad-agent/references",
+    "patterns": [
+      "i[0-9][0-9]-*.md",
+      "s[0-9][0-9]-*.md"
+    ]
+  },
+  "active_governance_files": [
+    "AGENTS.md",
+    "contracts/authority-precedence.json",
+    "contracts/evidence-retention.json",
+    "contracts/experiences/corpus-review-decision.schema.json",
+    "contracts/experiences/corpus-snapshot.schema.json",
+    "contracts/experiences/grounded-experience.schema.json",
+    "contracts/repository-change-classification-policy.json",
+    "contracts/repository-change-classification-policy.schema.json",
+    "contracts/semantics/abox-ingestion-receipt.schema.json",
+    "contracts/semantics/shacl-gate-policy.schema.json",
+    "contracts/semantics/semantic-asset-bundle.schema.json",
+    "contracts/semantica-integration/shadow-cutover-rehearsal-plan-v2.schema.json",
+    "contracts/semantica-integration/shadow-cutover-rehearsal-report-v2.schema.json",
+    "data/semantic-assets/active-bundle.json",
+    "data/semantic-assets/shacl-gate-policy.json",
+    "data/semantica-integration/package-delta-registry.v1.json",
+    "data/semantica-integration/project-ontology-binding.v2.json",
+    "data/semantica-integration/shadow-cutover-rehearsal.plan.v2.json",
+    "data/tool-contracts/experience-action-routes-v1.json",
+    "data/tool-contracts/registry.json",
+    "contracts/tools/experience-action-route-catalog.schema.json",
+    "docs/architecture.md",
+    "docs/git-change-governance.md",
+    "docs/fusion-curriculum-implementation-plan.md",
+    ".agents/skills/cad-agent/SKILL.md",
+    "contracts/lifecycle/registry.json"
+  ],
+  "forbidden_active_terms": [
+    "gpt-5.3-codex-spark",
+    "spark e0",
+    "spark e1",
+    "spark e2",
+    "spark e3",
+    "spark e4",
+    "formal weak-model evaluation"
+  ],
+  "forbidden_paths": [
+    "evaluations",
+    "dist",
+    "tmp",
+    "cad-agent-outputs",
+    ".pytest_cache",
+    ".ruff_cache"
+  ],
+  "components": [
+    {
+      "id": "governance",
+      "responsibility": "Repository workflow, authority, lifecycle separation and safety boundaries.",
+      "authority": "normative",
+      "owned_roots": [
+        ".gitattributes",
+        ".gitleaksignore",
+        ".gitignore",
+        "AGENTS.md",
+        "README.md",
+        "contracts",
+        "contracts/authority-precedence.json",
+        "contracts/authority-precedence.schema.json",
+        "contracts/project-surface.json",
+        "contracts/project-surface.schema.json",
+        "contracts/repository-change-classification-policy.json",
+        "contracts/repository-change-classification-policy.schema.json",
+        "contracts/semantics/git-change-set-assessment.schema.json",
+        "docs",
+        "docs/project-map.md",
+        "docs/architecture.md",
+        "docs/git-change-governance.md",
+        "src/cad_agent/project_surface.py",
+        "scripts/check_project_surface.py",
+        "tests/test_project_surface.py"
+      ],
+      "required_files": []
+    },
+    {
+      "id": "curriculum_definition",
+      "responsibility": "Frozen lesson identity, order, release and dependency inputs.",
+      "authority": "source",
+      "owned_roots": [
+        "data/video-catalog.json",
+        "data/video-knowledge-dependency-overlay.json",
+        "data",
+        "curriculum-ontology",
+        "docs/fusion-49-video-knowledge-structure.md",
+        "docs/fusion-curriculum-implementation-plan.md"
+      ],
+      "required_files": [
+        "curriculum-ontology/course-order-lock.json"
+      ]
+    },
+    {
+      "id": "curriculum_records",
+      "responsibility": "Append-only lesson and evolution attempts, evidence, checks, authorization and rollback.",
+      "authority": "evidence",
+      "owned_roots": [
+        "curriculum-learning",
+        "skill-deltas"
+      ],
+      "required_files": []
+    },
+    {
+      "id": "curriculum_projection",
+      "responsibility": "Non-authoritative current-state and ambiguity projection.",
+      "authority": "derived",
+      "owned_roots": [
+        "src/cad_agent/curriculum_state.py",
+        "src/cad_agent/lifecycle_projection.py",
+        "scripts/validate_lifecycle_projection.py",
+        "curriculum/state",
+        "contracts/lifecycle"
+      ],
+      "required_files": [
+        "curriculum/state/current.proposed.json",
+        "curriculum/state/ambiguities.proposed.json",
+        "contracts/lifecycle/registry.json",
+        "contracts/lifecycle/registry.schema.json",
+        "contracts/lifecycle/curriculum-current-state.schema.json",
+        "contracts/lifecycle/curriculum-lifecycle.schema.json"
+      ]
+    },
+    {
+      "id": "grounded_experience_contracts",
+      "responsibility": "Model-neutral Grounded Experience, independent corpus review and immutable corpus snapshot contracts.",
+      "authority": "proposed_experience_contract",
+      "owned_roots": [
+        "contracts/experiences"
+      ],
+      "required_files": [
+        "contracts/experiences/grounded-experience.schema.json",
+        "contracts/experiences/corpus-review-decision.schema.json",
+        "contracts/experiences/corpus-snapshot.schema.json"
+      ]
+    },
+    {
+      "id": "quality_assurance",
+      "responsibility": "Deterministic repository regressions and falsification fixtures; tests verify bounded claims but grant no release or execution authority.",
+      "authority": "verification_code",
+      "owned_roots": [
+        "tests"
+      ],
+      "required_files": []
+    },
+    {
+      "id": "agent_orchestrator",
+      "responsibility": "Intent normalization, plan validation, routing, provenance and evolution gates.",
+      "authority": "code",
+      "owned_roots": [
+        "src/cad_agent",
+        ".agents/skills/cad-agent",
+        "docs/experience-to-action-routing.md",
+        "docs/workflow-experience-memory.md",
+        "cad_solver.py",
+        "commands",
+        "examples",
+        "scripts",
+        "scripts/check_repository_contracts.py",
+        "pyproject.toml",
+        "uv.lock"
+      ],
+      "required_files": [
+        ".agents/skills/cad-agent/SKILL.md",
+        ".agents/skills/cad-agent/references/curriculum-working-memory-index.md",
+        "commands/cad.md",
+        "src/cad_agent/repository_contracts.py",
+        "examples/cad-agent-invalid.ttl",
+        "examples/cad-agent-task-plan-only.json",
+        "examples/cad-agent-valid.ttl",
+        "examples/example-invalid.ttl",
+        "examples/example-valid.ttl"
+      ]
+    },
+    {
+      "id": "semantic_sidecar",
+      "responsibility": "Read-only ontology, SHACL and named CQ access.",
+      "authority": "code_and_semantic",
+      "owned_roots": [
+        "contracts/semantics",
+        "data/semantic-assets",
+        "data/knowledge",
+        "src/cad_agent/semantic_asset_bundle_contract.py",
+        "src/cad_geometry_mcp",
+        "ontology",
+        "shapes",
+        "sparql",
+        "data/tool-catalog.ttl"
+      ],
+      "required_files": [
+        "contracts/semantics/abox-ingestion-receipt.schema.json",
+        "contracts/semantics/shacl-gate-policy.schema.json",
+        "contracts/semantics/semantic-asset-bundle.schema.json",
+        "data/semantic-assets/active-bundle.json",
+        "data/semantic-assets/shacl-gate-policy.json"
+      ]
+    },
+    {
+      "id": "semantica_control_plane",
+      "responsibility": "Source-locked project binding, task-envelope materialization, reproducible PackageDelta registry, attested authoring preflight, disposable-snapshot observation, fresh-history readiness audit and read-only promoted-payload qualification; retained or fixture payload is never selected as CAD runtime semantics, and no CAD execution, routing, cutover or semantic promotion authority is inferred.",
+      "authority": "binding_and_handoff_contract",
+      "owned_roots": [
+        "contracts/semantica-integration",
+        "data/semantica-integration",
+        "docs/semantica-integration.md",
+        "src/cad_agent/semantica_integration.py",
+        "src/cad_agent/semantica_payload_adapter.py",
+        "src/cad_agent/semantica_shadow.py"
+      ],
+      "required_files": [
+        "contracts/semantica-integration/binding-transition-proposal.schema.json",
+        "contracts/semantica-integration/binding-materialization-receipt.schema.json",
+        "contracts/semantica-integration/book-authoring-sync-report.schema.json",
+        "contracts/semantica-integration/engagement-evidence-request.schema.json",
+        "contracts/semantica-integration/governance-readiness-report.schema.json",
+        "contracts/semantica-integration/lifecycle-readiness-request.schema.json",
+        "contracts/semantica-integration/lifecycle-readiness-request-v2.schema.json",
+        "contracts/semantica-integration/lifecycle-readiness-request-v3.schema.json",
+        "contracts/semantica-integration/lifecycle-readiness-report.schema.json",
+        "contracts/semantica-integration/lifecycle-readiness-report-v2.schema.json",
+        "contracts/semantica-integration/lifecycle-readiness-report-v3.schema.json",
+        "contracts/semantica-integration/migration-inventory.schema.json",
+        "contracts/semantica-integration/migration-coverage-report.schema.json",
+        "contracts/semantica-integration/package-delta-registry.schema.json",
+        "contracts/semantica-integration/package-delta-source-spec.schema.json",
+        "contracts/semantica-integration/package-preflight-report.schema.json",
+        "contracts/semantica-integration/promoted-payload-adapter-request.schema.json",
+        "contracts/semantica-integration/promoted-payload-adapter-report.schema.json",
+        "contracts/semantica-integration/proposal-history-snapshot.schema.json",
+        "contracts/semantica-integration/semantic-task-request.schema.json",
+        "contracts/semantica-integration/shadow-cutover-rehearsal-plan.schema.json",
+        "contracts/semantica-integration/shadow-cutover-rehearsal-plan-v2.schema.json",
+        "contracts/semantica-integration/shadow-cutover-rehearsal-report.schema.json",
+        "contracts/semantica-integration/shadow-cutover-rehearsal-report-v2.schema.json",
+        "contracts/semantica-integration/workspace-replay-resolution-report.schema.json",
+        "data/semantica-integration/bootstrap-open.request.v1.json",
+        "data/semantica-integration/bootstrap-open.task.v1.json",
+        "data/semantica-integration/migration-inventory.v1.json",
+        "data/semantica-integration/package-delta-registry.v1.json",
+        "data/semantica-integration/shadow-cutover-rehearsal.plan.v1.json",
+        "data/semantica-integration/shadow-cutover-rehearsal.plan.v2.json",
+        "data/semantica-integration/deltas/cad-agent-governance-v1/source-spec.v1.json",
+        "data/semantica-integration/deltas/cad-core-query-gates-v1/source-spec.v1.json",
+        "data/semantica-integration/deltas/cad-reverse-assembly-v1/source-spec.v1.json",
+        "data/semantica-integration/deltas/cad-rendering-provenance-v1/source-spec.v1.json",
+        "data/semantica-integration/deltas/cad-workflow-memory-v1/source-spec.v1.json",
+        "data/semantica-integration/deltas/cad-problem-memory-v1/source-spec.v1.json",
+        "data/semantica-integration/deltas/s17-functional-pose-v2/source-spec.v1.json",
+        "data/semantica-integration/deltas/s17-functional-pose-v3/source-spec.v1.json",
+        "data/semantica-integration/deltas/s17-functional-pose-v4/source-spec.v1.json",
+        "data/semantica-integration/project-ontology-binding.v1.json",
+        "data/semantica-integration/project-ontology-binding.v2.json"
+      ]
+    },
+    {
+      "id": "tool_contracts",
+      "responsibility": "Versioned internal and external tool declarations, schemas and routing scope.",
+      "authority": "versioned_tool_contract",
+      "owned_roots": [
+        "data/tool-contracts",
+        "contracts/tools",
+        "src/cad_agent/tool_contract_registry.py",
+        "src/cad_agent/semantic_mcp_tool_contract.py",
+        "scripts/check_tool_contract_registry.py",
+        "scripts/check_semantic_mcp_tool_contract.py"
+      ],
+      "required_files": [
+        "data/tool-contracts/registry.json"
+      ]
+    },
+    {
+      "id": "fusion_adapter",
+      "responsibility": "Upstream Fusion MCP forwarding and bounded UI or supplier adapters.",
+      "authority": "optional_execution_adapter",
+      "owned_roots": [
+        "src/fusion_mcp_proxy",
+        "scripts/fusion_ui_bridge.py",
+        "docs/fusion-ui-bridge.md",
+        "docs/mcmaster-carr-integration.md"
+      ],
+      "required_files": []
+    },
+    {
+      "id": "video_pipeline",
+      "responsibility": "Source cataloging, jobs, evidence frames and study plans.",
+      "authority": "evidence_pipeline",
+      "owned_roots": [
+        "prompts",
+        "src/cad_agent/video_pipeline",
+        "src/cad_agent/video_pipeline/adaptive_video_windows.py",
+        "src/cad_agent/video_pipeline/build_video_catalog.py",
+        "src/cad_agent/video_pipeline/build_video_jobs.py",
+        "src/cad_agent/video_pipeline/build_video_knowledge_dependency_overlay.py",
+        "src/cad_agent/video_pipeline/compile_fusion_video_study_plan.py",
+        "src/cad_agent/video_pipeline/extract_evidence_frames.py",
+        "src/cad_agent/video_pipeline/rehydrate_hires_keyframes.py",
+        "src/cad_agent/video_pipeline/run_video_jobs.py",
+        "schemas/fusion-video-study-plan.schema.json",
+        "schemas/video-evidence.schema.json",
+        "scripts/adaptive_video_windows.py",
+        "scripts/build_video_catalog.py",
+        "scripts/build_video_jobs.py",
+        "scripts/build_video_knowledge_dependency_overlay.py",
+        "scripts/compile_fusion_video_study_plan.py",
+        "scripts/run_video_jobs.py",
+        "scripts/extract_evidence_frames.py",
+        "scripts/rehydrate_hires_keyframes.py",
+        "data/video-jobs.json"
+      ],
+      "required_files": [
+        "prompts/cad_video_observation_v2.txt",
+        "prompts/cad_video_structuring_v2.txt",
+        "src/cad_agent/video_pipeline/__init__.py",
+        "src/cad_agent/video_pipeline/errors.py",
+        "src/cad_agent/video_pipeline/media.py"
+      ]
+    },
+    {
+      "id": "semantic_release",
+      "responsibility": "Independent semantic release contract and manifests.",
+      "authority": "release_contract",
+      "owned_roots": [
+        "schemas",
+        "schemas/semantic-release.schema.json",
+        "data/semantic-release-contract.json"
+      ],
+      "required_files": []
+    },
+    {
+      "id": "large_evidence",
+      "responsibility": "Hash-bound video, Fusion and generated presentation evidence.",
+      "authority": "external_or_generated_evidence",
+      "owned_roots": [
+        "runs",
+        "contracts/evidence-retention.json",
+        "contracts/evidence-retention.schema.json",
+        "scripts/audit_evidence_storage.py",
+        "docs/refactor/storage/README.md"
+      ],
+      "required_files": []
+    }
+  ],
+  "legacy_evidence_policy": {
+    "roots": [
+      "curriculum-learning",
+      "curriculum-ontology",
+      "skill-deltas"
+    ],
+    "rule": "Historical vocabulary may remain as immutable evidence but never overrides active governance, lifecycle contracts or generated current state."
+  },
+  "compatibility_wrappers": [
+    {
+      "wrapper": "scripts/check_project_surface.py",
+      "target_module": "cad_agent.project_surface",
+      "target_path": "src/cad_agent/project_surface.py",
+      "retention_reason": "Temporary compatibility for the existing project-surface contract test.",
+      "sunset_condition": "Remove after tests/test_project_surface.py invokes the packaged module or stable repository gate."
+    },
+    {
+      "wrapper": "scripts/check_repository_contracts.py",
+      "target_module": "cad_agent.repository_contracts",
+      "target_path": "src/cad_agent/repository_contracts.py",
+      "retention_reason": "Existing operators still invoke the historical repository-contract script path.",
+      "sunset_condition": "Remove after all callers use the cad-agent-check-contracts package entry point."
+    },
+    {
+      "wrapper": "scripts/check_semantic_mcp_tool_contract.py",
+      "target_module": "cad_agent.semantic_mcp_tool_contract",
+      "target_path": "src/cad_agent/semantic_mcp_tool_contract.py",
+      "retention_reason": "Existing operators still invoke the historical semantic MCP contract script path.",
+      "sunset_condition": "Remove after all callers use the packaged semantic contract module."
+    },
+    {
+      "wrapper": "scripts/check_tool_contract_registry.py",
+      "target_module": "cad_agent.tool_contract_registry",
+      "target_path": "src/cad_agent/tool_contract_registry.py",
+      "retention_reason": "Existing operators still invoke the historical tool-contract registry script path.",
+      "sunset_condition": "Remove after all callers use the packaged tool-contract registry module."
+    },
+    {
+      "wrapper": "scripts/validate_lifecycle_projection.py",
+      "target_module": "cad_agent.lifecycle_projection",
+      "target_path": "src/cad_agent/lifecycle_projection.py",
+      "retention_reason": "Existing operators and documentation still invoke the historical lifecycle validation script path.",
+      "sunset_condition": "Remove after all callers use the packaged lifecycle projection module."
+    },
+    {
+      "wrapper": "scripts/build_video_catalog.py",
+      "target_module": "cad_agent.video_pipeline.build_video_catalog",
+      "target_path": "src/cad_agent/video_pipeline/build_video_catalog.py",
+      "retention_reason": "Existing tests and operators still import or invoke the historical scripts path.",
+      "sunset_condition": "Remove after all callers use cad_agent.video_pipeline.build_video_catalog."
+    },
+    {
+      "wrapper": "scripts/build_video_jobs.py",
+      "target_module": "cad_agent.video_pipeline.build_video_jobs",
+      "target_path": "src/cad_agent/video_pipeline/build_video_jobs.py",
+      "retention_reason": "Existing tests and operators still import or invoke the historical scripts path.",
+      "sunset_condition": "Remove after all callers use cad_agent.video_pipeline.build_video_jobs."
+    },
+    {
+      "wrapper": "scripts/build_video_knowledge_dependency_overlay.py",
+      "target_module": "cad_agent.video_pipeline.build_video_knowledge_dependency_overlay",
+      "target_path": "src/cad_agent/video_pipeline/build_video_knowledge_dependency_overlay.py",
+      "retention_reason": "Existing tests and operators still invoke the historical scripts path.",
+      "sunset_condition": "Remove after all callers use cad_agent.video_pipeline.build_video_knowledge_dependency_overlay."
+    },
+    {
+      "wrapper": "scripts/compile_fusion_video_study_plan.py",
+      "target_module": "cad_agent.video_pipeline.compile_fusion_video_study_plan",
+      "target_path": "src/cad_agent/video_pipeline/compile_fusion_video_study_plan.py",
+      "retention_reason": "Existing tests and operators still import or invoke the historical scripts path.",
+      "sunset_condition": "Remove after all callers use cad_agent.video_pipeline.compile_fusion_video_study_plan."
+    },
+    {
+      "wrapper": "scripts/extract_evidence_frames.py",
+      "target_module": "cad_agent.video_pipeline.extract_evidence_frames",
+      "target_path": "src/cad_agent/video_pipeline/extract_evidence_frames.py",
+      "retention_reason": "Existing tests and operators still import or invoke the historical scripts path.",
+      "sunset_condition": "Remove after all callers use cad_agent.video_pipeline.extract_evidence_frames."
+    },
+    {
+      "wrapper": "scripts/rehydrate_hires_keyframes.py",
+      "target_module": "cad_agent.video_pipeline.rehydrate_hires_keyframes",
+      "target_path": "src/cad_agent/video_pipeline/rehydrate_hires_keyframes.py",
+      "retention_reason": "Existing tests and operators still import or invoke the historical scripts path.",
+      "sunset_condition": "Remove after all callers use cad_agent.video_pipeline.rehydrate_hires_keyframes."
+    },
+    {
+      "wrapper": "scripts/run_video_jobs.py",
+      "target_module": "cad_agent.video_pipeline.run_video_jobs",
+      "target_path": "src/cad_agent/video_pipeline/run_video_jobs.py",
+      "retention_reason": "Existing tests and operators still import or invoke the historical scripts path.",
+      "sunset_condition": "Remove after all callers use cad_agent.video_pipeline.run_video_jobs."
+    }
+  ],
+  "commands": {
+    "agent": "uv run cad-agent",
+    "semantic_sidecar": "uv run cad-agent-mcp",
+    "fusion_proxy": "uv run fusion-mcp-proxy",
+    "experience_route": "uv run cad-agent-experience-route",
+    "semantic_build": "uv run cad-agent-semantic-build --help",
+    "semantic_preflight": "uv run cad-agent-semantic-preflight --help",
+    "semantic_runtime_route": "uv run cad-agent-semantic-runtime-route --help",
+    "runtime_reopen_canary": "uv run cad-agent-runtime-reopen-canary --help",
+    "curriculum_memory_retrospective": "uv run cad-agent-curriculum-memory-retrospective --help",
+    "git_change_set": "uv run cad-agent-git-change-set --help",
+    "semantic_engagement": "uv run cad-agent-semantic-engagement --help",
+    "semantica_shadow": "uv run cad-agent-semantica-shadow --help",
+    "current_state": "uv run cad-agent-current-state --project-root .",
+    "repository_contracts": "uv run cad-agent-check-contracts --root ."
+  }
+}

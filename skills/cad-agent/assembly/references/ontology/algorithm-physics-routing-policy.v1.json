@@ -1,0 +1,651 @@
+{
+  "$schema": "cad-agent.assembly-algorithm-physics-routing-policy/v1",
+  "policy_id": "cad-agent-assembly-algorithm-physics-routing-2026-08-27",
+  "version": "1.0.0",
+  "purpose": "Fail-closed routing and claim boundaries for paper-derived assembly planning, S9 direction probes, P-level contact physics, presentation, and physical falsification.",
+  "authority_model": {
+    "FUSION": {
+      "role": "Authoritative CAD occurrence identity, geometry identity, world pose, and q0 source.",
+      "claim_ceiling": "CAD_POSE_AND_GEOMETRY_AUTHORITY"
+    },
+    "PHYSICS_SOLVER": {
+      "role": "Version-bound numerical evidence for the modeled contact, load, constraint, and drive law only.",
+      "claim_ceiling": "MODELED_PHYSICS_ONLY"
+    },
+    "BLENDER": {
+      "role": "Read-only presentation of certified states and telemetry.",
+      "claim_ceiling": "DELIVERY_VERIFIED"
+    },
+    "PHYSICAL_FIXTURE": {
+      "role": "Fixture-calibrated minimal real action that can falsify physical buildability.",
+      "claim_ceiling": "PHYSICAL_RELEASE_VALIDATED"
+    }
+  },
+  "claim_ledger": {
+    "common_nonpositive_results": [
+      "NOT_CLAIMED",
+      "NOT_REQUIRED",
+      "INCONCLUSIVE",
+      "HOLD"
+    ],
+    "claims": {
+      "ORDERED_PLANNING": [
+        "ORDERED_STATES_VERIFIED"
+      ],
+      "GEOMETRIC_PATH": [
+        "GEOMETRY_PATH_VALIDATED"
+      ],
+      "DIRECTION_RANKING": [
+        "PROMISING_DIRECTION",
+        "GUIDED_CONTACT_DIRECTION",
+        "RESISTED_DIRECTION",
+        "AMBIGUOUS_DIRECTION"
+      ],
+      "CONTACT_TRANSFER": [
+        "CONTACT_TRANSFER_VALIDATED"
+      ],
+      "PASSAGE": [
+        "PASSAGE_VALIDATED"
+      ],
+      "MOTOR_CAPACITY": [
+        "MOTOR_CAPACITY_VALIDATED"
+      ],
+      "ENDPOINT_RECLOSURE": [
+        "GEOMETRIC_RECLOSURE_CANDIDATE"
+      ],
+      "MECHANICAL_RELOCK": [
+        "MECHANICAL_RELOCK_VALIDATED"
+      ],
+      "THREADED_CONTACT": [
+        "THREADED_CONTACT_VALIDATED"
+      ],
+      "MEDIA": [
+        "DELIVERY_VERIFIED"
+      ],
+      "PHYSICAL_RELEASE": [
+        "PHYSICAL_RELEASE_VALIDATED"
+      ]
+    }
+  },
+  "status_vocabularies": {
+    "route_status": [
+      "REQUIRED",
+      "NOT_REQUIRED",
+      "HOLD"
+    ],
+    "execution_status": [
+      "EXECUTED",
+      "NOT_RUN",
+      "NOT_REQUIRED",
+      "FAILED"
+    ],
+    "check_status": [
+      "PASS",
+      "FAIL",
+      "HOLD",
+      "NOT_APPLICABLE"
+    ],
+    "parameter_provenance": [
+      "GIVEN",
+      "DERIVED",
+      "ASSUMED",
+      "RECOMMENDED",
+      "UNKNOWN"
+    ],
+    "parameter_portability": [
+      "STRUCTURAL_INVARIANT",
+      "TARGET_SPECIFIC",
+      "CASE_LOCKED_EXAMPLE"
+    ],
+    "drive_mode": [
+      "MOTION_DRIVEN_CONTACT_VALIDATION",
+      "TORQUE_LIMITED_MOTOR_VALIDATION",
+      "NOT_APPLICABLE"
+    ]
+  },
+  "planning_admission_invariants": [
+    {
+      "id": "PAB-01",
+      "name": "authoritative_q0",
+      "statement": "Bind the assembled q0 to the authoritative final product pose."
+    },
+    {
+      "id": "PAB-02",
+      "name": "identity_units_frames_hashes",
+      "statement": "Pin geometry identity, mover and fixed identities, units, frames, and consumed source hashes."
+    },
+    {
+      "id": "PAB-03",
+      "name": "one_rigid_transition",
+      "statement": "Move one rigid occurrence or one explicitly declared rigid subassembly per transition and partition deformables separately."
+    },
+    {
+      "id": "PAB-04",
+      "name": "ordered_absolute_states",
+      "statement": "Persist ordered absolute states, state count, and a canonical state digest."
+    },
+    {
+      "id": "PAB-05",
+      "name": "continuous_model_consistency",
+      "statement": "Check q0, every admitted state, and every path edge against one declared mover and fixed model; label sampling as sampled."
+    },
+    {
+      "id": "PAB-06",
+      "name": "terminal_goal",
+      "statement": "Persist the disassembled terminal goal and label any convex-hull or other proxy goal as a proxy."
+    },
+    {
+      "id": "PAB-07",
+      "name": "reverse_state_order_only",
+      "statement": "Form assembly by reversing state order, never by negating absolute translations, Euler angles, or transforms."
+    },
+    {
+      "id": "PAB-08",
+      "name": "connector_path",
+      "statement": "Verify a connector path when the incoming pose differs from the reversed disassembly terminal."
+    },
+    {
+      "id": "PAB-09",
+      "name": "sbdp_reproduction_boundary",
+      "statement": "Claim SBDP reproduction only after translation exhaustion before rotation; otherwise label the path inspired or external."
+    },
+    {
+      "id": "PAB-10",
+      "name": "partition_update",
+      "statement": "Update moving and fixed partitions at every real fastening, release, or removal boundary."
+    },
+    {
+      "id": "PAB-11",
+      "name": "saved_scene_readback",
+      "statement": "Reopen the saved source scene and compare every admitted state before requesting a render."
+    },
+    {
+      "id": "PAB-12",
+      "name": "claim_caps_and_canonical_hash",
+      "statement": "Persist claim caps; reject canonical-hash drift; never promote paper statistics, probes, proxies, or deferred deformables to target success."
+    }
+  ],
+  "s9_fair_comparison_facets": [
+    {
+      "id": "S9-FC-01",
+      "name": "candidate_set_bound"
+    },
+    {
+      "id": "S9-FC-02",
+      "name": "common_initial_state_and_environment_bound"
+    },
+    {
+      "id": "S9-FC-03",
+      "name": "common_proxy_and_parameter_profile_bound"
+    },
+    {
+      "id": "S9-FC-04",
+      "name": "first_discriminating_feature_machine_defined"
+    },
+    {
+      "id": "S9-FC-05",
+      "name": "no_feature_cap_is_inconclusive"
+    },
+    {
+      "id": "S9-FC-06",
+      "name": "paired_control_per_candidate_bound"
+    },
+    {
+      "id": "S9-FC-07",
+      "name": "repeatability_and_numerical_noise_bounded"
+    },
+    {
+      "id": "S9-FC-08",
+      "name": "single_direction_and_zero_contact_promotion_guarded"
+    },
+    {
+      "id": "S9-FC-09",
+      "name": "symmetric_campaign_stop_and_completion_defined"
+    },
+    {
+      "id": "S9-FC-10",
+      "name": "tie_and_contradiction_handling_defined"
+    }
+  ],
+  "contact_physics_invariants": [
+    {
+      "id": "CP-01",
+      "name": "world_transform_and_si_units"
+    },
+    {
+      "id": "CP-02",
+      "name": "body_roles_and_allowed_contact_pairs"
+    },
+    {
+      "id": "CP-03",
+      "name": "render_proxy_solver_geometry_separated"
+    },
+    {
+      "id": "CP-04",
+      "name": "proxy_error_bounded"
+    },
+    {
+      "id": "CP-05",
+      "name": "parameter_provenance_bound"
+    },
+    {
+      "id": "CP-06",
+      "name": "no_direct_deformable_feed"
+    },
+    {
+      "id": "CP-07",
+      "name": "drive_mode_declared"
+    },
+    {
+      "id": "CP-08",
+      "name": "staged_canaries_before_full_solve"
+    },
+    {
+      "id": "CP-09",
+      "name": "matched_counterfactual"
+    },
+    {
+      "id": "CP-10",
+      "name": "version_bound_force_recovery"
+    },
+    {
+      "id": "CP-11",
+      "name": "action_reaction_torque_and_work"
+    },
+    {
+      "id": "CP-12",
+      "name": "convergence_and_sensitivity"
+    }
+  ],
+  "paper_algorithm_routes": [
+    {
+      "id": "AAMERI_STATIC_SEMANTICS",
+      "name": "Aameri-Cheong-Beck static assembly semantics",
+      "applicability": [
+        "Occurrence identity, boundary entity, incidence, mating-feature, connection, and relative-configuration modeling."
+      ],
+      "required_inputs": [
+        "Occurrence-resolved BOM",
+        "Boundary and mating-feature identities",
+        "Connection-tree evidence"
+      ],
+      "produces": [
+        "Static assembly relation semantics",
+        "Connection and relative-configuration records"
+      ],
+      "does_not_prove": [
+        "Fusion Joint frames or limits",
+        "Current mechanism state",
+        "Executable collision-free path",
+        "Physical buildability"
+      ],
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "STATIC_ASSEMBLY_SEMANTICS_ONLY",
+      "branch_refs": [
+        "S7_GEOMETRY"
+      ]
+    },
+    {
+      "id": "AGRAWALA_ACTION_GRAPH",
+      "name": "Agrawala action graph and exploded guidance",
+      "applicability": [
+        "Stepwise presentation after engineering order and certified states exist."
+      ],
+      "required_inputs": [
+        "Certified partial order",
+        "Certified state ledger",
+        "Occurrence-complete connection tree"
+      ],
+      "produces": [
+        "Action-graph presentation candidate",
+        "Exploded-view guidance candidate"
+      ],
+      "does_not_prove": [
+        "Missing occurrence recovery",
+        "Engineering process order",
+        "Clearance",
+        "Force or physical release"
+      ],
+      "capability_status": "LITERATURE_ONLY",
+      "claim_ceiling": "PRESENTATION_ORDER_CANDIDATE_ONLY",
+      "branch_refs": [
+        "S7_GEOMETRY"
+      ]
+    },
+    {
+      "id": "LI_DAG_SHORT_ESCAPE",
+      "name": "Li DAG and unblocked short-escape removal",
+      "applicability": [
+        "Rigid exploded-layout partial-order and local direction candidate generation."
+      ],
+      "required_inputs": [
+        "Occurrence-level interference relations",
+        "Candidate directions",
+        "Current fixed and moving partition"
+      ],
+      "produces": [
+        "DAG partial-order candidate",
+        "Unblocked short-escape candidate"
+      ],
+      "does_not_prove": [
+        "Shop-floor process truth",
+        "Continuous full-path clearance",
+        "Stability or physical release"
+      ],
+      "capability_status": "LITERATURE_ONLY",
+      "claim_ceiling": "PARTIAL_ORDER_AND_DIRECTION_CANDIDATE_ONLY",
+      "branch_refs": [
+        "S7_GEOMETRY",
+        "S9_DIRECTION_PROBE"
+      ]
+    },
+    {
+      "id": "ATA_REVERSE_DISASSEMBLY",
+      "name": "Assemble Them All reverse-disassembly state sequence",
+      "applicability": [
+        "Rigid disassembly candidate generation followed by exact reversal of ordered absolute states."
+      ],
+      "required_inputs": [
+        "Authoritative q0",
+        "Mover and fixed identities",
+        "Ordered absolute disassembly states",
+        "PAB-01 through PAB-12"
+      ],
+      "produces": [
+        "Ordered disassembly-state candidate",
+        "Reverse-ordered assembly-state candidate"
+      ],
+      "does_not_prove": [
+        "Independent continuous geometry clearance",
+        "Contact-force validity",
+        "Physical buildability"
+      ],
+      "capability_status": "CASE_PROVEN_NOT_GENERALIZED",
+      "claim_ceiling": "ORDERED_STATE_CANDIDATE_ONLY",
+      "branch_refs": [
+        "S7_GEOMETRY"
+      ]
+    },
+    {
+      "id": "ASAP_STABILITY",
+      "name": "ASAP gravity, support, and finite-hold stability",
+      "applicability": [
+        "Sequence candidates whose gravity, support, or finite holding stability affects feasibility."
+      ],
+      "required_inputs": [
+        "Sequence candidate",
+        "Gravity and support model",
+        "Finite holding assumptions"
+      ],
+      "produces": [
+        "Sequence-stability candidate classification"
+      ],
+      "does_not_prove": [
+        "Continuous geometric path",
+        "Contact transfer",
+        "Fixture-qualified physical release"
+      ],
+      "capability_status": "LITERATURE_ONLY",
+      "claim_ceiling": "SEQUENCE_STABILITY_CANDIDATE_ONLY",
+      "branch_refs": [
+        "P_CONTACT_PHYSICS",
+        "S11_PHYSICAL"
+      ]
+    },
+    {
+      "id": "SBDP_DBG_INSPIRED",
+      "name": "SBDP direction-blocking-graph inspired planner",
+      "applicability": [
+        "Rigid planning candidate using state memory, direction-blocking priors, translation before rotation, and fixed-set updates."
+      ],
+      "required_inputs": [
+        "Authoritative q0",
+        "Direction-blocking relations",
+        "Translation-exhaustion record",
+        "Partition updates",
+        "PAB-01 through PAB-12"
+      ],
+      "produces": [
+        "SBDP-inspired path candidate"
+      ],
+      "does_not_prove": [
+        "Full SBDP reproduction",
+        "Transfer of paper benchmark success rate",
+        "Continuous path or physical success"
+      ],
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "INSPIRED_PATH_CANDIDATE_ONLY",
+      "branch_refs": [
+        "S7_GEOMETRY"
+      ]
+    },
+    {
+      "id": "IPC_LIBUIPC",
+      "name": "IPC and libuipc contact simulation",
+      "applicability": [
+        "Short-prefix rigid direction probing or separately contracted rigid/deformable contact transfer."
+      ],
+      "required_inputs": [
+        "Hash-bound world poses",
+        "SI units and body roles",
+        "Error-bounded solver geometry",
+        "Version-pinned solver contract",
+        "S9-FC or CP checks for the selected branch"
+      ],
+      "produces": [
+        "Direction-only response evidence",
+        "Modeled contact-transfer evidence when the P-level contract is complete"
+      ],
+      "does_not_prove": [
+        "Global assembly planning",
+        "Exact B-Rep clearance",
+        "Motor capacity from servo strength",
+        "Mechanical relock",
+        "Physical release"
+      ],
+      "capability_status": "CASE_PROVEN_NOT_GENERALIZED",
+      "claim_ceiling": "MODELED_PHYSICS_ONLY",
+      "branch_refs": [
+        "S9_DIRECTION_PROBE",
+        "P_CONTACT_PHYSICS"
+      ]
+    },
+    {
+      "id": "FACTORY_THREADED_CONTACT",
+      "name": "Factory or equivalent threaded-contact model",
+      "applicability": [
+        "Thread engagement, nut-bolt insertion, screw driving, seating torque, or cross-thread claims."
+      ],
+      "required_inputs": [
+        "Thread geometry and state",
+        "Friction and controller model",
+        "Torque model",
+        "Target-hardware calibration"
+      ],
+      "produces": [
+        "Dedicated threaded-contact candidate evidence"
+      ],
+      "does_not_prove": [
+        "Target threaded-contact success before project qualification",
+        "Physical release"
+      ],
+      "capability_status": "LITERATURE_ONLY",
+      "claim_ceiling": "THREADED_CONTACT_CANDIDATE_ONLY",
+      "branch_refs": [
+        "THREADED_CONTACT"
+      ]
+    }
+  ],
+  "route_matrix": [
+    {
+      "id": "ROUTE-S7-GEOMETRY",
+      "branch_id": "S7_GEOMETRY",
+      "trigger": "Any admitted engineering path or downstream physics claim.",
+      "operation_classes": [
+        "RIGID_INSERTION",
+        "RIGID_REMOVAL",
+        "RIGID_SUBASSEMBLY",
+        "FLEXIBLE_OR_CONTACT_DRIVEN",
+        "PRESS_OR_SNAP",
+        "THREADED"
+      ],
+      "required_upstream": [
+        "Occurrence identity",
+        "BOM and interface closure",
+        "Connection tree",
+        "Authoritative q0",
+        "PAB admission for planned trajectories"
+      ],
+      "required_claims": [
+        "GEOMETRIC_PATH"
+      ],
+      "tool_refs": [
+        "T-fusion",
+        "T-trimesh-fcl"
+      ],
+      "algorithm_refs": [
+        "AAMERI_STATIC_SEMANTICS",
+        "LI_DAG_SHORT_ESCAPE",
+        "ATA_REVERSE_DISASSEMBLY",
+        "SBDP_DBG_INSPIRED"
+      ],
+      "claim_ceiling": "GEOMETRY_PATH_VALIDATED",
+      "on_unknown": "HOLD",
+      "return_stage": "S6"
+    },
+    {
+      "id": "ROUTE-S9-DIRECTION",
+      "branch_id": "S9_DIRECTION_PROBE",
+      "trigger": "Two or more unresolved local approach directions after S7 readiness.",
+      "operation_classes": [
+        "RIGID_INSERTION",
+        "RIGID_REMOVAL",
+        "RIGID_SUBASSEMBLY"
+      ],
+      "required_upstream": [
+        "S7 geometry readiness",
+        "Frozen common comparison basis",
+        "At least two direction candidates",
+        "S9-FC-01 through S9-FC-10"
+      ],
+      "required_claims": [
+        "DIRECTION_RANKING"
+      ],
+      "tool_refs": [
+        "T-libuipc"
+      ],
+      "algorithm_refs": [
+        "LI_DAG_SHORT_ESCAPE",
+        "IPC_LIBUIPC"
+      ],
+      "claim_ceiling": "DIRECTION_RANKING_ONLY",
+      "on_unknown": "HOLD",
+      "return_stage": "S6"
+    },
+    {
+      "id": "ROUTE-P-CONTACT",
+      "branch_id": "P_CONTACT_PHYSICS",
+      "trigger": "Flexible/contact-driven behavior, press/snap response, load transfer, force, torque, or motor capacity affects the claim.",
+      "operation_classes": [
+        "FLEXIBLE_OR_CONTACT_DRIVEN",
+        "PRESS_OR_SNAP",
+        "CABLE_OR_GUIDE_PASSAGE",
+        "RIGID_CONTACT_FORCE"
+      ],
+      "required_upstream": [
+        "S7 geometry readiness interval",
+        "Hash-bound Fusion world poses",
+        "Active target-specific parameter profile",
+        "CP-01 through CP-12"
+      ],
+      "required_claims": [
+        "CONTACT_TRANSFER",
+        "PASSAGE",
+        "MOTOR_CAPACITY"
+      ],
+      "tool_refs": [
+        "T-libuipc-contact-validation"
+      ],
+      "algorithm_refs": [
+        "ASAP_STABILITY",
+        "IPC_LIBUIPC"
+      ],
+      "claim_ceiling": "MODELED_PHYSICS_ONLY",
+      "on_unknown": "HOLD",
+      "return_stage": "S7"
+    },
+    {
+      "id": "ROUTE-THREADED-CONTACT",
+      "branch_id": "THREADED_CONTACT",
+      "trigger": "Thread following, nut-bolt insertion, screw driving, seating torque, or cross-thread behavior affects the claim.",
+      "operation_classes": [
+        "THREADED"
+      ],
+      "required_upstream": [
+        "S7 geometry readiness",
+        "Thread geometry and state",
+        "Project-qualified threaded solver and parameters"
+      ],
+      "required_claims": [
+        "THREADED_CONTACT"
+      ],
+      "tool_refs": [
+        "T-factory-thread-contact"
+      ],
+      "algorithm_refs": [
+        "FACTORY_THREADED_CONTACT"
+      ],
+      "claim_ceiling": "THREADED_CONTACT_VALIDATED",
+      "on_unknown": "HOLD",
+      "return_stage": "S7"
+    },
+    {
+      "id": "ROUTE-S11-PHYSICAL",
+      "branch_id": "S11_PHYSICAL",
+      "trigger": "Real buildability or physical release is claimed.",
+      "operation_classes": [
+        "RIGID_INSERTION",
+        "RIGID_REMOVAL",
+        "RIGID_SUBASSEMBLY",
+        "FLEXIBLE_OR_CONTACT_DRIVEN",
+        "PRESS_OR_SNAP",
+        "CABLE_OR_GUIDE_PASSAGE",
+        "RIGID_CONTACT_FORCE",
+        "THREADED"
+      ],
+      "required_upstream": [
+        "Applicable geometry and physics gates",
+        "Fixture-to-product calibration",
+        "Stop conditions and minimal falsification action"
+      ],
+      "required_claims": [
+        "PHYSICAL_RELEASE"
+      ],
+      "tool_refs": [
+        "T-physical-trial"
+      ],
+      "algorithm_refs": [
+        "ASAP_STABILITY"
+      ],
+      "claim_ceiling": "PHYSICAL_RELEASE_VALIDATED",
+      "on_unknown": "HOLD",
+      "return_stage": "S7"
+    }
+  ],
+  "routing_rules": {
+    "s9_claim_ceiling": "DIRECTION_RANKING_ONLY",
+    "contact_physics_claim_ceiling": "MODELED_PHYSICS_ONLY",
+    "threaded_contact_requires_dedicated_model": true,
+    "physical_release_requires_fixture_trial": true,
+    "unknown_route_facts_default": "HOLD"
+  },
+  "overclaim_guards": {
+    "required_route_without_execution": "INCONCLUSIVE",
+    "zero_contact_alone_can_be_promising": false,
+    "motion_servo_strength_is_motor_capacity": false,
+    "geometric_reclosure_is_mechanical_relock": false,
+    "blender_claim_ceiling": "DELIVERY_VERIFIED",
+    "simulation_is_physical_release": false,
+    "case_locked_parameter_may_be_active": false
+  }
+}

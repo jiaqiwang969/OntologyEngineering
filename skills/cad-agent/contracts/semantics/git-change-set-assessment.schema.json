@@ -1,0 +1,1589 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cad-agent.git-change-set-assessment.schema.v1",
+  "title": "CAD Agent read-only Git change-set assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "policy",
+    "project_surface",
+    "repository",
+    "classification",
+    "changes",
+    "append_only_integrity",
+    "derived_projection_freshness",
+    "active_head_closure",
+    "release_basis_eligible",
+    "release_basis_scope",
+    "evidence_scope",
+    "complete_release_source_closure_proven",
+    "fresh_rebuild_performed",
+    "cq_sb22_satisfied",
+    "read_only",
+    "writes_performed",
+    "staging_performed",
+    "activation_authorized",
+    "review_authorized",
+    "release_authorized",
+    "active_pointer_mutation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed",
+    "fusion_write_authorized",
+    "errors"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.git-change-set-assessment.v1"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "UNKNOWN"
+      ]
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "schema_path",
+        "schema_sha256",
+        "mode",
+        "diagnostic_only",
+        "status"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "schema_path": {
+          "const": "contracts/repository-change-classification-policy.schema.json"
+        },
+        "schema_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "mode": {
+          "enum": [
+            "DEFAULT_RELEASE_PREFLIGHT",
+            "CUSTOM_DIAGNOSTIC_ONLY"
+          ]
+        },
+        "diagnostic_only": {
+          "type": "boolean"
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        }
+      }
+    },
+    "project_surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "schema_path",
+        "schema_sha256",
+        "schema_validation_status",
+        "ownership_cross_constraints_status",
+        "status",
+        "owner_resolution"
+      ],
+      "properties": {
+        "path": {
+          "const": "contracts/project-surface.json"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "schema_path": {
+          "const": "contracts/project-surface.schema.json"
+        },
+        "schema_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "schema_validation_status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "ownership_cross_constraints_status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "owner_resolution": {
+          "const": "deepest_owned_root"
+        }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "head_status",
+        "object_format",
+        "head_commit",
+        "head_tree",
+        "porcelain_version",
+        "status_record_count",
+        "changed_path_count"
+      ],
+      "properties": {
+        "head_status": {
+          "enum": [
+            "PRESENT",
+            "UNBORN",
+            "UNKNOWN"
+          ]
+        },
+        "object_format": {
+          "enum": [
+            "sha1",
+            "sha256",
+            "UNKNOWN"
+          ]
+        },
+        "head_commit": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/gitObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "head_tree": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/gitObjectId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "porcelain_version": {
+          "const": 2
+        },
+        "status_record_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "changed_path_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8192
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "classified_path_count",
+        "unclassified_paths",
+        "ambiguous_paths",
+        "unowned_component_paths",
+        "ambiguous_component_owner_paths"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "classified_path_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8192
+        },
+        "unclassified_paths": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "ambiguous_paths": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "unowned_component_paths": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "ambiguous_component_owner_paths": {
+          "$ref": "#/$defs/pathArray"
+        }
+      }
+    },
+    "changes": {
+      "type": "array",
+      "maxItems": 8192,
+      "items": {
+        "$ref": "#/$defs/change"
+      }
+    },
+    "append_only_integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "roots",
+        "violations"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "roots": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/directoryPrefix"
+          }
+        },
+        "violations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "reason"
+            ],
+            "properties": {
+              "path": {
+                "$ref": "#/$defs/projectPath"
+              },
+              "reason": {
+                "enum": [
+                  "tracked_content_modified",
+                  "tracked_path_deleted",
+                  "tracked_path_renamed",
+                  "tracked_type_changed",
+                  "unmerged_history_path"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "derived_projection_freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "paths",
+        "reason"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "UNKNOWN",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "paths": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    },
+    "active_head_closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "manifest_path",
+        "head_manifest_sha256",
+        "closure_sha256",
+        "minimum_fixed_paths",
+        "configured_fixed_paths",
+        "required_paths",
+        "loaded_trust_bytes",
+        "dirty_paths",
+        "missing_from_head",
+        "digest_mismatches",
+        "oversized_paths",
+        "error_codes"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "manifest_path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "head_manifest_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "closure_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minimum_fixed_paths": {
+          "const": [
+            "AGENTS.md",
+            "contracts/project-surface.json",
+            "contracts/project-surface.schema.json",
+            "contracts/repository-change-classification-policy.json",
+            "contracts/repository-change-classification-policy.schema.json",
+            "contracts/semantics/git-change-set-assessment.schema.json",
+            "src/cad_agent/git_change_set.py"
+          ]
+        },
+        "configured_fixed_paths": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "required_paths": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "loaded_trust_bytes": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/loadedTrustByte"
+          }
+        },
+        "dirty_paths": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "missing_from_head": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "digest_mismatches": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "oversized_paths": {
+          "$ref": "#/$defs/pathArray"
+        },
+        "error_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "pattern": "^[A-Z][A-Z0-9_-]*$"
+          }
+        }
+      }
+    },
+    "release_basis_eligible": {
+      "type": "boolean"
+    },
+    "release_basis_scope": {
+      "const": "exact_head_closure_only_not_activation_authority"
+    },
+    "evidence_scope": {
+      "const": "active_head_closure_preflight_only"
+    },
+    "complete_release_source_closure_proven": {
+      "const": false
+    },
+    "fresh_rebuild_performed": {
+      "const": false
+    },
+    "cq_sb22_satisfied": {
+      "const": false
+    },
+    "read_only": {
+      "const": true
+    },
+    "writes_performed": {
+      "const": false
+    },
+    "staging_performed": {
+      "const": false
+    },
+    "activation_authorized": {
+      "const": false
+    },
+    "review_authorized": {
+      "const": false
+    },
+    "release_authorized": {
+      "const": false
+    },
+    "active_pointer_mutation_authorized": {
+      "const": false
+    },
+    "execution_authorized": {
+      "const": false
+    },
+    "runtime_routing_changed": {
+      "const": false
+    },
+    "fusion_write_authorized": {
+      "const": false
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/error"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "release_basis_eligible": {
+            "const": true
+          }
+        },
+        "required": [
+          "release_basis_eligible"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "PASS"
+          },
+          "policy": {
+            "properties": {
+              "status": {
+                "const": "PASS"
+              },
+              "mode": {
+                "const": "DEFAULT_RELEASE_PREFLIGHT"
+              },
+              "diagnostic_only": {
+                "const": false
+              }
+            }
+          },
+          "project_surface": {
+            "properties": {
+              "status": {
+                "const": "PASS"
+              },
+              "schema_validation_status": {
+                "const": "PASS"
+              },
+              "ownership_cross_constraints_status": {
+                "const": "PASS"
+              }
+            }
+          },
+          "repository": {
+            "properties": {
+              "head_status": {
+                "const": "PRESENT"
+              },
+              "head_commit": {
+                "type": "string"
+              },
+              "head_tree": {
+                "type": "string"
+              }
+            }
+          },
+          "classification": {
+            "properties": {
+              "status": {
+                "const": "PASS"
+              },
+              "unclassified_paths": {
+                "maxItems": 0
+              },
+              "ambiguous_paths": {
+                "maxItems": 0
+              },
+              "unowned_component_paths": {
+                "maxItems": 0
+              },
+              "ambiguous_component_owner_paths": {
+                "maxItems": 0
+              }
+            }
+          },
+          "changes": {
+            "items": {
+              "properties": {
+                "classification_status": {
+                  "const": "PASS"
+                },
+                "unmerged": {
+                  "const": false
+                }
+              }
+            }
+          },
+          "append_only_integrity": {
+            "properties": {
+              "status": {
+                "const": "PASS"
+              },
+              "violations": {
+                "maxItems": 0
+              }
+            }
+          },
+          "derived_projection_freshness": {
+            "properties": {
+              "status": {
+                "const": "NOT_APPLICABLE"
+              },
+              "paths": {
+                "maxItems": 0
+              }
+            }
+          },
+          "active_head_closure": {
+            "properties": {
+              "status": {
+                "const": "PASS"
+              },
+              "head_manifest_sha256": {
+                "$ref": "#/$defs/sha256"
+              },
+              "closure_sha256": {
+                "$ref": "#/$defs/sha256"
+              },
+              "dirty_paths": {
+                "maxItems": 0
+              },
+              "missing_from_head": {
+                "maxItems": 0
+              },
+              "digest_mismatches": {
+                "maxItems": 0
+              },
+              "oversized_paths": {
+                "maxItems": 0
+              },
+              "error_codes": {
+                "maxItems": 0
+              },
+              "loaded_trust_bytes": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/loadedTrustByteMatchArray"
+                  },
+                  {
+                    "contains": {
+                      "properties": {
+                        "path": {
+                          "const": "contracts/repository-change-classification-policy.json"
+                        }
+                      },
+                      "required": [
+                        "path"
+                      ]
+                    }
+                  }
+                ]
+              },
+              "configured_fixed_paths": {
+                "$ref": "#/$defs/minimumFixedClosurePathArray"
+              },
+              "required_paths": {
+                "$ref": "#/$defs/minimumFixedClosurePathArray"
+              }
+            }
+          },
+          "errors": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "path": {
+                "const": "contracts/repository-change-classification-policy.json"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        "required": [
+          "policy"
+        ]
+      },
+      "then": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "mode": {
+                "const": "DEFAULT_RELEASE_PREFLIGHT"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "mode": {
+                "const": "CUSTOM_DIAGNOSTIC_ONLY"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "active_head_closure": {
+            "properties": {
+              "status": {
+                "const": "PASS"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "active_head_closure"
+        ]
+      },
+      "then": {
+        "properties": {
+          "active_head_closure": {
+            "properties": {
+              "head_manifest_sha256": {
+                "$ref": "#/$defs/sha256"
+              },
+              "closure_sha256": {
+                "$ref": "#/$defs/sha256"
+              },
+              "dirty_paths": {
+                "maxItems": 0
+              },
+              "missing_from_head": {
+                "maxItems": 0
+              },
+              "digest_mismatches": {
+                "maxItems": 0
+              },
+              "oversized_paths": {
+                "maxItems": 0
+              },
+              "error_codes": {
+                "maxItems": 0
+              },
+              "loaded_trust_bytes": {
+                "$ref": "#/$defs/loadedTrustByteMatchArray"
+              },
+              "configured_fixed_paths": {
+                "$ref": "#/$defs/minimumFixedClosurePathArray"
+              },
+              "required_paths": {
+                "$ref": "#/$defs/minimumFixedClosurePathArray"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "repository": {
+            "properties": {
+              "object_format": {
+                "const": "sha1"
+              }
+            },
+            "required": [
+              "object_format"
+            ]
+          }
+        },
+        "required": [
+          "repository"
+        ]
+      },
+      "then": {
+        "properties": {
+          "repository": {
+            "properties": {
+              "head_commit": {
+                "$ref": "#/$defs/nullableGitObjectIdSha1"
+              },
+              "head_tree": {
+                "$ref": "#/$defs/nullableGitObjectIdSha1"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "repository": {
+            "properties": {
+              "object_format": {
+                "const": "sha256"
+              }
+            },
+            "required": [
+              "object_format"
+            ]
+          }
+        },
+        "required": [
+          "repository"
+        ]
+      },
+      "then": {
+        "properties": {
+          "repository": {
+            "properties": {
+              "head_commit": {
+                "$ref": "#/$defs/nullableGitObjectIdSha256"
+              },
+              "head_tree": {
+                "$ref": "#/$defs/nullableGitObjectIdSha256"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PASS"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "release_basis_eligible": {
+            "const": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "mode": {
+                "const": "CUSTOM_DIAGNOSTIC_ONLY"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        },
+        "required": [
+          "policy"
+        ]
+      },
+      "then": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "diagnostic_only": {
+                "const": true
+              }
+            }
+          },
+          "status": {
+            "enum": [
+              "FAIL",
+              "UNKNOWN"
+            ]
+          },
+          "release_basis_eligible": {
+            "const": false
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "diagnostic_only": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "project_surface": {
+            "properties": {
+              "status": {
+                "const": "PASS"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "project_surface"
+        ]
+      },
+      "then": {
+        "properties": {
+          "project_surface": {
+            "properties": {
+              "schema_validation_status": {
+                "const": "PASS"
+              },
+              "ownership_cross_constraints_status": {
+                "const": "PASS"
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitObjectIdSha1": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "gitObjectIdSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitObjectId": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/gitObjectIdSha1"
+        },
+        {
+          "$ref": "#/$defs/gitObjectIdSha256"
+        }
+      ]
+    },
+    "nullableGitObjectIdSha1": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/gitObjectIdSha1"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableGitObjectIdSha256": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/gitObjectIdSha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)(?!.*[\\\\\\u0000-\\u001F\\u007F]).+$"
+    },
+    "directoryPrefix": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/projectPath"
+        },
+        {
+          "pattern": "/$"
+        }
+      ]
+    },
+    "pathArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/projectPath"
+      }
+    },
+    "minimumFixedClosurePathArray": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/pathArray"
+        },
+        {
+          "contains": {
+            "const": "AGENTS.md"
+          }
+        },
+        {
+          "contains": {
+            "const": "contracts/project-surface.json"
+          }
+        },
+        {
+          "contains": {
+            "const": "contracts/project-surface.schema.json"
+          }
+        },
+        {
+          "contains": {
+            "const": "contracts/repository-change-classification-policy.json"
+          }
+        },
+        {
+          "contains": {
+            "const": "contracts/repository-change-classification-policy.schema.json"
+          }
+        },
+        {
+          "contains": {
+            "const": "contracts/semantics/git-change-set-assessment.schema.json"
+          }
+        },
+        {
+          "contains": {
+            "const": "src/cad_agent/git_change_set.py"
+          }
+        }
+      ]
+    },
+    "loadedTrustByte": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "worktree_sha256",
+        "head_sha256",
+        "status"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "worktree_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "head_sha256": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "enum": [
+            "MATCH",
+            "MISMATCH",
+            "MISSING_FROM_HEAD",
+            "OVERSIZED",
+            "READ_FAILURE",
+            "HEAD_UNAVAILABLE"
+          ]
+        }
+      }
+    },
+    "loadedTrustByteMatchArray": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/loadedTrustByte"
+          },
+          {
+            "properties": {
+              "status": {
+                "const": "MATCH"
+              },
+              "head_sha256": {
+                "$ref": "#/$defs/sha256"
+              }
+            }
+          }
+        ]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "contracts/repository-change-classification-policy.schema.json"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "contracts/project-surface.json"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        },
+        {
+          "contains": {
+            "properties": {
+              "path": {
+                "const": "contracts/project-surface.schema.json"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          }
+        }
+      ]
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id",
+        "artifact_kind",
+        "default_lifecycle_role",
+        "retention_policy",
+        "authority_impact"
+      ],
+      "properties": {
+        "rule_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "artifact_kind": {
+          "enum": [
+            "source",
+            "evidence",
+            "derived_projection",
+            "runtime_manifest",
+            "external_reference",
+            "local_disposable"
+          ]
+        },
+        "default_lifecycle_role": {
+          "enum": [
+            "authoring_candidate",
+            "correction",
+            "release_input",
+            "none"
+          ]
+        },
+        "retention_policy": {
+          "enum": [
+            "append_only",
+            "reproducible_replaceable",
+            "immutable_release",
+            "external_hash_bound",
+            "disposable"
+          ]
+        },
+        "authority_impact": {
+          "enum": [
+            "none",
+            "potential_runtime_code",
+            "potential_local_semantic_authority",
+            "active_manifest",
+            "historical_only"
+          ]
+        }
+      }
+    },
+    "nullableString": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableArtifactKind": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/classification/properties/artifact_kind"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableLifecycleRole": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/classification/properties/default_lifecycle_role"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableLifecycleRoleBasis": {
+      "oneOf": [
+        {
+          "enum": [
+            "path_policy_default",
+            "correction_segment_overlay"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "componentOwnerCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component_owner",
+        "owned_root"
+      ],
+      "properties": {
+        "component_owner": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "owned_root": {
+          "$ref": "#/$defs/projectPath"
+        }
+      }
+    },
+    "nullableRetentionPolicy": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/classification/properties/retention_policy"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableAuthorityImpact": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/classification/properties/authority_impact"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "gitStatusCode": {
+      "type": "string",
+      "pattern": "^[.MADRCUT?!]$"
+    },
+    "change": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "related_path",
+        "record_type",
+        "path_role",
+        "operation",
+        "index_status",
+        "worktree_status",
+        "staged",
+        "worktree_changed",
+        "untracked",
+        "unmerged",
+        "classification_status",
+        "classification_match_count",
+        "classification_match_ids",
+        "component_owner_match_count",
+        "component_owner_match_roots",
+        "component_owner",
+        "component_owner_root",
+        "artifact_kind",
+        "lifecycle_role_in_this_change",
+        "lifecycle_role_basis",
+        "retention_policy",
+        "authority_impact",
+        "classification_candidates",
+        "component_owner_candidates"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "related_path": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/projectPath"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "record_type": {
+          "enum": [
+            "ordinary",
+            "renamed_or_copied",
+            "unmerged",
+            "untracked"
+          ]
+        },
+        "path_role": {
+          "enum": [
+            "primary",
+            "destination",
+            "source"
+          ]
+        },
+        "operation": {
+          "enum": [
+            "ordinary",
+            "rename_destination",
+            "rename_source",
+            "copy_destination",
+            "unmerged",
+            "untracked"
+          ]
+        },
+        "index_status": {
+          "$ref": "#/$defs/gitStatusCode"
+        },
+        "worktree_status": {
+          "$ref": "#/$defs/gitStatusCode"
+        },
+        "staged": {
+          "type": "boolean"
+        },
+        "worktree_changed": {
+          "type": "boolean"
+        },
+        "untracked": {
+          "type": "boolean"
+        },
+        "unmerged": {
+          "type": "boolean"
+        },
+        "classification_status": {
+          "enum": [
+            "PASS",
+            "UNCLASSIFIED",
+            "AMBIGUOUS"
+          ]
+        },
+        "classification_match_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 256
+        },
+        "classification_match_ids": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "component_owner_match_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 256
+        },
+        "component_owner_match_roots": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/projectPath"
+          }
+        },
+        "component_owner": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "component_owner_root": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/projectPath"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "artifact_kind": {
+          "$ref": "#/$defs/nullableArtifactKind"
+        },
+        "lifecycle_role_in_this_change": {
+          "$ref": "#/$defs/nullableLifecycleRole"
+        },
+        "lifecycle_role_basis": {
+          "$ref": "#/$defs/nullableLifecycleRoleBasis"
+        },
+        "retention_policy": {
+          "$ref": "#/$defs/nullableRetentionPolicy"
+        },
+        "authority_impact": {
+          "$ref": "#/$defs/nullableAuthorityImpact"
+        },
+        "classification_candidates": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/classification"
+          }
+        },
+        "component_owner_candidates": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/componentOwnerCandidate"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "classification_status": {
+                "const": "PASS"
+              }
+            },
+            "required": [
+              "classification_status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "classification_match_count": {
+                "const": 1
+              },
+              "classification_match_ids": {
+                "minItems": 1,
+                "maxItems": 1
+              },
+              "component_owner_match_count": {
+                "const": 1
+              },
+              "component_owner_match_roots": {
+                "minItems": 1,
+                "maxItems": 1
+              },
+              "component_owner": {
+                "type": "string"
+              },
+              "component_owner_root": {
+                "$ref": "#/$defs/projectPath"
+              },
+              "artifact_kind": {
+                "$ref": "#/$defs/classification/properties/artifact_kind"
+              },
+              "lifecycle_role_in_this_change": {
+                "$ref": "#/$defs/classification/properties/default_lifecycle_role"
+              },
+              "lifecycle_role_basis": {
+                "enum": [
+                  "path_policy_default",
+                  "correction_segment_overlay"
+                ]
+              },
+              "retention_policy": {
+                "$ref": "#/$defs/classification/properties/retention_policy"
+              },
+              "authority_impact": {
+                "$ref": "#/$defs/classification/properties/authority_impact"
+              },
+              "classification_candidates": {
+                "minItems": 1,
+                "maxItems": 1
+              },
+              "component_owner_candidates": {
+                "minItems": 1,
+                "maxItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "component_owner": {
+                "type": "null"
+              },
+              "component_owner_root": {
+                "type": "null"
+              },
+              "artifact_kind": {
+                "type": "null"
+              },
+              "lifecycle_role_in_this_change": {
+                "type": "null"
+              },
+              "lifecycle_role_basis": {
+                "type": "null"
+              },
+              "retention_policy": {
+                "type": "null"
+              },
+              "authority_impact": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "classification_status": {
+                "const": "AMBIGUOUS"
+              }
+            },
+            "required": [
+              "classification_status"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "classification_match_count": {
+                    "minimum": 2
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "component_owner_match_count": {
+                    "minimum": 2
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "classification_status": {
+                "const": "UNCLASSIFIED"
+              }
+            },
+            "required": [
+              "classification_status"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "classification_match_count": {
+                    "const": 0
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "component_owner_match_count": {
+                    "const": 0
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[A-Z][A-Z0-9_-]*$"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      }
+    }
+  }
+}

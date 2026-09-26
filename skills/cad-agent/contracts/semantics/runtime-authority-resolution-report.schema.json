@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/runtime-authority-resolution-report-v1.json",
+  "title": "Runtime authority resolution report",
+  "description": "Fail-closed result of resolving the fixed authority pointer against an out-of-band host pin.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "status", "resolution", "bootstrap_provenance",
+    "bootstrap_source", "fixed_pointer_path",
+    "pointer_sha256", "registry_sha256", "pointer_generation",
+    "identity_authentication_performed", "clock_observation_verified",
+    "active_memory_selected", "activation_authorized", "execution_authorized",
+    "fusion_write_authorized", "runtime_routing_changed", "issues",
+    "resolution_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.runtime-authority-resolution-report.v1"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "resolution": {
+      "enum": [
+        "ACTIVE_AUTHORITY_RESOLVED",
+        "ACTIVE_AUTHORITY_NOT_CONFIGURED",
+        "ACTIVE_AUTHORITY_INVALID"
+      ]
+    },
+    "bootstrap_provenance": {
+      "enum": ["HostDescriptor", "SyntheticTestPin", null]
+    },
+    "bootstrap_source": {
+      "enum": [
+        "ExternallyPinnedHostConfiguration",
+        "ConfiguredWithoutHostDescriptor",
+        "NotConfigured"
+      ]
+    },
+    "fixed_pointer_path": {"const": "data/runtime-authority/active-authority-pointer.json"},
+    "pointer_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "registry_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "pointer_generation": {"type": ["integer", "null"], "minimum": 0},
+    "identity_authentication_performed": {"type": "boolean"},
+    "clock_observation_verified": {"const": false},
+    "active_memory_selected": {"const": false},
+    "activation_authorized": {"const": false},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}},
+    "resolution_sha256": {"$ref": "#/$defs/sha256"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"bootstrap_provenance": {"const": "HostDescriptor"}},
+        "required": ["bootstrap_provenance"]
+      },
+      "then": {
+        "properties": {
+          "bootstrap_source": {"const": "ExternallyPinnedHostConfiguration"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"bootstrap_provenance": {"const": "SyntheticTestPin"}},
+        "required": ["bootstrap_provenance"]
+      },
+      "then": {
+        "properties": {
+          "bootstrap_source": {"const": "ConfiguredWithoutHostDescriptor"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"bootstrap_provenance": {"type": "null"}},
+        "required": ["bootstrap_provenance"]
+      },
+      "then": {
+        "properties": {"bootstrap_source": {"const": "NotConfigured"}}
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]},
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["severity", "code", "message"],
+      "properties": {
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "code": {"type": "string", "minLength": 2},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

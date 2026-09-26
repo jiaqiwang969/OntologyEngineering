@@ -1,0 +1,391 @@
+{
+  "$schema": "cad-agent.assembly-authoring-manifest/v2",
+  "project_id": "REPLACE_WITH_STABLE_PROJECT_ID",
+  "captured_at": "REPLACE_WITH_ISO_8601_TIMESTAMP",
+  "target_claims": [
+    "SOURCE_CLOSURE",
+    "TREE_REPRODUCTION",
+    "CONTENT_COMPLETENESS",
+    "NATIVE_GEOMETRY",
+    "PERSISTED_FUSION_ASSEMBLY"
+  ],
+  "release_intent": "PRACTICE_NATIVE_ASSEMBLY",
+  "evidence_registry": [
+    {
+      "evidence_id": "EVIDENCE_001",
+      "kind": "OTHER",
+      "path": "REPLACE_WITH_EVIDENCE_PATH",
+      "sha256": "REPLACE_WITH_SHA256",
+      "media_type": "REPLACE_WITH_MEDIA_TYPE",
+      "captured_at": "REPLACE_WITH_ISO_8601_TIMESTAMP"
+    }
+  ],
+  "sources": [
+    {
+      "source_id": "SOURCE_ROOT",
+      "role": "ASSEMBLY_ROOT",
+      "carrier_class": "UNKNOWN",
+      "path": "REPLACE_WITH_PATH",
+      "sha256": "REPLACE_WITH_SHA256",
+      "size_bytes": null,
+      "revision": "UNKNOWN",
+      "authority": "UNKNOWN",
+      "rights_status": "UNKNOWN",
+      "rights_evidence_ids": [
+        "EVIDENCE_001"
+      ]
+    }
+  ],
+  "selected_root": {
+    "source_id": "SOURCE_ROOT",
+    "configuration": "UNKNOWN",
+    "selection_basis_evidence_ids": [
+      "EVIDENCE_001"
+    ]
+  },
+  "source_closure": {
+    "expected_external_file_count": 0,
+    "resolved_external_file_count": 0,
+    "unresolved_reference_count": 0,
+    "definition_count": 1,
+    "saved_occurrence_count": 1,
+    "expanded_occurrence_count": 1,
+    "independent_tree_crosscheck": "NOT_RUN",
+    "file_records": [
+      {
+        "file_id": "FILE_ROOT",
+        "file_kind": "ROOT",
+        "resolution_status": "RESOLVED",
+        "source_id": "SOURCE_ROOT",
+        "evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      }
+    ],
+    "definition_records": [
+      {
+        "source_definition_id": "SOURCE_DEF_001",
+        "definition_kind": "PART",
+        "file_id": "FILE_ROOT",
+        "evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      }
+    ],
+    "reference_edges": [],
+    "evidence_ids": [
+      "EVIDENCE_001"
+    ]
+  },
+  "geometry_policy": {
+    "accepted_native_classes": [
+      "NATIVE_PARAMETRIC",
+      "IMPORTED_BREP",
+      "SUPPLIER_EXACT_BREP"
+    ],
+    "triangle_mesh_delivery_allowed": false,
+    "proxy_claim_limit": "DISPLAY_ONLY",
+    "supplier_exact_required_for_manufacturing": true,
+    "mesh_to_brep_selfcheck_required": true
+  },
+  "geometry_definitions": [
+    {
+      "definition_id": "DEF_001",
+      "geometry_class": "IMPORTED_BREP",
+      "provenance_kind": "CONTROLLED_BREP_IMPORT",
+      "source_ids": [
+        "SOURCE_ROOT"
+      ],
+      "source_definition_id": "SOURCE_DEF_001",
+      "faceted_or_tessellated": false,
+      "brep_body_count": 1,
+      "mesh_body_count": 0,
+      "surface_only_or_empty_count": 0,
+      "evidence_ids": [
+        "EVIDENCE_001"
+      ]
+    }
+  ],
+  "completeness": {
+    "procurement_package_is_not_installed_count": true,
+    "expected_physical_occurrence_count": 1,
+    "requirements": [
+      {
+        "requirement_id": "REQ_001",
+        "category": "STRUCTURAL",
+        "item_identity": "REPLACE_WITH_ITEM_IDENTITY",
+        "quantity_semantics": "EXACT",
+        "quantity": {
+          "lower_bound": 1,
+          "upper_bound": 1,
+          "selected_installed_count": 1,
+          "procurement_pack_size": null
+        },
+        "status": "PASS",
+        "rationale": null,
+        "evidence_ids": [
+          "EVIDENCE_001"
+        ],
+        "occurrences": [
+          {
+            "occurrence_id": "REQ_OCC_001",
+            "source_occurrence_id": "SRC_OCC_001",
+            "fusion_occurrence_id": "FUS_OCC_001",
+            "geometry_definition_id": "DEF_001",
+            "placement_contract_id": "PLACE_001",
+            "presence": "EXACT",
+            "evidence_ids": [
+              "EVIDENCE_001"
+            ]
+          }
+        ]
+      }
+    ],
+    "categories": [
+      {
+        "category": "STRUCTURAL",
+        "expected_count": 1,
+        "present_exact_count": 1,
+        "present_proxy_count": 0,
+        "missing_count": 0,
+        "unknown_count": 0,
+        "status": "PASS",
+        "evidence_ids": [
+          "EVIDENCE_001"
+        ],
+        "not_applicable_rationale": null,
+        "not_applicable_evidence_ids": []
+      },
+      {
+        "category": "FASTENER",
+        "expected_count": 0,
+        "present_exact_count": 0,
+        "present_proxy_count": 0,
+        "missing_count": 0,
+        "unknown_count": 0,
+        "status": "NOT_APPLICABLE",
+        "evidence_ids": [],
+        "not_applicable_rationale": "REPLACE_WITH_CONTROLLED_NA_RATIONALE",
+        "not_applicable_evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      },
+      {
+        "category": "NUT",
+        "expected_count": 0,
+        "present_exact_count": 0,
+        "present_proxy_count": 0,
+        "missing_count": 0,
+        "unknown_count": 0,
+        "status": "NOT_APPLICABLE",
+        "evidence_ids": [],
+        "not_applicable_rationale": "REPLACE_WITH_CONTROLLED_NA_RATIONALE",
+        "not_applicable_evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      },
+      {
+        "category": "WASHER_RING_KEY",
+        "expected_count": 0,
+        "present_exact_count": 0,
+        "present_proxy_count": 0,
+        "missing_count": 0,
+        "unknown_count": 0,
+        "status": "NOT_APPLICABLE",
+        "evidence_ids": [],
+        "not_applicable_rationale": "REPLACE_WITH_CONTROLLED_NA_RATIONALE",
+        "not_applicable_evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      },
+      {
+        "category": "PIN_BEARING_SPACER",
+        "expected_count": 0,
+        "present_exact_count": 0,
+        "present_proxy_count": 0,
+        "missing_count": 0,
+        "unknown_count": 0,
+        "status": "NOT_APPLICABLE",
+        "evidence_ids": [],
+        "not_applicable_rationale": "REPLACE_WITH_CONTROLLED_NA_RATIONALE",
+        "not_applicable_evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      },
+      {
+        "category": "PURCHASED_MODULE_ELECTRONICS",
+        "expected_count": 0,
+        "present_exact_count": 0,
+        "present_proxy_count": 0,
+        "missing_count": 0,
+        "unknown_count": 0,
+        "status": "NOT_APPLICABLE",
+        "evidence_ids": [],
+        "not_applicable_rationale": "REPLACE_WITH_CONTROLLED_NA_RATIONALE",
+        "not_applicable_evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      },
+      {
+        "category": "HARNESS_FLEXIBLE",
+        "expected_count": 0,
+        "present_exact_count": 0,
+        "present_proxy_count": 0,
+        "missing_count": 0,
+        "unknown_count": 0,
+        "status": "NOT_APPLICABLE",
+        "evidence_ids": [],
+        "not_applicable_rationale": "REPLACE_WITH_CONTROLLED_NA_RATIONALE",
+        "not_applicable_evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      },
+      {
+        "category": "OTHER_REQUIRED",
+        "expected_count": 0,
+        "present_exact_count": 0,
+        "present_proxy_count": 0,
+        "missing_count": 0,
+        "unknown_count": 0,
+        "status": "NOT_APPLICABLE",
+        "evidence_ids": [],
+        "not_applicable_rationale": "REPLACE_WITH_CONTROLLED_NA_RATIONALE",
+        "not_applicable_evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      }
+    ],
+    "unresolved_items": []
+  },
+  "placement_root": {
+    "root_anchor_id": "FUSION_ROOT_ANCHOR",
+    "anchor_type": "FUSION_ROOT_COMPONENT",
+    "status": "UNKNOWN",
+    "evidence_ids": [
+      "EVIDENCE_001"
+    ]
+  },
+  "placement_contracts": [
+    {
+      "placement_contract_id": "PLACE_001",
+      "requirement_occurrence_id": "REQ_OCC_001",
+      "fusion_occurrence_id": "FUS_OCC_001",
+      "lineage_source_occurrence_id": "SRC_OCC_001",
+      "host_fusion_occurrence_ids": [
+        "FUSION_ROOT_ANCHOR"
+      ],
+      "world_transform": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "transform_convention": "ROW_MAJOR_PARENT_TO_WORLD",
+      "placement_status": "UNKNOWN",
+      "transform_status": "UNKNOWN",
+      "lineage_status": "UNKNOWN",
+      "joint_id": null,
+      "evidence_ids": [
+        "EVIDENCE_001"
+      ]
+    }
+  ],
+  "joint_records": [],
+  "joint_validation": {
+    "status": "NOT_APPLICABLE",
+    "expected_joint_count": 0,
+    "healthy_joint_count": 0,
+    "unhealthy_joint_count": 0,
+    "rationale": "REPLACE_WITH_EVIDENCE_BACKED_NO_JOINT_RATIONALE",
+    "evidence_ids": [
+      "EVIDENCE_001"
+    ]
+  },
+  "fusion_target": {
+    "document_name": "REPLACE_WITH_SEMANTIC_NAME",
+    "destination_project": "REPLACE_WITH_PROJECT",
+    "destination_folder": "REPLACE_WITH_FOLDER",
+    "overwrite_allowed": false,
+    "overwrite_authority_evidence_ids": [],
+    "one_writer": true,
+    "writer_receipt_evidence_ids": [
+      "EVIDENCE_001"
+    ]
+  },
+  "native_readback": {
+    "status": "NOT_RUN",
+    "document_name": "UNKNOWN",
+    "document_creation_id": "UNKNOWN",
+    "is_saved": false,
+    "is_modified_after_save": null,
+    "data_file_identity": "UNKNOWN",
+    "component_definition_count": 1,
+    "occurrence_count": 1,
+    "brep_body_count": 1,
+    "mesh_body_count": 0,
+    "surface_only_or_empty_count": 0,
+    "unresolved_external_reference_count": 0,
+    "duplicate_occurrence_count": 0,
+    "orphan_occurrence_count": 0,
+    "close_reopen_status": "NOT_RUN",
+    "evidence_ids": [
+      "EVIDENCE_001"
+    ],
+    "second_readback": {
+      "status": "NOT_RUN",
+      "document_creation_id": "UNKNOWN",
+      "data_file_identity": "UNKNOWN",
+      "occurrence_count": 1,
+      "evidence_ids": [
+        "EVIDENCE_001"
+      ]
+    }
+  },
+  "occurrence_reconciliation": {
+    "status": "NOT_RUN",
+    "rows": [
+      {
+        "row_id": "RECON_001",
+        "source_occurrence_id": "SRC_OCC_001",
+        "source_definition_id": "SOURCE_DEF_001",
+        "fusion_occurrence_id": "FUS_OCC_001",
+        "fusion_definition_id": "DEF_001",
+        "disposition": "MATCHED",
+        "rationale": null,
+        "evidence_ids": [
+          "EVIDENCE_001"
+        ]
+      }
+    ],
+    "evidence_ids": [
+      "EVIDENCE_001"
+    ]
+  },
+  "s0_s11_handoff": {
+    "status": "NOT_RUN",
+    "project_input_id": "UNKNOWN",
+    "certified_motion_count": null,
+    "uncertified_motion_count": null,
+    "scene_readback_status": "NOT_RUN",
+    "media_decode_status": "NOT_RUN",
+    "media_sha256": "UNKNOWN",
+    "evidence_ids": []
+  },
+  "declared_verdict": "HOLD",
+  "known_unknowns": [
+    "REPLACE_WITH_CURRENT_UNKNOWN_OR_REMOVE"
+  ],
+  "claim_boundary": "This manifest is an evidence ledger and gate input; it is not itself proof that Fusion, geometry, motion, tooling, or a physical assembly passed."
+}

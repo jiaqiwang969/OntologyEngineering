@@ -1,0 +1,45 @@
+FUSION_MCP_UNTITLED_PRESERVATION_ROLE = "destination-preflight"
+import adsk.core
+import adsk.fusion
+import json
+
+NEW_NAME = __DOC_NAME__
+PROJECT_NAME = __PROJECT_NAME__
+
+app = adsk.core.Application.get()
+projects = app.data.dataProjects
+project = None
+for index in range(projects.count):
+    candidate = projects.item(index)
+    if str(candidate.name) == PROJECT_NAME:
+        project = candidate
+if project is None:
+    raise RuntimeError("target project not found: " + PROJECT_NAME)
+folder = project.rootFolder
+names = []
+for index in range(folder.dataFiles.count):
+    names.append(str(folder.dataFiles.item(index).name))
+unsaved = []
+for index in range(app.documents.count):
+    candidate = app.documents.item(index)
+    if not candidate.isSaved:
+        unsaved.append(str(candidate.name))
+similar = []
+for name in names:
+    if NEW_NAME[:12] in name:
+        similar.append(name)
+print(json.dumps({
+    "success": True,
+    "stage": "destination_preflight",
+    "project_name": str(project.name),
+    "project_id": str(project.id),
+    "folder_name": str(folder.name),
+    "folder_id": str(folder.id),
+    "exact_name_exists": NEW_NAME in names,
+    "root_folder_file_count": len(names),
+    "similar": sorted(similar)[:20],
+    "unsaved_documents": unsaved,
+}))
+
+def run(context):
+    pass

@@ -1,0 +1,259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cad-agent.tool-contract-registry.schema.v1",
+  "title": "CAD Agent tool contract registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema",
+    "status",
+    "owner",
+    "constitution",
+    "surface_registry",
+    "integrity_checker",
+    "routing_policy",
+    "records",
+    "rules"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "contracts/tools/tool-contract-registry.schema.json"
+    },
+    "schema": {
+      "const": "cad-agent.tool-contract-registry.v1"
+    },
+    "status": {
+      "const": "Active"
+    },
+    "owner": {
+      "const": "tool_contracts"
+    },
+    "constitution": {
+      "const": "AGENTS.md"
+    },
+    "surface_registry": {
+      "const": "contracts/project-surface.json"
+    },
+    "integrity_checker": {
+      "const": "src/cad_agent/tool_contract_registry.py"
+    },
+    "routing_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default",
+        "candidate_records",
+        "runtime_snapshot_scope",
+        "static_manifest_scope"
+      ],
+      "properties": {
+        "default": {
+          "const": "deny"
+        },
+        "candidate_records": {
+          "const": "advisory_only_never_routable"
+        },
+        "runtime_snapshot_scope": {
+          "const": "tool_name_discovery_only"
+        },
+        "static_manifest_scope": {
+          "const": "operation_routing"
+        }
+      }
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$defs": {
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id",
+        "path",
+        "schema_claim",
+        "record_kind",
+        "lifecycle_state",
+        "tool_id",
+        "routing_eligible",
+        "routing_scope",
+        "payload_validation",
+        "payload_schema",
+        "schema_normalization",
+        "references"
+      ],
+      "properties": {
+        "record_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^data/tool-contracts/[a-z0-9][a-z0-9._-]*\\.json$"
+        },
+        "schema_claim": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_kind": {
+          "enum": [
+            "static_manifest",
+            "runtime_snapshot",
+            "candidate"
+          ]
+        },
+        "lifecycle_state": {
+          "enum": [
+            "Active",
+            "Observed",
+            "Candidate"
+          ]
+        },
+        "tool_id": {
+          "enum": [
+            "CADGeometryMCP",
+            "FusionMCP"
+          ]
+        },
+        "routing_eligible": {
+          "type": "boolean"
+        },
+        "routing_scope": {
+          "enum": [
+            "operation_routing",
+            "tool_name_discovery_only",
+            "advisory_only"
+          ]
+        },
+        "payload_validation": {
+          "enum": [
+            "strict_schema",
+            "legacy_minimal",
+            "pending_profile_schema"
+          ]
+        },
+        "payload_schema": {
+          "type": "string",
+          "pattern": "^contracts/tools/[a-z0-9][a-z0-9._-]*\\.schema\\.json$"
+        },
+        "schema_normalization": {
+          "enum": [
+            "canonical",
+            "legacy_alias"
+          ]
+        },
+        "references": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "implementation_relation": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "record_kind": {
+                "const": "static_manifest"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "lifecycle_state": {
+                "const": "Active"
+              },
+              "tool_id": {
+                "const": "CADGeometryMCP"
+              },
+              "routing_eligible": {
+                "const": true
+              },
+              "routing_scope": {
+                "const": "operation_routing"
+              },
+              "payload_validation": {
+                "const": "strict_schema"
+              },
+              "schema_normalization": {
+                "const": "canonical"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "record_kind": {
+                "const": "runtime_snapshot"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "lifecycle_state": {
+                "const": "Observed"
+              },
+              "tool_id": {
+                "const": "FusionMCP"
+              },
+              "routing_eligible": {
+                "const": true
+              },
+              "routing_scope": {
+                "const": "tool_name_discovery_only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "record_kind": {
+                "const": "candidate"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "lifecycle_state": {
+                "const": "Candidate"
+              },
+              "tool_id": {
+                "const": "FusionMCP"
+              },
+              "routing_eligible": {
+                "const": false
+              },
+              "routing_scope": {
+                "const": "advisory_only"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

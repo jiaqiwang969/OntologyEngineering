@@ -1,0 +1,1723 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/operational-pattern-package-v2.json",
+  "title": "CAD Agent operational pattern source package",
+  "description": "Domain-neutral source contract for compiling reviewed workflow knowledge into runtime projections. The package is advisory and intentionally contains no concrete tool-operation binding or execution authorization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "package_id",
+    "package_version",
+    "package_status",
+    "authority_model",
+    "operational_form",
+    "requirement",
+    "output_definitions",
+    "retrieval_signature",
+    "pattern",
+    "validation_envelopes",
+    "observation_specs",
+    "guards",
+    "action_stages",
+    "verifications",
+    "feedback",
+    "provenance"
+  ],
+  "properties": {
+    "schema": {
+      "const": "cad-agent.operational-pattern-package.v2"
+    },
+    "package_id": {
+      "$ref": "#/$defs/stableId"
+    },
+    "package_version": {
+      "$ref": "#/$defs/semver"
+    },
+    "package_status": {
+      "enum": [
+        "Draft",
+        "Candidate",
+        "Reviewed",
+        "Deprecated"
+      ]
+    },
+    "authority_model": {
+      "const": "advisory_until_separately_linked_validated_and_activated"
+    },
+    "operational_form": {
+      "enum": [
+        "ExecutablePlan",
+        "ValidationPlan",
+        "GuidanceOnly",
+        "WarningOnly"
+      ]
+    },
+    "requirement": {
+      "$ref": "#/$defs/requirement"
+    },
+    "output_definitions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/outputDefinition"
+      }
+    },
+    "retrieval_signature": {
+      "$ref": "#/$defs/retrievalSignature"
+    },
+    "pattern": {
+      "$ref": "#/$defs/pattern"
+    },
+    "validation_envelopes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/validationEnvelope"
+      }
+    },
+    "recipe": {
+      "$ref": "#/$defs/recipe"
+    },
+    "observation_specs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/observationSpec"
+      }
+    },
+    "guards": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/guard"
+      }
+    },
+    "action_stages": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/actionStage"
+      }
+    },
+    "verifications": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/verification"
+      }
+    },
+    "feedback": {
+      "$ref": "#/$defs/feedback"
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "operational_form": {
+            "enum": [
+              "ExecutablePlan",
+              "ValidationPlan"
+            ]
+          }
+        },
+        "required": [
+          "operational_form"
+        ]
+      },
+      "then": {
+        "required": [
+          "recipe"
+        ],
+        "properties": {
+          "observation_specs": {
+            "minItems": 1
+          },
+          "guards": {
+            "minItems": 1
+          },
+          "action_stages": {
+            "minItems": 1
+          },
+          "verifications": {
+            "minItems": 1
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "recipe"
+          ]
+        },
+        "properties": {
+          "action_stages": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "package_status": {
+            "const": "Reviewed"
+          }
+        },
+        "required": [
+          "package_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "validation_envelopes": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "pattern": {
+            "properties": {
+              "applicability": {
+                "properties": {
+                  "required_condition_semantics": {
+                    "contains": {
+                      "const": "urn:cad-agent:semantics:AdvisoryExtensionAvailableAndVerified"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "validation_envelopes": {
+            "contains": {
+              "$ref": "#/$defs/advisoryExtensionBindingEnvelope"
+            }
+          },
+          "observation_specs": {
+            "contains": {
+              "properties": {
+                "property_semantics": {
+                  "const": "urn:cad-agent:semantics:AdvisoryExtensionIntegrity"
+                },
+                "output_contract": {
+                  "properties": {
+                    "value_type": {
+                      "const": "boolean"
+                    },
+                    "cardinality": {
+                      "const": "ExactlyOne"
+                    }
+                  },
+                  "required": [
+                    "value_type",
+                    "cardinality"
+                  ]
+                }
+              },
+              "required": [
+                "property_semantics",
+                "output_contract"
+              ]
+            }
+          },
+          "verifications": {
+            "contains": {
+              "properties": {
+                "claim_semantics": {
+                  "const": "urn:cad-agent:semantics:AdvisoryExtensionBindingVerified"
+                },
+                "method_semantics": {
+                  "const": "urn:cad-agent:method:CanonicalAdvisoryExtensionVerification"
+                }
+              },
+              "required": [
+                "claim_semantics",
+                "method_semantics"
+              ]
+            }
+          },
+          "feedback": {
+            "properties": {
+              "capture_field_semantics": {
+                "contains": {
+                  "const": "urn:cad-agent:semantics:AdvisoryExtensionAssessment"
+                }
+              },
+              "maintenance_trigger_semantics": {
+                "contains": {
+                  "const": "urn:cad-agent:semantics:AdvisoryExtensionUnavailableOrDrifted"
+                }
+              }
+            }
+          },
+          "provenance": {
+            "properties": {
+              "source_kind_semantics": {
+                "contains": {
+                  "const": "urn:cad-agent:semantics:OperationalPatternAdvisoryExtension"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "validation_envelopes": {
+            "contains": {
+              "$ref": "#/$defs/advisoryExtensionBindingEnvelope"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pattern": {
+            "properties": {
+              "applicability": {
+                "properties": {
+                  "required_condition_semantics": {
+                    "contains": {
+                      "const": "urn:cad-agent:semantics:AdvisoryExtensionAvailableAndVerified"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "projectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)[A-Za-z0-9._/-]+$"
+    },
+    "nonEmptyUniqueStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "uniqueStrings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      }
+    },
+    "nonEmptyUniqueIris": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "uniqueIris": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/semanticIri"
+      }
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "path": {
+          "$ref": "#/$defs/projectPath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "media_type": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+$"
+        }
+      }
+    },
+    "advisoryExtensionBindingEnvelope": {
+      "type": "object",
+      "properties": {
+        "context_coordinates": {
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "coordinate_semantics": {
+                    "const": "urn:cad-agent:semantics:OperationalPatternAdvisoryExtensionBinding"
+                  },
+                  "asset_value": {
+                    "$ref": "#/$defs/assetRef"
+                  }
+                },
+                "required": [
+                  "coordinate_semantics",
+                  "asset_value"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "coordinate_semantics": {
+                    "const": "urn:cad-agent:semantics:AdvisoryExtensionSchema"
+                  },
+                  "value_semantics": {
+                    "const": "urn:cad-agent:schema:operational-pattern-advisory-extension:v1"
+                  }
+                },
+                "required": [
+                  "coordinate_semantics",
+                  "value_semantics"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "coordinate_semantics": {
+                    "const": "urn:cad-agent:semantics:AdvisoryExtensionRole"
+                  },
+                  "value_semantics": {
+                    "const": "urn:cad-agent:role:OperationalPatternAdvisoryExtension"
+                  }
+                },
+                "required": [
+                  "coordinate_semantics",
+                  "value_semantics"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "coordinate_semantics": {
+                    "const": "urn:cad-agent:semantics:AdvisoryExtensionConsumptionPolicy"
+                  },
+                  "value_semantics": {
+                    "const": "urn:cad-agent:policy:JointConsumptionFailClosed"
+                  }
+                },
+                "required": [
+                  "coordinate_semantics",
+                  "value_semantics"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "context_coordinates"
+      ]
+    },
+    "parameterDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parameter_id",
+        "parameter_semantics",
+        "value_type",
+        "required"
+      ],
+      "properties": {
+        "parameter_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "parameter_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "value_type": {
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "semantic_iri",
+            "object_identity",
+            "asset_reference"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "unit_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "value_constraint": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pattern": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "minimum": {
+              "type": "number"
+            },
+            "maximum": {
+              "type": "number"
+            },
+            "allowed_values": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "not": {
+                  "enum": ["integer", "number"]
+                }
+              }
+            },
+            "required": ["value_type"]
+          },
+          "then": {
+            "not": {
+              "required": ["unit_semantics"]
+            }
+          }
+        }
+      ]
+    },
+    "outputDefinition": {
+      "type": "object",
+      "description": "Source-owned semantic and value contract for one action-stage output. Concrete tool-field binding remains the linker's responsibility.",
+      "additionalProperties": false,
+      "required": [
+        "output_id",
+        "output_semantics",
+        "value_type",
+        "required"
+      ],
+      "properties": {
+        "output_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "output_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "value_type": {
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "semantic_iri",
+            "object_identity",
+            "asset_reference"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "unit_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "value_type": {
+                "not": {
+                  "enum": ["integer", "number"]
+                }
+              }
+            },
+            "required": ["value_type"]
+          },
+          "then": {
+            "not": {
+              "required": ["unit_semantics"]
+            }
+          }
+        }
+      ]
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_id",
+        "requirement_semantics",
+        "statement",
+        "objective_semantics",
+        "situation_semantics",
+        "parameters"
+      ],
+      "properties": {
+        "requirement_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "requirement_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "statement": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "objective_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "situation_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "current_state_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "desired_state_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "parameters": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/parameterDefinition"
+          }
+        }
+      }
+    },
+    "retrievalSignature": {
+      "type": "object",
+      "description": "Language-independent semantic keys used for ontology retrieval. Lexical aliases and parameter extraction belong to a separate recognition-adapter package; concrete Pattern selection and tool binding belong to the retriever/linker.",
+      "additionalProperties": false,
+      "required": [
+        "problem_type_semantics",
+        "goal_semantics",
+        "context_facet_semantics",
+        "transfer_mode_semantics"
+      ],
+      "properties": {
+        "problem_type_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "goal_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "context_facet_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "transfer_mode_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        }
+      }
+    },
+    "applicability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required_condition_semantics",
+        "excluded_condition_semantics",
+        "context_facets"
+      ],
+      "properties": {
+        "required_condition_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "excluded_condition_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        },
+        "context_facets": {
+          "$ref": "#/$defs/uniqueIris"
+        }
+      }
+    },
+    "pattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pattern_iri",
+        "pattern_version",
+        "pattern_kind_semantics",
+        "statement",
+        "applicability",
+        "evidence_refs",
+        "evidence_maturity"
+      ],
+      "properties": {
+        "pattern_iri": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "pattern_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "pattern_kind_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "statement": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "applicability": {
+          "$ref": "#/$defs/applicability"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetRef"
+          }
+        },
+        "evidence_maturity": {
+          "enum": [
+            "Recorded",
+            "Reproduced",
+            "RegressionCovered",
+            "RevalidationRequired"
+          ]
+        }
+      }
+    },
+    "contextCoordinate": {
+      "type": "object",
+      "description": "One typed coordinate of the context in which the pattern was validated. Software release, material batch, instrument calibration, ambient condition, governing standard, human-review role, or any future domain coordinate is represented through semantics rather than a core-schema field.",
+      "additionalProperties": false,
+      "required": [
+        "coordinate_semantics",
+        "matching_policy"
+      ],
+      "properties": {
+        "coordinate_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "value_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "literal_value": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ]
+        },
+        "asset_value": {
+          "$ref": "#/$defs/assetRef"
+        },
+        "unit_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "matching_policy": {
+          "enum": [
+            "Exact",
+            "SemanticCompatibility",
+            "RangeOrConstraint",
+            "ObserverDefined"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "value_semantics"
+          ]
+        },
+        {
+          "required": [
+            "literal_value"
+          ]
+        },
+        {
+          "required": [
+            "asset_value"
+          ]
+        }
+      ]
+    },
+    "adapterEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adapter_semantics",
+        "adapter_version",
+        "implementation_sha256"
+      ],
+      "properties": {
+        "adapter_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "adapter_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "implementation_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "validationEnvelope": {
+      "type": "object",
+      "description": "N-ary validation context binding a validation subject to typed context coordinates, optional adapter implementations, evidence, regression coverage, and a validity period.",
+      "additionalProperties": false,
+      "required": [
+        "envelope_id",
+        "status",
+        "validation_subject_semantics",
+        "context_coordinates",
+        "adapter_envelopes",
+        "evidence_refs",
+        "regression_suite_ids",
+        "valid_from"
+      ],
+      "properties": {
+        "envelope_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "status": {
+          "enum": [
+            "Validated",
+            "RevalidationRequired",
+            "Superseded"
+          ]
+        },
+        "validation_subject_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "context_coordinates": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/contextCoordinate"
+          }
+        },
+        "adapter_envelopes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/adapterEnvelope"
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetRef"
+          }
+        },
+        "regression_suite_ids": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "valid_from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "orderingConstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "before_stage_id",
+        "after_stage_id"
+      ],
+      "properties": {
+        "before_stage_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "after_stage_id": {
+          "$ref": "#/$defs/stableId"
+        }
+      }
+    },
+    "transitionConstraint": {
+      "type": "object",
+      "description": "A runtime transition distinct from acyclic precedence/data dependencies. Retry and Repeat transitions must carry a finite traversal or time bound.",
+      "additionalProperties": false,
+      "required": [
+        "transition_id",
+        "from_stage_id",
+        "to_stage_id",
+        "transition_kind",
+        "when_guard_ids"
+      ],
+      "properties": {
+        "transition_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "from_stage_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "to_stage_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "transition_kind": {
+          "enum": [
+            "Success",
+            "Failure",
+            "ConditionalBranch",
+            "Retry",
+            "Repeat",
+            "Compensation"
+          ]
+        },
+        "when_guard_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "maximum_traversals": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "time_budget_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "transition_kind": {
+                "enum": [
+                  "Retry",
+                  "Repeat"
+                ]
+              }
+            },
+            "required": [
+              "transition_kind"
+            ]
+          },
+          "then": {
+            "anyOf": [
+              {
+                "required": [
+                  "maximum_traversals"
+                ]
+              },
+              {
+                "required": [
+                  "time_budget_seconds"
+                ]
+              }
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "maximum_traversals"
+                  ]
+                },
+                {
+                  "required": [
+                    "time_budget_seconds"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recipe_iri",
+        "recipe_version",
+        "plan_model",
+        "stage_ids",
+        "entry_stage_ids",
+        "exit_stage_ids",
+        "ordering_constraints",
+        "transition_constraints"
+      ],
+      "properties": {
+        "recipe_iri": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "recipe_version": {
+          "$ref": "#/$defs/semver"
+        },
+        "plan_model": {
+          "enum": [
+            "DirectedAcyclicGraph",
+            "PartialOrder",
+            "Sequential",
+            "BoundedStateMachine"
+          ]
+        },
+        "stage_ids": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "entry_stage_ids": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "exit_stage_ids": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "ordering_constraints": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/orderingConstraint"
+          }
+        },
+        "transition_constraints": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/transitionConstraint"
+          }
+        }
+      }
+    },
+    "observerRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation_semantics",
+        "required_capability_semantics",
+        "linkage_policy"
+      ],
+      "properties": {
+        "operation_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "required_capability_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "linkage_policy": {
+          "const": "RegistryResolutionRequired"
+        }
+      }
+    },
+    "outputContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value_type",
+        "cardinality"
+      ],
+      "properties": {
+        "value_type": {
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "semantic_iri",
+            "object_identity",
+            "asset_reference",
+            "structured_record"
+          ]
+        },
+        "cardinality": {
+          "enum": [
+            "ExactlyOne",
+            "ZeroOrOne",
+            "OneOrMore",
+            "ZeroOrMore"
+          ]
+        },
+        "unit_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        }
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "SameObservationContext",
+            "SameSubjectRevision",
+            "BoundedAge",
+            "ImmutableEvidence"
+          ]
+        },
+        "max_age_seconds": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "BoundedAge"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "required": [
+              "max_age_seconds"
+            ]
+          }
+        }
+      ]
+    },
+    "observationSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "subject_semantics",
+        "property_semantics",
+        "evidence_class",
+        "observer_requirement",
+        "scope_binding_keys",
+        "freshness",
+        "output_contract",
+        "provenance_requirements"
+      ],
+      "properties": {
+        "observation_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "subject_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "property_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "evidence_class": {
+          "enum": [
+            "NativeReadback",
+            "ExternalAuthority",
+            "RepositoryArtifact",
+            "DerivedFromGroundedEvidence",
+            "UserAssertion"
+          ]
+        },
+        "observer_requirement": {
+          "$ref": "#/$defs/observerRequirement"
+        },
+        "scope_binding_keys": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "freshness": {
+          "$ref": "#/$defs/freshness"
+        },
+        "output_contract": {
+          "$ref": "#/$defs/outputContract"
+        },
+        "provenance_requirements": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "ObserverIdentity",
+              "ObserverImplementation",
+              "ObservationContext",
+              "SubjectIdentity",
+              "SubjectRevision",
+              "ObservedAt",
+              "RawEvidenceDigest",
+              "DerivationActivity"
+            ]
+          }
+        },
+        "additional_provenance_semantics": {
+          "$ref": "#/$defs/uniqueIris"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "evidence_class": {
+                "enum": [
+                  "NativeReadback",
+                  "ExternalAuthority",
+                  "RepositoryArtifact",
+                  "DerivedFromGroundedEvidence"
+                ]
+              }
+            },
+            "required": [
+              "evidence_class"
+            ]
+          },
+          "then": {
+            "properties": {
+              "provenance_requirements": {
+                "contains": {
+                  "const": "RawEvidenceDigest"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "guardClause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "operator",
+        "evidence_acceptance"
+      ],
+      "properties": {
+        "observation_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "operator": {
+          "enum": [
+            "Exists",
+            "Equals",
+            "NotEquals",
+            "In",
+            "NotIn",
+            "LessThan",
+            "LessThanOrEqual",
+            "GreaterThan",
+            "GreaterThanOrEqual"
+          ]
+        },
+        "evidence_acceptance": {
+          "enum": [
+            "GroundedObservationOnly",
+            "AssertionAllowed"
+          ]
+        },
+        "expected_value": {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "expected_values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operator": {
+                "enum": [
+                  "In",
+                  "NotIn"
+                ]
+              }
+            },
+            "required": [
+              "operator"
+            ]
+          },
+          "then": {
+            "required": [
+              "expected_values"
+            ],
+            "not": {
+              "required": [
+                "expected_value"
+              ]
+            }
+          },
+          "else": {
+            "if": {
+              "properties": {
+                "operator": {
+                  "const": "Exists"
+                }
+              },
+              "required": [
+                "operator"
+              ]
+            },
+            "then": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "expected_value"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "expected_values"
+                    ]
+                  }
+                ]
+              }
+            },
+            "else": {
+              "required": [
+                "expected_value"
+              ],
+              "not": {
+                "required": [
+                  "expected_values"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "guard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "guard_id",
+        "guard_kind",
+        "strength",
+        "evidence_policy",
+        "logic",
+        "clauses",
+        "unknown_policy",
+        "failure_effect"
+      ],
+      "properties": {
+        "guard_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "guard_kind": {
+          "enum": [
+            "Precondition",
+            "Exclusion",
+            "Postcondition",
+            "BranchCondition"
+          ]
+        },
+        "strength": {
+          "enum": [
+            "Hard",
+            "Soft"
+          ]
+        },
+        "evidence_policy": {
+          "enum": [
+            "RegisteredObservationRequired",
+            "RegisteredObservationPreferred",
+            "AssertionPermitted"
+          ]
+        },
+        "logic": {
+          "enum": [
+            "All",
+            "Any"
+          ]
+        },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/guardClause"
+          }
+        },
+        "unknown_policy": {
+          "enum": [
+            "Block",
+            "Probe",
+            "FailClosed",
+            "Advisory"
+          ]
+        },
+        "failure_effect": {
+          "enum": [
+            "StopPlan",
+            "SkipStage",
+            "SelectAlternateBranch",
+            "RequestReview",
+            "RecordWarning"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "strength": {
+                "const": "Hard"
+              }
+            },
+            "required": [
+              "strength"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence_policy": {
+                "const": "RegisteredObservationRequired"
+              },
+              "unknown_policy": {
+                "enum": [
+                  "Block",
+                  "Probe",
+                  "FailClosed"
+                ]
+              },
+              "failure_effect": {
+                "enum": [
+                  "StopPlan",
+                  "SkipStage",
+                  "SelectAlternateBranch",
+                  "RequestReview"
+                ]
+              },
+              "clauses": {
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "#/$defs/guardClause"
+                    },
+                    {
+                      "properties": {
+                        "evidence_acceptance": {
+                          "const": "GroundedObservationOnly"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "failureTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "target_stage_ids",
+        "when_guard_ids"
+      ],
+      "properties": {
+        "policy": {
+          "enum": [
+            "StopPlan",
+            "RunRecoveryStage",
+            "SelectAlternateBranch",
+            "RequestReview",
+            "RecordAndContinue"
+          ]
+        },
+        "target_stage_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "when_guard_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "policy": {
+                "enum": [
+                  "RunRecoveryStage",
+                  "SelectAlternateBranch"
+                ]
+              }
+            },
+            "required": [
+              "policy"
+            ]
+          },
+          "then": {
+            "properties": {
+              "target_stage_ids": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "target_stage_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "actionStage": {
+      "type": "object",
+      "description": "A tool-neutral stage. Concrete tool and ToolOperation identities belong to a separately generated linker projection.",
+      "additionalProperties": false,
+      "required": [
+        "stage_id",
+        "label",
+        "action_semantics",
+        "stage_kind_semantics",
+        "mutation_mode",
+        "required_capability_semantics",
+        "input_parameter_ids",
+        "output_ids",
+        "pre_guard_ids",
+        "post_guard_ids",
+        "observation_ids",
+        "verification_ids",
+        "depends_on_stage_ids",
+        "failure_transition",
+        "execution_authority"
+      ],
+      "properties": {
+        "stage_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "label": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "action_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "stage_kind_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "mutation_mode": {
+          "enum": [
+            "ReadOnly",
+            "ReversibleMutation",
+            "PrivilegedMutation",
+            "ExternalSideEffect"
+          ]
+        },
+        "required_capability_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "input_parameter_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "output_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "pre_guard_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "post_guard_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "observation_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "verification_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "depends_on_stage_ids": {
+          "$ref": "#/$defs/uniqueStrings"
+        },
+        "failure_transition": {
+          "$ref": "#/$defs/failureTransition"
+        },
+        "execution_authority": {
+          "const": "separate_runtime_policy_required"
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verification_id",
+        "claim_semantics",
+        "method_semantics",
+        "observation_ids",
+        "pass_guard_ids",
+        "scope_binding_keys",
+        "required",
+        "verdict_domain",
+        "unknown_policy"
+      ],
+      "properties": {
+        "verification_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "claim_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "method_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "observation_ids": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "pass_guard_ids": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "scope_binding_keys": {
+          "$ref": "#/$defs/nonEmptyUniqueStrings"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "verdict_domain": {
+          "type": "array",
+          "const": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ]
+        },
+        "unknown_policy": {
+          "enum": [
+            "Block",
+            "RequestProbe",
+            "NarrowClaim",
+            "AdvisoryOnly"
+          ]
+        }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "application_record_semantics",
+        "capture_field_semantics",
+        "maintenance_trigger_semantics",
+        "promotion_policy",
+        "automatic_activation"
+      ],
+      "properties": {
+        "application_record_semantics": {
+          "$ref": "#/$defs/semanticIri"
+        },
+        "capture_field_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "maintenance_trigger_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "promotion_policy": {
+          "const": "IndependentReviewRequired"
+        },
+        "automatic_activation": {
+          "const": false
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_evidence_refs",
+        "source_kind_semantics",
+        "curation_activity_id",
+        "authored_at"
+      ],
+      "properties": {
+        "source_evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetRef"
+          }
+        },
+        "source_kind_semantics": {
+          "$ref": "#/$defs/nonEmptyUniqueIris"
+        },
+        "source_episode_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetRef"
+          }
+        },
+        "source_record_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/assetRef"
+          }
+        },
+        "curation_activity_id": {
+          "$ref": "#/$defs/stableId"
+        },
+        "authored_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

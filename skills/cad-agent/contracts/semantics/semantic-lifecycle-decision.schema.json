@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/semantic-lifecycle-decision-v1.json",
+  "title": "Separated semantic release or activation decision",
+  "description": "Independent decision over exact bound inputs. A release acceptance decision is not an activation decision, and neither performs a pointer change in this contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "decision_id",
+    "decision_kind",
+    "decision",
+    "reviewer",
+    "bindings",
+    "reviewed_at",
+    "activation_authorized",
+    "execution_authorized",
+    "runtime_routing_changed"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.semantic-lifecycle-decision.v1"},
+    "decision_id": {"$ref": "#/$defs/stableId"},
+    "decision_kind": {"enum": ["ReleaseAcceptance", "Activation"]},
+    "decision": {
+      "enum": [
+        "AcceptRelease",
+        "RejectRelease",
+        "ApproveActivationPlan",
+        "RejectActivationPlan"
+      ]
+    },
+    "reviewer": {"$ref": "#/$defs/reviewerRef"},
+    "bindings": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 5,
+      "items": {"$ref": "#/$defs/decisionBinding"}
+    },
+    "reviewed_at": {"type": "string", "format": "date-time"},
+    "activation_authorized": {"const": false},
+    "execution_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision_kind": {"const": "ReleaseAcceptance"}}},
+      "then": {
+        "properties": {
+          "decision": {"enum": ["AcceptRelease", "RejectRelease"]},
+          "bindings": {"minItems": 5, "maxItems": 5}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"decision_kind": {"const": "Activation"}}},
+      "then": {
+        "properties": {
+          "decision": {"enum": ["ApproveActivationPlan", "RejectActivationPlan"]},
+          "bindings": {"minItems": 4, "maxItems": 4}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "stableId": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "reviewerRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewer_id", "reviewer_registry_sha256"],
+      "properties": {
+        "reviewer_id": {"$ref": "#/$defs/stableId"},
+        "reviewer_registry_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "decisionBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "schema", "sha256"],
+      "properties": {
+        "role": {
+          "enum": [
+            "release_candidate",
+            "release_assessment",
+            "release_policy",
+            "activation_policy",
+            "reviewer_registry",
+            "runtime_trust_bundle",
+            "release_acceptance_decision"
+          ]
+        },
+        "schema": {"type": "string", "minLength": 2, "maxLength": 256},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

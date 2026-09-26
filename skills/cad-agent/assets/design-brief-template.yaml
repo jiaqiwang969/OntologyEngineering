@@ -1,0 +1,166 @@
+schema_version: "1.0"
+job:
+  id: ""
+  name: ""
+  owner: ""
+  responsible_engineer: ""
+  risk_level: "low|moderate|high"
+  status: "draft"
+  revision: "0.1.0"
+  created_at: "YYYY-MM-DDTHH:MM:SSZ"
+  updated_at: "YYYY-MM-DDTHH:MM:SSZ"
+
+source_of_truth:
+  master_cad_document: ""
+  computational_geometry_source: ""
+  parameter_manifest: "design-brief.yaml"
+  change_log: "change-log.md"
+
+intent:
+  objective:
+    value: ""
+    status: "unknown"
+    source: ""
+  intended_use:
+    value: ""
+    status: "unknown"
+    source: ""
+  excluded_uses: []
+  success_criteria: []
+
+units:
+  length:
+    value: "mm"
+    status: "recommended"
+    source: "template default; user approval required"
+  mass:
+    value: "kg"
+    status: "recommended"
+    source: "template default; user approval required"
+  force:
+    value: "N"
+    status: "recommended"
+    source: "template default; user approval required"
+  pressure:
+    value: "Pa"
+    status: "recommended"
+    source: "template default; user approval required"
+  temperature:
+    value: "degC"
+    status: "recommended"
+    source: "template default; user approval required"
+
+coordinate_system:
+  handedness:
+    value: "right-handed"
+    status: "recommended"
+    source: "template default; user approval required"
+  origin_definition:
+    value: ""
+    status: "unknown"
+    source: ""
+  x_axis:
+    value: ""
+    status: "unknown"
+    source: ""
+  y_axis:
+    value: ""
+    status: "unknown"
+    source: ""
+  z_axis:
+    value: ""
+    status: "unknown"
+    source: ""
+
+product_envelope:
+  bounding_box:
+    x:
+      min: null
+      max: null
+      unit: "mm"
+      status: "unknown"
+    y:
+      min: null
+      max: null
+      unit: "mm"
+      status: "unknown"
+    z:
+      min: null
+      max: null
+      unit: "mm"
+      status: "unknown"
+  keep_out_zones: []
+  service_clearances: []
+
+interfaces:
+  datums: []
+  mating_interfaces: []
+  ports: []
+  fastener_patterns: []
+  electrical_interfaces: []
+  fluid_interfaces: []
+
+loads_and_environment:
+  load_cases: []
+  temperatures: []
+  pressures: []
+  vibration_and_shock: []
+  chemical_exposure: []
+  life_cycles:
+    value: null
+    unit: "cycles"
+    status: "unknown"
+    source: ""
+
+materials_and_process:
+  material:
+    value: ""
+    status: "unknown"
+    source: ""
+  manufacturing_process:
+    value: ""
+    status: "unknown"
+    source: ""
+  post_processing: []
+  finishes: []
+  inspection_processes: []
+  applicable_standards: []
+
+parameters:
+  - name: "example_parameter"
+    value: null
+    unit: "mm"
+    status: "unknown"
+    source: ""
+    valid_range:
+      min: null
+      max: null
+    depends_on: []
+    notes: "Delete or replace this example before modelling."
+
+architecture:
+  computational_geometry_regions: []
+  conventional_cad_regions: []
+  exchange_format:
+    value: "STEP"
+    status: "recommended"
+    source: "template default; confirm downstream compatibility"
+  regeneration_owners: []
+
+verification:
+  geometry_checks: []
+  simulation_cases: []
+  prototype_tests: []
+  manufacturing_release_checks: []
+  acceptance_criteria: []
+
+assumptions: []
+open_questions: []
+decisions: []
+
+approvals:
+  modelling_approved_by: ""
+  prototype_export_approved_by: ""
+  manufacturing_release_approved_by: ""
+  approval_scope: ""
+  approval_date: ""

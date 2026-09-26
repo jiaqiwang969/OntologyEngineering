@@ -18,6 +18,7 @@
 
 | 本轮需要的产出 | 起点与进一步选择 |
 | --- | --- |
+| 实际网页中的定位、填写、选择与结果读取 | [Jev Ultrafast 浏览器工具](jev-browser-tool.md)；遵守指定账号及浏览器方式，下载与工程结果分别验收 |
 | 几何、图纸、装配或机构的原生结果 | [cad-agent](../skills/cad-agent/SKILL.md)；制造条件确实影响结构时才联动工艺 |
 | 工艺路线、设备供应商、检验、资源成本或交期比较 | [manufacturing-process-cost](../skills/manufacturing-process-cost/SKILL.md)；保持对象、数量、费用与时段口径 |
 | 对测量、模型、比较或来源支持范围的判断 | [engineering-evidence-methods](../skills/engineering-evidence-methods/SKILL.md)；把缺证、适用性和实物结论分开 |
@@ -37,6 +38,10 @@ skill 和工具中发现相应专长，读取其实际合同，再按需协同�
 匹配时分开保留：**需要此能力、已找到入口、具备输入与运行条件、获准执行**。
 模型判断需要 CAD 不代表已取得图纸；能发现包不代表项目已采用它；工具缺失也不
 自动证明任务不需要这项能力。只阻断依赖缺失条件的工作。
+
+本轮目标按[工程迭代合同](engineering-iteration.md)先提出并与用户对齐；已有明确任务
+直接续接。Jev 能力路由、网页动作循环和整体工程迭代分别记录，选出浏览器能力不自动
+启动浏览器；真实连接和账户条件由工具入口复核。
 
 ## 协同围绕交接组织
 
@@ -117,6 +122,11 @@ python3 scripts/route_engineering_task.py \
 进行情景判断。凭据沿现有本地文件选择规则读取，不进入任务文件或日志。模型使用
 [能力说明](context-capabilities.json)中的精确版本；每次保留上下文、问题、代码、
 能力入口摘要及原始调用记录。能力说明属于操作路由元数据，不拥有工程语义裁定权。
+
+`context-capabilities.json` 的 `capability` 文本是 Jev 实际收到的能力简介；`source`
+绑定入口文件的身份和哈希，不会把整份 SKILL.md 自动发送给 Jev。改变执行默认或
+能力范围时同步这段简介，操作细节仍保存在对应模块。当前 CAD 简介包含 NX 直连、
+米思米完整型号与 CAD 取得、原生保存重开及 BOM 关联；报价/交期比较再按需联动制造。
 
 需要外部专长时，从当前可用 skill 中选出相关条目，向 `external_skills` 增加
 `id`、实际 `skill_path` 和描述本轮适用能力的 `capability`。入口核对文件存在并保留

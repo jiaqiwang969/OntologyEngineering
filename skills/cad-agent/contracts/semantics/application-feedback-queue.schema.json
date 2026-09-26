@@ -1,0 +1,469 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://w3id.org/cad-geometry/schema/application-feedback-queue-v2.json",
+  "title": "Append-only verified PatternApplication feedback maintenance queue",
+  "description": "Digest-bound plan whose embedded source manifest closes feedback IDs over a controlled WorkflowExperienceRecord and an exact operational-pattern source revision. Generation >1 commit assessment additionally requires the exact predecessor committed snapshot to prove the append delta. It deliberately does not assert active-memory consumption or perform persistence, promotion, revalidation, activation, routing, execution, or Fusion writes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "assessor_version",
+    "queue_id",
+    "queue_version",
+    "generation",
+    "predecessor_committed_snapshot_sha256",
+    "state_kind",
+    "committed",
+    "status",
+    "queue_state",
+    "source_manifest_id",
+    "source_manifest_sha256",
+    "source_manifest",
+    "entries",
+    "queue_snapshot_sha256",
+    "append_plan",
+    "automatic_promotion",
+    "pattern_state_changed",
+    "pattern_maturity_changed",
+    "retrieval_status_changed",
+    "materialization_performed",
+    "index_update_performed",
+    "revalidation_performed",
+    "activation_authorized",
+    "active_pointer_changed",
+    "execution_authorized",
+    "fusion_write_authorized",
+    "runtime_routing_changed",
+    "issues"
+  ],
+  "properties": {
+    "schema": {"const": "cad-agent.application-feedback-queue.v2"},
+    "assessor_version": {"const": "0.1.0"},
+    "queue_id": {"$ref": "#/$defs/stableId"},
+    "queue_version": {"$ref": "#/$defs/stableId"},
+    "generation": {"type": "integer", "minimum": 1},
+    "predecessor_committed_snapshot_sha256": {"$ref": "#/$defs/nullableSha256"},
+    "state_kind": {"const": "PLANNED_TARGET"},
+    "committed": {"const": false},
+    "status": {"enum": ["PASS", "FAIL"]},
+    "queue_state": {
+      "enum": ["APPEND_PLAN_READY", "APPEND_PLAN_REJECTED", "NO_CHANGES"]
+    },
+    "source_manifest_id": {"$ref": "#/$defs/stableId"},
+    "source_manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "source_manifest": {"$ref": "#/$defs/sourceManifest"},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "queue_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+    "append_plan": {"$ref": "#/$defs/appendPlan"},
+    "automatic_promotion": {"const": false},
+    "pattern_state_changed": {"const": false},
+    "pattern_maturity_changed": {"const": false},
+    "retrieval_status_changed": {"const": false},
+    "materialization_performed": {"const": false},
+    "index_update_performed": {"const": false},
+    "revalidation_performed": {"const": false},
+    "activation_authorized": {"const": false},
+    "active_pointer_changed": {"const": false},
+    "execution_authorized": {"const": false},
+    "fusion_write_authorized": {"const": false},
+    "runtime_routing_changed": {"const": false},
+    "issues": {"type": "array", "items": {"$ref": "#/$defs/issue"}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASS"}}},
+      "then": {"properties": {"issues": {"maxItems": 0}}}
+    },
+    {
+      "if": {"properties": {"queue_state": {"const": "APPEND_PLAN_READY"}}},
+      "then": {
+        "properties": {
+          "status": {"const": "PASS"},
+          "issues": {"maxItems": 0},
+          "entries": {
+            "minItems": 1,
+            "items": {"$ref": "#/$defs/verifiedEntry"}
+          },
+          "append_plan": {
+            "properties": {
+              "eligible": {"const": true},
+              "added_feedback_ids": {"minItems": 1},
+              "rejected_feedback_ids": {"maxItems": 0}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"queue_state": {"const": "APPEND_PLAN_REJECTED"}}},
+      "then": {
+        "properties": {
+          "status": {"const": "FAIL"},
+          "append_plan": {"properties": {"eligible": {"const": false}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"queue_state": {"const": "NO_CHANGES"}}},
+      "then": {
+        "properties": {
+          "append_plan": {
+            "properties": {
+              "eligible": {"const": false},
+              "added_feedback_ids": {"maxItems": 0}
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "nullableSha256": {
+      "anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]
+    },
+    "nullableString": {"type": ["string", "null"]},
+    "stableId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "semanticIri": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(?:https://|urn:)[^\\s]+$"
+    },
+    "assetRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "schema", "media_type"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "schema": {"type": "string", "minLength": 1},
+        "media_type": {"const": "application/json"}
+      }
+    },
+    "manifestEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feedback_id",
+        "application_id",
+        "workflow_record",
+        "operational_pattern"
+      ],
+      "properties": {
+        "feedback_id": {"$ref": "#/$defs/stableId"},
+        "application_id": {"$ref": "#/$defs/stableId"},
+        "workflow_record": {"$ref": "#/$defs/assetRef"},
+        "operational_pattern": {"$ref": "#/$defs/assetRef"}
+      }
+    },
+    "sourceManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "manifest_id", "entries"],
+      "properties": {
+        "schema": {"const": "cad-agent.application-feedback-manifest.v2"},
+        "manifest_id": {"$ref": "#/$defs/stableId"},
+        "entries": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/manifestEntry"}
+        }
+      }
+    },
+    "assetVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "declared_sha256",
+        "observed_sha256",
+        "declared_schema",
+        "observed_schema",
+        "media_type",
+        "status"
+      ],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "declared_sha256": {"$ref": "#/$defs/sha256"},
+        "observed_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "declared_schema": {"type": "string", "minLength": 1},
+        "observed_schema": {"$ref": "#/$defs/nullableString"},
+        "media_type": {"const": "application/json"},
+        "status": {
+          "enum": [
+            "VERIFIED",
+            "MISSING",
+            "UNSAFE_PATH",
+            "UNREADABLE",
+            "TOO_LARGE",
+            "INVALID_JSON",
+            "DIGEST_MISMATCH",
+            "SCHEMA_MISMATCH",
+            "UNSUPPORTED_SCHEMA",
+            "SCHEMA_INVALID"
+          ]
+        }
+      }
+    },
+    "appliedPattern": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pattern_uri",
+        "pattern_version",
+        "package_id",
+        "package_version",
+        "package_source_sha256"
+      ],
+      "properties": {
+        "pattern_uri": {"$ref": "#/$defs/semanticIri"},
+        "pattern_version": {"$ref": "#/$defs/semver"},
+        "package_id": {"$ref": "#/$defs/stableId"},
+        "package_version": {"$ref": "#/$defs/semver"},
+        "package_source_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feedback_id",
+        "workflow_id",
+        "application_id",
+        "workflow_record",
+        "application_sha256",
+        "application_binding_status",
+        "operational_pattern",
+        "applied_pattern",
+        "pattern_binding_status",
+        "active_memory_binding_status",
+        "feedback_outcome",
+        "maintenance_action",
+        "queue_state",
+        "automatic_promotion",
+        "pattern_state_changed",
+        "pattern_maturity_changed",
+        "retrieval_status_changed",
+        "materialization_performed",
+        "index_update_performed",
+        "revalidation_performed",
+        "activation_authorized",
+        "active_pointer_changed",
+        "execution_authorized",
+        "fusion_write_authorized",
+        "runtime_routing_changed",
+        "entry_sha256"
+      ],
+      "properties": {
+        "feedback_id": {"$ref": "#/$defs/stableId"},
+        "workflow_id": {"$ref": "#/$defs/nullableString"},
+        "application_id": {"$ref": "#/$defs/stableId"},
+        "workflow_record": {"$ref": "#/$defs/assetVerification"},
+        "application_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "application_binding_status": {
+          "enum": ["VERIFIED_MODEL_RELATION", "UNVERIFIED"]
+        },
+        "operational_pattern": {"$ref": "#/$defs/assetVerification"},
+        "applied_pattern": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/appliedPattern"}]
+        },
+        "pattern_binding_status": {
+          "enum": ["VERIFIED_EXACT_SOURCE_PACKAGE", "UNVERIFIED"]
+        },
+        "active_memory_binding_status": {
+          "const": "NOT_ASSERTED_BY_THIS_CONTRACT"
+        },
+        "feedback_outcome": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "enum": [
+                "supported",
+                "narrowing_suggested",
+                "contradicted",
+                "inconclusive",
+                "not_applied"
+              ]
+            }
+          ]
+        },
+        "maintenance_action": {
+          "enum": [
+            "REVALIDATION_REQUIRED",
+            "REVALIDATION_MONITORING",
+            "CURATION_REVIEW_REQUIRED",
+            "EVIDENCE_REPAIR_REQUIRED"
+          ]
+        },
+        "queue_state": {"const": "PENDING_REVIEW"},
+        "automatic_promotion": {"const": false},
+        "pattern_state_changed": {"const": false},
+        "pattern_maturity_changed": {"const": false},
+        "retrieval_status_changed": {"const": false},
+        "materialization_performed": {"const": false},
+        "index_update_performed": {"const": false},
+        "revalidation_performed": {"const": false},
+        "activation_authorized": {"const": false},
+        "active_pointer_changed": {"const": false},
+        "execution_authorized": {"const": false},
+        "fusion_write_authorized": {"const": false},
+        "runtime_routing_changed": {"const": false},
+        "entry_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "application_binding_status": {"const": "VERIFIED_MODEL_RELATION"}
+            }
+          },
+          "then": {
+            "properties": {
+              "workflow_id": {"type": "string", "minLength": 1},
+              "application_sha256": {"$ref": "#/$defs/sha256"},
+              "workflow_record": {
+                "properties": {"status": {"const": "VERIFIED"}}
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "pattern_binding_status": {"const": "VERIFIED_EXACT_SOURCE_PACKAGE"}
+            }
+          },
+          "then": {
+            "properties": {
+              "applied_pattern": {"$ref": "#/$defs/appliedPattern"},
+              "operational_pattern": {
+                "properties": {"status": {"const": "VERIFIED"}}
+              }
+            }
+          }
+        },
+        {
+          "if": {"properties": {"feedback_outcome": {"const": "supported"}}},
+          "then": {
+            "properties": {
+              "maintenance_action": {"const": "REVALIDATION_MONITORING"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "feedback_outcome": {
+                "enum": ["narrowing_suggested", "contradicted"]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "maintenance_action": {"const": "REVALIDATION_REQUIRED"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "feedback_outcome": {"enum": ["inconclusive", "not_applied"]}
+            }
+          },
+          "then": {
+            "properties": {
+              "maintenance_action": {"const": "CURATION_REVIEW_REQUIRED"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"feedback_outcome": {"type": "null"}}},
+          "then": {
+            "properties": {
+              "maintenance_action": {"const": "EVIDENCE_REPAIR_REQUIRED"}
+            }
+          }
+        }
+      ]
+    },
+    "verifiedEntry": {
+      "allOf": [
+        {"$ref": "#/$defs/entry"},
+        {
+          "properties": {
+            "workflow_record": {
+              "properties": {"status": {"const": "VERIFIED"}}
+            },
+            "application_binding_status": {"const": "VERIFIED_MODEL_RELATION"},
+            "operational_pattern": {
+              "properties": {"status": {"const": "VERIFIED"}}
+            },
+            "applied_pattern": {"$ref": "#/$defs/appliedPattern"},
+            "pattern_binding_status": {"const": "VERIFIED_EXACT_SOURCE_PACKAGE"},
+            "feedback_outcome": {
+              "enum": [
+                "supported",
+                "narrowing_suggested",
+                "contradicted",
+                "inconclusive",
+                "not_applied"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "appendPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "expected_prior_queue_sha256",
+        "observed_prior_queue_sha256",
+        "target_queue_snapshot_sha256",
+        "added_feedback_ids",
+        "rejected_feedback_ids",
+        "eligible",
+        "performed"
+      ],
+      "properties": {
+        "mode": {"const": "CompareAndSwapAppendPlanOnly"},
+        "expected_prior_queue_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "observed_prior_queue_sha256": {"$ref": "#/$defs/nullableSha256"},
+        "target_queue_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "added_feedback_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "rejected_feedback_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/stableId"}
+        },
+        "eligible": {"type": "boolean"},
+        "performed": {"const": false}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "path", "message"],
+      "properties": {
+        "code": {"type": "string", "minLength": 2},
+        "severity": {"enum": ["ERROR", "WARNING"]},
+        "path": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

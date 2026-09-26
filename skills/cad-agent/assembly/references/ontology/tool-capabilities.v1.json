@@ -1,0 +1,818 @@
+{
+  "$schema": "assembly.engineering-ontology.tool-matrix/v1",
+  "record_id": "AEO-TOOLS-20260823-V001",
+  "purpose": "每个工具/算法回答什么、明确不回答什么、消费什么、产出什么、有哪些已知的坑。选型错误在本项目里的代价最大的一次是把通用装配路径规划器用在闭式机构上——那不是参数没调好，是范畴错误。",
+  "selection_rule": "先问『这个问题属于哪一类』，再选工具；不要先选工具再把问题削成它的形状。判据见 K-KIN-01（机构识别优先）与 K-IF-03（共轴界面图给定插入轴）：94 个工步里真正需要通用路径搜索的是 0 个。",
+  "capability_status_vocabulary": {
+    "PINNED_EXECUTABLE": "可执行实现与版本/提交已钉住；仍只在 claim_ceiling 内回答。",
+    "LOCAL_ADAPTER": "存在本地适配器，但实现或环境未达到可跨项目推广的完整钉住。",
+    "CASE_PROVEN_NOT_GENERALIZED": "在具名案例形成证据，尚无无关装配回归。",
+    "LITERATURE_ONLY": "仅恢复了论文/外部方法角色，本地执行器未钉住。",
+    "NOT_EXECUTED": "路线或试验尚未实际执行。"
+  },
+  "fidelity_tiers": {
+    "G 几何事实级": {
+      "回答": "身份、界面、轴、精确体积与半径",
+      "工具": [
+        "T-occt-xcaf"
+      ],
+      "成本": "分钟级/进程可并行"
+    },
+    "K 运动学级": {
+      "回答": "候选轨迹、脱离距离、认证接近距离、时序、工具净空",
+      "工具": [
+        "T-trimesh-fcl",
+        "T-warp-gpu",
+        "T-ata",
+        "T-sbdp-adapter",
+        "T-spherical-kin",
+        "T-visual-overlap-scan"
+      ],
+      "成本": "秒~分钟级"
+    },
+    "D 方向探针级": {
+      "回答": "候选装配最开始往哪个方向更顺，哪个呈阻力或导向接触特征",
+      "工具": [
+        "T-libuipc"
+      ],
+      "成本": "只跑一个短前缀，秒~分钟"
+    },
+    "P 接触物理级": {
+      "回答": "在专用接触/柔性/螺纹模型与对照、收敛、版本钉住条件下验证 passage、传力、扭矩与功等限定主张",
+      "工具": [
+        "T-libuipc-contact-validation",
+        "T-factory-thread-contact"
+      ],
+      "成本": "按 operation class 专项建模，分钟~小时；不是 S9 的延长版"
+    },
+    "V 实体验证级": {
+      "回答": "真实夹具标定/重夹、机器可判定完成、承载转移/按序松夹、工装撤出与最小高风险实体证伪",
+      "工具": [
+        "T-physical-trial"
+      ],
+      "成本": "按风险显式启动；是唯一可在实测覆盖范围内授予 physical release 的级别"
+    },
+    "X 表达与治理级": {
+      "回答": "把已认证状态链变成人能照着装的东西，并管住主张边界",
+      "工具": [
+        "T-blender",
+        "T-ffmpeg",
+        "T-semantica",
+        "T-gates",
+        "T-film-review"
+      ],
+      "成本": "分钟~小时"
+    }
+  },
+  "tools": [
+    {
+      "id": "T-occt-xcaf",
+      "name": "OCCT / XCAF（精确 B-Rep）",
+      "tier": "G",
+      "capability_status": "PINNED_EXECUTABLE",
+      "claim_ceiling": "EXACT_BREP_IDENTITY_AND_INTERFACE_FACTS_ONLY",
+      "applicable_operation_classes": [
+        "ALL_SOURCE_NATIVE_BREP"
+      ],
+      "version_pin": "OCCT 7.9.3",
+      "answers": [
+        "occurrence 身份与全局唯一 label",
+        "解析面（CYLINDER/PLANE/CONE）的世界轴线、半径、轴向投影区间",
+        "精确实体体积与局部包围盒",
+        "两体精确 common 的零/正体积判定",
+        "配合的最小径向间隙（fit_class 的依据）"
+      ],
+      "does_not_answer": [
+        "快速的逐步扫掠（太慢）",
+        "任何物理量"
+      ],
+      "consumes": [
+        "源 STEP（SHA-256 锚定）"
+      ],
+      "produces": [
+        "identity-evidence",
+        "joint-port-evidence",
+        "global-interface-graph",
+        "occurrence-resolution"
+      ],
+      "pitfalls": [
+        "同型号族的 source_label 单独不足以定位 CAD：三种轴承共用同一句描述，必须结合 occurrence_id 型号前缀并按内圈局部尺寸解析。",
+        "界面图按最终装配位姿计算，某工步的候选轴可能混入更晚工步才形成的界面（见 K-IF-06）。"
+      ],
+      "criteria": [
+        "K-ID-01",
+        "K-IF-01",
+        "K-IF-02",
+        "K-IF-03",
+        "K-IF-05"
+      ]
+    },
+    {
+      "id": "T-trimesh-fcl",
+      "name": "trimesh + python-fcl（CPU 全分辨率碰撞）",
+      "tier": "K",
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "DISCRETE_GEOMETRIC_SWEEP_ONLY",
+      "applicable_operation_classes": [
+        "RIGID_TRANSLATION",
+        "RIGID_SEQUENCE_SWEEP",
+        "TOOL_CLEARANCE"
+      ],
+      "version_pin": "随项目 venv",
+      "answers": [
+        "零容差接触与侵入深度",
+        "沿给定轴的逐步扫掠：脱离距离、认证接近距离、路径上的非基线接触",
+        "多动件时序推进中的件间干涉"
+      ],
+      "does_not_answer": [
+        "径向过盈量——同心互穿的深度是重叠量不是过盈（K-IF-05）",
+        "连续证明：它是有限步长采样（K-PATH-10）",
+        "力、摩擦、柔性"
+      ],
+      "consumes": [
+        "占位网格（局部 STL）+ 世界位姿",
+        "工步分类与插入轴",
+        "求解单元划分"
+      ],
+      "produces": [
+        "orbita3d.b-class-insertion-trajectory/v2 轨迹契约"
+      ],
+      "pitfalls": [
+        "脱离后改粗步长会跨过窄干涉带（F-PATH-02）。",
+        "网格需水密预处理。",
+        "碰撞求解是纯 CPU 单线程且工步互相独立，天然可分发到多机。"
+      ],
+      "criteria": [
+        "K-IF-04",
+        "K-PATH-01",
+        "K-PATH-02",
+        "K-PATH-04",
+        "K-PATH-05",
+        "K-PATH-09"
+      ]
+    },
+    {
+      "id": "T-warp-gpu",
+      "name": "NVIDIA Warp（GPU 三角形级扫掠）",
+      "tier": "K",
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "INDEPENDENT_DISCRETE_GEOMETRY_CROSS_CHECK_ONLY",
+      "applicable_operation_classes": [
+        "RIGID_TRANSLATION",
+        "RIGID_SEQUENCE_SWEEP",
+        "TOOL_CLEARANCE"
+      ],
+      "version_pin": "GB10 节点 yd-001",
+      "answers": [
+        "与 FCL 同一问题的独立第二实现：BVH AABB 查询 + 三角形-三角形相交，逐三角形、GPU"
+      ],
+      "does_not_answer": [
+        "任何 FCL 不回答的东西——它存在的唯一理由是交叉验证（K-GOV-02）"
+      ],
+      "consumes": [
+        "与 FCL 链共享的只有 STL、装配位姿、求解单元划分；碰撞判据、遍历顺序、加速结构全部另起一套"
+      ],
+      "produces": [
+        "orbita3d.gpu-triangle-sweep/v1"
+      ],
+      "pitfalls": [
+        "交叉验证要有意义，两侧对静止集与许可界面的定义必须一致。当前 10/97 个单元不一致且未裁决（O-03）——这正说明这条纪律不是形式主义。"
+      ],
+      "criteria": [
+        "K-GOV-02",
+        "K-PATH-01"
+      ]
+    },
+    {
+      "id": "T-spherical-kin",
+      "name": "机构闭式解（本项目为 3-RRR 球面并联）",
+      "tier": "K",
+      "capability_status": "CASE_PROVEN_NOT_GENERALIZED",
+      "claim_ceiling": "PINNED_MECHANISM_KINEMATICS_ONLY",
+      "applicable_operation_classes": [
+        "3_RRR_SPHERICAL_PARALLEL_MECHANISM"
+      ],
+      "version_pin": "工具/装配动画/orbita_spherical_kinematics.py",
+      "answers": [
+        "闭式正/逆解与结构不变量自检",
+        "关节空间可行域（维度从 6 降到 1~2，可穷尽而非采样）"
+      ],
+      "does_not_answer": [
+        "非该机构的运动"
+      ],
+      "consumes": [
+        "界面配对得到的全部铰轴"
+      ],
+      "produces": [
+        "closure-map / closure-trajectory"
+      ],
+      "pitfalls": [
+        "换机构时这是唯一需要整体替换的文件——把它做成可替换件，其余环节就不必动。"
+      ],
+      "criteria": [
+        "K-KIN-01",
+        "K-KIN-02",
+        "K-KIN-03"
+      ]
+    },
+    {
+      "id": "T-ata",
+      "name": "Assemble-Them-All（由拆卸反推装配，SIGGRAPH Asia 2022）",
+      "tier": "K",
+      "capability_status": "PINNED_EXECUTABLE",
+      "claim_ceiling": "ORDERED_ABSOLUTE_GEOMETRIC_PATH_CANDIDATE_ONLY",
+      "applicable_operation_classes": [
+        "RIGID_TWO_BODY_DISASSEMBLY_CANDIDATE",
+        "RIGID_MULTI_SEGMENT_PATH_CANDIDATE"
+      ],
+      "version_pin": "上游 commit 29db7df4d7f2e6055f3f26fc5c11a424954f7308；本地 checkout 含项目适配，消费结果必须另钉几何与状态哈希",
+      "answers": [
+        "刚体两件分离的多段几何候选路径（BFS 平移动作，SE(3) 时才开旋转）",
+        "对『拆得出』这个问题的高效搜索"
+      ],
+      "does_not_answer": [
+        "零干涉证书——Success 只表示到达了它自己的凸包分离目标（K-PATH-08）",
+        "物理：搜索模型约为零重力、零摩擦、零阻尼，施加的是标称力/力矩，不是标定过的装配物理模型",
+        "初始穿透的排除：该实现可按 max(-initial_min_distance,0) 抬高碰撞阈值，初始就穿透的代理仍能产出候选"
+      ],
+      "consumes": [
+        "按刚组聚合后的水密网格（312 实例须先聚成约 15 个刚体）",
+        "显式 q0"
+      ],
+      "produces": [
+        "有序绝对状态序列（candidate，不是答案）"
+      ],
+      "pitfalls": [
+        "整组盲喂必然失败：62 个叶子全刚锁 → 选错 +Y、60.787 s 超时（F-ALG-02）。",
+        "它面向刚体两件分离；柔性件必须先分出去。",
+        "简化代理网格永远没有渲染资格，只用于搜索。"
+      ],
+      "criteria": [
+        "K-PATH-06",
+        "K-PATH-07",
+        "K-PATH-08",
+        "K-KIN-04"
+      ]
+    },
+    {
+      "id": "T-sbdp-adapter",
+      "name": "SBDP_DBG_INSPIRED_NOT_FULL_SBDP_IMPLEMENTATION（AAAI 2025 思想适配器）",
+      "tier": "K",
+      "capability_status": "LOCAL_ADAPTER",
+      "implementation_identity": "SBDP_DBG_INSPIRED_NOT_FULL_SBDP_IMPLEMENTATION",
+      "claim_ceiling": "SEARCH_ACTION_PRIORITY_ONLY",
+      "applicable_operation_classes": [
+        "RIGID_DIRECTION_PRIOR",
+        "RIGID_TRANSLATION_BEFORE_ROTATION_SEARCH"
+      ],
+      "version_pin": "无官方代码可钉；本地实现必须始终自称『思想适配器』，不得称官方复现",
+      "answers": [
+        "六方向阻塞扫描给出的方向候选与搜索动作优先级"
+      ],
+      "does_not_answer": [
+        "物理正确性——先验只改善搜索时间，路径本身不变（K-DIR-05）",
+        "论文报告的 98.55% 基准成功率不得转述为本项目或任何目标装配成功率（K-GOV-05）"
+      ],
+      "consumes": [
+        "正确运动分区上的全分辨率网格"
+      ],
+      "produces": [
+        "方向候选 + 引导动作序列"
+      ],
+      "pitfalls": [
+        "方向扫描的正确性完全取决于运动分区是否按装配语义拆（K-ID-04）。"
+      ],
+      "criteria": [
+        "K-DIR-05",
+        "K-ID-04",
+        "K-GOV-05"
+      ]
+    },
+    {
+      "id": "T-libuipc",
+      "name": "libuipc 短方向探针（CUDA/DGX）",
+      "tier": "D",
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "DIRECTION_RANKING_ONLY",
+      "applicable_operation_classes": [
+        "AMBIGUOUS_RIGID_INSERTION_DIRECTION",
+        "SHORT_PREFIX_CONTACT_DISCRIMINATION"
+      ],
+      "version_pin": "工作室 DGX，走 fleet 动态寻址",
+      "answers": [
+        "候选路径最开始一小段的方向性特征：首触位置、接触拓扑、位姿滞后、求解阻力",
+        "四类方向判定：PROMISING / GUIDED_CONTACT / RESISTED / AMBIGUOUS"
+      ],
+      "does_not_answer": [
+        "精确力值、完整装配路径、精确间隙、碰撞件身份",
+        "任何 ApproachPathAccepted=true 的结论"
+      ],
+      "consumes": [
+        "规划级或局部裁剪代理网格 + 同一初态/参数"
+      ],
+      "produces": [
+        "directional-probe-summary（方向分类 + 停止动作）"
+      ],
+      "pitfalls": [
+        "冻结环境不是真实夹持：已装件合并成单一开表面、转动关节合并为刚性静态，会比实物更顶死（K-PHY-05）。",
+        "每个候选都必须跑匹配的 contact/control 对；没有 first discriminating feature、只有零接触或候选未跑齐时均为 AMBIGUOUS。",
+        "runner 没跑出可独立审定版本时必须失败关闭为 INCONCLUSIVE，不能记通过（K-PHY-04）。"
+      ],
+      "criteria": [
+        "K-PHY-01",
+        "K-PHY-02",
+        "K-PHY-03",
+        "K-PHY-04",
+        "K-PHY-05",
+        "K-PHY-06"
+      ]
+    },
+    {
+      "id": "T-blender",
+      "name": "Blender（表达层）",
+      "tier": "X",
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "DELIVERY_VERIFIED_ONLY",
+      "applicable_operation_classes": [
+        "CERTIFIED_STATE_PRESENTATION",
+        "ACTION_GRAPH_PRESENTATION",
+        "DELIVERY_READBACK"
+      ],
+      "version_pin": "本地版本；远端 Blender 版本与本地不一致，渲染不分发",
+      "answers": [
+        "把已认证状态链编译成可看的场景与影片"
+      ],
+      "does_not_answer": [
+        "任何几何或运动学结论——动画层不发明任何运动（K-GOV-01 的推论）"
+      ],
+      "consumes": [
+        "轨迹契约 + 状态链 + 工艺卡字段"
+      ],
+      "produces": [
+        ".blend 源场景 + 回读清单 + 分章 MP4"
+      ],
+      "pitfalls": [
+        "隐藏对象不进 depsgraph，matrix_world 停在单位阵；取样前须把 hide 曲线静音（K-SCN-06）。",
+        "Blender Python 异常默认不改变进程退出码，生成器必须自己保证失败返回非零。",
+        "MCP 传输层对非 ASCII 有双重编码问题——场景内对象命名一律用英文，中文放到后期字幕。"
+      ],
+      "criteria": [
+        "K-SCN-01",
+        "K-SCN-04",
+        "K-SCN-05",
+        "K-SCN-06",
+        "K-SCN-07"
+      ]
+    },
+    {
+      "id": "T-ffmpeg",
+      "name": "ffmpeg（交付）",
+      "tier": "X",
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "MEDIA_CONTAINER_DELIVERY_ONLY",
+      "applicable_operation_classes": [
+        "CERTIFIED_MEDIA_PACKAGING"
+      ],
+      "version_pin": "系统",
+      "answers": [
+        "分章拼接与封装"
+      ],
+      "does_not_answer": [
+        "内容正确性"
+      ],
+      "consumes": [
+        "分章渲染输出"
+      ],
+      "produces": [
+        "成片"
+      ],
+      "pitfalls": [
+        "moov 原子须 +faststart；必须原子换名；临时名后缀仍须是 .mp4（F-DEL-01/02/03）。"
+      ],
+      "criteria": [
+        "K-DEL-01"
+      ]
+    },
+    {
+      "id": "T-fusion",
+      "name": "Fusion + MCP（as-built 与人工实证）",
+      "tier": "G",
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "CAD_POSE_AND_NATIVE_DOCUMENT_AUTHORITY_ONLY",
+      "applicable_operation_classes": [
+        "SOURCE_NATIVE_CAD",
+        "AS_BUILT_JOINT_REVIEW",
+        "REVERSIBLE_POSE_SNAPSHOT"
+      ],
+      "version_pin": "Fusion MCP 走受保护的一次性会话与动态发现端点；严禁写死端口或绕过 guarded health/read/write/save 路由",
+      "answers": [
+        "as-built 关节与刚组的人工拖拽实证",
+        "位姿快照、爆炸图、可逆的过程回放"
+      ],
+      "does_not_answer": [
+        "批量数值校验"
+      ],
+      "consumes": [
+        "活文档"
+      ],
+      "produces": [
+        "asm_plan 位姿快照"
+      ],
+      "pitfalls": [
+        "全部操作须可逆：动画前暂停转动副，结束后逐实例校验位姿并恢复。",
+        "源 STEP 里可能存在自动保存副本（本项目发现一块 PCB 的 _autosave 副本与正本同位置可见），须显式建模为 ModelArtifact 而不是当成真实零件。"
+      ],
+      "criteria": [
+        "K-ID-01"
+      ]
+    },
+    {
+      "id": "T-semantica",
+      "name": "Semantica（RDF/SPARQL/SHACL/receipt 治理）",
+      "tier": "X",
+      "capability_status": "PINNED_EXECUTABLE",
+      "claim_ceiling": "SEMANTIC_GOVERNANCE_AND_RECEIPTS_ONLY",
+      "applicable_operation_classes": [
+        "ONTOLOGY_BINDING",
+        "SHACL_VALIDATION",
+        "PROVENANCE_AND_RELEASE_GOVERNANCE"
+      ],
+      "version_pin": "workspace cad-agent-industry-cad",
+      "answers": [
+        "身份、证据、闭合状态的治理与生命周期",
+        "断线检测作为可执行的具名查询",
+        "SHACL 闭合门禁"
+      ],
+      "does_not_answer": [
+        "任何数值几何计算——FK 扫掠、包络避障、齿系解算仍由工程脚本执行"
+      ],
+      "consumes": [
+        "工程脚本的产出与其哈希锚点"
+      ],
+      "produces": [
+        "ontology / competency_questions / shapes / queries / cases / provenance"
+      ],
+      "pitfalls": [
+        "职责边界要写清：计算在外，主权在内（K-GOV-07）。",
+        "治理路径按 binding 授权范围推进，到 candidate/proposed 为止；commit/release/promote 需决策权人另行授权。"
+      ],
+      "criteria": [
+        "K-GOV-07"
+      ]
+    },
+    {
+      "id": "T-gates",
+      "name": "自研门禁（本体门禁 + 装配聚合门禁）",
+      "tier": "X",
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "DECLARED_CONTRACT_AGGREGATION_ONLY",
+      "applicable_operation_classes": [
+        "ASSEMBLY_CONTRACT_VALIDATION",
+        "FAIL_CLOSED_RELEASE_AGGREGATION"
+      ],
+      "version_pin": "工具/本体生成/门禁.py（L0–L8 语义工件）；装配工艺/verify_assembly_migration_v5.py（装配候选聚合裁决）",
+      "answers": [
+        "一条命令重建全部工件并跑全部校验，产出工件哈希清单",
+        "装配候选的总裁决与 physical_release 布尔"
+      ],
+      "does_not_answer": [
+        "两个门禁目前互不引用——语义门禁仍消费 assembly_process.v1.json，装配权威却是 v4/v5（未闭合项 O-04）"
+      ],
+      "consumes": [
+        "全部生成器与工件"
+      ],
+      "produces": [
+        "gate-report.json / v5 聚合裁决"
+      ],
+      "pitfalls": [
+        "非零退出是安全阻断不是故障，这一点必须写进 README，否则会被当成 bug 绕过。"
+      ],
+      "criteria": [
+        "K-GOV-01",
+        "K-GOV-03",
+        "K-GOV-04",
+        "K-GOV-08"
+      ]
+    },
+    {
+      "id": "T-fleet",
+      "name": "多机分发（fleet + DGX）",
+      "tier": "K",
+      "capability_status": "LOCAL_ADAPTER",
+      "claim_ceiling": "COMPUTE_DISTRIBUTION_ONLY",
+      "applicable_operation_classes": [
+        "INDEPENDENT_BATCH_SWEEP",
+        "GPU_PHYSICS_JOB_DISPATCH"
+      ],
+      "version_pin": "节点 jx002 / yd-001 / jx-001，并发度分别 10 / 8 / 4",
+      "answers": [
+        "把互相独立的逐工步碰撞求解分发到多机"
+      ],
+      "does_not_answer": [
+        "渲染——远端 Blender 版本与本地不一致，画面会不同，渲染不走这条路"
+      ],
+      "consumes": [
+        "同步后的代码与数据"
+      ],
+      "produces": [
+        "回传的轨迹文件"
+      ],
+      "pitfalls": [
+        "连接串与目标从 fleet 动态取，不写死地址：DGX 会在 IPv4 LAN 与有线 IPv6 链路本地之间切换。",
+        "rsync 的 IPv6 目标需要方括号。",
+        "有常驻推理服务的节点要压低并发度。",
+        "xargs -P 在部分节点上实际并发远低于设定（dell-7920 实测 96→25），必须用保活式 launcher 并以 pgrep/loadavg 核实（K-GOV-16）。"
+      ],
+      "criteria": []
+    },
+    {
+      "id": "T-physical-trial",
+      "name": "最小实体证伪试验",
+      "tier": "V",
+      "capability_status": "NOT_EXECUTED",
+      "claim_ceiling": "PHYSICAL_RELEASE_WITHIN_EXECUTED_TEST_SCOPE_ONLY",
+      "applicable_operation_classes": [
+        "HIGH_RISK_MINIMAL_FALSIFICATION",
+        "FIXTURE_RELEASE",
+        "MACHINE_MEASURABLE_ACCEPTANCE"
+      ],
+      "version_pin": "未执行",
+      "answers": [
+        "现实问题：装到位可测、承载已转移、松夹后姿态不丢、工装可无碰撤出"
+      ],
+      "does_not_answer": [
+        "它是唯一能回答实体问题的工具；前面所有级别都不能替代它"
+      ],
+      "consumes": [
+        "带特性、方法、基准、单位、阈值、不确定度和证据哈希的试验合同"
+      ],
+      "produces": [
+        "PASS/FAIL/INCONCLUSIVE 记录"
+      ],
+      "pitfalls": [
+        "只执行候选的第一段风险最高、最能区分候选的动作；失败立即回退，不把整套装配做完。",
+        "当前 37 项 B13/B14 完成验收全部 NOT_RUN，机器可判定项为 0。"
+      ],
+      "criteria": [
+        "K-GOV-01",
+        "K-REAL-01",
+        "K-REAL-02",
+        "K-REAL-03",
+        "K-REAL-04",
+        "K-REAL-05"
+      ]
+    },
+    {
+      "id": "T-libuipc-contact-validation",
+      "name": "libuipc 完整接触传力验证",
+      "tier": "P",
+      "capability_status": "CASE_PROVEN_NOT_GENERALIZED",
+      "claim_ceiling": "CASE_SCOPED_PASSAGE_AND_CONTACT_FORCE_TRANSFER_ONLY",
+      "applicable_operation_classes": [
+        "FLEXIBLE_STRIP_CONTACT_DRIVE",
+        "DEFORMABLE_CONTACT_TRANSFER",
+        "DEDICATED_PRESS_OR_SNAP_MODEL"
+      ],
+      "version_pin": "执行时必须在证据合同中钉住 libuipc/IPC commit、CUDA 环境、force convention 与 solver profile；Y-Zipper 数值只可作 CASE_LOCKED_EXAMPLE",
+      "answers": [
+        "专用接触模型内的 passage、体对力/力矩、作用反作用残差、驱动功与匹配反事实"
+      ],
+      "does_not_answer": [
+        "未建模的螺纹/卡扣/材料失效",
+        "电机容量——除非切换为扭矩受限驱动并钉住功率/控制模型",
+        "实体放行"
+      ],
+      "consumes": [
+        "Fusion/源 CAD 冻结世界位姿",
+        "独立哈希的 solver mesh",
+        "单位/材料/摩擦/驱动/接触参数来源",
+        "分阶段 canary 与 matched counterfactual 合同"
+      ],
+      "produces": [
+        "version-bound contact telemetry",
+        "body-pair force/torque/work ledger",
+        "convergence and counterfactual verdict"
+      ],
+      "pitfalls": [
+        "不得把渲染或规划代理直接当求解网格。",
+        "无执行、无对照、无收敛或力符号不清均 INCONCLUSIVE。",
+        "Y-Zipper 的数值不是新装配默认值。"
+      ],
+      "criteria": [
+        "K-PHY-06",
+        "K-PHY-07",
+        "K-PHY-08",
+        "K-PHY-09",
+        "K-PHY-10",
+        "K-PHY-12"
+      ]
+    },
+    {
+      "id": "T-asap-adapter",
+      "name": "ASAP 重力/有限夹持稳定性适配器",
+      "tier": "K",
+      "capability_status": "LITERATURE_ONLY",
+      "claim_ceiling": "STEPWISE_GRAVITY_STABILITY_CANDIDATE_ONLY",
+      "applicable_operation_classes": [
+        "GRAVITY_SUPPORTED_SEQUENCE",
+        "FINITE_HOLD_ASSEMBLY_SEQUENCE"
+      ],
+      "version_pin": "本地执行器未钉住",
+      "answers": [
+        "在显式重力、支撑和有限夹持约束下的逐步稳定性候选"
+      ],
+      "does_not_answer": [
+        "几何连续路径",
+        "工具可达",
+        "实体放行"
+      ],
+      "consumes": [
+        "已认证几何状态",
+        "重力方向",
+        "支撑接触",
+        "夹持数与释放时点"
+      ],
+      "produces": [
+        "stepwise stability candidate + unstable state witness"
+      ],
+      "pitfalls": [
+        "最终姿态稳定不代表每个中间态稳定。",
+        "未执行时必须 NOT_EXECUTED/INCONCLUSIVE。"
+      ],
+      "criteria": [
+        "K-KIN-05"
+      ]
+    },
+    {
+      "id": "T-action-graph-adapter",
+      "name": "Agrawala/Li 动作图与偏序表达适配器",
+      "tier": "X",
+      "capability_status": "LITERATURE_ONLY",
+      "claim_ceiling": "CERTIFIED_PARTIAL_ORDER_PRESENTATION_ONLY",
+      "applicable_operation_classes": [
+        "ACTION_GRAPH_PRESENTATION",
+        "EXPLODED_VIEW_LAYOUT",
+        "CERTIFIED_PARTIAL_ORDER"
+      ],
+      "version_pin": "本地统一适配器未钉住",
+      "answers": [
+        "已认证依赖图的分步呈现与爆炸布局候选"
+      ],
+      "does_not_answer": [
+        "配合关系",
+        "装配方向",
+        "路径可行",
+        "物理成功"
+      ],
+      "consumes": [
+        "连接图",
+        "已认证偏序",
+        "已认证状态"
+      ],
+      "produces": [
+        "action graph / exploded layout presentation candidate"
+      ],
+      "pitfalls": [
+        "画面更清楚不等于工程主张更强；布局冲突必须回到上游 HOLD。"
+      ],
+      "criteria": [
+        "K-SCN-09"
+      ]
+    },
+    {
+      "id": "T-factory-thread-contact",
+      "name": "Factory/Isaac 螺纹专用接触路线",
+      "tier": "P",
+      "capability_status": "LITERATURE_ONLY",
+      "claim_ceiling": "DEDICATED_THREADED_ASSEMBLY_CANDIDATE_ONLY",
+      "applicable_operation_classes": [
+        "THREADED_NUT_BOLT_ASSEMBLY"
+      ],
+      "version_pin": "本地项目级执行器与版本尚未钉住",
+      "answers": [
+        "显式螺纹几何、旋合约束与接触控制下的螺纹装配候选"
+      ],
+      "does_not_answer": [
+        "未执行项目的旋合成功",
+        "预紧/扭矩关系——除非材料、摩擦和拧紧模型经标定",
+        "实体放行"
+      ],
+      "consumes": [
+        "专用螺纹模型",
+        "旋转-平移驱动",
+        "标定摩擦/材料/控制参数"
+      ],
+      "produces": [
+        "thread engagement candidate + dedicated contact telemetry"
+      ],
+      "pitfalls": [
+        "通用刚体碰撞不能替代螺纹牙型和螺旋约束。",
+        "文献存在不等于本地已具备执行能力。"
+      ],
+      "criteria": [
+        "K-PHY-11"
+      ]
+    },
+    {
+      "id": "T-visual-overlap-scan",
+      "name": "画面口径双向含入扫描（独立验证口径）",
+      "tier": "K",
+      "capability_status": "CASE_PROVEN_NOT_GENERALIZED",
+      "claim_ceiling": "INDEPENDENT_PENETRATION_ORACLE_ONLY",
+      "applicable_operation_classes": [
+        "CERTIFIED_STATE_PRESENTATION",
+        "RIGID_INSERTION"
+      ],
+      "version_pin": "tools/visual_overlap_scan.py（2026-09-03，seat_frac/path_margin）",
+      "answers": [
+        "就位本底含入与沿路最大含入（双向绕数）",
+        "SEATED_OVERLAP / PATH_OVERLAP 分类台账"
+      ],
+      "does_not_answer": [
+        "许可界面的工艺合法性",
+        "柔性件"
+      ],
+      "consumes": [
+        "state-chain + 网格 + S1 位姿"
+      ],
+      "produces": [
+        "*.visual.json 逐工序记录 + 验收包 visual_overlap_scan 块"
+      ],
+      "pitfalls": [
+        "不豁免基线接触，故 SEATED 数量大；须与根因分类一起读。",
+        "采样点数 600 时 2% 阈值≈12 点，薄件噪声在此量级。"
+      ],
+      "criteria": [
+        "K-GOV-15",
+        "K-DEL-05",
+        "K-IF-09"
+      ]
+    },
+    {
+      "id": "T-film-review",
+      "name": "多智能体分段逐帧审片",
+      "tier": "X",
+      "capability_status": "CASE_PROVEN_NOT_GENERALIZED",
+      "claim_ceiling": "PRESENTATION_DEFECT_LEDGER_ONLY",
+      "applicable_operation_classes": [
+        "CERTIFIED_STATE_PRESENTATION",
+        "DELIVERY_READBACK"
+      ],
+      "version_pin": "OLSK 2026-09-03：10 段×9 章，每段章首+每动件中程/就位帧+局部放大",
+      "answers": [
+        "缺陷分类（穿模/静止重叠/透明/机位/虚化/材质/其他）与严重度的逐章台账",
+        "系统性根因的归纳线索"
+      ],
+      "does_not_answer": [
+        "几何或运动学结论——审片只报画面现象",
+        "CAD 是否有缺陷"
+      ],
+      "consumes": [
+        "成片 MP4 + 章节表（op/start/end/movers f0 f1）"
+      ],
+      "produces": [
+        "分段报告 + 三张最差帧路径"
+      ],
+      "pitfalls": [
+        "子智能体会自发写像素分析脚本浪费时间——明确只看帧。",
+        "缩略图拼板不是审片。"
+      ],
+      "criteria": [
+        "K-DEL-04",
+        "K-SCN-10"
+      ]
+    }
+  ],
+  "category_errors": [
+    {
+      "错用": "用通用装配路径规划器搜闭式机构的路径",
+      "为什么错": "机构运动是闭式的，搜索空间根本不该被采样",
+      "正确做法": "K-KIN-01 机构识别 → 闭式解 + 关节空间穷尽"
+    },
+    {
+      "错用": "用通用路径搜索处理轴向插装工步",
+      "为什么错": "动件与已装件共享一条轴线，该轴即插入方向，运动只有一个自由度",
+      "正确做法": "K-IF-03 共轴界面图给定轴 → 沿轴一维扫掠"
+    },
+    {
+      "错用": "把 S9 短方向探针延长后当作完整接触传力验证",
+      "为什么错": "S9 使用方向比较代理与排序合同，claim ceiling 只有 DIRECTION_RANKING_ONLY；完整 passage/force/torque/work 需要另一套专用模型、对照、版本力约定和收敛",
+      "正确做法": "K-PHY-06 分路：S9 见 first discriminating feature 即停；高主张按 operation class 进入 P 级完整接触/螺纹路线"
+    },
+    {
+      "错用": "用碰撞深度判断过盈量",
+      "为什么错": "同心互穿的深度是重叠量",
+      "正确做法": "K-IF-05 从 B-Rep 半径判"
+    },
+    {
+      "错用": "用动画终帧或『拆得出』证明装配成功",
+      "为什么错": "表现层不产生事实；可逆性不是自动的",
+      "正确做法": "K-GOV-01 + K-PATH-06 + 实体最小证伪"
+    },
+    {
+      "错用": "用刚体方法处理线缆、排线、接插件",
+      "为什么错": "柔性件不满足刚体假设",
+      "正确做法": "分出去进入具备连续拓扑与材料证据的 P 级柔性接触路线，或如实列为未覆盖（K-DEL-03/K-PHY-07）"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+import adsk.core
+import adsk.fusion
+import json
+import traceback
+
+DOC_NAME = __DOC_NAME__
+EXPECTED_LINEAGE = __LINEAGE__
+SAVE_COMMENT = __SAVE_COMMENT__
+COMMENT_PREFIX = __COMMENT_PREFIX__
+PARAMS = __PARAMS__
+
+def _items(collection):
+    return [collection.item(index) for index in range(collection.count)]
+
+result = {"success": False, "stage": "user_parameters"}
+try:
+    app = adsk.core.Application.get()
+    doc = app.activeDocument
+    if doc is None or str(doc.name) != DOC_NAME:
+        raise RuntimeError("active document is not " + DOC_NAME + ": " + str(getattr(doc, "name", None)))
+    data_file = doc.dataFile
+    if data_file is None or str(data_file.id) != EXPECTED_LINEAGE:
+        raise RuntimeError("lineage mismatch")
+    if not doc.isSaved or doc.isModified:
+        raise RuntimeError("document must be saved and unmodified before adding parameters")
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    ups = design.userParameters
+    existing = set(p.name for p in _items(ups))
+    added = []
+    failures = []
+    for row in PARAMS:
+        name = row[0]
+        expression = row[1]
+        comment = row[2] if len(row) > 2 else ""
+        if name in existing:
+            continue
+        try:
+            unit = "mm" if expression.endswith(" mm") else ("deg" if expression.endswith(" deg") else "")
+            value = adsk.core.ValueInput.createByString(expression) if unit else adsk.core.ValueInput.createByReal(float(expression))
+            parameter = ups.add(name, value, unit, COMMENT_PREFIX + comment)
+            added.append(parameter.name)
+        except Exception as inner:
+            failures.append({"name": name, "expression": expression, "error": str(inner)})
+    saved = doc.save(SAVE_COMMENT)
+    df = doc.dataFile
+    result.update({
+        "success": len(failures) == 0,
+        "added": len(added),
+        "added_names": added[:80],
+        "failures": failures[:40],
+        "planned": len(PARAMS),
+        "total_user_parameters": ups.count,
+        "save_returned": bool(saved),
+        "is_saved": bool(doc.isSaved),
+        "is_modified": bool(doc.isModified),
+        "version": int(df.versionNumber) if df is not None else None,
+    })
+except Exception as exc:
+    result.update({"success": False, "error": str(exc), "trace": traceback.format_exc()[-1500:]})
+print(json.dumps(result))
+
+def run(context):
+    pass

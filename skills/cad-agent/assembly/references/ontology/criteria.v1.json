@@ -1,0 +1,2359 @@
+{
+  "$schema": "assembly.engineering-ontology.criteria/v1",
+  "record_id": "AEO-CRITERIA-20260823-V001",
+  "purpose": "把 Orbita 项目积累的装配判据从叙述性文档提取为可引用、可机器校验的条目。每条判据必须有：可执行陈述、数值阈值（若有）、来源锚点、验证状态、它拦截的失效、实现它的脚本。没有验证状态的判据不得被下游引用为通过依据。",
+  "id_convention": "K-<域>-<序号>。域：ID 身份 / IF 界面 / KIN 运动 / DIR 方向 / PATH 路径认证 / TOOL 工具可达 / PHY 方向探针与接触物理 / REAL 实体试验 / SCN 场景表达 / DEL 交付 / GOV 治理。",
+  "validation_status_vocabulary": {
+    "VALIDATED": "已在本项目真实数据上验证，且验证方式独立于该判据自身的假设。",
+    "APPLIED_UNVALIDATED": "已实现并在生产中使用，但没有独立验证过它的正确性。",
+    "PLANNED": "已识别为必要，尚未实现。",
+    "BOUNDARY": "这是一条边界声明而不是通过判据：它规定方法不覆盖什么。"
+  },
+  "criteria": [
+    {
+      "id": "K-ID-01",
+      "name": "三重匹配唯一身份绑定",
+      "domain": "ID",
+      "statement": "冻结的源实例必须逐个绑定到 STEP/XCAF 的 occurrence label，靠三项同时匹配：4×4 世界变换、构件局部包围盒、精确实体体积。要求 label 全局唯一、每个实例恰好一个候选。文件名与编号顺序不是身份。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/ata_cases/B13_successor_identity/runs/occt793-xcaf-identity-v001/identity-evidence.json",
+        "本体/装配动画方法论.v2.md#环节1"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "B13 33/33 实例唯一绑定，无多候选。"
+      },
+      "blocks": [
+        "F-ID-01",
+        "F-ID-02",
+        "F-ID-04",
+        "F-ID-05"
+      ],
+      "implemented_by": [
+        "外部算法/ata_cases/B13_successor_identity/scripts/build_b13_brep_joint_port_evidence.py"
+      ]
+    },
+    {
+      "id": "K-ID-02",
+      "name": "求解单元 = 采购件，不是 CAD 叶子",
+      "domain": "ID",
+      "statement": "把 CAD 叶子按共享世界变换归并为物理件（采购件）后再求解。单元的叶子清单必须落盘到轨迹契约的 leaves 字段，否则下游无法把逐单元的轴发回各叶子。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/ata_cases/global_interface_scan/runs/occt793-all-rigid-v001/v4-occurrence-resolution.json",
+        "工具/装配动画/b_class_insertion_pipeline.py"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "一套滚动轴承 5 个 CAD 叶子；逐叶子求解时小件各自都能脱离，作为采购件整体不能（防尘盖外径大于内孔）。167 个刚性实例归并为 97 个求解单元。"
+      },
+      "blocks": [
+        "F-ID-03",
+        "F-DIR-01"
+      ],
+      "implemented_by": [
+        "外部算法/ata_cases/global_interface_scan/scripts/resolve_v4_occurrences.py"
+      ]
+    },
+    {
+      "id": "K-ID-03",
+      "name": "occurrence 世界变换恰好施加一次且可复算",
+      "domain": "ID",
+      "statement": "occurrence-local 网格必须施加其世界变换，且只施加一次；变换的施加次数本身要作为可校验量记录。任何声称『产品世界坐标』的输入都必须能证明这一点。",
+      "thresholds": {
+        "transform_apply_count": 1
+      },
+      "provenance": [
+        "外部算法/sbdp_pilot/README.md",
+        "工具/装配动画/runs/README.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "反例已发生：B2 v001 把 occurrence-local STL 直接合并却标为产品世界坐标，整轮结论作废（INVALID_INPUT_FRAME）。B14 v003 以 occ_174『变换应用次数 = 0』作为正向校验量通过。"
+      },
+      "blocks": [
+        "F-ALG-01"
+      ],
+      "implemented_by": [
+        "外部算法/sbdp_pilot/prepare_b2_top_case_pose_corrected.py"
+      ]
+    },
+    {
+      "id": "K-ID-04",
+      "name": "运动分区按装配语义拆，不按 CAD 父子整锁",
+      "domain": "ID",
+      "statement": "喂给求解器前必须按装配语义划分刚性核心 / 柔性件 / 端子等自由体，不得把一个 CAD 父节点下的全部叶子当成一个刚体。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/sbdp_pilot/runs/B2_TOP_methodology_verdict_20260821_v008/README.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "B2.1：62 个叶子全刚锁 → 方向探测选错 +Y、ATA 60.787 s 超时；改为 12 刚性核心 + 12 引线 + 38 端子体后，方向探测自动选中 -Z，ATA 1.271 s 得候选，与工艺『自下轴向』一致。"
+      },
+      "blocks": [
+        "F-ALG-02",
+        "F-ALG-03"
+      ],
+      "implemented_by": [
+        "外部算法/sbdp_pilot/prepare_b2_top_case_pose_corrected.py"
+      ]
+    },
+    {
+      "id": "K-ID-05",
+      "name": "同型多实例不得按编号分组",
+      "domain": "ID",
+      "statement": "可互换标准件（螺钉、垫片、转轴）的分组必须由 B-Rep 端口配对或状态链证据给出，不得按文件名后缀或变体号推定。",
+      "thresholds": {},
+      "provenance": [
+        "装配工艺/B13-fastener-assignment-correction.v1.json",
+        "装配工艺/A8-hinge-instance-correction.v1.json"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "B13 六颗螺钉按编号排 BOT={1,2} MID={3,4} TOP={5,6}，端口配对给出 BOT={2,5} MID={4,6} TOP={1,3}；A8 三个 Moon↔平台转轴整体循环错位并带错两片垫片。A8 纠正后多轴候选由 7 降为 6，自证一致。"
+      },
+      "blocks": [
+        "F-ID-01",
+        "F-ID-02"
+      ],
+      "implemented_by": [
+        "工具/本体生成/fix_b13_fastener_assignment.py",
+        "工具/本体生成/fix_a8_hinge_instance_assignment.py"
+      ]
+    },
+    {
+      "id": "K-IF-01",
+      "name": "同轴配对三条件",
+      "domain": "IF",
+      "statement": "两个解析圆柱面构成一个配合界面，必须三条同时成立：轴向夹角、轴线偏心、轴向投影区间重叠。两轴反向时投影参数化符号相反，需先翻到同一参数化再比较重叠。圆柱面抽取只覆盖共轴圆柱界面；靠平面贴合或锥面定位的配合必须由相应界面类型补充。不得再用灵犀 X1 的『105/494 个动件无插入轴』估算缺失收益：后续复核证明真正零共轴配合的实例只有 10 个，原 105 里绝大多数来自扫掠静止集口径错误（见 O-16、F-PATH-14、K-PATH-13）。",
+      "thresholds": {
+        "axis_angle_max_deg": 0.5,
+        "axis_eccentricity_max_mm": 0.08,
+        "axial_overlap": "required"
+      },
+      "provenance": [
+        "本体/装配动画方法论.v2.md#环节2",
+        "../104-灵犀x2/本体/X1-S2界面配对报告.v1.md",
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "B13 定出 6 铰轴 + 6 螺钉端口，并纠正旧启发式 5 处；由 C++ 轴对枚举与 Python 同轴配对两条独立代码路径各算一遍，6/6 与 6/6 一致。 灵犀 X1 补充了一条重要观测：在**数学精确的 CAD 装配态**里，这两个阈值不是敏感参数。实测轴向夹角最大 0.028°（0 个超过 0.5°）；偏心中位 0、90 分位 1e-6mm，仅 2.3% 的面对到 0.31mm。把判据从 0.05°/0.005mm 放到 5°/1mm，occurrence 配合对只从 2721 变到 2841（±2%），孤立件数一个不变。所以这条判据的阈值可以跨装配直接搬用；它真正起作用的场合是输入为网格、扫描或粗代理时。"
+      },
+      "blocks": [
+        "F-ID-02"
+      ],
+      "implemented_by": [
+        "外部算法/ata_cases/B13_successor_identity/scripts/build_b13_brep_joint_port_evidence.py"
+      ]
+    },
+    {
+      "id": "K-IF-02",
+      "name": "只用解析面，不用距离启发式",
+      "domain": "IF",
+      "statement": "连接关系只从 B-Rep 解析面（CYLINDER / PLANE / CONE）的世界轴线、半径、轴向投影区间导出。『最近邻』一类距离启发式不得作为配对依据。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#环节2"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "最近邻启发式产生的旧证据自身即自相矛盾：某条链标注的转轴与它标注的垫片在几何上不相配。"
+      },
+      "blocks": [
+        "F-ID-02"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-IF-03",
+      "name": "全局共轴界面图",
+      "domain": "IF",
+      "statement": "把全部刚性实例的圆柱面按轴线分桶，一次线性扫描建成全局共轴界面图；该图即工艺记录中缺失的机械配合界面表。工步按此图分类为 A 无刚体几何 / B 轴向插装 / C 铰接闭合 / D 多轴候选 / E 无共轴界面。 抽取必须**按零件定义做一次、再按世界变换实例化**，不要按实例逐个读 B-Rep——这是 K-ID-02 在几何抽取上的推论，也是这套方法能扩到上千实例的原因。",
+      "thresholds": {
+        "axis_parallel_tolerance_deg": 1.0,
+        "journal_clearance_max_mm": 0.6,
+        "min_axial_engagement_mm": 0.2
+      },
+      "provenance": [
+        "外部算法/ata_cases/global_interface_scan/runs/occt793-all-rigid-v001/operation-classification.json",
+        "../104-灵犀x2/本体/X1-S2界面配对报告.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "167 个刚性实例、5445 个圆柱面 → 132 条共享轴线界面。94 工步分布 A17 / B58 / C3 / D13 / E3。B 类的插入轴由几何直接给定，不需要通用路径搜索。 灵犀 X1 检验了规模：1558 个实例 / 187 个零件定义 / 15094 个局部圆柱面 → 31586 个实例化圆柱面，整图 **2.7 秒**建成，2783 个 occurrence 配合对、0 个 occurrence 未匹配到几何。原先担心的『15094 个面可能要上 DGX』不成立——瓶颈从来不是算力，是别读 1558 次 B-Rep。"
+      },
+      "blocks": [
+        "F-KIN-02"
+      ],
+      "implemented_by": [
+        "外部算法/ata_cases/global_interface_scan/scripts/build_global_interface_graph.py",
+        "外部算法/ata_cases/global_interface_scan/scripts/classify_operations.py"
+      ]
+    },
+    {
+      "id": "K-IF-04",
+      "name": "装配态基线自动导出，禁止手工白名单",
+      "domain": "IF",
+      "statement": "CAD 装配态按定义无干涉，因此该姿态下发生的一切接触都是许可的装配界面，其深度存为基线。此后与基线之外任何实例接触即判失败；与基线实例接触超过许可深度即判过度侵入。许可深度 = 基线 + max(绝对余量, 比例余量×基线)——螺纹与压装界面在 B-Rep 中不建模螺纹，基线侵入本身可达毫米级，纯绝对余量对它过严。　基线不只用在终点判定上，**更要用在整条路径上**：路径上出现基线之外的接触即失败。只判『最终能不能脱离』会放过『穿过别的件才脱离』这种情况。　基线豁免是**深度/区域级**的，不是零件级的：动件可以在自己的配合面上滑动，但触及基线实例许可深度（网格实现：t=0 接触三角形区 + 膨胀邻域）之外即判穿模——否则 sense 翻转的『从基线件里隧道穿越』全程隐形，且任何按 clear-run 直接量选轴的机制都会在这个盲区上优化（F-IF-01）。",
+      "thresholds": {
+        "over_penetration_margin_mm": 0.1,
+        "over_penetration_relative": 0.2
+      },
+      "provenance": [
+        "工具/装配动画/b_class_insertion_pipeline.py#allowed_depth",
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "自动涵盖 24 件轴承/转轴/垫片界面，免去手工圈定；手工白名单会把真错误一并放过。　灵犀 X1：S7 只用了『无接触即脱离』、没做路径上的非基线检查，结果 41.5% 的动件的认证距离是穿模得来的。补上路径基线检查后才归零。",
+        "note": "灵犀 X1 第二课（2026-08-24）：零件级基线豁免让 7 颗翻向螺钉与 1 颗 v1 时代隧道螺钉审计全绿；区域级基线补上后 8/8 被抓、合法方向 11–12mm 不误伤。fcl mesh-mesh contact depth 不可用，深度预算以接触三角形区域预算等价实现。"
+      },
+      "blocks": [
+        "F-PATH-03",
+        "F-IF-01"
+      ],
+      "implemented_by": [
+        "工具/装配动画/b_class_insertion_pipeline.py",
+        "../104-灵犀x2/tools/audit_path_penetration.py"
+      ]
+    },
+    {
+      "id": "K-IF-05",
+      "name": "配合性质从 B-Rep 半径判，不从碰撞深度判",
+      "domain": "IF",
+      "statement": "过盈 / 间隙 / 紧配的判定取 B-Rep 的最小径向间隙，不取碰撞深度。同心互穿的碰撞深度量的是重叠量，不是径向过盈。",
+      "thresholds": {},
+      "provenance": [
+        "工具/装配动画/b_class_insertion_pipeline.py",
+        "外部算法/ata_cases/global_interface_scan/runs/b-class-trajectories-v001/b-class-summary.json"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "74 个工步的 fit_class 分布：INTERFERENCE 33 / CLEARANCE 36 / TIGHT 2 / UNKNOWN 3。"
+      },
+      "blocks": [
+        "F-PATH-04"
+      ],
+      "implemented_by": [
+        "工具/装配动画/b_class_insertion_pipeline.py"
+      ]
+    },
+    {
+      "id": "K-IF-06",
+      "name": "多轴候选必须逐个消歧",
+      "domain": "IF",
+      "statement": "共轴界面图按最终装配位姿计算，某工步的候选轴可能混入更晚工步才形成的界面。凡有多条候选轴的工步必须逐个消歧并落盘理由，不得默认取一条。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/ata_cases/global_interface_scan/scripts/disambiguate_d_class.py"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "消歧结论：无一为真正的过约束。A5-* 是两组独立的一自由度压装；A6-* 的另一条候选轴要到 B13 才形成。"
+      },
+      "blocks": [],
+      "implemented_by": [
+        "外部算法/ata_cases/global_interface_scan/scripts/disambiguate_d_class.py"
+      ]
+    },
+    {
+      "id": "K-KIN-01",
+      "name": "机构识别优先于路径搜索",
+      "domain": "KIN",
+      "statement": "把界面配对得到的全部铰轴放在一起，检查共点性、正交性、对称性。若构成已知机构，其运动是闭式的，通用装配路径规划器在此处是范畴错误。用机构的结构不变量做自检，而不是只验证自己的假设。",
+      "thresholds": {},
+      "provenance": [
+        "工具/装配动画/orbita_spherical_kinematics.py",
+        "本体/装配动画方法论.v2.md#环节4"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "六根铰轴交于同一点 (0.0593, 0.1433, 76.4535)，每条腿两轴正交 → 3-RRR 球面并联。自检 14/14，绕 Z 三重对称误差 7.9e-14——这条不是假设，是数据自己吻合。"
+      },
+      "blocks": [
+        "F-KIN-02"
+      ],
+      "implemented_by": [
+        "工具/装配动画/orbita_spherical_kinematics.py"
+      ]
+    },
+    {
+      "id": "K-KIN-02",
+      "name": "单刚体识别",
+      "domain": "KIN",
+      "statement": "在关节空间里看哪个自由度全程不变，不变者两侧即构成一个刚体。刚体划分由此得出，不由『看起来像一组』得出。",
+      "thresholds": {},
+      "provenance": [
+        "工具/装配动画/b13_closure_map.py"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "B13：θ 偏离 0 仅 2° 臂脚就压进 Crown 凸台 1.58 mm，5° 时 7.03 mm，且 ±θ 完全对称（臂脚是贴合面坐在凸台上）→ θ≡0，臂与月牙件是一个刚体。该结论否定了方法制定者本人的初始假设。"
+      },
+      "blocks": [
+        "F-KIN-01"
+      ],
+      "implemented_by": [
+        "工具/装配动画/b13_closure_map.py"
+      ]
+    },
+    {
+      "id": "K-KIN-03",
+      "name": "机构不变量作逐帧校验量",
+      "domain": "KIN",
+      "statement": "机构的结构关系（如铰轴共点）可作为每帧校验量，一个校验函数即可替代整套门禁格。",
+      "thresholds": {},
+      "provenance": [
+        "工具/装配动画/orbita_spherical_kinematics.py"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "已在 B13 闭合链使用；未与独立实现对照。"
+      },
+      "blocks": [],
+      "implemented_by": [
+        "工具/装配动画/orbita_spherical_kinematics.py"
+      ]
+    },
+    {
+      "id": "K-KIN-04",
+      "name": "多段工步在真实紧固边界换分区",
+      "domain": "KIN",
+      "statement": "一个多段工步必须在真实的紧固或移除边界处更换 mover/fixed 分区，不得把后续各段整体刚性同动。",
+      "thresholds": {},
+      "provenance": [
+        "本体/paper-algorithm-correction-benchmark.v1.json#PAB-10"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "旧 B13 case 把三条臂与平台错误锁成一个刚体，判 COMPLETE_REJECT。"
+      },
+      "blocks": [
+        "F-ALG-03"
+      ],
+      "implemented_by": [
+        "工具/装配动画/validate_algorithm_trajectory_against_papers.py"
+      ]
+    },
+    {
+      "id": "K-DIR-01",
+      "name": "方向三级判据",
+      "domain": "DIR",
+      "statement": "逐求解单元判方向，不按工步摊。① GEOMETRY_FORCED：只有一个方向能脱离，几何唯一确定。② THICK_END：两向都能脱离但件一端更粗，退出方向朝粗端（细端先进、螺钉头/轴承法兰/台肩留外面）。③ UNDETERMINED：两向都能脱离且两端等粗，几何给不出方向。粗端判据取沿轴两端各 25% 区段的最大半径之差。",
+      "thresholds": {
+        "thick_end_min_radius_diff_mm": 0.15,
+        "end_segment_fraction": 0.25
+      },
+      "provenance": [
+        "工具/装配动画/b_class_insertion_pipeline.py#thick_end_sense"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "97 个单元实测：GEOMETRY_FORCED 54 / THICK_END 27 / UNDETERMINED 16（复算自 b-class-trajectories-v001）。②纠正了三个层盘章第一步（内齿圈压入盘）整个反了的方向。"
+      },
+      "blocks": [
+        "F-DIR-04",
+        "F-DIR-05"
+      ],
+      "implemented_by": [
+        "工具/装配动画/b_class_insertion_pipeline.py"
+      ]
+    },
+    {
+      "id": "K-DIR-02",
+      "name": "启发式方向判据须在几何唯一解上验证后方可使用",
+      "domain": "DIR",
+      "statement": "②级（粗端）这类启发式判据，必须先拿去跑那些方向已由①级唯一确定的单元，统计吻合率；不过关就不得使用。 若确定解与启发式的适用域不相交、这条路走不通，则必须换一种**独立的物理量**来验证启发式，而不是跳过验证。　**验证必须分域做**：一条启发式往往只在某一类零件上成立。全局吻合率会把它误判为『勉强可用』或『完全不可用』——两种误判都会让方法失去它本可用的那部分。",
+      "thresholds": {
+        "agreement_required": "报告实测吻合/不符/不可判三分数，并由人裁决是否启用"
+      },
+      "provenance": [
+        "工具/装配动画/b_class_insertion_pipeline.py#thick_end_sense",
+        "../104-灵犀x2/本体/X1-S1身份绑定报告.v1.md",
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v1.md",
+        "../104-灵犀x2/本体/S7-扫掠认证.v2.json"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "在 54 个①级单元上验证：符合 40、不符 2、两端等粗 12；可判者中 95% 吻合。 灵犀 X1 给出了适用域不相交的实例：43 个确定命中的物料名全部没有国标签名（它们是结构件不是标准件），无法用来验证国标号规则；改用几何独立验证（销的包围盒必须等于 d×d×L、螺钉总长应在杆长+头高的带内），24/24 通过。　灵犀 X1 给出了决定性实例：粗端判据的全局吻合率 74.6%（50符/17不符/20等粗），看着不够格；按零件类别分域后真相是 紧固件/销 **94.6%**（35/2/2，与 Orbita 的 95% 一致，可用）、壳/盖 **31.2%**（5/11，比抛硬币还差）、结构/其他 71.4%。壳件的『粗端』是壳体曲率不是螺钉头/台肩，判据的语义前提在它身上不成立。处置是**限制适用域**（只对紧固件启用），不是调阈值；9 个动件因此降级为未定。"
+      },
+      "blocks": [
+        "F-DIR-04"
+      ],
+      "implemented_by": [
+        "工具/装配动画/b_class_insertion_pipeline.py"
+      ]
+    },
+    {
+      "id": "K-DIR-03",
+      "name": "未定方向不得声称已确定",
+      "domain": "DIR",
+      "statement": "③级单元在动画或工艺卡里取的方向是任意选的，必须显式标注为未定。『脱离距离短者胜』是任意规则，不是判据。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#5c",
+        "装配工艺/assembly-film-plan.v1.json#claim_boundary"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "16/97 单元为③级，全部是轴对称件：顶丝、光面轴承、磁铁、垫片、球。当前实现落盘为 UNDETERMINED_SHORTER_RELEASE，名称已自陈其任意性。"
+      },
+      "blocks": [
+        "F-DIR-05"
+      ],
+      "implemented_by": [
+        "工具/装配动画/b_class_insertion_pipeline.py"
+      ]
+    },
+    {
+      "id": "K-DIR-04",
+      "name": "共轴未定件跟随同工步已定向件",
+      "domain": "DIR",
+      "statement": "同一工步中与已定向件共轴的③级件（典型为垫片），其方向应显式继承该已定向件，而不是靠碰巧一致。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#5d"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "已识别为脆弱点，未实现。当前垫片方向与其螺栓一致属偶然。"
+      },
+      "blocks": [
+        "F-DIR-06"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-DIR-05",
+      "name": "方向先验只加速搜索，不增加物理正确性",
+      "domain": "DIR",
+      "statement": "方向先验的价值是缩小搜索空间。它不构成对路径的物理背书，报告中必须把『搜索加速』与『路径通过』分开陈述。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/sbdp_pilot/runs/B2_TOP_ata_guidance_control_20260821_v007/README.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "三组有效坐标 A/B 对照：引导版平均 1.280 s，官方默认动作顺序平均 6.664 s（约 5.2×），但两者保存的 100 个状态逐字节相同——先验没有改变路径本身。"
+      },
+      "blocks": [
+        "F-ALG-04"
+      ],
+      "implemented_by": [
+        "外部算法/sbdp_pilot/run_guided_ata_translation.py"
+      ]
+    },
+    {
+      "id": "K-PATH-01",
+      "name": "全程细步长，禁止自适应加粗",
+      "domain": "PATH",
+      "statement": "扫掠必须全程用细步长。脱离之后为提速改用粗步长会直接跨过窄干涉带。要提速只能压低扫掠上限，不能放粗步长。",
+      "thresholds": {
+        "fine_step_mm_cpu": 0.25,
+        "fine_step_mm_gpu": 0.02,
+        "probe_mm": 2.0,
+        "max_travel_mm_cpu": 60.0,
+        "max_travel_mm_gpu": 16.0
+      },
+      "provenance": [
+        "工具/装配动画/b_class_insertion_pipeline.py#profile"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "反例已发生：A6-1 的 2.75 mm 窄干涉带在自适应加粗下被读成 19.5 mm。"
+      },
+      "blocks": [
+        "F-PATH-02"
+      ],
+      "implemented_by": [
+        "工具/装配动画/b_class_insertion_pipeline.py",
+        "工具/物理仿真/gpu_sweep.py"
+      ]
+    },
+    {
+      "id": "K-PATH-02",
+      "name": "认证区间必须覆盖播放/工艺区间",
+      "domain": "PATH",
+      "statement": "扫掠不能在首次脱离处停——件从接近位进来，在更远处可能重新撞上别的东西。**完整形态：可播/可执行的接近距离 = 自就位点(0)起，连续『只有装配态基线接触』能延伸到的最远处**；实际起始偏移 = min(该值, 全局上限)。注意不能用『自首次完全脱离点起连续无接触的最远处』代替——『不再碰到任何东西』这个状态可以靠**从别的件里穿过去**达到，那样得到的距离是穿模的距离。两种表述在动件退入自由空间时等价，在密集装配上会分开。",
+      "thresholds": {
+        "global_approach_cap_mm": 14.0,
+        "x1_cap_mm": 20.0,
+        "min_playable_mm": "低于此值判为不可播；X1 取 1.0"
+      },
+      "provenance": [
+        "工具/装配动画/b_class_insertion_pipeline.py#clear_to",
+        "装配工艺/assembly-film-plan.v1.json#claim_boundary",
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v1.md",
+        "../104-灵犀x2/本体/S7-可播接近距离.v1.json"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "97 个单元中 9 个的认证接近距离不足 14 mm（复算自 b-class-trajectories-v001）：A7.1 的球仅 0.50 mm，A6/A8 六个铰接工步的垫片 2.75 mm，B5-1/2 层组件 7.75 mm。用 14 mm 全局常数就是这 9 处穿模。　**灵犀 X1 暴露了原表述的不完整**：按『自首次脱离点起』算，352 个可播动件里**146 个（41.5%）在播放段上有基线之外的接触**——典型是 M3×25 螺钉退出 11mm 撞进邻近执行器，一路穿过去到 36.5mm 才『不再碰到任何东西』，S7 就把 36.5 当成了脱离距离。首次非基线接触位置中位仅 3.25mm、最大 15.75mm，**全部小于 20mm 的起始偏移**。改用完整形态后：206 个保持原偏移、101 个收短（中位 5.25mm）、45 个判为不可播；复验 **307/307 播放段上无任何非基线接触**。"
+      },
+      "blocks": [
+        "F-PATH-01"
+      ],
+      "implemented_by": [
+        "工具/装配动画/b_class_insertion_pipeline.py"
+      ]
+    },
+    {
+      "id": "K-PATH-03",
+      "name": "报通过必须同报覆盖区间",
+      "domain": "PATH",
+      "statement": "『零容差通过』只在被扫掠覆盖的区间内成立。任何通过结论必须与其覆盖区间同时给出，否则结论没错但适用范围比说法窄得多。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#一.4"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "代价是一整版穿模的成片：覆盖 0→脱离点却播 0→14 mm。"
+      },
+      "blocks": [
+        "F-PATH-01"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-PATH-04",
+      "name": "时序校验与独立静止集",
+      "domain": "PATH",
+      "statement": "把所有动件同时放进场景，按工艺顺序推进，件间干涉一并校验。每工步的静止集独立取，不取全集。",
+      "thresholds": {},
+      "provenance": [
+        "工具/装配动画/insertion_sequence.py",
+        "工具/装配动画/b13_sequence_verify.py"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "13 条状态链（12 条插装 + 1 条耦合）全程零容差通过；分章拆分正是被这一校验逼出来的。"
+      },
+      "blocks": [
+        "F-SCN-04"
+      ],
+      "implemented_by": [
+        "工具/装配动画/insertion_sequence.py"
+      ]
+    },
+    {
+      "id": "K-PATH-05",
+      "name": "场景保守性必须自陈",
+      "domain": "PATH",
+      "statement": "按工艺引入顺序判定『已装』时，离体子装配会被提前放入场景，使校验偏保守（在场件更多、更易报碰撞）。通过即为真通过；若报阻挡，必须人工确认阻挡件在该工步是否真已在机上。这条偏向必须写进契约。",
+      "thresholds": {},
+      "provenance": [
+        "工具/装配动画/b_class_insertion_pipeline.py#docstring"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "已实现并落盘 scene_scope / bench_group 字段；未统计因保守性产生的假阻挡数量。"
+      },
+      "blocks": [],
+      "implemented_by": [
+        "工具/装配动画/b_class_insertion_pipeline.py"
+      ]
+    },
+    {
+      "id": "K-PATH-06",
+      "name": "反向路径准入：倒序不取负，不可逆动作显式隔离",
+      "domain": "PATH",
+      "statement": "由拆卸反推的候选只是 candidate。装配回放必须是拆卸状态的严格倒序，绝不能靠对绝对变换取负得到。胶粘、压装、卡扣、线缆形变、摩擦滞回、换夹等不可逆动作不因时间倒放而变成合法装配动作，必须逐类显式隔离，并把反向端点绑定到正向前后状态后独立正向复演。",
+      "thresholds": {},
+      "provenance": [
+        "本体/paper-algorithm-correction-benchmark.v1.json#PAB-07",
+        "本体/reverse-path-applicability-audit.v1.json"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "判据已成文并进入 v5 门禁，但审计结果为 BLOCKER：24 个工步未分类、20 个范围-特性缺口、8 类不可逆动作未隔离。"
+      },
+      "blocks": [
+        "F-ALG-05"
+      ],
+      "implemented_by": [
+        "装配工艺/audit_reverse_path_applicability_v1.py"
+      ]
+    },
+    {
+      "id": "K-PATH-07",
+      "name": "来料位姿与拆卸终态不同则须另证连接段",
+      "domain": "PATH",
+      "statement": "真实来料位姿与拆卸终态不一致时，必须另有一条独立验证的无碰撞连接路径，把来料位姿接到倒序路径的起点。凭视觉把两个端点连起来不算。",
+      "thresholds": {},
+      "provenance": [
+        "本体/paper-algorithm-correction-benchmark.v1.json#PAB-08"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "已作为 REJECT 级不变量进入论文标尺校验器。"
+      },
+      "blocks": [],
+      "implemented_by": [
+        "工具/装配动画/validate_algorithm_trajectory_against_papers.py"
+      ]
+    },
+    {
+      "id": "K-PATH-08",
+      "name": "规划器的 Success 不是零干涉证书",
+      "domain": "PATH",
+      "statement": "路径规划器返回 Success 只表示它到达了自己的分离目标（如凸包分离判据），不是独立的连续零干涉证明。任何候选必须放回全分辨率原始网格，补入 q0、加密平移边，做独立连续碰撞复核后才能进入下游。",
+      "thresholds": {},
+      "provenance": [
+        "本体/paper-algorithm-correction-benchmark.v1.json#authority.assemble_them_all.implementation_audit",
+        "外部算法/sbdp_pilot/verify_ata_translation_path.py"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "旧 B13 解为纯 +Z 直线 101 mm 且求解器报 Success；收紧复核后 q0+200 个状态中有 162 个干涉并发生碰撞重入，判 COMPLETE_REJECT。此外该实现可按 max(-initial_min_distance, 0) 自动抬高碰撞阈值，初始就穿透的代理仍能产出候选。"
+      },
+      "blocks": [
+        "F-ALG-04"
+      ],
+      "implemented_by": [
+        "外部算法/sbdp_pilot/verify_ata_translation_path.py"
+      ]
+    },
+    {
+      "id": "K-PATH-09",
+      "name": "过盈配合的路径干涉是其定义属性",
+      "domain": "PATH",
+      "statement": "过盈件插入路径必然有干涉，用单点基线判它『过度侵入』是错的工具。对过盈件该问的是：动件最终能否脱离。压装力、过盈量与工艺可执行性不在本方法结论内。",
+      "thresholds": {},
+      "provenance": [
+        "工具/装配动画/b_class_insertion_pipeline.py"
+      ],
+      "validation": {
+        "status": "BOUNDARY",
+        "evidence": "74 个工步中 33 个 fit_class 为 INTERFERENCE。"
+      },
+      "blocks": [],
+      "implemented_by": [
+        "工具/装配动画/b_class_insertion_pipeline.py"
+      ]
+    },
+    {
+      "id": "K-PATH-10",
+      "name": "密集采样不等于连续证明",
+      "domain": "PATH",
+      "statement": "有限步长的精确采样即使全部通过，也只能记为 DENSE_SAMPLED_ONLY，不能升级为连续无干涉证明。状态名必须自陈这一区别。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/sbdp_pilot/runs/B2_TOP_rigid_contact_sweep_20260821_v006/README.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "B2.1：22 个禁止接触对已连续证明清空，但初始 0–2 mm 的两个允许配合界面只有 0.05 mm 间隔的 82 次精确 BRep 零正体积证据，状态保持 HOLD_ALLOWED_INTERFACE_WINDOW_DENSE_SAMPLED_ONLY。"
+      },
+      "blocks": [
+        "F-ALG-06"
+      ],
+      "implemented_by": [
+        "外部算法/sbdp_pilot/verify_b2_rigid_core_contact_aware_sweep.py"
+      ]
+    },
+    {
+      "id": "K-TOOL-01",
+      "name": "工具可达性 = 三件事",
+      "domain": "TOOL",
+      "statement": "工具能不能拧到那颗紧固件，必须判三项而不是一项：①工作位干涉（零容差三角形相交）；②进刀通道——从机外沿轴推到工作位逐步全程校验；③回转净空——绕螺钉轴分档转一圈，取最长连续可转角。只验工作位那一帧远远不够。工具位姿由几何推出：工具轴 = 螺钉插入轴，刀头贴端面，柄朝机外。",
+      "thresholds": {
+        "approach_corridor_step_mm": 1.0,
+        "rotation_probe_step_deg": 15.0,
+        "min_continuous_rotation_deg": 45.0
+      },
+      "provenance": [
+        "外部算法/ata_cases/global_interface_scan/runs/tool-reach-v001/"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "39 颗紧固件全部 REACHABLE：工作位不干涉、进刀通道全程通、最小连续可转角 165°。最受限的是电机法兰 M3 沉头螺钉，高扭矩姿态只能连续转 165°~285°。"
+      },
+      "blocks": [
+        "F-TOOL-01"
+      ],
+      "implemented_by": [
+        "工具/物理仿真/tool_reach.py"
+      ]
+    },
+    {
+      "id": "K-TOOL-02",
+      "name": "无头螺钉两端都放一次",
+      "domain": "TOOL",
+      "statement": "无头螺钉（顶丝）两端等粗，『更粗那端是头』对它无效。工具两端各放一次，取几何上通得过的一侧。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/ata_cases/global_interface_scan/runs/tool-reach-v001/"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "反例已发生：起子被指进旁边的电机件，3 颗顶丝里错 2 颗。修正后 3 颗无头螺钉中 2 颗取细端、1 颗取粗端。"
+      },
+      "blocks": [
+        "F-TOOL-01"
+      ],
+      "implemented_by": [
+        "工具/物理仿真/tool_reach.py"
+      ]
+    },
+    {
+      "id": "K-TOOL-03",
+      "name": "杆身净空跳过刀头段",
+      "domain": "TOOL",
+      "statement": "量杆身净空时必须跳过刀头前若干毫米。刀头贴着工件表面是常态不是阻挡，不跳则量出来永远是那个贴合值。",
+      "thresholds": {
+        "skip_tip_mm": 6.0
+      },
+      "provenance": [
+        "外部算法/ata_cases/global_interface_scan/runs/tool-reach-v001/"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "反例已发生：净空量出来全是 0.316 mm 且高度一致。修正后杆身净空最小 3.081 mm、中位 7.635 mm、最大 17.871 mm。"
+      },
+      "blocks": [
+        "F-TOOL-02"
+      ],
+      "implemented_by": [
+        "工具/物理仿真/tool_reach.py"
+      ]
+    },
+    {
+      "id": "K-TOOL-04",
+      "name": "L 型工具两种握持都验",
+      "domain": "TOOL",
+      "statement": "L 型内六角必须验两种握持：短臂入（长臂作力臂，高扭矩姿态，长臂在螺钉附近扫大圆，受限重）与长臂入（短臂作手柄，长臂在机外空转，几乎不受限）。只验后者会得到『全部 360°』这种没有信息量的结论。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/ata_cases/global_interface_scan/runs/tool-reach-v001/"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "39 颗的姿态分布：短臂入 18、直杆 17、长臂入 4。"
+      },
+      "blocks": [
+        "F-TOOL-01"
+      ],
+      "implemented_by": [
+        "工具/物理仿真/tool_reach.py"
+      ]
+    },
+    {
+      "id": "K-TOOL-05",
+      "name": "工具规格配对的来源必须显式",
+      "domain": "TOOL",
+      "statement": "工具与紧固件的规格对应关系若不是工艺卡明写的，必须声明其推定来源（如 ISO 标准对应、沉孔实测反推）。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/ata_cases/global_interface_scan/runs/tool-reach-v001/#claim_boundary"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "Torx M2→T6、M2.5→T8；内六角 M2→1.5 mm、M2.5→2 mm、M3→2.5 mm；非标 WDS887 肩胛螺栓量沉孔壁半径反推为 2 mm。"
+      },
+      "blocks": [],
+      "implemented_by": [
+        "工具/物理仿真/tool_reach.py"
+      ]
+    },
+    {
+      "id": "K-TOOL-06",
+      "name": "压装工装不在手工具方法覆盖内",
+      "domain": "TOOL",
+      "statement": "手工具位姿是同轴配对的退化情形，可由几何推出。压装工装不是同轴插入：位姿要从压头与被压件的贴合面反推，且必须连『工装本身让不让得开』一起验。当前方法不覆盖。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#七"
+      ],
+      "validation": {
+        "status": "BOUNDARY",
+        "evidence": "13 个 TLG 压装工装 STL 在手，未入场景、未验证。"
+      },
+      "blocks": [],
+      "implemented_by": []
+    },
+    {
+      "id": "K-PHY-01",
+      "name": "物理探针只做短前缀方向排序",
+      "domain": "PHY",
+      "statement": "接触物理求解器在本方法中是方向侦察兵，不是精度终局验证器。只跑候选路径最开始的一小段：预先注册第一个要看的方向性特征，出现足以保留或淘汰候选的特征立即停止，不追求精确力值、不跑到路径终点。",
+      "thresholds": {},
+      "provenance": [
+        "本体/混合保真度仿真方案.md#D级"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "B14 SE(3) 三方向比较已产出可区分结果（C0/D1 RESISTED、D2 PROMISING），但公平比较合同本身仍是 BLOCKER（见 K-PHY-02）。"
+      },
+      "blocks": [
+        "F-PHY-01"
+      ],
+      "implemented_by": [
+        "外部算法/libuipc_cases/B14_se3_direction_probe/"
+      ]
+    },
+    {
+      "id": "K-PHY-02",
+      "name": "方向探测必须是同条件多候选带对照的比较",
+      "domain": "PHY",
+      "statement": "至少比较两个方向，使用同一初态、同一代理几何、同一参数，并配套相同的控制项与重复。单方向短跑或『零接触』不得晋级为 PROMISING/PASS；无特征记 AMBIGUOUS。平局、冲突与无特征的处置须预先写进合同。",
+      "thresholds": {
+        "min_candidates": 2
+      },
+      "provenance": [
+        "本体/directional-probe-comparison-audit.v1.json"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "审计判为 BLOCKER：缺 10 类同初态、对照、重复、噪声、平局/冲突与无特征处置合同。"
+      },
+      "blocks": [
+        "F-PHY-01"
+      ],
+      "implemented_by": [
+        "装配工艺/audit_directional_probe_comparison_v1.py"
+      ]
+    },
+    {
+      "id": "K-PHY-03",
+      "name": "探针结论的非蕴含关系",
+      "domain": "PHY",
+      "statement": "必须保持三条非蕴含：方向探针合格 ≠ 完整路径合格；有希望的方向 ≠ 接近路径已接受；求解阻力特征 ≠ 精确几何干涉。",
+      "thresholds": {},
+      "provenance": [
+        "本体/混合保真度仿真方案.md#本体表达"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "已形式化为本体属性约束并在 v5 门禁保持 physical_release=false。"
+      },
+      "blocks": [
+        "F-GOV-01"
+      ],
+      "implemented_by": [
+        "装配工艺/verify_assembly_migration_v5.py"
+      ]
+    },
+    {
+      "id": "K-PHY-04",
+      "name": "未执行的数值求解记 INCONCLUSIVE，不记通过",
+      "domain": "PHY",
+      "statement": "静态资产与几何门禁通过、但数值 runner 未在时间盒内形成可独立审定版本时，结论必须失败关闭为 INCONCLUSIVE_NO_NUMERICAL_EXECUTION。",
+      "thresholds": {},
+      "provenance": [
+        "外部算法/sbdp_pilot/README.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "lead-stub 子项：12 source → 14 rods 资产与三态几何门禁已过，contact-off/on 均未执行，按此判据失败关闭。"
+      },
+      "blocks": [
+        "F-GOV-02"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-PHY-05",
+      "name": "冻结环境不等于真实夹持",
+      "domain": "PHY",
+      "statement": "把已装件合并成单一 world-fixed 表面、把转动关节合并为刚性静态，足以做同模型内的方向排序，但比实物更顶死，且不含实体夹具、基座、重力、抓持包络与柔性预连接。跨到实体结论前必须补齐这四项声明。",
+      "thresholds": {},
+      "provenance": [
+        "本体/混合保真度仿真方案.md#冻结环境不等于真实夹持"
+      ],
+      "validation": {
+        "status": "BOUNDARY",
+        "evidence": "B14 环境为 185 个已装件合并的开表面；九个已知转动关节被合并为刚性静态。"
+      },
+      "blocks": [],
+      "implemented_by": []
+    },
+    {
+      "id": "K-SCN-01",
+      "name": "在场时机按工步给",
+      "domain": "SCN",
+      "statement": "画面不得主张任何早于工步的在场事实。动件从其工步起飞入；静止件从它首次进入该工步静止集的工步起出场；工步内基体从该工步起出场。静止集不一定单调递增（互相独立的子装配各有各的静止集），取首次出现即可，不要再隐回去。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#上片纪律1"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "同一毛病在四个层级各犯一次：单工步作用域 / 台钳组 / 时序静止全集 / 章节分组。"
+      },
+      "blocks": [
+        "F-SCN-01",
+        "F-SCN-02"
+      ],
+      "implemented_by": [
+        "工具/装配动画/build_insertion_scene.py"
+      ]
+    },
+    {
+      "id": "K-SCN-02",
+      "name": "分章判据是时序校验失败",
+      "domain": "SCN",
+      "statement": "互相独立的工位子装配必须分章。判据不是『看着像』，而是：合成一章后时序校验会失败。章节顺序还须与静止集蕴含的先后一致。",
+      "thresholds": {},
+      "provenance": [
+        "装配工艺/assembly-film-plan.v1.json#split_note"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "三层层盘合章则层 2 的轴承撞层 1 的 Crown；臂系与平台合章则 A7.1 的碟片一动就撞月牙臂；B14.C10 的静止集已含臂平台，说明它在 B13 之后，原排在 C5 末尾是错的。"
+      },
+      "blocks": [
+        "F-SCN-03",
+        "F-SCN-04"
+      ],
+      "implemented_by": [
+        "装配工艺/assembly-film-plan.v1.json"
+      ]
+    },
+    {
+      "id": "K-SCN-03",
+      "name": "输出必须承载工艺卡的可执行字段",
+      "domain": "SCN",
+      "statement": "只搬运受控工艺卡、不新增主张，但至少四项必须出现：工装、扭矩、螺纹胶、验收判据。缺了这几项，输出只回答『什么装到哪、朝哪走』，回答不了『用什么装、拧到多少、怎么算装好』。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#上片纪律3"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "工艺卡里 59/76 工步有 tool、36 个有 torque、27 个有 threadlocker；一整版成片全丢了才被发现。"
+      },
+      "blocks": [
+        "F-DEL-04"
+      ],
+      "implemented_by": [
+        "工具/装配动画/build_insertion_scene.py"
+      ]
+    },
+    {
+      "id": "K-SCN-04",
+      "name": "相机按视锥反解，含全程极端位姿",
+      "domain": "SCN",
+      "statement": "相机距离按视锥反解，并把全程极端位姿（含接近位、含绕支点转的中间态）都算进去；上下留出字幕带。不用『1.5×包围盒最大边』一类经验系数。　反解要把顶点投到**相机的右/上基底**上分别解距离取大者，不要用包围球——细长体会被框得很松。相机姿态要用基底显式构造旋转矩阵，不要依赖 look-at 辅助函数的『up』语义。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#上片纪律4",
+        "../104-灵犀x2/本体/X1-质检片交付说明.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "反例已发生：三条臂掉出画面下边缘。　灵犀 X1：用包围球反解，1.27m 的人形只占画面 1/4；改为投到右/上基底后（半宽 319 / 半高 665 / 半深 327mm → 机距 4157mm）构图合适。另外 Blender 的 to_track_quat(track, up) 里 up 指的是『对象自身哪根轴对齐**世界 +Z**』，而这份 CAD 的世界上方向是 +Y——用它得到倾斜 45°、机器人躺着的画面。"
+      },
+      "blocks": [
+        "F-SCN-05"
+      ],
+      "implemented_by": [
+        "工具/装配动画/build_insertion_scene.py"
+      ]
+    },
+    {
+      "id": "K-SCN-05",
+      "name": "源场景保存后重开回读比对",
+      "domain": "SCN",
+      "statement": "编译出的源场景必须存盘后重新打开、回读、与每一个已准入状态比对，才可请求渲染。回读还须拒绝 fixed/deferred 对象上的动画、driver、constraint、错误 parent 和延后件渲染。",
+      "thresholds": {},
+      "provenance": [
+        "本体/paper-algorithm-correction-benchmark.v1.json#PAB-11",
+        "工具/装配动画/runs/README.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "B2 v005 / B14 v003 均以回读 PASS 为准入条件；v001 因生成器未在 Blender Python 异常时返回非零进程状态而被取代。"
+      },
+      "blocks": [
+        "F-SCN-07"
+      ],
+      "implemented_by": [
+        "工具/装配动画/validate_algorithm_trajectory_against_papers.py"
+      ]
+    },
+    {
+      "id": "K-SCN-06",
+      "name": "隐藏对象不进 depsgraph",
+      "domain": "SCN",
+      "statement": "被隐藏的对象不进入依赖图，其世界矩阵停在单位阵。取样前必须把 hide 曲线静音——只改属性没用，动画下一次求值就覆盖回去。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#D6"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "反例已发生：整章渲成空画面，相机退到 158 米外。"
+      },
+      "blocks": [
+        "F-SCN-06"
+      ],
+      "implemented_by": [
+        "工具/装配动画/build_insertion_scene.py"
+      ]
+    },
+    {
+      "id": "K-SCN-07",
+      "name": "表达取舍必须落盘",
+      "domain": "SCN",
+      "statement": "凡是几何与工艺卡都给不出的表达选择（如离体子装配用什么姿态呈现），必须把选择、含义与理由一并落盘，并在成品中标注。另一种做法观感更好但属于在表达层发明位姿，不得默默采用。",
+      "thresholds": {},
+      "provenance": [
+        "装配工艺/assembly-film-plan.v1.json#representation_decision"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "Orbita 选 BENCH_CHAPTERS_IN_PLACE：台钳子装配单独成章、件仍在最终装配位姿，片中标注『台钳工位·离体组装』。"
+      },
+      "blocks": [
+        "F-GOV-03"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-DEL-01",
+      "name": "交付原子化",
+      "domain": "DEL",
+      "statement": "先写临时文件 → 自检（能解出首帧、时长帧数对得上）→ 原子换名。自检不过保留旧文件。临时名的后缀仍须是目标封装格式。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#E2",
+        "本体/装配动画方法论.v2.md#E3"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "反例已发生：拼接直接往成片路径写，-y 先截断，那几秒文件残缺且播放器缓存住；改用 .part 后缀又导致 ffmpeg 认不出封装。"
+      },
+      "blocks": [
+        "F-DEL-02",
+        "F-DEL-03"
+      ],
+      "implemented_by": [
+        "工具/装配动画/assemble_film.py"
+      ]
+    },
+    {
+      "id": "K-DEL-02",
+      "name": "抽帧审核每工步的接近位",
+      "domain": "DEL",
+      "statement": "每章把每个工步的接近位那一帧拼成接触表逐张看——方向装反在这一帧最容易露馅。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配动画方法论.v2.md#六.9"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "已列入复用流程；未统计其检出率。"
+      },
+      "blocks": [
+        "F-DIR-04"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-DEL-03",
+      "name": "覆盖率台账，不伪造运动",
+      "domain": "DEL",
+      "statement": "没被覆盖的工步逐条写明原因，用标注方式如实列出，不在输出里伪造运动。柔性件、无 CAD 件、未定方向件都归此类。",
+      "thresholds": {},
+      "provenance": [
+        "装配工艺/assembly-film-plan.v1.json#C7_UNCOVERED"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "94 工步中 17 个柔性/无几何以标注卡列出，并注明『这些恰恰是实际装配中最易出错的部分』。"
+      },
+      "blocks": [
+        "F-GOV-03"
+      ],
+      "implemented_by": [
+        "工具/装配动画/build_annotation_card.py"
+      ]
+    },
+    {
+      "id": "K-GOV-01",
+      "name": "fail-closed：无证据即阻断",
+      "domain": "GOV",
+      "statement": "流水线前一环不过不进下一环。任一箭头缺证据就停在 HOLD/BLOCKED。校验器返回非零是预期的安全阻断，不是工具故障，且必须在文档中如此说明，以免被当成 bug 绕过。",
+      "thresholds": {},
+      "provenance": [
+        "装配工艺/verify_assembly_migration_v5.py",
+        "装配工艺/Orbita-装配快速纠错报告.v5.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "v5 总门禁当前返回 rc1 / V5_CANDIDATE_BLOCKED / physical_release=false。"
+      },
+      "blocks": [
+        "F-GOV-01"
+      ],
+      "implemented_by": [
+        "装配工艺/verify_assembly_migration_v5.py"
+      ]
+    },
+    {
+      "id": "K-GOV-02",
+      "name": "双实现交叉验证，且两实现的口径必须一致",
+      "domain": "GOV",
+      "statement": "关键结论用两条互相独立的代码路径各算一遍再比对：只共享输入数据，碰撞判据、遍历顺序、加速结构全部另起一套。前提是两侧对『静止集』『许可界面』『脱离』的定义必须一致——否则分歧是伪的，一致也可能是巧合。",
+      "thresholds": {},
+      "provenance": [
+        "工具/物理仿真/gpu_sweep.py",
+        "外部算法/ata_cases/B13_successor_identity/scripts/build_b13_cross_validation.py",
+        "../104-灵犀x2/本体/X1-S1身份绑定报告.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "Orbita：B13 铰轴/端口由 C++ 轴对枚举与 Python 同轴配对各算一遍，6/6 与 6/6 一致；插入扫掠 FCL(CPU) vs Warp(GPU) 方向 97/97 一致、脱离距离 87/97 一致，其余 10 个口径不一致未裁决（O-03）。**灵犀 X1 给出了这条判据的决定性实证**：纯 Python 的 STEP 解析链与 OCCT/XCAF 链，第一次比对 1558 个叶子位置零重合、最近邻最大差 137mm——查出是 Python 链把装配变换取反了（应取 ITEM_DEFINED_TRANSFORMATION 的item_1，本文件里 item_2 恒为单位阵）。改正后 1558/1558 位置一致。**关键在于单跑任一条链都完全自洽**：1444 条边一条不缺变换、树能走通、叶子数与 BOM 对得上，错的位姿照样产出一份漂亮的清单。"
+      },
+      "blocks": [
+        "F-GOV-04"
+      ],
+      "implemented_by": [
+        "工具/物理仿真/gpu_sweep.py"
+      ]
+    },
+    {
+      "id": "K-GOV-03",
+      "name": "哈希锚定 + create-only 运行目录 + 取代关系",
+      "domain": "GOV",
+      "statement": "每次运行写入独立的 create-only 目录；消费的源文件、契约与脚本都记 SHA-256；被取代的运行必须显式记录『被谁取代、为什么』，不得静默删除或覆盖。",
+      "thresholds": {},
+      "provenance": [
+        "工具/装配动画/runs/README.md",
+        "装配工艺/Orbita-装配快速纠错报告.v5.md#冻结入口与复验"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "B2 v001–v004 与 B14 v001–v002 均保留并逐条注明取代理由。"
+      },
+      "blocks": [],
+      "implemented_by": []
+    },
+    {
+      "id": "K-GOV-04",
+      "name": "口径不得混算",
+      "domain": "GOV",
+      "statement": "同一个名词的不同口径必须分列并各带定义，不得合成一个数。没有重算的口径要显式写 null，不得用别的口径顶替。",
+      "thresholds": {},
+      "provenance": [
+        "装配工艺/Orbita-装配快速纠错报告.v5.md#数字怎么读"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "v5 分列六个口径：历史唯一根因 177 / 全局当前开放 null / 旧账本开放 101 / 当前有界 live 7 / 已做记录修正 8 / 状态更新 10。"
+      },
+      "blocks": [
+        "F-GOV-05"
+      ],
+      "implemented_by": [
+        "装配工艺/verify_assembly_migration_v5.py"
+      ]
+    },
+    {
+      "id": "K-GOV-05",
+      "name": "主张边界必须落盘，外部统计不得挪用",
+      "domain": "GOV",
+      "statement": "每个产出物带 claim_boundary 字段，写明它不主张什么。外部论文/基准的统计数字（如某方法在公开数据集上的成功率）不得转述为本项目的成功率。",
+      "thresholds": {},
+      "provenance": [
+        "本体/paper-algorithm-correction-benchmark.v1.json#fail_closed_rules"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "已成文为拒绝规则：Reject any attempt to use 98.55 percent as an Orbita success rate。"
+      },
+      "blocks": [
+        "F-GOV-03"
+      ],
+      "implemented_by": [
+        "工具/装配动画/validate_algorithm_trajectory_against_papers.py"
+      ]
+    },
+    {
+      "id": "K-GOV-06",
+      "name": "方法必须能否定提出它的人的假设",
+      "domain": "GOV",
+      "statement": "一套方法只有在它能推翻方法制定者本人的预设时才算立住，否则它只是把成见形式化。每轮应记录方法否定自身假设的实例。",
+      "thresholds": {},
+      "provenance": [
+        "本体/装配纠错方法论.v1.md#五"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "四个实例：螺钉分组、转轴错配、闭合自由度（否定了制定者假设的单参数运动）、认证区间比动画区间窄。"
+      },
+      "blocks": [],
+      "implemented_by": []
+    },
+    {
+      "id": "K-GOV-07",
+      "name": "计算在外，主权在内",
+      "domain": "GOV",
+      "statement": "语义/治理层（RDF/SPARQL/SHACL/receipt）不做数值几何计算；FK 扫掠、包络避障、齿系解算由工程脚本执行，语义层治理它们的输入身份、结果证据与闭合状态。两边的职责不得互相冒充。",
+      "thresholds": {},
+      "provenance": [
+        "本体/主线-特性链与Semantica重构.md#二"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "已作为分工边界成文；本体 TTL 与门禁脚本按此划分。"
+      },
+      "blocks": [],
+      "implemented_by": []
+    },
+    {
+      "id": "K-GOV-08",
+      "name": "每层要能单命令重建、机器校验、自陈边界",
+      "domain": "GOV",
+      "statement": "任何一层的逻辑都必须满足三条：①能被单条命令重建；②有机器校验；③能指出自己的适用边界。门禁绿是任何一层改动的合并条件。",
+      "thresholds": {},
+      "provenance": [
+        "本体/加固路线图.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "L0–L8 逐层加固台账即按此三条组织；统一门禁 工具/本体生成/门禁.py 一条命令重建全部语义工件并跑全部校验。"
+      },
+      "blocks": [],
+      "implemented_by": [
+        "工具/本体生成/门禁.py"
+      ]
+    },
+    {
+      "id": "K-ID-06",
+      "name": "多命名域身份链",
+      "domain": "ID",
+      "statement": "来源存在多套命名体系（工艺文件名 / BOM 文件名 / 采购物料名 / CAD PRODUCT 名）时，必须先落盘名称匹配率（精确 / 子串 / 接不上三分数），再对接不上的部分逐个建立可复算的几何路径。不得默认名字能对上；子串命中不等于确认，必须检查多候选。 标准件尤其要注意：两套命名往往一套写中文名、一套写国标号，必须经由一张**显式的国标号对照表**才接得上；这张表是领域知识，要能被逐行核对，不是模糊匹配。　歧义解析可以**下移到上下文**：判据不变（仍要求唯一且数量相符），只把范围从整机换成本工序的上下文（侧别、已绑定实例）。同一个过泛的名字在整机里多候选、在上下文里可能唯一。",
+      "thresholds": {},
+      "provenance": [
+        "../104-灵犀x2/本体/X1-S1身份绑定报告.v1.md",
+        "../104-灵犀x2/本体/S1-身份链.v1.json",
+        "../104-灵犀x2/本体/X1-S3实例绑定报告.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "灵犀 X1：SOP 的 150 个唯一物料名，纯字符串分层规则只接上 57 个、覆盖 370/1558 个实例（23.7%）；加入 (国标号, 规格) 二元组规则后接上 81 个、覆盖 1345/1558（86.3%）。该规则的 24 个命中用单件几何独立证实：圆柱销包围盒必须精确等于 d×d×L —— 8/8 一致；内六角螺钉总长应在 [L−0.3, L+d+1] —— 16/16 在带内。接不上的 69 个逐个留档定性（规格不在 CAD 里 / 命名过泛多候选 / 根本不在整机 STEP 里），未猜。　灵犀 X1 的 S3 又补了三条显式规则：别名表（PFR86-2→R86-2 一类供应商系列前缀）、双向包含（SOP 名可能比 CAD 名多一个 X1 前缀）、上下文唯一——合计多解出 28 行物料。"
+      },
+      "blocks": [],
+      "implemented_by": [
+        "../104-灵犀x2/tools/build_identity_chain.py"
+      ]
+    },
+    {
+      "id": "K-ID-07",
+      "name": "源名称编码显式化",
+      "domain": "ID",
+      "statement": "源文件的名称编码必须显式声明并可复算解码，解码失败数必须落盘。编码推定不得默认为 UTF-8。",
+      "thresholds": {},
+      "provenance": [
+        "../104-灵犀x2/本体/X1-S1身份绑定报告.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "灵犀 X1 的 STEP 把 GB18030 裸字节直接写进 ISO-10303-21 字符串（未用 \\X2\\ 转义）：198 个 PRODUCT 名里 192 个含非 ASCII，UTF-8 解码 0/192、GB18030 192/192。OCCT 把这些字节按 latin-1 读进XCAF label，显式回解（encode('latin-1').decode('gb18030')）后 1350 个恢复中文、**199 个仍失败**、28 个本就是 ASCII——即『回解』本身也不是全成功，失败数必须落盘。"
+      },
+      "blocks": [],
+      "implemented_by": []
+    },
+    {
+      "id": "K-ID-08",
+      "name": "镜像件的手性判据",
+      "domain": "ID",
+      "statement": "镜像件是等谱的——体积、表面积、惯量特征值、包围盒全部相同，任何偶次标量都分不开。因此在体积/包围盒/惯量三重匹配出现同指纹碰撞时，必须再用一个奇次量定手性：在（质心，主惯量右手轴）坐标系里算 ∫xyz dV / V²，镜像会让它变号；接近零的判为无手性，不作镜像判定。注意装配变换帮不上忙：STEP 的 AXIS2_PLACEMENT_3D 只能表达右手系，镜像件必然是独立的零件定义。",
+      "thresholds": {},
+      "provenance": [
+        "../104-灵犀x2/本体/X1-S1身份绑定报告.v1.md",
+        "../104-灵犀x2/本体/S1-零件几何指纹.v1.json"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "在灵犀 X1 的 187 个零件上实测（OCP 7.9.3.1，四面体 5 点求积）：130 件本身镜像对称（无手性）、L 20 / R 20、17 件网格不达标不可信；三重匹配的同指纹碰撞只有 4 组 8 件，其中 2 组是真镜像。**原先预判『人形机器人镜像会大面积破坏身份唯一性』被证伪**——X1 的左右主要靠件本身对称加旋转复用。手性判据的实际价值收窄为：同指纹碰撞组内部判『镜像还是重复』的唯一手段，本次靠它证明了 R52≡R52组件、以及两个重复的螺钉定义是同一颗螺钉。未经独立实现交叉验证。"
+      },
+      "blocks": [],
+      "implemented_by": [
+        "../104-灵犀x2/tools/part_geometry_fingerprint.py"
+      ]
+    },
+    {
+      "id": "K-PATH-11",
+      "name": "紧固顺序约束原样搬运",
+      "domain": "PATH",
+      "statement": "工艺声明的拧紧顺序（对角锁附、分步预紧、预紧再终紧）属于工艺约束而非几何约束：几何方法既不产生它也不推翻它，必须原样搬运并在输出中保留。",
+      "thresholds": {},
+      "provenance": [
+        "../104-灵犀x2/本体/X1-方法适用性差距报告.v1.md"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "灵犀 X1 官方 SOP 的 470 条作业步骤里反复出现『对角锁附牢靠』；Orbita 的工艺卡没有这个概念，因此本体此前没有承载它的字段。"
+      },
+      "blocks": [],
+      "implemented_by": []
+    },
+    {
+      "id": "K-IF-07",
+      "name": "网格派生量必须以精确几何自检",
+      "domain": "IF",
+      "statement": "凡是从三角网格算出来的量（体积、矩、碰撞、扫掠），都必须先用精确 B-Rep 的对应量自检；不达标就加密重来，仍不达标则把该件的派生结论标为不可信，不得使用。网格挠度不得写死常数——同一个挠度对大件够用、对小件是灾难。自检还能顺带识别出根本不是水密实体的形状。",
+      "thresholds": {
+        "deflection_rule": "按包围盒对角线成比例，并夹在上下限内",
+        "volume_rel_err_tol": 0.005,
+        "max_refine": 4
+      },
+      "provenance": [
+        "../104-灵犀x2/本体/X1-S1身份绑定报告.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "灵犀 X1：写死 0.5mm 挠度时 187 件里 70 件体积误差 >1%，最严重的小法兰 471%（中位体积仅约 1000mm³）。改为按对角线自适应加自检加密后降到 17 件不达标；再查这 17 件，发现其中 6 件根本没有实体（只有开壳），误差高达 89% 的那件在 0.0045mm 挠度下依旧——说明自检不仅能挡住粗网格，还能把非水密件揪出来。"
+      },
+      "blocks": [
+        "F-GEO-01",
+        "F-GEO-02"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/part_geometry_fingerprint.py"
+      ]
+    },
+    {
+      "id": "K-ID-09",
+      "name": "身份解析必须确定，且两侧同归一化",
+      "domain": "ID",
+      "statement": "名字到实体的解析必须是**确定的**：候选键用有序列表按从严到宽排，取第一个命中，不得用集合承载（集合迭代顺序随进程变，结果不可复现）。查询侧与建键侧必须用**同一个归一化函数**。『去后缀/去前缀』这类宽松键只允许用在查询侧，不得用来建键——否则不同实体会被挤到同一个键上。键冲突必须落盘计数，不得静默取一个。",
+      "thresholds": {},
+      "provenance": [
+        "../104-灵犀x2/本体/X1-S2界面配对报告.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "灵犀 X1 的 S2 一轮里连踩三个，全部静默、全部产出自洽的图：①候选键放 set，实例化圆柱面数在 31741/31570 之间跳；②无条件 rsplit('_',1) 去配置后缀，把 `6DUUED_手臂_关节01固定法兰1` 切出键 `手臂`，造成 38 个键冲突、144 个 occurrence 取到别的零件的圆柱面；③建键侧漏了 NFKC 与 ╱→/，460 个名字完全相同的 occurrence 静默失去几何。三条纪律到位后：实例化数固定 31586、未匹配 0、键冲突降到 2——而剩下那 2 个是真发现（同一颗螺钉的重复零件定义，被键冲突检测独立抓到第二次）。"
+      },
+      "blocks": [
+        "F-ID-07",
+        "F-ID-08",
+        "F-ID-09"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/build_interface_graph.py"
+      ]
+    },
+    {
+      "id": "K-ID-10",
+      "name": "位置一律用世界质心，不用 occurrence 原点",
+      "domain": "ID",
+      "statement": "凡是需要『位置』的判断（侧别、区域、邻近、对称配对），都必须用世界质心 W·com_local，不得用 occurrence 的世界原点。原点是建模坐标系的产物，可能落在任何地方——大量零件的原点就在装配原点上。非实体件用包围盒中心代替质心，并显式标注来源。　**无实体件不能用包围盒中心当位置**：开壳几何的局部包围盒可能远大于零件本身，变换后会落到几何之外。要用面积加权的表面质心。",
+      "thresholds": {},
+      "provenance": [
+        "../104-灵犀x2/本体/X1-S3实例绑定报告.v1.md",
+        "../104-灵犀x2/本体/X1-质检片交付说明.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "灵犀 X1：用原点做左右判定时，1558 个实例里 103 个原点落在矢状对称面上——`手臂_关节02外壳左` 与 `…右` 的原点只差 0.3mm，两侧都被判『居中』，侧别过滤对最需要它的件完全失效。改用世界质心后：镜像成对率 77.8%→81.6%，居中件 103→60，LEFT 750 / RIGHT 748（只差 2），工序绑定的实例数 251→311。对称面常数也从 53.015 精修到 52.992。　另一处：`OmniPicker` 的局部包围盒是 276×424×1114mm（一个夹爪），开壳里有游离面；W·包围盒中心落到实际几何之外 230mm，侧别被判到躯干中部（x=+70），而真实世界包围盒在 x∈[245.8,360.1]（手臂末端）。改用表面质心后落在 ±251/257，两侧对称。187 件里只有它有这个病态包围盒——一个就够把侧别判错。"
+      },
+      "blocks": [
+        "F-ID-10"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/extract_part_com.py",
+        "../104-灵犀x2/tools/build_side_labels.py"
+      ]
+    },
+    {
+      "id": "K-ID-11",
+      "name": "语义朝向必须来自受控来源，且多锚一致",
+      "domain": "ID",
+      "statement": "左/右、前/后一类**语义**朝向，几何只能给出『分成两侧』，给不出『哪侧是左』。必须从受控来源锚定，优先用装配结构自己声明左右的**节点**，不要用零件名。必须用多个独立锚并要求一致；不一致就不裁定，如实标为未定。　同一条也适用于**上方向**：取最大跨度轴为竖直轴，符号由具名锚件（如脚掌/头部）的质心比较定，不要写死 Z。",
+      "thresholds": {
+        "min_anchors": 2
+      },
+      "provenance": [
+        "../104-灵犀x2/本体/X1-S3实例绑定报告.v1.md",
+        "../104-灵犀x2/本体/X1-质检片交付说明.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "灵犀 X1：零件名这条路走不通——CAD 里 9 个名字带左/右/镜的件，原点几乎都落在对称面上（|x偏移| < 0.4mm），而且『镜向左侧小腿-1』实际在右侧，照名字读会反。改用 CAD 声明左右的 4 个子装配节点（左/右踝连杆组件、左/右腰连杆组件）作锚，子件质心中位分别为 +138.78 / -59.86 / +59.99 / -133.96 mm，四个锚一致判定 左 = +x。另有一条未闭合：SOP 的『左/右』是否与 CAD 的『左/右』同义，没有交叉证据。　X1 的世界上方向是 +Y（脚掌 y=−979 / 头部 y=+196，身高 1267mm）；写死 Z 会得到躺着的画面。"
+      },
+      "blocks": [
+        "F-ID-11"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/build_side_labels.py"
+      ]
+    },
+    {
+      "id": "K-GOV-10",
+      "name": "指派/优化类方法必须配唯一性检验，且检验粒度与结论粒度一致",
+      "domain": "GOV",
+      "statement": "凡是靠最小化代价得出结论的方法（指派、匹配、拟合、路径优选），**一定会给出答案**，所以必须配一个唯一性检验：把某个已得结论强制排除后重解，总代价没有实质上升就说明该结论是任意的，标为未定、不得计入。**检验粒度必须与结论粒度一致**：结论是集合级的就在集合级检验，不要在更细的粒度上检验——细粒度上的『并列』往往是伪的，会把方法自己的正确结论判成不可用。",
+      "thresholds": {
+        "tie_epsilon": "按问题的量纲定，需落盘并说明未标定"
+      },
+      "provenance": [
+        "../104-灵犀x2/本体/X1-S3实例绑定报告.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "灵犀 X1 的 S3b：把候选实例指派给同一序列的各道工序。按**槽位**粒度做唯一性检验得到6 ROBUST / 41 有并列，看起来这条路走不通；但同一工序内槽位互换是无差别的（可互换标准件，正是 Orbita 的 F-ID-01 结论），那些并列是伪的。改成按**工序**粒度检验（结论本来就是集合级的）：40 ROBUST / 7 有并列，新增 197 个确定绑定。**只改检验粒度，可用结论差 6.7 倍。** 唯一性检验本身也是这一步能用的前提：没有它，指派会把 78 件任意归属报成已定。"
+      },
+      "blocks": [
+        "F-GOV-06"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/assign_within_series.py"
+      ]
+    },
+    {
+      "id": "K-GOV-11",
+      "name": "判据的适用域必须与判据本身一起验证和声明",
+      "domain": "GOV",
+      "statement": "每条判据除了『阈值』还有一个**适用域**——它在哪类对象上成立。验证必须按域分层做并逐域落盘吻合率；只报全局吻合率等于把适用域这个变量藏起来。不达标的域要显式禁用，达标的域照常启用；『整体不过关就整体禁用』和『整体过关就整体启用』都是错的。　还有一条推论：**当启发式代理的那个量本身可算，就直接算那个量，别用代理。**代理存在的理由通常是『那个量太贵』；一旦算得起，代理就该退场。",
+      "thresholds": {
+        "per_domain_enable_threshold": "按判据定，需落盘；X1 的粗端判据取 0.90"
+      },
+      "provenance": [
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v1.md",
+        "../104-灵犀x2/本体/S7-扫掠认证.v2.json",
+        "../104-灵犀x2/本体/S7-轴选取验证/"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "灵犀 X1 的粗端方向判据：全局 74.6% → 分域后 紧固件/销 94.6% 可用、壳/盖 31.2% 必须禁用、结构/其他 71.4% 不够。只按全局数判，要么误禁掉 217 个本可确定方向的紧固件，要么误用在 9 个壳件与结构件上。分域是把这 226 个动件分成『可用 217 + 降级 9』的唯一办法。　第二个实例：D 类多轴候选的轴按『共享面最多』选，这条启发式验下来只有 **65.6%**（42/64）选中最优轴。而它代理的那个量——『沿该轴能走出多长的只有基线接触的连续段』——本身就能直接算，算一遍每个候选轴只要几秒。改用直接量后，22 个动件的可播距离改善（轴承挡圈 0→20mm、标零挡块 4.5→19mm、OmniPicker 0→5.5mm），另有 13 个确认**任何轴都走不动**（属 O-17 的多自由度问题，不是轴选错）。"
+      },
+      "blocks": [
+        "F-DIR-07"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/merge_s7.py"
+      ]
+    },
+    {
+      "id": "K-GOV-12",
+      "name": "同一对象的字段必须整组来自同一份记录",
+      "domain": "GOV",
+      "statement": "下游消费上游结果时，**同一个对象的一组相关字段必须整组取自同一份记录**，不能一半从这份取、一半回上游另一份取。上游被修正过的字段与未修正的字段拼在一起，会得到一个**从未存在过**的对象，而且看起来完全正常。实现上：把相关字段同组落盘，并在消费端记录字段的来源（如 axis_from），来源不一致要能被看见。",
+      "thresholds": {},
+      "provenance": [
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v1.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "灵犀 X1：穿模审计从 S7 取**插入轴**、从状态链取**起始偏移**。对 19 个换过轴的动件，这等于用『旧轴 + 新偏移』去审——报出 19 个假穿模，而单独看任一份记录都是自洽的。把轴与偏移同组落盘、审计只消费状态链那一份之后，复验从 297/316 变成 **316/316 全通过**。同一轮里还踩过两次同类：审计的排除集取自『这一版可播列表』而不是工艺定义的本工序动件；以及 glob 把两轮审计结果混算（352 变 659）。"
+      },
+      "blocks": [
+        "F-GOV-08"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/audit_path_penetration.py"
+      ]
+    },
+    {
+      "id": "K-PATH-13",
+      "name": "工序内按序安装：静止集不能一律排除本工序全部动件",
+      "domain": "PATH",
+      "statement": "一道工序装多个件时，扫掠的静止集必须按**工序内安装顺序**取：装第 k 件时，同工序的前 k-1 件**已经在场**，第 k 件之后的不在场。把本工序动件一律排除出静止集会造成两个后果：①子装配在一道工序里整体装完时，内部紧固件只跟同为动件的件共轴，于是被误判为『无共轴界面』；②该件在没有配合对象的场景里扫掠，会平凡地『脱离』，基线也是空的——结论过于宽松。",
+      "thresholds": {},
+      "provenance": [
+        "../104-灵犀x2/本体/排查-下肢.v1.md"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "灵犀 X1：原实现把本工序动件一律排除，494 个动件里 105 个判为 E_无共轴界面。而 S2 共轴界面图里**全机真正零共轴配合的实例只有 10 个**——`下肢右组装06` 的 24 颗 M3×8 只跟同为本工序动件的小腿支架共轴，因此全被误判。改为工序内按序（先非紧固件后紧固件、同类按 occ 序）后重跑 S7，效果待复算。"
+      },
+      "blocks": [
+        "F-PATH-14"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/sweep_certify_fcl.py"
+      ]
+    },
+    {
+      "id": "K-IF-08",
+      "domain": "IF",
+      "name": "体积含入检测必须双向",
+      "statement": "判『甲是否穿入乙的材料』必须同时数甲的采样点在乙内与乙的采样点在甲内,裕度各按**自身**采样数计。穿透量相对小件是 100%、相对大件是 0.x%,任何单向检测在『大件吞小件』上必然漏报。网格实现用广义绕数(开壳稳健,|w|>0.5),不用射线奇偶(rtree 依赖+开壳双向撒谎)。",
+      "thresholds": {
+        "margin_abs": 3,
+        "margin_frac": 0.05,
+        "winding_threshold": 0.5
+      },
+      "blocks": [
+        "F-IF-02"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/baseline_region.py"
+      ],
+      "provenance": [
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v8.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "note": "已知坏例 8/8 仍抓、滑动误报 6/6 洗清;全量重审 31 件单向盲区现形;用户案例治愈",
+        "evidence": "已知坏例 8/8 保持被抓、滑动误报 6/6 洗清;v012 全量重审 31 件单向盲区现形并处置(11 收短/20 退场)"
+      }
+    },
+    {
+      "id": "K-SCN-08",
+      "domain": "SCN",
+      "name": "夹持件在场时序由连接图派生",
+      "statement": "被夹集包含某动件的**未绑定**紧固件,按连接拓扑必然晚于该动件安装:其上下文出场必须推迟到被夹件就位之后,且认证/审计场景与画面同步执行同一时序。否则画面是『螺钉先站好、件再挤进来』,而审计若单独移除它们又会『审计过了画面照穿』——场景与画面必须同一份时序。",
+      "thresholds": {},
+      "blocks": [
+        "F-IF-02"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/build_assembly_animation.py",
+        "../104-灵犀x2/tools/audit_path_penetration.py"
+      ],
+      "provenance": [
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v8.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "note": "X1 全片 435 件次、34 章应用;用户案例(0318 摆臂)画面治愈并经双审计+人眼确认",
+        "evidence": "X1 v013 全片 435 件次、34 章应用;0318 案例画面治愈,双审计 394/394 零违规"
+      }
+    },
+    {
+      "id": "K-PATH-14",
+      "domain": "PATH",
+      "name": "认证场景=真实剩余集（逆向拆卸行走）",
+      "statement": "认证扫掠必须沿(给定或推导的)装配序**逆向行走**:整机起步按序倒序逐件移出,每件在移出前的真实剩余集里认证。顺序无关的保守口径(除本工序动件外全部在场)有两个互补盲区:后装件造成假阻挡(K-PATH-05),同工序先装兄弟互穿隐形(F-SCN-12)。『动画在场集是认证静止集的子集故结论成立』对同工序先装件不成立,禁止引用。",
+      "thresholds": {},
+      "blocks": [
+        "F-SCN-12"
+      ],
+      "implemented_by": [
+        "../104-灵犀x2/tools/sweep_sequence_reverse.py",
+        "../104-灵犀x2/tools/fast_walk_check.py"
+      ],
+      "provenance": [
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v8.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "note": "X1:99 件假阻挡救回、59 件真卡死暴露、零回归;ReachyMini 拆卸搜索为由构造先例",
+        "evidence": "X1:99 件假阻挡救回、59 件真卡死暴露、零回归;与逐工序慢速行走同序对照一致"
+      }
+    },
+    {
+      "id": "K-ID-12",
+      "domain": "ID",
+      "name": "连接关系图是装配表达的规范层",
+      "statement": "从已量出的界面(共轴啮合+径向间隙/锥面/平面)固化 net:节点=occurrence,边=真配合,紧固件由 COAX 邻接得被夹集。顺序=图上拓扑约束(结构前/紧固后,紧固件后于被夹件)、可见性=图邻域外遮挡者虚化、完整性=边实现率——三类问题在图上统一表述,成片携带图面板(occ 标签为沟通主键)。图只消费已量出的界面数据,不新增几何主张。",
+      "thresholds": {
+        "coax_min_overlap_mm": 0.5,
+        "coax_max_radial_gap_mm": 1.0
+      },
+      "blocks": [],
+      "implemented_by": [
+        "../104-灵犀x2/tools/build_connection_graph.py"
+      ],
+      "provenance": [
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v8.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "note": "X1 S8:1558 节点/2639 边;顺序(71 席位重排)/虚化(494 件次)/完整性(终章+台账)三处落地",
+        "evidence": "顺序(71 席位重排)/虚化(494 件次)/完整性(终章+台账)三处独立落地;成片图面板作为沟通坐标系"
+      }
+    },
+    {
+      "id": "K-GOV-13",
+      "domain": "GOV",
+      "name": "物理约束一等报警机制",
+      "statement": "任何『装不进』事件禁止静默处理:必须落成约束记录——被挡件/阻挡者/位置mm/图关系(夹持|邻接|图外)/约束语义(阻挡者必后于被挡件,或被挡件换轴换席位换路径)/处置状态(RESOLVED_BY_TIMING|TRIM|REORDER|WITHDRAWAL|BOUNDS_APPROACH|OPEN)。OPEN 即报警并定位打印;收短/退场/重排都必须在台账留痕。",
+      "thresholds": {},
+      "blocks": [],
+      "implemented_by": [
+        "../104-灵犀x2/tools/build_constraint_ledger.py"
+      ],
+      "provenance": [
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v8.md"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "note": "X1 v013:328 条全量留痕、OPEN=0;历史违规(29+21/31+11)全部经台账状态机闭环",
+        "evidence": "X1 v013 台账 328 条全量留痕、OPEN=0;v012→v013 违规(29+21/31+11)全部经状态机闭环"
+      }
+    },
+    {
+      "id": "K-PATH-15",
+      "domain": "PATH",
+      "name": "装配序应为连接图的生成树",
+      "statement": "每个入场件必须经至少一条已实现边挂到已建子图(悬空入场=报警);紧固件应处叶位(后于其全部被夹件)。序的搜索空间由『件的排列』缩到『图的生成树』(BrickNet Tree 表征)。只挂未绑定脚手架的入场(TIER_B)如实分层列出;无边入场需先区分真悬空与 S2 解析面覆盖缺口。",
+      "thresholds": {},
+      "blocks": [],
+      "implemented_by": [
+        "../104-灵犀x2/tools/audit_tree_conformance.py",
+        "../104-灵犀x2/tools/order_by_tree.py"
+      ],
+      "provenance": [
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v8.md"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "note": "产序首轮验证**未通过**(X1 v014):纯拓扑分层 BFS 无视几何可行性,卡死 38→46、TIER_A 205→170、无边入场 45→73——高连接度件先行会围死后续件,退场级联又斩断挂接链。审计半边(一致性度量)有效保留;产序半边的正确形态应是:几何可行性驱动为主键,树约束(挂接性/叶位)作硬约束与破平器。负结果按 K-GOV 纪律记录,v014 已回滚不渲染",
+        "evidence": "X1 v013/v014 对照:/tmp 基线快照 + FILM_v014 state-chain 树一致性复测"
+      }
+    },
+    {
+      "id": "K-GOV-14",
+      "domain": "GOV",
+      "name": "镜像/重复子结构同构一致性",
+      "statement": "同构(含镜像)子装配应有同构解:逐件配对比较可播性/来源/接近距离/轴向,判定分家即报警——要么真几何不对称(值得知道),要么流水线不一致(必须修)。亦是『认证一侧、映射另一侧』复用的前置校验。",
+      "thresholds": {
+        "approach_tolerance_mm": 0.5
+      },
+      "blocks": [],
+      "implemented_by": [
+        "../104-灵犀x2/tools/mirror_isomorphism_check.py"
+      ],
+      "provenance": [
+        "../104-灵犀x2/本体/X1-装配动画交付说明.v8.md"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "note": "首报告 X1:17 对镜像工序,100 处分家(67 缺员/22 行程差/4 可播分家)待分诊",
+        "evidence": "首报告:17 对镜像工序 100 处分家(67 缺员/22 行程差/4 可播分家),分诊未开始"
+      }
+    },
+    {
+      "id": "K-PATH-16",
+      "name": "规划候选的绝对状态与搜索账本合同",
+      "domain": "PATH",
+      "statement": "任一论文规划器或本地路径搜索的输出必须绑定 q0、mover/fixed 分区、按序绝对世界状态、状态摘要、已访问状态数、失败原因、终止条件与每步 remaining/fixed 集；不得只保存相对位移、渲染帧或 Success 布尔。由拆卸反推装配时只反转这个已钉住的绝对状态序列，不能重解释坐标系。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#planning-admission-invariants",
+        "../../../references/s17-boundary-frame-kinematic-assembly.md"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "合同已固化进算法/物理路由规范；尚未在一个与 Orbita、灵犀 X1、Y-Zipper 无关的装配上独立回归。"
+      },
+      "blocks": [
+        "F-ALG-10"
+      ],
+      "implemented_by": [
+        "../../scripts/validate_algorithm_physics_contract.py"
+      ]
+    },
+    {
+      "id": "K-PATH-17",
+      "name": "论文算法身份、适用域与实现成熟度不得混写",
+      "domain": "PATH",
+      "statement": "每条算法路线必须分别记录论文方法身份、本地实现身份、版本/提交钉住、适用 operation class、反向适用性与 claim ceiling。文献中存在、思想适配器、局部实现、已钉执行器、案例验证是五种不同事实；没有官方代码的 SBDP 本地路线只能标为 SBDP_DBG_INSPIRED_NOT_FULL_SBDP_IMPLEMENTATION。论文基准数字不得改写为目标装配的通过率。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#paper-derived-methods"
+      ],
+      "validation": {
+        "status": "BOUNDARY",
+        "evidence": "这是算法身份与主张边界；它本身不证明任何路径可行。"
+      },
+      "blocks": [
+        "F-ALG-11"
+      ],
+      "implemented_by": [
+        "../../scripts/validate_algorithm_physics_contract.py"
+      ]
+    },
+    {
+      "id": "K-KIN-05",
+      "name": "ASAP 类有限夹持稳定性是独立候选门",
+      "domain": "KIN",
+      "statement": "候选装配序若声称重力下可逐步保持，必须用 ASAP 类稳定性适配器显式建模重力、支撑接触、有限夹持/机械手保持数与释放时点；几何无碰路径、最终静态稳定或动画停住都不能替代逐步稳定性。未钉住本地适配器和输入参数时结果只能 NOT_EXECUTED/INCONCLUSIVE。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#paper-derived-methods"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "论文角色已恢复，但本地 ASAP 适配器、版本钉住与跨项目回归尚未完成。"
+      },
+      "blocks": [
+        "F-ALG-12"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-SCN-09",
+      "name": "动作图与爆炸图只表达已认证偏序",
+      "domain": "SCN",
+      "statement": "Agrawala 动作图、Li 偏序 DAG、爆炸布局和分步呈现只能重排或表达已由界面图、依赖关系、路径/工具门禁认证的状态与偏序；表现层不得新增配合边、装配方向、可达性或物理成功主张。布局冲突只能回到上游 HOLD，不能靠画面修饰消失。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#paper-derived-methods"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "动作图/偏序表达边界已定义，统一适配器与陌生装配回归未完成。"
+      },
+      "blocks": [
+        "F-SCN-13"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-PHY-06",
+      "name": "短方向探针与完整接触传力是两条路线",
+      "domain": "PHY",
+      "statement": "S9 只允许对同一 q0、同一代理与同一参数合同下的候选方向跑短前缀并排序；柔性条带驱动、压装、卡扣、线缆、螺纹或需要力/扭矩/功验证的任务必须进入独立 P 接触物理级路线。不得把 S9 的 PROMISING、零接触或数值收敛升级为完整 passage、force transfer、motor capacity 或 physical release。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#physics-route-selection"
+      ],
+      "validation": {
+        "status": "BOUNDARY",
+        "evidence": "这是主张上限与路由边界，不是物理通过证书。"
+      },
+      "blocks": [
+        "F-PHY-02"
+      ],
+      "implemented_by": [
+        "../../scripts/validate_algorithm_physics_contract.py"
+      ]
+    },
+    {
+      "id": "K-PHY-07",
+      "name": "CAD 位姿、libuipc 物理与 Blender 表达三权分离",
+      "domain": "PHY",
+      "statement": "Fusion/源 CAD 冻结世界位姿、occurrence 身份与刚柔分区；libuipc 只消费冻结姿态和专用 solver mesh 产生物理证据；Blender 只读认证状态与遥测。渲染网格、规划代理与求解网格必须分栏并各自哈希；任何开放壳体、断裂线束或仅供显示的网格不得未经可审计重建直接喂入柔性/接触求解器。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#p-level-contact-physics"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "Y-Zipper 路线已采用 CAD pose authority、libuipc solver、Blender read-only 分工；尚未在第二个无关接触驱动装配上复现。"
+      },
+      "blocks": [
+        "F-PHY-03"
+      ],
+      "implemented_by": [
+        "../../scripts/validate_algorithm_physics_contract.py"
+      ]
+    },
+    {
+      "id": "K-PHY-08",
+      "name": "接触力恢复必须版本钉住并闭合力矩功账本",
+      "domain": "PHY",
+      "statement": "完整接触验证必须钉住 libuipc/IPC 版本、force convention 与求解设置，按 body pair 恢复接触力，报告作用反作用残差、关于声明参考点的力矩、驱动功与耗散/储能账本；只有标量接触计数、servo effort 或单体合力不得支持 force transfer/torque 主张。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#p-level-contact-physics"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "版本/符号/体对/力矩/功合同已固化，并在 Y-Zipper 案例形成先例；跨装配独立验证未完成。"
+      },
+      "blocks": [
+        "F-PHY-04"
+      ],
+      "implemented_by": [
+        "../../scripts/validate_algorithm_physics_contract.py"
+      ]
+    },
+    {
+      "id": "K-PHY-09",
+      "name": "接触验证必须有分阶段金丝雀、对照与收敛",
+      "domain": "PHY",
+      "statement": "正式接触运行前必须依次通过静态/无接触/接触开启等金丝雀；每个因果主张必须有 matched counterfactual，只改变被检验因素；至少做时间步/网格或容差收敛与重复性检查。未执行、对照不匹配、数值发散或结论对离散化不稳定一律 INCONCLUSIVE。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#p-level-contact-physics"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "Y-Zipper 案例使用分阶段 canary 与反事实控制；尚未形成跨案例数值阈值。"
+      },
+      "blocks": [
+        "F-PHY-05"
+      ],
+      "implemented_by": [
+        "../../scripts/validate_algorithm_physics_contract.py"
+      ]
+    },
+    {
+      "id": "K-PHY-10",
+      "name": "运动驱动与扭矩受限驱动的主张不可互换",
+      "domain": "PHY",
+      "statement": "prescribed motion/angle servo 可以回答几何跟随、接触拓扑与实现该运动所需的反力/反扭矩；只有显式扭矩受限、功率/速度曲线和控制器饱和模型才能回答给定电机能否驱动。servo 把运动强制做成不等于 motor capacity，所需扭矩小于额度也不自动证明闭环稳定。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#p-level-contact-physics"
+      ],
+      "validation": {
+        "status": "BOUNDARY",
+        "evidence": "这是驱动模型的可识别性边界；不授予任何电机能力主张。"
+      },
+      "blocks": [
+        "F-PHY-06"
+      ],
+      "implemented_by": [
+        "../../scripts/validate_algorithm_physics_contract.py"
+      ]
+    },
+    {
+      "id": "K-PHY-11",
+      "name": "螺纹、压装与卡扣必须走专用接触模型",
+      "domain": "PHY",
+      "statement": "螺纹旋合、压装过盈、卡扣弹性跃迁等动作不能由通用刚体三角形碰撞替代。每类必须声明专用几何/本构/摩擦/驱动/失效模型及其标定证据；没有模型时允许输出几何候选或试验计划，不得输出装配力、锁止、预紧或可重复装配结论。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#threaded-contact-route"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "Factory/Isaac 螺纹路线与压装/卡扣专用建模需求已定位；本地项目级执行器尚未钉住。"
+      },
+      "blocks": [
+        "F-PHY-07"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-PHY-12",
+      "name": "几何复位不等于机械重新锁止",
+      "domain": "PHY",
+      "statement": "路径终态回到 CAD 几何位置、碰撞审计通过或外观闭合，只能支持 geometric reclosure candidate；机械重新锁止还必须观察到对应的接触/弹性/螺纹/卡扣状态、保持能力及反向证伪。没有这些证据时 mechanical relock 与 physical release 必须为 false/UNKNOWN。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#claims-and-transfer-limits"
+      ],
+      "validation": {
+        "status": "BOUNDARY",
+        "evidence": "Y-Zipper 已暴露 geometric reclosure 与 mechanical relock 的主张差；本条固定该边界，不把案例结果普适化。"
+      },
+      "blocks": [
+        "F-PHY-08"
+      ],
+      "implemented_by": [
+        "../../scripts/validate_algorithm_physics_contract.py"
+      ]
+    },
+    {
+      "id": "K-REAL-01",
+      "name": "夹具坐标标定与重夹复现",
+      "domain": "REAL",
+      "statement": "进入实体试验前必须把 CAD 世界系、工件基准、夹具系和测量系显式标定；至少一次完全松夹重装后复测关键位姿与不确定度。未经重夹复现的单次对齐不能支持实体方向、间隙或完成状态主张。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#s11-physical-falsification"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "B13/B14 的夹具标定与重夹复现仍为未闭合 blocker。"
+      },
+      "blocks": [
+        "F-REAL-01"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-REAL-02",
+      "name": "完成状态必须机器可判定",
+      "domain": "REAL",
+      "statement": "实体装到位必须由带单位、基准、阈值、不确定度和采样方法的可观测特性验收；『看起来到位』『动画终帧一致』或操作者手感不能作为机器通过依据。未测量即 NOT_RUN，不得默认为 PASS。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#s11-physical-falsification"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "B13/B14 现有 37 项完成验收均为 NOT_RUN，机器可判定项为 0。"
+      },
+      "blocks": [
+        "F-REAL-02"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-REAL-03",
+      "name": "承载转移与按序松夹必须实测",
+      "domain": "REAL",
+      "statement": "撤去每个临时约束前必须验证载荷已转移到目标连接，按声明顺序逐夹释放并记录位姿/力变化；全部夹具同时松开或只看最终姿态无法定位哪一步丢失承载。任一步超阈值即停止并回退。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#s11-physical-falsification"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "承载转移、按序松夹与松夹后保持合同尚未执行。"
+      },
+      "blocks": [
+        "F-REAL-03"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-REAL-04",
+      "name": "工装撤出路径是实体放行的一部分",
+      "domain": "REAL",
+      "statement": "装到位后必须验证夹具、压头、定位销和工具沿记录路径无碰撤出，且撤出后组件保持在验收窗口内。装件成功但工装被困、撤出擦碰或撤出后失位均为实体失败。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#s11-physical-falsification"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "B13/B14 撤夹完整性尚未形成可执行记录。"
+      },
+      "blocks": [
+        "F-REAL-04"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-REAL-05",
+      "name": "只做风险最高且最能区分候选的最小实体证伪",
+      "domain": "REAL",
+      "statement": "实体试验应从候选路径中选取风险最高、最早失效且最能区分候选的最小动作，预先声明停止/回退条件、观察量与证据哈希；不为验证算法而盲目完成整套装配。只有该最小试验与前置门禁均通过，才可在其覆盖范围内授予 physical release。",
+      "thresholds": {},
+      "provenance": [
+        "../algorithm-physics-routing.md#s11-physical-falsification"
+      ],
+      "validation": {
+        "status": "PLANNED",
+        "evidence": "最小证伪原则已定义，但 Orbita/B13/B14 的目标实体试验尚未执行。"
+      },
+      "blocks": [
+        "F-REAL-05"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-IF-09",
+      "name": "含入采样点必须在材料内部，就位本底受限",
+      "domain": "IF",
+      "statement": "K-IF-04 的『基线含入』只在本底可信时才是许可界面。含入采样点必须取表面采样并沿法向向材料内偏移（用自身绕数校验偏移方向；薄件两侧都不在自身材料内的样本丢弃），不得直接用网格顶点：贴合面上的顶点恰在对方表面上，绕数≈0.5 被计为『内』，本底被虚高（实测衬板对横梁 25%），随后滑进对方壁内 27.8% 仍低于本底+裕度而放行。就位本底任一方向 >2% 即视为 CAD 态重叠或绑定错误，须进入装配态重叠台账（K-DEL-05）并 HOLD 该件的基线豁免。",
+      "thresholds": {
+        "inward_eps_mm": 0.3,
+        "seat_baseline_max_frac": 0.02
+      },
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03",
+        "../occurrence-film-rebuild-playbook.md#七olsk-增量2026-09-03"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "OLSK Large CNC V3 FILM_v005–v008（2026-09-03/04）：修正量具后行走方向翻转（衬板 +X 穿壁→−X 离开 150 mm）且画面口径独立扫描 PATH 30→7→1→0（K-IF-09/K-GOV-15）；行程 20→150 mm 后可读性测量位移不足 423→4 件（K-PATH-19）；F 曲线显式设置后 α/位移无渐变（帧间求值核实，K-SCN-11）；十段审片零布局缺陷（K-SCN-14）；十段审片在机器门全 PASS 的 v007 上找出 21 条三级缺陷并驱动 v008（K-DEL-04）；行走 386 作业、审计 3×83 作业农场化，内存守卫落地（K-GOV-16）。"
+      },
+      "blocks": [
+        "F-IF-03"
+      ],
+      "implemented_by": [
+        "../../tools/baseline_region.py",
+        "../../tools/sweep_sequence_reverse_generic.py",
+        "../../tools/audit_path_penetration_generic.py"
+      ]
+    },
+    {
+      "id": "K-GOV-15",
+      "name": "认证与验证不得共享同一豁免口径",
+      "domain": "GOV",
+      "statement": "路径认证（逆向行走）与成片验证（穿模审计）若使用同一量具与同一基线豁免，验证通过只是自我印证。验证侧必须另有一条不共享豁免的独立口径：画面口径双向含入扫描（不豁免基线接触，记录就位本底与沿路最大含入，分 SEATED_OVERLAP / PATH_OVERLAP），并作为交付硬门（PATH=0）。K-GOV-02 的『两实现口径一致』只约束同一主张的两条实现，不得用来排除独立口径。",
+      "thresholds": {
+        "path_margin_frac": 0.05,
+        "visible_frac_threshold": 0.02
+      },
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "OLSK Large CNC V3 FILM_v005–v008（2026-09-03/04）：修正量具后行走方向翻转（衬板 +X 穿壁→−X 离开 150 mm）且画面口径独立扫描 PATH 30→7→1→0（K-IF-09/K-GOV-15）；行程 20→150 mm 后可读性测量位移不足 423→4 件（K-PATH-19）；F 曲线显式设置后 α/位移无渐变（帧间求值核实，K-SCN-11）；十段审片零布局缺陷（K-SCN-14）；十段审片在机器门全 PASS 的 v007 上找出 21 条三级缺陷并驱动 v008（K-DEL-04）；行走 386 作业、审计 3×83 作业农场化，内存守卫落地（K-GOV-16）。"
+      },
+      "blocks": [
+        "F-GOV-09"
+      ],
+      "implemented_by": [
+        "../../tools/visual_overlap_scan.py",
+        "../../tools/build_acceptance_packet.py"
+      ]
+    },
+    {
+      "id": "K-PATH-18",
+      "name": "穿模的处置是改道再认证，不是收短",
+      "domain": "PATH",
+      "statement": "审计或独立口径报穿模的动件，必须以修正后的量具重跑该件的逆向行走并在候选轴集中换轴（最长干净行程优先），而不是把行程收短到首次接触前。改道失败的件归 not_animated 静态出场（K-DEL-03）。可播行程低于 min_visible_mm 的不得作为动画播放——2 mm 的『弹入』既不可读也掩盖穿模。",
+      "thresholds": {
+        "min_visible_mm": 5.0
+      },
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "已实现并用于 OLSK v006–v008：画面口径回灌（clean_prefix）与 5 mm 最小可见行程（K-PATH-18）；Cryptomatte 可读性测量进入链路与验收包（K-SCN-10）。独立验证待与审片逐件对齐（O-21/O-22）。"
+      },
+      "blocks": [
+        "F-PATH-15"
+      ],
+      "implemented_by": [
+        "../../tools/build_playable_from_seqwalk.py"
+      ]
+    },
+    {
+      "id": "K-PATH-19",
+      "name": "尺度参数按目标机器反解并落盘",
+      "domain": "PATH",
+      "statement": "行走上限、每件帧数、最小取景半宽、上下文半径、遮挡判据半径等尺度参数必须由目标机器的包围盒与动件尺寸反解并写入 run 参数，不得沿用上一案例的数值。1.27 m 人形上的 20 mm 行程在 2.5 m 机床画面里不可辨。",
+      "thresholds": {
+        "walk_cap_mm": "max(150, 0.06×机器最大跨度)，20 mm 内细步 0.25、之后粗步 1.0",
+        "frames_per_mover": "12→30 随行程线性（--fpm-max）",
+        "min_frame_half_width_mm": 200
+      },
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "OLSK Large CNC V3 FILM_v005–v008（2026-09-03/04）：修正量具后行走方向翻转（衬板 +X 穿壁→−X 离开 150 mm）且画面口径独立扫描 PATH 30→7→1→0（K-IF-09/K-GOV-15）；行程 20→150 mm 后可读性测量位移不足 423→4 件（K-PATH-19）；F 曲线显式设置后 α/位移无渐变（帧间求值核实，K-SCN-11）；十段审片零布局缺陷（K-SCN-14）；十段审片在机器门全 PASS 的 v007 上找出 21 条三级缺陷并驱动 v008（K-DEL-04）；行走 386 作业、审计 3×83 作业农场化，内存守卫落地（K-GOV-16）。"
+      },
+      "blocks": [
+        "F-PATH-16"
+      ],
+      "implemented_by": [
+        "../../tools/sweep_sequence_reverse_generic.py",
+        "../../tools/build_assembly_animation_generic.py"
+      ]
+    },
+    {
+      "id": "K-SCN-10",
+      "name": "动作可读性机器门",
+      "domain": "SCN",
+      "statement": "每个动件在其机位中必须可读：屏幕尺寸 ≥ min_px、f0→f1 的屏幕位移 ≥ min_shift_px、运动窗内动件可见像素占其投影 ≥ visible_frac（用对象索引通道渲染取样测量）。不达标须换机位/分组/虚化遮挡者；仍不达标则如实列为『不可读』进入验收包，不得默默交付。",
+      "thresholds": {
+        "min_px": 24,
+        "min_shift_px": 12,
+        "visible_frac": 0.4
+      },
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "已实现并用于 OLSK v006–v008：画面口径回灌（clean_prefix）与 5 mm 最小可见行程（K-PATH-18）；Cryptomatte 可读性测量进入链路与验收包（K-SCN-10）。独立验证待与审片逐件对齐（O-21/O-22）。"
+      },
+      "blocks": [
+        "F-SCN-14"
+      ],
+      "implemented_by": [
+        "../../tools/build_assembly_animation_generic.py"
+      ]
+    },
+    {
+      "id": "K-SCN-11",
+      "name": "状态量阶跃、位移匀速，插值显式落盘并回读",
+      "domain": "SCN",
+      "statement": "对象色/可见性/相机的 F 曲线必须是常量插值，动件位移必须线性；Blender 的『新关键帧插值』偏好对 Python keyframe_insert 不生效，因此必须在存盘前遍历动作显式设置，并在回读中核对 f0+1 帧的位置与颜色（阶跃而非渐变）。",
+      "thresholds": {},
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "OLSK Large CNC V3 FILM_v005–v008（2026-09-03/04）：修正量具后行走方向翻转（衬板 +X 穿壁→−X 离开 150 mm）且画面口径独立扫描 PATH 30→7→1→0（K-IF-09/K-GOV-15）；行程 20→150 mm 后可读性测量位移不足 423→4 件（K-PATH-19）；F 曲线显式设置后 α/位移无渐变（帧间求值核实，K-SCN-11）；十段审片零布局缺陷（K-SCN-14）；十段审片在机器门全 PASS 的 v007 上找出 21 条三级缺陷并驱动 v008（K-DEL-04）；行走 386 作业、审计 3×83 作业农场化，内存守卫落地（K-GOV-16）。"
+      },
+      "blocks": [
+        "F-SCN-15"
+      ],
+      "implemented_by": [
+        "../../tools/build_assembly_animation_generic.py"
+      ]
+    },
+    {
+      "id": "K-SCN-12",
+      "name": "真实外观必须在成片环境里可辨",
+      "domain": "SCN",
+      "statement": "真实 STEP 外观是身份语义，但渲染必须让它可辨：金属 metallic 封顶、粗糙度下限、环境亮度足以让抛光件不映成近黑；透明外观按透明渲染；供应商信号色允许表达层覆盖，但原值必须保留并写明理由（K-SCN-07）。就位件与背景的对比度必须可测。",
+      "thresholds": {
+        "metal_cap": 0.55,
+        "rough_floor": 0.4,
+        "world_grey": 0.3,
+        "clear_alpha": 0.28
+      },
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "OLSK v004 审片：抛光铝件就位即『消失』、窗玻璃纯黑、HGR25 信号绿被误读为调试材质；v005 参数已应用，12 章测试构建目视验证。"
+      },
+      "blocks": [
+        "F-SCN-16"
+      ],
+      "implemented_by": [
+        "../../tools/build_assembly_animation_generic.py"
+      ]
+    },
+    {
+      "id": "K-SCN-13",
+      "name": "遮挡处理有上限且按动件足迹判定",
+      "domain": "SCN",
+      "statement": "遮挡者虚化只针对压在动件足迹前方、且足够大的已在场件，每机位最多 ghost_max 件，α ≤ ghost_alpha；动件整件包围盒落在配合件包围盒内时，配合件在运动窗内虚化；非本台架件以极淡在场作空间参照属于表达取舍，必须落盘并在图例声明（K-SCN-07）。按整章半径挑选遮挡者会把整机虚化成毛玻璃。",
+      "thresholds": {
+        "ghost_max": 8,
+        "ghost_alpha": 0.05,
+        "mate_ghost_alpha": 0.3,
+        "bench_ghost_alpha": 0.03
+      },
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "OLSK v004 单章虚化 33–85 件；v005 builder --ghost-max 8 --ghost-alpha 0.05 --mate-ghost-alpha 0.3 --bench-ghost 0.03。"
+      },
+      "blocks": [
+        "F-SCN-17"
+      ],
+      "implemented_by": [
+        "../../tools/build_assembly_animation_generic.py"
+      ]
+    },
+    {
+      "id": "K-SCN-14",
+      "name": "合成布局与渲染幅面一致",
+      "domain": "SCN",
+      "statement": "渲染幅宽必须等于合成后面板左侧的可见区，右栏面板通高，字幕带高度在构图反解时扣除，副标题超宽须截断；否则机器右端被面板盖住、右下角露出未覆盖画面、标题压在面板上。",
+      "thresholds": {
+        "render_width_px": 1280,
+        "overlay_top_px": 104,
+        "overlay_bottom_px": 118
+      },
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "OLSK Large CNC V3 FILM_v005–v008（2026-09-03/04）：修正量具后行走方向翻转（衬板 +X 穿壁→−X 离开 150 mm）且画面口径独立扫描 PATH 30→7→1→0（K-IF-09/K-GOV-15）；行程 20→150 mm 后可读性测量位移不足 423→4 件（K-PATH-19）；F 曲线显式设置后 α/位移无渐变（帧间求值核实，K-SCN-11）；十段审片零布局缺陷（K-SCN-14）；十段审片在机器门全 PASS 的 v007 上找出 21 条三级缺陷并驱动 v008（K-DEL-04）；行走 386 作业、审计 3×83 作业农场化，内存守卫落地（K-GOV-16）。"
+      },
+      "blocks": [
+        "F-SCN-18"
+      ],
+      "implemented_by": [
+        "../../tools/compose_assembly_film_generic.py",
+        "../../tools/build_assembly_animation_generic.py"
+      ]
+    },
+    {
+      "id": "K-DEL-04",
+      "name": "交付前逐帧审片，三级缺陷为零",
+      "domain": "DEL",
+      "statement": "成片交付前必须分段逐帧审片：多智能体并行，每段取章首、每动件中程与就位帧，按缺陷分类（穿模/静止重叠/透明错误/机位/虚化/材质/其他）与严重度 1–3 记录；三级缺陷为零才可交付，审片记录随验收包。机器门全部 PASS 不等于成片可用。",
+      "thresholds": {
+        "segments": 10,
+        "max_sev3": 0
+      },
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "OLSK Large CNC V3 FILM_v005–v008（2026-09-03/04）：修正量具后行走方向翻转（衬板 +X 穿壁→−X 离开 150 mm）且画面口径独立扫描 PATH 30→7→1→0（K-IF-09/K-GOV-15）；行程 20→150 mm 后可读性测量位移不足 423→4 件（K-PATH-19）；F 曲线显式设置后 α/位移无渐变（帧间求值核实，K-SCN-11）；十段审片零布局缺陷（K-SCN-14）；十段审片在机器门全 PASS 的 v007 上找出 21 条三级缺陷并驱动 v008（K-DEL-04）；行走 386 作业、审计 3×83 作业农场化，内存守卫落地（K-GOV-16）。"
+      },
+      "blocks": [
+        "F-DEL-09"
+      ],
+      "implemented_by": []
+    },
+    {
+      "id": "K-DEL-05",
+      "name": "装配态重叠台账按根因分类并在交付中声明",
+      "domain": "DEL",
+      "statement": "画面口径扫描的 SEATED_OVERLAP（就位态本已重叠）必须按根因分类入验收包：CAD 设计重叠（焊件端板插管、压配角件）/ 无槽嵌入（磁铁）/ 多体拆分体 / 绑定级；交付说明如实声明数量与类型，成片不修改 CAD，也不用画面手段掩盖。",
+      "thresholds": {},
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "OLSK v004：372 对 SEATED 已入验收包 visual_overlap_scan 块；根因分类字段待补。"
+      },
+      "blocks": [
+        "F-DEL-10"
+      ],
+      "implemented_by": [
+        "../../tools/visual_overlap_scan.py",
+        "../../tools/build_acceptance_packet.py"
+      ]
+    },
+    {
+      "id": "K-GOV-16",
+      "name": "重活默认农场化并核实并发",
+      "domain": "GOV",
+      "statement": "逆向行走、穿模审计、渲染默认分片到舰队节点并行执行；启动脚本必须核实实际并发数与负载（pgrep/loadavg），不得假定 xargs -P 的并发生效；输出目录按量具版本隔离，旧量具结果不得混入新链；本机只做编排与中文字幕合成。",
+      "thresholds": {},
+      "provenance": [
+        "../../tools/CHANGELOG.md#2026-09-03",
+        "../occurrence-film-rebuild-playbook.md#五舰队分工模式"
+      ],
+      "validation": {
+        "status": "VALIDATED",
+        "evidence": "OLSK Large CNC V3 FILM_v005–v008（2026-09-03/04）：修正量具后行走方向翻转（衬板 +X 穿壁→−X 离开 150 mm）且画面口径独立扫描 PATH 30→7→1→0（K-IF-09/K-GOV-15）；行程 20→150 mm 后可读性测量位移不足 423→4 件（K-PATH-19）；F 曲线显式设置后 α/位移无渐变（帧间求值核实，K-SCN-11）；十段审片零布局缺陷（K-SCN-14）；十段审片在机器门全 PASS 的 v007 上找出 21 条三级缺陷并驱动 v008（K-DEL-04）；行走 386 作业、审计 3×83 作业农场化，内存守卫落地（K-GOV-16）。"
+      },
+      "blocks": [
+        "F-GOV-10"
+      ],
+      "implemented_by": [
+        "../../tools/farm/walk_launcher_example.py",
+        "../../tools/farm/audit_launcher_example.py"
+      ]
+    },
+    {
+      "id": "K-PATH-20",
+      "name": "顺序先过功能/安装语义，再过几何",
+      "domain": "PATH",
+      "statement": "装配序（工序间与工序内）必须先由功能属性手册的顺序约束（MUST_BEFORE/MUST_AFTER/SAME_BENCH/ACCESS/ADJUST_AFTER/WIRE_BEFORE_CLOSE/SAFETY，带来源与置信度）审计通过，几何可拆序只用于验证，不得作为唯一依据；审计结果（违反/未解析清单）随验收包交付。",
+      "thresholds": {
+        "violated_high_confidence": 0
+      },
+      "provenance": [
+        "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md",
+        "../../tools/audit_sequence_constraints.py"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "OLSK 2026-09-05 功能属性手册 v1、顺序审计 403 条（违反 48/高置信 40）；v010 待复核"
+      },
+      "blocks": [
+        "F-PATH-17"
+      ],
+      "implemented_by": [
+        "../../tools/audit_sequence_constraints.py",
+        "../../tools/function_tracks/SCHEMA.md"
+      ]
+    },
+    {
+      "id": "K-PATH-21",
+      "name": "工序内序：承载件先、接触支撑、紧固件后",
+      "domain": "PATH",
+      "statement": "工序内播放序 = 种子（功能线指定的承载件，否则与前序在场件接触且最大的非紧固件）→ 逐件贪心（下一件必须与已放置件有 S8 接触，按接触强度/尺寸）→ 紧固件在其全部被夹件之后 → 耦合对末尾；无接触记录的件单列台账；改序工序必须重跑序列感知行走。",
+      "thresholds": {
+        "unsupported_entities_reviewed": true
+      },
+      "provenance": [
+        "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md",
+        "../../tools/build_play_order_functional.py"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "OLSK 2026-09-05 功能属性手册 v1、工序内播放序 v2、单元结合认证、S4 v2、v010 表达层；v010 审片/验收待做（见 lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md）"
+      },
+      "blocks": [
+        "F-PATH-17"
+      ],
+      "implemented_by": [
+        "../../tools/build_play_order_functional.py",
+        "../../tools/sweep_sequence_reverse_generic.py"
+      ]
+    },
+    {
+      "id": "K-SCN-15",
+      "name": "台架组整体上机要有动作",
+      "domain": "SCN",
+      "statement": "手册 preparing 分组的结合工序必须表达单元整体位移：单元 = 台架工序动件展开，六个世界轴逆向行走认证净行程（并列优先从上方落装），落成为 kind=unit 动件（S3/S7/可播表/播放序同版本）；净行程 < 40 mm 的单元保留在场汇合并记 HOLD。",
+      "thresholds": {
+        "min_unit_travel_mm": 40
+      },
+      "provenance": [
+        "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md",
+        "../../tools/walk_unit_joins.py",
+        "../../tools/materialize_unit_joins.py"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "OLSK 2026-09-05 功能属性手册 v1、工序内播放序 v2、单元结合认证、S4 v2、v010 表达层；v010 审片/验收待做（见 lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md）"
+      },
+      "blocks": [
+        "F-SCN-19"
+      ],
+      "implemented_by": [
+        "../../tools/walk_unit_joins.py",
+        "../../tools/materialize_unit_joins.py",
+        "../../tools/freeze_film_state_generic.py"
+      ]
+    },
+    {
+      "id": "K-SCN-16",
+      "name": "就位可见与动件可辨的机位/时序门",
+      "domain": "SCN",
+      "statement": "遮挡/包壳虚化的恢复键放在章末而非组末或就位帧；每个动件就位后停顿 ≥ 6 帧；动件半径 ≥ 可见画面半高 16%（不足则推近并以动件为中心）；|插入轴·视线| ≤ 0.85；台架章隐藏非本组件而不是极淡在场；剖切用隐藏不用半透明。",
+      "thresholds": {
+        "seat_hold_frames": 6,
+        "min_mover_frac": 0.16,
+        "axis_view_max": 0.85
+      },
+      "provenance": [
+        "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md",
+        "../../tools/build_assembly_animation_generic.py"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "OLSK 2026-09-05 功能属性手册 v1、工序内播放序 v2、单元结合认证、S4 v2、v010 表达层；v010 审片/验收待做（见 lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md）"
+      },
+      "blocks": [
+        "F-SCN-20"
+      ],
+      "implemented_by": [
+        "../../tools/build_assembly_animation_generic.py",
+        "../../tools/compose_assembly_film_generic.py"
+      ]
+    },
+    {
+      "id": "K-KIN-06",
+      "name": "柔性词表判定前先列名给人看",
+      "domain": "KIN",
+      "statement": "把件判为柔性（不作动画）的名称词表必须排除 duct/chain/gland/tie/holder/clamp/channel/pulley/fixer/sensor/attacher 等刚体词，且判定结果按件名列表随记录落盘供人复核；被吞件数 > 0 时不得静默。",
+      "thresholds": {},
+      "provenance": [
+        "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md",
+        "../../tools/reclassify_s4_flexible.py"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "OLSK 2026-09-05 功能属性手册 v1、工序内播放序 v2、单元结合认证、S4 v2、v010 表达层；v010 审片/验收待做（见 lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md）"
+      },
+      "blocks": [
+        "F-KIN-07"
+      ],
+      "implemented_by": [
+        "../../tools/reclassify_s4_flexible.py",
+        "../../tools/build_playable_from_seqwalk.py"
+      ]
+    },
+    {
+      "id": "K-DEL-06",
+      "name": "功能属性手册与顺序审计是成片交付前置",
+      "domain": "DEL",
+      "statement": "交付装配影片前必须有《组件功能属性手册》（每单元/部套：功能、原理、安装方式、顺序约束、影片对照，来源与置信度）与顺序审计记录；高置信违反 > 0 不得交付。",
+      "thresholds": {
+        "violated_high_confidence": 0
+      },
+      "provenance": [
+        "../../lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md",
+        "../../tools/function_tracks/SCHEMA.md"
+      ],
+      "validation": {
+        "status": "APPLIED_UNVALIDATED",
+        "evidence": "OLSK 2026-09-05 功能属性手册 v1、工序内播放序 v2、单元结合认证、S4 v2、v010 表达层；v010 审片/验收待做（见 lessons-inbox/20260905-olsk-functional-order-and-unit-joins.md）"
+      },
+      "blocks": [
+        "F-PATH-17"
+      ],
+      "implemented_by": [
+        "../../tools/function_tracks/build_function_manual.py",
+        "../../tools/audit_sequence_constraints.py",
+        "../../tools/build_acceptance_packet.py"
+      ]
+    }
+  ]
+}

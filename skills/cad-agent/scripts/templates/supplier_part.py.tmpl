@@ -1,0 +1,79 @@
+import adsk.core
+import adsk.fusion
+import json
+import traceback
+
+DOC_NAME = __DOC_NAME__
+EXPECTED_LINEAGE = __LINEAGE__
+STEP_PATH = __STEP_PATH__
+PART_NUMBER = __PART_NUMBER__
+TARGET_NAME = __TARGET_NAME__
+DESCRIPTION = __DESCRIPTION__
+MATRIX = __MATRIX__
+SAVE_COMMENT = __SAVE_COMMENT__
+
+def _items(collection):
+    return [collection.item(index) for index in range(collection.count)]
+
+result = {"success": False, "stage": "import_supplier_part", "part_number": PART_NUMBER, "target": TARGET_NAME}
+try:
+    app = adsk.core.Application.get()
+    doc = app.activeDocument
+    if doc is None or str(doc.name) != DOC_NAME:
+        raise RuntimeError("active document is not " + DOC_NAME + ": " + str(getattr(doc, "name", None)))
+    data_file_before = doc.dataFile
+    if data_file_before is None or str(data_file_before.id) != EXPECTED_LINEAGE:
+        raise RuntimeError("lineage mismatch")
+    if not doc.isSaved or doc.isModified:
+        raise RuntimeError("document must be saved and unmodified before import")
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    root = design.rootComponent
+    before = set(str(o.component.name) for o in _items(root.allOccurrences))
+    if TARGET_NAME in before:
+        raise RuntimeError("target occurrence already exists: " + TARGET_NAME)
+    top_before = root.occurrences.count
+    manager = app.importManager
+    options = manager.createSTEPImportOptions(STEP_PATH)
+    options.isViewFit = False
+    if not manager.importToTarget(options, root):
+        raise RuntimeError("importToTarget returned False")
+    new_top = [o for o in _items(root.occurrences) if str(o.component.name) not in before]
+    if len(new_top) != 1:
+        raise RuntimeError("expected exactly one new top-level occurrence, found " + str(len(new_top)))
+    occ = new_top[0]
+    imported_name = str(occ.component.name)
+    occ.component.name = TARGET_NAME
+    occ.component.description = DESCRIPTION
+    matrix = adsk.core.Matrix3D.create()
+    matrix.setWithArray([
+        MATRIX[0], MATRIX[1], MATRIX[2], MATRIX[3] / 10.0,
+        MATRIX[4], MATRIX[5], MATRIX[6], MATRIX[7] / 10.0,
+        MATRIX[8], MATRIX[9], MATRIX[10], MATRIX[11] / 10.0,
+        MATRIX[12], MATRIX[13], MATRIX[14], MATRIX[15],
+    ])
+    occ.transform = matrix
+    if design.snapshots.hasPendingSnapshot:
+        design.snapshots.add()
+    bodies = occ.bRepBodies.count + sum(child.bRepBodies.count for child in _items(occ.childOccurrences))
+    bb = occ.boundingBox
+    saved = doc.save(SAVE_COMMENT)
+    data_file = doc.dataFile
+    result.update({
+        "success": True,
+        "imported_component_name": imported_name,
+        "occurrence_name": str(occ.component.name),
+        "top_level_before": top_before,
+        "top_level_after": root.occurrences.count,
+        "bodies_in_occurrence": bodies,
+        "bounding_box_mm": {"min": [bb.minPoint.x * 10.0, bb.minPoint.y * 10.0, bb.minPoint.z * 10.0], "max": [bb.maxPoint.x * 10.0, bb.maxPoint.y * 10.0, bb.maxPoint.z * 10.0]} if bb is not None else None,
+        "save_returned": bool(saved),
+        "is_saved": bool(doc.isSaved),
+        "is_modified": bool(doc.isModified),
+        "version": int(data_file.versionNumber) if data_file is not None else None,
+    })
+except Exception as exc:
+    result.update({"success": False, "error": str(exc), "trace": traceback.format_exc()[-1500:]})
+print(json.dumps(result))
+
+def run(context):
+    pass

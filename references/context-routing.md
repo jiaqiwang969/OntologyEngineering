@@ -18,6 +18,7 @@
 
 | 本轮需要的产出 | 起点与进一步选择 |
 | --- | --- |
+| 供应商资料中的功能机理、选型、装配、失效或规格证据 | [供应商工程知识](supplier-knowledge.md)；从当前项目生成快照并调用实际检索，根入口或专业模块核适用性后回写原决定 |
 | 实际网页中的定位、填写、选择与结果读取 | [Jev Ultrafast 浏览器工具](jev-browser-tool.md)；遵守指定账号及浏览器方式，下载与工程结果分别验收 |
 | 几何、图纸、装配或机构的原生结果 | [cad-agent](../skills/cad-agent/SKILL.md)；制造条件确实影响结构时才联动工艺 |
 | 工艺路线、设备供应商、检验、资源成本或交期比较 | [manufacturing-process-cost](../skills/manufacturing-process-cost/SKILL.md)；保持对象、数量、费用与时段口径 |
@@ -100,7 +101,7 @@ Jev 接受情景和明确问题，分别判断多项能力是否需要。每项�
 
 ## 默认调用
 
-由 agent 在私有任务工作区准备当前上下文，调用前删去不必要的私密细节；用户已禁止
+由 agent 在根 skill 的 `var/projects/<项目>/` 私有任务工作区准备当前上下文，调用前删去不必要的私密细节；用户已禁止
 资料外发时保持该边界。以下是输入结构，实际内容从当前任务续接，不让用户手填：
 
 ```json
@@ -115,9 +116,10 @@ Jev 接受情景和明确问题，分别判断多项能力是否需要。每项�
 
 ```bash
 python3 scripts/route_engineering_task.py \
-  --input /private/task/context.json --output /private/task/routing-001
+  --input var/projects/example/context.json --output var/projects/example/routing-001
 ```
 
+输出必须是根 skill `var/` 下的新目录；源码、共享方法和旧回执均不覆盖。项目记录不随核心包分发。
 该入口仅用 Python 标准库及现有 Jev 适配器，即使正在准备 Semantica 安装，也可先
 进行情景判断。凭据沿现有本地文件选择规则读取，不进入任务文件或日志。模型使用
 [能力说明](context-capabilities.json)中的精确版本；每次保留上下文、问题、代码、

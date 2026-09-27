@@ -16,6 +16,7 @@ import sys
 import time
 
 from .jev_transport import ENDPOINT, JevTransport, pinned_model, resolve_credential_file, validate_response
+from .local_paths import private_path
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "runtime/jev-ultrafast"
@@ -47,7 +48,10 @@ def source_identity(runtime=RUNTIME):
     if hashlib.sha256(requirements.read_bytes()).hexdigest() != lock["requirements_sha256"]:
         raise ValueError("browser_dependency_lock_mismatch")
     return {"repository": lock["repository"], "commit": lock["commit"],
-            "lock_sha256": hashlib.sha256((runtime / "source-lock.json").read_bytes()).hexdigest()}
+            "lock_sha256": hashlib.sha256((runtime / "source-lock.json").read_bytes()).hexdigest(),
+            "adapter_code": {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in (
+                "ontology_engineering/jev_browser.py", "ontology_engineering/jev_transport.py",
+                "ontology_engineering/local_paths.py")}}
 
 
 def doctor():
@@ -60,9 +64,11 @@ def doctor():
         except importlib.metadata.PackageNotFoundError:
             actual = None
         dependencies[name] = {"expected": expected, "installed": actual, "matches": actual == expected}
-    ready = sys.version_info >= (3, 12) and all(v["matches"] for v in dependencies.values())
+    python = {"required": ">=3.12", "version": ".".join(map(str, sys.version_info[:3])),
+              "compatible": sys.version_info >= (3, 12)}
+    ready = python["compatible"] and all(v["matches"] for v in dependencies.values())
     return {"status": "local_runtime_ready" if ready else "setup_required", "source": identity,
-            "dependencies": dependencies, "browser_connection": "not_checked",
+            "python": python, "dependencies": dependencies, "browser_connection": "not_checked",
             "website_account": "not_checked", "live_task": "not_run"}
 
 
@@ -185,9 +191,7 @@ def write_json(path, value):
 
 def execute(task, output, factory, identity):
     """Record a single bounded run; never retry an ambiguous browser mutation."""
-    output = Path(output).expanduser().resolve()
-    if output.is_relative_to(ROOT):
-        raise ValueError("browser_records_must_be_in_private_task_workspace")
+    output = private_path(output, "browser_records")
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     write_json(output / "task.json", task)
     started = time.monotonic()

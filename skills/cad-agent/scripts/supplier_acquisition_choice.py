@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT))
 from ontology_engineering.jev_transport import (
     JevTransport, pinned_model, resolve_credential_file, validate_response,
 )
+from ontology_engineering.local_paths import private_path
 
 
 def digest(value):
@@ -120,9 +121,7 @@ def prepare(context, observation):
 
 
 def choose(context, observation, output, *, transport=None):
-    output = Path(output).resolve()
-    if output.is_relative_to(ROOT):
-        raise ValueError('private_project_output_required')
+    output = private_path(output, 'supplier_choice_output')
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     payload, choices = prepare(context, observation)
     write(output/'context.json', context)

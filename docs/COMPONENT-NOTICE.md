@@ -7,7 +7,7 @@ No customer work, credentials, private history or physical product is released.
 | Component | Terms and provenance |
 |---|---|
 | Owner-authored engineering methods and operational code | Root [MIT license](../LICENSE). |
-| Semantica 0.6.5+oe.6 | Unchanged [source lock](../runtime/semantica-source-lock.json); upstream MIT license and book-derived chapter-package NOTICE remain inside the wheel. Downstream rights for book-derived assets require their own review. |
+| Semantica 0.6.5+oe.7 | Reviewed [source lock](../runtime/semantica-source-lock.json); upstream MIT license and book-derived chapter-package NOTICE remain inside the wheel. Downstream rights for book-derived assets require their own review. |
 | Frozen manufacturing package | Existing [notice](../runtime/vendor/MANUFACTURING-NOTICE.md); synthetic cases only. |
 | Jev Ultrafast snapshot | Upstream MIT, exact commit and files in [source lock](../runtime/jev-ultrafast/source-lock.json); [license](../runtime/jev-ultrafast/upstream/LICENSE). Browser Harness and other Python dependencies retain their own licenses. |
 | NX orchestration and general CAD methods | Owner-authored or AI-assisted code/templates under root MIT. Siemens NX, its license, host and native acceptance are supplied separately. Retired Fusion runtime is absent. |

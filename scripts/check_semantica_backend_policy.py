@@ -536,6 +536,11 @@ def _discover_surfaces(root: Path) -> tuple[list[tuple[Path, str]], list[Finding
     findings: list[Finding] = []
     resolved_root = root.resolve()
     for directory, directory_names, file_names in os.walk(root, followlinks=False):
+        # Installed originals and private work are not distributable source.
+        # Restrict this omission to the two root-owned data trees: an active
+        # module named var/ or sources/ deeper in the code still gets scanned.
+        if Path(directory).resolve() == resolved_root:
+            directory_names[:] = [name for name in directory_names if name not in {"var", "sources"}]
         for name in directory_names:
             candidate = Path(directory) / name
             if name not in IGNORED_DIRECTORY_NAMES and candidate.is_symlink():

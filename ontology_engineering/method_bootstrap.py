@@ -19,14 +19,14 @@ import uuid
 
 from ontology_engineering import semantic_engagement as entry
 from ontology_engineering import semantica_runtime as runtime
-from scripts.semantic_bundle_transport import (
+from ontology_engineering.semantic_bundle_transport import (
     ROOT, _regular_inside, load_bundle, safe_relative, validate_data_archive,
 )
 
 LOCK = "runtime/semantic-bootstrap.json"
 CODE = ("ontology_engineering/method_bootstrap.py", "scripts/method_bootstrap.py",
         "ontology_engineering/semantic_engagement.py", "ontology_engineering/semantica_runtime.py",
-        "scripts/semantic_bundle_transport.py")
+        "ontology_engineering/semantic_bundle_transport.py", "scripts/semantic_bundle_transport.py")
 CATEGORIES = ("ontology", "competency_questions", "shapes", "queries", "rules",
               "cases", "contract", "provenance")
 CAPS = ["semantic.package.load", "sparql.select", "shacl.validate", "rule.forward_chain"]

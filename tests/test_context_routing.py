@@ -7,7 +7,13 @@ import sys
 import pytest
 
 from ontology_engineering import context_routing as routing
+from ontology_engineering import local_paths
 from ontology_engineering.jev_transport import TransportError
+
+
+@pytest.fixture(autouse=True)
+def isolated_skill_root(tmp_path, monkeypatch):
+    monkeypatch.setattr(local_paths, "SKILL_ROOT", tmp_path)
 
 
 def test_routing_import_works_without_semantica_or_site_packages():
@@ -62,6 +68,8 @@ def test_context_and_real_sources_are_bound_without_paths_in_model_payload():
     assert all(source["sha256"] for source in item["sources"] if source["path"])
     assert str(routing.ROOT) not in json.dumps(item["payload"])
     assert item["identity"]["request_sha256"] == routing.digest(item["payload"])
+    assert item["identity"]["code"]["ontology_engineering/local_paths.py"] == routing.digest(
+        (routing.ROOT / "ontology_engineering/local_paths.py").read_bytes())
     assert item["sources"][-1]["availability"] == "requires_session_discovery"
 
 
@@ -84,7 +92,7 @@ def test_missing_source_keeps_needed_candidate_and_no_execution(tmp_path):
     item = prepared()
     item["sources"][0].update(availability="source_missing", sha256=None)
     fake = Fixture(response)
-    result = routing.run(item, tmp_path / "run", transport=fake)
+    result = routing.run(item, tmp_path / "var/run", transport=fake)
     assert result["status"] == "completed" and result["execution_kind"] == "fixture"
     assert "cad" in result["candidate_routes"]
     assert result["routes"][0]["source"]["availability"] == "source_missing"
@@ -95,23 +103,23 @@ def test_missing_source_keeps_needed_candidate_and_no_execution(tmp_path):
 def test_partial_retry_preserves_first_answers_and_only_retries_missing(tmp_path):
     fake = Fixture(lambda payload: response(payload, "needed", omit=("cad",)) if len(payload["questions"]) > 1
                    else response(payload, "not_needed"))
-    result = routing.run(prepared(), tmp_path / "run", transport=fake, sleeper=lambda _: None)
+    result = routing.run(prepared(), tmp_path / "var/run", transport=fake, sleeper=lambda _: None)
     assert len(fake.calls) == 2 and set(fake.calls[1]["questions"]) == {"cad"}
     assert result["status"] == "completed" and "cad" not in result["candidate_routes"]
     assert result["candidate_routes"]
     assert result["usage"]["input_tokens"] == 20
-    assert (tmp_path / "run/request-1.json").exists()
-    assert (tmp_path / "run/response-2.json").exists()
+    assert (tmp_path / "var/run/request-1.json").exists()
+    assert (tmp_path / "var/run/response-2.json").exists()
 
 
 def test_unknown_answer_is_distinct_from_service_failure(tmp_path):
-    unknown = routing.run(prepared(), tmp_path / "unknown", transport=Fixture(lambda p: response(p, "not_established")))
+    unknown = routing.run(prepared(), tmp_path / "var/unknown", transport=Fixture(lambda p: response(p, "not_established")))
     assert unknown["status"] == "completed" and not unknown["candidate_routes"]
     assert all(r["model_status"] == "answered" for r in unknown["routes"])
     def timeout(_):
         raise TransportError("connection_or_timeout", retryable=True)
     fake = Fixture(timeout)
-    failed = routing.run(prepared(), tmp_path / "failed", transport=fake, sleeper=lambda _: None)
+    failed = routing.run(prepared(), tmp_path / "var/failed", transport=fake, sleeper=lambda _: None)
     assert len(fake.calls) == 2 and failed["status"] == "unavailable"
     assert all(r["model_status"] == "not_answered" and r["need"] == "not_established" for r in failed["routes"])
     assert failed["usage"]["unreported_attempts"] == 2
@@ -121,7 +129,7 @@ def test_missing_credential_produces_explicit_unavailable_report(tmp_path, monke
     def absent(*args, **kwargs):
         raise ValueError("jev_credential_missing")
     monkeypatch.setattr(routing, "resolve_credential_file", absent)
-    result = routing.run(prepared(), tmp_path / "run")
+    result = routing.run(prepared(), tmp_path / "var/run")
     assert result["status"] == "unavailable" and result["attempts"] == 0
     assert result["transport_errors"] == ["credential_unavailable"]
 
@@ -129,16 +137,25 @@ def test_missing_credential_produces_explicit_unavailable_report(tmp_path, monke
 def test_model_identity_mismatch_cannot_supply_candidates(tmp_path):
     def wrong_model(payload):
         value = response(payload); value["model"] = "jev-99.0.0"; return value
-    result = routing.run(prepared(), tmp_path / "run", transport=Fixture(wrong_model))
+    result = routing.run(prepared(), tmp_path / "var/run", transport=Fixture(wrong_model))
     assert result["status"] == "unavailable" and not result["candidate_routes"]
     assert result["transport_errors"] == ["resolved_model_mismatch"]
 
 
 def test_existing_output_is_not_overwritten_or_reissued(tmp_path):
-    output = tmp_path / "run"; output.mkdir(); (output / "history").write_text("retained")
+    output = tmp_path / "var/run"; output.mkdir(parents=True); (output / "history").write_text("retained")
     fake = Fixture(response)
     with pytest.raises(FileExistsError): routing.run(prepared(), output, transport=fake)
     assert not fake.calls and (output / "history").read_text() == "retained"
+
+
+def test_output_cannot_write_core_or_external_paths_before_calling_model(tmp_path):
+    fake = Fixture(response)
+    for output in (tmp_path / "references/run", tmp_path.parent / "outside-routing"):
+        with pytest.raises(ValueError, match="must_be_inside_skill"):
+            routing.run(prepared(), output, transport=fake)
+        assert not output.exists()
+    assert not fake.calls
 
 
 def test_external_skill_must_resolve_and_reference_labels_are_rejected(tmp_path):

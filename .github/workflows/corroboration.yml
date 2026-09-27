@@ -11,7 +11,7 @@ on:
 jobs:
   engineering-integration:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -20,6 +20,11 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: runtime/requirements.txt
+
+      - name: Install local PDF extraction and rendering tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
 
       - name: Install and verify the pinned runtime
         run: |
@@ -30,7 +35,7 @@ jobs:
         run: python scripts/check_semantica_backend_policy.py --mode strict
 
       - name: Verify repository contracts and Jev integration
-        run: python -m pytest -q tests --ignore=tests/test_jev_browser_tool.py
+        run: python -m pytest -q tests --ignore=tests/test_jev_browser_tool.py --durations=20 -o faulthandler_timeout=120
 
       - name: Verify isolated browser tooling without a live browser
         run: |
@@ -40,8 +45,8 @@ jobs:
       - name: Check privacy and build both portable packages
         run: |
           python scripts/check_public_privacy.py
-          python scripts/package_skill.py --output "$RUNNER_TEMP/ontology-engineering-full.zip"
-          python scripts/build_shareable_core.py --output "$RUNNER_TEMP/ontology-engineering-core.zip"
+          python scripts/package_skill.py --output "$GITHUB_WORKSPACE/var/builds/ontology-engineering-full.zip"
+          python scripts/build_shareable_core.py --output "$GITHUB_WORKSPACE/var/builds/ontology-engineering-core.zip"
 
   cad-evidence:
     runs-on: ubuntu-latest
@@ -62,6 +67,26 @@ jobs:
           skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/test_cad_process_handoff.py
           skills/cad-agent/.venv/bin/python skills/cad-agent/scripts/test_remote_assembly_mechanism.py
           skills/cad-agent/.venv/bin/python skills/manufacturing-process-cost/scripts/test_cad_handoff_to_q21.py
+
+  book-snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: runtime/requirements.txt
+
+      - name: Install runtime (pinned)
+        run: |
+          bash runtime/setup_runtime.sh
+          echo "$GITHUB_WORKSPACE/runtime/.venv/bin" >> "$GITHUB_PATH"
+
+      - name: Verify both books, guides, and TeX snapshots against Semantica
+        run: semantica package verify-books --book-root . --json
 
   demos:
     runs-on: ubuntu-latest
@@ -85,9 +110,6 @@ jobs:
 
       - name: Validate Semantica's authoritative 29-chapter registry
         run: python scripts/validate_chapter_contracts.py
-
-      - name: Verify both books, guides, and TeX snapshots against Semantica
-        run: semantica package verify-books --book-root . --json
 
       - name: Verify maintained book-source factories
         run: |

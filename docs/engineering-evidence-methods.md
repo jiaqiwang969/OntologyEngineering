@@ -23,7 +23,7 @@
 
 ## 架构和兼容
 
-Semantica 是唯一执行正式规则的后端。本次新增 `semantica.engineering.evidence-methods` 数据包；运行时仍为锁定的 `0.6.5+oe.6`，没有另加语义引擎。OE 的新适配器只检查结构、来源摘要、指针和类型，再投影 ABox。
+Semantica 是唯一执行正式规则的后端。本次新增 `semantica.engineering.evidence-methods` 数据包；运行时仍为锁定的 `0.6.5+oe.7`，没有另加语义引擎。OE 的新适配器只检查结构、来源摘要、指针和类型，再投影 ABox。
 
 原 `analysis-record.v1` 与制造包 `0.1.1` 保持可用；自由文字假设不会自动升级为新模块已验证的条件。章节包原有的部分实现状态也没有因本次扩展而被改成完成。两卷书不作修改。
 

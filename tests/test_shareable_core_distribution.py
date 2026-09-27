@@ -36,14 +36,15 @@ class ShareableCoreDistributionTests(unittest.TestCase):
                 "scripts/route_engineering_task.py",
             ):
                 self.assertEqual((stage / name).read_bytes(), (ROOT / name).read_bytes())
-            context = workspace / "context.json"
+            context = stage / "var/projects/fixture/context.json"
+            context.parent.mkdir(parents=True)
             context.write_text(json.dumps({
                 "schema": "ontology-engineering.context-input/v1",
                 "task_id": "relocated-release-check",
                 "context": "Synthetic engineering discussion; no customer data.",
                 "request": "Identify the next evidence needed before changing the design.",
             }))
-            output = workspace / "routing"
+            output = stage / "var/projects/fixture/routing"
             result = subprocess.run([
                 sys.executable, "-S", str(stage / "scripts/route_engineering_task.py"),
                 "--input", str(context), "--output", str(output),

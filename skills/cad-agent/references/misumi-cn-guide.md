@@ -7,6 +7,22 @@
 选择适用条目并读入 Jev 的候选选择上下文。查阅、实际采用和执行结果分别回写项目，
 不能把指南存在当作经验已经被消费。
 
+## 先取得当前决定需要的工程知识
+
+原理、选型、载荷/寿命计算方法、接口装配、润滑与失效问题，使用父本体的
+[供应商工程知识入口](../../../references/supplier-knowledge.md)和
+`scripts/jev_knowledge.py`（脚本相对父本体根目录）。资料源与检索代码随父 skill 集成，
+无需另装 MISUMI 应用。由当前项目生成快照，
+共享原对象 ID/修订、必要功能、约束、未知项及变化，用户无需另填表。Jev 多主题
+路由后返回原页与精确片段；本模块读入内容，核对象型式和适用条件，再把采用理由、
+受影响的设计决定及下一验证动作回写同一项目。资料增加不自动创建正式本体类别。
+
+离线目录既用于规格定位，也用于结构机理、比较、装配和故障解释。算例数值不能
+补成项目输入，通用说明不能替代完整订购配置的核表、原生 CAD 回读或当前供货证据。
+收到新工况后，用新快照重审相关支持；不要直接沿用旧查询的高分或历史 PASS。
+已有知识足够时继续下面的实际供应商资源取得流程；只有知识解释需求时不启动网页
+下载或 CAD。完整合同、终端用法及采用记录要求统一维护在父本体引用中。
+
 ## 官方入口
 
 | 入口 | 用途 |
@@ -64,8 +80,8 @@ Chrome 个人资料显示名不一定是网站账号；在网页“个人信息�
 
 ```bash
 python3 scripts/misumi_session.py --tab-id OBSERVED_TAB_ID \
-  --identity /private/project/account-identity.json \
-  --output /private/project/account-check-001.json --navigate-account
+  --identity var/projects/example/account-identity.json \
+  --output var/projects/example/account-check-001.json --navigate-account
 ```
 
 配置 schema 为 `cad-agent.misumi-account-identity/v1`，`match_fields` 指定 `email`
@@ -142,18 +158,18 @@ Jev 或日志。核对目标账号后一次提交，再回到账号页验证，�
 
 ```bash
 python3 scripts/supplier_acquisition_choice.py \
-  --context /private/project/acquisition-context.json \
-  --observation /private/project/current-supplier-options.json \
-  --output /private/project/choice-001
+  --context var/projects/example/acquisition-context.json \
+  --observation var/projects/example/current-supplier-options.json \
+  --output var/projects/example/choice-001
 ```
 
 已核账号、完整型号和当前资源控件时，可调用整合入口；需要 CAD 候选时先打开格式框：
 
 ```bash
 python3 scripts/misumi_acquire.py \
-  --task /private/project/observed-browser-task.json \
-  --context /private/project/acquisition-context.json \
-  --download-dir /actual/browser/downloads --output /private/project/acquire-001
+  --task var/projects/example/observed-browser-task.json \
+  --context var/projects/example/acquisition-context.json \
+  --download-dir /actual/browser/downloads --output var/projects/example/acquire-001
 ```
 
 它把当前格式、可见文档链接和已显示的商品规格页交给 Jev，执行其选择的 CAD 单次生成，以本轮新文件、
@@ -193,12 +209,12 @@ Jev 的候选和置信度不是执行或验收依据。对“必须与人工 STE
 调用者从当前观察准备任务 JSON，选择 `backend=chrome_apple_events`，填写现有 tab ID、
 真实按钮标签及 `#cad_format` 下当前提供的 STEP(AP203) 选项。起点为完整型号页、CAD 弹层关闭。
 参考已观察的 `.cad-dl-button` 与 `.new_cadDl a.m-btn--dataGenerate` 补充自定义按钮。
-文件记录必须在项目私有目录；账号、tab ID、个人资料名不写入共享 skill。
+文件记录和保留的下载原件必须在根 skill 的 `var/projects/<项目>/`；该私有子树不随核心包分发。`--download-dir` 可只读观察外部浏览器下载目录，核验后的实际字节复制进本次 `var/` 输出，不修改 Chrome 下载设置。账号、tab ID、个人资料名不写入共享方法。
 
 ```bash
 python3 scripts/misumi_browser_download.py \
-  --task /private/project/browser-task.json --part CONFIRMED-PART \
-  --download-dir /actual/browser/downloads --output /private/project/new-run \
+  --task var/projects/example/browser-task.json --part CONFIRMED-PART \
+  --download-dir /actual/browser/downloads --output var/projects/example/new-run \
   --policy jev --delivery browser
 ```
 

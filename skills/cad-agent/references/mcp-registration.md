@@ -1,35 +1,15 @@
-# Optional Codex MCP registration
+# 可选 Semantica MCP 传输
 
-Use this only when the user requests registered MCP tools. Normal skill calls
-continue to use `fusion_call.py` / `fusion_ops.py` directly.
+`scripts/mcp_stdio.py` 仅提供 `semantica` 模式，将 `semantic_doctor`、
+`semantic_discover`、`semantic_run` 和 `semantic_review` 转交根 skill 的
+source-locked Semantica 与 `scripts/semantic_engagement.py`。
+适配器不加载第二套语义引擎，也不提供 CAD 执行；CAD 使用 NXOpen/Journal。
 
-`scripts/mcp_stdio.py` is a transport adapter, launched with this module's
-`.venv/bin/python`. It supports two modes:
+已有注册使用 CAD 模块的 `.venv/bin/python` 启动
+`/absolute/cad-agent/scripts/mcp_stdio.py semantica`。
+只有用户要求注册工具时才修改客户端配置。保留当前连接和正在运行的会话，
+迁移前核对实际注册与运行时，不因清理旧文档而重启或改动它们。
 
-- `fusion`: the four static Fusion tool schemas; each call delegates once to
-  `scripts/fusion_call.py`. No Fusion session is retained by the adapter.
-- `semantica`: `semantic_doctor`, `semantic_discover`, `semantic_run` and
-  `semantic_review`, delegated to the parent skill's own runtime and
-  `scripts/semantic_engagement.py`. No legacy semantic engine is loaded.
-
-For Codex, configure stdio `command` as the absolute CAD private Python and
-`args` as `["/absolute/canonical/cad-agent/scripts/mcp_stdio.py", "fusion"]`
-under `mcp_servers.fusion-mcp`. Use the same launcher with mode `semantica`
-under `mcp_servers.ontology-engineering`. Suggested startup timeout: 30 s;
-tool timeout: 900 s. The adapter shields the canonical call from cancellation;
-the canonical cell remains responsible for deadlines and PID retirement.
-
-When migrating an old installation, back up the config with mode 0600 and
-disable the obsolete `cad-agent-semantic` registration. Preserve its files
-and already-running sessions; do not reinstall its wheel in the new module.
-The four Semantica tools replace the routing, not the old seven tool contracts.
-MCP clients may require reconnect/reload to discard an already-closed transport.
-
-Verify initialize and tools/list for both registrations. Then run
-`semantic_doctor` and `semantic_discover`; verify the source identity and native
-verdict. For Fusion, run external preflight before one `projects` read. Listing
-four tools is not proof that the installed Fusion release supports execution.
-Unsupported release, protected document and retired-PID checks stay enforced.
-
-The bounded `2705.1.15` runtime update and its verified read-only call shapes
-are documented in [release compatibility](fusion-release-compatibility.md).
+初始化和工具列表证明传输可用；`semantic_doctor`、`semantic_discover` 用于核对
+来源身份与能力。正式运行或 review 仍要求对应项目 binding、当前 task、包身份
+和原生回执；传输连通不代表工程验收或发布通过。

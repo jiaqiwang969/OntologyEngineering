@@ -13,6 +13,8 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from ontology_engineering.local_paths import private_path
 ASSETS = ROOT / "skills/manufacturing-process-cost/assets/report-template"
 FORMAT = "ontology-engineering.manufacturing-report/v1"
 ID = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,63}\Z")
@@ -292,8 +294,8 @@ def command(argv, cwd):
 
 
 def generate(source, output, compile_pdf=False):
+    output = private_path(output, "manufacturing_report_output")
     require(not output.exists(), "output exists; create a successor directory")
-    require(not output.resolve().is_relative_to(ROOT), "generated reports belong outside the distributed skill")
     source_bytes = source.read_bytes()
     require(len(source_bytes) <= 4 * 1024 * 1024, "report input exceeds 4 MiB")
     s = json.loads(source_bytes)
@@ -318,6 +320,7 @@ def generate(source, output, compile_pdf=False):
         (output / "pdfinfo.txt").write_text(command(["pdfinfo", "report.pdf"], output))
         files += ["report.pdf", "report.txt", "report.log", "fonts.txt", "pdfinfo.txt"]
     manifest = {"format": "ontology-engineering.manufacturing-report-delivery/v1", "generator_sha256": digest(Path(__file__).read_bytes()),
+                "local_paths_sha256": digest((ROOT / "ontology_engineering/local_paths.py").read_bytes()),
                 "input_sha256": digest(source_bytes), "files": [{"path": name, "sha256": digest((output / name).read_bytes())} for name in files],
                 "document_id": s["document"]["id"], "revision": s["document"]["revision"], "compiled": compile_pdf,
                 "semantic_status": s["semantic_status"], "scope": "Frozen report artifact, not engineering approval or a semantic receipt."}
@@ -336,6 +339,7 @@ def verify(directory):
     require(manifest.get("format") == "ontology-engineering.manufacturing-report-delivery/v1", "unsupported delivery format")
     issues = []
     require(manifest["generator_sha256"] == digest(Path(__file__).read_bytes()), "use the archived generator version to verify this report")
+    require(manifest.get("local_paths_sha256") == digest((ROOT / "ontology_engineering/local_paths.py").read_bytes()), "report path policy identity changed")
     expected_files = {"snapshot.json", "template.tex", "contract.json", "report.tex", "render-map.json"}
     if manifest["compiled"]:
         expected_files |= {"report.pdf", "report.txt", "report.log", "fonts.txt", "pdfinfo.txt"}

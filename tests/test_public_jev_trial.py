@@ -3,11 +3,13 @@ import hashlib
 import json
 from pathlib import Path
 import stat
+from unittest.mock import patch
 import zipfile
 
 import pytest
 
 from scripts.package_jev_trial import build
+from scripts import package_jev_trial as trial
 from scripts.check_public_privacy import CONTENT_RULES
 from ontology_engineering.jev_transport import JevTransport, resolve_credential_file
 
@@ -52,3 +54,21 @@ def test_changed_base_package_is_not_wrapped(tmp_path):
     with pytest.raises(ValueError,match="archive_member_digest_mismatch"):
         build(base,key,out)
     assert not out.exists()
+
+
+def test_trial_cli_confines_build_to_skill_var_before_reading_credentials(tmp_path, capsys):
+    root = tmp_path / "skill"
+    builds = root / "var/builds"
+    builds.mkdir(parents=True)
+    base = portable(builds)
+    key = root / "var/public-trial-key.md"
+    key.write_text("apikey_SYNTHETIC_PUBLIC_FIXTURE")
+    key.chmod(0o600)
+    output = builds / "trial.zip"
+    with patch.object(trial, "ROOT", root):
+        assert trial.main(["--skill-archive", str(base), "--credential-file", str(key), "--output", str(output)]) == 0
+        assert output.is_file()
+        with patch.object(trial, "build", side_effect=AssertionError("invalid location reached credential reader")):
+            assert trial.main(["--skill-archive", str(base), "--credential-file", str(key), "--output", str(tmp_path / "escaped.zip")]) == 1
+    assert not (tmp_path / "escaped.zip").exists()
+    assert "apikey_" not in capsys.readouterr().out

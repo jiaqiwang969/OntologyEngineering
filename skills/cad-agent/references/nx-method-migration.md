@@ -2,7 +2,8 @@
 
 This migration changes the default CAD execution and supplier paths, not the
 engineering obligations. The full pre-change module was archived before editing;
-replaced entrypoints are also available under `legacy-20260925/`. Native NX
+replaced entrypoints are retained under the parent skill's `var/legacy/`, excluded
+from current executable modules and distribution. Native NX
 operation coverage grows through measured, version-bound cases; it is not inferred
 from the existence of NXOpen or old Fusion PASS results.
 

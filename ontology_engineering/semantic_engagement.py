@@ -2536,8 +2536,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         args = build_argument_parser().parse_args(argv)
         command = str(args.command)
-        # Native reasoners may emit human-readable progress. Keep the machine
-        # channel one JSON value without suppressing those diagnostics.
+        # Preserve native progress on stderr while stdout remains one JSON value.
         with redirect_stdout(sys.stderr):
             response = _dispatch(args)
     except (SemanticEngagementError, RuntimeError, OSError, ValueError) as exc:

@@ -8,7 +8,7 @@ orientation, and position, but only through relations inside one panel and
 across neighbouring panels. This complements `s05-drawing-to-hole-intent.md`
 (dimensioned drawings), `s12-dimension-authority-projection.md` (numeric
 authority), the A5 placement contract in
-`source-to-fusion-assembly-delivery.md`, and the direction evidence levels
+`source-to-native-assembly-delivery.md`, and the direction evidence levels
 K-DIR-01/K-DIR-02 in `../assembly/references/ontology/criteria.v1.json`.
 
 Derived from and checked against the 2026-09-02/03 brick-tutorial

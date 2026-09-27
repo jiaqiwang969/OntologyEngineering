@@ -27,6 +27,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'runtime/jev-ultrafast/upstream'))
 from ontology_engineering import jev_browser
 from ontology_engineering.chrome_apple_events import AppleEventsBrowser
+from ontology_engineering.local_paths import private_path
 
 
 def stamp(path):
@@ -209,9 +210,7 @@ def run(task, directory, part, output, policy='jev', delivery='browser'):
         raise ValueError('configured_URL_part_mismatch')
     if delivery not in {'browser','observed-url'}:
         raise ValueError('unsupported_delivery_mode')
-    output = Path(output).resolve()
-    if output.is_relative_to(ROOT):
-        raise ValueError('use_private_project_output')
+    output = private_path(output, 'supplier_browser_output')
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     write = lambda name, value: jev_browser.write_json(output/name, value)
     write('task.json', task)

@@ -1,7 +1,7 @@
 ---
 name: ontology-engineering
 metadata:
-  version: "0.6.0"
+  version: "0.7.0"
 description: Interpret engineering requests in context and coordinate the needed CAD, manufacturing, evidence, ontology modeling and Semantica workflows. Develop ideas, compare candidates and revise decisions from source-bound evidence and feedback. Use for engineering-ontology requests, cross-skill engineering collaboration, domain knowledge modeling or Semantica integration. Source-locked Semantica remains the sole executable semantic authority; the two engineering books guide the method.
 ---
 
@@ -43,6 +43,35 @@ description: Interpret engineering requests in context and coordinate the needed
 下一项模型、图纸、规格或采购资料。不得在适配器里把目标固定成 STEP/AP203。
 文件与内容核验后再反馈下一轮选择，执行详情见 CAD 模块的 MISUMI 指南。
 
+需要供应商目录里的原理、选型、计算边界、装配或失效知识时，走
+[供应商工程知识入口](references/supplier-knowledge.md)：由当前项目生成对象、功能、
+条件和缺口快照，调用统一入口 `scripts/jev_knowledge.py`。来源适配与筛选实现内置于
+本 skill，米思米是其中的供应商资料源，无需独立 MISUMI 应用。原件经 Drive 单独传输后，归回当前 skill 的 `sources/books/` 与 `sources/misumi/`；
+索引在 `sources/.indexes/`。代码、方法和下载后的资料组成同一本地目录；Git 与核心
+ZIP 排除 `sources/` 和 `var/`。按[下载位置与接入](docs/PORTABLE-DISTRIBUTION.md)校验和登记，
+查询只恢复所需原页。
+Jev 按本轮决定选择主题，
+返回带原页、片段和条件线索的候选；主 agent 读入后核适用性，把采用理由与下一验证
+动作写回原项目。知识检索也可独立服务概念讨论，不因查目录而启动 CAD。
+查询历史用于追溯，项目台账继续是当前状态正本；来源陈述不自动变成项目事实或 TBox。
+知识链的 Jev 判断共用根 instruct 与[书源方法解释](references/supplier-knowledge-interpretation.md)，
+原页筛选之后再依据返回内容提出核查与交接候选；读入该结果，保留条件、反例和未知，
+把采用范围接回当前决定。
+
+资料融合按[统一架构与升级计划](docs/releases/mechanical-design-next.md)组织：第一卷指导建模，
+第二卷提供工程本体化的方法示范，机械教材补充领域机理与方法，供应商目录提供具体
+实现与配置边界。先保持整书领域覆盖地图，再按工程问题跨书凝练；复用既有
+[五组工程设计模式](references/judgment-pattern-source-map.json)，把对象、关系、条件、反例和
+CQ 接到同一项目的决定、计算、CAD、工艺及成本依据。Jev 协助模式匹配、领域细化和
+概念对齐；生成候选与正式 Semantica 语义分别验证。来源材料不直接成为项目事实。
+每项采用可回到原文档、版次、物理 PDF 页及图表公式；原页图片按需生成，局部图保留
+整页上下文。相同陈述合并时保留来源和条件，精简不删掉反例或查证能力。全文、原图、
+索引与项目记录分离保存；[两页示例](examples/knowledge-distillation/README.md)只演示方法，
+不限定教材覆盖或用户项目。整书索引、候选映射与完成本体化分别报告。
+同一知识入口现可登记本地教材 PDF，与米思米共用查询、Jev 审阅和证据包；原页按需
+渲染，工程交接可核对当前决定与对象身份。扫描正文仍需提取／看图；目录地图、文字
+检索和身份一致不等于完成教材本体化或知识到 CAD、工艺及成本的适用性采用。
+
 用户纠正、重复失败或任务检查点出现有价值的新经验时，按
 [经验复盘与做梦式整理](references/practice-consolidation.md)回看证据、请 Jev 提出处置、
 由主 agent 复核后维护对应指南，并验证下一任务能否实际采用。操作经验更新与正式
@@ -75,6 +104,11 @@ Fusion 已退出当前工具范围，不作为备用执行器；历史教材只�
 制造能力、变形、刀具可达性及现场反馈反过来推动结构调整。涉及这些相互影响时，按
 [CAD／工艺双向交接](skills/cad-agent/references/cad-process-integration.md)联动两个模块。
 单项 CAD 任务直接用 CAD 工具；Semantica 负责正式语义检查，原生模型和加工验证各自取证。
+
+下一版以机械设计完整链路为升级主线，范围和有界案例验收见
+[机械设计链路发布草案](docs/releases/mechanical-design-next.md)。供应商知识、选型计算、
+NX、制造检验与反馈继续由本入口统筹；已接通的接口和仍待验证的交接分别标明，
+不以资料取得或单项工具完成代替整条设计链的验收。
 
 把每次调用视为一次 source-locked semantic engagement。Semantica 默认以锁感知发现介入，
 正式执行取决于本轮问题、证据及绑定是否适用；发现、接入配置和正式审查分别报告。
@@ -112,7 +146,7 @@ Fusion 已退出当前工具范围，不作为备用执行器；历史教材只�
 微信群或其他渠道持续讨论新品试制、工艺/流程选择、设备、供应商、质量、成本及现场问题时，
 先读[制造协作入口](docs/MANUFACTURING-COLLABORATION.md)。续接当前问题与方案，沿新证据
 完善项目本体，再更新有依据的方案与下一验证动作。项目本体、客户资料、对话和实际参数
-只留在项目私有工作区，不能随聊天积累写入通用 skill。
+只留在本 skill 的 `var/projects/` 私有工作区，不写入可分发方法与示例。
 员工提供日常描述及手头资料即可；agent 负责来源、记录、绑定和工具调用，不要求员工
 先学本体或手填 JSON。技术回执与学习记录附后可查；现场任务卡只是按需输出的一种视图。
 
@@ -142,6 +176,11 @@ Jev 只产生候选，Semantica 执行已实现的身份、主张、范围、功
 ## 开始任何任务
 
 1. 从本 `SKILL.md` 所在目录解析 skill root；不要写死用户主目录或依赖当前工作目录。
+   所有本 skill 自有的原件、索引、项目、状态、缓存和维护产物都留在该根目录内；
+   原件与资料索引用 `sources/`，项目用 `var/projects/`，状态与缓存用 `var/state/`、
+   `var/cache/`，维护与构建用 `var/maintenance/`、`var/builds/`。不在 `~/.local`
+   建第二套数据目录，不用指向外部的符号链接替代归位。Git 和发布包排除两个本地子树；
+   共享系统程序、NX 安装和账号认证由环境提供，不复制到技能的可分发文件。
 2. 续接情景并运行上述默认 Jev 路由，读取 `routing.json` 后安排本轮工作；随后读取
    `references/semantic-engagement-contract.md`，如果任务涉及工程应用、跨 skill
    调用、验证、学习、内化或发布。
@@ -165,56 +204,20 @@ Jev 只产生候选，Semantica 执行已实现的身份、主张、范围、功
 
 ## 每次调用的快速内环
 
-按以下顺序工作：
-
-```text
-当前情景 → 本轮产出与所需能力 → 必要模块及交接
-  → task + project binding（正式执行需要时）
-  → 两卷书的方法镜头与来源锚点
-  → Semantica package / baseline / capability 发现
-  → 对象、身份、CQ、证据与权限归一化
-  → 已有 query / shape / rule / oracle 的适用执行
-  → 获授权的工程工作或只读审查
-  → 原生证据 + receipt + release 状态
-  → 工程结果 + Semantica 结果 + learning verdict
-```
-
-运行统一入口；它必须自动注入 `runtime/semantica-source-lock.json` 中的 runtime commit、
-version 和 wheel SHA-256：
+沿“当前决定 → 所需能力 → 有源输入 → 适用检查 → 工程工作 → 证据与反馈”推进。
+正式执行使用统一入口，自动注入 runtime source lock：
 
 ```bash
 runtime/.venv/bin/python scripts/semantic_engagement.py open \
-  --binding /path/to/workspace-binding.json \
-  --task /path/to/task-envelope.json \
-  --workspace /path/to/semantica-managed-registry
+  --binding var/projects/<project>/workspace-binding.json \
+  --task var/projects/<project>/task-envelope.json \
+  --workspace var/projects/<project>/semantica-registry
 ```
 
-Native `open/propose/commit/verify/history/promote` 使用 `kind=workspace` 的 binding 和显式
-`--workspace`；`kind=package` 只用于内置 package 的只读 `run/verify`。
-
-所有 workspace 写入使用本次调用的 `--task`。将它按动作投影为 exact 单 action native
-envelope/context：`propose` 产生 `candidate` 与 `proposed`；`commit` 产生 `committed`；
-`verify` 产生 `execute_candidate`、两类 gate 推导、`regression_passed` 与
-`release_complete`；`promote` 产生 `promoted`。不得用较早 task/context 预授权未来迁移，
-也不得给 workspace `verify` 提交外部 pass/fail gate evidence。崩溃恢复与幂等重放必须从
-immutable event/CAS 恢复原 context，并逐项比对；不得把新 context 报成已经发生的迁移。
-
-首次 proposal 会把 exact binding 永久保留在 candidate 中；后续 transition 不得换用更宽
-binding，也不得越过 retained lifecycle prefix。准备 release/promote 时，从一开始就在
-binding 中声明完整有序能力上限，再由 fresh task 和独立 commit/promote authorization
-收窄当前动作。短 prefix candidate 只能保留为历史，不能原地扩权。
-
-按任务使用同一入口的 `discover`、`run`、`review`、`propose`、`commit`、`verify`、`history` 或
-`promote`。先读 `--help`；不要绕过入口手抄 source identity。
-
-项目决定的跨证据审查使用只读 `review`：必须有指向**已晋升 workspace package** 的
-binding、当前 task、与 task 证据 SHA/媒体类型一致的 RDF ABox 文件，以及明确的
-scope、focus IRI、focus RDF 类型、package query/shape asset ID。一个输入投影只能有一个
-所声明类型的焦点对象。入口先核对项目、证据和 promoted
-baseline，再调用 Semantica 原生 `DecisionReviewRunner`；`execution.review` 只说明该
-有界记录投影是否存在语义缺口，`receipt`/`release` 仍单独报告，`clear` 不等于焊缝密封、
-强度或产品放行。候选 package 的 manifest 模式只供受控编写与测试，不能替代项目
-`review`。见 [跨 skill 输入合同](references/semantic-engagement-contract.md)。
+先读[统一合同](references/semantic-engagement-contract.md)的对应操作；其中维护
+package/workspace、fresh task、exact action、证据绑定、幂等恢复和生命周期权限。
+项目 `review` 使用已晋升 package 与本轮有界 ABox，候选作者测试不能替代它。
+查询和语义通过不能替代原生回读、数值校核或实物验收。
 
 ## 三联结果
 
@@ -281,58 +284,11 @@ python3 scripts/search_ontology_sources.py --scope book \
 
 ## 两卷书维护
 
-当用户要求重写、校正或重新出版两卷书时，读取
-`references/book-authoring-workflow.md`。保留以下边界：
-
-- 第一卷的人写正本包括卷根/九章/resources README 与 handbook TeX/figures/author tools；
-  同一个卷根作者锁覆盖这些输入，fragment 来自 source-locked Semantica。
-- 第二卷的人写内容正本是 preface、20 个 `chapter.md` 和 4 个 appendix Markdown；
-  TeX 工厂和生成 fragments 必须保持可复现。
-- PDF 是构建产物，不替代 TeX、Markdown、图源与作者锁。
-- 同时改变书与可执行语义时，把 Semantica candidate、书源、book binding、wheel、
-  source lock 和 PDF 作为一个跨仓候选收敛。
-
-使用显式工具检查或更新作者锁：
-
-```bash
-runtime/.venv/bin/python scripts/update_book_authoring_locks.py
-runtime/.venv/bin/python scripts/update_book_authoring_locks.py --write
-```
-
-只有完成审阅后的作者修改才可使用 `--write`。
-
-### 两卷 book artifact v1
-
-两卷跨仓收敛后，读取 `references/release-evidence/README.md`，形成可重放的**技术候选**。
-v1 的 `artifact_status` 永远是 `candidate`：无签名 JSON 不能授权 rights/publication，治理
-状态只接受 `pending`/`blocked`，两项 blocker 也不能被技术门禁消除。不要调用保留的
-`--claim-release` 企图升级状态。
-
-package inventory 只复验 exact locked wheel 中 29 个章节 manifest 的
-`status`/`release_status` 与声明资产；book artifact v1 不包含 receipt 或 gate verdict。
-Semantica package 自身的 receipt/gate/release lifecycle 与两卷静态候选是两个发布面。
-
-从 OE 根执行：
-
-```bash
-runtime/.venv/bin/python scripts/collect_book_release_evidence.py governance
-runtime/.venv/bin/python scripts/collect_book_release_evidence.py static
-runtime/.venv/bin/python scripts/collect_book_release_evidence.py book-bindings
-runtime/.venv/bin/python scripts/collect_book_release_evidence.py regressions \
-  --semantica-root /controlled/semantica/checkout
-runtime/.venv/bin/python scripts/collect_book_release_evidence.py pdf-qa \
-  --visual-review references/release-evidence/pdf-visual-review.json
-runtime/.venv/bin/python scripts/book_release_artifacts.py create \
-  --oe-source-commit 0123456789abcdef0123456789abcdef01234567 \
-  --semantica-root /controlled/semantica/checkout
-runtime/.venv/bin/python scripts/book_release_artifacts.py verify \
-  --semantica-root /controlled/semantica/checkout
-```
-
-Semantica checkout 必须干净且 HEAD 精确匹配 source lock。`--oe-source-commit` 之后只能出现
-脚本固定允许的 PDF/证据/日志/manifest 生成物；其他 tracked/untracked 漂移必须阻断。
-`create` 和 `verify` 都重放固定测试。`governance` 默认保留完整合法的现有记录；除非用户
-明确要求重新初始化，禁止使用 `--reset-existing`，且重置只会得到新的 `pending`，不是批准。
+仅在用户要求修改、校正或重新出版两卷书时，取得作者源码并读取
+`references/book-authoring-workflow.md`；技术候选证据见作者源码中的
+`references/release-evidence/README.md`。作者锁、生成片段、跨仓收敛和出版命令均由
+该流程维护。下载的 PDF 可用于查证，不能替代 TeX／Markdown 作者正本。
+书稿、可执行语义、技术候选和公开发布分别验证；不通过编辑无签名记录取得发布权限。
 
 ## 新标准与跨行业复用
 

@@ -20,6 +20,7 @@ from supplier_artifacts import FreshSupplierDownload
 from misumi_browser_download import FocusMonitor
 from ontology_engineering import jev_browser
 from ontology_engineering.chrome_apple_events import AppleEventsBrowser
+from ontology_engineering.local_paths import private_path
 
 
 def observe_supplier(browser):
@@ -104,9 +105,7 @@ def run(task, context, directory, output):
     if task['backend'] != 'chrome_apple_events':
         raise ValueError('authorized_existing_tab_required')
     part = context['object_identity']['part']
-    output = Path(output).resolve()
-    if output.is_relative_to(ROOT):
-        raise ValueError('private_project_output_required')
+    output = private_path(output, 'supplier_acquisition_output')
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     write(output/'task.json', task)
     write(output/'context.json', context)
@@ -215,16 +214,26 @@ def run(task, context, directory, output):
 
 
 def main():
-    venv = ROOT/'runtime/jev-ultrafast/.venv'
-    if Path(sys.prefix).resolve() != venv.resolve():
-        python = venv/'bin/python'
-        os.execv(str(python), [str(python), str(Path(__file__).resolve()), *sys.argv[1:]])
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--task', type=Path, required=True)
     p.add_argument('--context', type=Path, required=True)
     p.add_argument('--download-dir', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
-    a = p.parse_args(); os.umask(0o077)
+    a = p.parse_args()
+    venv = ROOT/'runtime/jev-ultrafast/.venv'
+    python = ROOT/'runtime/jev-ultrafast/.venv/bin/python'
+    try:
+        if not python.is_file() or not os.access(python, os.X_OK):
+            raise OSError('jev_browser_environment_unavailable')
+        if Path(sys.prefix).resolve() != venv.resolve():
+            os.execv(str(python), [str(python), str(Path(__file__).resolve()), *sys.argv[1:]])
+    except OSError:
+        print(json.dumps({'status': 'setup_required',
+                          'error_code': 'jev_browser_environment_unavailable',
+                          'next_step': 'From the skill root, run bash runtime/jev-ultrafast/setup.sh with Python >=3.12 (OE_JEV_PYTHON selects the interpreter).',
+                          'browser_execution': 'not_run'}))
+        return 2
+    os.umask(0o077)
     r = run(json.loads(a.task.read_text()), json.loads(a.context.read_text()), a.download_dir, a.output)
     summary = {k: r.get(k) for k in ('status', 'elapsed_seconds', 'error_code')}
     decision = r.get('selection', {})

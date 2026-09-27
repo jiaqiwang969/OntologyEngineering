@@ -20,7 +20,7 @@ class SkillControlPlaneContractTests(unittest.TestCase):
         self.assertIn("references/semantic-engagement-contract.md", skill)
         self.assertIn("skills/domain-ontology-loop/SKILL.md", skill)
         self.assertIn("references/book-authoring-workflow.md", skill)
-        self.assertIn("--task /path/to/task-envelope.json", skill)
+        self.assertIn("--task var/projects/<project>/task-envelope.json", skill)
         self.assertNotIn("~/.codex/skills", skill)
 
     def test_agent_default_prompt_explicitly_invokes_skill(self) -> None:

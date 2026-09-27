@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sqlite3
 import subprocess
 import sys
 from dataclasses import asdict, dataclass
@@ -191,30 +192,93 @@ def path_findings(path: Path, root: Path) -> list[Finding]:
     return findings
 
 
-def content_findings(path: Path, root: Path) -> list[Finding]:
-    if path.suffix.lower() in BINARY_SUFFIXES:
-        return []
-    try:
-        raw = path.read_bytes()
-    except OSError:
-        return [Finding(path.relative_to(root).as_posix(), "unreadable candidate file")]
-    if b"\0" in raw[:8192]:
-        return [Finding(path.relative_to(root).as_posix(), "NUL byte in declared text candidate")]
-    try:
-        text = raw.decode("utf-8")
-    except UnicodeDecodeError:
-        return [Finding(path.relative_to(root).as_posix(), "invalid UTF-8 text candidate")]
+def _text_rules(text: str, rel: str, line: int | None = None) -> list[Finding]:
+    findings = []
+    if any((ord(c) < 32 and c not in "\n\r\t") or ord(c) == 127 for c in text):
+        findings.append(Finding(rel, "invalid control character in text candidate", line))
+    for rule in CONTENT_RULES:
+        if rule.pattern.search(text):
+            findings.append(Finding(rel, rule.name, line))
+    return findings
+
+
+def sqlite_findings(path: Path, root: Path) -> list[Finding]:
+    """Read only declared SQL text values; never UTF-8-decode the database/BLOBs.
+
+    This is a direct-identifier scan of live text, not a copyright or general
+    forensic audit. A standalone vacuumed database is required: WAL/journal and
+    free pages cannot be treated as checked live text.
+    """
     rel = path.relative_to(root).as_posix()
     findings: list[Finding] = []
-    for offset, character in enumerate(text):
-        if (ord(character) < 32 and character not in "\n\r\t") or ord(character) == 127:
-            line_number = text.count("\n", 0, offset) + 1
-            findings.append(Finding(rel, "invalid control character in text candidate", line_number))
-            break
-    for line_number, line in enumerate(text.splitlines(), 1):
-        for rule in CONTENT_RULES:
-            if rule.pattern.search(line):
-                findings.append(Finding(rel, rule.name, line_number))
+    if any(Path(str(path) + suffix).exists() for suffix in ("-wal", "-shm", "-journal")):
+        return [Finding(rel, "SQLite candidate must be standalone without sidecars")]
+    try:
+        with path.open("rb") as source:
+            if source.read(16) != b"SQLite format 3\x00":
+                return [Finding(rel, "invalid SQLite candidate header")]
+        connection = sqlite3.connect(path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+        try:
+            connection.execute("PRAGMA query_only=ON")
+            connection.execute("PRAGMA trusted_schema=OFF")
+            if connection.execute("PRAGMA freelist_count").fetchone()[0]:
+                findings.append(Finding(rel, "SQLite free pages require a vacuumed distribution copy"))
+            schema = connection.execute("SELECT type,name,sql FROM sqlite_schema ORDER BY name").fetchall()
+            for kind, name, definition in schema:
+                findings.extend(_text_rules(name, rel))
+                if definition:
+                    findings.extend(_text_rules(definition, rel))
+                if kind != "table":
+                    continue
+                if definition and "CREATE VIRTUAL TABLE" in definition.upper() and not re.search(r"\bUSING\s+fts5\b", definition, re.I):
+                    findings.append(Finding(rel, "unsupported SQLite virtual table for privacy scan"))
+                    continue
+                table = '"' + name.replace('"', '""') + '"'
+                columns = connection.execute("PRAGMA table_xinfo(" + table + ")").fetchall()
+                for column in columns:
+                    identifier = '"' + column[1].replace('"', '""') + '"'
+                    # Bound memory even if a malformed index contains a huge
+                    # text field. Oversized values fail closed for separate review.
+                    rows = connection.execute("SELECT length(" + identifier + "), substr(" + identifier
+                        + ",1,1048576) FROM " + table + " WHERE typeof(" + identifier + ")='text'")
+                    for length, value in rows:
+                        if length > 1048576:
+                            findings.append(Finding(rel, "SQLite text value exceeds bounded privacy scan"))
+                            continue
+                        findings.extend(_text_rules(value, rel))
+        finally:
+            connection.close()
+    except (OSError, sqlite3.Error, UnicodeError):
+        findings.append(Finding(rel, "unreadable or invalid SQLite candidate"))
+    return list(dict.fromkeys(findings))
+
+
+def content_findings(path: Path, root: Path) -> list[Finding]:
+    if path.suffix.lower() in {".sqlite", ".sqlite3", ".db"}:
+        return sqlite_findings(path, root)
+    if path.suffix.lower() in BINARY_SUFFIXES:
+        return []
+    rel = path.relative_to(root).as_posix()
+    findings: list[Finding] = []
+    try:
+        # Text files and JSON metadata are streamed. A pathological unbroken
+        # line is rejected rather than loaded into unbounded memory.
+        with path.open("r", encoding="utf-8") as source:
+            line_number = 0
+            while True:
+                line = source.readline(16 * 1024 * 1024 + 1)
+                if not line:
+                    break
+                line_number += 1
+                if len(line) > 16 * 1024 * 1024:
+                    return [Finding(rel, "text line exceeds bounded privacy scan", line_number)]
+                if "\0" in line:
+                    return [Finding(rel, "NUL byte in declared text candidate", line_number)]
+                findings.extend(_text_rules(line, rel, line_number))
+    except OSError:
+        return [Finding(rel, "unreadable candidate file")]
+    except UnicodeDecodeError:
+        return [Finding(rel, "invalid UTF-8 text candidate")]
     return findings
 
 

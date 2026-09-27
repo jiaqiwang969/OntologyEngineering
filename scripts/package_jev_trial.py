@@ -13,9 +13,12 @@ import os
 from pathlib import Path
 import re
 import stat
+import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from ontology_engineering.local_paths import private_path
 
 
 def digest(raw):
@@ -24,8 +27,10 @@ def digest(raw):
 
 def build(skill_archive, credential_file, output):
     skill_archive, credential_file, output = map(Path, (skill_archive, credential_file, output))
-    if output.exists() or output.resolve().is_relative_to(ROOT):
-        raise ValueError("output_must_be_new_and_outside_skill")
+    if output.exists():
+        raise ValueError("output_must_be_new")
+    if output.resolve().is_relative_to(ROOT) and not output.resolve().is_relative_to(ROOT / "var"):
+        raise ValueError("output_inside_skill_must_be_under_var")
     if skill_archive.is_symlink() or not skill_archive.is_file() or credential_file.is_symlink():
         raise ValueError("input_requires_regular_files")
     with zipfile.ZipFile(skill_archive) as source:
@@ -91,14 +96,16 @@ def build(skill_archive, credential_file, output):
             "skill_members_unchanged":len(payload)}
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skill-archive", type=Path, required=True)
     parser.add_argument("--credential-file", type=Path, required=True, help="Owner-authorized public temporary key; never use a private production key.")
-    parser.add_argument("--output", type=Path, required=True)
-    args = parser.parse_args()
+    parser.add_argument("--output", type=Path, required=True, help="New ZIP inside this skill's var/ (normally var/builds/)")
+    args = parser.parse_args(argv)
     try:
-        result = build(args.skill_archive, args.credential_file, args.output)
+        output = private_path(args.output, "output", root=ROOT)
+        skill_archive = private_path(args.skill_archive, "skill_archive", root=ROOT)
+        result = build(skill_archive, args.credential_file, output)
     except (ValueError, OSError, KeyError, zipfile.BadZipFile):
         print(json.dumps({"status":"error", "code":"public_trial_packaging_failed"}))
         return 1

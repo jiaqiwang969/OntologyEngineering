@@ -19,6 +19,12 @@ dated quantity-specific price, shipping/arrival terms and procurement status.
 Each state remains separate: selected, downloaded, geometry-verified,
 interface-accepted, supply-confirmed, ordered. Unknowns are not filled with defaults.
 
+Keep acquisition records and retained artifacts under the parent skill's
+`var/projects/<project>/`, using a new directory per attempt. Existing browser
+downloads may be read as import inputs; verified bytes are retained inside this
+project directory. The tool does not change Chrome's download settings. Private
+project files are excluded from the shared core package.
+
 Never replace a required purchased fastener, bearing, guide or actuator with a
 coarse envelope while retaining an exact-manufacturing claim. Simplified supplier
 B-Rep may omit internal geometry; document the fit/clearance scope it actually
@@ -28,5 +34,3 @@ friction, material or life; bind those to the current catalog/drawing/test evide
 Use direct NXOpen/Journal to create native copies with provenance and save/reopen
 readback. External translator licenses/formats must be checked on the actual NX
 installation. No Fusion catalog, McMaster API or CAD MCP server is a prerequisite.
-Legacy McMaster guidance and the user-provided Fusion menu image remain at
-[mcmaster-entry-guide.md](mcmaster-entry-guide.md) for historical reference only.

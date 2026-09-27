@@ -12,7 +12,7 @@ from pathlib import Path, PurePosixPath
 import re
 from urllib.parse import quote
 
-from scripts.semantic_bundle_transport import load_bundle
+from ontology_engineering.semantic_bundle_transport import load_bundle
 
 SCHEMA = "ontology-engineering.method-evidence/v1"
 

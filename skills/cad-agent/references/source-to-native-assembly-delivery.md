@@ -1,6 +1,6 @@
 # Source-to-native CAD assembly delivery
 
-Use this workflow when the requested result is a new or repaired native native CAD
+Use this workflow when the requested result is a new or repaired native CAD
 assembly, not merely an analysis of a supplied STEP file. It bridges source
 recovery, content completeness, native CAD authoring, native readback, and the
 bundled S0-S11 assembly-analysis lane.
@@ -24,7 +24,7 @@ S0-S11 assembly lane
 
 A native assembly can pass A0-A7 while its assembly process remains `HOLD` at
 S3, S7, S8, or S11. Conversely, a STEP assembly can support bounded S0-S10
-analysis without being a complete or editable native native CAD deliverable.
+analysis without being a complete or editable native CAD deliverable.
 
 Before a native CAD call, read `references/nx-execution.md`. For assembly
 meaning and evidence gates, read `assembly/SKILL.md` and its linked input and

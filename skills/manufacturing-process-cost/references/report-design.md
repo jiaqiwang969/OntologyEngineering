@@ -61,12 +61,12 @@
 ```bash
 python3 scripts/manufacturing_report.py generate \
   --input skills/manufacturing-process-cost/assets/report-template/example/03-resource-cost.json \
-  --output ../work/report-r03 --compile
-python3 scripts/manufacturing_report.py verify ../work/report-r03
-pdftoppm -r 120 -png ../work/report-r03/report.pdf ../work/report-r03/page
+  --output var/projects/example/report-r03 --compile
+python3 scripts/manufacturing_report.py verify var/projects/example/report-r03
+pdftoppm -r 120 -png var/projects/example/report-r03/report.pdf var/projects/example/report-r03/page
 ```
 
-输出目录必须新建且在 skill 外。省略 `--compile` 可先检查输入及生成 TeX，输出明确标识未编译。编译需要 Python 3.10+、XeLaTeX、ctex/Fandol/TeX Gyre 常规 TeX 包和 Poppler；不需要另一独立 skill 的文件或私有系统字体。不复制字体文件，按接收方 TeX 发行版提供字体。
+输出目录必须新建且在根 skill 的 `var/` 下，项目报告不随核心包分发。省略 `--compile` 可先检查输入及生成 TeX，输出明确标识未编译。编译需要 Python 3.10+、XeLaTeX、ctex/Fandol/TeX Gyre 常规 TeX 包和 Poppler；不需要另一独立 skill 的文件或私有系统字体。不复制字体文件，按接收方 TeX 发行版提供字体。
 
 输出包含冻结输入、实际模板、合同、生成 TeX、各视图到条目和来源的 `render-map.json`、输入及文件摘要清单，编译时另有 PDF、文本镜像和核验结果。主 TeX 内联版式，不依赖运行期模板路径。当前组件只有原生文字与表格，没有产品图片、CAD 附件或 Office 自动生成器；增加这些能力时须另设计资产身份、裁图及链接的输出契约。
 

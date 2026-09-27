@@ -1,6 +1,7 @@
 """Real upstream policy/loop with a fake page and fake model; never opens Chrome."""
 from copy import deepcopy
 import json
+import hashlib
 import os
 from pathlib import Path
 import shutil
@@ -59,7 +60,11 @@ class BrowserToolTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name) / "var"
+        self.root.mkdir()
+        scope = patch("ontology_engineering.local_paths.SKILL_ROOT", Path(self.temp.name))
+        scope.start()
+        self.addCleanup(scope.stop)
         self.task = tool.validate_task({"schema": tool.TASK_SCHEMA, "url": "https://example.org",
                                        "goal": "Search for the exact supplied term, then stop.",
                                        "text_values": {"Search": "fixture part 15"}})
@@ -81,6 +86,8 @@ class BrowserToolTests(unittest.TestCase):
         self.assertEqual(result["status"], "reported_done")
         self.assertEqual(result["verification"], "required")
         self.assertEqual(result["engineering_acceptance"], "not_evaluated")
+        self.assertEqual(result["source"]["adapter_code"]["ontology_engineering/local_paths.py"],
+                         hashlib.sha256((tool.ROOT / "ontology_engineering/local_paths.py").read_bytes()).hexdigest())
         self.assertEqual(len(model.requests), 2)
         self.assertEqual(previous, {k: os.environ.get(k) for k in previous})
         for path in (self.root / "run").iterdir():
@@ -125,6 +132,12 @@ class BrowserToolTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             tool.execute(self.task, self.root / "run", lambda *_args, **_kwargs: self.fail("browser opened"), {})
 
+    def test_core_and_external_outputs_are_rejected_before_browser_creation(self):
+        for output in (Path(self.temp.name) / "references/run", Path(self.temp.name).parent / "outside-browser"):
+            with self.assertRaisesRegex(ValueError, "must_be_inside_skill"):
+                tool.execute(self.task, output, lambda *_args, **_kwargs: self.fail("browser opened"), {})
+            self.assertFalse(output.exists())
+
     def test_keep_open_retains_only_owned_fixture_tab(self):
         self.task["keep_open"] = True
         result, page, _ = self.execute()
@@ -163,6 +176,15 @@ assert doctor()['status'] == 'local_runtime_ready'
 """
         completed = subprocess.run([sys.executable, "-c", code], cwd=tool.ROOT, capture_output=True, text=True)
         self.assertEqual(completed.returncode, 0, completed.stderr)
+
+    def test_doctor_reports_incompatible_python_even_with_matching_dependencies(self):
+        versions = {'browser-harness': '0.1.13', 'httpx': '0.28.1'}
+        with patch.object(tool.sys, 'version_info', (3, 11, 9)), \
+                patch.object(tool.importlib.metadata, 'version', side_effect=versions.__getitem__):
+            result = tool.doctor()
+        self.assertEqual(result['status'], 'setup_required')
+        self.assertEqual(result['python'], {'required': '>=3.12', 'version': '3.11.9', 'compatible': False})
+        self.assertEqual(result['browser_connection'], 'not_checked')
 
     def test_observation_failure_still_closes_owned_tab_and_records_failure(self):
         from jev_ultrafast.agent import Agent

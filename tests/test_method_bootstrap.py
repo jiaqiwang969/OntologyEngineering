@@ -3,12 +3,14 @@ from copy import deepcopy
 import io
 import json
 from pathlib import Path
+import shutil
 import zipfile
 
 import pytest
 
 from ontology_engineering import method_bootstrap as bootstrap
 from ontology_engineering import semantic_engagement as entry
+from ontology_engineering import judgment_contracts
 from ontology_engineering.judgment_review import review_plan
 from scripts.semantic_bundle_transport import BundleError, validate_data_archive
 
@@ -71,6 +73,36 @@ def test_changed_configuration_requires_a_separate_plan(tmp_path, monkeypatch):
     monkeypatch.setattr(bootstrap, "code_identity", lambda root: {"changed": "0" * 64})
     with pytest.raises(bootstrap.BootstrapError, match="configuration changed"):
         bootstrap.apply(directory, path)
+    assert not (directory / "registry").exists()
+
+
+@pytest.mark.parametrize("changed_file", [
+    "ontology_engineering/semantic_bundle_transport.py", "scripts/semantic_bundle_transport.py",
+])
+def test_transport_change_invalidates_bootstrap_plan_and_judgment_lock(tmp_path, changed_file):
+    root = tmp_path / "relocated-identity"
+    names = set(bootstrap.CODE) | set(judgment_contracts.adapter_identity()["files"])
+    names.update(("runtime/semantica-source-lock.json", "runtime/semantic-bundles.json", bootstrap.LOCK))
+    for lock_name, section in (("runtime/semantic-bundles.json", "bundles"), (bootstrap.LOCK, "capsules")):
+        lock = json.loads((bootstrap.ROOT / lock_name).read_bytes())
+        names.add(lock[section]["engineering-judgment-intake"]["path"])
+    for name in names:
+        target = root / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(bootstrap.ROOT / name, target)
+    directory = tmp_path / "recipient"
+    bootstrap.prepare(directory, project="judgment-intake-maintenance", domain="discrete-manufacturing",
+        actor="recipient-test-operator", fact_authority="recipient-controlled-synthetic-records",
+        evidence_root="evidence:recipient-test", root=root)
+    request = authorization(directory)
+    deployment = judgment_contracts.deployment_lock(model="jev-1.13.0", skill_root=root)
+    judgment_contracts.validate_lock(deployment, skill_root=root)
+    source = root / changed_file
+    source.write_bytes(source.read_bytes() + b"\n# changed transport bytes\n")
+    with pytest.raises(ValueError, match="deployment_combination_or_adapter_mismatch"):
+        judgment_contracts.validate_lock(deployment, skill_root=root)
+    with pytest.raises(bootstrap.BootstrapError, match="configuration changed"):
+        bootstrap.apply(directory, request, root=root)
     assert not (directory / "registry").exists()
 
 

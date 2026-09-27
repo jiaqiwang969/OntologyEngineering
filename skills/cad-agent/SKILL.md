@@ -42,11 +42,20 @@ engine or manufacturing approval. See [contribution rules](CONTRIBUTING.md).
    Continue to the requested deliverable, without imposing release paperwork on
    ordinary reversible design work.
 
+Revisit the shared [engineering knowledge workflow](references/cad-engineering-workflow.md#知识随工程决定接续)
+when changed requirements, configuration, interfaces or measured results alter a
+decision or expose a knowledge gap. Update the same project's decision and object
+revision context, then use Jev to reconsider relevant sources and next checks.
+This applies to custom parts and mechanisms as well as purchased parts; it does
+not require a new query for every CAD operation. Keep exploratory possibilities
+as candidates until the applicable source review and engineering checks support them.
+
 ## Routes and required methods
 
 | Task | Read and use |
 |---|---|
 | Create, edit, inspect, import or export native CAD | [NX execution](references/nx-execution.md); `scripts/nx_direct.py` |
+| Engineering principles, mechanism comparison, selection, installation and failure knowledge | Use the parent's [shared textbook and supplier knowledge](../../references/supplier-knowledge.md); carry current object/version, functions, conditions and gaps, then review the returned source passages before changing the design |
 | Purchased parts, exact supplier CAD and BOM linkage | Start with the applicable [acquisition experience](references/supplier-acquisition-experience.md), then [supplier acquisition](references/supplier-cad-acquisition.md) and [MISUMI China guide](references/misumi-cn-guide.md) |
 | Photos, videos, patents, sparse dimensions or hidden mechanism inference | [Evidence-driven reconstruction](references/evidence-driven-reconstruction.md); keep visible facts separate from alternative hypotheses |
 | Shape-generating rules, field/lattice geometry or inverse controls | [Computational geometry](references/computational-geometry.md), [inverse parameter discovery](references/inverse-shape-parameter-discovery.md) |
@@ -83,12 +92,14 @@ no project-specific tolerance is a universal default.
 bash setup.sh
 bash doctor.sh --json                         # local, no CAD/network call
 python3 scripts/semantic_query.py capabilities
-python3 scripts/nx_direct.py probe --profile /private/nx-profile.json
+python3 scripts/nx_direct.py probe --profile ../../var/projects/example/nx-profile.json
 ```
 
 The local runner needs Python standard library. NXOpen runs in the installed,
 licensed NX interpreter; never install an unrelated `NXOpen` package from pip.
-Configure transport/paths outside this shared skill; in the studio use `fleet` for
+Keep local transport profiles and task files under the parent skill's
+`var/projects/<project>/`; these private files are excluded from distribution.
+In the studio use `fleet` for
 live host identity and health. An executable-present probe is not a license or API
 test. Direct journals run in isolated batch processes and new task directories;
 no desktop focus change, service restart or attachment to somebody else's session.
@@ -117,10 +128,10 @@ Probe version-specific equivalents in isolated artifacts and retain unsupported
 fields as unknown. A Fusion tutorial can supply design reasoning; it cannot earn
 NX UI evidence, and NX reproduction cannot claim Fusion UI credit.
 
-[The previous entrypoint](references/legacy-20260925/ARCHIVED_ENTRYPOINT.md) and old
-software instructions are historical material, not discoverable skills or execution
-routes. Fusion adapters and its runtime were archived outside the active skill tree
-and removed; no environment variable re-enables them. McMaster material remains
+Previous entrypoints and obsolete software instructions are archived under the
+parent skill's `var/legacy/`, outside the current executable modules and distribution.
+Mechanical methods remain in the current native CAD guides. Fusion adapters and
+its runtime are retired; no environment variable re-enables them. McMaster material remains
 historical supplier evidence. `data/execution-policy.json` is an operational routing
 policy only; historical registry and experience snapshots grant no execution right.
 Formal learning/promotion still uses parent Semantica. Ordinary practice records a

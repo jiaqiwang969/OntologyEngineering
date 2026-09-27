@@ -9,27 +9,31 @@ its `nx_call.py`/`nx_bridge.sh` commands for this route.
 
 ## Prepare and run
 
-Copy `assets/nx-direct/profile.example.json` outside the skill and fill in the real
-host and exact installed NX path. `ssh_command` is an argv array, not shell code.
+Copy `assets/nx-direct/profile.example.json` to the parent skill's
+`var/projects/<project>/nx-profile.json` and fill in the real host and exact installed
+NX path. Local profiles, journals, staged inputs and fetched results stay in that
+private project directory, which is excluded from distribution. `ssh_command` is
+an argv array, not shell code.
 In this studio use `["fleet", "ssh", "dell-nb"]`, after `fleet health dell-nb`.
 The runner resolves fleet to its verified SSH argv with stdin closed, then transfers
 bytes; discovery subprocesses must not consume the upload stream. The upload reads an
 explicit byte/character count instead of depending on Windows SSH EOF. A completed
-`stage.json` is required before dispatch. No fixed IP,
-account credentials or project paths belong in the shared skill.
+`stage.json` is required before dispatch. Do not embed fixed IPs, account credentials
+or project-specific paths in reusable code or distributed profiles; use the system's
+existing authentication mechanism.
 `remote_root` must be one stable task root for all cooperating writers on a host.
 Do not change roots to evade a pending job. A recipient can use ordinary SSH.
 
 ```bash
-python3 scripts/nx_direct.py probe --profile /private/nx-profile.json
+python3 scripts/nx_direct.py probe --profile ../../var/projects/example/nx-profile.json
 python3 scripts/nx_direct.py prepare \
-  --journal /project/journal.py --params /project/params.json \
-  --input /project/copied-source.prt --job-id task-stage-001 --out /project/job-001
-python3 scripts/nx_direct.py stage --profile /private/nx-profile.json --job /project/job-001
-python3 scripts/nx_direct.py run --profile /private/nx-profile.json --job-id task-stage-001
-python3 scripts/nx_direct.py status --profile /private/nx-profile.json --job-id task-stage-001
-python3 scripts/nx_direct.py fetch --profile /private/nx-profile.json \
-  --job-id task-stage-001 --out /project/receipt-001
+  --journal ../../var/projects/example/journal.py --params ../../var/projects/example/params.json \
+  --input ../../var/projects/example/copied-source.prt --job-id task-stage-001 --out ../../var/projects/example/job-001
+python3 scripts/nx_direct.py stage --profile ../../var/projects/example/nx-profile.json --job ../../var/projects/example/job-001
+python3 scripts/nx_direct.py run --profile ../../var/projects/example/nx-profile.json --job-id task-stage-001
+python3 scripts/nx_direct.py status --profile ../../var/projects/example/nx-profile.json --job-id task-stage-001
+python3 scripts/nx_direct.py fetch --profile ../../var/projects/example/nx-profile.json \
+  --job-id task-stage-001 --out ../../var/projects/example/receipt-001
 ```
 
 `prepare` and `fetch` require new local directories; `stage` requires a new remote

@@ -15,7 +15,7 @@ from ontology_engineering.jev_transport import strict_json
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True, help="New private directory outside the skill")
+    parser.add_argument("--output", type=Path, required=True, help="New private directory under this skill's var/")
     parser.add_argument("--credential-file", type=Path)
     args = parser.parse_args()
     try:

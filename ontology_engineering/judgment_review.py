@@ -16,7 +16,7 @@ from ontology_engineering.judgment_batch import journal
 from ontology_engineering.judgment_contracts import contracts, digest, encoded, validate_lock
 from ontology_engineering.jev_transport import strict_json, validate_response
 from ontology_engineering.method_evidence import _inside, _keys, _text, pointer_value, project_record
-from scripts.semantic_bundle_transport import load_bundle
+from ontology_engineering.semantic_bundle_transport import load_bundle
 
 
 def now():

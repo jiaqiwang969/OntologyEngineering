@@ -10,7 +10,7 @@ from pathlib import Path
 
 from ontology_engineering.jev_transport import ADAPTER_VERSION, pinned_model, strict_json
 from ontology_engineering.method_evidence import _inside, _keys, _text, pointer_value
-from scripts.semantic_bundle_transport import load_bundle
+from ontology_engineering.semantic_bundle_transport import load_bundle
 
 ROOT = Path(__file__).resolve().parents[1]
 BATCH_SCHEMA = "ontology-engineering.judgment-batch/v1"
@@ -45,7 +45,8 @@ def contracts(skill_root=ROOT):
 def adapter_identity(skill_root=ROOT):
     names = ["ontology_engineering/jev_transport.py", "ontology_engineering/judgment_contracts.py",
              "ontology_engineering/judgment_batch.py", "ontology_engineering/method_evidence.py",
-             "ontology_engineering/semantica_runtime.py", "scripts/semantic_bundle_transport.py",
+             "ontology_engineering/semantica_runtime.py", "ontology_engineering/semantic_bundle_transport.py",
+             "scripts/semantic_bundle_transport.py",
              "ontology_engineering/judgment_review.py", "scripts/judgment_batch.py", "scripts/judgment_review.py"]
     names += ["ontology_engineering/judgment_compatibility.py", "scripts/judgment_compatibility.py"]
     names += ["ontology_engineering/judgment_admission.py", "scripts/judgment_admission.py"]

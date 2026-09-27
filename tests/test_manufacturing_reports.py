@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -85,8 +86,8 @@ class ManufacturingReportTests(unittest.TestCase):
         self.assertNotIn("按上述条件计算的小计：", body)
 
     def test_generation_freezes_input_and_rejects_overwrite(self):
-        with tempfile.TemporaryDirectory() as name:
-            out = Path(name) / "report"
+        with tempfile.TemporaryDirectory() as name, patch("ontology_engineering.local_paths.SKILL_ROOT", Path(name)):
+            out = Path(name) / "var/report"
             result = report.generate(EXAMPLE / "03-resource-cost.json", out)
             self.assertTrue(result["passed"])
             self.assertFalse(result["compiled"])
@@ -95,16 +96,16 @@ class ManufacturingReportTests(unittest.TestCase):
                 report.generate(EXAMPLE / "03-resource-cost.json", out)
 
     def test_rejects_frozen_output_tamper(self):
-        with tempfile.TemporaryDirectory() as name:
-            out = Path(name) / "report"
+        with tempfile.TemporaryDirectory() as name, patch("ontology_engineering.local_paths.SKILL_ROOT", Path(name)):
+            out = Path(name) / "var/report"
             report.generate(EXAMPLE / "03-resource-cost.json", out)
             with (out / "report.tex").open("a") as f:
                 f.write("changed")
             self.assertFalse(report.verify(out)["passed"])
 
     def test_relocked_tex_still_must_match_snapshot(self):
-        with tempfile.TemporaryDirectory() as name:
-            out = Path(name) / "report"
+        with tempfile.TemporaryDirectory() as name, patch("ontology_engineering.local_paths.SKILL_ROOT", Path(name)):
+            out = Path(name) / "var/report"
             report.generate(EXAMPLE / "03-resource-cost.json", out)
             file = out / "report.tex"
             file.write_text(file.read_text().replace("2088.00", "9999.00"))
@@ -112,6 +113,13 @@ class ManufacturingReportTests(unittest.TestCase):
             next(r for r in m["files"] if r["path"] == "report.tex")["sha256"] = report.digest(file.read_bytes())
             (out / "manifest.json").write_text(json.dumps(m))
             self.assertFalse(report.verify(out)["passed"])
+
+    def test_report_output_rejects_core_and_external_locations(self):
+        with tempfile.TemporaryDirectory() as name, patch("ontology_engineering.local_paths.SKILL_ROOT", Path(name)):
+            for output in (Path(name) / "references/report", Path(name).parent / "outside-report"):
+                with self.assertRaisesRegex(ValueError, "must_be_inside_skill"):
+                    report.generate(EXAMPLE / "03-resource-cost.json", output)
+                self.assertFalse(output.exists())
 
 
 if __name__ == "__main__":

@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import json
+import io
+import os
 from pathlib import Path
 import sys
-import tempfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,36 +20,13 @@ from mechanism import fourbar as mechanism  # noqa: E402
 
 
 class TestBridge(unittest.TestCase):
-    def test_ssh_command_quotes_paths_and_rejects_host_injection(self):
-        profile = {"transport": "ssh_windows", "host": "cad-host.example",
-                   "python": "C:\\Program Files\\Python\\python.exe",
-                   "entry": {"module": "nx_mcp.server"},
-                   "environment": {"NX_MCP_WORKSPACE": "C:\\client's data"}}
-        command = bridge.command_for(profile)
-        self.assertEqual(command[0], "ssh")
-        self.assertEqual(command[6], "cad-host.example")
-        self.assertNotIn("client's data", " ".join(command))
-        profile["host"] = "example;whoami"
-        with self.assertRaises(ValueError):
-            bridge.command_for(profile)
-
-    def test_one_shot_mcp_protocol(self):
-        source = '''import json,sys
-for line in sys.stdin:
- m=json.loads(line)
- if "id" not in m: continue
- if m["method"]=="initialize": r={"serverInfo":{"name":"fake"}}
- elif m["method"]=="tools/list": r={"tools":[{"name":"echo"}]}
- else: r={"content":[{"type":"text","text":json.dumps(m["params"]["arguments"])}]}
- print(json.dumps({"jsonrpc":"2.0","id":m["id"],"result":r}),flush=True)
-'''
-        with tempfile.TemporaryDirectory() as directory:
-            fake = Path(directory) / "fake.py"
-            fake.write_text(source)
-            profile = {"transport": "local_stdio", "argv": [sys.executable, str(fake)]}
-            self.assertEqual(bridge.run(profile, None, {}, 3)["tools"][0]["name"], "echo")
-            result = bridge.run(profile, "echo", {"x": 7}, 3)
-            self.assertEqual(json.loads(result["content"][0]["text"]), {"x": 7})
+    def test_retired_bridge_has_no_importable_transport(self):
+        for name in ("run", "Session", "command_for"):
+            self.assertFalse(hasattr(bridge, name), name)
+        with patch.dict(os.environ, {"CAD_AGENT_LEGACY_CAD": "explicit"}), \
+                patch("sys.stderr", new_callable=io.StringIO) as output:
+            self.assertEqual(bridge.main(["--list-tools"]), 64)
+        self.assertIn("permanently disabled", output.getvalue())
 
     def test_autocad_protocol_without_com(self):
         response = autocad.handle({"jsonrpc": "2.0", "id": 1, "method": "initialize"})

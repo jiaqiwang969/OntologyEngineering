@@ -18,10 +18,17 @@ bash runtime/jev-ultrafast/setup.sh
 python3 scripts/jev_browser.py doctor
 ```
 
+此环境需要 Python 3.12 或更新版本。若默认 `python3` 较旧，使用
+`OE_JEV_PYTHON=/path/to/python3.12 bash runtime/jev-ultrafast/setup.sh`；路径可含空格，
+此时用引号包住赋值。安装会先检查解释器和源码锁，再创建环境及联网安装锁定依赖。
+已有环境的 Python 不兼容时先将该 `.venv` 移到备份位置，再用所选解释器重建；脚本不会删除它。
+
 `doctor` 验证固定源码、依赖锁和已安装直接依赖；不读取用户页面、不调用模型、不连接 Chrome。
+结果中的 `python` 分别报告要求、实际版本与兼容性。米思米取得入口在未准备环境时返回
+`setup_required` 和安装提示；`--help` 无需预先安装该环境。
 `local_runtime_ready` 只表示本地环境就绪，账号、浏览器连接和真实任务另验。
 
-agent 在项目私有目录准备任务文件，用户无需写 JSON：
+agent 在根 skill 的 `var/projects/<项目>/` 准备私有任务文件，用户无需写 JSON：
 
 ```json
 {
@@ -39,11 +46,11 @@ agent 在项目私有目录准备任务文件，用户无需写 JSON：
 
 ```bash
 python3 scripts/jev_browser.py run \
-  --task /private/project/web-task.json --output /private/project/web-run-001
+  --task var/projects/example/web-task.json --output var/projects/example/web-run-001
 ```
 
-输出目录必须是新的项目私有目录，不得写进 skill。事件、页面和结果使用私有文件权限；页面记录可能
-包含账号业务信息，不并入通用 skill。字段按当前页面的准确标签写入 `text_values`；值来自已确认输入。
+输出目录必须是根 skill `var/` 下的新私有目录。事件、页面和结果使用私有文件权限；页面记录可能
+包含账号业务信息，不随核心代码和方法包分发。字段按当前页面的准确标签写入 `text_values`；值来自已确认输入。
 未知标签或值返回 `field_value_required`，由主 agent 根据实际观察补充，不能猜测身份、型号或参数。
 密码字段不在上游动作表中；不把凭据填进目标、文本映射或记录。
 

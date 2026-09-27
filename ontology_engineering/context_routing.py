@@ -16,6 +16,7 @@ from ontology_engineering.jev_transport import (
     JevTransport, TransportError, pinned_model, resolve_credential_file,
     strict_json, validate_response,
 )
+from ontology_engineering.local_paths import private_path
 
 ROOT = Path(__file__).resolve().parents[1]
 INPUT_SCHEMA = "ontology-engineering.context-input/v1"
@@ -120,6 +121,7 @@ def prepare(document, *, root=ROOT):
     code = {name: digest((root / name).read_bytes()) for name in (
         "ontology_engineering/__init__.py",
         "ontology_engineering/context_routing.py", "ontology_engineering/jev_transport.py",
+        "ontology_engineering/local_paths.py",
         "scripts/route_engineering_task.py")}
     return {"task_id": document["task_id"], "payload": payload, "sources": sources,
             "identity": {"input_sha256": digest(document), "request_sha256": digest(payload),
@@ -136,9 +138,7 @@ Missing service credentials still produce an explicit unavailable route report.
 """
     if type(max_attempts) is not int or not 1 <= max_attempts <= 3:
         raise ValueError("invalid_attempt_limit")
-    output = Path(output).expanduser().resolve()
-    if output.is_relative_to(ROOT):
-        raise ValueError("routing_output_must_be_outside_skill")
+    output = private_path(output, "routing_output")
     output.mkdir(parents=True, exist_ok=False, mode=0o700)
     write_new(output / "input.json", prepared)
     valid, errors, attempts, transport_errors = {}, {}, [], []

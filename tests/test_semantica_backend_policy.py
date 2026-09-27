@@ -520,6 +520,17 @@ class Client {
             gate.RULE_DIRECT_BACKEND_IMPORT, self.rules(report, "bin/ontology-runner")
         )
 
+    def test_only_root_data_trees_are_excluded_from_active_source_checks(self) -> None:
+        self.repo.write("var/legacy/retired.py", "import pyshacl\n")
+        self.repo.write("sources/imported/example.py", "import pyshacl\n")
+        self.repo.write("ontology_engineering/var/active.py", "import pyshacl\n")
+        self.repo.policy()
+        report = self.repo.evaluate()
+        self.assertFalse(self.rules(report, "var/legacy/retired.py"))
+        self.assertFalse(self.rules(report, "sources/imported/example.py"))
+        self.assertIn(gate.RULE_DIRECT_BACKEND_IMPORT,
+                      self.rules(report, "ontology_engineering/var/active.py"))
+
     def test_powershell_and_ci_workflow_commands_are_scanned(self) -> None:
         self.repo.write("tools/run.ps1", "python -m owlready2\n")
         self.repo.write(

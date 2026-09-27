@@ -20,6 +20,7 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
 from ontology_engineering.chrome_apple_events import evaluate_tab
+from ontology_engineering.local_paths import private_path
 
 ORIGIN = 'https://www.misumi.com.cn'
 ACCOUNT_URL = ORIGIN + '/my/user/manage/'
@@ -124,8 +125,10 @@ def main():
     a = p.parse_args()
     if stat.S_IMODE(a.identity.stat().st_mode) & 0o077:
         raise ValueError('private_identity_file_permissions_required')
-    if a.output.resolve().is_relative_to(ROOT):
-        raise ValueError('private_project_receipt_required')
+    a.output = private_path(a.output, 'supplier_session_receipt')
+    if a.output.exists():
+        raise FileExistsError('supplier_session_receipt_exists')
+    a.output.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     result = check(a.tab_id, json.loads(a.identity.read_text()), navigate=a.navigate_account)
     fd = os.open(a.output, os.O_CREAT|os.O_EXCL|os.O_WRONLY, 0o600)
     with os.fdopen(fd, 'w') as f:

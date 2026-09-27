@@ -109,6 +109,24 @@ class ManufacturingDistributionTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2)
                 self.assertFalse(list(Path(temporary).iterdir()))
 
+    def test_legacy_transport_import_runs_from_relocated_stdlib_only_cli(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "copied skill with spaces"
+            for relative in ["ontology_engineering/__init__.py", "ontology_engineering/semantic_bundle_transport.py",
+                             "scripts/semantic_bundle_transport.py", "scripts/run_manufacturing_cases.py",
+                             "runtime/semantic-bundles.json", "runtime/semantica-source-lock.json", self.spec["path"]]:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, target)
+            result = subprocess.run(
+                [sys.executable, "-S", str(root / "scripts/run_manufacturing_cases.py"), "--list"],
+                cwd=temporary, env={"PATH": "/nonexistent", "PYTHONPATH": "", "HOME": temporary,
+                                    "PYTHONDONTWRITEBYTECODE": "1"},
+                capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(json.loads(result.stdout), self.report)
+            self.assertEqual(result.stderr, "")
+
     def test_link_extraction_includes_images_html_and_reference_links(self):
         with tempfile.TemporaryDirectory() as temporary:
             file = Path(temporary) / "readme.md"

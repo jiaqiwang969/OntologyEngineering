@@ -1,6 +1,10 @@
 import sys
 from pathlib import Path
 import unittest
+import io
+import json
+import tempfile
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'skills/cad-agent/scripts'))
@@ -62,6 +66,30 @@ class SessionTests(unittest.TestCase):
         self.assertEqual(calls, [(17, module.ORIGIN)])
         self.assertNotIn('engineer@example.com', str(result))
         self.assertFalse(result['browser_storage_accessed'])
+
+    def test_receipt_is_inside_var_and_external_input_identity_remains_unchanged(self):
+        with tempfile.TemporaryDirectory() as name, patch('ontology_engineering.local_paths.SKILL_ROOT', Path(name)):
+            identity = Path(name) / 'imported-identity.json'
+            identity.write_text(json.dumps(self.identity)); identity.chmod(0o600)
+            original = identity.read_bytes()
+            output = Path(name) / 'var/projects/fixture/session/receipt.json'
+            arguments = ['misumi_session.py', '--tab-id', '17', '--identity', str(identity), '--output', str(output)]
+            with patch.object(sys, 'argv', arguments), patch.object(module, 'check', return_value={'account_verified': True}) as check, \
+                    patch('sys.stdout', new_callable=io.StringIO):
+                self.assertEqual(module.main(), 0)
+            self.assertEqual(check.call_count, 1)
+            self.assertEqual(identity.read_bytes(), original)
+            self.assertEqual(output.stat().st_mode & 0o777, 0o600)
+            with patch.object(sys, 'argv', arguments), patch.object(module, 'check') as check:
+                with self.assertRaises(FileExistsError):
+                    module.main()
+                check.assert_not_called()
+            for invalid in (Path(name) / 'references/receipt.json', Path(name).parent / 'outside-session.json'):
+                with patch.object(sys, 'argv', arguments[:-1] + [str(invalid)]), patch.object(module, 'check') as check:
+                    with self.assertRaisesRegex(ValueError, 'must_be_inside_skill'):
+                        module.main()
+                    check.assert_not_called()
+                self.assertFalse(invalid.exists())
 
 
 if __name__ == '__main__':

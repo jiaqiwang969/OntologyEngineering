@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Behavioral regressions for native ledger migration and bounded file/job intake."""
 from copy import deepcopy
+import ast
 import hashlib
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -89,9 +91,36 @@ class MigrationTests(unittest.TestCase):
     def test_active_catalog_excludes_retired_mcp(self):
         self.assertEqual({x['tool_id'] for x in capabilities()['records']},{'NXDirect','MISUMI_CN'})
         with self.assertRaises(ValueError):capabilities('FusionMCP')
-    def test_retired_cli_has_no_implicit_remote_call(self):
-        result=subprocess.run([sys.executable,str(ROOT/'scripts/nx_call.py'),'--status'],capture_output=True,text=True)
-        self.assertNotEqual(result.returncode,0);self.assertIn('Retired CAD MCP',result.stderr)
+    def test_retired_cli_cannot_be_enabled_by_legacy_environment(self):
+        # The only potential old transport points at a local sentinel, never a host.
+        marker=self.root/'transport-called'
+        sentinel=self.root/'transport'
+        sentinel.write_text('#!/bin/sh\nprintf called > "$RETIREMENT_MARKER"\nexit 99\n')
+        sentinel.chmod(0o700)
+        profile=self.root/'profile.json'
+        profile.write_text(json.dumps({'profiles':{'fixture':{'transport':'local_stdio','argv':[str(sentinel)]}}}))
+        for override in (None,'explicit'):
+            env=dict(os.environ, NX_CALL_SSH=str(sentinel), AUTOCAD_CALL_SSH=str(sentinel), RETIREMENT_MARKER=str(marker))
+            env.pop('CAD_AGENT_LEGACY_CAD',None)
+            if override:env['CAD_AGENT_LEGACY_CAD']=override
+            results=[
+                subprocess.run([sys.executable,str(ROOT/'scripts/nx_call.py'),'--status'],env=env,capture_output=True,text=True,timeout=5),
+                subprocess.run([sys.executable,str(ROOT/'scripts/autocad_call.py'),'--status'],env=env,capture_output=True,text=True,timeout=5),
+                subprocess.run(['/bin/bash',str(ROOT/'scripts/nx_bridge.sh'),'start'],env=env,capture_output=True,text=True,timeout=5),
+                subprocess.run(['/bin/bash',str(ROOT/'scripts/autocad_service.sh'),'start-acad'],env=env,capture_output=True,text=True,timeout=5),
+                subprocess.run([sys.executable,str(ROOT/'remote/mcp_bridge.py'),'--config',str(profile),'--profile','fixture','--list-tools'],env=env,capture_output=True,text=True,timeout=5),
+            ]
+            for result in results:
+                self.assertEqual(result.returncode,64,result)
+                self.assertEqual(result.stdout,'')
+                self.assertIn('permanently disabled',result.stderr)
+            self.assertFalse(marker.exists())
+    def test_retired_python_entries_export_no_transport_implementation(self):
+        for relative in ('scripts/nx_call.py','scripts/autocad_call.py','remote/mcp_bridge.py'):
+            tree=ast.parse((ROOT/relative).read_text())
+            self.assertEqual([node.name for node in ast.walk(tree) if isinstance(node,(ast.ClassDef,ast.FunctionDef))],['main'])
+            self.assertEqual([alias.name for node in ast.walk(tree) if isinstance(node,ast.Import) for alias in node.names],['sys'])
+            self.assertFalse(any(isinstance(node,ast.ImportFrom) for node in ast.walk(tree)))
     def test_timeout_does_not_retry(self):
         profile=self.root/'profile.json';profile.write_text(json.dumps({'ssh_command':['ssh','example'],'remote_root':'%USERPROFILE%\\work\\cad-agent-jobs','run_journal':'C:\\NX\\run_journal.exe'}))
         args=['nx_direct','run','--profile',str(profile),'--job-id','timeout-test']

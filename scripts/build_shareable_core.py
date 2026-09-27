@@ -18,11 +18,11 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-from package_skill import check  # noqa: E402
+from package_skill import check, write_archive, build_directory, new_output_path, LOCAL_ONLY_ROOTS  # noqa: E402
 
 ASSETS = ROOT / "distribution/shareable-core-assets.json"
 OVERRIDES = ROOT / "distribution/shareable-overrides"
-PUBLIC_CORE_SCOPE = "public-core-v0.6.0"
+PUBLIC_CORE_SCOPE = "public-core-v" + (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 
 
 def _sha256(data: bytes) -> str:
@@ -62,6 +62,8 @@ def stage(directory: Path) -> dict:
     for entry in ledger["files"]:
         name = entry["path"]
         relative = _safe_relative(name)
+        if relative.parts[0] in LOCAL_ONLY_ROOTS:
+            raise ValueError("local sources or private state must not be included in the core")
         if name in seen:
             raise ValueError(f"duplicate asset: {name}")
         seen.add(name)
@@ -96,15 +98,16 @@ def stage(directory: Path) -> dict:
     return {"asset_count": len(seen), "ledger_sha256": _sha256(ASSETS.read_bytes())}
 
 
-def main() -> int:
+def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, required=True, help="New ZIP path outside the source tree")
+    parser.add_argument("--output", type=Path, required=True, help="New ZIP inside this skill's var/ (normally var/builds/)")
     parser.add_argument("--inspect-only", action="store_true", help="Validate the stage without writing a ZIP")
-    args = parser.parse_args()
-    output = args.output.expanduser().resolve()
-    if output.exists() or output.is_relative_to(ROOT):
-        parser.error("output must be a new path outside the source tree")
-    with tempfile.TemporaryDirectory(prefix="oe-shareable-core-") as temporary:
+    args = parser.parse_args(argv)
+    try:
+        output = new_output_path(args.output, ROOT)
+    except ValueError as error:
+        parser.error(str(error))
+    with tempfile.TemporaryDirectory(prefix="oe-shareable-core-", dir=build_directory(ROOT)) as temporary:
         stage_root = Path(temporary) / "ontology-engineering"
         stage_root.mkdir()
         ledger_report = stage(stage_root)
@@ -114,15 +117,7 @@ def main() -> int:
             print(json.dumps(report, ensure_ascii=False, indent=2))
             return 1
         if not args.inspect_only:
-            # Reuse the same checker and manifest writer against the staged tree.
-            import subprocess
-            command = [sys.executable, str(ROOT / "scripts/package_skill.py"),
-                       "--root", str(stage_root), "--output", str(output)]
-            result = subprocess.run(command, capture_output=True, text=True)
-            if result.returncode:
-                raise RuntimeError(result.stdout + result.stderr)
-            packaged = json.loads(result.stdout)
-            report["archive"] = packaged["archive"]
+            report["archive"] = write_archive(stage_root, files, output)
         print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 

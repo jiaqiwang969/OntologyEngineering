@@ -1,0 +1,75 @@
+# Rust port of Semantica 0.6.5+oe.7 (frozen scope: runtime/semantica-scope.json). See PORTING.md.
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+version = "2.0.0-rc.5"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT"
+publish = false
+
+[workspace.dependencies]
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = { version = "=1.0.151", features = ["preserve_order", "float_roundtrip"] }
+thiserror = "=2.0.21"
+anyhow = "=1.0.104"
+indexmap = { version = "=2.14.2", features = ["serde"] }
+regex = "=1.13.1"
+fancy-regex = "=0.14.0"
+chrono = { version = "=0.4.43", features = ["serde"] }
+once_cell = "=1.21.4"
+sha2 = "=0.10.9"
+sha1 = "=0.10.6"
+md-5 = "=0.10.6"
+hex = "=0.4.3"
+base64 = "=0.22.1"
+rand = "=0.9.5"
+uuid = { version = "1", features = ["v4", "v5", "serde"] }
+glob = "0.3"
+walkdir = "=2.5.0"
+serde_yaml = "=0.9.34"
+toml = "=0.8.23"
+unicode-normalization = "=0.1.25"
+unicode-segmentation = "=1.13.3"
+html5ever = "=0.35.0"
+quick-xml = "=0.37.5"
+zip = { version = "=6.0.0", default-features = false, features = ["deflate"] }
+csv = "1.3"
+encoding_rs = "0.8"
+chardetng = "0.1"
+whatlang = "0.16"
+calamine = "0.37"
+lopdf = "0.36"
+image = { version = "=0.25.10", default-features = false, features = ["png", "jpeg", "webp"] }
+reqwest = { version = "=0.12.28", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+url = "=2.5.8"
+percent-encoding = "=2.3.2"
+rusqlite = { version = "=0.32.1", features = ["bundled"] }
+oxigraph = { version = "=0.5.11", default-features = false }
+oxrdf = "=0.3.4"
+oxttl = "=0.2.4"
+petgraph = { version = "=0.8.3", default-features = false, features = ["std", "graphmap", "stable_graph"] }
+strsim = "=0.11.1"
+itertools = "=0.14.0"
+rayon = "=1.12.0"
+candle-core = { version = "=0.9.1", default-features = false }
+candle-nn = { version = "=0.9.1", default-features = false }
+candle-transformers = { version = "=0.9.1", default-features = false }
+tokenizers = { version = "=0.21.4", default-features = false, features = ["fancy-regex"] }
+tokio = { version = "=1.53.1", features = ["rt-multi-thread", "macros", "net", "sync", "time", "io-util", "fs"] }
+hyper = { version = "=1.11.1", features = ["server", "client", "http1"] }
+hyper-util = { version = "=0.1.21", features = ["tokio", "server", "http1"] }
+http-body-util = "=0.1.5"
+bytes = "=1.12.1"
+clap = { version = "=4.6.7", features = ["derive"] }
+notify = "8"
+tempfile = "=3.20.0"
+
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.release]
+lto = "thin"
+strip = "debuginfo"

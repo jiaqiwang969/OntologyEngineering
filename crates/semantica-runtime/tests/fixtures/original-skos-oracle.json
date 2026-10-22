@@ -1,0 +1,165 @@
+{
+  "schema": "unmodified-original-skos-oracle/1",
+  "source": "semantica/utils/skos.py",
+  "source_sha256": "06870db663ab31924f1bfcd77b8438f9cac09d59345a980d2cef419a0e2cc661",
+  "source_mode": 420,
+  "source_span": [
+    1,
+    96
+  ],
+  "runtime": "private Python standard library only; no production delegation",
+  "cases": [
+    {
+      "name": "broader_closes_two_node_cycle",
+      "existing": [
+        {
+          "source": "a",
+          "target": "b",
+          "type": "skos:broader"
+        }
+      ],
+      "new": {
+        "source": "b",
+        "target": "a",
+        "type": "skos:broader"
+      },
+      "expected": {
+        "allowed": false,
+        "error_type": "ValueError",
+        "message": "SKOS hierarchy contains a cycle involving 'b'."
+      }
+    },
+    {
+      "name": "narrower_same_orientation_is_not_cycle",
+      "existing": [
+        {
+          "source": "a",
+          "target": "b",
+          "type": "skos:broader"
+        }
+      ],
+      "new": {
+        "source": "b",
+        "target": "a",
+        "type": "skos:narrower"
+      },
+      "expected": {
+        "allowed": true
+      }
+    },
+    {
+      "name": "narrower_closes_cycle",
+      "existing": [
+        {
+          "source": "a",
+          "target": "b",
+          "type": "skos:broader"
+        }
+      ],
+      "new": {
+        "source": "a",
+        "target": "b",
+        "type": "skos:narrower"
+      },
+      "expected": {
+        "allowed": false,
+        "error_type": "ValueError",
+        "message": "SKOS hierarchy contains a cycle involving 'b'."
+      }
+    },
+    {
+      "name": "self_loop",
+      "existing": [],
+      "new": {
+        "source": "a",
+        "target": "a",
+        "type": "skos:broader"
+      },
+      "expected": {
+        "allowed": false,
+        "error_type": "ValueError",
+        "message": "SKOS hierarchy contains a cycle involving 'a'."
+      }
+    },
+    {
+      "name": "trimmed_endpoints_cycle",
+      "existing": [],
+      "new": {
+        "source": " a ",
+        "target": "a",
+        "type": "skos:broader"
+      },
+      "expected": {
+        "allowed": false,
+        "error_type": "ValueError",
+        "message": "SKOS hierarchy contains a cycle involving 'a'."
+      }
+    },
+    {
+      "name": "unrelated_existing_cycle_does_not_block",
+      "existing": [
+        {
+          "source": "a",
+          "target": "b",
+          "type": "skos:broader"
+        },
+        {
+          "source": "b",
+          "target": "a",
+          "type": "skos:broader"
+        }
+      ],
+      "new": {
+        "source": "c",
+        "target": "d",
+        "type": "skos:broader"
+      },
+      "expected": {
+        "allowed": true
+      }
+    },
+    {
+      "name": "non_skos_cycle_allowed",
+      "existing": [
+        {
+          "source": "a",
+          "target": "b",
+          "type": "SUPPORTS"
+        }
+      ],
+      "new": {
+        "source": "b",
+        "target": "a",
+        "type": "SUPPORTS"
+      },
+      "expected": {
+        "allowed": true
+      }
+    },
+    {
+      "name": "longer_mixed_cycle",
+      "existing": [
+        {
+          "source": "a",
+          "target": "b",
+          "type": "skos:broader"
+        },
+        {
+          "source": "c",
+          "target": "b",
+          "type": "skos:narrower"
+        }
+      ],
+      "new": {
+        "source": "c",
+        "target": "a",
+        "type": "skos:broader"
+      },
+      "expected": {
+        "allowed": false,
+        "error_type": "ValueError",
+        "message": "SKOS hierarchy contains a cycle involving 'a'."
+      }
+    }
+  ]
+}

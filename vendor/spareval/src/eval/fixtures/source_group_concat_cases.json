@@ -1,0 +1,1396 @@
+{
+  "schema": "source-group-concat-public-cases/1",
+  "source_record_id": "SOURCE-GROUP-CONCAT-FROZEN-01",
+  "source_record_sha256": "cd764129bcd981247cd7fc31d99f7d5cb6397a960a3e507358fd69e331fa0655",
+  "reused_source_record_id": "NEXT-EXTREMA-CONCAT-SOURCE-EXAMPLES-01",
+  "reused_source_record_sha256": "19ebfb25e122b559dffd1eccbcc384a48d007e7b8cc0f9c6c68c6dd75681c679",
+  "config": {
+    "numeric_capability": "MixedBinary64V1",
+    "group_semantics": "SourceAggregateV1",
+    "literal_semantics": "SourceLiteralV1",
+    "normalize_literals": true,
+    "decimal_context": "precision 28 ROUND_HALF_EVEN Emin=-999999 Emax=999999 clamp=0; traps InvalidOperation/DivisionByZero/Overflow; flags initially empty",
+    "order": "explicit ordered VALUES, stable initial data and first-seen group insertion; no arbitrary graph scan order assertion",
+    "default_limits": "existing NumericLimits defaults unless case overrides",
+    "default_expected_decimal_flags": "Empty for new cases unless stated; reused GC05 additionally requires DivisionByZero under the explicit default trap, without rewriting its original record."
+  },
+  "text_cases": [
+    {
+      "id": "GT01",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "literal",
+        "lexical": "01",
+        "source_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+        "numeric_cache": {
+          "Integer": "1"
+        }
+      },
+      "expected_text": "01",
+      "basis": [
+        "term:146-152"
+      ]
+    },
+    {
+      "id": "GT02",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "literal",
+        "lexical": "猫",
+        "source_datatype": null,
+        "language_original": "ZH"
+      },
+      "expected_text": "猫",
+      "basis": [
+        "term:146-152"
+      ]
+    },
+    {
+      "id": "GT03",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "named_node",
+        "value": "urn:x"
+      },
+      "expected_text": "urn:x",
+      "basis": [
+        "term:146-152"
+      ]
+    },
+    {
+      "id": "GT04",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "blank_node",
+        "value": "node-a"
+      },
+      "expected_text": "node-a",
+      "basis": [
+        "term:146-152,491-495"
+      ]
+    },
+    {
+      "id": "GT05",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "ExplicitNone"
+      },
+      "expected_text": "None",
+      "basis": [
+        "cpython_object:2020-2023"
+      ]
+    },
+    {
+      "id": "GT06",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "ReturnedError",
+        "source_class": "SPARQLError",
+        "source_constructor_argument": "divide by 0"
+      },
+      "expected_text": "divide by 0",
+      "basis": [
+        "sparql:35-37",
+        "cpython_exceptions:119-130"
+      ]
+    },
+    {
+      "id": "GT07",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "ReturnedError",
+        "source_class": "SPARQLError",
+        "source_constructor_argument": null
+      },
+      "expected_text": "None",
+      "basis": [
+        "sparql:35-37",
+        "cpython_exceptions:119-130",
+        "cpython_object:2020-2023"
+      ]
+    },
+    {
+      "id": "GT08",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "ReturnedError",
+        "source_class": "SPARQLTypeError",
+        "source_constructor_argument": "a\nb"
+      },
+      "expected_text": "a\nb",
+      "basis": [
+        "sparql:50-54",
+        "cpython_exceptions:119-130"
+      ]
+    },
+    {
+      "id": "GT09",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "literal",
+        "lexical": "1.0",
+        "source_datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+        "numeric_cache": {
+          "Binary64_bits": "3ff0000000000000"
+        }
+      },
+      "expected_text": "1.0",
+      "basis": [
+        "term:146-152"
+      ],
+      "notes": "Uses Literal lexical, not float repr or cached numeric conversion."
+    },
+    {
+      "id": "GT10",
+      "classification": "source_derived_unobserved",
+      "operation": "source_str",
+      "input": {
+        "kind": "literal",
+        "lexical": "false",
+        "source_datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+        "metadata_origin": "UnknownNormalized"
+      },
+      "expected_text": "false",
+      "basis": [
+        "term:146-152"
+      ],
+      "notes": "No Boolean construction qualification inferred: existing RDF literal text only."
+    }
+  ],
+  "repr_cases": [
+    {
+      "id": "GR01",
+      "input": {
+        "kind": "literal",
+        "lexical": "a'b",
+        "source_datatype": null,
+        "language_original": null
+      },
+      "expected_repr": "rdflib.term.Literal(\"a'b\")",
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "term:350-356,502-508,1752-1762",
+        "cpython_exceptions:133-141",
+        "cpython_unicodeobject:12516-12630"
+      ]
+    },
+    {
+      "id": "GR02",
+      "input": {
+        "kind": "literal",
+        "lexical": "a\nb\t\\",
+        "source_datatype": null,
+        "language_original": "EN"
+      },
+      "expected_repr": "rdflib.term.Literal('a\\nb\\t\\\\', lang='EN')",
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "term:350-356,502-508,1752-1762",
+        "cpython_exceptions:133-141",
+        "cpython_unicodeobject:12516-12630"
+      ]
+    },
+    {
+      "id": "GR03",
+      "input": {
+        "kind": "literal",
+        "lexical": "猫 ",
+        "source_datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "language_original": null
+      },
+      "expected_repr": "rdflib.term.Literal('猫\\xa0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "term:350-356,502-508,1752-1762",
+        "cpython_exceptions:133-141",
+        "cpython_unicodeobject:12516-12630"
+      ]
+    },
+    {
+      "id": "GR04",
+      "input": {
+        "kind": "blank_node",
+        "value": "node-a"
+      },
+      "expected_repr": "rdflib.term.BNode('node-a')",
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "term:350-356,502-508,1752-1762",
+        "cpython_exceptions:133-141",
+        "cpython_unicodeobject:12516-12630"
+      ]
+    },
+    {
+      "id": "GR05",
+      "input": {
+        "kind": "ReturnedError",
+        "source_class": "SPARQLError",
+        "source_constructor_argument": "divide by 0"
+      },
+      "expected_repr": "SPARQLError('divide by 0')",
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "term:350-356,502-508,1752-1762",
+        "cpython_exceptions:133-141",
+        "cpython_unicodeobject:12516-12630"
+      ]
+    }
+  ],
+  "protocol_cases": [
+    {
+      "id": "GP01",
+      "distinct": true,
+      "gate_update_pairs": [
+        [
+          "A",
+          "B"
+        ],
+        [
+          "A",
+          "C"
+        ]
+      ],
+      "definitions": {
+        "A": {
+          "plain_literal": "a"
+        },
+        "B": {
+          "plain_literal": "b"
+        },
+        "C": {
+          "plain_literal": "c"
+        }
+      },
+      "expected": {
+        "retained": [
+          "B",
+          "C"
+        ],
+        "seen": [
+          "B",
+          "C"
+        ],
+        "text": "b c",
+        "evaluations": 4
+      },
+      "notes": "Seen uses second evaluation, not gate value. Stateful closure only protocol test; no fake query AST.",
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "aggregates:38-59,252-278,305-314"
+      ]
+    },
+    {
+      "id": "GP02",
+      "distinct": true,
+      "gate_update_pairs": [
+        [
+          "A",
+          "B"
+        ],
+        [
+          "B",
+          "UNREACHED"
+        ]
+      ],
+      "definitions": {
+        "A": {
+          "plain_literal": "a"
+        },
+        "B": {
+          "plain_literal": "b"
+        }
+      },
+      "expected": {
+        "retained": [
+          "B"
+        ],
+        "seen": [
+          "B"
+        ],
+        "text": "b",
+        "evaluations": 3
+      },
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "aggregates:38-59,252-278,305-314"
+      ]
+    },
+    {
+      "id": "GP03",
+      "distinct": false,
+      "update_sequence": [
+        {
+          "RaisedNotBound": "E1"
+        },
+        {
+          "ReturnedNotBound": "E2"
+        },
+        {
+          "ExplicitNone": true
+        },
+        {
+          "ReturnedError": "E3"
+        }
+      ],
+      "definitions": {
+        "E3": {
+          "source_class": "SPARQLError",
+          "source_constructor_argument": "e"
+        }
+      },
+      "expected": {
+        "retained": [
+          "ExplicitNone",
+          "E3"
+        ],
+        "text": "None e",
+        "evaluations": 4
+      },
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "aggregates:38-59,252-278,305-314"
+      ]
+    },
+    {
+      "id": "GP04",
+      "distinct": true,
+      "gate_update_pairs": [
+        [
+          {
+            "ExplicitNone": true
+          },
+          {
+            "ExplicitNone": true
+          }
+        ],
+        [
+          {
+            "ExplicitNone": true
+          },
+          "UNREACHED"
+        ]
+      ],
+      "expected": {
+        "retained": [
+          "ExplicitNone"
+        ],
+        "seen_size": 1,
+        "text": "None",
+        "evaluations": 3
+      },
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "aggregates:38-59,252-278,305-314"
+      ]
+    },
+    {
+      "id": "GP05",
+      "distinct": false,
+      "update_sequence": [
+        {
+          "plain_literal": "a"
+        },
+        {
+          "RaisedSparqlTypeError": "E"
+        }
+      ],
+      "expected": {
+        "failure_identity": "E",
+        "phase": "update",
+        "completed_group_rows": 0,
+        "evaluations": 2
+      },
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "aggregates:38-59,252-278,305-314"
+      ]
+    },
+    {
+      "id": "GP06",
+      "distinct": true,
+      "gate_update_pairs": [
+        [
+          {
+            "plain_literal": "a"
+          },
+          {
+            "FatalDataset": "F"
+          }
+        ]
+      ],
+      "expected": {
+        "fatal_identity": "F",
+        "retained_values": 0,
+        "seen_size": 0,
+        "completed_group_rows": 0,
+        "evaluations": 2
+      },
+      "classification": "source_derived_unobserved",
+      "basis": [
+        "aggregates:38-59,252-278,305-314"
+      ]
+    }
+  ],
+  "query_cases": [
+    {
+      "id": "GQ01",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES ?x { \"a\" \"b\" \"a\" } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "a b a",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492"
+      ]
+    },
+    {
+      "id": "GQ02",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"\") AS ?v) WHERE { VALUES ?x { \"a\" \"b\" } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "ab",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492"
+      ]
+    },
+    {
+      "id": "GQ03",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"🙂\") AS ?v) WHERE { VALUES ?x { \"猫\" \"犬\" } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "猫🙂犬",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492"
+      ]
+    },
+    {
+      "id": "GQ04",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT ?g (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES (?g ?x) { } } GROUP BY ?g",
+      "expected": {
+        "rows": [
+          {}
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "algebra:573-579,714-727"
+      ]
+    },
+    {
+      "id": "GQ05",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(?x) AS ?v) WHERE { { SELECT (SAMPLE(?missing) AS ?x) WHERE { VALUES ?z { } } } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "None",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "checkpoints": {
+          "inner_x": "ExplicitNone",
+          "outer_retained_values": 1
+        }
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "aggregates:229-249",
+        "evalutils:117-134",
+        "evaluate:125-138",
+        "cpython_object:none_repr"
+      ]
+    },
+    {
+      "id": "GQ06",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(DISTINCT ?x; SEPARATOR=\"|\") AS ?v) WHERE { VALUES ?x { \"x\" \"x\"^^<http://www.w3.org/2001/XMLSchema#string> \"x\" } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "x|x",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "checkpoints": {
+          "raw_evaluations": 5,
+          "retained_values": 2,
+          "seen_size": 2
+        }
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "aggregates:38-59,305-310",
+        "term:1313-1407"
+      ]
+    },
+    {
+      "id": "GQ07",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(DISTINCT ?x; SEPARATOR=\"|\") AS ?v) WHERE { VALUES ?x { \"x\"@EN \"x\"@en \"x\"@fr \"x\" } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "x|x|x",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "checkpoints": {
+          "raw_evaluations": 7,
+          "retained_values": 3,
+          "seen_size": 3
+        }
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "term:1313-1407"
+      ]
+    },
+    {
+      "id": "GQ08",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(DISTINCT (?missing + 1)) AS ?v) WHERE { VALUES ?row { 1 2 } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "checkpoints": {
+          "raw_evaluations": 4,
+          "retained_values": 0,
+          "seen_size": 0
+        }
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "aggregates:57-59,260-272",
+        "parserutils:Expr.eval"
+      ]
+    },
+    {
+      "id": "GQ09",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(1/0; SEPARATOR=\"|\") AS ?v) WHERE { VALUES ?row { 1 2 } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "divide by 0|divide by 0",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "decimal_flags_required": [
+          "DivisionByZero"
+        ],
+        "checkpoints": {
+          "raw_evaluations": 2,
+          "distinct_error_objects": 2
+        }
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "operators:758-772",
+        "sparql:35-42",
+        "cpython_exceptions:119-132"
+      ]
+    },
+    {
+      "id": "GQ10",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(\"x\" + 1) AS ?v) WHERE { VALUES ?row { 1 } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "rdflib.term.Literal('x') does not have a numeric datatype!",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "operators:1055-1078",
+        "term:1752-1762",
+        "parserutils:Expr.eval"
+      ]
+    },
+    {
+      "id": "GQ11",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(\"x\"^^<http://www.w3.org/2001/XMLSchema#string> + 1) AS ?v) WHERE { VALUES ?row { 1 } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "rdflib.term.Literal('x', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string')) does not have a numeric datatype!",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "operators:1055-1078",
+        "term:1752-1762"
+      ]
+    },
+    {
+      "id": "GQ12",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(\"x\"@EN + 1) AS ?v) WHERE { VALUES ?row { 1 } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "rdflib.term.Literal('x', lang='EN') does not have a numeric datatype!",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "operators:1055-1078",
+        "term:1752-1762"
+      ]
+    },
+    {
+      "id": "GQ13",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(<urn:x> + 1) AS ?v) WHERE { VALUES ?row { 1 } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "rdflib.term.URIRef('urn:x') is not a literal!",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "operators:1055-1056",
+        "term:350-356"
+      ]
+    },
+    {
+      "id": "GQ14",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT ?g (GROUP_CONCAT(?x; SEPARATOR=\"|\") AS ?v) WHERE { VALUES (?g ?x) { (2 \"b\") (1 \"a\") (2 \"c\") } } GROUP BY ?g",
+      "expected": {
+        "rows": [
+          {
+            "g": {
+              "kind": "literal",
+              "lexical": "2",
+              "source_datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "v": {
+              "kind": "literal",
+              "lexical": "b|c",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          },
+          {
+            "g": {
+              "kind": "literal",
+              "lexical": "1",
+              "source_datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "v": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "evaluate:474-492"
+      ]
+    },
+    {
+      "id": "GQ15",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"|\") AS ?v) WHERE { VALUES ?row { 1 2 } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "node-a|node-a",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "term:146-152"
+      ],
+      "initial": [
+        {
+          "variable": "x",
+          "origin": "UnknownNormalized",
+          "rdf": {
+            "kind": "blank_node",
+            "value": "node-a"
+          }
+        }
+      ]
+    },
+    {
+      "id": "GQ16",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES ?row { 1 } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "01",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492"
+      ],
+      "initial": [
+        {
+          "variable": "x",
+          "origin": "UnknownNormalized",
+          "rdf": {
+            "kind": "literal",
+            "lexical": "01",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+          }
+        }
+      ],
+      "notes": "Only current RDF lexical is claimed known. No datatype-presence/cache/source identity recovery; no arithmetic or DISTINCT."
+    },
+    {
+      "id": "GQ17",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"|\") AS ?v) WHERE { VALUES ?row { 1 } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "a\nb\t猫",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492"
+      ],
+      "initial": [
+        {
+          "variable": "x",
+          "origin": "DirectString",
+          "lexical": "a\nb\t猫",
+          "datatype": null,
+          "language": null
+        }
+      ]
+    },
+    {
+      "id": "GQ18",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(?x + 1) AS ?v) WHERE { { SELECT (SAMPLE(?missing) AS ?x) WHERE { VALUES ?z { } } } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "checkpoints": {
+          "inner_x": "ExplicitNone",
+          "outer_expression_result_kind": "ReturnedNotBound",
+          "retained_values": 0
+        }
+      },
+      "basis": [
+        "aggregates:252-278",
+        "aggregates:229-249",
+        "evalutils:117-134",
+        "parserutils:80-94,Expr.eval",
+        "evaluate:125-138"
+      ],
+      "notes": "Bare aggregate variable in GQ05 reads ctx[] and retains None; arithmetic operand is parserutils.value Variable lookup via ctx.get(None), raises NotBound before numeric(None), Expr catches and GC skips. This was corrected from a draft-only erroneous None numeric type message before final freezing."
+    },
+    {
+      "id": "GQ19",
+      "classification": "source_derived_unobserved",
+      "query": "SELECT (GROUP_CONCAT(?x) AS ?v) (COUNT(?x) AS ?n) WHERE { VALUES ?x { UNDEF \"a\" } }",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            },
+            "n": {
+              "kind": "literal",
+              "lexical": "1",
+              "source_datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:252-278",
+        "term:146-152,642-724",
+        "evaluate:474-492",
+        "aggregates:Counter"
+      ]
+    }
+  ],
+  "active_safety_cases": [
+    {
+      "id": "GA01",
+      "classification": "active_safety_not_python_semantics",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"🙂\") AS ?v) WHERE { VALUES ?x { \"猫\" \"犬\" } }",
+      "limits": {
+        "max_output_characters": 3
+      },
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "猫🙂犬",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "proposed output-character contract; counts Unicode scalar values"
+      ]
+    },
+    {
+      "id": "GA02",
+      "classification": "active_safety_not_python_semantics",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"🙂\") AS ?v) WHERE { VALUES ?x { \"猫\" \"犬\" } }",
+      "limits": {
+        "max_output_characters": 2
+      },
+      "expected": {
+        "first_poll": "FatalResourceLimit",
+        "next_poll": "None",
+        "phase": "group_finish",
+        "rows_before_error": []
+      },
+      "basis": [
+        "proposed output-character contract"
+      ]
+    },
+    {
+      "id": "GA03",
+      "classification": "active_safety_not_python_semantics",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"unused\") AS ?v) WHERE { VALUES ?x { \"a\" } }",
+      "limits": {
+        "max_input_characters": 1,
+        "max_output_characters": 1
+      },
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "cpython_unicodeobject:9830-9885",
+        "aggregate separator is syntax String, not a literal input constructor; unused separator contributes zero output characters"
+      ]
+    },
+    {
+      "id": "GA04",
+      "classification": "active_safety_not_python_semantics",
+      "query": "SELECT (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES ?x { \"a\" \"b\" } }",
+      "limits": {
+        "max_input_characters": 1,
+        "max_output_characters": 3
+      },
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "a b",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ]
+      },
+      "basis": [
+        "aggregate output is not reclassified as an input string; use output budget only"
+      ]
+    },
+    {
+      "id": "GA05",
+      "classification": "active_safety_not_python_semantics",
+      "query": "SELECT ?g (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES (?g ?x) { (1 \"a\") (2 \"bb\") (2 \"cc\") } } GROUP BY ?g",
+      "limits": {
+        "max_output_characters": 3
+      },
+      "expected": {
+        "rows_before_error": [
+          {
+            "g": {
+              "lexical": "1"
+            },
+            "v": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "next_poll": "FatalResourceLimit",
+        "after_error": "None",
+        "failing_group": "2",
+        "phase": "group_finish"
+      },
+      "basis": [
+        "evaluate:474-492",
+        "proposed output-character contract"
+      ]
+    },
+    {
+      "id": "GA06",
+      "classification": "active_safety_not_python_semantics",
+      "query": "SELECT ?g (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES (?g ?x) { (1 \"a\") (2 \"bb\") (2 \"cc\") } } GROUP BY ?g LIMIT 1",
+      "limits": {
+        "max_output_characters": 3
+      },
+      "expected": {
+        "rows": [
+          {
+            "g": {
+              "lexical": "1"
+            },
+            "v": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "next_poll": "None",
+        "group_2_finish_calls": 0
+      },
+      "basis": [
+        "evaluate:474-516",
+        "proposed output-character contract"
+      ]
+    },
+    {
+      "id": "GA07",
+      "classification": "active_safety_not_python_semantics",
+      "query": "SELECT (GROUP_CONCAT(DISTINCT ?x) AS ?v) WHERE { VALUES ?row {1} }",
+      "initial": [
+        {
+          "variable": "x",
+          "origin": "UnknownNormalized",
+          "rdf": {
+            "kind": "literal",
+            "lexical": "01",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+          }
+        }
+      ],
+      "expected": {
+        "first_poll": "UnknownSourceLiteralIdentity",
+        "next_poll": "None",
+        "phase": "distinct_use_row",
+        "completed_group_rows": 0
+      },
+      "basis": [
+        "existing SourceLiteralV1 active identity contract"
+      ]
+    },
+    {
+      "id": "GA08",
+      "classification": "active_safety_not_python_semantics",
+      "operation": "source_str",
+      "input": {
+        "kind": "ReturnedError",
+        "kind_tag": "OtherSparql",
+        "diagnostic": "unproven text",
+        "source_text": null
+      },
+      "expected": {
+        "fatal": "UnknownSourceErrorText"
+      },
+      "basis": [
+        "diagnostic without fixed source construction is not original str(error)"
+      ]
+    },
+    {
+      "id": "GA09",
+      "classification": "active_safety_not_python_semantics",
+      "query": "SELECT (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES ?row {1 2} }",
+      "initial": [
+        {
+          "variable": "x",
+          "origin": "DirectString",
+          "lexical": "a",
+          "datatype": null,
+          "language": null
+        }
+      ],
+      "dataset_fault": {
+        "arm": "after_prepare_before_execute",
+        "matching_rdf": {
+          "kind": "literal",
+          "lexical": "a",
+          "physical_datatype": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "fail_matching_externalize_call": 2
+      },
+      "expected": {
+        "first_poll": "same_Dataset_error",
+        "next_poll": "None",
+        "completed_group_rows": 0,
+        "group_finish_calls": 0
+      },
+      "basis": [
+        "raw evaluation fatal propagates; actual Dataset failure, not artificial AST error"
+      ],
+      "notes": "Arm a backend fault predicate on the actual initial literal a; encoding VALUES row numbers cannot consume this matching counter. No fake expression failure."
+    }
+  ],
+  "unclosed": [
+    "No full Semantica or public nullable profile claim; no new /5.",
+    "Current source literal implementation must first pass its own receiving; these expectations do not grant that result.",
+    "No historical process observation or arbitrary external SPARQL custom exception/subclass behavior; source error constructors explicitly described here only.",
+    "No GC-specific input-row or retained-value-count budget is introduced. Output bound is not a total query memory bound; allocation failure and cancellation remain fatal.",
+    "Scalar Rust strings do not cover Python lone-surrogate term domain; keep existing transport rejection explicit.",
+    "BGP/OPTIONAL/JOIN/MINUS/path source-context gates remain; no arbitrary function compiler added.",
+    "All original scope and MIN/MAX/ORDER/comparison/context/wrapper obligations remain."
+  ],
+  "expected_comparison": {
+    "rows": "Ordered rows and bound variable set are exact. A descriptor checks every explicitly present field; omitted cache/metadata fields are not implied values. Every GROUP_CONCAT result descriptor fully fixes plain source datatype/language/ill_typed/cache kind.",
+    "protocol": "Explicit evaluator schedules are accumulator unit inputs only, not a second query interpreter or claimed reachable public expression. Actual query cases must use the one production prepare/execute chain.",
+    "errors": "Compare stable original exception kind/identity or explicitly classified active fault, not candidate diagnostics. The bound iterator must fuse after fatal; no retraction of prior yielded rows."
+  },
+  "counts": {
+    "text_cases": 10,
+    "repr_cases": 5,
+    "protocol_cases": 6,
+    "query_cases": 19,
+    "active_safety_cases": 9,
+    "reused_query_examples": 6,
+    "reused_core_example": 1
+  },
+  "reused_cases": [
+    {
+      "id": "GC01",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"|\") AS ?v) WHERE { VALUES ?x { \"01\"^^<http://www.w3.org/2001/XMLSchema#integer> <urn:x> \"猫\"@zh } }",
+      "expected_row": {
+        "v": {
+          "kind": "literal",
+          "lexical": "01|urn:x|猫",
+          "datatype": null,
+          "language": null
+        }
+      },
+      "basis": [
+        "aggregates:257-278",
+        "term:146-152",
+        "algebra:573-579",
+        "evaluate:125-138"
+      ],
+      "notes": "Stringification uses lexical text; output loses input language and datatype. Typed query lexical 01 is retained by existing-Literal construction."
+    },
+    {
+      "id": "GC02",
+      "query": "SELECT (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES ?x { } }",
+      "expected_row": {
+        "v": {
+          "kind": "literal",
+          "lexical": "",
+          "datatype": null,
+          "language": null
+        }
+      },
+      "basis": [
+        "aggregates:252-278",
+        "evaluate:474-492"
+      ],
+      "notes": "Implicit aggregate group exists even with zero input; explicit empty GROUP BY has different lifecycle."
+    },
+    {
+      "id": "GC03",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"|\") AS ?v) WHERE { VALUES ?x { UNDEF \"a\" } }",
+      "expected_row": {
+        "v": {
+          "kind": "literal",
+          "lexical": "a",
+          "datatype": null,
+          "language": null
+        }
+      },
+      "basis": [
+        "aggregates:257-278",
+        "evalutils:117-134"
+      ],
+      "notes": "Raised bare-variable NotBound caught in update."
+    },
+    {
+      "id": "GC04",
+      "query": "SELECT (GROUP_CONCAT(DISTINCT ?x; SEPARATOR=\"|\") AS ?v) WHERE { VALUES ?x { UNDEF \"a\" } }",
+      "expected_error": {
+        "source_exception": "NotBoundError",
+        "phase": "Accumulator.use_row",
+        "completed_group_rows": 0
+      },
+      "basis": [
+        "aggregates:57-59",
+        "aggregates:305-310",
+        "evalutils:123-134"
+      ],
+      "notes": "No Counter-specific NotBound suppression; use_row is outside GroupConcat.update catch."
+    },
+    {
+      "id": "GC05",
+      "query": "SELECT (GROUP_CONCAT(DISTINCT (1/0); SEPARATOR=\"|\") AS ?v) WHERE { VALUES ?row {1 2} }",
+      "expected_row": {
+        "v": {
+          "kind": "literal",
+          "lexical": "divide by 0|divide by 0",
+          "datatype": null,
+          "language": null
+        }
+      },
+      "basis": [
+        "aggregates:57-59",
+        "aggregates:257-278",
+        "operators:758-772",
+        "parserutils:Expr.eval",
+        "sparql:35-42"
+      ],
+      "notes": "Each gate/update error has a new object identity. Two rows remain distinct. Default Decimal DivisionByZero trap is explicit precondition; diagnostic originates from fixed multiplicative source."
+    },
+    {
+      "id": "GC06",
+      "query": "SELECT (GROUP_CONCAT(?missing + 1) AS ?v) WHERE { VALUES ?row {1 2} }",
+      "expected_row": {
+        "v": {
+          "kind": "literal",
+          "lexical": "",
+          "datatype": null,
+          "language": null
+        }
+      },
+      "basis": [
+        "aggregates:260-265",
+        "parserutils:Expr.eval",
+        "evalutils:117-134"
+      ],
+      "notes": "Expr returns a NotBoundError object; update explicitly skips it. Bare variable and Expr cases are distinct."
+    },
+    {
+      "id": "GC07",
+      "state_input": {
+        "evaluated_values": [
+          {
+            "kind": "ExplicitNone"
+          }
+        ],
+        "distinct": false,
+        "separator": " "
+      },
+      "expected_finish": {
+        "kind": "literal",
+        "lexical": "None",
+        "datatype": null,
+        "language": null
+      },
+      "basis": [
+        "aggregates:257-278"
+      ],
+      "notes": "State-level frozen example; future real query uses already-source-proved empty SAMPLE subquery to supply explicit None. No new external input protocol is assumed."
+    }
+  ]
+}

@@ -1,0 +1,3720 @@
+{
+  "cases": [
+    {
+      "id": "prior-empty",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": []
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-same-node-empty",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": []
+        },
+        "source": "A",
+        "target": "A",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "A",
+          "paths": [
+            {
+              "path": [
+                "A"
+              ],
+              "edges": [],
+              "length": 0
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          []
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-two-edges-default",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "id": "bt",
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-maximum-0",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": 0,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "id": "bt",
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-maximum-1",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": 1,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-maximum-2",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": 2,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-maximum-3",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": 3,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "id": "bt",
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-maximum-negative1",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": -1,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-parallel-direct",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "at1",
+              "source": "A",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "at2",
+              "source": "A",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "at1",
+                  "source": "A",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 1
+            },
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "at2",
+                  "source": "A",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 2
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-diamond-global-visited",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "ac",
+              "source": "A",
+              "target": "C",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bd",
+              "source": "B",
+              "target": "D",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "cd",
+              "source": "C",
+              "target": "D",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "dt",
+              "source": "D",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "D",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "id": "bd",
+                  "source": "B",
+                  "target": "D",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "id": "dt",
+                  "source": "D",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 3
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            2,
+            4
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-cycle-suppression",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "ba",
+              "source": "B",
+              "target": "A",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "id": "bt",
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            2
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-canonical-endpoint-keys",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "at",
+              "source_id": "A",
+              "target_id": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "at",
+                  "source_id": "A",
+                  "target_id": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-null-legacy-uses-canonical",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "at",
+              "source": null,
+              "target": null,
+              "source_id": "A",
+              "target_id": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "at",
+                  "source": null,
+                  "target": null,
+                  "source_id": "A",
+                  "target_id": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-empty-legacy-does-not-use-canonical",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "at",
+              "source": "",
+              "target": "T",
+              "source_id": "A",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-strict-rejects-backward",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-03"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-02"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-loose-accepts-backward",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-03"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-02"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "loose",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z",
+                  "valid_from": "2024-01-03"
+                },
+                {
+                  "id": "bt",
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z",
+                  "valid_from": "2024-01-02"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-disabled-ordering",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-03"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-02"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": false,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z",
+                  "valid_from": "2024-01-03"
+                },
+                {
+                  "id": "bt",
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z",
+                  "valid_from": "2024-01-02"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-unknown-ordering-accepts",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-03"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-02"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "unrecognized",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z",
+                  "valid_from": "2024-01-03"
+                },
+                {
+                  "id": "bt",
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z",
+                  "valid_from": "2024-01-02"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-overlap-rejects-gap",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_until": "2024-01-01"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-02"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "overlap",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-overlap-unknown-end",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-02"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "overlap",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "id": "bt",
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z",
+                  "valid_from": "2024-01-02"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-unused-constraints",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "ab",
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            },
+            {
+              "id": "bt",
+              "source": "B",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": {
+          "forbidden_type": "all",
+          "require_real_causality": true
+        },
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "ab",
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "id": "bt",
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-query-window-touches",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "at",
+              "source": "A",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "2024-01-01",
+              "valid_until": "2024-01-02"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": "2024-01-02",
+        "end_time": "2024-01-03",
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "at",
+                  "source": "A",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-query-window-excludes",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "at",
+              "source": "A",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_until": "2024-01-01"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": "2024-01-02",
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-no-window-does-not-parse-one-edge",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "at",
+              "source": "A",
+              "target": "T",
+              "recorded_at": "2024-01-10T00:00:00Z",
+              "valid_from": "bad-date"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "id": "at",
+                  "source": "A",
+                  "target": "T",
+                  "recorded_at": "2024-01-10T00:00:00Z",
+                  "valid_from": "bad-date"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "numeric-bool-identity",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": 1
+            },
+            {
+              "source": true,
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                1,
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": 1
+                },
+                {
+                  "source": true,
+                  "target": "T"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "numeric-string-distinct",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": 1
+            },
+            {
+              "source": "1",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "null-endpoint",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": null
+            },
+            {
+              "source": null,
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                null,
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": null
+                },
+                {
+                  "source": null,
+                  "target": "T"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "boolean-cycle",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": true,
+              "target": 1
+            },
+            {
+              "source": true,
+              "target": "T"
+            }
+          ]
+        },
+        "source": true,
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": true,
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                true,
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": true,
+                  "target": "T"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "target-before-hash",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": [
+                "x"
+              ]
+            }
+          ]
+        },
+        "source": "A",
+        "target": [
+          "x"
+        ],
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": [
+            "x"
+          ],
+          "paths": [
+            {
+              "path": [
+                "A",
+                [
+                  "x"
+                ]
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": [
+                    "x"
+                  ]
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unhashable-neighbor-not-target",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": [
+                "x"
+              ]
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "unhashable type: 'list'"
+      }
+    },
+    {
+      "id": "unhashable-source",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "source": [],
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "unhashable type: 'list'"
+      }
+    },
+    {
+      "id": "same-unhashable-source-target",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "source": [],
+        "target": [],
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": [],
+          "target": [],
+          "paths": [
+            {
+              "path": [
+                []
+              ],
+              "edges": [],
+              "length": 0
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          []
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "object-source-target",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "source": {},
+        "target": {},
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": {},
+          "target": {},
+          "paths": [
+            {
+              "path": [
+                {}
+              ],
+              "edges": [],
+              "length": 0
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          []
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unhashable-adjacency-unreachable",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": [],
+              "target": "x"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "unhashable type: 'list'"
+      }
+    },
+    {
+      "id": "unhashable-adjacency-filtered",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": {},
+              "target": "x",
+              "valid_until": "2024-01-01"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": "2024-01-02",
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unhashable-adjacency-object",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": {},
+              "target": "x"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "unhashable type: 'dict'"
+      }
+    },
+    {
+      "id": "no-source-field",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "target": "T"
+            }
+          ]
+        },
+        "source": null,
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": null,
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                null,
+                "T"
+              ],
+              "edges": [
+                {
+                  "target": "T"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "empty-string-identity",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "",
+                  "target": "T"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "parallel-identical-edges",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "T"
+            },
+            {
+              "source": "A",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "T"
+                }
+              ],
+              "length": 1
+            },
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "T"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 2
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "zero-edge-negative-limit",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "source": "A",
+        "target": "A",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": -1,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "A",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "zero-edge-positive-limit",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "source": "A",
+        "target": "A",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": 1,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "A",
+          "paths": [
+            {
+              "path": [
+                "A"
+              ],
+              "edges": [],
+              "length": 0
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          []
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unknown-four-clock-calls",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "C"
+            },
+            {
+              "source": "C",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "C",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B"
+                },
+                {
+                  "source": "B",
+                  "target": "C"
+                },
+                {
+                  "source": "C",
+                  "target": "T"
+                }
+              ],
+              "length": 3
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        "clock_fallback_count": 4
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "clock-used-before-later-invalid",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "superseded_at": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "two-edge-invalid-valid_from",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "valid_from": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "two-edge-invalid-valid_until",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "valid_until": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "two-edge-invalid-recorded_at",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "recorded_at": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "two-edge-invalid-superseded_at",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "superseded_at": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "single-edge-invalid-recorded-ignored",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "T",
+              "recorded_at": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "T",
+                  "recorded_at": "bad"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "disabled-does-not-normalize",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_from": "bad"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "recorded_at": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": false,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "bad"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "recorded_at": "bad"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "loose-does-not-normalize",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_from": "bad"
+            },
+            {
+              "source": "B",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "loose",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "bad"
+                },
+                {
+                  "source": "B",
+                  "target": "T"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unknown-strategy-still-normalizes",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_from": "bad"
+            },
+            {
+              "source": "B",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "unknown",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "unknown-strategy-unknown-granularity",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "unknown",
+        "granularity": "unknown"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B"
+                },
+                {
+                  "source": "B",
+                  "target": "T"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unknown-granularity-no-dates",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "unknown"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B"
+                },
+                {
+                  "source": "B",
+                  "target": "T"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unknown-granularity-compared",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_from": "2024-01-01"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "valid_from": "2024-01-02"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "unknown"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.ValueError",
+        "message": "Unsupported temporal granularity: unknown"
+      }
+    },
+    {
+      "id": "coarse-order-accepted",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_from": "2024-01-02T20:00:00Z"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "valid_from": "2024-01-02T09:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-02T20:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02T09:00:00Z"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "fine-order-rejected",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_from": "2024-01-02T20:00:00Z"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "valid_from": "2024-01-02T09:00:00Z"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "second"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "overlap-before-previous-start",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_from": "2024-01-10",
+              "valid_until": "2024-01-11"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "valid_from": "2024-01-01"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "overlap",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-10",
+                  "valid_until": "2024-01-11"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-01"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "overlap-touch",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_until": "2024-01-02"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "valid_from": "2024-01-02"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "overlap",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_until": "2024-01-02"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 1
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "overlap-current-unknown",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_until": "2024-01-02"
+            },
+            {
+              "source": "B",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "overlap",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_until": "2024-01-02"
+                },
+                {
+                  "source": "B",
+                  "target": "T"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            1
+          ]
+        ],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "open-start-query",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "T",
+              "valid_from": "OPEN"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": "2024-01-01",
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "T",
+                  "valid_from": "OPEN"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "open-start-normalization-fails",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_from": "OPEN"
+            },
+            {
+              "source": "B",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=OPEN"
+      }
+    },
+    {
+      "id": "empty-query-skips-parsing",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "T",
+              "valid_from": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": "",
+        "end_time": "",
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "T",
+                  "valid_from": "bad"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "open-query-still-parses",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "T",
+              "valid_from": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": "OPEN",
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "invalid-query-on-empty",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": "bad",
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "invalid-unreachable-filtered-field",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "X",
+              "target": "Y",
+              "valid_from": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": "2024-01-01",
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "invalid-recorded-window-ignored",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "T",
+              "valid_from": "2024-01-01",
+              "recorded_at": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": "2024-01-02",
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "T",
+                  "valid_from": "2024-01-01",
+                  "recorded_at": "bad"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "max-one-prunes-before-second-parse",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "valid_from": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": 1,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [],
+          "num_paths": 0
+        },
+        "path_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "max-two-enqueues-before-pruning",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "T",
+              "valid_from": "bad"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": 2,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "semantica.utils.exceptions.TemporalValidationError",
+        "message": "Invalid temporal value | Context: value=bad"
+      }
+    },
+    {
+      "id": "cycle-skips-invalid-date",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            },
+            {
+              "source": "B",
+              "target": "A",
+              "valid_from": "bad"
+            },
+            {
+              "source": "B",
+              "target": "T"
+            }
+          ]
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "B",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "B"
+                },
+                {
+                  "source": "B",
+                  "target": "T"
+                }
+              ],
+              "length": 2
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0,
+            2
+          ]
+        ],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unused-malformed-entities",
+      "request": {
+        "schema": "semantica.temporal-paths-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": false,
+          "relationships": [
+            {
+              "source": "A",
+              "target": "T"
+            }
+          ],
+          "unknown": {
+            "causality": "unproven"
+          }
+        },
+        "source": "A",
+        "target": "T",
+        "start_time": null,
+        "end_time": null,
+        "max_path_length": null,
+        "temporal_constraints": null,
+        "enforce_causal_ordering": true,
+        "ordering_strategy": "strict",
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "source": "A",
+          "target": "T",
+          "paths": [
+            {
+              "path": [
+                "A",
+                "T"
+              ],
+              "edges": [
+                {
+                  "source": "A",
+                  "target": "T"
+                }
+              ],
+              "length": 1
+            }
+          ],
+          "num_paths": 1
+        },
+        "path_relationship_indices": [
+          [
+            0
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    }
+  ]
+}

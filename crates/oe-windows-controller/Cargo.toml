@@ -1,0 +1,49 @@
+[package]
+name = "oe-windows-controller"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+autobins = false
+autoexamples = false
+
+[features]
+default = []
+acceptance-fixtures = []
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+oe-nx-protocol.workspace = true
+zip.workspace = true
+toml = { version = "=1.0.6", default-features = false, features = ["parse", "serde", "std"] }
+
+[[bin]]
+name = "oe-nx-controller"
+path = "src/main.rs"
+
+[[example]]
+name = "controller-primitives-probe"
+path = "examples/controller_primitives_probe.rs"
+required-features = ["acceptance-fixtures"]
+test = false
+
+[[example]]
+name = "frame-echo-fixture"
+path = "examples/frame_echo.rs"
+required-features = ["acceptance-fixtures"]
+test = false
+
+[[example]]
+name = "synthetic-worker-fixture"
+path = "examples/synthetic_worker.rs"
+required-features = ["acceptance-fixtures"]
+test = false
+
+[lints]
+workspace = true
+
+[target.'cfg(not(windows))'.dependencies]
+sha2 = { workspace = true, features = ["asm"] }

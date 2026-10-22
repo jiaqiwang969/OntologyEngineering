@@ -1,0 +1,69 @@
+{
+  "schema": "oev2.project/1",
+  "project_id": "current-task-independent-fixture",
+  "revision": "same-r1",
+  "purpose": "Review declared source-bound support and downstream cost; no physical adoption attestation",
+  "objects": {
+    "urn:fixture:part": "r1",
+    "urn:fixture:independent": "r1"
+  },
+  "conditions": {
+    "service": "force=10 N; support=cantilever",
+    "independent-service": "independent boundary unchanged"
+  },
+  "evidence": {
+    "source-primary": "7945a4938ab929fdc2059e756fdac9882284e16bae34870ca50282e60d616492",
+    "source-downstream": "6ab54aa0090c4626e800ad7c5928b6bb29a100f31e2617feaa2dac1789fd6d37",
+    "source-independent": "f93b150d26a505b9ae1bb2ba0252d881ff09b77839bad4fc7237635a03140d77",
+    "source-unrelated": "3b4144f9c99292e138f8d0547034fde7d278fc67ce9a474b23b6a2a97a8fd430"
+  },
+  "decisions": [
+    {
+      "id": "select",
+      "object_id": "urn:fixture:part",
+      "object_revision": "r1",
+      "condition_scope": "service",
+      "source_sha256": "7945a4938ab929fdc2059e756fdac9882284e16bae34870ca50282e60d616492",
+      "conclusion": "supported",
+      "adopted": true,
+      "basis": [
+        "support-premise"
+      ]
+    },
+    {
+      "id": "cost",
+      "object_id": "urn:fixture:part",
+      "object_revision": "r1",
+      "condition_scope": "service",
+      "source_sha256": "6ab54aa0090c4626e800ad7c5928b6bb29a100f31e2617feaa2dac1789fd6d37",
+      "conclusion": "supported",
+      "adopted": true,
+      "basis": [
+        "select"
+      ]
+    },
+    {
+      "id": "independent",
+      "object_id": "urn:fixture:independent",
+      "object_revision": "r1",
+      "condition_scope": "independent-service",
+      "source_sha256": "f93b150d26a505b9ae1bb2ba0252d881ff09b77839bad4fc7237635a03140d77",
+      "conclusion": "supported",
+      "adopted": true,
+      "basis": [
+        "standalone-premise"
+      ]
+    }
+  ],
+  "dependencies": {
+    "support-premise": [
+      "source-primary"
+    ],
+    "cost": [
+      "select"
+    ],
+    "standalone-premise": [
+      "source-independent"
+    ]
+  }
+}

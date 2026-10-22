@@ -1,0 +1,173 @@
+{
+  "cases": [
+    {
+      "query": "SELECT ?s ?label WHERE { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?label }",
+      "accepted": true
+    },
+    {
+      "query": "ASK { ?s <http://www.w3.org/2000/01/rdf-schema#label> \"Python programming language\" }",
+      "accepted": true
+    },
+    {
+      "query": "CONSTRUCT { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?label } WHERE { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?label }",
+      "accepted": true
+    },
+    {
+      "query": "DESCRIBE <http://semantica.local/entity/python>",
+      "accepted": true
+    },
+    {
+      "query": "select ?s where { ?s a <http://semantica.local/entity/language> }",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/nonexistent> }",
+      "accepted": true
+    },
+    {
+      "query": "INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/hacked> }",
+      "accepted": false
+    },
+    {
+      "query": "DELETE DATA { <http://semantica.local/entity/python> a <http://semantica.local/entity/language> }",
+      "accepted": false
+    },
+    {
+      "query": "DELETE WHERE { ?s ?p ?o }",
+      "accepted": false
+    },
+    {
+      "query": "DROP ALL",
+      "accepted": false
+    },
+    {
+      "query": "DROP GRAPH <http://example.org/g>",
+      "accepted": false
+    },
+    {
+      "query": "CLEAR ALL",
+      "accepted": false
+    },
+    {
+      "query": "CLEAR GRAPH <http://example.org/g>",
+      "accepted": false
+    },
+    {
+      "query": "LOAD <http://example.org/data.ttl>",
+      "accepted": false
+    },
+    {
+      "query": "CREATE GRAPH <http://example.org/g>",
+      "accepted": false
+    },
+    {
+      "query": "MODIFY <http://example.org/g> DELETE { ?s ?p ?o } WHERE { ?s ?p ?o }",
+      "accepted": false
+    },
+    {
+      "query": "",
+      "accepted": false
+    },
+    {
+      "query": "   ",
+      "accepted": false
+    },
+    {
+      "query": "not a sparql query at all",
+      "accepted": false
+    },
+    {
+      "query": "# comment\nDROP ALL",
+      "accepted": false
+    },
+    {
+      "query": "SELECT ?s WHERE { ?s ?p ?o } ; DROP ALL",
+      "accepted": false
+    },
+    {
+      "query": "INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/y> }",
+      "accepted": false
+    },
+    {
+      "query": "SELECT ?s WHERE { ?s ?p ?o } ; ASK { ?x ?y ?z }",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?s WHERE { this is not valid sparql syntax",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?s WHERE { $$$ invalid $$$ }",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?s WHERE { ?s ?p ?o }",
+      "accepted": true
+    },
+    {
+      "query": "ASK {}",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?p ?v WHERE { <http://semantica.local/entity/python> ?p ?v }",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?o WHERE { <http://semantica.local/entity/python> <http://semantica.local/prop/used_in> ?o }",
+      "accepted": true
+    },
+    {
+      "query": "ſELECT ?s WHERE {?s ?p ?o}",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?s WHERE {?s ?p \"İNſERT\"}",
+      "accepted": false
+    },
+    {
+      "query": "PREFİX ex: <urn:> SELECT ?s WHERE {?s ?p ?o}",
+      "accepted": true
+    },
+    {
+      "query": "# DROP\nASK {}",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?s WHERE {?s <urn:has#part> ?o}",
+      "accepted": true
+    },
+    {
+      "query": "PREFIX ex: <urn:> PREFIX y: <urn:y> SELECT ?s WHERE {?s ?p ?o}",
+      "accepted": false
+    },
+    {
+      "query": "\u001c# DROP\nASK {}",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?s WHERE {?s ?p \"DROPPED\"}",
+      "accepted": true
+    },
+    {
+      "query": "SELECT ?s WHERE {?s ?p \"DROP\"}",
+      "accepted": false
+    },
+    {
+      "query": "ASK_ {}",
+      "accepted": false
+    },
+    {
+      "query": "ASKé {}",
+      "accepted": false
+    },
+    {
+      "query": "ASḰ {}",
+      "accepted": true
+    }
+  ],
+  "scope": "Actual unchanged original lexical guard, separate from parser/HTTP/query execution. Includes Python Unicode IGNORECASE and whitespace boundaries."
+}

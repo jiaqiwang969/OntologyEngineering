@@ -1,0 +1,32 @@
+From: a@example.com
+To: b@example.com
+Subject: Nested parts
+Content-Type: multipart/mixed; boundary="outer"
+
+Preamble line one
+Preamble line two
+
+--outer
+Content-Type: multipart/alternative; boundary="inner"
+
+--inner
+Content-Type: text/plain
+
+Inner plain
+--inner
+Content-Type: text/html
+
+<i>Inner html</i>
+--inner--
+inner epilogue
+
+--outer
+Content-Type: text/csv; name=data.csv
+Content-Disposition: attachment; filename=data.csv
+
+a,b
+1,2
+
+--outer--
+
+outer epilogue

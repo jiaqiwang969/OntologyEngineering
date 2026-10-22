@@ -1,0 +1,3501 @@
+{
+  "schema": "source-order-query-public-fixture/1",
+  "source_record_sha256": "738d39778338087562cf4edbac0fb651a4d1af66cd59002ce7a47b3a4fcc2b2d",
+  "cases_canonical_sha256": "9db628edba79f453378dc49f8940c137f98971feac331fc09edf8678e511d2da",
+  "excluded_deferred_ids": [
+    "OA12",
+    "OA13"
+  ],
+  "native_sort_vectors": "separate source_sort_schedule_cases.json; not repeated here",
+  "scope": "Fixed source/math and explicit active contracts; original RDFLib queries not executed. Production/receiving authors distinct; receiver author is expected-data author. No source graph capability implied.",
+  "context": {
+    "rdflib_version": "7.6.0",
+    "cpython_version": "3.13.11",
+    "backend": "CPython C decimal source pinned below for comparisons; source-derived, not observed",
+    "DAWG_LITERAL_COLLATION": false,
+    "normalize_literals": true,
+    "query_numeric_capabilities": "mixed-binary64-v1",
+    "query_group_semantics": "source-group/1",
+    "query_literal_semantics": "source-literal/1",
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "flags_initial": []
+    },
+    "numeric_limits": {
+      "max_input_characters": 4096,
+      "max_coefficient_digits": 4096,
+      "max_output_characters": 4096,
+      "max_materialized_power_of_ten": 4096
+    },
+    "integer_text_limit": null,
+    "query_rows": "ordered VALUES/UNION or single initial binding; not unspecified backend scan order",
+    "case_overrides": "Each operation/run/query receives a fresh context unless explicitly a single query. Context/limit overrides replace named fields only."
+  },
+  "source_math_cases": [
+    {
+      "id": "OQ01-a",
+      "family": "OR01",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag {  } } ORDER BY ?missing"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_class": "UnboundVariable(missing)",
+        "key_evaluations": 0,
+        "comparator_calls": 0,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "None",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Bare missing key is the original Variable, all equal; zero/one keys require no comparison.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085"
+      ]
+    },
+    {
+      "id": "OQ01-b",
+      "family": "OR01",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 1 } } ORDER BY ?missing"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_class": "UnboundVariable(missing)",
+        "key_evaluations": 1,
+        "comparator_calls": 0,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Bare missing key is the original Variable, all equal; zero/one keys require no comparison.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085"
+      ]
+    },
+    {
+      "id": "OQ01-c",
+      "family": "OR01",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 1 2 } } ORDER BY ?missing"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_class": "UnboundVariable(missing)",
+        "key_evaluations": 2,
+        "comparator_calls": 1,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Bare missing key is the original Variable, all equal; zero/one keys require no comparison.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085"
+      ]
+    },
+    {
+      "id": "OQ02-a",
+      "family": "OR01",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag {  } } ORDER BY (?missing + 1)"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_class": "NoneKey",
+        "key_evaluations": 0,
+        "comparator_calls": 0,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "None",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Actual additive Expr catches NotBound(None), returns that error; _val(error) is None. Two None keys raise TypeError on first actual LT.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "parserutils:219-227",
+        "object:994-1038"
+      ]
+    },
+    {
+      "id": "OQ02-b",
+      "family": "OR01",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 1 } } ORDER BY (?missing + 1)"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_class": "NoneKey",
+        "key_evaluations": 1,
+        "comparator_calls": 0,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Actual additive Expr catches NotBound(None), returns that error; _val(error) is None. Two None keys raise TypeError on first actual LT.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "parserutils:219-227",
+        "object:994-1038"
+      ]
+    },
+    {
+      "id": "OQ02-c",
+      "family": "OR01",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 1 2 } } ORDER BY (?missing + 1)"
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "TypeError",
+        "rows": [],
+        "flags_exact": [],
+        "key_class": "NoneKey",
+        "key_evaluations": 2,
+        "comparison_pairs": [
+          [
+            1,
+            0
+          ]
+        ],
+        "comparator_calls": 1,
+        "execute": "Err",
+        "iterator_returned": false,
+        "comparison_pair_coordinates": "zero-based original input row indices; optional third entry is returned bool",
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": []
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "derivation": "Actual additive Expr catches NotBound(None), returns that error; _val(error) is None. Two None keys raise TypeError on first actual LT.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "parserutils:219-227",
+        "object:994-1038"
+      ]
+    },
+    {
+      "id": "OQ03",
+      "family": "OR01",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 1 2 } } ORDER BY (?missing)"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_class": "UnboundVariable(missing)",
+        "key_evaluations": 2,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Transparent BrackettedExpression does not convert a single variable to an Expr catch boundary.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "parser:1030-1031,1371-1385"
+      ]
+    },
+    {
+      "id": "OQ04",
+      "family": "OR01",
+      "layer": "real_compiled_query_with_initial_cell_injection",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?tag WHERE { VALUES ?tag { 1 2 } } ORDER BY ?x",
+        "initial_cell_override": {
+          "x": {
+            "kind": "ExplicitNone"
+          }
+        },
+        "injection": "Actual prepared plan compiled with both x and tag projected; encode initial tuple, assign x at the actual root variable slot, then invoke the same compiled start/decoder. No AST replacement or substitute evaluator."
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "x": {
+              "kind": "ExplicitNone"
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "x": {
+              "kind": "ExplicitNone"
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_class": "UnboundVariable(x)",
+        "key_evaluations": 2,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "An existing explicit None binding follows the same r is None branch as missing. The actual compiled key lookup must see the cell, not a surrogate key function.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085"
+      ]
+    },
+    {
+      "id": "OQ05",
+      "family": "OR01",
+      "layer": "real_compiled_query_with_initial_cell_injection",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?tag WHERE { VALUES ?tag { 1 2 } } ORDER BY ?x",
+        "initial_cell_override": {
+          "x": {
+            "kind": "ReturnedError",
+            "class": "NotBoundError",
+            "argument": {
+              "kind": "Text",
+              "value": "bound-marker"
+            }
+          }
+        },
+        "injection": "Actual prepared plan compiled with both x and tag projected; encode initial tuple, assign x at the actual root variable slot, then invoke the same compiled start/decoder. No AST replacement or substitute evaluator."
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "NotBoundError",
+        "rows": [],
+        "flags_exact": [],
+        "same_error_identity": "injected actual ErrorValue Arc",
+        "key_evaluations": 1,
+        "comparator_calls": 0,
+        "execute": "Err",
+        "iterator_returned": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": []
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "derivation": "parserutils.value sees an already bound error and raises that same object before _val; it is not a None key.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085"
+      ]
+    },
+    {
+      "id": "OQ06",
+      "family": "OR02",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag ?x WHERE { VALUES (?tag ?x) { (1 \"same\"@EN) (2 \"same\"@en) } } ORDER BY ?x"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "same",
+              "datatype": null,
+              "language_original": "EN",
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "same"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "same",
+              "datatype": null,
+              "language_original": "en",
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "same"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "also_descending_same_rows": true,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Source Literal identity lowers language only for equality; ASC and DESC are stable and retain each original language spelling.",
+      "basis": [
+        "term:1182-1250,1395-1408,1427-1493",
+        "tupleobject:641-665",
+        "listobject:1892-1992,2831-2860",
+        "object:994-1038"
+      ]
+    },
+    {
+      "id": "OQ07",
+      "family": "OR02",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag ?x WHERE { VALUES (?tag ?x) { (1 \"same\"^^<http://www.w3.org/2001/XMLSchema#string>) (2 \"same\") } } ORDER BY ?x"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "same",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "same"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "same",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "same"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "also_descending_same_rows": true,
+        "less_in_both_directions": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Plain and explicit xsd:string identities differ, but both String caches are the same text. Literal.GT immediately returns cache>cache=false in both directions (term.py1214-1222), and Literal.eq considers equal lexical strings equal. Both LT directions are false; ASC/DESC therefore preserve the original row order.",
+      "basis": [
+        "term:1182-1250,1395-1408,1427-1493",
+        "tupleobject:641-665",
+        "listobject:1892-1992,2831-2860",
+        "object:994-1038"
+      ]
+    },
+    {
+      "id": "OQ08",
+      "family": "OR02",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag ?x WHERE { { BIND(?a AS ?x) BIND(1 AS ?tag) } UNION { BIND(?b AS ?x) BIND(2 AS ?tag) } } ORDER BY ?x",
+        "initial": [
+          {
+            "variable": "a",
+            "origin": "DirectString",
+            "lexical": "1E+2",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+            "normalize": true
+          },
+          {
+            "variable": "b",
+            "origin": "DirectString",
+            "lexical": "100",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+            "normalize": true
+          }
+        ]
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "100",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Decimal",
+                "negative": false,
+                "coefficient": "1",
+                "exponent": "2"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "100",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Decimal",
+                "negative": false,
+                "coefficient": "100",
+                "exponent": "0"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "also_descending_same_rows": true,
+        "source_identity_equal": true,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Direct constructor normalization preserves per-object Decimal exponent. Same source identity bypasses cache comparison; sorting returns original objects, including ill_typed=False.",
+      "basis": [
+        "term:1182-1250,1395-1408,1427-1493",
+        "tupleobject:641-665",
+        "listobject:1892-1992,2831-2860",
+        "object:994-1038",
+        "term:679-725"
+      ]
+    },
+    {
+      "id": "OQ09",
+      "family": "OR02",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { { SELECT (MIN(1/0) AS ?x) WHERE {} } UNION { VALUES ?x { \"divide by 0\" } } } ORDER BY ?x"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "divide by 0",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "ErrorObject",
+                "class": "SPARQLError",
+                "argument": {
+                  "kind": "Text",
+                  "value": "divide by 0"
+                },
+                "same_identity_as": "actual inner MIN selected returned error"
+              }
+            }
+          },
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "divide by 0",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "divide by 0"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [
+          "DivisionByZero"
+        ],
+        "also_descending_same_rows": true,
+        "error_arc_preserved": true,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": [
+              "DivisionByZero"
+            ]
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Literal identity ignores ErrorObject/String cache; all sort ties retain both original objects and the actual inner error Arc. No Literal(existing) constructor at ORDER output.",
+      "basis": [
+        "term:1182-1250,1395-1408,1427-1493",
+        "tupleobject:641-665",
+        "listobject:1892-1992,2831-2860",
+        "object:994-1038",
+        "operators:746-772",
+        "aggregates:182-222",
+        "term:695-725"
+      ]
+    },
+    {
+      "id": "OQ10",
+      "family": "OR03",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES (?tag ?a ?b) { (1 1 2) (2 0 3) (3 1 1) (4 0 2) } } ORDER BY (?a + 0) DESC(?b + 0)"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "4",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "4"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "3",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "3"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_passes": [
+          {
+            "condition_index": 1,
+            "direction": "DESC",
+            "key_tags": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "after_sort_tags": [
+              2,
+              1,
+              4,
+              3
+            ]
+          },
+          {
+            "condition_index": 0,
+            "direction": "ASC",
+            "key_tags": [
+              2,
+              1,
+              4,
+              3
+            ],
+            "after_sort_tags": [
+              2,
+              4,
+              1,
+              3
+            ]
+          }
+        ],
+        "total_key_evaluations": 8,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Last condition sorts first. Its stable permutation becomes the next pass key-evaluation order. A lexicographic comparator or one precomputed row-key matrix has a different observable schedule.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085"
+      ]
+    },
+    {
+      "id": "OQ11",
+      "family": "OR03",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES (?tag ?x) { (1 3) (2 1) (3 2) } } ORDER BY (?x + 0) (?x + 0)"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "3",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "3"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_passes": [
+          {
+            "condition_index": 1,
+            "key_tags": [
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "condition_index": 0,
+            "key_tags": [
+              2,
+              3,
+              1
+            ]
+          }
+        ],
+        "total_key_evaluations": 6,
+        "identical_conditions_retained": true,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Identical ORDER expressions remain separate occurrences and separate passes; no dedup or planner Extend rewrite.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085"
+      ]
+    },
+    {
+      "id": "OQ12",
+      "family": "OR03",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES (?tag ?x) { (1 1) (2 0) (3 2) } } ORDER BY (1 / ?x)"
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "TypeError",
+        "rows": [],
+        "flags_exact": [
+          "DivisionByZero"
+        ],
+        "key_tags": [
+          1,
+          2,
+          3
+        ],
+        "key_classes": [
+          "Rdf",
+          "NoneKey",
+          "Rdf"
+        ],
+        "comparison_pairs": [
+          [
+            1,
+            0
+          ]
+        ],
+        "comparator_calls": 1,
+        "execute": "Err",
+        "iterator_returned": false,
+        "comparison_pair_coordinates": "zero-based original input row indices; optional third entry is returned bool",
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": [
+              "DivisionByZero"
+            ]
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "derivation": "Division-by-zero is returned SPARQLError, so key collection continues through row3. Only then does NoneKey versus tuple LT raise TypeError.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "operators:746-772"
+      ]
+    },
+    {
+      "id": "OQ13",
+      "family": "OR03",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES (?tag ?x) { (1 1) (2 0.1e0) (3 2) } } ORDER BY (?x * 1)",
+        "context_override": {
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "FloatOperation"
+          ]
+        }
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "decimal.FloatOperation",
+        "rows": [],
+        "flags_exact": [
+          "FloatOperation"
+        ],
+        "key_tags": [
+          1,
+          2
+        ],
+        "comparator_calls": 0,
+        "execute": "Err",
+        "iterator_returned": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": [
+              "FloatOperation"
+            ]
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "derivation": "The second key traps at first Decimal(float) constructor; third key and every comparator call are not reached.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "operators:746-772"
+      ]
+    },
+    {
+      "id": "OQ14",
+      "family": "OR04",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?g (AVG(?x) AS ?v) WHERE { VALUES (?g ?x) { (1 1) (2 1) (2 2) } } GROUP BY ?g ORDER BY (0.1e0 * 1)",
+        "context_override": {
+          "precision": 1,
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "Inexact"
+          ]
+        },
+        "control_without_order": "SELECT ?g (AVG(?x) AS ?v) WHERE { VALUES (?g ?x) { (1 1) (2 1) (2 2) } } GROUP BY ?g"
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "decimal.Inexact",
+        "rows": [],
+        "flags_exact": [
+          "Inexact",
+          "Rounded"
+        ],
+        "groups_finished_successfully": 1,
+        "order_key_evaluations": 0,
+        "comparator_calls": 0,
+        "execute": "Err",
+        "iterator_returned": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": [
+              "Inexact",
+              "Rounded"
+            ]
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "derivation": "sorted first materializes all groups. Group1 finish is buffered; group2 AVG3/2 under p1 traps Inexact with full C-backend Rounded status before any ORDER key. No group1 row escapes.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "aggregates:149-174",
+        "_decimal:572-590",
+        "mpdecimal:3797-3945"
+      ],
+      "control_expected": {
+        "execute": "Ok(iterator)",
+        "prefix_rows": [
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "v": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "negative": false,
+                "coefficient": "1",
+                "exponent": "0"
+              }
+            }
+          }
+        ],
+        "then_error_class": "decimal.Inexact",
+        "next": "None",
+        "flags_exact": [
+          "Inexact",
+          "Rounded"
+        ]
+      }
+    },
+    {
+      "id": "OQ15",
+      "family": "OR04",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { { VALUES ?tag { 2 1 } } UNION { VALUES ?tag { 4 3 } } } ORDER BY ?tag"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "3",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "3"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "4",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "4"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "collection_tags": [
+          2,
+          1,
+          4,
+          3
+        ],
+        "key_tags": [
+          2,
+          1,
+          4,
+          3
+        ],
+        "phase_order": [
+          "collect entire left",
+          "collect entire right",
+          "evaluate all keys",
+          "compare",
+          "return iterator"
+        ],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "evalUnion is a normal eager collector, left then right; sorted materialization does not start keys between branches.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820"
+      ]
+    },
+    {
+      "id": "OQ16-a",
+      "family": "OR05",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 1 } } ORDER BY (0.1e0 * 1) OFFSET 0 LIMIT 0"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [],
+        "terminal": "None",
+        "flags_exact": [
+          "FloatOperation",
+          "Inexact",
+          "Rounded"
+        ],
+        "order_work_stage": "execute_start",
+        "key_evaluations": 1,
+        "flags_after_execute": [
+          "FloatOperation",
+          "Inexact",
+          "Rounded"
+        ],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": [
+              "FloatOperation",
+              "Inexact",
+              "Rounded"
+            ]
+          },
+          "first_poll": {
+            "result": "None",
+            "order_work": "execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Project and Slice immediately start child, whereas Distinct is a generator. OFFSET1 LIMIT0 consumes one child row when polled even though it returns none. The fixed p28 binary64-to-Decimal product is exact-source derived in prior EX12.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "SOURCE-EXTREMA-FROZEN-02:EX12-02"
+      ]
+    },
+    {
+      "id": "OQ16-b",
+      "family": "OR05",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT DISTINCT ?tag WHERE { VALUES ?tag { 1 } } ORDER BY (0.1e0 * 1) OFFSET 0 LIMIT 0"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [],
+        "terminal": "None",
+        "flags_exact": [],
+        "order_work_stage": "not_demanded",
+        "key_evaluations": 0,
+        "flags_after_execute": [],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "None",
+            "order_work": "not_demanded"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Project and Slice immediately start child, whereas Distinct is a generator. OFFSET1 LIMIT0 consumes one child row when polled even though it returns none. The fixed p28 binary64-to-Decimal product is exact-source derived in prior EX12.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "SOURCE-EXTREMA-FROZEN-02:EX12-02"
+      ]
+    },
+    {
+      "id": "OQ16-c",
+      "family": "OR05",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 1 } } ORDER BY (0.1e0 * 1) OFFSET 0 LIMIT 1"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [
+          "FloatOperation",
+          "Inexact",
+          "Rounded"
+        ],
+        "order_work_stage": "execute_start",
+        "key_evaluations": 1,
+        "flags_after_execute": [
+          "FloatOperation",
+          "Inexact",
+          "Rounded"
+        ],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": [
+              "FloatOperation",
+              "Inexact",
+              "Rounded"
+            ]
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Project and Slice immediately start child, whereas Distinct is a generator. OFFSET1 LIMIT0 consumes one child row when polled even though it returns none. The fixed p28 binary64-to-Decimal product is exact-source derived in prior EX12.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "SOURCE-EXTREMA-FROZEN-02:EX12-02"
+      ]
+    },
+    {
+      "id": "OQ16-d",
+      "family": "OR05",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT DISTINCT ?tag WHERE { VALUES ?tag { 1 } } ORDER BY (0.1e0 * 1) OFFSET 0 LIMIT 1"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [
+          "FloatOperation",
+          "Inexact",
+          "Rounded"
+        ],
+        "order_work_stage": "first_poll",
+        "key_evaluations": 1,
+        "flags_after_execute": [],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "first_poll"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Project and Slice immediately start child, whereas Distinct is a generator. OFFSET1 LIMIT0 consumes one child row when polled even though it returns none. The fixed p28 binary64-to-Decimal product is exact-source derived in prior EX12.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "SOURCE-EXTREMA-FROZEN-02:EX12-02"
+      ]
+    },
+    {
+      "id": "OQ16-e",
+      "family": "OR05",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT DISTINCT ?tag WHERE { VALUES ?tag { 1 } } ORDER BY (0.1e0 * 1) OFFSET 1 LIMIT 0"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [],
+        "terminal": "None",
+        "flags_exact": [
+          "FloatOperation",
+          "Inexact",
+          "Rounded"
+        ],
+        "order_work_stage": "first_poll",
+        "key_evaluations": 1,
+        "flags_after_execute": [],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "None",
+            "order_work": "first_poll"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Project and Slice immediately start child, whereas Distinct is a generator. OFFSET1 LIMIT0 consumes one child row when polled even though it returns none. The fixed p28 binary64-to-Decimal product is exact-source derived in prior EX12.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "SOURCE-EXTREMA-FROZEN-02:EX12-02"
+      ]
+    },
+    {
+      "id": "OQ17-a",
+      "family": "OR05",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 1 2 } } ORDER BY (?missing + 1) LIMIT 0"
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "TypeError",
+        "rows": [],
+        "flags_exact": [],
+        "key_evaluations": 2,
+        "execute": "Err",
+        "iterator_returned": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": []
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "derivation": "LIMIT0 cannot discard an already eager ORDER failure; an unstarted outer Distinct shields it until demanded.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085"
+      ]
+    },
+    {
+      "id": "OQ17-b",
+      "family": "OR05",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT DISTINCT ?tag WHERE { VALUES ?tag { 1 2 } } ORDER BY (?missing + 1) LIMIT 0"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [],
+        "terminal": "None",
+        "flags_exact": [],
+        "order_work_stage": "not_demanded",
+        "key_evaluations": 0,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "None",
+            "order_work": "not_demanded"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "LIMIT0 cannot discard an already eager ORDER failure; an unstarted outer Distinct shields it until demanded.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085"
+      ]
+    },
+    {
+      "id": "OQ18-a",
+      "family": "OR06",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag ?x WHERE { VALUES (?tag ?x) { (1 1) (2 \"NaN7\"^^<http://www.w3.org/2001/XMLSchema#decimal>) (3 2) } } ORDER BY ?x",
+        "context_override": {
+          "traps": [
+            "DivisionByZero",
+            "Overflow"
+          ]
+        }
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "3",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "3"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "NaN7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "special": "NaN",
+                "negative": false,
+                "signaling": false,
+                "payload": "7"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [
+          "InvalidOperation"
+        ],
+        "comparison_pairs": [
+          [
+            1,
+            0,
+            true
+          ],
+          [
+            2,
+            1,
+            true
+          ]
+        ],
+        "key_tags": [
+          1,
+          2,
+          3
+        ],
+        "comparison_pair_coordinates": "zero-based original input row indices; optional third entry is returned bool",
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": [
+              "InvalidOperation"
+            ]
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Untrapped Decimal qNaN GT=false and EQ=false makes Literal LT true against either finite value. count_run recognizes a three-row descending run; DESC first reverses input then finally reverses result. This non-total example cannot be replaced by numeric total order.",
+      "basis": [
+        "term:1182-1250,1395-1408,1427-1493",
+        "tupleobject:641-665",
+        "listobject:1892-1992,2831-2860",
+        "object:994-1038",
+        "listobject:3053-3062,3124-3125"
+      ]
+    },
+    {
+      "id": "OQ18-b",
+      "family": "OR06",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag ?x WHERE { VALUES (?tag ?x) { (1 1) (2 \"NaN7\"^^<http://www.w3.org/2001/XMLSchema#decimal>) (3 2) } } ORDER BY DESC(?x)",
+        "context_override": {
+          "traps": [
+            "DivisionByZero",
+            "Overflow"
+          ]
+        }
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "3",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "3"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "NaN7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "special": "NaN",
+                "negative": false,
+                "signaling": false,
+                "payload": "7"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [
+          "InvalidOperation"
+        ],
+        "comparison_pairs": [
+          [
+            1,
+            2,
+            true
+          ],
+          [
+            0,
+            1,
+            true
+          ]
+        ],
+        "key_tags": [
+          1,
+          2,
+          3
+        ],
+        "comparison_pair_coordinates": "zero-based original input row indices; optional third entry is returned bool",
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": [
+              "InvalidOperation"
+            ]
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Untrapped Decimal qNaN GT=false and EQ=false makes Literal LT true against either finite value. count_run recognizes a three-row descending run; DESC first reverses input then finally reverses result. This non-total example cannot be replaced by numeric total order.",
+      "basis": [
+        "term:1182-1250,1395-1408,1427-1493",
+        "tupleobject:641-665",
+        "listobject:1892-1992,2831-2860",
+        "object:994-1038",
+        "listobject:3053-3062,3124-3125"
+      ]
+    },
+    {
+      "id": "OQ19",
+      "family": "OR06",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag ?x WHERE { VALUES (?tag ?x) { (1 \"sNaN7\"^^<http://www.w3.org/2001/XMLSchema#decimal>) (2 \"sNaN7\"^^<http://www.w3.org/2001/XMLSchema#decimal>) } } ORDER BY ?x"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "sNaN7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "special": "NaN",
+                "negative": false,
+                "signaling": true,
+                "payload": "7"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "sNaN7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "special": "NaN",
+                "negative": false,
+                "signaling": true,
+                "payload": "7"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "numeric_comparisons": 0,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Equal source identity bypasses sNaN numeric equality entirely; default InvalidOperation trap is untouched.",
+      "basis": [
+        "term:1182-1250,1395-1408,1427-1493",
+        "tupleobject:641-665",
+        "listobject:1892-1992,2831-2860",
+        "object:994-1038"
+      ]
+    },
+    {
+      "id": "OQ20",
+      "family": "OR06",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x { 0.1e0 \"0.1\"^^<http://www.w3.org/2001/XMLSchema#decimal> } } ORDER BY ?x",
+        "context_override": {
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "FloatOperation"
+          ]
+        }
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "decimal.FloatOperation",
+        "rows": [],
+        "flags_exact": [
+          "FloatOperation"
+        ],
+        "comparison_pairs": [
+          [
+            1,
+            0
+          ]
+        ],
+        "key_evaluations": 2,
+        "source_reflection_trace": [
+          "candidate Literal.LT",
+          "candidate numeric GT traps FloatOperation",
+          "LT catches TypeError and returns NotImplemented",
+          "current reflected Literal.GT traps FloatOperation",
+          "uncaught FloatOperation"
+        ],
+        "execute": "Err",
+        "iterator_returned": false,
+        "comparison_pair_coordinates": "zero-based original input row indices; optional third entry is returned bool",
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": [
+              "FloatOperation"
+            ]
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "derivation": "The source trap is a TypeError subclass, so LT reflects before the final uncaught trap. It is not a caught SPARQLTypeError.",
+      "basis": [
+        "term:1182-1250,1395-1408,1427-1493",
+        "tupleobject:641-665",
+        "listobject:1892-1992,2831-2860",
+        "object:994-1038",
+        "_decimal:3178-3245",
+        "_pydecimal:309-329"
+      ]
+    },
+    {
+      "id": "OQ21",
+      "family": "OR06",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x { \"b\"^^<http://www.w3.org/2001/XMLSchema#integer> \"a\"^^<http://www.w3.org/2001/XMLSchema#integer> } } ORDER BY ?x"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "a",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "None"
+              }
+            }
+          },
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "b",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "None"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "source_reflection_trace": [
+          "a.GT(b) lexical false",
+          "a.eq(b) TypeError",
+          "a.LT -> NotImplemented",
+          "b.GT(a) lexical true"
+        ],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Known cast-failed cache None remains source-known and uses lexical fallback/reflection; it must not be treated as an unknown backend import.",
+      "basis": [
+        "term:1182-1250,1395-1408,1427-1493",
+        "tupleobject:641-665",
+        "listobject:1892-1992,2831-2860",
+        "object:994-1038"
+      ]
+    },
+    {
+      "id": "OQ22",
+      "family": "OR08",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES (?tag ?x) { (1 3) (2 1) (3 2) } } ORDER BY ?x"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "3",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "3"
+              }
+            }
+          },
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "order_before_projection": true,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "The key may be unprojected; ORDER runs before Project drops ?x.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "algebra:729-751"
+      ]
+    },
+    {
+      "id": "OQ23-a",
+      "family": "OR08",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?g (SUM(?x) AS ?s) WHERE { VALUES (?g ?x) { (1 9) (1 1) (2 3) (2 4) } } GROUP BY ?g ORDER BY ?x"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "s": {
+              "kind": "Literal",
+              "lexical": "10",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "10"
+              }
+            }
+          },
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "s": {
+              "kind": "Literal",
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "7"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_class": "UnboundVariable(x)",
+        "order_implicit_samples": 0,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "ORDER aggregate detection uses complete=False: bare ?x is not sampled and is missing after Group, alias ?s is available, while expression containing SUM rewrites the other ?x occurrence to an implicit first SAMPLE.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "algebra:570-601,684-751",
+        "aggregates:225-247"
+      ]
+    },
+    {
+      "id": "OQ23-b",
+      "family": "OR08",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?g (SUM(?x) AS ?s) WHERE { VALUES (?g ?x) { (1 9) (1 1) (2 3) (2 4) } } GROUP BY ?g ORDER BY ?s"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "s": {
+              "kind": "Literal",
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "7"
+              }
+            }
+          },
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "s": {
+              "kind": "Literal",
+              "lexical": "10",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "10"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_class": "Rdf alias s",
+        "order_implicit_samples": 0,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "ORDER aggregate detection uses complete=False: bare ?x is not sampled and is missing after Group, alias ?s is available, while expression containing SUM rewrites the other ?x occurrence to an implicit first SAMPLE.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "algebra:570-601,684-751",
+        "aggregates:225-247"
+      ]
+    },
+    {
+      "id": "OQ23-c",
+      "family": "OR08",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?g (SUM(?x) AS ?s) WHERE { VALUES (?g ?x) { (1 9) (1 1) (2 3) (2 4) } } GROUP BY ?g ORDER BY (?x + SUM(?x))"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "s": {
+              "kind": "Literal",
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "7"
+              }
+            }
+          },
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "s": {
+              "kind": "Literal",
+              "lexical": "10",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "10"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "first_sample_x_per_group": [
+          9,
+          3
+        ],
+        "key_values_by_first_seen_group": [
+          19,
+          10
+        ],
+        "order_implicit_samples": 1,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "ORDER aggregate detection uses complete=False: bare ?x is not sampled and is missing after Group, alias ?s is available, while expression containing SUM rewrites the other ?x occurrence to an implicit first SAMPLE.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "algebra:570-601,684-751",
+        "aggregates:225-247"
+      ]
+    },
+    {
+      "id": "OQ24",
+      "family": "OR08",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?g (COUNT(*) AS ?c) WHERE { VALUES ?x { 2 1 2 } } GROUP BY (?x + 1 AS ?g) ORDER BY ?g"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "c": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "3",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "3"
+              }
+            },
+            "c": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "AS evaluates before grouping and sample projection preserves computed alias; ORDER sees that alias, not the original group expression.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "algebra:660-673",
+        "QUERY-SUM-AVG-FROZEN-03:source GROUP AS cases"
+      ]
+    },
+    {
+      "id": "OQ25",
+      "family": "OR08",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x (COUNT(*) AS ?c) WHERE { VALUES ?x { 2 1 2 } } GROUP BY (?x + 1) ORDER BY ?x"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "c": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "c": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "Raw group expression remains raw; projected ?x is implicit SAMPLE retaining token metadata, then ORDER sorts that sampled object.",
+      "basis": [
+        "algebra:729-758",
+        "evaluate:124-138,168-174,462-516,559-573",
+        "bltinmodule:2495-2524",
+        "itertoolsmodule:1796-1820",
+        "algebra:570-601"
+      ]
+    },
+    {
+      "id": "OQ23-d",
+      "family": "OR08",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "fixed_source_and_exact_math_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?g (SUM(?x) AS ?s) WHERE { VALUES (?g ?x) { (1 1) (1 9) (2 3) (2 4) } } GROUP BY ?g ORDER BY ?x SUM(?x)"
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "s": {
+              "kind": "Literal",
+              "lexical": "10",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "10"
+              }
+            }
+          },
+          {
+            "g": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "2"
+              }
+            },
+            "s": {
+              "kind": "Literal",
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "7"
+              }
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "first_sample_x_per_group": [
+          1,
+          3
+        ],
+        "order_implicit_samples": 1,
+        "key_passes": [
+          {
+            "condition_index": 1,
+            "expression": "SUM(?x) hidden aggregate variable",
+            "first_seen_group_ids": [
+              1,
+              2
+            ],
+            "key_values": [
+              10,
+              7
+            ],
+            "after_sort_groups": [
+              2,
+              1
+            ]
+          },
+          {
+            "condition_index": 0,
+            "expression": "original bare ?x transformed to implicit SAMPLE by aggregate in OTHER condition",
+            "group_ids": [
+              2,
+              1
+            ],
+            "key_values": [
+              3,
+              1
+            ],
+            "after_sort_groups": [
+              1,
+              2
+            ]
+          }
+        ],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "derivation": "translateAggregates checks the entire q.orderby for ANY aggregate, then applies _sample and _aggs to ALL conditions. Thus the first bare ?x is sampled because the second condition has SUM. Last SUM sorts first to groups2,1; sampled x then sorts to1,2. If only the aggregate-bearing condition were rewritten, the final order would remain2,1.",
+      "basis": [
+        "evaluate:495-506",
+        "parserutils:70-99",
+        "evalutils:179-189",
+        "listobject:2936-2945,3053-3085",
+        "algebra:570-601,684-751",
+        "aggregates:225-247"
+      ]
+    }
+  ],
+  "active_contract_cases": [
+    {
+      "id": "OA01",
+      "family": "OR09",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "query": "SELECT ?x WHERE {} ORDER BY ?x",
+        "initial": [
+          {
+            "variable": "x",
+            "origin": "UnknownNormalized",
+            "rdf_literal": {
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "x": {
+              "kind": "Literal",
+              "rdf_lexical": "7",
+              "rdf_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "source_metadata": "all Unknown, unchanged",
+              "numeric_cache": "UnknownNormalized"
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "key_evaluations": 1,
+        "comparator_calls": 0,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "rationale": "Constructing a key does not consume identity/cache; singleton sort returns original unknown cell without Literal-copy metadata changes."
+    },
+    {
+      "id": "OA02",
+      "family": "OR09",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "query": "SELECT ?x WHERE { { BIND(?seed AS ?x) } UNION { VALUES ?x { 1 } } } ORDER BY ?x",
+        "initial": [
+          {
+            "variable": "seed",
+            "origin": "UnknownNormalized",
+            "rdf_literal": {
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "RawNumericFault::UnknownSourceLiteralIdentity",
+        "rows": [],
+        "flags_exact": [],
+        "key_evaluations": 2,
+        "comparator_calls": 1,
+        "execute": "Err",
+        "iterator_returned": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": []
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "rationale": "The first same-rank literal identity comparison fails closed. No global RDF cache reconstruction."
+    },
+    {
+      "id": "OA03",
+      "family": "OR09",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "query": "SELECT ?x WHERE { { BIND(?seed AS ?x) } UNION { VALUES ?x { <urn:a> } } } ORDER BY ?x",
+        "initial": [
+          {
+            "variable": "seed",
+            "origin": "UnknownNormalized",
+            "rdf_literal": {
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "rows": [
+          {
+            "x": {
+              "kind": "IRI",
+              "value": "urn:a"
+            }
+          },
+          {
+            "x": {
+              "kind": "Literal",
+              "rdf_lexical": "7",
+              "rdf_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "source_metadata": "all Unknown, unchanged",
+              "numeric_cache": "UnknownNormalized"
+            }
+          }
+        ],
+        "terminal": "None",
+        "flags_exact": [],
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first expected row",
+            "order_work": "completed at execute_start"
+          },
+          "decoder": "original rows, no constructor/copy; see complete expected descriptors"
+        }
+      },
+      "rationale": "Different tuple rank decides comparison without needing literal identity/cache."
+    },
+    {
+      "id": "OA04",
+      "family": "OR09",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "query": "SELECT ?x WHERE {} ORDER BY ?x",
+        "initial": [
+          {
+            "variable": "x",
+            "origin": "DirectString",
+            "lexical": "abc",
+            "datatype": null,
+            "normalize": true
+          }
+        ],
+        "dataset_fault": {
+          "operation": "externalize",
+          "arm": "after prepare, before execute_source_presence",
+          "fail_on": "first externalize after arm"
+        }
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "original Dataset error",
+        "rows": [],
+        "flags_exact": [],
+        "same_error_identity": true,
+        "externalize_calls_after_arm": 1,
+        "key_evaluations": 1,
+        "comparator_calls": 0,
+        "execute": "Err",
+        "iterator_returned": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": []
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "rationale": "Bare ORDER variable key performs real externalize while eager starting; preserve original boxed fault/Arc and return no iterator."
+    },
+    {
+      "id": "OA05",
+      "family": "OR09",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 2 1 } } ORDER BY ?tag",
+        "dataset_fault": {
+          "operation": "externalize",
+          "arm": "after execute_source_presence returned successfully",
+          "fail_on": "second final decoder externalize after arm"
+        }
+      },
+      "expected": {
+        "execute": "Ok(iterator)",
+        "prefix_rows": [
+          {
+            "tag": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": false,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "then_error": "original Dataset error",
+        "same_error_identity": true,
+        "next": "None",
+        "externalize_calls_after_arm": 2,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "first prefix row"
+          },
+          "decoder": {
+            "result": "prefix then original failure; see expected"
+          }
+        }
+      },
+      "rationale": "ORDER completed before arming. Final decoder remains incremental; late externalize error must not erase an already yielded decoded row."
+    },
+    {
+      "id": "OA06",
+      "family": "OR09",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "query": "SELECT ?tag WHERE { { VALUES ?tag { 1 } } UNION { BIND(?seed + 1 AS ?bad) BIND(2 AS ?tag) } } ORDER BY (0.1e0 * 1)",
+        "initial": [
+          {
+            "variable": "seed",
+            "origin": "UnknownNormalized",
+            "rdf_literal": {
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "RawNumericFault::UnknownNumericCache",
+        "rows": [],
+        "flags_exact": [],
+        "order_key_evaluations": 0,
+        "comparison_calls": 0,
+        "left_rows_buffered": 1,
+        "right_rows_completed": 0,
+        "execute": "Err",
+        "iterator_returned": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": []
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "rationale": "Union fully collects left then right. Right child fatal precedes ORDER keys and no left prefix is yielded."
+    },
+    {
+      "id": "OA07",
+      "family": "OR09",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag { 1 } } ORDER BY (0.1e0 * 1)",
+        "cancel": "after prepare, before execute_source_presence"
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "QueryEvaluationError::Cancelled",
+        "rows": [],
+        "flags_exact": [],
+        "order_key_evaluations": 0,
+        "comparator_calls": 0,
+        "execute": "Err",
+        "iterator_returned": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": []
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "rationale": "Actual cancelled session must stop before eager work, with no arithmetic flags."
+    },
+    {
+      "id": "OA08",
+      "family": "OR09",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "query": "SELECT DISTINCT ?tag WHERE { VALUES ?tag { 1 } } ORDER BY (0.1e0 * 1)",
+        "cancel": "after execute_source_presence succeeds, before first poll"
+      },
+      "expected": {
+        "stage": "first_poll",
+        "error_class": "QueryEvaluationError::Cancelled",
+        "rows": [],
+        "flags_exact": [],
+        "order_key_evaluations": 0,
+        "comparator_calls": 0,
+        "execute": "Ok(iterator)",
+        "error_poll": "Err",
+        "after_error": "None; no more key/comparator/backend calls",
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Ok(iterator)",
+            "flags_exact": []
+          },
+          "first_poll": {
+            "result": "Err",
+            "identity_and_kind": "see expected error fields"
+          },
+          "decoder": "not reached"
+        }
+      },
+      "rationale": "Deferred Distinct child ORDER is not started until first poll, cancellation checked first."
+    },
+    {
+      "id": "OA09",
+      "family": "OR09",
+      "layer": "actual_sort_primitive",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "integer_keys": [
+          4,
+          1,
+          3,
+          0,
+          2
+        ],
+        "descending": false,
+        "cancel_callback": "initial flag false; set true inside comparator immediately after third successful comparison"
+      },
+      "expected": {
+        "error": "SourceSortError::Callback(original cancellation marker)",
+        "same_error_identity": true,
+        "comparator_calls": 3,
+        "fourth_comparator_not_called": true,
+        "partial_permutation_not_asserted": true,
+        "phases": {
+          "prepare": "not applicable for primitive/helper layer",
+          "execute_start": "not applicable",
+          "first_poll": "not applicable",
+          "decoder": "not applicable"
+        }
+      },
+      "rationale": "Production sorter cancel hook must run before every next comparison and in long moves; no global state or alternate sorting implementation."
+    },
+    {
+      "id": "OA10",
+      "family": "OR09",
+      "layer": "actual_production_reserve_helper",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "reserve_elements": "usize::MAX",
+        "helper": "reserve_sort_scratch<E>(&mut Vec<usize>, additional: usize)",
+        "scratch_initial": [
+          7,
+          11
+        ]
+      },
+      "expected": {
+        "error": "SourceSortError::Allocation",
+        "comparator_calls": 0,
+        "large_allocation_not_attempted": "standard Vec element-layout capacity rejection",
+        "scratch_unchanged": [
+          7,
+          11
+        ],
+        "phases": {
+          "prepare": "not applicable for primitive/helper layer",
+          "execute_start": "not applicable",
+          "first_poll": "not applicable",
+          "decoder": "not applicable"
+        }
+      },
+      "rationale": "Safe helper-level capacity failure, not real full-query OOM; same try_reserve helper as sorter. Does not claim IndexOverflow execution."
+    },
+    {
+      "id": "OA11",
+      "family": "OR09",
+      "layer": "real_prepared_source_query",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "input": {
+        "query": "SELECT ?g (MIN(?x) AS ?m) WHERE { VALUES (?g ?x) { (1 <urn:a>) (2 <urn:abcdefg>) } } GROUP BY ?g ORDER BY ?g",
+        "limits_override": {
+          "max_output_characters": 6
+        }
+      },
+      "expected": {
+        "stage": "execute_start",
+        "error_class": "RawNumericFault::Core(ResourceLimit)",
+        "rows": [],
+        "flags_exact": [],
+        "operation": "output_characters",
+        "groups_finished_successfully": 1,
+        "order_key_evaluations": 0,
+        "execute": "Err",
+        "iterator_returned": false,
+        "phases": {
+          "prepare": {
+            "result": "Ok(prepared)",
+            "flags_exact": []
+          },
+          "execute_start": {
+            "result": "Err",
+            "flags_exact": []
+          },
+          "first_poll": "not applicable: no iterator returned",
+          "decoder": "not reached"
+        }
+      },
+      "rationale": "Known prior active output constructor budget: ORDER must buffer and discard group1 prefix on later finish failure. Existing Literals/row count do not acquire new numeric limits."
+    }
+  ],
+  "author_controls": [
+    {
+      "id": "OC01",
+      "family": "OR10",
+      "evidence_class": "author_capability_control",
+      "input": {
+        "entry": "unchanged public default evaluator",
+        "query": "SELECT ?x WHERE { VALUES ?x { 2 1 } } ORDER BY ?x"
+      },
+      "expected": {
+        "legacy_rows_lexical": [
+          "1",
+          "2"
+        ],
+        "no_source_metadata_claim": true
+      }
+    },
+    {
+      "id": "OC02",
+      "family": "OR10",
+      "evidence_class": "author_capability_control",
+      "input": {
+        "entry": "source session compiler",
+        "graph_pattern": "legacy OrderBy from ordinary parser/direct AST"
+      },
+      "expected": {
+        "compile_result": "Err",
+        "error_kind": "RawNumericFault::UnsupportedSourceLiteralOperator",
+        "rejected_operator": "legacy OrderBy",
+        "diagnostic_text_not_oracle": true
+      }
+    },
+    {
+      "id": "OC03",
+      "family": "OR10",
+      "evidence_class": "author_capability_control",
+      "input": {
+        "entry": "default/non-source compiler",
+        "graph_pattern": "SourceOrderBy via new private parser"
+      },
+      "expected": {
+        "compile_result": "Err",
+        "source_only_node_rejected_before_execution": true,
+        "diagnostic_text_not_oracle": true
+      }
+    },
+    {
+      "id": "OC04",
+      "family": "OR10",
+      "evidence_class": "author_transport_control",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x { 2 1 } } ORDER BY (?x + 0) (?x + 0)",
+        "entry": "sealed source prepare"
+      },
+      "expected": {
+        "node": "SourceOrderBy",
+        "expression_occurrences": 2,
+        "hidden_Extend_for_order": 0,
+        "ordinary_parser_still_legacy_OrderBy": true,
+        "legacy_hash_bytes_unchanged": true
+      }
+    }
+  ]
+}

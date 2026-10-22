@@ -1,0 +1,505 @@
+{
+  "schema": "public.source-extrema-receiving-cases/1",
+  "source_record_sha256": "6df0965cedb36486e13c20876eab75315fb77e42c5af66a0b4278e3dbe5e55fa",
+  "classification": "source_math_unobserved_and_separate_active_contracts",
+  "context": {
+    "rdflib_version": "7.6.0",
+    "cpython_version": "3.13.11",
+    "backend": "CPython C decimal source pinned below for comparisons; source-derived, not observed",
+    "DAWG_LITERAL_COLLATION": false,
+    "normalize_literals": true,
+    "query_numeric_capabilities": "mixed-binary64-v1",
+    "query_group_semantics": "source-group/1",
+    "query_literal_semantics": "source-literal/1",
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "flags_initial": []
+    },
+    "numeric_limits": {
+      "max_input_characters": 4096,
+      "max_coefficient_digits": 4096,
+      "max_output_characters": 4096,
+      "max_materialized_power_of_ten": 4096
+    },
+    "integer_text_limit": null,
+    "query_rows": "ordered VALUES/UNION or single initial binding; not unspecified backend scan order",
+    "case_overrides": "Each operation/run/query receives a fresh context unless explicitly a single query. Context/limit overrides replace named fields only."
+  },
+  "source_math_cases": [
+    {
+      "id": "EX04-01",
+      "family": "EX04",
+      "layer": "numeric_relation",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "left": {
+          "family": "Integer",
+          "value": "9007199254740993"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits": "0x4340000000000000"
+        },
+        "operations": [
+          "Equal",
+          "Less",
+          "Greater"
+        ]
+      },
+      "expected": {
+        "results": [
+          false,
+          false,
+          true
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542"
+      ],
+      "derivation": "Right is exactly 2^53; left is 2^53+1. Compare exact integers/significands; rounding left to binary64 would erase the strict relation."
+    },
+    {
+      "id": "EX04-02",
+      "family": "EX04",
+      "layer": "numeric_relation",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "left": {
+          "family": "Integer",
+          "value": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits": "0x7fefffffffffffff"
+        },
+        "operations": [
+          "Equal",
+          "Less",
+          "Greater"
+        ]
+      },
+      "expected": {
+        "results": [
+          false,
+          false,
+          true
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542"
+      ],
+      "derivation": "Max finite binary64 is (2^53-1)*2^971, less than 2^1024 and less than 10^400. Python float/int comparison does not cast the huge integer and cannot overflow."
+    },
+    {
+      "id": "EX04-03",
+      "family": "EX04",
+      "layer": "numeric_relation",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "left": {
+          "family": "Decimal",
+          "negative": false,
+          "coefficient": "1001",
+          "exponent": "-3"
+        },
+        "right": {
+          "family": "Decimal",
+          "negative": false,
+          "coefficient": "1000",
+          "exponent": "-3"
+        },
+        "operations": [
+          "Equal",
+          "Less",
+          "Greater"
+        ],
+        "context_override": {
+          "precision": 1
+        }
+      },
+      "expected": {
+        "results": [
+          false,
+          false,
+          true
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542"
+      ],
+      "derivation": "1.001 is exactly greater than 1.000 even at precision 1. Comparison performs no context rounding and emits neither Rounded nor Inexact."
+    },
+    {
+      "id": "EX04-04",
+      "family": "EX04",
+      "layer": "numeric_relation",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "pairs": [
+          [
+            {
+              "family": "Decimal",
+              "negative": false,
+              "coefficient": "10",
+              "exponent": "-1"
+            },
+            {
+              "family": "Decimal",
+              "negative": false,
+              "coefficient": "100",
+              "exponent": "-2"
+            }
+          ],
+          [
+            {
+              "family": "Decimal",
+              "negative": true,
+              "coefficient": "0",
+              "exponent": "-7"
+            },
+            {
+              "family": "Decimal",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "3"
+            }
+          ]
+        ],
+        "operations": [
+          "Equal",
+          "Less",
+          "Greater"
+        ]
+      },
+      "expected": {
+        "results_per_pair": [
+          [
+            true,
+            false,
+            false
+          ],
+          [
+            true,
+            false,
+            false
+          ]
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542"
+      ],
+      "derivation": "Numeric equality ignores scale and the sign/exponent of zero; it is not DecimalValue representation equality."
+    },
+    {
+      "id": "EX04-05",
+      "family": "EX04",
+      "layer": "numeric_relation",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "left": {
+          "family": "Decimal",
+          "negative": false,
+          "coefficient": "1",
+          "exponent": "-1"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits": "0x3fb999999999999a"
+        },
+        "operations": [
+          "Equal",
+          "Less",
+          "Greater"
+        ],
+        "context_override": {
+          "precision": 1,
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow"
+          ]
+        }
+      },
+      "expected": {
+        "results": [
+          false,
+          true,
+          false
+        ],
+        "flags_exact": [
+          "FloatOperation"
+        ]
+      },
+      "basis": [
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542"
+      ],
+      "derivation": "Binary64 0.1 is 3602879701896397/36028797018963968; subtracting 1/10 gives 1/180143985094819840 > 0. Exact mixed comparison emits FloatOperation but no rounding signals."
+    },
+    {
+      "id": "EX06-01",
+      "family": "EX06",
+      "layer": "numeric_relation",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "left": {
+          "family": "Decimal",
+          "special": "NaN",
+          "negative": false,
+          "signaling": false,
+          "payload": "7"
+        },
+        "right": {
+          "family": "Integer",
+          "value": "1"
+        },
+        "operations": [
+          "Equal",
+          "Less",
+          "Greater"
+        ],
+        "runs": [
+          {
+            "traps": [
+              "InvalidOperation"
+            ]
+          },
+          {
+            "traps": []
+          }
+        ]
+      },
+      "expected": {
+        "runs": [
+          {
+            "per_operation": [
+              {
+                "value": false,
+                "flags_exact": []
+              },
+              {
+                "error_class": "decimal.InvalidOperation",
+                "flags_exact": [
+                  "InvalidOperation"
+                ]
+              },
+              {
+                "error_class": "decimal.InvalidOperation",
+                "flags_exact": [
+                  "InvalidOperation"
+                ]
+              }
+            ]
+          },
+          {
+            "per_operation": [
+              {
+                "value": false,
+                "flags_exact": []
+              },
+              {
+                "value": false,
+                "flags_exact": [
+                  "InvalidOperation"
+                ]
+              },
+              {
+                "value": false,
+                "flags_exact": [
+                  "InvalidOperation"
+                ]
+              }
+            ]
+          }
+        ],
+        "fresh_context_each_operation": true
+      },
+      "basis": [
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542"
+      ],
+      "derivation": "Quiet Decimal NaN equality is false without InvalidOperation; ordering signals InvalidOperation before either returning false or trapping."
+    },
+    {
+      "id": "EX06-02",
+      "family": "EX06",
+      "layer": "numeric_relation",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "left": {
+          "family": "Decimal",
+          "special": "NaN",
+          "negative": false,
+          "signaling": true,
+          "payload": "7"
+        },
+        "right": {
+          "family": "Integer",
+          "value": "1"
+        },
+        "operations": [
+          "Equal"
+        ],
+        "runs": [
+          {
+            "traps": [
+              "InvalidOperation"
+            ]
+          },
+          {
+            "traps": []
+          }
+        ]
+      },
+      "expected": {
+        "runs": [
+          {
+            "error_class": "decimal.InvalidOperation",
+            "flags_exact": [
+              "InvalidOperation"
+            ]
+          },
+          {
+            "value": false,
+            "flags_exact": [
+              "InvalidOperation"
+            ]
+          }
+        ]
+      },
+      "basis": [
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542"
+      ],
+      "derivation": "Signaling Decimal NaN equality also signals InvalidOperation."
+    },
+    {
+      "id": "EX06-03",
+      "family": "EX06",
+      "layer": "numeric_relation",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "left": {
+          "family": "Decimal",
+          "special": "NaN",
+          "negative": false,
+          "signaling": false,
+          "payload": "7"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits": "0x3ff0000000000000"
+        },
+        "operations": [
+          "Equal",
+          "Less"
+        ],
+        "context_override": {
+          "traps": [
+            "FloatOperation",
+            "InvalidOperation"
+          ]
+        }
+      },
+      "expected": {
+        "fresh_context_each_operation": true,
+        "per_operation": [
+          {
+            "value": false,
+            "flags_exact": [
+              "FloatOperation"
+            ]
+          },
+          {
+            "error_class": "decimal.FloatOperation",
+            "flags_exact": [
+              "FloatOperation"
+            ],
+            "InvalidOperation_not_reached": true
+          }
+        ]
+      },
+      "basis": [
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542"
+      ],
+      "derivation": "Mixed EQ records FloatOperation but ignores its trap and qNaN EQ needs no InvalidOperation. Mixed LT traps FloatOperation before exact conversion/NaN comparison, so InvalidOperation is absent."
+    }
+  ],
+  "active_contract_cases": [
+    {
+      "id": "EA04",
+      "family": "EX06",
+      "status": "root_boundary_locked_pending_final_freeze",
+      "input": {
+        "left": {
+          "family": "Decimal",
+          "negative": false,
+          "coefficient": "1",
+          "exponent": "-1"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits": "0x3fb999999999999a"
+        },
+        "operation": "Equal",
+        "context_override": {
+          "precision": 3,
+          "traps": [
+            "FloatOperation"
+          ]
+        },
+        "limits_override": {
+          "max_coefficient_digits": 3
+        }
+      },
+      "rationale": "Existing exact float-to-Decimal converter needs a55-digit coefficient for0.1. Comparison EQ records FO but does not trap it; result envelope must retain that signal when the explicit conversion budget then refuses. The precise conversion-budget policy must be locked before freezing.",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "expected": {
+        "fatal_kind": "NumericFault::ResourceLimit",
+        "operation": "coefficient_digits",
+        "flags_exact": [
+          "FloatOperation"
+        ],
+        "FloatOperation_trap_ignored_for_EQ": true
+      }
+    }
+  ],
+  "counts": {
+    "source_math_cases": 8,
+    "active_contract_cases": 1
+  },
+  "payload_canonical_sha256": "efa59a6b5efddada4a9904bf3bed7f70577ee8841db2d318d1a935786848f5ab",
+  "revision": {
+    "previous_source_record_sha256": "9cb28bb8ab35653f2490037f627925fbe8c4b92b0fffa51563f8c1c9367fb497",
+    "current_record_number": 2,
+    "classification": "EA01_post_exposure_development_replay; all_other_expected_objects_preserved",
+    "corrected_case_ids": [],
+    "source_math_and_reused_MM_expectations_unchanged": true
+  }
+}

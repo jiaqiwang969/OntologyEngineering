@@ -7,7 +7,7 @@
 模式定义引用既有 [P-ID／P-CLAIM／P-SCOPE／P-REALIZE／P-CHANGE](../../references/judgment-pattern-source-map.json)，
 正式含义从锁定 Semantica 包读取。领域条目只写对象、主张、条件、反例和出处，
 项目里再填写实际参数、采用理由和变更依赖。继续使用已有
-[方案记录](../../skills/manufacturing-process-cost/assets/templates/solution-record.json)，
+方案记录，
 不因新增目录另造通用规则或项目状态机。
 
 凝练保留的关键区别：177 页普通直线轴承不适合旋转；221 页微型滚珠衬套支持

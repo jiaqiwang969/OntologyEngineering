@@ -1,0 +1,1036 @@
+{
+  "schema": "public.literal-language-receiving-cases/1",
+  "source_record_id": "LITERAL-LANGUAGE-SUPPLEMENT-FROZEN-02",
+  "source_record_sha256": "7096daa56ce66da5fe842ecc9f0a970f74021b37ac430744f6e1d7824bd66523",
+  "parent_record_id": "LITERAL-IDENTITY-FROZEN-01",
+  "parent_record_sha256": "06c8b66119ae3a6138d08d3418bab7684096a789e65a170e8b6448bd31e94f98",
+  "source_basis": "source-derived supplement after static mismatch exposure; original Python and candidate not executed",
+  "canonical_payload_sha256": "70725421a0d44d3d2f32dc6cf446df8ec96c76bbe328c99e74253d23b798fb63",
+  "explicit_environment": {
+    "literal_semantics": "SourceLiteralV1",
+    "numeric_capabilities": "MixedBinary64V1",
+    "group_semantics": "SourceAggregateV1",
+    "normalize_literals": true,
+    "result_boundary": "execute_source_presence",
+    "row_order": "VALUES source order",
+    "decimal_context": "same default p28/HALF_EVEN/traps as parent; no Decimal operations in this supplement"
+  },
+  "rules": {
+    "constructor_pattern": "^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$ via re.match",
+    "query_token_pattern": "[a-zA-Z]+(?:-[a-zA-Z0-9]+)* via Regex inside Combine",
+    "length_bounds": "none in source primary or subsequent component",
+    "empty_constructor_language": "converted to None before language validation",
+    "dollar_boundary": "Lib/re/_parser.py878-879 compiles $ to AT_END; sre_lib.h31-34 accepts end or one final LF, sre.c137-138 defines LF only. Metadata retains that LF; it is not trimmed.",
+    "query_whitespace": "pyparsing default white chars space/LF/tab/CR; whitespace after language token is not part of token",
+    "copy": "explicit Literal(existing) retains datatype/value/language, resets ill_typed=None; all accepted text cases here already have ill_typed=None",
+    "identity": "lexical + datatypeOption + lowercase original languageOption; numeric cache and ill_typed excluded"
+  },
+  "core_cases": [
+    {
+      "id": "LL-C01",
+      "operation": "direct_string_then_explicit_existing_copy",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "abcdefghi",
+        "normalize": true
+      },
+      "expected": {
+        "status": "ok",
+        "constructed": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "abcdefghi",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "copied": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "abcdefghi",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "source_identity_equal_to_copy": true,
+        "hash_equal_to_copy": true,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "term:668-724",
+        "term:1331-1350",
+        "term:1395-1407"
+      ]
+    },
+    {
+      "id": "LL-C02",
+      "operation": "direct_string_then_explicit_existing_copy",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en-abcdefghi",
+        "normalize": true
+      },
+      "expected": {
+        "status": "ok",
+        "constructed": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "en-abcdefghi",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "copied": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "en-abcdefghi",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "source_identity_equal_to_copy": true,
+        "hash_equal_to_copy": true,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "term:668-724",
+        "term:1331-1350",
+        "term:1395-1407"
+      ]
+    },
+    {
+      "id": "LL-C03",
+      "operation": "direct_string_then_explicit_existing_copy",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "EN",
+        "normalize": true
+      },
+      "expected": {
+        "status": "ok",
+        "constructed": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "EN",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "copied": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "EN",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "source_identity_equal_to_copy": true,
+        "hash_equal_to_copy": true,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "term:668-724",
+        "term:1331-1350",
+        "term:1395-1407"
+      ]
+    },
+    {
+      "id": "LL-C04",
+      "operation": "direct_string_then_explicit_existing_copy",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en",
+        "normalize": true
+      },
+      "expected": {
+        "status": "ok",
+        "constructed": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "en",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "copied": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "en",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "source_identity_equal_to_copy": true,
+        "hash_equal_to_copy": true,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "term:668-724",
+        "term:1331-1350",
+        "term:1395-1407"
+      ]
+    },
+    {
+      "id": "LL-C05",
+      "operation": "direct_string_then_explicit_existing_copy",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "",
+        "normalize": true
+      },
+      "expected": {
+        "status": "ok",
+        "constructed": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": null,
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "copied": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": null,
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "source_identity_equal_to_copy": true,
+        "hash_equal_to_copy": true,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "term:668-724",
+        "term:1331-1350",
+        "term:1395-1407"
+      ]
+    },
+    {
+      "id": "LL-C06",
+      "operation": "direct_string_then_explicit_existing_copy",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en\n",
+        "normalize": true
+      },
+      "expected": {
+        "status": "ok",
+        "constructed": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "en\n",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "copied": {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "en\n",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        "source_identity_equal_to_copy": true,
+        "hash_equal_to_copy": true,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "term:668-724",
+        "term:1331-1350",
+        "term:1395-1407"
+      ]
+    },
+    {
+      "id": "LL-C07",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "1en",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C08",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en_US",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C09",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en--US",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C10",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en-",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C11",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "-en",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C12",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en/US",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C13",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "é",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C14",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en ",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C15",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en\r",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C16",
+      "operation": "direct_string_constructor",
+      "input": {
+        "lexical": "a",
+        "datatype": null,
+        "language": "en\n\n",
+        "normalize": true
+      },
+      "expected": {
+        "status": "source_exception",
+        "source_exception": "ValueError",
+        "stage": "language_validation_before_value_cast",
+        "value": null,
+        "flags": []
+      },
+      "derivation": [
+        "term:111-115",
+        "term:648-661",
+        "sre_lib:30-39",
+        "sre:137-138"
+      ]
+    },
+    {
+      "id": "LL-C17",
+      "operation": "source_identity_comparison",
+      "pairs": [
+        {
+          "left_language": "EN",
+          "right_language": "en",
+          "equal": true,
+          "hash_equal": true
+        },
+        {
+          "left_language": "ABCDEFGHI",
+          "right_language": "abcdefghi",
+          "equal": true,
+          "hash_equal": true
+        },
+        {
+          "left_language": "EN\n",
+          "right_language": "en\n",
+          "equal": true,
+          "hash_equal": true
+        },
+        {
+          "left_language": "en\n",
+          "right_language": "en",
+          "equal": false,
+          "hash_equal": null
+        }
+      ],
+      "expected_policy": "False equality does not imply unequal hash; original language spelling remains unchanged in each object.",
+      "derivation": [
+        "term:1343-1350",
+        "term:1395-1407"
+      ]
+    }
+  ],
+  "query_cases": [
+    {
+      "id": "LL-Q01",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@abcdefghi } }",
+      "initial": [],
+      "expected": {
+        "status": "ok",
+        "rows": [
+          {
+            "x": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": {
+                "state": "absent"
+              },
+              "original_language": "abcdefghi",
+              "ill_typed": null,
+              "cache_family": "String"
+            }
+          }
+        ],
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:345-348",
+        "parser:449",
+        "parser:1549-1557",
+        "algebra:193-197",
+        "term:668-724",
+        "pyparsing_core:400,499,1274-1341"
+      ],
+      "note": "Actual language token retains original spelling without a primary/subtag length bound."
+    },
+    {
+      "id": "LL-Q02",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@en-abcdefghi } }",
+      "initial": [],
+      "expected": {
+        "status": "ok",
+        "rows": [
+          {
+            "x": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": {
+                "state": "absent"
+              },
+              "original_language": "en-abcdefghi",
+              "ill_typed": null,
+              "cache_family": "String"
+            }
+          }
+        ],
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:345-348",
+        "parser:449",
+        "parser:1549-1557",
+        "algebra:193-197",
+        "term:668-724",
+        "pyparsing_core:400,499,1274-1341"
+      ],
+      "note": "Actual language token retains original spelling without a primary/subtag length bound."
+    },
+    {
+      "id": "LL-Q03",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@EN } }",
+      "initial": [],
+      "expected": {
+        "status": "ok",
+        "rows": [
+          {
+            "x": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": {
+                "state": "absent"
+              },
+              "original_language": "EN",
+              "ill_typed": null,
+              "cache_family": "String"
+            }
+          }
+        ],
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:345-348",
+        "parser:449",
+        "parser:1549-1557",
+        "algebra:193-197",
+        "term:668-724",
+        "pyparsing_core:400,499,1274-1341"
+      ],
+      "note": "Actual language token retains original spelling without a primary/subtag length bound."
+    },
+    {
+      "id": "LL-Q04",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@en\n } }",
+      "initial": [],
+      "expected": {
+        "status": "ok",
+        "rows": [
+          {
+            "x": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": {
+                "state": "absent"
+              },
+              "original_language": "en",
+              "ill_typed": null,
+              "cache_family": "String"
+            }
+          }
+        ],
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:345-348",
+        "parser:449",
+        "parser:1549-1557",
+        "algebra:193-197",
+        "term:668-724",
+        "pyparsing_core:400,499,1274-1341"
+      ],
+      "note": "Whitespace following LANGTAG is grammar whitespace, not part of the original language field."
+    },
+    {
+      "id": "LL-Q05",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@en\r } }",
+      "initial": [],
+      "expected": {
+        "status": "ok",
+        "rows": [
+          {
+            "x": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": {
+                "state": "absent"
+              },
+              "original_language": "en",
+              "ill_typed": null,
+              "cache_family": "String"
+            }
+          }
+        ],
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:345-348",
+        "parser:449",
+        "parser:1549-1557",
+        "algebra:193-197",
+        "term:668-724",
+        "pyparsing_core:400,499,1274-1341"
+      ],
+      "note": "Whitespace following LANGTAG is grammar whitespace, not part of the original language field."
+    },
+    {
+      "id": "LL-Q06",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@en  } }",
+      "initial": [],
+      "expected": {
+        "status": "ok",
+        "rows": [
+          {
+            "x": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": {
+                "state": "absent"
+              },
+              "original_language": "en",
+              "ill_typed": null,
+              "cache_family": "String"
+            }
+          }
+        ],
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:345-348",
+        "parser:449",
+        "parser:1549-1557",
+        "algebra:193-197",
+        "term:668-724",
+        "pyparsing_core:400,499,1274-1341"
+      ],
+      "note": "Whitespace following LANGTAG is grammar whitespace, not part of the original language field."
+    },
+    {
+      "id": "LL-Q07",
+      "query": "SELECT ?s (COUNT(?x) AS ?n) (COUNT(DISTINCT ?x) AS ?d) WHERE { VALUES ?x { \"a\"@EN \"a\"@en } BIND(?x AS ?s) } GROUP BY ?s",
+      "initial": [],
+      "expected": {
+        "status": "ok",
+        "rows": [
+          {
+            "s": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": {
+                "state": "absent"
+              },
+              "original_language": "EN",
+              "ill_typed": null,
+              "cache_family": "String"
+            },
+            "n": {
+              "kind": "literal",
+              "lexical": "2",
+              "source_datatype": {
+                "state": "specified",
+                "iri": "http://www.w3.org/2001/XMLSchema#integer"
+              },
+              "original_language": null,
+              "ill_typed": null,
+              "cache_family": "Integer",
+              "cache_value": "2"
+            },
+            "d": {
+              "kind": "literal",
+              "lexical": "1",
+              "source_datatype": {
+                "state": "specified",
+                "iri": "http://www.w3.org/2001/XMLSchema#integer"
+              },
+              "original_language": null,
+              "ill_typed": null,
+              "cache_family": "Integer",
+              "cache_value": "1"
+            }
+          }
+        ],
+        "flags": []
+      },
+      "derivation": [
+        "term:1395-1407",
+        "evaluate:474-495",
+        "aggregates:57-61,73-117,228-247",
+        "algebra:573-591"
+      ],
+      "note": "Ordered VALUES, BIND transports the same language spelling, source Group key folds case, implicit SAMPLE retains the first EN representative."
+    },
+    {
+      "id": "LL-Q08",
+      "query": "SELECT ?s WHERE { VALUES ?x { \"a\"@abcdefghi } BIND(?x AS ?s) }",
+      "initial": [],
+      "expected": {
+        "status": "ok",
+        "rows": [
+          {
+            "s": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": {
+                "state": "absent"
+              },
+              "original_language": "abcdefghi",
+              "ill_typed": null,
+              "cache_family": "String"
+            }
+          }
+        ],
+        "flags": []
+      },
+      "derivation": [
+        "evaluate:124-140",
+        "parser:268-269",
+        "algebra:193-197",
+        "term:668-724"
+      ]
+    },
+    {
+      "id": "LL-Q09",
+      "query": "SELECT (SAMPLE(?x) AS ?s) WHERE { VALUES ?x { \"a\"@abcdefghi \"a\"@ABCDEFGHI } }",
+      "initial": [],
+      "expected": {
+        "status": "ok",
+        "rows": [
+          {
+            "s": {
+              "kind": "literal",
+              "lexical": "a",
+              "source_datatype": {
+                "state": "absent"
+              },
+              "original_language": "abcdefghi",
+              "ill_typed": null,
+              "cache_family": "String"
+            }
+          }
+        ],
+        "flags": []
+      },
+      "derivation": [
+        "aggregates:228-247",
+        "evaluate:474-495",
+        "algebra:573-591",
+        "term:668-724"
+      ]
+    },
+    {
+      "id": "LL-Q10",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@ } }",
+      "initial": [],
+      "expected": {
+        "status": "syntax_error",
+        "source_exception": "ParseException",
+        "stage": "parse_query",
+        "rows": null,
+        "iteration": null,
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:449",
+        "parser:1549-1557",
+        "pyparsing_core:1274-1341"
+      ],
+      "note": "Full query must parse; a regex prefix cannot turn remaining malformed language characters into a legal next VALUES term."
+    },
+    {
+      "id": "LL-Q11",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@1en } }",
+      "initial": [],
+      "expected": {
+        "status": "syntax_error",
+        "source_exception": "ParseException",
+        "stage": "parse_query",
+        "rows": null,
+        "iteration": null,
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:449",
+        "parser:1549-1557",
+        "pyparsing_core:1274-1341"
+      ],
+      "note": "Full query must parse; a regex prefix cannot turn remaining malformed language characters into a legal next VALUES term."
+    },
+    {
+      "id": "LL-Q12",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@en_US } }",
+      "initial": [],
+      "expected": {
+        "status": "syntax_error",
+        "source_exception": "ParseException",
+        "stage": "parse_query",
+        "rows": null,
+        "iteration": null,
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:449",
+        "parser:1549-1557",
+        "pyparsing_core:1274-1341"
+      ],
+      "note": "Full query must parse; a regex prefix cannot turn remaining malformed language characters into a legal next VALUES term."
+    },
+    {
+      "id": "LL-Q13",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@en--US } }",
+      "initial": [],
+      "expected": {
+        "status": "syntax_error",
+        "source_exception": "ParseException",
+        "stage": "parse_query",
+        "rows": null,
+        "iteration": null,
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:449",
+        "parser:1549-1557",
+        "pyparsing_core:1274-1341"
+      ],
+      "note": "Full query must parse; a regex prefix cannot turn remaining malformed language characters into a legal next VALUES term."
+    },
+    {
+      "id": "LL-Q14",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@en- } }",
+      "initial": [],
+      "expected": {
+        "status": "syntax_error",
+        "source_exception": "ParseException",
+        "stage": "parse_query",
+        "rows": null,
+        "iteration": null,
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:449",
+        "parser:1549-1557",
+        "pyparsing_core:1274-1341"
+      ],
+      "note": "Full query must parse; a regex prefix cannot turn remaining malformed language characters into a legal next VALUES term."
+    },
+    {
+      "id": "LL-Q15",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@-en } }",
+      "initial": [],
+      "expected": {
+        "status": "syntax_error",
+        "source_exception": "ParseException",
+        "stage": "parse_query",
+        "rows": null,
+        "iteration": null,
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:449",
+        "parser:1549-1557",
+        "pyparsing_core:1274-1341"
+      ],
+      "note": "Full query must parse; a regex prefix cannot turn remaining malformed language characters into a legal next VALUES term."
+    },
+    {
+      "id": "LL-Q16",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@en/US } }",
+      "initial": [],
+      "expected": {
+        "status": "syntax_error",
+        "source_exception": "ParseException",
+        "stage": "parse_query",
+        "rows": null,
+        "iteration": null,
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:449",
+        "parser:1549-1557",
+        "pyparsing_core:1274-1341"
+      ],
+      "note": "Full query must parse; a regex prefix cannot turn remaining malformed language characters into a legal next VALUES term."
+    },
+    {
+      "id": "LL-Q17",
+      "query": "SELECT ?x WHERE { VALUES ?x { \"a\"@é } }",
+      "initial": [],
+      "expected": {
+        "status": "syntax_error",
+        "source_exception": "ParseException",
+        "stage": "parse_query",
+        "rows": null,
+        "iteration": null,
+        "flags": []
+      },
+      "derivation": [
+        "parser:268-269",
+        "parser:449",
+        "parser:1549-1557",
+        "pyparsing_core:1274-1341"
+      ],
+      "note": "Full query must parse; a regex prefix cannot turn remaining malformed language characters into a legal next VALUES term."
+    }
+  ],
+  "implementation_error_contract": {
+    "source_ValueError": "must remain distinguishable from invalid provenance and Dataset/resource failures; exact Rust enum name deliberately not frozen",
+    "query_ParseException": "query preparation syntax failure, no fake executor error poll",
+    "default_parser": "supplement changes only SourceLiteralV1 accepted domain; existing default oxilangtag validation remains active"
+  },
+  "unknown_or_excluded": [
+    "No original runtime or candidate execution observed.",
+    "No claim to general graph-store acceptance of non-BCP47 source language; source VALUES/initial literal carrier must preserve accepted source text or report a separately typed lossy-backend failure.",
+    "No API output wrapper beyond the metadata-preserving SELECT solution is inferred.",
+    "Source language plus explicit datatype TypeError ordering is not newly qualified by this supplement."
+  ]
+}

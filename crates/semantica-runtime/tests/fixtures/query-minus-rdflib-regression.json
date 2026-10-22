@@ -1,0 +1,576 @@
+{
+  "schema": "semantica.query-minus-rdflib-regression/1",
+  "rdflib_version": "7.6.0",
+  "oracle_source_sha256": {
+    "evaluate.py": "991944f756398773c4ddf0da0bf5a3c2285f2a67140c9976a8a806ba5d8402be",
+    "sparql.py": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f",
+    "processor.py": "f6f5786782c8d5c0518e1c2564ba9b444690189c539c286a21c48d437fef67e8"
+  },
+  "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en .\n<urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+  "namespaces": {
+    "ex": "urn:"
+  },
+  "profile": "exact RDF identities; expected JSON adapter exposes RDF 1.1 literal datatype explicitly; no production query output consumed",
+  "cases": [
+    {
+      "id": "default_original_disjoint_project",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?dummy WHERE { BIND(\"x\" AS ?dummy) } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        },
+        {
+          "name": "\"bearing\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        },
+        {
+          "name": {
+            "kind": "literal",
+            "value": "bearing",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_shared_initial_project",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?s WHERE { ?s ex:tag \"A\" } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [],
+      "expected_rows": []
+    },
+    {
+      "id": "default_shared_dynamic_project",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?name WHERE { ex:part ex:alias ?name } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"bearing\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "bearing",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_conflicting_dynamic_project",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?name WHERE { ex:other ex:name ?name } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_nested_disjoint_project",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?dummy WHERE { { SELECT ?dummy WHERE { BIND(\"x\" AS ?dummy) } } } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        },
+        {
+          "name": "\"bearing\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        },
+        {
+          "name": {
+            "kind": "literal",
+            "value": "bearing",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_nested_shared_project",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?name WHERE { { SELECT ?name WHERE { ?s ex:name ?name } } } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [],
+      "expected_rows": []
+    },
+    {
+      "id": "default_left_project_hides_initial",
+      "query": "SELECT ?name WHERE { {SELECT ?name WHERE { ?s ex:name ?name }} MINUS { SELECT ?s WHERE { ?s ex:tag \"A\" } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        },
+        {
+          "name": "\"bearing\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        },
+        {
+          "name": {
+            "kind": "literal",
+            "value": "bearing",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_both_project_disjoint",
+      "query": "SELECT ?name WHERE { { SELECT ?name WHERE { ?s ex:name ?name } } MINUS { SELECT ?dummy WHERE { BIND(\"x\" AS ?dummy) } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        },
+        {
+          "name": "\"bearing\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        },
+        {
+          "name": {
+            "kind": "literal",
+            "value": "bearing",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_empty_right",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?name WHERE { ex:missing ex:name ?name } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        },
+        {
+          "name": "\"bearing\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        },
+        {
+          "name": {
+            "kind": "literal",
+            "value": "bearing",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_right_optional_unbound",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?name WHERE { BIND(\"x\" AS ?dummy) OPTIONAL { ex:missing ex:name ?name } } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        },
+        {
+          "name": "\"bearing\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        },
+        {
+          "name": {
+            "kind": "literal",
+            "value": "bearing",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_right_union_domain",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { {SELECT ?dummy WHERE { BIND(\"x\" AS ?dummy) }} UNION { SELECT ?name WHERE { ex:other ex:name ?name } } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_right_plain_bgp_initial_domain",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { ex:other ex:note ?note } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        },
+        {
+          "name": "\"bearing\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        },
+        {
+          "name": {
+            "kind": "literal",
+            "value": "bearing",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_right_project_filter_initial",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?dummy WHERE { BIND(\"x\" AS ?dummy) FILTER(?s=ex:part) } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"shaft\"@en"
+        },
+        {
+          "name": "\"bearing\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "shaft",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        },
+        {
+          "name": {
+            "kind": "literal",
+            "value": "bearing",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "default_post_project_filter_initial",
+      "query": "SELECT ?name WHERE { {SELECT ?name WHERE { ?s ex:name ?name }} FILTER(BOUND(?s)) MINUS { SELECT ?dummy WHERE { BIND(\"x\" AS ?dummy) } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [],
+      "expected_rows": []
+    },
+    {
+      "id": "default_nested_inner_minus",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name MINUS { SELECT ?name WHERE { ?s ex:name ?name MINUS {SELECT ?dummy WHERE {BIND(\"x\" AS ?dummy)}} } } }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [],
+      "expected_rows": []
+    },
+    {
+      "id": "default_project_then_bgp_restores_initial",
+      "query": "SELECT ?name WHERE { {SELECT ?name WHERE { ?s ex:name ?name }} ?s ex:tag \"A\" MINUS {SELECT ?s WHERE {?s ex:name ?other}} }",
+      "bindings": {},
+      "columns": [
+        "name"
+      ],
+      "original_rows": [],
+      "expected_rows": []
+    },
+    {
+      "id": "blank_initial_disjoint",
+      "data": "_:unit <urn:name> \"fixture\"@en . <urn:part> <urn:count> \"007\"^^<http://www.w3.org/2001/XMLSchema#integer> .",
+      "query": "SELECT ?name WHERE {?s ex:name ?name MINUS {SELECT ?dummy WHERE {BIND(\"x\" AS ?dummy)}}}",
+      "bindings": {
+        "s": {
+          "kind": "blank",
+          "value": "unit"
+        }
+      },
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"fixture\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "fixture",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "blank_initial_shared",
+      "data": "_:unit <urn:name> \"fixture\"@en . <urn:part> <urn:count> \"007\"^^<http://www.w3.org/2001/XMLSchema#integer> .",
+      "query": "SELECT ?name WHERE {?s ex:name ?name MINUS {SELECT ?s WHERE {?s ex:name ?other}}}",
+      "bindings": {
+        "s": {
+          "kind": "blank",
+          "value": "unit"
+        }
+      },
+      "columns": [
+        "name"
+      ],
+      "original_rows": [],
+      "expected_rows": []
+    },
+    {
+      "id": "typed_initial_disjoint",
+      "data": "_:unit <urn:name> \"fixture\"@en . <urn:part> <urn:count> \"007\"^^<http://www.w3.org/2001/XMLSchema#integer> .",
+      "query": "SELECT ?count WHERE {ex:part ex:count ?count MINUS {SELECT ?dummy WHERE {BIND(\"x\" AS ?dummy)}}}",
+      "bindings": {
+        "count": {
+          "kind": "literal",
+          "value": "007",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null
+        }
+      },
+      "columns": [
+        "count"
+      ],
+      "original_rows": [
+        {
+          "count": "\"007\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+        }
+      ],
+      "expected_rows": [
+        {
+          "count": {
+            "kind": "literal",
+            "value": "007",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "language": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "typed_initial_different_lexical",
+      "data": "_:unit <urn:name> \"fixture\"@en . <urn:part> <urn:count> \"007\"^^<http://www.w3.org/2001/XMLSchema#integer> .",
+      "query": "SELECT ?count WHERE {ex:part ex:count ?count MINUS {SELECT ?dummy WHERE {BIND(\"x\" AS ?dummy)}}}",
+      "bindings": {
+        "count": {
+          "kind": "literal",
+          "value": "7",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null
+        }
+      },
+      "columns": [
+        "count"
+      ],
+      "original_rows": [],
+      "expected_rows": []
+    },
+    {
+      "id": "typed_initial_shared",
+      "data": "_:unit <urn:name> \"fixture\"@en . <urn:part> <urn:count> \"007\"^^<http://www.w3.org/2001/XMLSchema#integer> .",
+      "query": "SELECT ?count WHERE {ex:part ex:count ?count MINUS {SELECT ?count WHERE {ex:part ex:count ?count}}}",
+      "bindings": {
+        "count": {
+          "kind": "literal",
+          "value": "007",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null
+        }
+      },
+      "columns": [
+        "count"
+      ],
+      "original_rows": [],
+      "expected_rows": []
+    },
+    {
+      "id": "language_initial_disjoint",
+      "data": "_:unit <urn:name> \"fixture\"@en . <urn:part> <urn:count> \"007\"^^<http://www.w3.org/2001/XMLSchema#integer> .",
+      "query": "SELECT ?name WHERE {?s ex:name ?name MINUS {SELECT ?dummy WHERE {BIND(\"x\" AS ?dummy)}}}",
+      "bindings": {
+        "s": {
+          "kind": "blank",
+          "value": "unit"
+        },
+        "name": {
+          "kind": "literal",
+          "value": "fixture",
+          "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+          "language": "en"
+        }
+      },
+      "columns": [
+        "name"
+      ],
+      "original_rows": [
+        {
+          "name": "\"fixture\"@en"
+        }
+      ],
+      "expected_rows": [
+        {
+          "name": {
+            "kind": "literal",
+            "value": "fixture",
+            "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+            "language": "en"
+          }
+        }
+      ]
+    },
+    {
+      "id": "language_initial_mismatch",
+      "data": "_:unit <urn:name> \"fixture\"@en . <urn:part> <urn:count> \"007\"^^<http://www.w3.org/2001/XMLSchema#integer> .",
+      "query": "SELECT ?name WHERE {?s ex:name ?name MINUS {SELECT ?dummy WHERE {BIND(\"x\" AS ?dummy)}}}",
+      "bindings": {
+        "s": {
+          "kind": "blank",
+          "value": "unit"
+        },
+        "name": {
+          "kind": "literal",
+          "value": "fixture",
+          "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString",
+          "language": "fr"
+        }
+      },
+      "columns": [
+        "name"
+      ],
+      "original_rows": [],
+      "expected_rows": []
+    }
+  ]
+}

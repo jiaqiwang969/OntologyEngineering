@@ -1,0 +1,71 @@
+[package]
+name = "semantica-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[features]
+# Explicit production port; ordinary DatasetSession/query profiles retain admission.
+source-session-local-v1 = ["rdflib760-nullable-internal"]
+rdflib760-nullable-internal = ["spareval/rdflib760-nullable-internal", "dep:oxttl", "oxttl/source-literal-internal", "dep:oxrdfxml", "oxrdfxml/source-literal-internal", "dep:oxjsonld", "oxjsonld/source-literal-internal"]
+
+[dependencies]
+semantica-contracts.workspace = true
+semantica-numeric.workspace = true
+semantica-temporal.workspace = true
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
+sha2.workspace = true
+sha1 = "=0.10.6"
+chrono.workspace = true
+libc.workspace = true
+getrandom = "=0.3.4"
+semantica-json.workspace = true
+base64.workspace = true
+num-bigint.workspace = true
+num-rational = "=0.4.2"
+oxigraph = { version = "=0.5.11", default-features = false }
+oxrdf = { version = "=0.3.4", features = ["rdfc-10"] }
+oxsdatatypes = "=0.2.3"
+oxttl = { version = "=0.2.4", optional = true }
+oxrdfxml = { version = "=0.2.4", optional = true }
+oxjsonld = { version = "=0.2.6", optional = true }
+spargebra = "=0.4.7"
+spareval = "=0.2.7"
+regex = "1.12"
+candle-core = { version = "=0.9.1", default-features = false }
+candle-nn = { version = "=0.9.1", default-features = false }
+candle-transformers = { version = "=0.9.1", default-features = false }
+tokenizers = { version = "=0.21.4", default-features = false, features = ["fancy-regex"] }
+
+html5ever = "=0.35.0"
+
+quick-xml = "=0.37.5"
+
+png = { version = "=0.18.1", default-features = false, features = ["zlib-rs"] }
+crc32fast = "=1.5.2"
+flate2 = { version = "=1.1.10", default-features = false, features = ["zlib-rs"] }
+
+petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[lints]
+workspace = true
+
+[target.'cfg(not(windows))'.dependencies]
+sha2 = { workspace = true, features = ["asm"] }
+
+[[test]]
+name = "source_session"
+path = "tests/source_session.rs"
+required-features = ["source-session-local-v1"]
+
+[[test]]
+name = "source_session_storage"
+path = "tests/source_session_storage.rs"
+required-features = ["source-session-local-v1"]

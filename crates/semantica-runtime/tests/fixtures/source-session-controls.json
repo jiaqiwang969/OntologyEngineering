@@ -1,0 +1,1144 @@
+{
+  "schema": "semantica.source-session-test-controls/1",
+  "requests": {
+    "S01_same_session": {
+      "schema": "semantica.source-session-request/1",
+      "profile": "semantica.rdflib760-source-session/1",
+      "cache_queries": true,
+      "created_at": "2026-10-15T09:00:00Z",
+      "resources": [
+        {
+          "binding": {
+            "schema": "semantica.source-binding/1",
+            "source_id": "https://example.invalid/source.ttl",
+            "source_sha256": "0fdd68de3d6dff65dbc867f208015d6ce80076197d1104cfc176cfdb066c9624",
+            "byte_count": 25
+          },
+          "data": "<urn:s> <urn:p> <urn:o> .",
+          "rdf_format": "turtle"
+        }
+      ],
+      "actions": [
+        {
+          "id": "load",
+          "operation": "load",
+          "resource_id": "https://example.invalid/source.ttl",
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "query-cold",
+          "operation": "query",
+          "resource_id": null,
+          "query": "SELECT ?s WHERE { ?s <urn:p> <urn:o> } ORDER BY ?s",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "query-warm",
+          "operation": "query",
+          "resource_id": null,
+          "query": "SELECT ?s WHERE { ?s <urn:p> <urn:o> } ORDER BY ?s",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "before",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "insert",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA { <urn:t> <urn:p> <urn:o> }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "query-after",
+          "operation": "query",
+          "resource_id": null,
+          "query": "SELECT ?s WHERE { ?s <urn:p> <urn:o> } ORDER BY ?s",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "query-after-warm",
+          "operation": "query",
+          "resource_id": null,
+          "query": "SELECT ?s WHERE { ?s <urn:p> <urn:o> } ORDER BY ?s",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "after",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        }
+      ]
+    },
+    "S02_reached_prefix_failure": {
+      "schema": "semantica.source-session-request/1",
+      "profile": "semantica.rdflib760-source-session/1",
+      "cache_queries": true,
+      "created_at": "2026-10-15T09:00:00Z",
+      "resources": [
+        {
+          "binding": {
+            "schema": "semantica.source-binding/1",
+            "source_id": "https://example.invalid/source.ttl",
+            "source_sha256": "344923bcd79ac49abb521fa8bf8aeddbc5abac8cdf8e51ea1e0824fb37f12038",
+            "byte_count": 33
+          },
+          "data": "<urn:forbidden> <urn:p> <urn:o> .",
+          "rdf_format": "turtle"
+        }
+      ],
+      "actions": [
+        {
+          "id": "warm",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK { <urn:s> <urn:p> <urn:o> }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "warm-repeat",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK { <urn:s> <urn:p> <urn:o> }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "before",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "partial",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA {<urn:s> <urn:p> <urn:o>}; CREATE GRAPH <urn:g>",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "skip-update",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA {<urn:later> <urn:p> <urn:o>}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "skip-load",
+          "operation": "load",
+          "resource_id": "https://example.invalid/source.ttl",
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "after-query",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK { <urn:s> <urn:p> <urn:o> }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "after-query-repeat",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK { <urn:s> <urn:p> <urn:o> }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "check-update-skipped",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK { <urn:later> <urn:p> <urn:o> }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "check-load-skipped",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK { <urn:forbidden> <urn:p> <urn:o> }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "after",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        }
+      ]
+    },
+    "S03_unknown_load_silent": {
+      "schema": "semantica.source-session-request/1",
+      "profile": "semantica.rdflib760-source-session/1",
+      "cache_queries": true,
+      "created_at": "2026-10-15T09:00:00Z",
+      "resources": [],
+      "actions": [
+        {
+          "id": "warm",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK {}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "before",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "unknown",
+          "operation": "update",
+          "resource_id": null,
+          "query": "LOAD SILENT <https://example.invalid/source.ttl>",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "skip-update",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA {<urn:later> <urn:p> <urn:o>}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "after-query",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK {}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "after",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        }
+      ]
+    },
+    "S04_wrong_source_sha": {
+      "schema": "semantica.source-session-request/1",
+      "profile": "semantica.rdflib760-source-session/1",
+      "cache_queries": true,
+      "created_at": "2026-10-15T09:00:00Z",
+      "resources": [
+        {
+          "binding": {
+            "schema": "semantica.source-binding/1",
+            "source_id": "https://example.invalid/source.ttl",
+            "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "byte_count": 25
+          },
+          "data": "<urn:s> <urn:p> <urn:o> .",
+          "rdf_format": "turtle"
+        }
+      ],
+      "actions": [
+        {
+          "id": "must-not-run",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA {<urn:sentinel> <urn:p> <urn:o>}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "observe",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        }
+      ]
+    },
+    "S05_wrong_utf8_byte_count": {
+      "schema": "semantica.source-session-request/1",
+      "profile": "semantica.rdflib760-source-session/1",
+      "cache_queries": true,
+      "created_at": "2026-10-15T09:00:00Z",
+      "resources": [
+        {
+          "binding": {
+            "schema": "semantica.source-binding/1",
+            "source_id": "https://example.invalid/source.ttl",
+            "source_sha256": "962ea1d3264ca58143cce67c0c65e02abc1198c40dc4fef9e15d11d85b96bc68",
+            "byte_count": 23
+          },
+          "data": "<urn:s> <urn:p> \"测量\" .\n",
+          "rdf_format": "turtle"
+        }
+      ],
+      "actions": [
+        {
+          "id": "must-not-run",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA {<urn:sentinel> <urn:p> <urn:o>}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "observe",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        }
+      ]
+    },
+    "S06_duplicate_action_id": {
+      "schema": "semantica.source-session-request/1",
+      "profile": "semantica.rdflib760-source-session/1",
+      "cache_queries": true,
+      "created_at": "2026-10-15T09:00:00Z",
+      "resources": [],
+      "actions": [
+        {
+          "id": "duplicate",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA {<urn:first> <urn:p> <urn:o>}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "duplicate",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA {<urn:last> <urn:p> <urn:o>}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        }
+      ]
+    },
+    "S07_duplicate_resource_id": {
+      "schema": "semantica.source-session-request/1",
+      "profile": "semantica.rdflib760-source-session/1",
+      "cache_queries": true,
+      "created_at": "2026-10-15T09:00:00Z",
+      "resources": [
+        {
+          "binding": {
+            "schema": "semantica.source-binding/1",
+            "source_id": "https://example.invalid/source.ttl",
+            "source_sha256": "0fdd68de3d6dff65dbc867f208015d6ce80076197d1104cfc176cfdb066c9624",
+            "byte_count": 25
+          },
+          "data": "<urn:s> <urn:p> <urn:o> .",
+          "rdf_format": "turtle"
+        },
+        {
+          "binding": {
+            "schema": "semantica.source-binding/1",
+            "source_id": "https://example.invalid/source.ttl",
+            "source_sha256": "3efb7bb91dba3374c4c1011b9bf377a9d0189a58733e089b9b2e9e647dbae5bc",
+            "byte_count": 29
+          },
+          "data": "<urn:other> <urn:p> <urn:o> .",
+          "rdf_format": "turtle"
+        }
+      ],
+      "actions": [
+        {
+          "id": "must-not-run",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA {<urn:sentinel> <urn:p> <urn:o>}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "observe",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        }
+      ]
+    },
+    "S08_authorized_load": {
+      "schema": "semantica.source-session-request/1",
+      "profile": "semantica.rdflib760-source-session/1",
+      "cache_queries": true,
+      "created_at": "2026-10-15T09:00:00Z",
+      "resources": [
+        {
+          "binding": {
+            "schema": "semantica.source-binding/1",
+            "source_id": "https://example.invalid/source.ttl",
+            "source_sha256": "0fdd68de3d6dff65dbc867f208015d6ce80076197d1104cfc176cfdb066c9624",
+            "byte_count": 25
+          },
+          "data": "<urn:s> <urn:p> <urn:o> .",
+          "rdf_format": "turtle"
+        }
+      ],
+      "actions": [
+        {
+          "id": "load-1",
+          "operation": "update",
+          "resource_id": null,
+          "query": "LOAD <https://example.invalid/source.ttl>",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "query-1",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK { <urn:s> <urn:p> <urn:o> }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "load-2",
+          "operation": "update",
+          "resource_id": null,
+          "query": "LOAD <https://example.invalid/source.ttl>",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "query-2",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK { <urn:s> <urn:p> <urn:o> }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "snapshot",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        }
+      ]
+    },
+    "S09_unknown_using": {
+      "schema": "semantica.source-session-request/1",
+      "profile": "semantica.rdflib760-source-session/1",
+      "cache_queries": true,
+      "created_at": "2026-10-15T09:00:00Z",
+      "resources": [],
+      "actions": [
+        {
+          "id": "warm",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK {}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "before",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "unknown",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT { ?s <urn:copied> ?o } USING <https://example.invalid/source.ttl> WHERE { ?s <urn:p> ?o }",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "skip-update",
+          "operation": "update",
+          "resource_id": null,
+          "query": "INSERT DATA {<urn:later> <urn:p> <urn:o>}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        },
+        {
+          "id": "after-query",
+          "operation": "query",
+          "resource_id": null,
+          "query": "ASK {}",
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": true
+        },
+        {
+          "id": "after",
+          "operation": "snapshot",
+          "resource_id": null,
+          "query": null,
+          "namespaces": {},
+          "bindings": [],
+          "base_uri": null,
+          "graph_name": null,
+          "use_cache": false
+        }
+      ]
+    }
+  },
+  "expected": {
+    "S01_same_session": {
+      "action_order": [
+        "load",
+        "query-cold",
+        "query-warm",
+        "before",
+        "insert",
+        "query-after",
+        "query-after-warm",
+        "after"
+      ],
+      "statuses": [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed"
+      ],
+      "revision_before_after": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "admission": "accepted",
+      "query_checks": {
+        "query-cold": {
+          "cache_hit": false,
+          "ordered_iri_subjects": [
+            "urn:s"
+          ]
+        },
+        "query-warm": {
+          "cache_hit": true,
+          "ordered_iri_subjects": [
+            "urn:s"
+          ]
+        },
+        "query-after": {
+          "cache_hit": false,
+          "ordered_iri_subjects": [
+            "urn:s",
+            "urn:t"
+          ]
+        },
+        "query-after-warm": {
+          "cache_hit": true,
+          "ordered_iri_subjects": [
+            "urn:s",
+            "urn:t"
+          ]
+        }
+      },
+      "mutation_checks": {
+        "load": {
+          "operation": "load",
+          "added": 1,
+          "removed": 0,
+          "quad_count": 1,
+          "revision": 1
+        },
+        "insert": {
+          "operation": "update",
+          "added": 1,
+          "removed": 0,
+          "quad_count": 2,
+          "revision": 2
+        }
+      },
+      "snapshots": {
+        "before": {
+          "canonical_nquads": "<urn:s> <urn:p> <urn:o> .",
+          "dataset_sha256": "0fdd68de3d6dff65dbc867f208015d6ce80076197d1104cfc176cfdb066c9624",
+          "quad_count": 1,
+          "revision": 1
+        },
+        "after": {
+          "canonical_nquads": "<urn:s> <urn:p> <urn:o> .\n<urn:t> <urn:p> <urn:o> .",
+          "dataset_sha256": "2d1492652d5e3c590e9b796a238fe1f691233eebd11e434750d8a5bcbd691ece",
+          "quad_count": 2,
+          "revision": 2
+        }
+      }
+    },
+    "S02_reached_prefix_failure": {
+      "action_order": [
+        "warm",
+        "warm-repeat",
+        "before",
+        "partial",
+        "skip-update",
+        "skip-load",
+        "after-query",
+        "after-query-repeat",
+        "check-update-skipped",
+        "check-load-skipped",
+        "after"
+      ],
+      "statuses": [
+        "completed",
+        "completed",
+        "completed",
+        "failed",
+        "skipped",
+        "skipped",
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed"
+      ],
+      "revision_before_after": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "admission": "accepted",
+      "query_checks": {
+        "warm": {
+          "cache_hit": false,
+          "boolean": false
+        },
+        "warm-repeat": {
+          "cache_hit": true,
+          "boolean": false
+        },
+        "after-query": {
+          "cache_hit": false,
+          "boolean": true
+        },
+        "after-query-repeat": {
+          "cache_hit": true,
+          "boolean": true
+        },
+        "check-update-skipped": {
+          "cache_hit": false,
+          "boolean": false
+        },
+        "check-load-skipped": {
+          "cache_hit": false,
+          "boolean": false
+        }
+      },
+      "snapshots": {
+        "before": {
+          "canonical_nquads": "",
+          "dataset_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "quad_count": 0,
+          "revision": 0
+        },
+        "after": {
+          "canonical_nquads": "<urn:s> <urn:p> <urn:o> .",
+          "dataset_sha256": "0fdd68de3d6dff65dbc867f208015d6ce80076197d1104cfc176cfdb066c9624",
+          "quad_count": 1,
+          "revision": 0
+        }
+      },
+      "failure": {
+        "action": "partial",
+        "backend_phase": "reached",
+        "module": "semantica.ontology.runtime",
+        "class": "SemanticInputError",
+        "message": "SPARQL update failed: Create not implemented!"
+      }
+    },
+    "S03_unknown_load_silent": {
+      "action_order": [
+        "warm",
+        "before",
+        "unknown",
+        "skip-update",
+        "after-query",
+        "after"
+      ],
+      "statuses": [
+        "completed",
+        "completed",
+        "failed",
+        "skipped",
+        "completed",
+        "completed"
+      ],
+      "revision_before_after": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "admission": "accepted",
+      "query_checks": {
+        "warm": {
+          "cache_hit": false,
+          "boolean": true
+        },
+        "after-query": {
+          "cache_hit": false,
+          "boolean": true
+        }
+      },
+      "snapshots": {
+        "before": {
+          "canonical_nquads": "",
+          "dataset_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "quad_count": 0,
+          "revision": 0
+        },
+        "after": {
+          "canonical_nquads": "",
+          "dataset_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "quad_count": 0,
+          "revision": 0
+        }
+      },
+      "failure": {
+        "action": "unknown",
+        "backend_phase": "reached",
+        "diagnostic_contains": "source_update_resource_not_authorized",
+        "original_exception_identity": null
+      }
+    },
+    "S04_wrong_source_sha": {
+      "action_order": [
+        "must-not-run",
+        "observe"
+      ],
+      "statuses": null,
+      "revision_before_after": null,
+      "admission": "rejected_before_any_action"
+    },
+    "S05_wrong_utf8_byte_count": {
+      "action_order": [
+        "must-not-run",
+        "observe"
+      ],
+      "statuses": null,
+      "revision_before_after": null,
+      "admission": "rejected_before_any_action"
+    },
+    "S06_duplicate_action_id": {
+      "action_order": [
+        "duplicate",
+        "duplicate"
+      ],
+      "statuses": null,
+      "revision_before_after": null,
+      "admission": "rejected_before_any_action"
+    },
+    "S07_duplicate_resource_id": {
+      "action_order": [
+        "must-not-run",
+        "observe"
+      ],
+      "statuses": null,
+      "revision_before_after": null,
+      "admission": "rejected_before_any_action"
+    },
+    "S08_authorized_load": {
+      "action_order": [
+        "load-1",
+        "query-1",
+        "load-2",
+        "query-2",
+        "snapshot"
+      ],
+      "statuses": [
+        "completed",
+        "completed",
+        "completed",
+        "completed",
+        "completed"
+      ],
+      "revision_before_after": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "admission": "accepted",
+      "query_checks": {
+        "query-1": {
+          "cache_hit": false,
+          "boolean": true
+        },
+        "query-2": {
+          "cache_hit": false,
+          "boolean": true
+        }
+      },
+      "mutation_checks": {
+        "load-1": {
+          "operation": "update",
+          "added": 1,
+          "removed": 0,
+          "quad_count": 1,
+          "revision": 1
+        },
+        "load-2": {
+          "operation": "update",
+          "added": 0,
+          "removed": 0,
+          "quad_count": 1,
+          "revision": 2
+        }
+      },
+      "snapshots": {
+        "snapshot": {
+          "canonical_nquads": "<urn:s> <urn:p> <urn:o> .",
+          "dataset_sha256": "0fdd68de3d6dff65dbc867f208015d6ce80076197d1104cfc176cfdb066c9624",
+          "quad_count": 1,
+          "revision": 2
+        }
+      }
+    },
+    "S09_unknown_using": {
+      "action_order": [
+        "warm",
+        "before",
+        "unknown",
+        "skip-update",
+        "after-query",
+        "after"
+      ],
+      "statuses": [
+        "completed",
+        "completed",
+        "failed",
+        "skipped",
+        "completed",
+        "completed"
+      ],
+      "revision_before_after": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "admission": "accepted",
+      "query_checks": {
+        "warm": {
+          "cache_hit": false,
+          "boolean": true
+        },
+        "after-query": {
+          "cache_hit": false,
+          "boolean": true
+        }
+      },
+      "snapshots": {
+        "before": {
+          "canonical_nquads": "",
+          "dataset_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "quad_count": 0,
+          "revision": 0
+        },
+        "after": {
+          "canonical_nquads": "",
+          "dataset_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "quad_count": 0,
+          "revision": 0
+        }
+      },
+      "failure": {
+        "action": "unknown",
+        "backend_phase": "reached",
+        "diagnostic_contains": "source_update_resource_not_authorized",
+        "original_exception_identity": null
+      }
+    }
+  }
+}

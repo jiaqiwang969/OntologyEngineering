@@ -1,0 +1,13 @@
+# 原值操作与搜索文本准备
+
+工程本体规定含义 → ggen生成合同 → Rust Semantica执行 → RRSI检验反馈。原值不仅要保存，还要能按其真实类型参与检索与计算，不能先把surrogate、NaN或有类型字典键变成普通JSON再推断原意。
+
+`semantica-json::native_operations` 在已有NativeValue上执行str/repr、truth、builtin float及strip。普通字符串与码点文本共享引号/Unicode转义函数；有限float复用原格式化器，数字字符串复用原Unicode十进制与浮点解析规则。非有限float按原位参与float操作；容器顺序来自保留值，不声称构造Python集合、重算hash/equality或对象别名。
+
+str/repr是迭代工作栈，宿主给出输出码点、访问次数和深度限额；待展开引用也在入栈前计限额。整数文本采用本次原运行时默认4300十进制位profile，转换错误暴露原异常类别，完整原错误消息尚未作为Rust接口提供。任意解释器设置、递归边界、用户自定义Python对象仍不在已验结论内。
+
+现有 `explorer_search_index::normalize_native` 复用以上操作和现有原lower数据/算法，返回保留surrogate的码点文本。旧String路径和新码点路径共用lower_each，保持上下文Sigma与İ扩展；原宿主截止时间和输出限额继续生效。该函数只准备文本；现有索引的后续原值适配及保存恢复见 [原值搜索索引](NATIVE-SEARCH-INDEX.md)，各自按当前执行证据验收。
+
+原运行时1108个值的4432次操作逐项比较码点、位、真假及错误类别；输入保持不变。另在真实原_normalize_text上冻结1117份输入，覆盖surrogate旁的上下文大小写。set输入的repr按原对象实际迭代顺序取证，normalizer语料避免重建set改变顺序而明确排除含set的值。以上为暴露开发回归，不冒未见泛化或RRSI收益。
+
+后续原值索引仍须绑定同一DatasetSession的context记录与原变更状态；随后实现各HTTP响应的原序列化差异及CSV。正式skill接收、工程语义和实际项目制造验收继续分别取证。

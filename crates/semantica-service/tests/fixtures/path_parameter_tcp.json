@@ -1,0 +1,831 @@
+[
+  {
+    "name": "defaults",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "node_alias",
+    "method": "GET",
+    "target": "/api/graph/node/a/path?target=z",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "missing_both",
+    "method": "GET",
+    "target": "/api/graph/path",
+    "status": 422,
+    "body": {
+      "detail": [
+        {
+          "type": "missing",
+          "loc": [
+            "query",
+            "source"
+          ],
+          "msg": "Field required",
+          "input": null
+        },
+        {
+          "type": "missing",
+          "loc": [
+            "query",
+            "target"
+          ],
+          "msg": "Field required",
+          "input": null
+        }
+      ]
+    },
+    "location": null,
+    "observed_query": null
+  },
+  {
+    "name": "missing_target",
+    "method": "GET",
+    "target": "/api/graph/path?source=a",
+    "status": 422,
+    "body": {
+      "detail": [
+        {
+          "type": "missing",
+          "loc": [
+            "query",
+            "target"
+          ],
+          "msg": "Field required",
+          "input": null
+        }
+      ]
+    },
+    "location": null,
+    "observed_query": null
+  },
+  {
+    "name": "invalid_algorithm",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&algorithm=DIJKSTRA",
+    "status": 422,
+    "body": {
+      "detail": [
+        {
+          "type": "enum",
+          "loc": [
+            "query",
+            "algorithm"
+          ],
+          "msg": "Input should be 'bfs' or 'dijkstra'",
+          "input": "DIJKSTRA",
+          "ctx": {
+            "expected": "'bfs' or 'dijkstra'"
+          }
+        }
+      ]
+    },
+    "location": null,
+    "observed_query": null
+  },
+  {
+    "name": "invalid_bool",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=maybe",
+    "status": 422,
+    "body": {
+      "detail": [
+        {
+          "type": "bool_parsing",
+          "loc": [
+            "query",
+            "directed"
+          ],
+          "msg": "Input should be a valid boolean, unable to interpret input",
+          "input": "maybe"
+        }
+      ]
+    },
+    "location": null,
+    "observed_query": null
+  },
+  {
+    "name": "duplicates",
+    "method": "GET",
+    "target": "/api/graph/path?source=first&source=last&target=z&directed=true&directed=false",
+    "status": 200,
+    "body": {
+      "source": "last",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "last",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": false,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "last",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": false
+    }
+  },
+  {
+    "name": "unknown_params",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&work_limit=10000000&resource_profile=x",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "unicode",
+    "method": "GET",
+    "target": "/api/graph/path?source=%E8%BD%B4%2F1&target=a+b%2Bc",
+    "status": 200,
+    "body": {
+      "source": "轴/1",
+      "target": "a b+c",
+      "algorithm": "bfs",
+      "path": [
+        "轴/1",
+        "a b+c"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "轴/1",
+      "target": "a b+c",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "invalid_utf8",
+    "method": "GET",
+    "target": "/api/graph/path?source=%FF&target=z",
+    "status": 200,
+    "body": {
+      "source": "�",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "�",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "�",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "invalid_percent",
+    "method": "GET",
+    "target": "/api/graph/path?source=%ZZ&target=z",
+    "status": 200,
+    "body": {
+      "source": "%ZZ",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "%ZZ",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "%ZZ",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "empty",
+    "method": "GET",
+    "target": "/api/graph/path?source=&target=",
+    "status": 200,
+    "body": {
+      "source": "",
+      "target": "",
+      "algorithm": "bfs",
+      "path": [
+        "",
+        ""
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "",
+      "target": "",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "alias_slash",
+    "method": "GET",
+    "target": "/api/graph/node/a%2Fb/path?target=z",
+    "status": 404,
+    "body": {
+      "detail": "Not Found"
+    },
+    "location": null,
+    "observed_query": null
+  },
+  {
+    "name": "alias_double_encoded",
+    "method": "GET",
+    "target": "/api/graph/node/a%252Fb/path?target=z",
+    "status": 200,
+    "body": {
+      "source": "a%2Fb",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a%2Fb",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a%2Fb",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "alias_plus",
+    "method": "GET",
+    "target": "/api/graph/node/a+b/path?target=z",
+    "status": 200,
+    "body": {
+      "source": "a+b",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a+b",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a+b",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "wrong_method",
+    "method": "POST",
+    "target": "/api/graph/path?source=a&target=z",
+    "status": 405,
+    "body": {
+      "detail": "Method Not Allowed"
+    },
+    "location": null,
+    "observed_query": null
+  },
+  {
+    "name": "trailing_slash",
+    "method": "GET",
+    "target": "/api/graph/path/?source=a&target=z",
+    "status": 307,
+    "body": null,
+    "location": "http://testserver/api/graph/path?source=a&target=z",
+    "observed_query": null
+  },
+  {
+    "name": "bool_1",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=1",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "bool_0",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=0",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": false,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": false
+    }
+  },
+  {
+    "name": "bool_TRUE",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=TRUE",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "bool_False",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=False",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": false,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": false
+    }
+  },
+  {
+    "name": "bool_on",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=on",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "bool_OFF",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=OFF",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": false,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": false
+    }
+  },
+  {
+    "name": "bool_yes",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=yes",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "bool_No",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=No",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": false,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": false
+    }
+  },
+  {
+    "name": "bool_t",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=t",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": true,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": true
+    }
+  },
+  {
+    "name": "bool_f",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=f",
+    "status": 200,
+    "body": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "path": [
+        "a",
+        "z"
+      ],
+      "edge_ids": [],
+      "total_weight": 0.0,
+      "directed": false,
+      "hop_count": 0,
+      "distance_band": "direct",
+      "semantic_similarity": null,
+      "path_coherence_score": null,
+      "confidence_decay": null,
+      "bottleneck_node": null,
+      "alternative_path_count": 0,
+      "interpretation": "Private parameter-capture stub; no path calculation"
+    },
+    "location": null,
+    "observed_query": {
+      "source": "a",
+      "target": "z",
+      "algorithm": "bfs",
+      "directed": false
+    }
+  },
+  {
+    "name": "bool_%20true%20",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=%20true%20",
+    "status": 422,
+    "body": {
+      "detail": [
+        {
+          "type": "bool_parsing",
+          "loc": [
+            "query",
+            "directed"
+          ],
+          "msg": "Input should be a valid boolean, unable to interpret input",
+          "input": " true "
+        }
+      ]
+    },
+    "location": null,
+    "observed_query": null
+  },
+  {
+    "name": "bool_",
+    "method": "GET",
+    "target": "/api/graph/path?source=a&target=z&directed=",
+    "status": 422,
+    "body": {
+      "detail": [
+        {
+          "type": "bool_parsing",
+          "loc": [
+            "query",
+            "directed"
+          ],
+          "msg": "Input should be a valid boolean, unable to interpret input",
+          "input": ""
+        }
+      ]
+    },
+    "location": null,
+    "observed_query": null
+  }
+]

@@ -1,0 +1,169 @@
+{
+  "nodes": [
+    {
+      "id": "d1",
+      "type": "decision",
+      "content": "bearing choice",
+      "properties": {
+        "category": "Design",
+        "scenario": "bearing shaft load",
+        "reasoning": "stiffness",
+        "outcome": "candidate",
+        "confidence": 0.8
+      }
+    },
+    {
+      "id": "d2",
+      "type": "decision",
+      "content": "second",
+      "properties": {
+        "category": "design",
+        "scenario": "bearing load",
+        "reasoning": "life",
+        "outcome": "review",
+        "confidence": "0.6"
+      }
+    },
+    {
+      "id": "d3",
+      "type": "decision",
+      "content": "third",
+      "properties": {
+        "category": "Other",
+        "scenario": "paint finish",
+        "confidence": null
+      }
+    },
+    {
+      "id": "part",
+      "type": "Part",
+      "content": "ordinary part",
+      "properties": {}
+    },
+    {
+      "id": "policy",
+      "type": "Policy",
+      "content": "fixture policy",
+      "properties": {}
+    }
+  ],
+  "edges": [
+    {
+      "source": "d1",
+      "target": "d2",
+      "type": "causes"
+    },
+    {
+      "source": "d2",
+      "target": "part",
+      "type": "related_to"
+    },
+    {
+      "source": "d1",
+      "target": "policy",
+      "type": "violates",
+      "note": "fixture only"
+    }
+  ],
+  "queries": [
+    [
+      "/api/decisions",
+      {}
+    ],
+    [
+      "/api/decisions",
+      {
+        "category": "DESIGN"
+      }
+    ],
+    [
+      "/api/decisions",
+      {
+        "category": ""
+      }
+    ],
+    [
+      "/api/decisions",
+      {
+        "skip": 1,
+        "limit": 1
+      }
+    ],
+    [
+      "/api/decisions",
+      {
+        "skip": -1
+      }
+    ],
+    [
+      "/api/decisions",
+      {
+        "limit": 0
+      }
+    ],
+    [
+      "/api/decisions",
+      {
+        "limit": 501
+      }
+    ],
+    [
+      "/api/decisions/d1",
+      {}
+    ],
+    [
+      "/api/decisions/part",
+      {}
+    ],
+    [
+      "/api/decisions/missing",
+      {}
+    ],
+    [
+      "/api/decisions/d1/chain",
+      {}
+    ],
+    [
+      "/api/decisions/part/chain",
+      {}
+    ],
+    [
+      "/api/decisions/missing/chain",
+      {}
+    ],
+    [
+      "/api/decisions/d1/precedents",
+      {}
+    ],
+    [
+      "/api/decisions/d3/precedents",
+      {}
+    ],
+    [
+      "/api/decisions/d1/precedents",
+      {
+        "limit": 0
+      }
+    ],
+    [
+      "/api/decisions/d1/compliance",
+      {}
+    ],
+    [
+      "/api/decisions/d2/compliance",
+      {}
+    ],
+    [
+      "/api/decisions/missing/compliance",
+      {}
+    ],
+    [
+      "/api/decisions/causal-distance",
+      {
+        "source": "d1",
+        "target": "d2"
+      }
+    ]
+  ],
+  "source_freeze_sha256": "ff16ffce9224190ef6f5813fcb912953dc42031b4d91201a46fca6f45f4a2991"
+}

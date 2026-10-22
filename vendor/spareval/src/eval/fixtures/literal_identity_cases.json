@@ -1,0 +1,1830 @@
+{
+  "schema": "private.literal-identity-public-fixture/1",
+  "source_record_id": "LITERAL-IDENTITY-FROZEN-01",
+  "source_record_sha256": "06c8b66119ae3a6138d08d3418bab7684096a789e65a170e8b6448bd31e94f98",
+  "expectation_origin": "frozen_source_derived_not_executed",
+  "canonical_payload_sha256": "0ea57f94c88ce9d11d3d14b4c6f74209e96398b087814fcfa001e767d50b895e",
+  "explicit_environment": {
+    "literal_semantics": "SourceLiteralV1",
+    "numeric_capabilities": "MixedBinary64V1",
+    "group_semantics": "SourceAggregateV1",
+    "normalize_literals": true,
+    "dawg_literal_collation": false,
+    "decimal": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ]
+    },
+    "result_boundary": "execute_source_presence / source metadata-preserving solution; normal Term-only decoder is insufficient",
+    "row_order": "ordered VALUES/UNION source branch order/first-seen Group; no unordered graph order claim"
+  },
+  "identity_contract": {
+    "key": "source datatype option + lowercase original language option + lexical",
+    "cache_and_ill_typed_in_identity": false,
+    "hash": "equal identities require equal hash under same context; unequal identities may collide",
+    "unknown": "transportable Unknown, fallible at first source identity use; never inferred from canonical RDF",
+    "physical_wrapper_eq_hash": "legacy RDF byte stream remains unchanged; source-semantic collections use an explicit fallible key"
+  },
+  "core_cases": [
+    {
+      "id": "LI-C01",
+      "operation": "source_eq_hash_contract",
+      "inputs": [
+        {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": null,
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "specified",
+            "iri": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "original_language": null,
+          "ill_typed": null,
+          "cache_family": "String"
+        }
+      ],
+      "expected": {
+        "eq": false,
+        "hash_relation": "not_constrained_for_unequal_values"
+      },
+      "source_basis": [
+        "term:1313-1350",
+        "term:1395-1407"
+      ],
+      "notes": "Python hash collisions are legal; do not assert unequal hashes."
+    },
+    {
+      "id": "LI-C02",
+      "operation": "source_eq_hash_contract",
+      "inputs": [
+        {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "EN",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "en",
+          "ill_typed": null,
+          "cache_family": "String"
+        }
+      ],
+      "expected": {
+        "eq": true,
+        "hash_relation": "equal_in_same_hash_context"
+      },
+      "source_basis": [
+        "term:1344-1350",
+        "term:1400-1405"
+      ],
+      "notes": "Original language spelling is preserved, equality/hash use lowercase."
+    },
+    {
+      "id": "LI-C03",
+      "operation": "source_eq_hash_contract",
+      "inputs": [
+        {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "EN",
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "original_language": "fr",
+          "ill_typed": null,
+          "cache_family": "String"
+        }
+      ],
+      "expected": {
+        "eq": false,
+        "hash_relation": "not_constrained_for_unequal_values"
+      },
+      "source_basis": [
+        "term:1400-1405"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "LI-C04",
+      "operation": "source_eq_hash_contract",
+      "inputs": [
+        {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "specified",
+            "iri": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "original_language": null,
+          "ill_typed": null,
+          "cache_family": "String"
+        },
+        {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "specified",
+            "iri": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "original_language": null,
+          "ill_typed": false,
+          "cache_family": "String"
+        }
+      ],
+      "expected": {
+        "eq": true,
+        "hash_relation": "equal_in_same_hash_context"
+      },
+      "source_basis": [
+        "term:1313-1350",
+        "term:1395-1407"
+      ],
+      "notes": "Query typed ExistingLiteral has ill_typed=None; direct string typed construction has ill_typed=False. Both are source-valid and identity-equal."
+    },
+    {
+      "id": "LI-C05",
+      "operation": "constructor",
+      "inputs": {
+        "origin": "QueryTypedExistingLiteral",
+        "lexical": "a",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string"
+      },
+      "expected": {
+        "kind": "literal",
+        "lexical": "a",
+        "source_datatype": {
+          "state": "specified",
+          "iri": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "original_language": null,
+        "ill_typed": null,
+        "cache_family": "String"
+      },
+      "source_basis": [
+        "parser:345-348",
+        "algebra:193-197",
+        "term:665-677"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "LI-C06",
+      "operation": "constructor",
+      "inputs": {
+        "origin": "DirectString",
+        "lexical": "a",
+        "datatype": "http://www.w3.org/2001/XMLSchema#string",
+        "normalize": true
+      },
+      "expected": {
+        "kind": "literal",
+        "lexical": "a",
+        "source_datatype": {
+          "state": "specified",
+          "iri": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "original_language": null,
+        "ill_typed": false,
+        "cache_family": "String"
+      },
+      "source_basis": [
+        "term:679-693",
+        "term:2241-2277"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "LI-C07",
+      "operation": "constructor",
+      "inputs": {
+        "origin": "DirectString",
+        "lexical": "oops",
+        "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+        "normalize": true
+      },
+      "expected": {
+        "kind": "literal",
+        "lexical": "oops",
+        "source_datatype": {
+          "state": "specified",
+          "iri": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "original_language": null,
+        "ill_typed": true,
+        "cache_family": "None"
+      },
+      "source_basis": [
+        "term:679-693",
+        "term:2241-2277"
+      ],
+      "notes": "Invalid cached value None is distinct from an ExplicitNone solution cell. Converter warning text is outside this oracle."
+    },
+    {
+      "id": "LI-C08",
+      "operation": "constructor",
+      "inputs": {
+        "origin": "QueryTypedExistingLiteral",
+        "lexical": "oops",
+        "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      "expected": {
+        "kind": "literal",
+        "lexical": "oops",
+        "source_datatype": {
+          "state": "specified",
+          "iri": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "original_language": null,
+        "ill_typed": null,
+        "cache_family": "None"
+      },
+      "source_basis": [
+        "parser:345-348",
+        "algebra:193-197",
+        "term:665-677"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "LI-C09",
+      "operation": "literal_existing_constructor",
+      "inputs": [
+        {
+          "kind": "literal",
+          "lexical": "oops",
+          "source_datatype": {
+            "state": "specified",
+            "iri": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          "original_language": null,
+          "ill_typed": true,
+          "cache_family": "None"
+        }
+      ],
+      "expected": {
+        "kind": "literal",
+        "lexical": "oops",
+        "source_datatype": {
+          "state": "specified",
+          "iri": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "original_language": null,
+        "ill_typed": null,
+        "cache_family": "None"
+      },
+      "source_basis": [
+        "term:665-677",
+        "term:721-724"
+      ],
+      "notes": "Explicit constructor resets ill_typed to None while preserving lexical, datatype and cached None."
+    },
+    {
+      "id": "LI-C10",
+      "operation": "transport_clone",
+      "inputs": [
+        {
+          "kind": "literal",
+          "lexical": "a",
+          "source_datatype": {
+            "state": "specified",
+            "iri": "http://www.w3.org/2001/XMLSchema#string"
+          },
+          "original_language": null,
+          "ill_typed": false,
+          "cache_family": "String"
+        }
+      ],
+      "expected": {
+        "kind": "literal",
+        "lexical": "a",
+        "source_datatype": {
+          "state": "specified",
+          "iri": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "original_language": null,
+        "ill_typed": false,
+        "cache_family": "String"
+      },
+      "source_basis": [
+        "evaluate:125-138",
+        "aggregates:238-249"
+      ],
+      "notes": "BIND/SAMPLE transports the object; it must not invoke Literal(existing)."
+    },
+    {
+      "id": "LI-C11",
+      "operation": "source_identity_key",
+      "inputs": {
+        "backend_rdf": {
+          "kind": "literal",
+          "lexical": "a",
+          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "source_metadata": "Unknown"
+      },
+      "expected": {
+        "outcome": "active_fatal",
+        "semantic_class": "unknown_source_literal_identity"
+      },
+      "source_basis": [],
+      "notes": "New safety requirement, not an original Python exception. Never alias unknown to both known plain and known typed keys."
+    },
+    {
+      "id": "LI-C12",
+      "operation": "source_eq_hash_contract",
+      "inputs": [
+        {
+          "kind": "literal",
+          "lexical": "1.0",
+          "source_datatype": {
+            "state": "specified",
+            "iri": "http://www.w3.org/2001/XMLSchema#decimal"
+          },
+          "original_language": null,
+          "ill_typed": null,
+          "cache_family": "Binary64"
+        },
+        {
+          "kind": "literal",
+          "lexical": "1.0",
+          "source_datatype": {
+            "state": "specified",
+            "iri": "http://www.w3.org/2001/XMLSchema#decimal"
+          },
+          "original_language": null,
+          "ill_typed": false,
+          "cache_family": "Decimal"
+        }
+      ],
+      "expected": {
+        "eq": true,
+        "hash_relation": "equal_in_same_hash_context"
+      },
+      "source_basis": [
+        "term:695-724",
+        "term:1313-1350",
+        "term:1395-1407"
+      ],
+      "notes": "Source-valid Literal(float1.0,datatype=decimal) and Literal(\"1.0\",datatype=decimal) share RDF identity; cached family is not an identity key."
+    }
+  ],
+  "query_families": [
+    {
+      "id": "LI-Q01",
+      "title": "real raw expression literal construction",
+      "runs": [
+        {
+          "query": "SELECT ?p ?t ?l WHERE { BIND(\"a\" AS ?p) BIND(\"a\"^^<http://www.w3.org/2001/XMLSchema#string> AS ?t) BIND(\"a\"@EN AS ?l) }",
+          "expected": {
+            "rows": [
+              {
+                "p": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "t": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#string"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "l": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": "EN",
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "parser:345-348",
+            "algebra:193-197",
+            "term:665-724",
+            "evaluate:125-138",
+            "evalutils:117-134"
+          ],
+          "notes": "",
+          "id": "LI-Q01-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q02",
+      "title": "real VALUES occurrence transport",
+      "runs": [
+        {
+          "query": "SELECT ?x WHERE { VALUES ?x { \"a\" \"a\"^^<http://www.w3.org/2001/XMLSchema#string> \"a\"@EN } }",
+          "expected": {
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#string"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": "EN",
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "parser:345-348",
+            "algebra:193-197",
+            "term:665-724",
+            "evaluate:125-138",
+            "evalutils:117-134"
+          ],
+          "notes": "",
+          "id": "LI-Q02-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q03",
+      "title": "VALUES to BIND to final source decoder",
+      "runs": [
+        {
+          "query": "SELECT ?y WHERE { VALUES ?x { \"a\" \"a\"^^<http://www.w3.org/2001/XMLSchema#string> \"a\"@EN } BIND(?x AS ?y) }",
+          "expected": {
+            "rows": [
+              {
+                "y": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              },
+              {
+                "y": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#string"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              },
+              {
+                "y": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": "EN",
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "parser:345-348",
+            "algebra:193-197",
+            "term:665-724",
+            "evaluate:125-138",
+            "evalutils:117-134"
+          ],
+          "notes": "Final execute_source_presence must expose the original metadata; plain Term-only decoder is not sufficient.",
+          "id": "LI-Q03-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q04",
+      "title": "COUNT DISTINCT separates source datatype, merges language case",
+      "runs": [
+        {
+          "query": "SELECT (COUNT(?x) AS ?n) (COUNT(DISTINCT ?x) AS ?d) WHERE { VALUES ?x { \"a\" \"a\"^^<http://www.w3.org/2001/XMLSchema#string> \"a\"@EN \"a\"@en \"a\"@fr } }",
+          "expected": {
+            "rows": [
+              {
+                "n": {
+                  "kind": "literal",
+                  "lexical": "5",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                },
+                "d": {
+                  "kind": "literal",
+                  "lexical": "4",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:67-106",
+            "term:1313-1407"
+          ],
+          "notes": "",
+          "expected_evaluation_counts": {
+            "COUNT(?x)": 5,
+            "COUNT(DISTINCT ?x)": 9
+          },
+          "id": "LI-Q04-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q05",
+      "title": "COUNT DISTINCT full solution uses same source identity",
+      "runs": [
+        {
+          "query": "SELECT (COUNT(*) AS ?n) (COUNT(DISTINCT *) AS ?d) WHERE { VALUES ?x { \"a\" \"a\"^^<http://www.w3.org/2001/XMLSchema#string> \"a\"@EN \"a\"@en } }",
+          "expected": {
+            "rows": [
+              {
+                "n": {
+                  "kind": "literal",
+                  "lexical": "4",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                },
+                "d": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:67-106",
+            "sparql:114-149",
+            "term:1313-1407"
+          ],
+          "notes": "",
+          "id": "LI-Q05-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q06",
+      "title": "SELECT DISTINCT source identity retains first spelling",
+      "runs": [
+        {
+          "query": "SELECT DISTINCT ?x WHERE { VALUES ?x { \"a\" \"a\"^^<http://www.w3.org/2001/XMLSchema#string> \"a\"@EN \"a\"@en } }",
+          "expected": {
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#string"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": "EN",
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "evaluate:559-568",
+            "term:1313-1407"
+          ],
+          "notes": "",
+          "id": "LI-Q06-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q07",
+      "title": "raw Group keys + implicit SAMPLE preserve datatype and spelling",
+      "runs": [
+        {
+          "query": "SELECT ?x (COUNT(*) AS ?n) WHERE { VALUES ?x { \"a\" \"a\"^^<http://www.w3.org/2001/XMLSchema#string> \"a\"@EN \"a\"@en \"a\"@fr } } GROUP BY ?x",
+          "expected": {
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#string"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": "EN",
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": "fr",
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "evaluate:474-492",
+            "algebra:555-605",
+            "aggregates:238-249",
+            "term:1313-1407"
+          ],
+          "notes": "",
+          "id": "LI-Q07-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q08",
+      "title": "BIND and GROUP BY AS use source identity",
+      "runs": [
+        {
+          "query": "SELECT ?g (COUNT(*) AS ?n) WHERE { VALUES ?x { \"a\" \"a\"^^<http://www.w3.org/2001/XMLSchema#string> \"a\"@EN \"a\"@en } BIND(?x AS ?y) } GROUP BY (?y AS ?g)",
+          "expected": {
+            "rows": [
+              {
+                "g": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              },
+              {
+                "g": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#string"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              },
+              {
+                "g": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": "EN",
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "evaluate:125-138",
+            "evaluate:474-492",
+            "algebra:555-605",
+            "term:1313-1407"
+          ],
+          "notes": "",
+          "id": "LI-Q08-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q09",
+      "title": "explicit SAMPLE survives subquery and outer DISTINCT",
+      "runs": [
+        {
+          "query": "SELECT (COUNT(DISTINCT ?s) AS ?d) WHERE { { SELECT (SAMPLE(\"a\") AS ?s) WHERE {} } UNION { SELECT (SAMPLE(\"a\"^^<http://www.w3.org/2001/XMLSchema#string>) AS ?s) WHERE {} } }",
+          "expected": {
+            "rows": [
+              {
+                "d": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:238-249",
+            "algebra:573-579",
+            "evaluate:125-138",
+            "term:1313-1407"
+          ],
+          "notes": "",
+          "id": "LI-Q09-01"
+        },
+        {
+          "query": "SELECT (SAMPLE(?x) AS ?s) WHERE { VALUES ?x { \"a\"@EN \"a\"@en } }",
+          "expected": {
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": "EN",
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:238-249"
+          ],
+          "notes": "",
+          "id": "LI-Q09-02"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q10",
+      "title": "SUM distinguishes plain/language absence from explicit string datatype",
+      "runs": [
+        {
+          "query": "SELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { 1 \"bad\" } }",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "source_uncaught_sparql",
+              "source_exception": "SPARQLTypeError",
+              "phase": "Sum.update numeric(value)",
+              "first_failing_input_index": 1
+            }
+          },
+          "source_basis": [
+            "aggregates:125-146",
+            "datatypes:90-105",
+            "operators:1055-1078"
+          ],
+          "notes": "",
+          "id": "LI-Q10-01"
+        },
+        {
+          "query": "SELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { 1 \"bad\"^^<http://www.w3.org/2001/XMLSchema#string> } }",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "source_fatal",
+              "source_exception": "TypeError",
+              "phase": "Sum.update type_promotion",
+              "first_failing_input_index": 1
+            }
+          },
+          "source_basis": [
+            "aggregates:125-146",
+            "datatypes:90-105"
+          ],
+          "notes": "",
+          "id": "LI-Q10-02"
+        },
+        {
+          "query": "SELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { 1 \"bad\"@EN } }",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "source_uncaught_sparql",
+              "source_exception": "SPARQLTypeError",
+              "phase": "Sum.update numeric(value)",
+              "first_failing_input_index": 1
+            }
+          },
+          "source_basis": [
+            "aggregates:125-146",
+            "datatypes:90-105"
+          ],
+          "notes": "",
+          "id": "LI-Q10-03"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q11",
+      "title": "SUM first invalid datum stops before second input",
+      "runs": [
+        {
+          "query": "SELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { \"bad\" 1 } }",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "source_uncaught_sparql",
+              "source_exception": "SPARQLTypeError",
+              "phase": "Sum.update numeric(value)",
+              "first_failing_input_index": 0
+            }
+          },
+          "source_basis": [
+            "aggregates:125-146",
+            "operators:1055-1078"
+          ],
+          "notes": "",
+          "id": "LI-Q11-01"
+        },
+        {
+          "query": "SELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { \"bad\"^^<http://www.w3.org/2001/XMLSchema#string> 1 } }",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "source_uncaught_sparql",
+              "source_exception": "SPARQLTypeError",
+              "phase": "Sum.update numeric(value)",
+              "first_failing_input_index": 0
+            }
+          },
+          "source_basis": [
+            "aggregates:125-146",
+            "operators:1055-1078"
+          ],
+          "notes": "",
+          "id": "LI-Q11-02"
+        },
+        {
+          "query": "SELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { \"bad\"@EN 1 } }",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "source_uncaught_sparql",
+              "source_exception": "SPARQLTypeError",
+              "phase": "Sum.update numeric(value)",
+              "first_failing_input_index": 0
+            }
+          },
+          "source_basis": [
+            "aggregates:125-146",
+            "operators:1055-1078"
+          ],
+          "notes": "",
+          "id": "LI-Q11-03"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q12",
+      "title": "AVG skips both source strings without count or datatype mutation",
+      "runs": [
+        {
+          "query": "SELECT (AVG(?x) AS ?a) (COUNT(?x) AS ?n) WHERE { VALUES ?x { 1 \"bad\" } }",
+          "expected": {
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#decimal"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Decimal"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:153-189",
+            "operators:1055-1078"
+          ],
+          "notes": "",
+          "id": "LI-Q12-01"
+        },
+        {
+          "query": "SELECT (AVG(?x) AS ?a) (COUNT(?x) AS ?n) WHERE { VALUES ?x { 1 \"bad\"^^<http://www.w3.org/2001/XMLSchema#string> } }",
+          "expected": {
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#decimal"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Decimal"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:153-189",
+            "operators:1055-1078"
+          ],
+          "notes": "",
+          "id": "LI-Q12-02"
+        },
+        {
+          "query": "SELECT (AVG(?x) AS ?a) (COUNT(?x) AS ?n) WHERE { VALUES ?x { \"bad\" 1 } }",
+          "expected": {
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#decimal"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Decimal"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:153-189",
+            "operators:1055-1078"
+          ],
+          "notes": "",
+          "id": "LI-Q12-03"
+        },
+        {
+          "query": "SELECT (AVG(?x) AS ?a) (COUNT(?x) AS ?n) WHERE { VALUES ?x { \"bad\"^^<http://www.w3.org/2001/XMLSchema#string> 1 } }",
+          "expected": {
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#decimal"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Decimal"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:153-189",
+            "operators:1055-1078"
+          ],
+          "notes": "",
+          "id": "LI-Q12-04"
+        },
+        {
+          "query": "SELECT (AVG(?x) AS ?a) (COUNT(?x) AS ?n) WHERE { VALUES ?x { 1 \"bad\"@EN } }",
+          "expected": {
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#decimal"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Decimal"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:153-189",
+            "operators:1055-1078"
+          ],
+          "notes": "",
+          "id": "LI-Q12-05"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q13",
+      "title": "AVG all skipped produces integer zero",
+      "runs": [
+        {
+          "query": "SELECT (AVG(?x) AS ?a) (COUNT(DISTINCT ?x) AS ?d) WHERE { VALUES ?x { \"a\" \"a\"^^<http://www.w3.org/2001/XMLSchema#string> \"a\"@EN \"a\"@en } }",
+          "expected": {
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                },
+                "d": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:153-189",
+            "aggregates:67-106",
+            "term:1313-1407"
+          ],
+          "notes": "",
+          "id": "LI-Q13-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q14",
+      "title": "initial construction before internalize and BIND/SAMPLE transport",
+      "runs": [
+        {
+          "query": "SELECT ?p ?t ?l WHERE { BIND(?p0 AS ?p) BIND(?t0 AS ?t) BIND(?l0 AS ?l) }",
+          "expected": {
+            "rows": [
+              {
+                "p": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "String"
+                },
+                "t": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#string"
+                  },
+                  "original_language": null,
+                  "ill_typed": false,
+                  "cache_family": "String"
+                },
+                "l": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "absent"
+                  },
+                  "original_language": "EN",
+                  "ill_typed": null,
+                  "cache_family": "String"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "parser:345-348",
+            "algebra:193-197",
+            "term:665-724",
+            "evaluate:125-138",
+            "evalutils:117-134"
+          ],
+          "notes": "",
+          "initial_objects": [
+            {
+              "variable": "p0",
+              "constructor": {
+                "origin": "DirectString",
+                "lexical": "a",
+                "datatype": null,
+                "language": null,
+                "normalize": true
+              }
+            },
+            {
+              "variable": "t0",
+              "constructor": {
+                "origin": "DirectString",
+                "lexical": "a",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null,
+                "normalize": true
+              }
+            },
+            {
+              "variable": "l0",
+              "constructor": {
+                "origin": "DirectString",
+                "lexical": "a",
+                "datatype": null,
+                "language": "EN",
+                "normalize": true
+              }
+            }
+          ],
+          "id": "LI-Q14-01"
+        },
+        {
+          "query": "SELECT (SAMPLE(?t0) AS ?s) WHERE {}",
+          "expected": {
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#string"
+                  },
+                  "original_language": null,
+                  "ill_typed": false,
+                  "cache_family": "String"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "term:679-693",
+            "aggregates:238-249",
+            "evaluate:125-138"
+          ],
+          "notes": "",
+          "initial_objects": [
+            {
+              "variable": "t0",
+              "constructor": {
+                "origin": "DirectString",
+                "lexical": "a",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null,
+                "normalize": true
+              }
+            }
+          ],
+          "id": "LI-Q14-02"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q15",
+      "title": "ill_typed is preserved by transport but excluded from identity",
+      "runs": [
+        {
+          "query": "SELECT (COUNT(DISTINCT ?x) AS ?d) (SAMPLE(?x) AS ?s) WHERE { { BIND(?typed AS ?x) } UNION { BIND(\"a\"^^<http://www.w3.org/2001/XMLSchema#string> AS ?x) } }",
+          "expected": {
+            "rows": [
+              {
+                "d": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                },
+                "s": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#string"
+                  },
+                  "original_language": null,
+                  "ill_typed": false,
+                  "cache_family": "String"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "term:679-693",
+            "term:1313-1407",
+            "aggregates:67-106",
+            "aggregates:238-249"
+          ],
+          "notes": "",
+          "initial_objects": [
+            {
+              "variable": "typed",
+              "constructor": {
+                "origin": "DirectString",
+                "lexical": "a",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null,
+                "normalize": true
+              }
+            }
+          ],
+          "id": "LI-Q15-01"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q16",
+      "title": "unknown transport and nondistinct counts do not invent source metadata",
+      "runs": [
+        {
+          "query": "SELECT ?u WHERE {}",
+          "expected": {
+            "rows": [
+              {
+                "u": {
+                  "kind": "transported_rdf_with_unknown_source_metadata",
+                  "rdf": {
+                    "kind": "literal",
+                    "lexical": "a",
+                    "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                    "language": null
+                  }
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "parser:345-348",
+            "algebra:193-197",
+            "term:665-724",
+            "evaluate:125-138",
+            "evalutils:117-134"
+          ],
+          "notes": "Source decoder exposes Unknown; it does not label this object plain or explicitly typed.",
+          "initial_objects": [
+            {
+              "variable": "u",
+              "constructor": {
+                "origin": "UnknownNormalized",
+                "backend_rdf": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "language": null
+                }
+              }
+            }
+          ],
+          "id": "LI-Q16-01"
+        },
+        {
+          "query": "SELECT (COUNT(?u) AS ?n) (COUNT(*) AS ?all) WHERE {}",
+          "expected": {
+            "rows": [
+              {
+                "n": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                },
+                "all": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "source_datatype": {
+                    "state": "specified",
+                    "iri": "http://www.w3.org/2001/XMLSchema#integer"
+                  },
+                  "original_language": null,
+                  "ill_typed": null,
+                  "cache_family": "Integer"
+                }
+              }
+            ],
+            "terminal": "end"
+          },
+          "source_basis": [
+            "aggregates:67-89"
+          ],
+          "notes": "Active allowance: these operations do not require source literal equality.",
+          "initial_objects": [
+            {
+              "variable": "u",
+              "constructor": {
+                "origin": "UnknownNormalized",
+                "backend_rdf": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "language": null
+                }
+              }
+            }
+          ],
+          "id": "LI-Q16-02"
+        }
+      ]
+    },
+    {
+      "id": "LI-Q17",
+      "title": "unknown must fail when source identity is first needed",
+      "runs": [
+        {
+          "query": "SELECT (COUNT(DISTINCT ?u) AS ?d) WHERE {}",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "active_safety_not_original_python",
+              "semantic_class": "unknown_source_literal_identity",
+              "phase": "first_required_source_identity_consumption"
+            }
+          },
+          "source_basis": [
+            "parser:345-348",
+            "algebra:193-197",
+            "term:665-724",
+            "evaluate:125-138",
+            "evalutils:117-134"
+          ],
+          "notes": "Active safety boundary agreed with carrier designer; not a Python oracle claim.",
+          "initial_objects": [
+            {
+              "variable": "u",
+              "constructor": {
+                "origin": "UnknownNormalized",
+                "backend_rdf": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "language": null
+                }
+              }
+            }
+          ],
+          "id": "LI-Q17-01"
+        },
+        {
+          "query": "SELECT (COUNT(DISTINCT *) AS ?d) WHERE {}",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "active_safety_not_original_python",
+              "semantic_class": "unknown_source_literal_identity",
+              "phase": "first_required_source_identity_consumption"
+            }
+          },
+          "source_basis": [
+            "parser:345-348",
+            "algebra:193-197",
+            "term:665-724",
+            "evaluate:125-138",
+            "evalutils:117-134"
+          ],
+          "notes": "Active safety boundary agreed with carrier designer; not a Python oracle claim.",
+          "initial_objects": [
+            {
+              "variable": "u",
+              "constructor": {
+                "origin": "UnknownNormalized",
+                "backend_rdf": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "language": null
+                }
+              }
+            }
+          ],
+          "id": "LI-Q17-02"
+        },
+        {
+          "query": "SELECT ?u (COUNT(*) AS ?n) WHERE {} GROUP BY ?u",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "active_safety_not_original_python",
+              "semantic_class": "unknown_source_literal_identity",
+              "phase": "first_required_source_identity_consumption"
+            }
+          },
+          "source_basis": [
+            "parser:345-348",
+            "algebra:193-197",
+            "term:665-724",
+            "evaluate:125-138",
+            "evalutils:117-134"
+          ],
+          "notes": "Active safety boundary agreed with carrier designer; not a Python oracle claim.",
+          "initial_objects": [
+            {
+              "variable": "u",
+              "constructor": {
+                "origin": "UnknownNormalized",
+                "backend_rdf": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "language": null
+                }
+              }
+            }
+          ],
+          "id": "LI-Q17-03"
+        },
+        {
+          "query": "SELECT DISTINCT ?u WHERE {}",
+          "expected": {
+            "rows_before_error": [],
+            "terminal": "one_error_then_fused",
+            "error": {
+              "classification": "active_safety_not_original_python",
+              "semantic_class": "unknown_source_literal_identity",
+              "phase": "first_required_source_identity_consumption"
+            }
+          },
+          "source_basis": [
+            "parser:345-348",
+            "algebra:193-197",
+            "term:665-724",
+            "evaluate:125-138",
+            "evalutils:117-134"
+          ],
+          "notes": "Active safety boundary agreed with carrier designer; not a Python oracle claim.",
+          "initial_objects": [
+            {
+              "variable": "u",
+              "constructor": {
+                "origin": "UnknownNormalized",
+                "backend_rdf": {
+                  "kind": "literal",
+                  "lexical": "a",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                  "language": null
+                }
+              }
+            }
+          ],
+          "id": "LI-Q17-04"
+        }
+      ]
+    }
+  ],
+  "receiving_requirements": [
+    "Actual sealed source parser through real planner/evaluator, no test-side AST reconstruction or second interpreter.",
+    "Original language and datatype presence checked at final source decoder, plus earlier BIND/SAMPLE/Group checkpoints as projected.",
+    "Source errors separate from active safety; source failures return no completed groups and iterator fuses after first error.",
+    "Same-session flags stay empty for these text/identity cases; AVG exact division by1 adds no flags.",
+    "Old RdfIdentityV1 constructors/default profiles and prior fixture bytes remain unchanged; SourceLiteralV1 is explicit opt-in."
+  ],
+  "excluded_not_complete": [
+    "GROUP_CONCAT/MIN/MAX/ORDER BY/relational comparison implementation",
+    "source-aware BGP/backend scan qualification; unknown import cannot claim original datatype absence",
+    "arbitrary Python cached object subclasses/custom datatype mapping",
+    "original global config observations or dynamic monkeypatches",
+    "public /5 or complete 63-goal qualification"
+  ],
+  "compatibility_controls": [
+    {
+      "record_id": "QUERY-NUMERIC-FROZEN-02",
+      "source_record_sha256": "2a63d9a7043935df5c925b5ed5285d4447a24c9f0d09a532432fd8c2442cf5fd",
+      "literal_semantics": "RdfIdentityV1",
+      "expected": "unchanged_original_fixture_bytes_and_existing_result_contract"
+    },
+    {
+      "record_id": "QUERY-BINARY64-FROZEN-01",
+      "source_record_sha256": "69974deeacb163228a361b5b3d03de93ee2fe437c1d5a95361b7d7de62ed34dd",
+      "literal_semantics": "RdfIdentityV1",
+      "expected": "unchanged_original_fixture_bytes_and_existing_result_contract"
+    },
+    {
+      "record_id": "QUERY-SUM-AVG-FROZEN-03",
+      "source_record_sha256": "f86864839e50f1902e18ee89a9315377ead0577ab3065fdc6407d73f25246566",
+      "literal_semantics": "RdfIdentityV1",
+      "expected": "unchanged_original_fixture_bytes_and_existing_result_contract"
+    }
+  ]
+}

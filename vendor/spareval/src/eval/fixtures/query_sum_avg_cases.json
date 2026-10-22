@@ -1,0 +1,3484 @@
+{
+  "schema": "public.synthetic-source-math-fixture/1",
+  "source_record_id": "QUERY-SUM-AVG-FROZEN-03",
+  "source_record_sha256": "f86864839e50f1902e18ee89a9315377ead0577ab3065fdc6407d73f25246566",
+  "status": "expected_only_not_executed",
+  "authorship": "Source/math oracle and receiving adapter have the same author; candidate execution is separately recorded.",
+  "environment": {
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "initial_flags": []
+    },
+    "numeric_limits": {
+      "max_input_characters": 10000,
+      "max_coefficient_digits": 10064,
+      "max_output_characters": 10064,
+      "max_materialized_power_of_ten": 10064
+    },
+    "integer_text_limit": 4096,
+    "normalize_literals": true,
+    "default_query_capability": "mixed-binary64-v1",
+    "conversion_resource_policy": "binary64-conversion-budget-v1",
+    "scalar_target_assumption": "IEEE754 binary64; default nearest ties-even; gradual underflow; no fast-math/reassociation/FMA contraction across source steps. Target runtime qualification remains later receiving work.",
+    "context_basis": "Explicit fixture configuration, not observation of a historical mutable Python process.",
+    "limits_basis": "Active bounded receiving configuration, not original Python acceptance limits. Core converter inputs are already constructed values; input loading is not the lexical API under test.",
+    "group_semantics": "source-group/1",
+    "builtin_sum_source_branch": "Pinned CPython 3.13.11 ordinary #ifndef SLOW_SUM branch. Historical build flags are not newly observed."
+  },
+  "cases": [
+    {
+      "id": "SA01",
+      "title": "Measurement totals, means, subtype and arbitrary integer carrier",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "sum",
+        "average",
+        "group",
+        "promotion"
+      ],
+      "derivation": "Real grouped numeric summaries. SUM keeps first dtype until a later promotion; AVG integer domain divides Decimal exactly in these examples.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?part (SUM(?x) AS ?total) (AVG(?x) AS ?mean) (COUNT(?x) AS ?n) (SAMPLE(?x) AS ?sample) WHERE { VALUES (?part ?x) { (1 2) (1 4) (2 8) } } GROUP BY ?part",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "part": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "total": {
+                  "kind": "literal",
+                  "lexical": "6",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "mean": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "sample": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              },
+              {
+                "part": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "total": {
+                  "kind": "literal",
+                  "lexical": "8",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "mean": {
+                  "kind": "literal",
+                  "lexical": "8",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "sample": {
+                  "kind": "literal",
+                  "lexical": "8",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "part",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "total",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "6"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "mean",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "3",
+                    "exponent": "0"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "n",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "sample",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "row_index": 1,
+              "binding": "part",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "row_index": 1,
+              "binding": "total",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "8"
+                }
+              }
+            },
+            {
+              "row_index": 1,
+              "binding": "mean",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "8",
+                    "exponent": "0"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 1,
+              "binding": "n",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 1,
+              "binding": "sample",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "8"
+                }
+              }
+            }
+          ],
+          "id": "SA01-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { \"3\"^^xsd:int } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#int"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "3"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "3",
+                    "exponent": "0"
+                  }
+                }
+              }
+            }
+          ],
+          "id": "SA01-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { \"3\"^^xsd:int \"3\"^^xsd:int } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "6",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "6"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "3",
+                    "exponent": "0"
+                  }
+                }
+              }
+            }
+          ],
+          "id": "SA01-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { 9223372036854775808 1 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "9223372036854775809",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "4611686018427387904.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "9223372036854775809"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "46116860184273879045",
+                    "exponent": "-1"
+                  }
+                }
+              }
+            }
+          ],
+          "id": "SA01-04"
+        }
+      ]
+    },
+    {
+      "id": "SA02",
+      "title": "Aggregate output survives aliases and downstream numeric consumers",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "sum",
+        "average",
+        "alias",
+        "group"
+      ],
+      "derivation": "Every result is constructed by actual aggregate finish, then reused through a subquery variable. No second interpreter or replacement AST is permitted.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?total ?mean ?score WHERE { { SELECT (SUM(?x) AS ?total) (AVG(?x) AS ?mean) WHERE { VALUES ?x { 2 4 } } } BIND(?total + ?mean AS ?score) FILTER(?score) }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "total": {
+                  "kind": "literal",
+                  "lexical": "6",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "mean": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "score": {
+                  "kind": "literal",
+                  "lexical": "9",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "total",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "6"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "mean",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "3",
+                    "exponent": "0"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "score",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "9",
+                    "exponent": "0"
+                  }
+                }
+              }
+            }
+          ],
+          "id": "SA02-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SAMPLE(?score) AS ?selected) (COUNT(?score) AS ?n) WHERE { { SELECT (SUM(?x) AS ?total) (AVG(?x) AS ?mean) WHERE { VALUES ?x { 2 4 } } } BIND(?total + ?mean AS ?score) FILTER(?score) }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "selected": {
+                  "kind": "literal",
+                  "lexical": "9",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "selected",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "9",
+                    "exponent": "0"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "n",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            }
+          ],
+          "id": "SA02-02"
+        }
+      ]
+    },
+    {
+      "id": "SA03",
+      "title": "Empty group and prior COUNT/SAMPLE presence controls",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "group",
+        "count",
+        "sample",
+        "raw_eval",
+        "alias"
+      ],
+      "derivation": "FrozenBindings presence is the boundary. Pending SAMPLE inserts None; alias Extend carries it. Explicit empty Group has no accumulator, hence hidden aliases remain absent. This agrees with the previous EXPRESSION-AGGREGATE empty_cases; scope01 SA03 prose had incorrectly collapsed presence to the later wrapper.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) (COUNT(*) AS ?c) (SAMPLE(?x) AS ?v) WHERE { VALUES ?x {} }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "v": {
+                  "kind": "explicit_none"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            }
+          ],
+          "id": "SA03-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?g (SUM(?x) AS ?s) (AVG(?x) AS ?a) (COUNT(*) AS ?c) (SAMPLE(?x) AS ?v) WHERE { VALUES (?g ?x) {} } GROUP BY ?g",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {}
+            ]
+          },
+          "id": "SA03-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?g (COUNT(*) AS ?c) (SAMPLE(?x) AS ?v) WHERE { VALUES (?g ?x) {} } GROUP BY ?g",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {}
+            ]
+          },
+          "id": "SA03-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?missing) AS ?s) (AVG(?missing) AS ?a) (COUNT(?missing) AS ?c) (COUNT(*) AS ?rows) (SAMPLE(?missing) AS ?v) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "rows": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "v": {
+                  "kind": "explicit_none"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "rows",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            }
+          ],
+          "id": "SA03-04"
+        }
+      ]
+    },
+    {
+      "id": "SA04",
+      "title": "DISTINCT gate is outside SUM/AVG catches",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "accumulator",
+        "sum",
+        "average",
+        "count",
+        "sample",
+        "raw_eval"
+      ],
+      "derivation": "Inherited use_row raises bare missing before update, unlike Counter override. A compound expression can instead return a fresh error object, leading to numeric/type handling inside the consumer.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(DISTINCT ?missing) AS ?s) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "UncaughtSparql",
+            "failure_stage": "distinct_gate",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "source_error_kind": "NotBound",
+          "consumer_trace": [
+            {
+              "kind": "SUM",
+              "gate_evaluations": 1,
+              "update_evaluations": 0
+            }
+          ],
+          "id": "SA04-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(DISTINCT ?missing) AS ?a) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "UncaughtSparql",
+            "failure_stage": "distinct_gate",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "source_error_kind": "NotBound",
+          "consumer_trace": [
+            {
+              "kind": "AVG",
+              "gate_evaluations": 1,
+              "update_evaluations": 0
+            }
+          ],
+          "id": "SA04-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(DISTINCT ?missing) AS ?c) (SAMPLE(DISTINCT ?missing) AS ?s) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "explicit_none"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            }
+          ],
+          "id": "SA04-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?missing + 1) AS ?a) (COUNT(?missing + 1) AS ?c) (SAMPLE(?missing + 1) AS ?s) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            }
+          ],
+          "consumer_trace": [
+            {
+              "kind": "AVG",
+              "raw_evaluations": 1,
+              "returned_error_kind": "NotBound",
+              "caught_numeric_error_kind": "Type"
+            },
+            {
+              "kind": "COUNT",
+              "raw_evaluations": 1,
+              "returned_error_kind": "NotBound"
+            },
+            {
+              "kind": "SAMPLE",
+              "raw_evaluations": 1,
+              "returned_error_kind": "NotBound",
+              "selected_exact_error_object": true,
+              "final_alias_absent": true
+            }
+          ],
+          "id": "SA04-04"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?missing + 1) AS ?s) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "AggregateDatatypeAccess",
+            "failure_stage": "sum_update_before_numeric",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "python_exception_class": "AttributeError",
+          "consumer_trace": [
+            {
+              "kind": "SUM",
+              "raw_evaluations": 1,
+              "returned_error_kind": "NotBound"
+            }
+          ],
+          "id": "SA04-05"
+        }
+      ]
+    },
+    {
+      "id": "SA05",
+      "title": "Bad measurement skip differs between SUM and AVG",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "sum",
+        "average",
+        "count",
+        "sample",
+        "raw_eval",
+        "alias"
+      ],
+      "derivation": "SUM accesses datatype before numeric, AVG calls numeric first. An existing explicit None is a returned value, distinct from absent binding.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { <urn:not-a-number> } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "AggregateDatatypeAccess",
+            "failure_stage": "sum_update_before_numeric",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "python_exception_class": "AttributeError",
+          "id": "SA05-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?x) AS ?a) (COUNT(?x) AS ?c) (SAMPLE(?x) AS ?s) WHERE { VALUES ?x { <urn:not-a-number> } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "named_node",
+                  "iri": "urn:not-a-number"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            }
+          ],
+          "id": "SA05-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { \"bad\" } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "UncaughtSparql",
+            "failure_stage": "sum_update_numeric",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "source_error_kind": "Type",
+          "id": "SA05-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?x) AS ?a) (COUNT(?x) AS ?c) (SAMPLE(?x) AS ?s) WHERE { VALUES ?x { \"bad\" } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "literal",
+                  "lexical": "bad",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#string"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            }
+          ],
+          "id": "SA05-04"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?x) AS ?a) (COUNT(?x) AS ?c) (SAMPLE(?x) AS ?s) WHERE { { SELECT (SAMPLE(?missing) AS ?x) WHERE {} } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "explicit_none"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            }
+          ],
+          "id": "SA05-05"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) WHERE { { SELECT (SAMPLE(?missing) AS ?x) WHERE {} } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "AggregateDatatypeAccess",
+            "failure_stage": "sum_update_before_numeric",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "python_exception_class": "AttributeError",
+          "id": "SA05-06"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { 1 \"bad\"^^xsd:string } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "AggregateTypePromotion",
+            "failure_stage": "sum_second_row_before_numeric",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "python_exception_class": "TypeError",
+          "id": "SA05-07"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?x) AS ?a) (COUNT(?x) AS ?c) WHERE { VALUES ?x { 1 \"bad\"^^xsd:string } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "0"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            }
+          ],
+          "id": "SA05-08"
+        }
+      ]
+    },
+    {
+      "id": "SA06",
+      "title": "RDF DISTINCT with retained per-instance numeric cache",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "accumulator",
+        "sum",
+        "average",
+        "term_object",
+        "literal_identity"
+      ],
+      "derivation": "Same RDF may carry distinct actual Python-family caches. DISTINCT selects first RDF identity; the numeric helper must consume that accepted cell rather than a global RDF cache.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(DISTINCT ?x) AS ?s) (AVG(DISTINCT ?x) AS ?a) (COUNT(DISTINCT ?x) AS ?d) (COUNT(?x) AS ?all) WHERE { { BIND(?left AS ?x) } UNION { BIND(?right AS ?x) } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "FloatOperation"
+          ],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "d": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "all": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "0"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "d",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "all",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            }
+          ],
+          "initial_bindings": {
+            "left": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "1.0",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(1.0,datatype=XSD.decimal) retains actual Python float cache"
+            },
+            "right": {
+              "origin": "DirectString",
+              "input_lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          },
+          "carrier_assertions": {
+            "same_rdf": true,
+            "distinct_caches": true,
+            "rdf_hash_equal": true,
+            "accepted_first_instance_cache": true
+          },
+          "consumer_trace": [
+            {
+              "kind": "SUM",
+              "gate_evaluations": 2,
+              "update_evaluations": 1
+            },
+            {
+              "kind": "AVG",
+              "gate_evaluations": 2,
+              "update_evaluations": 1
+            }
+          ],
+          "id": "SA06-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(DISTINCT ?x) AS ?s) (AVG(DISTINCT ?x) AS ?a) (COUNT(DISTINCT ?x) AS ?d) (COUNT(?x) AS ?all) WHERE { { BIND(?right AS ?x) } UNION { BIND(?left AS ?x) } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "d": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "all": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "10",
+                    "exponent": "-1"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "10",
+                    "exponent": "-1"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "d",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "all",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            }
+          ],
+          "initial_bindings": {
+            "left": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "1.0",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(1.0,datatype=XSD.decimal) retains actual Python float cache"
+            },
+            "right": {
+              "origin": "DirectString",
+              "input_lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          },
+          "carrier_assertions": {
+            "same_rdf": true,
+            "distinct_caches": true,
+            "rdf_hash_equal": true,
+            "accepted_first_instance_cache": true
+          },
+          "consumer_trace": [
+            {
+              "kind": "SUM",
+              "gate_evaluations": 2,
+              "update_evaluations": 1
+            },
+            {
+              "kind": "AVG",
+              "gate_evaluations": 2,
+              "update_evaluations": 1
+            }
+          ],
+          "id": "SA06-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(DISTINCT ?x) AS ?s) (AVG(DISTINCT ?x) AS ?a) (COUNT(DISTINCT ?x) AS ?c) WHERE { VALUES ?x { \"01\"^^xsd:integer \"1\"^^xsd:integer } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "0"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            }
+          ],
+          "id": "SA06-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x (COUNT(*) AS ?n) WHERE { { BIND(?left AS ?x) } UNION { BIND(?right AS ?x) } } GROUP BY ?x",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "x",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "n",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            }
+          ],
+          "initial_bindings": {
+            "left": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "1.0",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(1.0,datatype=XSD.decimal) retains actual Python float cache"
+            },
+            "right": {
+              "origin": "DirectString",
+              "input_lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          },
+          "carrier_assertions": {
+            "same_rdf": true,
+            "distinct_caches": true,
+            "rdf_hash_equal": true,
+            "source_groups": 1,
+            "projected_x_origin": "implicit_SAMPLE_first_cell_not_key_reparse"
+          },
+          "id": "SA06-04"
+        }
+      ]
+    },
+    {
+      "id": "SA07",
+      "title": "Stepwise Decimal sum, scale, zero and average division",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "sum",
+        "average",
+        "builtin_sum",
+        "decimal_round"
+      ],
+      "derivation": "Every row restarts Python sum over (acc,incoming) from int0. Decimal addition/average division separately round under the shared context; construction is exact.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { \"1.0000000000000000000000000005\"^^xsd:decimal } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "Inexact",
+            "Rounded"
+          ],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1.000000000000000000000000000",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1.000000000000000000000000000",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1000000000000000000000000000",
+                    "exponent": "-27"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1000000000000000000000000000",
+                    "exponent": "-27"
+                  }
+                }
+              }
+            }
+          ],
+          "math_derivation": "coefficient=10^28+5 at exponent -28; p28 shift1 tie to even coefficient10^27, exponent-27; /1 preserves preferred exponent",
+          "id": "SA07-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { 1.2345 0.005 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "Inexact",
+            "Rounded"
+          ],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1.24",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0.62",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "124",
+                    "exponent": "-2"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "62",
+                    "exponent": "-2"
+                  }
+                }
+              }
+            }
+          ],
+          "context_override": {
+            "precision": 3
+          },
+          "math_derivation": "row1 0+1.2345 rounds1.23; row2 0+1.23 exact then+0.005=1.235 halfway with odd123 rounds1.24; divide2 exact0.62",
+          "id": "SA07-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { \"-0.0\"^^xsd:decimal \"-0.0\"^^xsd:decimal } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "0",
+                    "exponent": "-1"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "0",
+                    "exponent": "-1"
+                  }
+                }
+              }
+            }
+          ],
+          "math_derivation": "HalfEven zero-start additions with opposite zero signs produce positive zero at preferred exponent-1; /positive2 retains it",
+          "id": "SA07-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { 1 0 0 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "Inexact",
+            "Rounded"
+          ],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0.3333333333333333333333333333",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "3333333333333333333333333333",
+                    "exponent": "-28"
+                  }
+                }
+              }
+            }
+          ],
+          "math_derivation": "integer row sums exact; Decimal1/Decimal3 p28 repeats3 and rounds down",
+          "id": "SA07-04"
+        }
+      ]
+    },
+    {
+      "id": "SA08",
+      "title": "Per-row float sum is not whole-group compensated sum",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "sum",
+        "average",
+        "builtin_sum",
+        "type_safe_numbers"
+      ],
+      "derivation": "Compensation is local to each two-element builtin sum call. Decimal/float conversion is lazy in accumulator/input order; this is not Python math.fsum over the whole group.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { -0e0 -0e0 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "0000000000000000"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "0000000000000000"
+                }
+              }
+            }
+          ],
+          "id": "SA08-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { 1e16 1e0 -1e16 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "0000000000000000"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "0000000000000000"
+                }
+              }
+            }
+          ],
+          "math_derivation": "per-row total states 1e16,1e16,0; one is lost at the second row and compensation is not retained into the third",
+          "id": "SA08-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { 0.1 0.2e0 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.30000000000000004",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0.15000000000000002",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fd3333333333334"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fc3333333333334"
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "M-0.1-plus-0.2",
+            "M-half-0.30000000000000004"
+          ],
+          "id": "SA08-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { 0.2e0 0.1 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.30000000000000004",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0.15000000000000002",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fd3333333333334"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fc3333333333334"
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "M-0.1-plus-0.2",
+            "M-half-0.30000000000000004"
+          ],
+          "id": "SA08-04"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { VALUES ?x { \"16777217\"^^xsd:float \"1\"^^xsd:float } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "16777218.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "8388609.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "4170000020000000"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "4160000020000000"
+                }
+              }
+            }
+          ],
+          "id": "SA08-05"
+        }
+      ]
+    },
+    {
+      "id": "SA09",
+      "title": "AVG chooses final division by dtype, not cache family",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "sum",
+        "average",
+        "term_object",
+        "long_true_divide"
+      ],
+      "derivation": "Trusted constructor provenance permits numeric dtype/family crossings. Float dtype plus integer sum needs exact integer ratio division; nonfloat dtype plus float sum reaches Decimal(float).",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE { { BIND(?big AS ?x) } UNION { BIND(?zero AS ?x) } UNION { BIND(?zero AS ?x) } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "9007199254740993",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "3002399751580331.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "9007199254740993"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "4325555555555556"
+                }
+              }
+            }
+          ],
+          "initial_bindings": {
+            "big": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "9007199254740993",
+                "datatype": "http://www.w3.org/2001/XMLSchema#float"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "9007199254740993"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(integer9007199254740993,datatype=XSD.float) retains integer cache"
+            },
+            "zero": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0",
+                "datatype": "http://www.w3.org/2001/XMLSchema#float"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "0"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(integer0,datatype=XSD.float) retains integer cache"
+            }
+          },
+          "proof_refs": [
+            "M-int-quotient-not-double-rounded"
+          ],
+          "id": "SA09-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "FloatOperation"
+          ],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fe0000000000000"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "5",
+                    "exponent": "-1"
+                  }
+                }
+              }
+            }
+          ],
+          "initial_bindings": {
+            "x": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.5",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fe0000000000000"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(float0.5,datatype=XSD.decimal) retains float cache"
+            }
+          },
+          "id": "SA09-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "FloatOperation"
+          ],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "Core.DecimalTrap",
+            "failure_stage": "average_finish_decimal_constructor",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "DivisionByZero",
+              "Overflow",
+              "FloatOperation"
+            ]
+          },
+          "initial_bindings": {
+            "x": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.5",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fe0000000000000"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(float0.5,datatype=XSD.decimal) retains float cache"
+            }
+          },
+          "primary_signal": "FloatOperation",
+          "required_signals": [
+            "FloatOperation"
+          ],
+          "no_partial_current_group_tuple": true,
+          "id": "SA09-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.10",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0.10",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "10",
+                    "exponent": "-2"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "10",
+                    "exponent": "-2"
+                  }
+                }
+              }
+            }
+          ],
+          "initial_bindings": {
+            "x": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.10",
+                "datatype": "http://www.w3.org/2001/XMLSchema#float"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "10",
+                    "exponent": "-2"
+                  }
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(Decimal(\"0.10\"),datatype=XSD.float) retains Decimal cache"
+            }
+          },
+          "id": "SA09-04"
+        }
+      ]
+    },
+    {
+      "id": "SA10",
+      "title": "Raw Group keys, AS alias and first-seen lazy finish",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "group",
+        "group_translate",
+        "alias",
+        "sample",
+        "raw_eval"
+      ],
+      "derivation": "Raw returned errors are identity keys, while AS evaluates through Extend and then variable lookup. Projected bare variables are implicit SAMPLE. Update failures precede every group output; finish failures preserve the already-yielded prefix, and LIMIT does not finalize later groups.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x (COUNT(*) AS ?c) WHERE { VALUES ?x { 1 1 } } GROUP BY (?x + 1)",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "x",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            }
+          ],
+          "group_observation": {
+            "key_origin": "raw_expression",
+            "projected_x_origin": "implicit_SAMPLE_not_key_assignment"
+          },
+          "id": "SA10-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?c) (SUM(1) AS ?s) (AVG(1) AS ?a) WHERE { VALUES ?row { 1 2 } } GROUP BY (1 / 0)",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "DivisionByZero"
+          ],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              },
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "0"
+                  }
+                }
+              }
+            },
+            {
+              "row_index": 1,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 1,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 1,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "0"
+                  }
+                }
+              }
+            }
+          ],
+          "group_observation": {
+            "key_origin": "raw_expression",
+            "returned_error_kind": "OtherSparql",
+            "diagnostic": "divide by 0",
+            "key_objects": 2,
+            "pairwise_distinct_identity": true,
+            "source_groups": 2
+          },
+          "id": "SA10-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?key (COUNT(*) AS ?c) (SUM(1) AS ?s) (AVG(1) AS ?a) WHERE { VALUES ?row { 1 2 } } GROUP BY (1 / 0 AS ?key)",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "DivisionByZero"
+          ],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "key": {
+                  "kind": "explicit_none"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "0"
+                  }
+                }
+              }
+            }
+          ],
+          "group_observation": {
+            "key_origin": "AS_Extend_then_variable",
+            "source_groups": 1,
+            "alias_extend_discards_returned_errors": true,
+            "projected_key_pending_SAMPLE": "ExplicitNone"
+          },
+          "id": "SA10-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?missing (COUNT(*) AS ?c) WHERE { VALUES ?row { 1 2 } } GROUP BY ?missing",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "missing": {
+                  "kind": "explicit_none"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            }
+          ],
+          "group_observation": {
+            "key_origin": "bare_variable",
+            "missing_key": "None",
+            "source_groups": 1
+          },
+          "id": "SA10-04"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?g (AVG(?x) AS ?a) WHERE { { BIND(1 AS ?g) BIND(?good AS ?x) } UNION { BIND(2 AS ?g) BIND(?late AS ?x) } } GROUP BY ?g",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "FloatOperation"
+          ],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [
+              {
+                "g": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ],
+            "semantic_category": "Core.DecimalTrap",
+            "failure_stage": "second_group_average_finish",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "g",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "0"
+                  }
+                }
+              }
+            }
+          ],
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "DivisionByZero",
+              "Overflow",
+              "FloatOperation"
+            ]
+          },
+          "initial_bindings": {
+            "good": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "1",
+                "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(integer1)"
+            },
+            "late": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.5",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fe0000000000000"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(float0.5,datatype=XSD.decimal) retains float cache"
+            }
+          },
+          "primary_signal": "FloatOperation",
+          "required_signals": [
+            "FloatOperation"
+          ],
+          "group_observation": {
+            "first_seen_order": [
+              "g=1",
+              "g=2"
+            ],
+            "input_rows_consumed_before_first_output": 2,
+            "finished_groups_before_fatal": 1
+          },
+          "id": "SA10-05"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?g (AVG(?x) AS ?a) WHERE { { BIND(1 AS ?g) BIND(?good AS ?x) } UNION { BIND(2 AS ?g) BIND(?late AS ?x) } } GROUP BY ?g LIMIT 1",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "g": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "g",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "0"
+                  }
+                }
+              }
+            }
+          ],
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "DivisionByZero",
+              "Overflow",
+              "FloatOperation"
+            ]
+          },
+          "initial_bindings": {
+            "good": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "1",
+                "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(integer1)"
+            },
+            "late": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.5",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fe0000000000000"
+                }
+              },
+              "construction_provenance": "term.py695–705: Literal(float0.5,datatype=XSD.decimal) retains float cache"
+            }
+          },
+          "group_observation": {
+            "first_seen_order": [
+              "g=1",
+              "g=2"
+            ],
+            "input_rows_consumed_before_first_output": 2,
+            "finished_groups": 1,
+            "second_group_finish_calls": 0
+          },
+          "id": "SA10-06"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?g (SUM(1 * ?x * 2.0) AS ?s) WHERE { VALUES (?g ?x) { (1 1.0) (2 0.5e0) } } GROUP BY ?g",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "MixedNumericTypeError",
+            "failure_stage": "second_input_group_update",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "group_observation": {
+            "first_group_updated_before_failure": true,
+            "groups_emitted": 0
+          },
+          "id": "SA10-07"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?g (SUM(?x) AS ?s) WHERE { VALUES (?g ?x) { (1 0) (1 2) (2 3) } } GROUP BY ?g HAVING(?x)",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "g": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "g",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "3"
+                }
+              }
+            }
+          ],
+          "group_observation": {
+            "having_x_origin": "implicit_SAMPLE_first_value",
+            "group1_having_value": "integer0",
+            "group2_having_value": "integer3",
+            "having_is_not_raw_group_key_lookup": true
+          },
+          "id": "SA10-08"
+        }
+      ]
+    },
+    {
+      "id": "SA11",
+      "title": "Multiple aggregate order and duplicate aggregate objects",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "aggregate_collection",
+        "accumulator",
+        "sum",
+        "count",
+        "sample"
+      ],
+      "derivation": "Original _aggs appends each occurrence; no expression dedup. Numeric expressions in SELECT order precede implicit projected-variable SAMPLEs. Reached flags and actual callback counts distinguish source scheduling.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(0.1e0 * 1) AS ?s) (SUM(1 * 0.5e0 * 2.0) AS ?bad) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "FloatOperation",
+            "Inexact",
+            "Rounded"
+          ],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "MixedNumericTypeError",
+            "failure_stage": "second_aggregate_first_row",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "consumer_trace": [
+            {
+              "kind": "SUM",
+              "raw_evaluations": 1
+            },
+            {
+              "kind": "SUM",
+              "raw_evaluations": 1
+            }
+          ],
+          "id": "SA11-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(1 * 0.5e0 * 2.0) AS ?bad) (SUM(0.1e0 * 1) AS ?s) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "MixedNumericTypeError",
+            "failure_stage": "first_aggregate_first_row",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "consumer_trace": [
+            {
+              "kind": "SUM",
+              "raw_evaluations": 1
+            },
+            {
+              "kind": "SUM",
+              "raw_evaluations": 0
+            }
+          ],
+          "id": "SA11-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(DISTINCT (1 / 0)) AS ?a) (COUNT(DISTINCT (1 / 0)) AS ?b) (SAMPLE(1 / 0) AS ?s) WHERE { VALUES ?row { 1 2 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [
+            "DivisionByZero"
+          ],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "b": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "row_index": 0,
+              "binding": "b",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "2"
+                }
+              }
+            }
+          ],
+          "consumer_trace": [
+            {
+              "kind": "COUNT",
+              "raw_evaluations": 4
+            },
+            {
+              "kind": "COUNT",
+              "raw_evaluations": 4
+            },
+            {
+              "kind": "SAMPLE",
+              "raw_evaluations": 1,
+              "selected_exact_error_object": true
+            }
+          ],
+          "returned_error_identity_assertions": {
+            "object_count": 9,
+            "all_pairwise_distinct": true,
+            "kind": "OtherSparql",
+            "diagnostic": "divide by 0"
+          },
+          "group_observation": {
+            "aggregate_count": 3,
+            "duplicate_expression_consumers_remain_distinct": true
+          },
+          "id": "SA11-03"
+        }
+      ]
+    },
+    {
+      "id": "SA12",
+      "title": "Backend, provenance and output-budget refusal",
+      "classification": "active_safety_not_original_parity",
+      "source_refs": [
+        "active_safety",
+        "sum",
+        "average",
+        "group"
+      ],
+      "derivation": "These are active admission/receiving policies, explicitly separate from original Python domain equivalence. Faults retain identity and stop additional work; no fallback aggregate values.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "UnknownNumericCache",
+            "failure_stage": "sum_update_numeric",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.5",
+                "datatype": "http://www.w3.org/2001/XMLSchema#double"
+              },
+              "cache": {
+                "state": "Unknown"
+              }
+            }
+          },
+          "id": "SA12-01"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?x) AS ?a) WHERE {}",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "UnknownNumericCache",
+            "failure_stage": "average_update_numeric",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.5",
+                "datatype": "http://www.w3.org/2001/XMLSchema#double"
+              },
+              "cache": {
+                "state": "Unknown"
+              }
+            }
+          },
+          "id": "SA12-02"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { 9999 9999 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "Core.ResourceLimit",
+            "failure_stage": "sum_finish_literal_format",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "numeric_limits_override": {
+            "max_output_characters": 4
+          },
+          "operation": "integer coefficient or output digits",
+          "id": "SA12-03"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (AVG(?x) AS ?a) WHERE { VALUES ?x { 9999 9999 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "solutions",
+            "order": "source_sequence",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "9999",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "row_index": 0,
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "9999",
+                    "exponent": "0"
+                  }
+                }
+              }
+            }
+          ],
+          "numeric_limits_override": {
+            "max_output_characters": 4
+          },
+          "id": "SA12-04"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { 2 2 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "Dataset",
+            "failure_stage": "aggregate_result_internalization",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "dataset_fixture": {
+            "kind": "actual_QueryableDataset",
+            "prepare_then_arm": true,
+            "arm_point": "Before bound execute_presence or any plan(input); Group input may be eager.",
+            "failure_identity": "original_ConversionFailure_same_token",
+            "counter_scope": "only target operation after arming",
+            "operation": "internalize_term",
+            "target_rdf": {
+              "kind": "literal",
+              "lexical": "4",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "fail_target_call": 1
+          },
+          "failing_dataset_calls": 1,
+          "id": "SA12-05"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) WHERE { VALUES ?x { 2 2 } }",
+          "numeric_capability": "mixed-binary64-v1",
+          "group_semantics": "source-group/1",
+          "decimal_signals_after_query_exact": [],
+          "expect": {
+            "kind": "fatal_after_prefix",
+            "prefix_rows": [],
+            "semantic_category": "Dataset",
+            "failure_stage": "final_presence_decoder",
+            "next_after_fatal": "None",
+            "no_dataset_calls_after_fatal": true
+          },
+          "dataset_fixture": {
+            "kind": "actual_QueryableDataset",
+            "prepare_then_arm": true,
+            "arm_point": "Before bound execute_presence or any plan(input); Group input may be eager.",
+            "failure_identity": "original_ConversionFailure_same_token",
+            "counter_scope": "only target operation after arming",
+            "operation": "externalize_term",
+            "target_rdf": {
+              "kind": "literal",
+              "lexical": "4",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "fail_target_call": 4,
+            "first_call": "Group result internalize roundtrip=1; hidden aggregate alias raw externalization=2; alias internalize roundtrip=3; final presence decoder=4. All occur after arming before bound execution."
+          },
+          "failing_dataset_calls": 1,
+          "target_dataset_calls": 4,
+          "id": "SA12-06"
+        }
+      ]
+    }
+  ],
+  "compatibility_controls": [
+    {
+      "id": "COMPAT-QN24-1",
+      "capability": "integer-decimal-v1",
+      "invocation": "existing default QueryNumericSession::new and explicit IntegerDecimalV1 must agree",
+      "source_record": "QUERY-NUMERIC-FROZEN-02.json",
+      "source_json_pointer": "/cases/23/runs/0",
+      "unchanged_frozen_run": {
+        "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (0.1e0 * 1 AS ?v) WHERE {}",
+        "expect": {
+          "kind": "fatal",
+          "semantic_category": "UnsupportedNumericFamily",
+          "first_poll": "Err",
+          "subsequent_poll": "None",
+          "rows_emitted": 0,
+          "family": "binary64"
+        }
+      },
+      "additional_decimal_signals_after_query_exact": [
+        "FloatOperation"
+      ],
+      "group_semantics": "LegacyPrivateV1 using unchanged existing constructors"
+    },
+    {
+      "id": "COMPAT-QN24-2",
+      "capability": "integer-decimal-v1",
+      "invocation": "existing default QueryNumericSession::new and explicit IntegerDecimalV1 must agree",
+      "source_record": "QUERY-NUMERIC-FROZEN-02.json",
+      "source_json_pointer": "/cases/23/runs/1",
+      "unchanged_frozen_run": {
+        "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0.1e0 AS ?v) WHERE {}",
+        "expect": {
+          "kind": "fatal",
+          "semantic_category": "UnsupportedNumericFamily",
+          "first_poll": "Err",
+          "subsequent_poll": "None",
+          "rows_emitted": 0,
+          "family": "binary64"
+        }
+      },
+      "additional_decimal_signals_after_query_exact": [],
+      "group_semantics": "LegacyPrivateV1 using unchanged existing constructors"
+    }
+  ]
+}

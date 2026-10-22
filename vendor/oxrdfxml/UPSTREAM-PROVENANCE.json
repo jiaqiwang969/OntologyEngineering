@@ -1,0 +1,83 @@
+{
+  "crate": "oxrdfxml",
+  "version": "0.2.4",
+  "crate_sha256": "71853d12051879f3e424c6864e978f5f5cbecd8e86a9817adbccaefccac9d61d",
+  "upstream_commit": "0e81a29d27575ab69e7f85ea9c7f1058b277fcd0",
+  "original_files": [
+    {
+      "path": ".cargo_vcs_info.json",
+      "bytes": 106,
+      "sha256": "dcdf74b0f859adfaacaf606991af9e609b1d1eedec45884fbb37ad439d362fe5"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 7520,
+      "sha256": "9bb754a5de5e7e5b2a1651591cebddb2be07ec3dd8c1b8aeab43da2c42f5e586"
+    },
+    {
+      "path": "Cargo.toml",
+      "bytes": 8107,
+      "sha256": "29cd60bb8407ee2ac5c1ceffb9b20e2c727dd6e23a21f6f6ec18ee07126b9f7a"
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "bytes": 894,
+      "sha256": "493da9400ff4a3fc604e5baffeb5acc8a227cbb593250f6e16637f201d810e8b"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2220,
+      "sha256": "70eadc9fa18c65fbe89e0f3a534ba094734ad8d8bcfac219eb6d2059e05014d0"
+    },
+    {
+      "path": "src/error.rs",
+      "bytes": 3206,
+      "sha256": "8925682b857d103e3ee8cca45b20c3e105d8cc7f9f8e9b9474396264be6c8bbe"
+    },
+    {
+      "path": "src/lib.rs",
+      "bytes": 743,
+      "sha256": "9d2ff2f0c47105fd2b6c0a3e3c308fcb890845c217ec18ba6accdecfa6ba639d"
+    },
+    {
+      "path": "src/parser.rs",
+      "bytes": 81194,
+      "sha256": "bb017f0a473d2c7dd80f95607d09dfc2a090f2f5c823858eb5052e0618bdb93a"
+    },
+    {
+      "path": "src/serializer.rs",
+      "bytes": 25417,
+      "sha256": "af355aeaba70dd265e87a08dfbd35349205555ef1ff7edd875377cf07b4dd67a"
+    },
+    {
+      "path": "src/utils.rs",
+      "bytes": 1361,
+      "sha256": "9e13e4d8e13895e8c1ec99621cba74127c88d7ddf318021c53db44fe5ee8d783"
+    }
+  ],
+  "licenses": [
+    {
+      "path": "LICENSE-MIT",
+      "sha256": "1f4f6736adc52ebfda18bb84947e0ef492bd86a408c0e83872efb75ed5e02838",
+      "source": "same exact upstream commit already verified for oxttl"
+    },
+    {
+      "path": "LICENSE-APACHE",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "source": "same exact upstream commit already verified for oxttl"
+    }
+  ],
+  "changes": "Private source-literal-internal emission facts, same parser and literal construction sites; default native syntax remains strict. Source empty language reset follows frozen RDFLib observations.",
+  "source_compatibility": {
+    "original_rdfxml_sha256": "03f5da5267e29b070bfd32b3dd778d42e17e1978564354f92728185b2f826f43",
+    "rules": [
+      "Original literal datatype attr is retained even when native resolves it; source/native objects explicitly paired",
+      "Original property character callbacks concatenate across CDATA/text events",
+      "Original literal_element SAX serialization consumes the same decoded event stream with source namespace declarations",
+      "Empty language resets inheritance only under source admission; native lenient empty-language constructor remains"
+    ],
+    "license": "LICENSE-RDFLIB",
+    "exposure": "development_replay",
+    "frozen_scope": "SOURCE-RDF-FORMATS original60 actions; no whole grammar parity claim"
+  }
+}

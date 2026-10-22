@@ -1,0 +1,2918 @@
+{
+ "schema": "semantica.migration-ledger/1",
+ "scope_sha256": "b1470d9980755811c815be24cdc041740de5f55e28232c327f0845d160455226",
+ "module": "sem-utils",
+ "entries": [
+  {
+   "id": "semantica/utils/__init__.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|setup_logging|154",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/logging.rs::setup_logging"
+   ],
+   "tests": [
+    "utils_init::test_logging_exports",
+    "utils_logging::test_setup_logging_rotates_files_like_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|get_logger|155",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/logging.rs::get_logger"
+   ],
+   "tests": [
+    "utils_init::test_logging_exports",
+    "utils_logging::test_get_logger_names_and_options_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|log_performance|156",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/logging.rs::log_performance"
+   ],
+   "tests": [
+    "utils_init::test_logging_exports",
+    "utils_logging::test_log_performance_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|log_error|157",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/logging.rs::log_error"
+   ],
+   "tests": [
+    "utils_init::test_logging_exports",
+    "utils_logging::test_log_error_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|log_data_quality|158",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/logging.rs::log_data_quality"
+   ],
+   "tests": [
+    "utils_init::test_logging_exports",
+    "utils_logging::test_log_data_quality_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|log_execution_time|159",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/logging.rs::log_execution_time"
+   ],
+   "tests": [
+    "utils_init::test_logging_exports",
+    "utils_logging::test_log_execution_time_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|SemanticaError|161",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::SemanticaError"
+   ],
+   "tests": [
+    "utils_init::test_exception_exports",
+    "utils_exceptions::test_exception_classes_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ValidationError|162",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::ValidationError"
+   ],
+   "tests": [
+    "utils_init::test_exception_exports",
+    "utils_exceptions::test_exception_classes_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|TemporalValidationError|163",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::TemporalValidationError"
+   ],
+   "tests": [
+    "utils_init::test_exception_exports",
+    "utils_exceptions::test_exception_classes_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ProcessingError|164",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::ProcessingError"
+   ],
+   "tests": [
+    "utils_init::test_exception_exports",
+    "utils_exceptions::test_exception_classes_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ConfigurationError|165",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::ConfigurationError"
+   ],
+   "tests": [
+    "utils_init::test_exception_exports",
+    "utils_exceptions::test_exception_classes_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|QualityError|166",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::QualityError"
+   ],
+   "tests": [
+    "utils_init::test_exception_exports",
+    "utils_exceptions::test_exception_classes_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|handle_exception|167",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::handle_exception"
+   ],
+   "tests": [
+    "utils_init::test_exception_exports",
+    "utils_exceptions::test_handle_exception_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|format_exception|168",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::format_exception"
+   ],
+   "tests": [
+    "utils_init::test_exception_exports",
+    "utils_exceptions::test_format_exception_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_data|170",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_data"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_validate_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_config|171",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_config"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_validate_config_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_schema|172",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_schema"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_validate_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_types|173",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_types"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_single_constraint_validators_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_required_fields|174",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_required_fields"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_single_constraint_validators_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_string_constraints|175",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_string_constraints"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_single_constraint_validators_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_numeric_constraints|176",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_numeric_constraints"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_single_constraint_validators_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_list_constraints|177",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_list_constraints"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_single_constraint_validators_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_entity|178",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_entity"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_validate_entity_and_relationship_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_relationship|179",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_relationship"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_validate_entity_and_relationship_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_file_path|180",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_file_path"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_validate_file_path_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_url|181",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_url"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_validate_url_and_email_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|validate_email|182",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_email"
+   ],
+   "tests": [
+    "utils_init::test_validator_exports",
+    "utils_validators::test_validate_url_and_email_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|format_data|184",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::format_data"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_format_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|clean_text|185",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::clean_text"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_clean_text_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|normalize_entities|186",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::normalize_entities"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_normalize_entities_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|normalize_graph_payload|187",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::normalize_graph_payload"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_normalize_graph_payload::test_normalize_graph_payload_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|hash_data|188",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::hash_data"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_hash_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|safe_filename|189",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::safe_filename"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_safe_filename_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ensure_directory|190",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::ensure_directory"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_ensure_directory_creates_and_reports_conflicts"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|read_json_file|191",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::read_json_file"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_read_and_write_json_file_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|write_json_file|192",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::write_json_file"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_read_and_write_json_file_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|get_file_size|193",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::get_file_size"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_read_and_write_json_file_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|format_timestamp|194",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::format_timestamp"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_format_timestamp_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|parse_timestamp|195",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::parse_timestamp"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_parse_timestamp_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|merge_dicts|196",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::merge_dicts"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_merge_dicts_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|chunk_list|197",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::chunk_list"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_chunk_list_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|flatten_dict|198",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::flatten_dict"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_flatten_dict_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|get_nested_value|199",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::get_nested_value"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_get_nested_value_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|set_nested_value|200",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::set_nested_value"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_set_nested_value_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|retry_on_error|201",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::retry_on_error"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_retry_on_error_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|safe_import|202",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/helpers.rs::safe_import"
+   ],
+   "tests": [
+    "utils_init::test_helper_exports",
+    "utils_helpers::test_safe_import_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|SUPPORTED_DOCUMENT_FORMATS|204",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::SUPPORTED_DOCUMENT_FORMATS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|SUPPORTED_IMAGE_FORMATS|205",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::SUPPORTED_IMAGE_FORMATS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|SUPPORTED_AUDIO_FORMATS|206",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::SUPPORTED_AUDIO_FORMATS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|SUPPORTED_VIDEO_FORMATS|207",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::SUPPORTED_VIDEO_FORMATS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|SUPPORTED_RDF_FORMATS|208",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::SUPPORTED_RDF_FORMATS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|SUPPORTED_VECTOR_STORES|209",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::SUPPORTED_VECTOR_STORES"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|SUPPORTED_GRAPH_DBS|210",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::SUPPORTED_GRAPH_DBS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|DEFAULT_CONFIG|211",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::DEFAULT_CONFIG"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ERROR_CODES|212",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::ERROR_CODES"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|PERFORMANCE_THRESHOLDS|213",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::PERFORMANCE_THRESHOLDS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|QUALITY_LEVELS|214",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::QUALITY_LEVELS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ENTITY_TYPES|215",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::ENTITY_TYPES"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|RELATIONSHIP_TYPES|216",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::RELATIONSHIP_TYPES"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|PROCESSING_STATUS|217",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::PROCESSING_STATUS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|DATA_TYPES|218",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::DATA_TYPES"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|API_ENDPOINTS|219",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::API_ENDPOINTS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|FILE_SIZE_LIMITS|220",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::FILE_SIZE_LIMITS"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|RETRY_CONFIG|221",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::RETRY_CONFIG"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|CACHE_CONFIG|222",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/constants.rs::CACHE_CONFIG"
+   ],
+   "tests": [
+    "utils_init::test_constant_exports",
+    "utils_constants::test_constants_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|JSONType|224",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::JSONType"
+   ],
+   "tests": [
+    "utils_init::test_type_exports"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|EntityDict|225",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::EntityDict"
+   ],
+   "tests": [
+    "utils_init::test_type_exports"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|RelationshipDict|226",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::RelationshipDict"
+   ],
+   "tests": [
+    "utils_init::test_type_exports"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ConfigDict|227",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::ConfigDict"
+   ],
+   "tests": [
+    "utils_init::test_type_exports"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|DataDict|228",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::DataDict"
+   ],
+   "tests": [
+    "utils_init::test_type_exports"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|EntityType|229",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::EntityType"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|DataType|230",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::DataType"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ProcessingStatus|231",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::ProcessingStatus"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|QualityLevel|232",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::QualityLevel"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|RelationshipType|233",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::RelationshipType"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|Entity|234",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::Entity"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_entity_equality_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|Relationship|235",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::Relationship"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_entity_and_relationship_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ProcessingResult|236",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::ProcessingResult"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_dataclass_defaults_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|QualityMetrics|237",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::QualityMetrics"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_dataclass_defaults_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|Result|238",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::Result"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_result_and_batch_result_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|BatchResult|239",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::BatchResult"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_result_and_batch_result_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|is_entity_dict|240",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::is_entity_dict"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_type_guards_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|is_relationship_dict|241",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::is_relationship_dict"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_type_guards_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|is_processing_result|242",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::is_processing_result"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_type_guards_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|entity_to_dict|243",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::entity_to_dict"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_entity_and_relationship_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|dict_to_entity|244",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::dict_to_entity"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_dict_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|relationship_to_dict|245",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::relationship_to_dict"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_entity_and_relationship_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|dict_to_relationship|246",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/types.rs::dict_to_relationship"
+   ],
+   "tests": [
+    "utils_init::test_type_exports",
+    "utils_types::test_dict_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ProgressTracker|248",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker"
+   ],
+   "tests": [
+    "utils_init::test_progress_exports",
+    "utils_progress_tracker::test_tracker_state_machine_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ProgressDisplay|249",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressDisplay"
+   ],
+   "tests": [
+    "utils_init::test_progress_exports",
+    "utils_progress_tracker::test_custom_display_receives_tracker_events"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ConsoleProgressDisplay|250",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ConsoleProgressDisplay"
+   ],
+   "tests": [
+    "utils_init::test_progress_exports",
+    "utils_progress_tracker::test_console_lines_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|JupyterProgressDisplay|251",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::JupyterProgressDisplay"
+   ],
+   "tests": [
+    "utils_init::test_progress_exports",
+    "utils_progress_tracker::test_jupyter_display_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|FileProgressDisplay|252",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::FileProgressDisplay"
+   ],
+   "tests": [
+    "utils_init::test_progress_exports",
+    "utils_progress_tracker::test_file_display_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ProgressItem|253",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressItem"
+   ],
+   "tests": [
+    "utils_init::test_progress_exports",
+    "utils_progress_tracker::test_console_lines_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|ModuleDetector|254",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ModuleDetector"
+   ],
+   "tests": [
+    "utils_init::test_progress_exports",
+    "utils_progress_tracker::test_module_detector_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|get_progress_tracker|255",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::get_progress_tracker"
+   ],
+   "tests": [
+    "utils_init::test_progress_exports",
+    "utils_progress_tracker::test_singletons_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/__init__.py|python_export|track_progress|256",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/lib.rs",
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::track_progress"
+   ],
+   "tests": [
+    "utils_init::test_progress_exports",
+    "utils_progress_tracker::test_track_and_track_progress_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/constants.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/constants.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/constants.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/constants.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|class|SemanticaError|49",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::SemanticaError"
+   ],
+   "tests": [
+    "utils_exceptions::test_exception_classes_match_oracle",
+    "utils_exceptions::test_builtin_exceptions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|method|SemanticaError.to_dict|106",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::SemanticaError::to_dict"
+   ],
+   "tests": [
+    "utils_exceptions::test_exception_classes_match_oracle",
+    "utils_exceptions::test_builtin_exceptions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|class|ValidationError|122",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::ValidationError"
+   ],
+   "tests": [
+    "utils_exceptions::test_exception_classes_match_oracle",
+    "utils_exceptions::test_subclass_structs_expose_their_state"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|class|TemporalValidationError|155",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::TemporalValidationError"
+   ],
+   "tests": [
+    "utils_exceptions::test_exception_classes_match_oracle",
+    "utils_exceptions::test_subclass_structs_expose_their_state"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|class|TemporalAmbiguityWarning|170",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::TemporalAmbiguityWarning"
+   ],
+   "tests": [
+    "utils_exceptions::test_temporal_ambiguity_warning_is_a_user_warning"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|class|ProcessingError|182",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::ProcessingError"
+   ],
+   "tests": [
+    "utils_exceptions::test_exception_classes_match_oracle",
+    "utils_exceptions::test_subclass_structs_expose_their_state"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|class|ConfigurationError|215",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::ConfigurationError"
+   ],
+   "tests": [
+    "utils_exceptions::test_exception_classes_match_oracle",
+    "utils_exceptions::test_subclass_structs_expose_their_state"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|class|QualityError|248",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::QualityError"
+   ],
+   "tests": [
+    "utils_exceptions::test_exception_classes_match_oracle",
+    "utils_exceptions::test_subclass_structs_expose_their_state"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|function|handle_exception|281",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::handle_exception"
+   ],
+   "tests": [
+    "utils_exceptions::test_handle_exception_matches_oracle",
+    "utils_exceptions::test_handle_exception_logs_through_log_error"
+   ]
+  },
+  {
+   "id": "semantica/utils/exceptions.py|function|format_exception|346",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/exceptions.rs::format_exception"
+   ],
+   "tests": [
+    "utils_exceptions::test_format_exception_matches_oracle",
+    "utils_exceptions::test_builtin_exceptions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|format_data|78",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::format_data"
+   ],
+   "tests": [
+    "utils_helpers::test_format_data_matches_oracle",
+    "utils_test_utils::test_helpers__test_format_data_json"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|clean_text|105",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::clean_text"
+   ],
+   "tests": [
+    "utils_helpers::test_clean_text_matches_oracle",
+    "utils_test_utils::test_helpers__test_clean_text"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|normalize_entities|137",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::normalize_entities"
+   ],
+   "tests": [
+    "utils_helpers::test_normalize_entities_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|hash_data|172",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::hash_data"
+   ],
+   "tests": [
+    "utils_helpers::test_hash_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|safe_filename|192",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::safe_filename"
+   ],
+   "tests": [
+    "utils_helpers::test_safe_filename_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|ensure_directory|223",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::ensure_directory"
+   ],
+   "tests": [
+    "utils_helpers::test_ensure_directory_creates_and_reports_conflicts",
+    "utils_test_utils::test_helpers__test_ensure_directory"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|read_json_file|238",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::read_json_file"
+   ],
+   "tests": [
+    "utils_helpers::test_read_and_write_json_file_round_trip",
+    "utils_helpers::test_read_json_file_errors_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|write_json_file|260",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::write_json_file"
+   ],
+   "tests": [
+    "utils_helpers::test_read_and_write_json_file_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|get_file_size|282",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::get_file_size"
+   ],
+   "tests": [
+    "utils_helpers::test_read_and_write_json_file_round_trip",
+    "utils_helpers::test_get_file_size_missing_file_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|format_timestamp|295",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::format_timestamp"
+   ],
+   "tests": [
+    "utils_helpers::test_format_timestamp_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|parse_timestamp|323",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::parse_timestamp"
+   ],
+   "tests": [
+    "utils_helpers::test_parse_timestamp_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|merge_dicts|356",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::merge_dicts"
+   ],
+   "tests": [
+    "utils_helpers::test_merge_dicts_matches_oracle",
+    "utils_test_utils::test_helpers__test_merge_dicts"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|chunk_list|390",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::chunk_list"
+   ],
+   "tests": [
+    "utils_helpers::test_chunk_list_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|flatten_dict|402",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::flatten_dict"
+   ],
+   "tests": [
+    "utils_helpers::test_flatten_dict_matches_oracle",
+    "utils_test_utils::test_helpers__test_flatten_dict"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|get_nested_value|443",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::get_nested_value"
+   ],
+   "tests": [
+    "utils_helpers::test_get_nested_value_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|set_nested_value|470",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::set_nested_value"
+   ],
+   "tests": [
+    "utils_helpers::test_set_nested_value_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|safe_import|492",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::safe_import"
+   ],
+   "tests": [
+    "utils_helpers::test_safe_import_matches_oracle",
+    "utils_helpers::test_safe_import_logs_error_message_like_oracle",
+    "utils_test_utils::test_helpers__test_safe_import_returns_module_and_flag"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|retry_on_error|541",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::retry_on_error"
+   ],
+   "tests": [
+    "utils_helpers::test_retry_on_error_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|classify_path_distance|586",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::classify_path_distance"
+   ],
+   "tests": [
+    "utils_helpers::test_classify_path_distance_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/helpers.py|function|normalize_graph_payload|917",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/helpers.rs::normalize_graph_payload"
+   ],
+   "tests": [
+    "utils_normalize_graph_payload::test_normalize_graph_payload_matches_oracle",
+    "utils_normalize_graph_payload::test_result_does_not_alias_the_input_collections"
+   ]
+  },
+  {
+   "id": "semantica/utils/logging.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/logging.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/logging.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/logging.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/logging.py|function|setup_logging|57",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/logging.rs::setup_logging"
+   ],
+   "tests": [
+    "utils_logging::test_setup_logging_rotates_files_like_oracle",
+    "utils_logging::test_setup_logging_options_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/logging.py|function|get_logger|138",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/logging.rs::get_logger"
+   ],
+   "tests": [
+    "utils_logging::test_get_logger_names_and_options_match_oracle",
+    "utils_logging::test_logger_hierarchy_and_levels"
+   ]
+  },
+  {
+   "id": "semantica/utils/logging.py|function|log_performance|178",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/logging.rs::log_performance"
+   ],
+   "tests": [
+    "utils_logging::test_log_performance_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/logging.py|function|log_error|229",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/logging.rs::log_error"
+   ],
+   "tests": [
+    "utils_logging::test_log_error_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/logging.py|function|log_data_quality|284",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/logging.rs::log_data_quality"
+   ],
+   "tests": [
+    "utils_logging::test_log_data_quality_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/logging.py|function|log_execution_time|351",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/logging.rs::log_execution_time"
+   ],
+   "tests": [
+    "utils_logging::test_log_execution_time_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|class|ProgressItem|82",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressItem"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_console_lines_match_oracle",
+    "utils_progress_tracker::test_tracker_state_machine_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|class|ProgressDisplay|102",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressDisplay"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_custom_display_receives_tracker_events"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressDisplay.update|106",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressDisplay::update"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_custom_display_receives_tracker_events"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|placeholder|update|106",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressDisplay::update"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_custom_display_receives_tracker_events"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressDisplay.show_summary|111",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressDisplay::show_summary"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_custom_display_receives_tracker_events"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|placeholder|show_summary|111",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressDisplay::show_summary"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_custom_display_receives_tracker_events"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressDisplay.clear|116",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressDisplay::clear"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_custom_display_receives_tracker_events"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|placeholder|clear|116",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressDisplay::clear"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_custom_display_receives_tracker_events"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|class|ConsoleProgressDisplay|121",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ConsoleProgressDisplay"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_console_lines_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ConsoleProgressDisplay.update|249",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ConsoleProgressDisplay::update"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_console_lines_match_oracle",
+    "utils_progress_tracker::test_pipeline_rendering_matches_oracle",
+    "utils_progress_tracker::test_console_throttle_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ConsoleProgressDisplay.show_summary|380",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ConsoleProgressDisplay::show_summary"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_console_summary_and_clear_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ConsoleProgressDisplay.clear|450",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ConsoleProgressDisplay::clear"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_console_summary_and_clear_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|class|JupyterProgressDisplay|458",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::JupyterProgressDisplay"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_jupyter_display_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|JupyterProgressDisplay.update|684",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::JupyterProgressDisplay::update"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_jupyter_display_keeps_items_without_ipython"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|JupyterProgressDisplay.show_summary|774",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::JupyterProgressDisplay::show_summary"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_jupyter_display_keeps_items_without_ipython",
+    "utils_progress_tracker::test_jupyter_display_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|JupyterProgressDisplay.clear|843",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::JupyterProgressDisplay::clear"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_jupyter_display_keeps_items_without_ipython"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|class|FileProgressDisplay|851",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::FileProgressDisplay"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_file_display_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|FileProgressDisplay.update|858",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::FileProgressDisplay::update"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_file_display_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|FileProgressDisplay.show_summary|889",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::FileProgressDisplay::show_summary"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_file_display_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|FileProgressDisplay.clear|931",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::FileProgressDisplay::clear"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_file_display_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|placeholder|clear|931",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::FileProgressDisplay::clear"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_file_display_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|class|ModuleDetector|936",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ModuleDetector"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_module_detector_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ModuleDetector.detect_from_frame|940",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ModuleDetector::detect_from_frame"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_module_detector_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ModuleDetector.detect_from_call_stack|987",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ModuleDetector::detect_from_call_stack"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_module_detector_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|class|ProgressTracker|1013",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_tracker_state_machine_matches_oracle",
+    "utils_progress_tracker::test_singletons_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.enabled|1075",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::enabled"
+   ],
+   "tests": [
+    "utils_test_progress_tracker_regressions::test_progress_tracker_constructor_can_disable_progress",
+    "utils_progress_tracker::test_singletons_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.enabled|1080",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::set_enabled"
+   ],
+   "tests": [
+    "utils_test_progress_tracker_regressions::test_disable_progress_env_prevents_reenable",
+    "utils_progress_tracker::test_tracker_show_summary_and_disabled_noops_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.get_instance|1135",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::get_instance"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_singletons_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.register_pipeline_modules|1177",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::register_pipeline_modules"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_tracker_pipeline_registration_matches_oracle",
+    "utils_progress_tracker::test_pipeline_rendering_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.get_pipeline_items|1204",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::get_pipeline_items"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_pipeline_rendering_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.clear_pipeline_context|1232",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::clear_pipeline_context"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_tracker_pipeline_registration_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.start_tracking|1250",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::start_tracking"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_tracker_state_machine_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.update_tracking|1323",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::update_tracking"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_tracker_state_machine_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.update_progress|1378",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::update_progress"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_tracker_state_machine_matches_oracle",
+    "utils_progress_tracker::test_console_throttle_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.stop_tracking|1454",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::stop_tracking"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_tracker_state_machine_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.show_summary|1515",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::show_summary"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_tracker_show_summary_and_disabled_noops_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|method|ProgressTracker.track|1530",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::ProgressTracker::track"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_track_and_track_progress_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|function|get_progress_tracker|1559",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::get_progress_tracker"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_singletons_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/progress_tracker.py|function|track_progress|1570",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/progress_tracker.rs::track_progress"
+   ],
+   "tests": [
+    "utils_progress_tracker::test_track_and_track_progress_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/skos.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/skos.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/skos.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/skos.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/skos.py|function|is_skos_hierarchy_edge|10",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/skos.rs::is_skos_hierarchy_edge"
+   ],
+   "tests": [
+    "utils_skos::test_is_skos_hierarchy_edge_matches_oracle",
+    "utils_test_skos::test_is_skos_hierarchy_edge__test_recognizes_broader_and_narrower"
+   ]
+  },
+  {
+   "id": "semantica/utils/skos.py|function|validate_skos_hierarchy|47",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/skos.rs::validate_skos_hierarchy"
+   ],
+   "tests": [
+    "utils_skos::test_validate_skos_hierarchy_matches_oracle",
+    "utils_test_skos::test_validate_skos_hierarchy__test_rejects_cycle_spanning_existing_and_new_edges"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|EntityType|89",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::EntityType"
+   ],
+   "tests": [
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|DataType|109",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::DataType"
+   ],
+   "tests": [
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|ProcessingStatus|122",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::ProcessingStatus"
+   ],
+   "tests": [
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|QualityLevel|135",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::QualityLevel"
+   ],
+   "tests": [
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|RelationshipType|145",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::RelationshipType"
+   ],
+   "tests": [
+    "utils_types::test_enums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|Entity|165",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Entity"
+   ],
+   "tests": [
+    "utils_types::test_entity_equality_matches_oracle",
+    "utils_types::test_entity_and_relationship_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|Relationship|191",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Relationship"
+   ],
+   "tests": [
+    "utils_types::test_entity_and_relationship_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|ProcessingResult|204",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::ProcessingResult"
+   ],
+   "tests": [
+    "utils_types::test_dataclass_defaults_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|QualityMetrics|217",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::QualityMetrics"
+   ],
+   "tests": [
+    "utils_types::test_dataclass_defaults_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|Processor|230",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Processor"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|method|Processor.process|233",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Processor::process"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|placeholder|process|233",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Processor::process"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|Validator|238",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Validator"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|method|Validator.validate|241",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Validator::validate"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|placeholder|validate|241",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Validator::validate"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|Exporter|246",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Exporter"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|method|Exporter.export|249",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Exporter::export"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|placeholder|export|249",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Exporter::export"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|Importer|254",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Importer"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|method|Importer.import_data|257",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Importer::import_data"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|placeholder|import_data|257",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Importer::import_data"
+   ],
+   "tests": [
+    "utils_types::test_protocols_dispatch_to_implementations"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|Result|269",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::Result"
+   ],
+   "tests": [
+    "utils_types::test_result_and_batch_result_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|class|BatchResult|287",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::BatchResult"
+   ],
+   "tests": [
+    "utils_types::test_result_and_batch_result_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|method|BatchResult.success_count|296",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::BatchResult::success_count"
+   ],
+   "tests": [
+    "utils_types::test_result_and_batch_result_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|method|BatchResult.failure_count|300",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::BatchResult::failure_count"
+   ],
+   "tests": [
+    "utils_types::test_result_and_batch_result_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|method|BatchResult.total_count|304",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::BatchResult::total_count"
+   ],
+   "tests": [
+    "utils_types::test_result_and_batch_result_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|method|BatchResult.success_rate|308",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::BatchResult::success_rate"
+   ],
+   "tests": [
+    "utils_types::test_result_and_batch_result_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|function|is_entity_dict|315",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::is_entity_dict"
+   ],
+   "tests": [
+    "utils_types::test_type_guards_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|function|is_relationship_dict|320",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::is_relationship_dict"
+   ],
+   "tests": [
+    "utils_types::test_type_guards_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|function|is_processing_result|331",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::is_processing_result"
+   ],
+   "tests": [
+    "utils_types::test_type_guards_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|function|entity_to_dict|341",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::entity_to_dict"
+   ],
+   "tests": [
+    "utils_types::test_entity_and_relationship_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|function|dict_to_entity|357",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::dict_to_entity"
+   ],
+   "tests": [
+    "utils_types::test_dict_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|function|relationship_to_dict|371",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::relationship_to_dict"
+   ],
+   "tests": [
+    "utils_types::test_entity_and_relationship_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/types.py|function|dict_to_relationship|388",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/types.rs::dict_to_relationship"
+   ],
+   "tests": [
+    "utils_types::test_dict_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_data|61",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_data"
+   ],
+   "tests": [
+    "utils_validators::test_validate_data_matches_oracle",
+    "utils_test_utils::test_validators__test_validate_data_required_fields"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_config|121",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_config"
+   ],
+   "tests": [
+    "utils_validators::test_validate_config_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_schema|179",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_schema"
+   ],
+   "tests": [
+    "utils_validators::test_validate_data_matches_oracle",
+    "utils_validators::test_single_constraint_validators_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_types|223",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_types"
+   ],
+   "tests": [
+    "utils_validators::test_single_constraint_validators_match_oracle",
+    "utils_test_utils::test_validators__test_validate_data_types"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_required_fields|248",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_required_fields"
+   ],
+   "tests": [
+    "utils_validators::test_single_constraint_validators_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_string_constraints|269",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_string_constraints"
+   ],
+   "tests": [
+    "utils_validators::test_single_constraint_validators_match_oracle",
+    "utils_validators::test_validate_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_numeric_constraints|315",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_numeric_constraints"
+   ],
+   "tests": [
+    "utils_validators::test_single_constraint_validators_match_oracle",
+    "utils_validators::test_validate_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_list_constraints|351",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_list_constraints"
+   ],
+   "tests": [
+    "utils_validators::test_single_constraint_validators_match_oracle",
+    "utils_validators::test_validate_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_entity|398",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_entity"
+   ],
+   "tests": [
+    "utils_validators::test_validate_entity_and_relationship_match_oracle",
+    "utils_test_utils::test_validators__test_validate_entity"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_relationship|433",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_relationship"
+   ],
+   "tests": [
+    "utils_validators::test_validate_entity_and_relationship_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_file_path|471",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_file_path"
+   ],
+   "tests": [
+    "utils_validators::test_validate_file_path_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_url|503",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_url"
+   ],
+   "tests": [
+    "utils_validators::test_validate_url_and_email_match_oracle",
+    "utils_test_utils::test_validators__test_validate_url"
+   ]
+  },
+  {
+   "id": "semantica/utils/validators.py|function|validate_email|529",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-utils/src/validators.rs::validate_email"
+   ],
+   "tests": [
+    "utils_validators::test_validate_url_and_email_match_oracle",
+    "utils_test_utils::test_validators__test_validate_email"
+   ]
+  },
+  {
+   "id": "tests/test_progress_tracker_regressions.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_progress_tracker_regressions.rs"
+   ]
+  },
+  {
+   "id": "tests/test_progress_tracker_regressions.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_progress_tracker_regressions.rs"
+   ]
+  },
+  {
+   "id": "tests/test_progress_tracker_regressions.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_progress_tracker_regressions.rs"
+   ]
+  },
+  {
+   "id": "tests/test_progress_tracker_regressions.py|original_test_function|test_start_tracking_pipeline_console_callback_does_not_deadlock|45",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_progress_tracker_regressions::test_start_tracking_pipeline_console_callback_does_not_deadlock"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_progress_tracker_regressions.rs::test_start_tracking_pipeline_console_callback_does_not_deadlock"
+   ]
+  },
+  {
+   "id": "tests/test_progress_tracker_regressions.py|original_test_function|test_update_progress_pipeline_console_callback_does_not_deadlock|61",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_progress_tracker_regressions::test_update_progress_pipeline_console_callback_does_not_deadlock"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_progress_tracker_regressions.rs::test_update_progress_pipeline_console_callback_does_not_deadlock"
+   ]
+  },
+  {
+   "id": "tests/test_progress_tracker_regressions.py|original_test_function|test_progress_tracker_constructor_can_disable_progress|84",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_progress_tracker_regressions::test_progress_tracker_constructor_can_disable_progress"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_progress_tracker_regressions.rs::test_progress_tracker_constructor_can_disable_progress"
+   ]
+  },
+  {
+   "id": "tests/test_progress_tracker_regressions.py|original_test_function|test_disable_progress_env_prevents_reenable|91",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_progress_tracker_regressions::test_disable_progress_env_prevents_reenable"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_progress_tracker_regressions.rs::test_disable_progress_env_prevents_reenable"
+   ]
+  },
+  {
+   "id": "tests/test_progress_tracker_regressions.py|original_test_function|test_build_knowledge_base_subprocess_does_not_deadlock|103",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_progress_tracker_regressions::test_build_knowledge_base_subprocess_does_not_deadlock"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_progress_tracker_regressions.rs::test_build_knowledge_base_subprocess_does_not_deadlock"
+   ],
+   "original_result": "failed"
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_function|test_recognizes_broader_and_narrower|8",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_skos::test_is_skos_hierarchy_edge__test_recognizes_broader_and_narrower"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs::test_is_skos_hierarchy_edge__test_recognizes_broader_and_narrower"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_function|test_ignores_other_edge_types|12",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_skos::test_is_skos_hierarchy_edge__test_ignores_other_edge_types"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs::test_is_skos_hierarchy_edge__test_ignores_other_edge_types"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_function|test_ignores_non_mapping|15",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_skos::test_is_skos_hierarchy_edge__test_ignores_non_mapping"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs::test_is_skos_hierarchy_edge__test_ignores_non_mapping"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_function|test_accepts_acyclic_chain|21",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_skos::test_validate_skos_hierarchy__test_accepts_acyclic_chain"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs::test_validate_skos_hierarchy__test_accepts_acyclic_chain"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_function|test_rejects_self_loop|27",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_skos::test_validate_skos_hierarchy__test_rejects_self_loop"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs::test_validate_skos_hierarchy__test_rejects_self_loop"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_function|test_rejects_direct_two_node_cycle|31",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_skos::test_validate_skos_hierarchy__test_rejects_direct_two_node_cycle"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs::test_validate_skos_hierarchy__test_rejects_direct_two_node_cycle"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_function|test_rejects_cycle_spanning_existing_and_new_edges|38",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_skos::test_validate_skos_hierarchy__test_rejects_cycle_spanning_existing_and_new_edges"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs::test_validate_skos_hierarchy__test_rejects_cycle_spanning_existing_and_new_edges"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_function|test_preexisting_unrelated_cycle_does_not_block_new_write|46",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_skos::test_validate_skos_hierarchy__test_preexisting_unrelated_cycle_does_not_block_new_write"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs::test_validate_skos_hierarchy__test_preexisting_unrelated_cycle_does_not_block_new_write"
+   ]
+  },
+  {
+   "id": "tests/utils/test_skos.py|original_test_function|test_none_and_blank_endpoints_are_ignored|56",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_skos::test_validate_skos_hierarchy__test_none_and_blank_endpoints_are_ignored"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_skos.rs::test_validate_skos_hierarchy__test_none_and_blank_endpoints_are_ignored"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_clean_text|11",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_helpers__test_clean_text"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_helpers__test_clean_text"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_format_data_json|15",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_helpers__test_format_data_json"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_helpers__test_format_data_json"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_format_data_invalid|20",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_helpers__test_format_data_invalid"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_helpers__test_format_data_invalid"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_ensure_directory|24",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_helpers__test_ensure_directory"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_helpers__test_ensure_directory"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_merge_dicts|29",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_helpers__test_merge_dicts"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_helpers__test_merge_dicts"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_flatten_dict|34",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_helpers__test_flatten_dict"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_helpers__test_flatten_dict"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_flatten_dict_key_collision|39",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_helpers__test_flatten_dict_key_collision"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_helpers__test_flatten_dict_key_collision"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_safe_import_returns_module_and_flag|50",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_helpers__test_safe_import_returns_module_and_flag"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_helpers__test_safe_import_returns_module_and_flag"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_validate_data_required_fields|57",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_validators__test_validate_data_required_fields"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_validators__test_validate_data_required_fields"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_validate_data_types|65",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_validators__test_validate_data_types"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_validators__test_validate_data_types"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_validate_entity|73",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_validators__test_validate_entity"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_validators__test_validate_entity"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_validate_entity_invalid|78",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_validators__test_validate_entity_invalid"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_validators__test_validate_entity_invalid"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_validate_url|83",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_validators__test_validate_url"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_validators__test_validate_url"
+   ]
+  },
+  {
+   "id": "tests/utils/test_utils.py|original_test_function|test_validate_email|87",
+   "disposition": "ported_test",
+   "tests": [
+    "utils_test_utils::test_validators__test_validate_email"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-utils/tests/utils_test_utils.rs::test_validators__test_validate_email"
+   ]
+  }
+ ]
+}

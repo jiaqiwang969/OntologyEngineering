@@ -1,0 +1,143 @@
+{
+  "schema": "public.source-exists-separator-capture-cases/1",
+  "source_record_sha256": "5a3da57279a5b667d8dd0b8e2c6bf86281f3f3281f4db04928be3b0568b6b83c",
+  "payload": {
+    "environment": {
+      "literal_semantics": "SourceLiteralV1",
+      "context_semantics": "SourceContextV1",
+      "group_semantics": "SourceAggregateV1",
+      "numeric_capabilities": "MixedBinary64V1",
+      "normalize_literals": true,
+      "limits": "Existing default NumericLimits; no new limits or session axes."
+    },
+    "cases": [
+      {
+        "id": "GCB01",
+        "classification": "fixed_source_string_facts_with_separate_active_occurrence_capture_contract",
+        "input": {
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT (GROUP_CONCAT(?x; SEPARATOR=\",\") AS ?s) WHERE { VALUES ?x { \",\" } } } AS ?b) }"
+        },
+        "expected": {
+          "actual_string_occurrence_count": 2,
+          "data_literal": {
+            "lexical": ",",
+            "source_datatype": "absent",
+            "language": null,
+            "ill_typed": null,
+            "cache_family": "String",
+            "python_truth": true
+          },
+          "aggregate_separator_field": "source_literal_occurrence",
+          "numeric_flags": [],
+          "runtime_exists_execution": "not_admitted",
+          "separator": {
+            "lexical": ",",
+            "source_datatype": "absent",
+            "language": null,
+            "ill_typed": null,
+            "cache_family": "String",
+            "python_truth": true
+          },
+          "separator_and_data_distinct_occurrences": true,
+          "separator_and_data_distinct_source_objects": true,
+          "separator_field_resolves_same_constructed_object": true
+        },
+        "source_basis": [
+          "parser.py338-351 String parse action constructs Literal from decoded text;740 explicit separator consumes String. Missing optional separator creates no String token.",
+          "term.py641-725 plain String Literal has absent source datatype, original lexical, String cache and ill_typed=None;__bool__1016-1023 reads String nonemptiness.",
+          "algebra.py257-275/318-334/472-490/551-586 preserves the same literal objects while aggregate nodes move into the actual translated child AggregateJoin. No new separator Literal is constructed by these phase walks."
+        ],
+        "active_capture_requirements": [
+          "Use actual source parser+same PreparedSourceLiteralRegistry hooks. Observe real callback IDs/source objects, not hand-written IDs or expected metadata fed to constructors.",
+          "Follow actual SourceExists runtime overlay arena links to Aggregate_GroupConcat.separator and source VALUES leaf. Exact stored source object must survive lower/reverse transport, with no unresolved SourceSyntax anywhere reachable.",
+          "One callback per actual String grammar production is a Rust capture contract, not a claim original Python constructor invocations were directly counted.",
+          "Do not call execute_source_presence for the EXISTS query or infer runtime graph/aggregate qualification from successful frontend capture."
+        ]
+      },
+      {
+        "id": "GCB02",
+        "classification": "fixed_source_string_facts_with_separate_active_occurrence_capture_contract",
+        "input": {
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT (GROUP_CONCAT(?x; SEPARATOR=\"\") AS ?s) WHERE { VALUES ?x { \",\" } } } AS ?b) }"
+        },
+        "expected": {
+          "actual_string_occurrence_count": 2,
+          "data_literal": {
+            "lexical": ",",
+            "source_datatype": "absent",
+            "language": null,
+            "ill_typed": null,
+            "cache_family": "String",
+            "python_truth": true
+          },
+          "aggregate_separator_field": "source_literal_occurrence",
+          "numeric_flags": [],
+          "runtime_exists_execution": "not_admitted",
+          "separator": {
+            "lexical": "",
+            "source_datatype": "absent",
+            "language": null,
+            "ill_typed": null,
+            "cache_family": "String",
+            "python_truth": false
+          },
+          "separator_and_data_distinct_occurrences": true,
+          "separator_and_data_distinct_source_objects": true,
+          "separator_field_resolves_same_constructed_object": true
+        },
+        "source_basis": [
+          "parser.py338-351 String parse action constructs Literal from decoded text;740 explicit separator consumes String. Missing optional separator creates no String token.",
+          "term.py641-725 plain String Literal has absent source datatype, original lexical, String cache and ill_typed=None;__bool__1016-1023 reads String nonemptiness.",
+          "algebra.py257-275/318-334/472-490/551-586 preserves the same literal objects while aggregate nodes move into the actual translated child AggregateJoin. No new separator Literal is constructed by these phase walks."
+        ],
+        "active_capture_requirements": [
+          "Use actual source parser+same PreparedSourceLiteralRegistry hooks. Observe real callback IDs/source objects, not hand-written IDs or expected metadata fed to constructors.",
+          "Follow actual SourceExists runtime overlay arena links to Aggregate_GroupConcat.separator and source VALUES leaf. Exact stored source object must survive lower/reverse transport, with no unresolved SourceSyntax anywhere reachable.",
+          "One callback per actual String grammar production is a Rust capture contract, not a claim original Python constructor invocations were directly counted.",
+          "Do not call execute_source_presence for the EXISTS query or infer runtime graph/aggregate qualification from successful frontend capture."
+        ]
+      },
+      {
+        "id": "GCB03",
+        "classification": "fixed_source_string_facts_with_separate_active_occurrence_capture_contract",
+        "input": {
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT (GROUP_CONCAT(?x) AS ?s) WHERE { VALUES ?x { \",\" } } } AS ?b) }"
+        },
+        "expected": {
+          "actual_string_occurrence_count": 1,
+          "data_literal": {
+            "lexical": ",",
+            "source_datatype": "absent",
+            "language": null,
+            "ill_typed": null,
+            "cache_family": "String",
+            "python_truth": true
+          },
+          "aggregate_separator_field": "absent",
+          "numeric_flags": [],
+          "runtime_exists_execution": "not_admitted",
+          "no_synthetic_default_space_occurrence": true,
+          "lowered_group_concat_separator": null
+        },
+        "source_basis": [
+          "parser.py338-351 String parse action constructs Literal from decoded text;740 explicit separator consumes String. Missing optional separator creates no String token.",
+          "term.py641-725 plain String Literal has absent source datatype, original lexical, String cache and ill_typed=None;__bool__1016-1023 reads String nonemptiness.",
+          "algebra.py257-275/318-334/472-490/551-586 preserves the same literal objects while aggregate nodes move into the actual translated child AggregateJoin. No new separator Literal is constructed by these phase walks."
+        ],
+        "active_capture_requirements": [
+          "Use actual source parser+same PreparedSourceLiteralRegistry hooks. Observe real callback IDs/source objects, not hand-written IDs or expected metadata fed to constructors.",
+          "Follow actual SourceExists runtime overlay arena links to Aggregate_GroupConcat.separator and source VALUES leaf. Exact stored source object must survive lower/reverse transport, with no unresolved SourceSyntax anywhere reachable.",
+          "One callback per actual String grammar production is a Rust capture contract, not a claim original Python constructor invocations were directly counted.",
+          "Do not call execute_source_presence for the EXISTS query or infer runtime graph/aggregate qualification from successful frontend capture."
+        ]
+      }
+    ],
+    "scope_limitations": [
+      "No raw pre-simplification pyparsing tree equality.",
+      "Source syntax is inspected through the actual finalized parser and planner.",
+      "No callback-count inference about original internal Literal(existing) sub-constructions.",
+      "Default separator runtime is already a separate GC concern; here absence must not fabricate a grammar literal."
+    ]
+  },
+  "payload_sha256": "80b411908bdc6dfbf99b54e1300cf2f91832afee8de80371b8c92451225f1949"
+}

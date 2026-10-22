@@ -1,0 +1,2929 @@
+{
+  "cases": [
+    {
+      "id": "empty-graph",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {},
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "empty-relationships",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "entities-and-metadata-not-consumed",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": "opaque unparsed",
+          "note": {
+            "version": 7
+          }
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "orphan-relationships-retained",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "source": "missing",
+              "target": {
+                "opaque": true
+              }
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "source": "missing",
+              "target": {
+                "opaque": true
+              }
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "before",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "touch-left",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "touch-right",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-05T23:59:59.999999Z",
+              "valid_until": "2024-01-07T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-05T23:59:59.999999Z",
+              "valid_until": "2024-01-07T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "after",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-06T00:00:00Z",
+              "valid_until": "2024-01-07T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "partial",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-04T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-04T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 2,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0,
+          1
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "contains-and-inside",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 2,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0,
+          1
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "exact-normalized-bounds",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-05T23:59:59.999999Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-05T23:59:59.999999Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "zero-at-start",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "zero-outside",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "inverted-candidate-omitted",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-08T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "inverted-query-nonempty",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-08T00:00:00Z",
+        "end_time": "2024-01-02T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-08T00:00:00Z",
+          "end_time": "2024-01-02T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "inverted-query-empty",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "2024-01-08T00:00:00Z",
+        "end_time": "2024-01-02T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-08T00:00:00Z",
+          "end_time": "2024-01-02T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "query-reversed-within-day",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T18:00:00Z",
+        "end_time": "2024-01-03T06:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-03T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "unbounded-valid-missing",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {}
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {}
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 1
+      },
+      "expected_error": false
+    },
+    {
+      "id": "open-end",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "OPEN"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "OPEN"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "open-query-null",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": null
+            },
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": null,
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": null,
+          "relationships": [
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "open-query-word",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "OPEN",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": null,
+          "relationships": [
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "intersection-complete",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-04T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-05T23:59:59.999999Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "intersection",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-05T23:59:59.999999Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 2,
+          "aggregation": "intersection"
+        },
+        "relationship_indices": [
+          0,
+          3
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "intersection-touch-insufficient",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-05T23:59:59.999999Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "intersection",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "intersection"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "intersection-open",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            },
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": null,
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "intersection",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": null,
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "intersection"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "intersection-clock-twice",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {}
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "intersection",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {}
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "intersection"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 2
+      },
+      "expected_error": false
+    },
+    {
+      "id": "unknown-aggregation-is-union",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "unrecognized",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "unrecognized"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "include-intervals-unused",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": false
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "query-text-unused",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "not a query language",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "not a query language",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "duplicates-raw-preserved",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "id": 1,
+              "metadata": {
+                "raw": [
+                  null,
+                  true,
+                  1.0
+                ]
+              }
+            },
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "id": 1,
+              "metadata": {
+                "raw": [
+                  null,
+                  true,
+                  1.0
+                ]
+              }
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "id": 1,
+              "metadata": {
+                "raw": [
+                  null,
+                  true,
+                  1.0
+                ]
+              }
+            },
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "id": 1,
+              "metadata": {
+                "raw": [
+                  null,
+                  true,
+                  1.0
+                ]
+              }
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 2,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0,
+          1
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "transaction-selected",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-08T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-01T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-08T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "transaction",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-08T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-01T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "transaction-superseded-touch",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "recorded_at": "2024-01-01T00:00:00Z",
+              "superseded_at": "2024-01-03T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "transaction",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "recorded_at": "2024-01-01T00:00:00Z",
+              "superseded_at": "2024-01-03T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "transaction-missing-clock-after",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {}
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "transaction",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 1
+      },
+      "expected_error": false
+    },
+    {
+      "id": "both-intersection-axes",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "recorded_at": "2024-01-02T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "recorded_at": "2024-01-08T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "both",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "recorded_at": "2024-01-02T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "both-clock-shortcircuit",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "both",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 1
+      },
+      "expected_error": false
+    },
+    {
+      "id": "both-clock-two-axes",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {}
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "both",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 2
+      },
+      "expected_error": false
+    },
+    {
+      "id": "transaction-inverted-valid-unused",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-09T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z",
+              "recorded_at": "2024-01-01T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "transaction",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-09T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z",
+              "recorded_at": "2024-01-01T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "valid-inverted-recorded-unused",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "recorded_at": "2024-01-09T00:00:00Z",
+              "superseded_at": "2024-01-02T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "recorded_at": "2024-01-09T00:00:00Z",
+              "superseded_at": "2024-01-02T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "unknown-axis-empty",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "unknown",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "unknown-axis-nonempty",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "unknown",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-start",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "bad",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-end",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "bad"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-unused-recorded",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "recorded_at": "bad"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-unused-superseded",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null,
+              "superseded_at": "bad"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-query-start",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {},
+        "start_time": "bad",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "null-query-start",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {},
+        "start_time": null,
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "open-query-start",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {},
+        "start_time": "OPEN",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-query-end",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {},
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "bad",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-granularity-empty",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {},
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "unknown",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "second-normalization",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T01:02:03.123456Z",
+        "end_time": "2024-01-03T01:02:04Z",
+        "time_axis": "valid",
+        "granularity": "second",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T01:02:03Z",
+          "end_time": "2024-01-03T01:02:04.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "minute-normalization",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T01:02:03Z",
+        "end_time": "2024-01-03T01:04:05Z",
+        "time_axis": "valid",
+        "granularity": "minute",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T01:02:00Z",
+          "end_time": "2024-01-03T01:04:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "hour-offset-normalization",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T09:02:03+08:00",
+        "end_time": "2024-01-03T11:04:05+08:00",
+        "time_axis": "valid",
+        "granularity": "hour",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T01:00:00Z",
+          "end_time": "2024-01-03T03:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "week-normalization",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-09T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "week",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-01T00:00:00Z",
+          "end_time": "2024-01-14T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": null,
+          "num_relationships": 1,
+          "aggregation": "union"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "leap-month-normalization",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "2024-02-12",
+        "end_time": "2024-02-15",
+        "time_axis": "valid",
+        "granularity": "month",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-02-01T00:00:00Z",
+          "end_time": "2024-02-29T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "year-normalization",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "2024-02-12",
+        "end_time": "2024-08-15",
+        "time_axis": "valid",
+        "granularity": "year",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-01T00:00:00Z",
+          "end_time": "2024-12-31T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "max-second-overflows",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "9999-12-31",
+        "end_time": "9999-12-31T23:59:59Z",
+        "time_axis": "valid",
+        "granularity": "second",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "max-year-normalization",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "9999-02-12",
+        "end_time": "9999-08-15",
+        "time_axis": "valid",
+        "granularity": "year",
+        "query": "",
+        "aggregation": "union",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "9999-01-01T00:00:00Z",
+          "end_time": "9999-12-31T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "union"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "evolution-empty",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": {},
+          "num_relationships": 0,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [],
+        "bucket_indices": {},
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "evolution-inclusive-boundaries",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-04T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-06T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z"
+            },
+            {
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-04T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": {
+            "2024-01-03": [
+              {
+                "valid_from": "2024-01-01T00:00:00Z",
+                "valid_until": "2024-01-03T00:00:00Z"
+              },
+              {
+                "valid_from": "2024-01-04T00:00:00Z",
+                "valid_until": "2024-01-04T00:00:00Z"
+              }
+            ],
+            "2024-01-04": [
+              {
+                "valid_from": "2024-01-04T00:00:00Z",
+                "valid_until": "2024-01-04T00:00:00Z"
+              }
+            ]
+          },
+          "num_relationships": 2,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [
+          0,
+          1
+        ],
+        "bucket_indices": {
+          "2024-01-03": [
+            0,
+            1
+          ],
+          "2024-01-04": [
+            1
+          ]
+        },
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "evolution-missing-clock-every-period",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {}
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {}
+          ],
+          "relationship_buckets": {
+            "2024-01-03": [
+              {}
+            ],
+            "2024-01-04": [
+              {}
+            ],
+            "2024-01-05": [
+              {}
+            ]
+          },
+          "num_relationships": 1,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": {
+          "2024-01-03": [
+            0
+          ],
+          "2024-01-04": [
+            0
+          ],
+          "2024-01-05": [
+            0
+          ]
+        },
+        "clock_fallback_count": 4
+      },
+      "expected_error": false
+    },
+    {
+      "id": "evolution-transaction-filter-valid-buckets",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-08T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-01T00:00:00Z"
+            }
+          ]
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": "2024-01-05T00:00:00Z",
+        "time_axis": "transaction",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-08T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-01T00:00:00Z"
+            }
+          ],
+          "relationship_buckets": {},
+          "num_relationships": 1,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": {},
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "evolution-second-steps-by-day",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-03T01:02:03Z",
+        "end_time": "2024-01-03T01:02:04Z",
+        "time_axis": "valid",
+        "granularity": "second",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T01:02:03Z",
+          "end_time": "2024-01-03T01:02:04.999999Z",
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": {
+            "2024-01-03": [
+              {
+                "valid_from": "2024-01-01T00:00:00Z",
+                "valid_until": null
+              }
+            ]
+          },
+          "num_relationships": 1,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": {
+          "2024-01-03": [
+            0
+          ]
+        },
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    },
+    {
+      "id": "evolution-week-iso-year",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": null,
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2020-12-31",
+        "end_time": "2021-01-05",
+        "time_axis": "valid",
+        "granularity": "week",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2020-12-28T00:00:00Z",
+          "end_time": "2021-01-10T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": null,
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": {
+            "2020-W53": [
+              {
+                "valid_from": null,
+                "valid_until": null
+              }
+            ],
+            "2021-W01": [
+              {
+                "valid_from": null,
+                "valid_until": null
+              }
+            ]
+          },
+          "num_relationships": 1,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": {
+          "2020-W53": [
+            0
+          ],
+          "2021-W01": [
+            0
+          ]
+        },
+        "clock_fallback_count": 3
+      },
+      "expected_error": false
+    },
+    {
+      "id": "evolution-month-year-crossing",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": null,
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2023-12-29",
+        "end_time": "2024-01-03",
+        "time_axis": "valid",
+        "granularity": "month",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2023-12-01T00:00:00Z",
+          "end_time": "2024-01-31T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": null,
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": {
+            "2023-12": [
+              {
+                "valid_from": null,
+                "valid_until": null
+              }
+            ],
+            "2024-01": [
+              {
+                "valid_from": null,
+                "valid_until": null
+              }
+            ]
+          },
+          "num_relationships": 1,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": {
+          "2023-12": [
+            0
+          ],
+          "2024-01": [
+            0
+          ]
+        },
+        "clock_fallback_count": 3
+      },
+      "expected_error": false
+    },
+    {
+      "id": "evolution-year",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": null,
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2023-12-29",
+        "end_time": "2024-01-03",
+        "time_axis": "valid",
+        "granularity": "year",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2023-01-01T00:00:00Z",
+          "end_time": "2024-12-31T23:59:59.999999Z",
+          "relationships": [
+            {
+              "valid_from": null,
+              "valid_until": null
+            }
+          ],
+          "relationship_buckets": {
+            "2023": [
+              {
+                "valid_from": null,
+                "valid_until": null
+              }
+            ],
+            "2024": [
+              {
+                "valid_from": null,
+                "valid_until": null
+              }
+            ]
+          },
+          "num_relationships": 1,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [
+          0
+        ],
+        "bucket_indices": {
+          "2023": [
+            0
+          ],
+          "2024": [
+            0
+          ]
+        },
+        "clock_fallback_count": 3
+      },
+      "expected_error": false
+    },
+    {
+      "id": "evolution-open-refused",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "2024-01-03T00:00:00Z",
+        "end_time": null,
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "evolution-max-year-overflows",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": []
+        },
+        "start_time": "9999-02-12",
+        "end_time": "9999-08-15",
+        "time_axis": "valid",
+        "granularity": "year",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-03T00:00:00Z",
+          "end_time": "2024-01-05T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": null,
+          "num_relationships": 0,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [],
+        "bucket_indices": null,
+        "clock_fallback_count": 0
+      },
+      "expected_error": true
+    },
+    {
+      "id": "evolution-inverted-empty",
+      "request": {
+        "schema": "semantica.temporal-range-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "relationships": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ]
+        },
+        "start_time": "2024-01-08T00:00:00Z",
+        "end_time": "2024-01-02T00:00:00Z",
+        "time_axis": "valid",
+        "granularity": "day",
+        "query": "",
+        "aggregation": "evolution",
+        "include_intervals": true
+      },
+      "expected": {
+        "clock_at": "2024-01-10T00:00:00Z",
+        "query_result": {
+          "query": "",
+          "start_time": "2024-01-08T00:00:00Z",
+          "end_time": "2024-01-02T23:59:59.999999Z",
+          "relationships": [],
+          "relationship_buckets": {},
+          "num_relationships": 0,
+          "aggregation": "evolution"
+        },
+        "relationship_indices": [],
+        "bucket_indices": {},
+        "clock_fallback_count": 0
+      },
+      "expected_error": false
+    }
+  ]
+}

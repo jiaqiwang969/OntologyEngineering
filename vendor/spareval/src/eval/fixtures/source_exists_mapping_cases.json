@@ -1,0 +1,119 @@
+{
+  "schema": "public.source-exists-mapping-fields-cases/1",
+  "source_record_sha256": "83789c4c296bd8d8475d4496acda75cf5ef27fe4df27c4258c3286219a1f06db",
+  "payload": {
+    "cases": [
+      {
+        "id": "MAP-EX01",
+        "original_id": "EX01",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "unit_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX01",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS {} AS ?b) WHERE {}"
+        },
+        "expected": {
+          "exists_mapping_keys": [
+            "graph",
+            "_vars"
+          ],
+          "raw_graph_operator": "GroupGraphPatternSub",
+          "raw_graph_mapping_keys": [
+            "_vars"
+          ],
+          "runtime_overlay_present": false,
+          "part_field_present": false
+        }
+      },
+      {
+        "id": "MAP-EX05",
+        "original_id": "EX05",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "empty_values_source_error",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX05",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { VALUES ?x {} } AS ?b) WHERE {}"
+        },
+        "expected": {
+          "exists_mapping_keys": [
+            "graph",
+            "_vars"
+          ],
+          "raw_graph_operator": "GroupGraphPatternSub",
+          "raw_graph_mapping_keys": [
+            "part",
+            "_vars"
+          ],
+          "runtime_overlay_present": false,
+          "part_field_present": true,
+          "inline_operator": "InlineData",
+          "inline_mapping_keys": [
+            "var",
+            "_vars"
+          ],
+          "inline_absent_fields": [
+            "value"
+          ],
+          "inline_variables": [
+            "x"
+          ]
+        }
+      },
+      {
+        "id": "MAP-EX06",
+        "original_id": "EX06",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "empty_binding_is_a_row",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX06",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { VALUES () { () } } AS ?b) WHERE {}"
+        },
+        "expected": {
+          "exists_mapping_keys": [
+            "graph",
+            "_vars"
+          ],
+          "raw_graph_operator": "GroupGraphPatternSub",
+          "raw_graph_mapping_keys": [
+            "part",
+            "_vars"
+          ],
+          "runtime_overlay_present": false,
+          "part_field_present": true,
+          "inline_operator": "InlineData",
+          "inline_mapping_keys": [
+            "value",
+            "_vars"
+          ],
+          "inline_absent_fields": [
+            "var"
+          ],
+          "inline_rows": [
+            []
+          ]
+        }
+      }
+    ],
+    "order_basis": "Fixed original parser/OrderedDict/_addVars derivation; raw JSON provides membership only.",
+    "runtime_scope": "frontend transport only"
+  },
+  "payload_sha256": "cf76b2116816568ed49454aaf6eb706e64115c213a84da9814b197ae62e1b0a4"
+}

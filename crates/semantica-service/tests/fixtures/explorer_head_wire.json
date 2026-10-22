@@ -1,0 +1,175 @@
+{
+  "rows": [
+    {
+      "method": "GET",
+      "path": "/api/graph/search",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: POST\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "wire_sha256": "3e16e40b2b94e21a5cbdbf0947f867ae115244ac060f3dc3feda2ea6776b537e"
+    },
+    {
+      "method": "GET",
+      "path": "/api/graph/search/",
+      "status": 307,
+      "header_utf8": "HTTP/1.1 307 Temporary Redirect\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\ncontent-length: 0\r\nlocation: http://localhost/api/graph/search\r\nConnection: close",
+      "body_utf8": "",
+      "wire_sha256": "1b61db061f75848027da97b3185f0874469b0d0c4aa0a0b64018c26c7e60db67"
+    },
+    {
+      "method": "GET",
+      "path": "/api/graph/nodes",
+      "status": 200,
+      "header_utf8": "HTTP/1.1 200 OK\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\ncontent-length: 195\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"nodes\":[{\"id\":\"a\",\"type\":\"Part\",\"content\":\"bearing\",\"properties\":{\"content\":\"bearing\"},\"valid_from\":null,\"valid_until\":null}],\"total\":1,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "wire_sha256": "e936ed9e22a654dca6369f1ac25708b34511ff94888dd6d35eac9c9128e934fe"
+    },
+    {
+      "method": "GET",
+      "path": "/api/graph/stats",
+      "status": 200,
+      "header_utf8": "HTTP/1.1 200 OK\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\ncontent-length: 85\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"node_count\":1,\"edge_count\":0,\"node_types\":{\"Part\":1},\"edge_types\":{},\"density\":0.0}",
+      "wire_sha256": "c4a8c5c2f02c1d905467af12963aac5176805b09dc5f3477171f6bcf5f11a6e8"
+    },
+    {
+      "method": "GET",
+      "path": "/api/missing",
+      "status": 404,
+      "header_utf8": "HTTP/1.1 404 Not Found\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\ncontent-length: 22\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":\"Not Found\"}",
+      "wire_sha256": "9a4c7f790cc085de63034dafe7513a3200e2b340c392fa9334f04fde0552fe16"
+    },
+    {
+      "method": "GET",
+      "path": "/api/graph/path",
+      "status": 422,
+      "header_utf8": "HTTP/1.1 422 Unprocessable Content\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\ncontent-length: 172\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"query\",\"source\"],\"msg\":\"Field required\",\"input\":null},{\"type\":\"missing\",\"loc\":[\"query\",\"target\"],\"msg\":\"Field required\",\"input\":null}]}",
+      "wire_sha256": "ed3d8650657c9db7ce398ce11609e02b80f0c06f737d26eb95c207df992db10e"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sparql",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: POST\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "wire_sha256": "3e16e40b2b94e21a5cbdbf0947f867ae115244ac060f3dc3feda2ea6776b537e"
+    },
+    {
+      "method": "HEAD",
+      "path": "/api/graph/search",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: POST\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "",
+      "wire_sha256": "8f6c3530b2426b4cdb87f339e3b4f2ada02c9b0fc780c482a3e6dedec4a0d80e"
+    },
+    {
+      "method": "HEAD",
+      "path": "/api/graph/search/",
+      "status": 307,
+      "header_utf8": "HTTP/1.1 307 Temporary Redirect\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\ncontent-length: 0\r\nlocation: http://localhost/api/graph/search\r\nConnection: close",
+      "body_utf8": "",
+      "wire_sha256": "1b61db061f75848027da97b3185f0874469b0d0c4aa0a0b64018c26c7e60db67"
+    },
+    {
+      "method": "HEAD",
+      "path": "/api/graph/nodes",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: GET\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "",
+      "wire_sha256": "6f621143745c766bd0b699e503833d7a47c1e9d5994cbfe8fbd08439efea3057"
+    },
+    {
+      "method": "HEAD",
+      "path": "/api/graph/stats",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: GET\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "",
+      "wire_sha256": "6f621143745c766bd0b699e503833d7a47c1e9d5994cbfe8fbd08439efea3057"
+    },
+    {
+      "method": "HEAD",
+      "path": "/api/missing",
+      "status": 404,
+      "header_utf8": "HTTP/1.1 404 Not Found\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\ncontent-length: 22\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "",
+      "wire_sha256": "438ba61b007453f8e2053a316a5a5a68612eea4a864532f56ae73deb8ba0e857"
+    },
+    {
+      "method": "HEAD",
+      "path": "/api/graph/path",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: GET\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "",
+      "wire_sha256": "6f621143745c766bd0b699e503833d7a47c1e9d5994cbfe8fbd08439efea3057"
+    },
+    {
+      "method": "HEAD",
+      "path": "/api/sparql",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: POST\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "",
+      "wire_sha256": "8f6c3530b2426b4cdb87f339e3b4f2ada02c9b0fc780c482a3e6dedec4a0d80e"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/graph/search",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: POST\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "wire_sha256": "3e16e40b2b94e21a5cbdbf0947f867ae115244ac060f3dc3feda2ea6776b537e"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/graph/search/",
+      "status": 307,
+      "header_utf8": "HTTP/1.1 307 Temporary Redirect\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\ncontent-length: 0\r\nlocation: http://localhost/api/graph/search\r\nConnection: close",
+      "body_utf8": "",
+      "wire_sha256": "1b61db061f75848027da97b3185f0874469b0d0c4aa0a0b64018c26c7e60db67"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/graph/nodes",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: GET\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "wire_sha256": "57cb08bab82c8064750dde86f697b5f4a0a06048952d6fa6a136e48dcfdf7a6f"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/graph/stats",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: GET\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "wire_sha256": "57cb08bab82c8064750dde86f697b5f4a0a06048952d6fa6a136e48dcfdf7a6f"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/missing",
+      "status": 404,
+      "header_utf8": "HTTP/1.1 404 Not Found\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\ncontent-length: 22\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":\"Not Found\"}",
+      "wire_sha256": "9a4c7f790cc085de63034dafe7513a3200e2b340c392fa9334f04fde0552fe16"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/graph/path",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: GET\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "wire_sha256": "57cb08bab82c8064750dde86f697b5f4a0a06048952d6fa6a136e48dcfdf7a6f"
+    },
+    {
+      "method": "OPTIONS",
+      "path": "/api/sparql",
+      "status": 405,
+      "header_utf8": "HTTP/1.1 405 Method Not Allowed\r\ndate: Tue, 06 Oct 2026 07:46:25 GMT\r\nserver: uvicorn\r\nallow: POST\r\ncontent-length: 31\r\ncontent-type: application/json\r\nConnection: close",
+      "body_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "wire_sha256": "3e16e40b2b94e21a5cbdbf0947f867ae115244ac060f3dc3feda2ea6776b537e"
+    }
+  ],
+  "source_unchanged": true,
+  "source_sha256": "ff16ffce9224190ef6f5813fcb912953dc42031b4d91201a46fca6f45f4a2991",
+  "production_python_delegate": false
+}

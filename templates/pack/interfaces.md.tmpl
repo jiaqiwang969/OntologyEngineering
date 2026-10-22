@@ -1,0 +1,41 @@
+---
+to: out/interfaces.md
+sparql:
+  project: 'SELECT ?version ?problem ?purpose WHERE { <urn:oev2:design:model> <urn:oev2:design:version> ?version ; <urn:oev2:design:problem> ?problem ; <urn:oev2:design:purpose> ?purpose }'
+  requirements: 'SELECT ?requirement ?function ?condition ?acceptance WHERE { ?r <urn:oev2:design:kind> "Requirement" ; <urn:oev2:design:function> ?function ; <urn:oev2:design:condition> ?condition ; <urn:oev2:design:acceptance> ?acceptance . BIND(STRAFTER(STR(?r), "urn:oev2:design:") AS ?requirement) } ORDER BY ?requirement'
+  sources: 'SELECT ?source ?identity ?role ?applicability WHERE { ?s <urn:oev2:design:kind> "Source" ; <urn:oev2:design:identity> ?identity ; <urn:oev2:design:role> ?role ; <urn:oev2:design:applicability> ?applicability . BIND(STRAFTER(STR(?s), "urn:oev2:design:") AS ?source) } ORDER BY ?source'
+  fields_engineering: 'SELECT ?type ?name ?rustType ?meaning ?format ?unit ?precision ?write ?applicability ?acceptance WHERE { ?t <urn:oev2:design:contractGroup> "engineering" . ?t <urn:oev2:design:kind> "Type" ; <urn:oev2:design:name> ?type ; <urn:oev2:design:field> ?f . ?f <urn:oev2:design:name> ?name ; <urn:oev2:design:rustType> ?rustType ; <urn:oev2:design:meaning> ?meaning ; <urn:oev2:design:format> ?format ; <urn:oev2:design:unit> ?unit ; <urn:oev2:design:precision> ?precision ; <urn:oev2:design:write> ?write ; <urn:oev2:design:applicability> ?applicability ; <urn:oev2:design:acceptance> ?acceptance } ORDER BY ?type ?name'
+  fields_semantic: 'SELECT ?type ?name ?rustType ?meaning ?format ?unit ?precision ?write ?applicability ?acceptance WHERE { ?t <urn:oev2:design:contractGroup> "semantic" . ?t <urn:oev2:design:kind> "Type" ; <urn:oev2:design:name> ?type ; <urn:oev2:design:field> ?f . ?f <urn:oev2:design:name> ?name ; <urn:oev2:design:rustType> ?rustType ; <urn:oev2:design:meaning> ?meaning ; <urn:oev2:design:format> ?format ; <urn:oev2:design:unit> ?unit ; <urn:oev2:design:precision> ?precision ; <urn:oev2:design:write> ?write ; <urn:oev2:design:applicability> ?applicability ; <urn:oev2:design:acceptance> ?acceptance } ORDER BY ?type ?name'
+  interfaces: 'SELECT ?name ?method ?input ?output ?error ?effects WHERE { ?i <urn:oev2:design:kind> "Interface" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:method> ?method ; <urn:oev2:design:input> ?input ; <urn:oev2:design:output> ?output ; <urn:oev2:design:error> ?error ; <urn:oev2:design:effects> ?effects } ORDER BY ?name'
+---
+# Generated interface and field contract
+
+Edit the annotated design, then run `oev2 design generate` and drift verification.
+
+{% for p in project %}
+Design version: {{ p.version }}.
+
+Problem: {{ p.problem }}.
+
+Purpose: {{ p.purpose }}.
+{% endfor %}
+
+Requirements and method sources below are design declarations. They do not assert execution, review, promotion or engineering acceptance.
+
+| Requirement | Function | Conditions | Acceptance |
+|---|---|---|---|
+{% for r in requirements %}| {{ r.requirement }} | {{ r.function }} | {{ r.condition }} | {{ r.acceptance }} |
+{% endfor %}
+
+| Source | Identity | Role | Applicability |
+|---|---|---|---|
+{% for s in sources %}| {{ s.source }} | {{ s.identity }} | {{ s.role }} | {{ s.applicability }} |
+{% endfor %}
+
+| Type.field | Rust | Meaning | Format / unit / precision | Agent writing | Applicability / acceptance |
+|---|---|---|---|---|---|
+{% set fields = fields_engineering | concat(with=fields_semantic) | sort(attribute="name") | sort(attribute="type") %}{% for f in fields %}| {{ f.type }}.{{ f.name }} | {{ f.rustType }} | {{ f.meaning }} | {{ f.format }} / {{ f.unit }} / {{ f.precision }} | {{ f.write }} | {{ f.applicability }} / {{ f.acceptance }} |
+{% endfor %}
+{% for i in interfaces %}
+`{{ i.name }}::{{ i.method }}(&{{ i.input }}) -> Result<{{ i.output }}, {{ i.error }}>`: {{ i.effects }}.
+{% endfor %}

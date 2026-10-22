@@ -1,0 +1,106 @@
+{
+  "profile": "pinned-reasoner-default-50/1",
+  "cases": [
+    {
+      "id": "chain",
+      "facts": [
+        "A(John)"
+      ],
+      "rules": [
+        "IF A(?x) THEN B(?x)",
+        "IF B(?x) THEN C(?x)"
+      ],
+      "expected": [
+        "B(John)",
+        "C(John)"
+      ]
+    },
+    {
+      "id": "same-variable",
+      "facts": [
+        "Pair(John,John)",
+        "Pair(John,Alice)"
+      ],
+      "rules": [
+        "IF Pair(?x,?x) THEN Equal(?x)"
+      ],
+      "expected": [
+        "Equal(John)"
+      ]
+    },
+    {
+      "id": "join",
+      "facts": [
+        "Parent(A,B)",
+        "Parent(B,C)",
+        "Parent(B,D)"
+      ],
+      "rules": [
+        "IF Parent(?a,?b) AND Parent(?b,?c) THEN Grand(?a,?c)"
+      ],
+      "expected": [
+        "Grand(A,C)",
+        "Grand(A,D)"
+      ]
+    },
+    {
+      "id": "deduplicate",
+      "facts": [
+        "A(John)",
+        "B(John)"
+      ],
+      "rules": [
+        "IF A(?x) THEN C(?x)",
+        "IF B(?x) THEN C(?x)"
+      ],
+      "expected": [
+        "C(John)"
+      ]
+    },
+    {
+      "id": "already-known",
+      "facts": [
+        "A(John)",
+        "B(John)"
+      ],
+      "rules": [
+        "IF A(?x) THEN B(?x)"
+      ],
+      "expected": []
+    },
+    {
+      "id": "case-literals",
+      "facts": [
+        "employee(John)"
+      ],
+      "rules": [
+        "if employee(?x) then Worker(?x)"
+      ],
+      "expected": [
+        "Worker(John)"
+      ]
+    },
+    {
+      "id": "invalid-rule",
+      "facts": [
+        "A(John)"
+      ],
+      "rules": [
+        "not a rule"
+      ],
+      "expected": []
+    },
+    {
+      "id": "prefix-substitution",
+      "facts": [
+        "Pair(A,B)"
+      ],
+      "rules": [
+        "IF Pair(?x,?xy) THEN Result(?x,?xy)"
+      ],
+      "expected": [
+        "Result(A,Ay)"
+      ]
+    }
+  ]
+}

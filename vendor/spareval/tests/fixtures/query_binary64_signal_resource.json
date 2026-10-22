@@ -1,0 +1,127 @@
+{
+  "schema": "source-derived-public-receiving-fixture/1",
+  "source_record_id": "QUERY-BINARY64-SIGNAL-RESOURCE-SUPPLEMENT-01",
+  "source_record_sha256": "98ee2a3aed96c57f8aa44f7e67c6b1ca48d049ebfc993d84e257e3e66c864da4",
+  "payload_canonical_sha256": "577e1a7fef32db8e1c396fb2d19a54e0117798fd88885e18b1ac6ec8d57bf7fe",
+  "scope": "Separate pre-execution source/active-resource supplement; does not amend mixed frozen01 or old QN24.",
+  "environment": {
+    "query": "SELECT (0.1e0 * 1 AS ?v) WHERE {}",
+    "decimal_context": {
+      "precision": 3,
+      "rounding": "HalfEven",
+      "emin": "-999999",
+      "emax": "999999",
+      "clamp": false,
+      "flags_initial": [],
+      "ignored_flags": []
+    },
+    "numeric_limits": {
+      "max_input_characters": 4096,
+      "max_coefficient_digits": 3,
+      "max_output_characters": 4096,
+      "max_materialized_power_of_ten": 4096
+    },
+    "integer_text_limit": 4300,
+    "normalize_literals": true,
+    "initial_bindings": [],
+    "dataset": "empty actual QueryableDataset; real parser, lowering, compiler and bound execute_presence"
+  },
+  "cases": [
+    {
+      "id": "BQS1U",
+      "capability": "integer-decimal-v1",
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "expected": {
+        "kind": "fatal",
+        "reason": "Core.ResourceLimit",
+        "operation": "coefficient_digits",
+        "value_conversion_reached": true,
+        "session_flags_exact": [
+          "FloatOperation"
+        ],
+        "rows_emitted": 0,
+        "first_poll": "Err",
+        "subsequent_poll": "None"
+      },
+      "evidence_classification": "source_reached_signal_plus_active_resource_and_iterator_safety"
+    },
+    {
+      "id": "BQS1T",
+      "capability": "integer-decimal-v1",
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow",
+        "FloatOperation"
+      ],
+      "expected": {
+        "kind": "fatal",
+        "reason": "Core.DecimalTrap",
+        "primary_signal": "FloatOperation",
+        "required_signals": [
+          "FloatOperation"
+        ],
+        "value_conversion_reached": false,
+        "session_flags_exact": [
+          "FloatOperation"
+        ],
+        "rows_emitted": 0,
+        "first_poll": "Err",
+        "subsequent_poll": "None"
+      },
+      "evidence_classification": "source_signal_trap_order_plus_active_iterator_safety"
+    },
+    {
+      "id": "BQS2U",
+      "capability": "mixed-binary64-v1",
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "expected": {
+        "kind": "fatal",
+        "reason": "Core.ResourceLimit",
+        "operation": "coefficient_digits",
+        "value_conversion_reached": true,
+        "session_flags_exact": [
+          "FloatOperation"
+        ],
+        "rows_emitted": 0,
+        "first_poll": "Err",
+        "subsequent_poll": "None"
+      },
+      "evidence_classification": "source_reached_signal_plus_active_resource_and_iterator_safety"
+    },
+    {
+      "id": "BQS2T",
+      "capability": "mixed-binary64-v1",
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow",
+        "FloatOperation"
+      ],
+      "expected": {
+        "kind": "fatal",
+        "reason": "Core.DecimalTrap",
+        "primary_signal": "FloatOperation",
+        "required_signals": [
+          "FloatOperation"
+        ],
+        "value_conversion_reached": false,
+        "session_flags_exact": [
+          "FloatOperation"
+        ],
+        "rows_emitted": 0,
+        "first_poll": "Err",
+        "subsequent_poll": "None"
+      },
+      "evidence_classification": "source_signal_trap_order_plus_active_iterator_safety"
+    }
+  ]
+}

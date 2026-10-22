@@ -1,0 +1,1092 @@
+{
+  "schema": "semantica.datalog-numeric-fixtures/1",
+  "expectation_origin": "literal_source_based_before_runtime_observation_or_candidate",
+  "original_source_sha256": "901676257437fd056203ea572bb750f84c528b1693a5ef8149c68d5725a3c78d",
+  "domain": "JSON integer or finite IEEE754 float, including finite underflow; not arithmetic equality",
+  "cases": [
+    {
+      "id": "zero-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0}],\"rules\":[\"checked(X) :- value(X, 0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "zero-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "negative-integer-zero-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-0}],\"rules\":[\"checked(X) :- value(X, 0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "negative-integer-zero-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-0}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "integer-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5}],\"rules\":[\"checked(X) :- value(X, 5).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 5)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "integer-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 5).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 5)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "negative-integer-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-42}],\"rules\":[\"checked(X) :- value(X, -42).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, -42)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "negative-integer-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, -42).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-42}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, -42)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "beyond-f64-integer-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":9007199254740993}],\"rules\":[\"checked(X) :- value(X, 9007199254740993).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 9007199254740993)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "beyond-f64-integer-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 9007199254740993).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":9007199254740993}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 9007199254740993)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "large-integer-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1234567890123456789012345678901234567890}],\"rules\":[\"checked(X) :- value(X, 1234567890123456789012345678901234567890).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1234567890123456789012345678901234567890)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "large-integer-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1234567890123456789012345678901234567890).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1234567890123456789012345678901234567890}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1234567890123456789012345678901234567890)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "float-zero-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.0}],\"rules\":[\"checked(X) :- value(X, 0.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "float-zero-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 0.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.0}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "negative-float-zero-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-0.0}],\"rules\":[\"checked(X) :- value(X, -0.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, -0.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "negative-float-zero-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, -0.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-0.0}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, -0.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "float-one-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1.0}],\"rules\":[\"checked(X) :- value(X, 1.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "float-one-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1.0}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "exponent-one-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e0}],\"rules\":[\"checked(X) :- value(X, 1.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "exponent-one-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e0}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "decimal-threshold-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.0001}],\"rules\":[\"checked(X) :- value(X, 0.0001).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0.0001)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "decimal-threshold-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 0.0001).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.0001}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0.0001)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "small-five-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.00001}],\"rules\":[\"checked(X) :- value(X, 1e-05).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e-05)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "small-five-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1e-05).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.00001}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e-05)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "small-six-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.000001}],\"rules\":[\"checked(X) :- value(X, 1e-06).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e-06)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "small-six-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1e-06).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.000001}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e-06)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "small-seven-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e-7}],\"rules\":[\"checked(X) :- value(X, 1e-07).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e-07)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "small-seven-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1e-07).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e-7}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e-07)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "negative-small-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-1e-5}],\"rules\":[\"checked(X) :- value(X, -1e-05).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, -1e-05)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "negative-small-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, -1e-05).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-1e-5}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, -1e-05)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "large-fixed-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e15}],\"rules\":[\"checked(X) :- value(X, 1000000000000000.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1000000000000000.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "large-fixed-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1000000000000000.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e15}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1000000000000000.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "large-exponent-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e16}],\"rules\":[\"checked(X) :- value(X, 1e+16).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e+16)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "large-exponent-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1e+16).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e16}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e+16)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "larger-exponent-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e20}],\"rules\":[\"checked(X) :- value(X, 1e+20).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e+20)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "larger-exponent-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1e+20).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e20}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e+20)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "redundant-zeroes-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.0000100}],\"rules\":[\"checked(X) :- value(X, 1e-05).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e-05)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "redundant-zeroes-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1e-05).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.0000100}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1e-05)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "min-normal-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":2.2250738585072014e-308}],\"rules\":[\"checked(X) :- value(X, 2.2250738585072014e-308).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 2.2250738585072014e-308)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "min-normal-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 2.2250738585072014e-308).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":2.2250738585072014e-308}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 2.2250738585072014e-308)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "min-subnormal-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5e-324}],\"rules\":[\"checked(X) :- value(X, 5e-324).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 5e-324)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "min-subnormal-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 5e-324).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5e-324}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 5e-324)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "max-finite-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1.7976931348623157e308}],\"rules\":[\"checked(X) :- value(X, 1.7976931348623157e+308).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.7976931348623157e+308)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "max-finite-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1.7976931348623157e+308).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1.7976931348623157e308}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.7976931348623157e+308)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "rounded-one-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1.0000000000000001}],\"rules\":[\"checked(X) :- value(X, 1.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "rounded-one-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1.0000000000000001}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "decimal-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":2.675}],\"rules\":[\"checked(X) :- value(X, 2.675).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 2.675)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "decimal-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 2.675).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":2.675}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 2.675)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "precision-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1.2345678901234567}],\"rules\":[\"checked(X) :- value(X, 1.2345678901234567).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.2345678901234567)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "precision-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 1.2345678901234567).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1.2345678901234567}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 1.2345678901234567)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "underflow-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e-400}],\"rules\":[\"checked(X) :- value(X, 0.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "underflow-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 0.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":1e-400}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 0.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "negative-underflow-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-1e-400}],\"rules\":[\"checked(X) :- value(X, -0.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, -0.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "negative-underflow-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, -0.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":-1e-400}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, -0.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "float-five-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5.0}],\"rules\":[\"checked(X) :- value(X, 5.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 5.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "float-five-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[\"checked(X) :- value(X, 5.0).\"],\"query\":{\"pattern\":\"checked(?id)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5.0}]}}",
+      "expected": {
+        "closure": [
+          "checked(sample)",
+          "value(sample, 5.0)"
+        ],
+        "rows": [
+          {
+            "id": "sample"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "dedup-python-spelling-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.00001},{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":\"1e-05\"}],\"rules\":[],\"query\":{\"pattern\":\"value(sample, ?value)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "value(sample, 1e-05)"
+        ],
+        "rows": [
+          {
+            "value": "1e-05"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "integer-float-distinct-facts",
+      "command": "datalog",
+      "request_raw": "{\"schema\":\"semantica.datalog-request/1\",\"facts\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5},{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5.0}],\"rules\":[],\"query\":{\"pattern\":\"value(sample, ?value)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000}}",
+      "expected": {
+        "closure": [
+          "value(sample, 5)",
+          "value(sample, 5.0)"
+        ],
+        "rows": [
+          {
+            "value": "5"
+          },
+          {
+            "value": "5.0"
+          }
+        ],
+        "seed_fact_count": 2,
+        "graph_facts_added": null
+      }
+    },
+    {
+      "id": "dedup-python-spelling-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[],\"query\":{\"pattern\":\"value(sample, ?value)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":0.00001},{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":\"1e-05\"}]}}",
+      "expected": {
+        "closure": [
+          "value(sample, 1e-05)"
+        ],
+        "rows": [
+          {
+            "value": "1e-05"
+          }
+        ],
+        "seed_fact_count": 1,
+        "graph_facts_added": 1
+      }
+    },
+    {
+      "id": "integer-float-distinct-graph",
+      "command": "datalog-graph",
+      "request_raw": "{\"schema\":\"semantica.datalog-graph-request/1\",\"facts\":[],\"rules\":[],\"query\":{\"pattern\":\"value(sample, ?value)\",\"bindings\":{}},\"budget\":{\"max_iterations\":1024,\"max_match_attempts\":10000000,\"max_facts\":100000,\"max_query_rows\":10000},\"graph\":{\"nodes\":[],\"edges\":[{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5},{\"subject\":\"sample\",\"predicate\":\"value\",\"object\":5.0}]}}",
+      "expected": {
+        "closure": [
+          "value(sample, 5)",
+          "value(sample, 5.0)"
+        ],
+        "rows": [
+          {
+            "value": "5"
+          },
+          {
+            "value": "5.0"
+          }
+        ],
+        "seed_fact_count": 2,
+        "graph_facts_added": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,3284 @@
+{
+ "json": {
+  "parse_file": {
+   "ok": {
+    "data": {
+     "key": "value",
+     "list": [
+      1,
+      2,
+      3
+     ]
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/data.json",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "parse_nested": {
+   "ok": {
+    "data": {
+     "user": {
+      "name": "Ann",
+      "tags": [
+       "a",
+       "b"
+      ],
+      "address": {
+       "city": "X"
+      }
+     },
+     "items": [
+      {
+       "name": "i1",
+       "n": 1
+      },
+      {
+       "name": "i2",
+       "n": 2.5
+      }
+     ],
+     "flag": true,
+     "none": null
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/nested.json",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "parse_flatten": {
+   "ok": {
+    "data": {
+     "user.name": "Ann",
+     "user.tags.0": "a",
+     "user.tags.1": "b",
+     "user.address.city": "X",
+     "items.0.name": "i1",
+     "items.0.n": 1,
+     "items.1.name": "i2",
+     "items.1.n": 2.5,
+     "flag": true,
+     "none": null
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/nested.json",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "parse_paths": {
+   "ok": {
+    "data": {
+     "user": {
+      "name": "Ann",
+      "tags": [
+       "a",
+       "b"
+      ],
+      "address": {
+       "city": "X"
+      }
+     },
+     "items": [
+      {
+       "name": "i1",
+       "n": 1
+      },
+      {
+       "name": "i2",
+       "n": 2.5
+      }
+     ],
+     "flag": true,
+     "none": null
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/nested.json",
+     "type": "object",
+     "paths": [
+      "user",
+      "user.name",
+      "user.tags",
+      "user.tags[0]",
+      "user.tags[1]",
+      "user.address",
+      "user.address.city",
+      "items",
+      "items[0]",
+      "items[0].name",
+      "items[0].n",
+      "items[1]",
+      "items[1].name",
+      "items[1].n",
+      "flag",
+      "none"
+     ]
+    }
+   }
+  },
+  "parse_flatten_paths": {
+   "ok": {
+    "data": {
+     "user.name": "Ann",
+     "user.tags.0": "a",
+     "user.tags.1": "b",
+     "user.address.city": "X",
+     "items.0.name": "i1",
+     "items.0.n": 1,
+     "items.1.name": "i2",
+     "items.1.n": 2.5,
+     "flag": true,
+     "none": null
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/nested.json",
+     "type": "object",
+     "paths": [
+      "user.name",
+      "user.tags.0",
+      "user.tags.1",
+      "user.address.city",
+      "items.0.name",
+      "items.0.n",
+      "items.1.name",
+      "items.1.n",
+      "flag",
+      "none"
+     ]
+    }
+   }
+  },
+  "parse_string": {
+   "ok": {
+    "data": {
+     "a": [
+      1,
+      {
+       "b": 2
+      }
+     ],
+     "c": 1.0,
+     "d": 100000.0
+    },
+    "type": "object",
+    "metadata": {
+     "source": "string",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "parse_array_string": {
+   "ok": {
+    "data": [
+     {
+      "x": 1
+     },
+     {
+      "x": 2
+     }
+    ],
+    "type": "array",
+    "metadata": {
+     "source": "string",
+     "type": "array",
+     "paths": null
+    }
+   }
+  },
+  "parse_str_scalar": {
+   "ok": {
+    "data": "hello",
+    "type": "string",
+    "metadata": {
+     "source": "string",
+     "type": "string",
+     "paths": null
+    }
+   }
+  },
+  "parse_int_scalar": {
+   "ok": {
+    "data": 42,
+    "type": "number",
+    "metadata": {
+     "source": "string",
+     "type": "number",
+     "paths": null
+    }
+   }
+  },
+  "parse_bool_scalar": {
+   "ok": {
+    "data": true,
+    "type": "number",
+    "metadata": {
+     "source": "string",
+     "type": "number",
+     "paths": null
+    }
+   }
+  },
+  "parse_null_scalar": {
+   "ok": {
+    "data": null,
+    "type": "null",
+    "metadata": {
+     "source": "string",
+     "type": "null",
+     "paths": null
+    }
+   }
+  },
+  "parse_float_scalar": {
+   "ok": {
+    "data": 1.5,
+    "type": "number",
+    "metadata": {
+     "source": "string",
+     "type": "number",
+     "paths": null
+    }
+   }
+  },
+  "invalid_string": {
+   "error": "ValidationError",
+   "message": "Invalid JSON string: Expecting value: line 1 column 7 (char 6)"
+  },
+  "invalid_string2": {
+   "error": "ValidationError",
+   "message": "Invalid JSON string: Expecting value: line 1 column 7 (char 6)"
+  },
+  "invalid_string3": {
+   "error": "ValidationError",
+   "message": "Invalid JSON string: Extra data: line 2 column 1 (char 9)"
+  },
+  "invalid_file": {
+   "error": "ValidationError",
+   "message": "Invalid JSON file: Expecting property name enclosed in double quotes: line 1 column 9 (char 8)"
+  },
+  "missing_path": {
+   "error": "ValidationError",
+   "message": "JSON file not found: $FILES/missing.json"
+  },
+  "missing_str": {
+   "error": "ValidationError",
+   "message": "Invalid JSON string: Expecting value: line 1 column 1 (char 0)"
+  },
+  "empty_string": {
+   "error": "IsADirectoryError",
+   "message": "[Errno 21] Is a directory: '.'"
+  },
+  "long_string": {
+   "error": "OSError",
+   "message": "[Errno 63] File name too long: '{\"k\": \"vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv\"}'"
+  },
+  "bom_file": {
+   "error": "ValidationError",
+   "message": "Invalid JSON file: Unexpected UTF-8 BOM (decode using utf-8-sig): line 1 column 1 (char 0)"
+  },
+  "latin1_file": {
+   "ok": {
+    "data": {
+     "name": "café"
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/latin1.json",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "badutf8_file": {
+   "error": "UnicodeDecodeError",
+   "message": "'utf-8' codec can't decode byte 0xe9 in position 13: invalid continuation byte"
+  },
+  "unknown_encoding": {
+   "error": "LookupError",
+   "message": "unknown encoding: nope"
+  },
+  "crlf_file": {
+   "ok": {
+    "data": {
+     "a": [
+      1,
+      2
+     ]
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/crlf.json",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "to_dict_object": {
+   "ok": {
+    "key": "value",
+    "list": [
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  "to_dict_array1": {
+   "ok": {
+    "only": 1
+   }
+  },
+  "to_dict_array2": {
+   "ok": {
+    "items": [
+     {
+      "x": 1
+     },
+     {
+      "x": 2
+     }
+    ]
+   }
+  },
+  "to_dict_ints": {
+   "ok": {
+    "data": [
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  "to_dict_scalar": {
+   "ok": {
+    "data": "text"
+   }
+  },
+  "to_dict_flat_array": {
+   "error": "KeyError",
+   "message": "0"
+  },
+  "to_list_array": {
+   "ok": [
+    1,
+    2,
+    3
+   ]
+  },
+  "to_list_object": {
+   "ok": [
+    {
+     "key": "value",
+     "list": [
+      1,
+      2,
+      3
+     ]
+    }
+   ]
+  },
+  "to_list_scalar": {
+   "ok": [
+    "text"
+   ]
+  },
+  "to_list_flat_array": {
+   "ok": {
+    "0.x": 1,
+    "1.x": 2
+   }
+  },
+  "values_user_name": {
+   "ok": [
+    "Ann"
+   ]
+  },
+  "values_items_name": {
+   "ok": [
+    "i1",
+    "i2"
+   ]
+  },
+  "values_missing": {
+   "ok": []
+  },
+  "values_tags": {
+   "ok": [
+    [
+     "a",
+     "b"
+    ]
+   ]
+  },
+  "values_empty_path": {
+   "ok": [
+    1
+   ]
+  }
+ },
+ "csv": {
+  "basic": {
+   "ok": {
+    "headers": [
+     "name",
+     "company",
+     "role"
+    ],
+    "rows": [
+     {
+      "name": "Tim Cook",
+      "company": "Apple Inc.",
+      "role": "CEO"
+     },
+     {
+      "name": "Satya Nadella",
+      "company": "Microsoft Corporation",
+      "role": "CEO"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/companies.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "no_header": {
+   "ok": {
+    "headers": [
+     "Column_1",
+     "Column_2",
+     "Column_3"
+    ],
+    "rows": [
+     {
+      "Column_1": "name",
+      "Column_2": "company",
+      "Column_3": "role"
+     },
+     {
+      "Column_1": "Tim Cook",
+      "Column_2": "Apple Inc.",
+      "Column_3": "CEO"
+     },
+     {
+      "Column_1": "Satya Nadella",
+      "Column_2": "Microsoft Corporation",
+      "Column_3": "CEO"
+     }
+    ],
+    "row_count": 3,
+    "metadata": {
+     "file_path": "$FILES/companies.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": false
+    }
+   }
+  },
+  "skip_max": {
+   "ok": {
+    "headers": [
+     "name",
+     "company",
+     "role"
+    ],
+    "rows": [
+     {
+      "name": "Satya Nadella",
+      "company": "Microsoft Corporation",
+      "role": "CEO"
+     }
+    ],
+    "row_count": 1,
+    "metadata": {
+     "file_path": "$FILES/companies.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "no_header_skip": {
+   "ok": {
+    "headers": [
+     "Column_1",
+     "Column_2",
+     "Column_3"
+    ],
+    "rows": [
+     {
+      "Column_1": "name",
+      "Column_2": "company",
+      "Column_3": "role"
+     },
+     {
+      "Column_1": "Satya Nadella",
+      "Column_2": "Microsoft Corporation",
+      "Column_3": "CEO"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/companies.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": false
+    }
+   }
+  },
+  "max_zero": {
+   "ok": {
+    "headers": [
+     "name",
+     "company",
+     "role"
+    ],
+    "rows": [
+     {
+      "name": "Tim Cook",
+      "company": "Apple Inc.",
+      "role": "CEO"
+     },
+     {
+      "name": "Satya Nadella",
+      "company": "Microsoft Corporation",
+      "role": "CEO"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/companies.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "max_negative": {
+   "ok": {
+    "headers": [
+     "name",
+     "company",
+     "role"
+    ],
+    "rows": [],
+    "row_count": 0,
+    "metadata": {
+     "file_path": "$FILES/companies.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "semicolon": {
+   "ok": {
+    "headers": [
+     "a",
+     "b",
+     "c"
+    ],
+    "rows": [
+     {
+      "a": "1",
+      "b": "2",
+      "c": "3"
+     },
+     {
+      "a": "4",
+      "b": "5",
+      "c": "6"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/semicolon.csv",
+     "delimiter": ";",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "sniff": {
+   "ok": {
+    "headers": [
+     "a",
+     "b",
+     "c"
+    ],
+    "rows": [
+     {
+      "a": "1",
+      "b": "2",
+      "c": "3"
+     },
+     {
+      "a": "4",
+      "b": "5",
+      "c": "6"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/semicolon.csv",
+     "delimiter": ";",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "sniff_fail": {
+   "error": "Error",
+   "message": "Could not determine delimiter"
+  },
+  "sniff_single": {
+   "ok": {
+    "headers": [
+     "wo",
+     "d"
+    ],
+    "rows": [
+     {
+      "wo": "anothe",
+      "d": ""
+     }
+    ],
+    "row_count": 1,
+    "metadata": {
+     "file_path": "$FILES/single.csv",
+     "delimiter": "r",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "ragged": {
+   "ok": {
+    "headers": [
+     "h1",
+     "h2"
+    ],
+    "rows": [
+     {
+      "h1": "1",
+      "h2": "2",
+      "null": [
+       "3",
+       "4"
+      ]
+     },
+     {
+      "h1": "5",
+      "h2": null
+     },
+     {
+      "h1": "6",
+      "h2": "7"
+     }
+    ],
+    "row_count": 3,
+    "metadata": {
+     "file_path": "$FILES/ragged.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "ragged_no_header": {
+   "ok": {
+    "headers": [
+     "Column_1",
+     "Column_2"
+    ],
+    "rows": [
+     {
+      "Column_1": "h1",
+      "Column_2": "h2"
+     },
+     {
+      "Column_1": "1",
+      "Column_2": "2"
+     },
+     {
+      "Column_1": "5"
+     },
+     {},
+     {
+      "Column_1": "6",
+      "Column_2": "7"
+     }
+    ],
+    "row_count": 5,
+    "metadata": {
+     "file_path": "$FILES/ragged.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": false
+    }
+   }
+  },
+  "quoted": {
+   "ok": {
+    "headers": [
+     "name",
+     "note"
+    ],
+    "rows": [
+     {
+      "name": "Smith, J",
+      "note": "said \"hi\"\non two lines"
+     },
+     {
+      "name": "plain",
+      "note": "x"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/quoted.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "empty": {
+   "ok": {
+    "headers": [],
+    "rows": [],
+    "row_count": 0,
+    "metadata": {
+     "file_path": "$FILES/empty.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "empty_no_header": {
+   "ok": {
+    "headers": [],
+    "rows": [],
+    "row_count": 0,
+    "metadata": {
+     "file_path": "$FILES/empty.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": false
+    }
+   }
+  },
+  "crlf": {
+   "ok": {
+    "headers": [
+     "a",
+     "b"
+    ],
+    "rows": [
+     {
+      "a": "1",
+      "b": "2"
+     },
+     {
+      "a": "3",
+      "b": "4"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/crlf.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "latin1": {
+   "ok": {
+    "headers": [
+     "n"
+    ],
+    "rows": [
+     {
+      "n": "café"
+     }
+    ],
+    "row_count": 1,
+    "metadata": {
+     "file_path": "$FILES/latin1.csv",
+     "delimiter": ",",
+     "encoding": "latin-1",
+     "has_header": true
+    }
+   }
+  },
+  "mixedbytes": {
+   "ok": {
+    "headers": [
+     "n",
+     "v"
+    ],
+    "rows": [
+     {
+      "n": "abc",
+      "v": "1"
+     }
+    ],
+    "row_count": 1,
+    "metadata": {
+     "file_path": "$FILES/mixedbytes.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "missing": {
+   "error": "ValidationError",
+   "message": "CSV file not found: $FILES/missing.csv"
+  },
+  "bad_delimiter": {
+   "error": "TypeError",
+   "message": "\"delimiter\" must be a 1-character string"
+  },
+  "unknown_encoding": {
+   "error": "LookupError",
+   "message": "unknown encoding: nope"
+  },
+  "has_header_zero": {
+   "ok": {
+    "headers": [
+     "Column_1",
+     "Column_2",
+     "Column_3"
+    ],
+    "rows": [
+     {
+      "Column_1": "name",
+      "Column_2": "company",
+      "Column_3": "role"
+     },
+     {
+      "Column_1": "Tim Cook",
+      "Column_2": "Apple Inc.",
+      "Column_3": "CEO"
+     },
+     {
+      "Column_1": "Satya Nadella",
+      "Column_2": "Microsoft Corporation",
+      "Column_3": "CEO"
+     }
+    ],
+    "row_count": 3,
+    "metadata": {
+     "file_path": "$FILES/companies.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": 0
+    }
+   }
+  },
+  "to_dict": {
+   "ok": [
+    {
+     "h1": "1",
+     "h2": "2",
+     "null": [
+      "3",
+      "4"
+     ]
+    },
+    {
+     "h1": "5",
+     "h2": null
+    },
+    {
+     "h1": "6",
+     "h2": "7"
+    }
+   ]
+  },
+  "to_dict_delim": {
+   "ok": [
+    {
+     "a": "1",
+     "b": "2",
+     "c": "3"
+    },
+    {
+     "a": "4",
+     "b": "5",
+     "c": "6"
+    }
+   ]
+  },
+  "to_list": {
+   "ok": [
+    [
+     "1",
+     "2"
+    ],
+    [
+     "5",
+     null
+    ],
+    [
+     "6",
+     "7"
+    ]
+   ]
+  },
+  "to_list_no_header": {
+   "ok": [
+    [
+     "h1",
+     "h2"
+    ],
+    [
+     "1",
+     "2"
+    ],
+    [
+     "5",
+     ""
+    ],
+    [
+     "",
+     ""
+    ],
+    [
+     "6",
+     "7"
+    ]
+   ]
+  }
+ },
+ "structured": {
+  "json_auto": {
+   "ok": {
+    "data": {
+     "key": "value",
+     "list": [
+      1,
+      2,
+      3
+     ]
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/data.json",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "json_explicit": {
+   "ok": {
+    "data": {
+     "key": "value",
+     "list": [
+      1,
+      2,
+      3
+     ]
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/data.json",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "csv_auto": {
+   "ok": {
+    "headers": [
+     "name",
+     "company",
+     "role"
+    ],
+    "rows": [
+     {
+      "name": "Tim Cook",
+      "company": "Apple Inc.",
+      "role": "CEO"
+     },
+     {
+      "name": "Satya Nadella",
+      "company": "Microsoft Corporation",
+      "role": "CEO"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/companies.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "csv_delimiter": {
+   "ok": {
+    "headers": [
+     "a",
+     "b",
+     "c"
+    ],
+    "rows": [
+     {
+      "a": "1",
+      "b": "2",
+      "c": "3"
+     },
+     {
+      "a": "4",
+      "b": "5",
+      "c": "6"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/semicolon.csv",
+     "delimiter": ";",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "yaml_file": {
+   "ok": {
+    "data": {
+     "parse": {
+      "default_encoding": "latin-1",
+      "extract_tables": false
+     },
+     "parse_methods": {
+      "document": {
+       "extract_images": true
+      }
+     },
+     "list": [
+      1,
+      "two",
+      3.5
+     ],
+     "nested": {
+      "a": null,
+      "b": [
+       "x",
+       "y"
+      ]
+     }
+    },
+    "type": "dict",
+    "metadata": {
+     "format": "yaml"
+    }
+   }
+  },
+  "yaml_scalar": {
+   "ok": {
+    "data": "just a string",
+    "type": "str",
+    "metadata": {
+     "format": "yaml"
+    }
+   }
+  },
+  "yaml_list": {
+   "ok": {
+    "data": [
+     "a",
+     "b"
+    ],
+    "type": "list",
+    "metadata": {
+     "format": "yaml"
+    }
+   }
+  },
+  "yaml_string": {
+   "ok": {
+    "data": {
+     "a": 1,
+     "b": [
+      "x",
+      2
+     ]
+    },
+    "type": "dict",
+    "metadata": {
+     "format": "yaml"
+    }
+   }
+  },
+  "json_content": {
+   "ok": {
+    "data": {
+     "k": [
+      1,
+      2
+     ]
+    },
+    "type": "object",
+    "metadata": {
+     "source": "string",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "csv_content": {
+   "error": "ValidationError",
+   "message": "CSV file not found: a,b\n1,2"
+  },
+  "xml_content_detect": {
+   "ok": "xml"
+  },
+  "unknown_content": {
+   "error": "ValidationError",
+   "message": "Unsupported data format: unknown"
+  },
+  "unknown_file": {
+   "error": "ValidationError",
+   "message": "Unsupported data format: unknown"
+  },
+  "bad_format": {
+   "error": "ValidationError",
+   "message": "Unsupported data format: ,"
+  },
+  "validate_none": {
+   "ok": {
+    "valid": true,
+    "errors": [],
+    "message": "No schema provided, skipping validation"
+   }
+  },
+  "validate_required": {
+   "ok": {
+    "valid": false,
+    "errors": [
+     "Missing required field: b"
+    ]
+   }
+  },
+  "validate_types": {
+   "ok": {
+    "valid": false,
+    "errors": [
+     "Field i: expected integer, got bool",
+     "Field z: expected null, got NoneType",
+     "Field q: expected None, got int"
+    ]
+   }
+  },
+  "validate_number_int": {
+   "ok": {
+    "valid": true,
+    "errors": []
+   }
+  },
+  "validate_non_dict": {
+   "ok": {
+    "valid": true,
+    "errors": []
+   }
+  },
+  "convert_dict_json": {
+   "ok": "{\n  \"name\": \"Ann\",\n  \"tags\": [\n    \"a\",\n    \"\\u00e9\"\n  ],\n  \"n\": 1.0\n}"
+  },
+  "convert_dict_csv": {
+   "ok": "a,b,c\r\n1,\"x,y\",\r\n"
+  },
+  "convert_list_dicts_csv": {
+   "ok": "a,b\r\n1,2\r\n3,\r\n"
+  },
+  "convert_list_extra_csv": {
+   "error": "ValueError",
+   "message": "dict contains fields not in fieldnames: 'z'"
+  },
+  "convert_list_lists_csv": {
+   "ok": "1,two\r\n\"x\"\"y\",\r\n"
+  },
+  "convert_list_mixed_csv": {
+   "error": "Error",
+   "message": "iterable expected, not int"
+  },
+  "convert_empty_csv": {
+   "ok": ""
+  },
+  "convert_scalar_csv": {
+   "ok": "42"
+  },
+  "convert_dict_xml": {
+   "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <person>\n    <name>A &amp; B</name>\n    <age>3</age>\n    <tags>\n      <item>x</item>\n      <k>v</k>\n    </tags>\n    <empty/>\n    <none>None</none>\n  </person>\n</root>\n"
+  },
+  "convert_list_xml": {
+   "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <item>1</item>\n  <a>&lt;b&gt;</a>\n</root>\n"
+  },
+  "convert_scalar_xml": {
+   "ok": "<?xml version=\"1.0\" ?>\n<root>3.5</root>\n"
+  },
+  "convert_bad_tag_xml": {
+   "error": "ExpatError",
+   "message": "not well-formed (invalid token): line 1, column 17"
+  },
+  "convert_empty_dict_xml": {
+   "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <a/>\n  <b/>\n</root>\n"
+  },
+  "convert_dict_yaml": {
+   "ok": "a:\n  x: y\nb:\n- 1\n- 2\n"
+  },
+  "convert_file_csv": {
+   "ok": "x\r\n1\r\n2\r\n"
+  },
+  "convert_string_yaml": {
+   "ok": "a:\n- true\n- null\nz: 1\n"
+  },
+  "convert_csv_file_json": {
+   "ok": "{\n  \"headers\": [\n    \"name\",\n    \"company\",\n    \"role\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"Tim Cook\",\n      \"company\": \"Apple Inc.\",\n      \"role\": \"CEO\"\n    },\n    {\n      \"name\": \"Satya Nadella\",\n      \"company\": \"Microsoft Corporation\",\n      \"role\": \"CEO\"\n    }\n  ],\n  \"row_count\": 2,\n  \"metadata\": {\n    \"file_path\": \"$FILES/companies.csv\",\n    \"delimiter\": \",\",\n    \"encoding\": \"utf-8\",\n    \"has_header\": true\n  }\n}"
+  },
+  "convert_unsupported": {
+   "error": "ValidationError",
+   "message": "Unsupported target format: toml"
+  },
+  "schema_dict": {
+   "ok": {
+    "type": "object",
+    "properties": {
+     "s": {
+      "type": "string"
+     },
+     "i": {
+      "type": "integer"
+     },
+     "f": {
+      "type": "number"
+     },
+     "b": {
+      "type": "boolean"
+     },
+     "n": {
+      "type": "string"
+     },
+     "l": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "integer"
+        }
+       }
+      }
+     },
+     "o": {
+      "type": "object",
+      "properties": {
+       "p": {
+        "type": "array"
+       }
+      }
+     }
+    }
+   }
+  },
+  "schema_list": {
+   "ok": {
+    "type": "array",
+    "properties": {},
+    "items": {
+     "type": "integer"
+    }
+   }
+  },
+  "schema_empty_list": {
+   "ok": {
+    "type": "array",
+    "properties": {}
+   }
+  },
+  "schema_scalar": {
+   "ok": {
+    "type": "str",
+    "properties": {}
+   }
+  },
+  "schema_none": {
+   "ok": {
+    "type": "NoneType",
+    "properties": {}
+   }
+  }
+ },
+ "config": {
+  "yaml": {
+   "config": {
+    "default_encoding": "latin-1",
+    "extract_tables": false
+   },
+   "method_configs": {
+    "document": {
+     "extract_images": true
+    }
+   }
+  },
+  "json": {
+   "config": {
+    "ocr_language": "deu",
+    "max": 5
+   },
+   "method_configs": {
+    "web": {
+     "render": false
+    }
+   }
+  },
+  "toml": {
+   "config": {
+    "default_encoding": "utf-16",
+    "limit": 10
+   },
+   "method_configs": {
+    "code": {
+     "language": "python"
+    }
+   }
+  },
+  "bad_yaml": {
+   "config": {},
+   "method_configs": {}
+  },
+  "list_yaml": {
+   "config": {},
+   "method_configs": {}
+  },
+  "missing": {
+   "config": {},
+   "method_configs": {}
+  },
+  "env": {
+   "ocr_language": "fra",
+   "extract_tables": true,
+   "max_pages": 12,
+   "threshold": 0.75,
+   "flag": true,
+   "name": "custom",
+   "empty": "",
+   "exp": 1000.0,
+   "neg": -5.0
+  },
+  "env_get": {
+   "configured": 12,
+   "missing_default": "dflt",
+   "missing_none": null,
+   "int_default": 30,
+   "float_default": 2.5,
+   "bool_default_digit": 1,
+   "bool_default_word": false,
+   "str_default": "yes",
+   "int_default_bad": 7
+  },
+  "api_get": "ascii",
+  "api_method": {
+   "extract_tables": false,
+   "pages": [
+    1,
+    2
+   ]
+  },
+  "api_method_missing": {},
+  "api_all": {
+   "config": {
+    "default_encoding": "ascii"
+   },
+   "method_configs": {
+    "document": {
+     "extract_tables": false,
+     "pages": [
+      1,
+      2
+     ]
+    }
+   }
+  },
+  "yaml_get_method": {
+   "extract_images": true
+  }
+ },
+ "registry": {
+  "initial": {
+   "document": [
+    "docling",
+    "default"
+   ],
+   "web": [
+    "default"
+   ],
+   "structured": [
+    "default"
+   ],
+   "email": [
+    "default"
+   ],
+   "code": [
+    "default"
+   ],
+   "media": [
+    "default"
+   ],
+   "mcp": []
+  },
+  "task": {
+   "document": [
+    "docling",
+    "default"
+   ]
+  },
+  "unknown_task": {
+   "nope": []
+  },
+  "empty_task": {
+   "document": [
+    "docling",
+    "default"
+   ],
+   "web": [
+    "default"
+   ],
+   "structured": [
+    "default"
+   ],
+   "email": [
+    "default"
+   ],
+   "code": [
+    "default"
+   ],
+   "media": [
+    "default"
+   ],
+   "mcp": []
+  },
+  "after_register": {
+   "document": [
+    "docling",
+    "default",
+    "mine"
+   ],
+   "web": [
+    "default"
+   ],
+   "structured": [
+    "default"
+   ],
+   "email": [
+    "default"
+   ],
+   "code": [
+    "default"
+   ],
+   "media": [
+    "default"
+   ],
+   "mcp": [],
+   "newtask": [
+    "m1"
+   ]
+  },
+  "get_mine": true,
+  "get_missing": true,
+  "get_missing_task": true,
+  "after_unregister": {
+   "document": [
+    "docling",
+    "default"
+   ],
+   "web": [
+    "default"
+   ],
+   "structured": [
+    "default"
+   ],
+   "email": [
+    "default"
+   ],
+   "code": [
+    "default"
+   ],
+   "media": [
+    "default"
+   ],
+   "mcp": [],
+   "newtask": [
+    "m1"
+   ]
+  },
+  "after_clear_web": {
+   "document": [
+    "docling",
+    "default"
+   ],
+   "web": [],
+   "structured": [
+    "default"
+   ],
+   "email": [
+    "default"
+   ],
+   "code": [
+    "default"
+   ],
+   "media": [
+    "default"
+   ],
+   "mcp": [],
+   "newtask": [
+    "m1"
+   ]
+  },
+  "after_clear_all": {
+   "document": [],
+   "web": [],
+   "structured": [],
+   "email": [],
+   "code": [],
+   "media": [],
+   "mcp": [],
+   "newtask": []
+  },
+  "restored": {
+   "document": [
+    "docling",
+    "default"
+   ],
+   "web": [
+    "default"
+   ],
+   "structured": [
+    "default"
+   ],
+   "email": [
+    "default"
+   ],
+   "code": [
+    "default"
+   ],
+   "media": [
+    "default"
+   ],
+   "mcp": []
+  }
+ },
+ "document": {
+  "parse_txt": {
+   "ok": {
+    "text": "Apple Inc. is a technology company. Tim Cook is the CEO.",
+    "metadata": {
+     "file_path": "$FILES/notes.txt",
+     "encoding": "utf-8",
+     "size": 56
+    },
+    "full_text": "Apple Inc. is a technology company. Tim Cook is the CEO."
+   }
+  },
+  "parse_txt_type": {
+   "ok": {
+    "text": "whatever",
+    "metadata": {
+     "file_path": "$FILES/unknown.xyz",
+     "encoding": "utf-8",
+     "size": 8
+    },
+    "full_text": "whatever"
+   }
+  },
+  "parse_alias": {
+   "ok": {
+    "text": "Apple Inc. is a technology company. Tim Cook is the CEO.",
+    "metadata": {
+     "file_path": "$FILES/notes.txt",
+     "encoding": "utf-8",
+     "size": 56
+    },
+    "full_text": "Apple Inc. is a technology company. Tim Cook is the CEO."
+   }
+  },
+  "extract_text": {
+   "ok": "Apple Inc. is a technology company. Tim Cook is the CEO."
+  },
+  "extract_text_crlf": {
+   "ok": "line1\nline2\nline3\n"
+  },
+  "extract_text_latin1": {
+   "ok": "café"
+  },
+  "extract_text_utf8_ignore": {
+   "ok": "caf"
+  },
+  "extract_text_missing": {
+   "error": "ProcessingError",
+   "message": "Failed to parse text file: [Errno 2] No such file or directory: '$FILES/missing.txt'"
+  },
+  "extract_text_unknown": {
+   "error": "ValidationError",
+   "message": "Unsupported document format: unknown"
+  },
+  "extract_metadata": {
+   "ok": {
+    "file_path": "$FILES/notes.txt",
+    "encoding": "utf-8",
+    "size": 56
+   }
+  },
+  "unknown_format": {
+   "error": "ProcessingError",
+   "message": "Failed to parse document: Unsupported document format: unknown"
+  },
+  "missing": {
+   "error": "ValidationError",
+   "message": "Document file not found: $FILES/missing.txt"
+  },
+  "bad_type": {
+   "error": "ProcessingError",
+   "message": "Failed to parse document: Unsupported document format: rtf"
+  },
+  "batch": {
+   "ok": {
+    "successful": [
+     {
+      "file_path": "$FILES/notes.txt",
+      "result": {
+       "text": "Apple Inc. is a technology company. Tim Cook is the CEO.",
+       "metadata": {
+        "file_path": "$FILES/notes.txt",
+        "encoding": "utf-8",
+        "size": 56
+       },
+       "full_text": "Apple Inc. is a technology company. Tim Cook is the CEO."
+      }
+     },
+     {
+      "file_path": "$FILES/crlf.txt",
+      "result": {
+       "text": "line1\nline2\nline3\n",
+       "metadata": {
+        "file_path": "$FILES/crlf.txt",
+        "encoding": "utf-8",
+        "size": 18
+       },
+       "full_text": "line1\nline2\nline3\n"
+      }
+     }
+    ],
+    "failed": [
+     {
+      "file_path": "$FILES/missing.txt",
+      "error": "Document file not found: $FILES/missing.txt",
+      "error_type": "ValidationError"
+     },
+     {
+      "file_path": "$FILES/unknown.xyz",
+      "error": "Failed to parse document: Unsupported document format: unknown",
+      "error_type": "ProcessingError"
+     }
+    ],
+    "total": 4,
+    "success_count": 2,
+    "failure_count": 2
+   }
+  },
+  "batch_stop": {
+   "error": "ProcessingError",
+   "message": "Batch processing failed at $FILES/missing.txt: Document file not found: $FILES/missing.txt"
+  },
+  "batch_empty": {
+   "ok": {
+    "successful": [],
+    "failed": [],
+    "total": 0,
+    "success_count": 0,
+    "failure_count": 0
+   }
+  },
+  "parse_list": {
+   "ok": [
+    {
+     "text": "Apple Inc. is a technology company. Tim Cook is the CEO.",
+     "metadata": {
+      "file_path": "$FILES/notes.txt",
+      "encoding": "utf-8",
+      "size": 56
+     },
+     "full_text": "Apple Inc. is a technology company. Tim Cook is the CEO."
+    },
+    {
+     "text": "line1\nline2\nline3\n",
+     "metadata": {
+      "file_path": "$FILES/crlf.txt",
+      "encoding": "utf-8",
+      "size": 18
+     },
+     "full_text": "line1\nline2\nline3\n"
+    }
+   ]
+  },
+  "parse_list_bad_item": {
+   "error": "ValueError",
+   "message": "Unsupported item type in list: <class 'int'>"
+  },
+  "parse_encoding": {
+   "ok": {
+    "text": "café",
+    "metadata": {
+     "file_path": "$FILES/latin1.txt",
+     "encoding": "latin-1",
+     "size": 4
+    },
+    "full_text": "café"
+   }
+  },
+  "supported_formats": {
+   ".pdf": "pdf",
+   ".docx": "docx",
+   ".doc": "docx",
+   ".html": "html",
+   ".htm": "html",
+   ".txt": "text",
+   ".text": "text"
+  }
+ },
+ "mcp": {
+  "resource_json": {
+   "ok": {
+    "type": "resource",
+    "raw": {
+     "uri": "file:///x",
+     "mimeType": "application/json",
+     "contents": [
+      {
+       "type": "text",
+       "text": " {\"a\": [1, 2]}"
+      }
+     ],
+     "metadata": {
+      "k": 1
+     }
+    },
+    "content": [
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": " {\"a\": [1, 2]}"
+      },
+      "text": " {\"a\": [1, 2]}",
+      "structured": {
+       "a": [
+        1,
+        2
+       ]
+      }
+     }
+    ],
+    "metadata": {
+     "k": 1
+    },
+    "parsed_content": {
+     "type": "text",
+     "mimeType": null,
+     "raw": {
+      "type": "text",
+      "text": " {\"a\": [1, 2]}"
+     },
+     "text": " {\"a\": [1, 2]}",
+     "structured": {
+      "a": [
+       1,
+       2
+      ]
+     }
+    },
+    "uri": "file:///x",
+    "mimeType": "application/json"
+   }
+  },
+  "resource_multi": {
+   "ok": {
+    "type": "resource",
+    "raw": {
+     "contents": [
+      {
+       "type": "text",
+       "text": "name,age\nAnn,3\n\nBob,4,extra\nCy,5"
+      },
+      {
+       "type": "text",
+       "text": "a\tb\n1\t2"
+      },
+      {
+       "type": "text",
+       "text": "single line, with comma"
+      },
+      {
+       "type": "text",
+       "text": "[1, 2"
+      },
+      {
+       "type": "image",
+       "data": "aGVsbG8=",
+       "mimeType": "image/png"
+      },
+      {
+       "type": "image",
+       "data": ""
+      },
+      {
+       "type": "resource",
+       "resource": {
+        "uri": "r"
+       }
+      },
+      {
+       "type": "blob",
+       "data": [
+        1,
+        2
+       ]
+      },
+      {
+       "text": "default type"
+      },
+      "not a dict",
+      {
+       "type": "text",
+       "text": 5
+      }
+     ]
+    },
+    "content": [
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "name,age\nAnn,3\n\nBob,4,extra\nCy,5"
+      },
+      "text": "name,age\nAnn,3\n\nBob,4,extra\nCy,5",
+      "structured": [
+       {
+        "name": "Ann",
+        "age": "3"
+       },
+       {
+        "name": "Cy",
+        "age": "5"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "a\tb\n1\t2"
+      },
+      "text": "a\tb\n1\t2",
+      "structured": [
+       {
+        "a": "1",
+        "b": "2"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "single line, with comma"
+      },
+      "text": "single line, with comma"
+     },
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "[1, 2"
+      },
+      "text": "[1, 2"
+     },
+     {
+      "type": "image",
+      "mimeType": "image/png",
+      "raw": {
+       "type": "image",
+       "data": "aGVsbG8=",
+       "mimeType": "image/png"
+      },
+      "image_data": "aGVsbG8=",
+      "image_format": "image/png"
+     },
+     {
+      "type": "image",
+      "mimeType": null,
+      "raw": {
+       "type": "image",
+       "data": ""
+      },
+      "data": ""
+     },
+     {
+      "type": "resource",
+      "mimeType": null,
+      "raw": {
+       "type": "resource",
+       "resource": {
+        "uri": "r"
+       }
+      },
+      "resource": {
+       "uri": "r"
+      }
+     },
+     {
+      "type": "blob",
+      "mimeType": null,
+      "raw": {
+       "type": "blob",
+       "data": [
+        1,
+        2
+       ]
+      },
+      "data": [
+       1,
+       2
+      ]
+     },
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "text": "default type"
+      },
+      "text": "default type"
+     }
+    ],
+    "metadata": {},
+    "parsed_content": [
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "name,age\nAnn,3\n\nBob,4,extra\nCy,5"
+      },
+      "text": "name,age\nAnn,3\n\nBob,4,extra\nCy,5",
+      "structured": [
+       {
+        "name": "Ann",
+        "age": "3"
+       },
+       {
+        "name": "Cy",
+        "age": "5"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "a\tb\n1\t2"
+      },
+      "text": "a\tb\n1\t2",
+      "structured": [
+       {
+        "a": "1",
+        "b": "2"
+       }
+      ]
+     },
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "single line, with comma"
+      },
+      "text": "single line, with comma"
+     },
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "[1, 2"
+      },
+      "text": "[1, 2"
+     },
+     {
+      "type": "image",
+      "mimeType": "image/png",
+      "raw": {
+       "type": "image",
+       "data": "aGVsbG8=",
+       "mimeType": "image/png"
+      },
+      "image_data": "aGVsbG8=",
+      "image_format": "image/png"
+     },
+     {
+      "type": "image",
+      "mimeType": null,
+      "raw": {
+       "type": "image",
+       "data": ""
+      },
+      "data": ""
+     },
+     {
+      "type": "resource",
+      "mimeType": null,
+      "raw": {
+       "type": "resource",
+       "resource": {
+        "uri": "r"
+       }
+      },
+      "resource": {
+       "uri": "r"
+      }
+     },
+     {
+      "type": "blob",
+      "mimeType": null,
+      "raw": {
+       "type": "blob",
+       "data": [
+        1,
+        2
+       ]
+      },
+      "data": [
+       1,
+       2
+      ]
+     },
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "text": "default type"
+      },
+      "text": "default type"
+     }
+    ],
+    "uri": null,
+    "mimeType": null
+   }
+  },
+  "resource_empty": {
+   "ok": {
+    "type": "resource",
+    "raw": {
+     "contents": []
+    },
+    "content": null,
+    "metadata": {},
+    "parsed_content": null,
+    "uri": null,
+    "mimeType": null
+   }
+  },
+  "resource_none": {
+   "ok": {
+    "type": "resource",
+    "raw": {
+     "contents": null,
+     "uri": "u"
+    },
+    "content": null,
+    "metadata": {},
+    "parsed_content": null,
+    "uri": "u",
+    "mimeType": null
+   }
+  },
+  "resource_not_dict": {
+   "error": "ProcessingError",
+   "message": "Failed to parse resource response: 'list' object has no attribute 'get'"
+  },
+  "resource_int_contents": {
+   "error": "ProcessingError",
+   "message": "Failed to parse resource response: 'int' object is not iterable"
+  },
+  "resource_str_contents": {
+   "ok": {
+    "type": "resource",
+    "raw": {
+     "contents": "ab"
+    },
+    "content": [],
+    "metadata": {},
+    "parsed_content": [],
+    "uri": null,
+    "mimeType": null
+   }
+  },
+  "tool_output": {
+   "ok": {
+    "type": "tool_output",
+    "raw": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"ok\": true}"
+      }
+     ],
+     "isError": true
+    },
+    "content": [
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "{\"ok\": true}"
+      },
+      "text": "{\"ok\": true}",
+      "structured": {
+       "ok": true
+      }
+     }
+    ],
+    "metadata": {},
+    "parsed_content": {
+     "type": "text",
+     "mimeType": null,
+     "raw": {
+      "type": "text",
+      "text": "{\"ok\": true}"
+     },
+     "text": "{\"ok\": true}",
+     "structured": {
+      "ok": true
+     }
+    },
+    "isError": true
+   }
+  },
+  "tool_output_default": {
+   "ok": {
+    "type": "tool_output",
+    "raw": {},
+    "content": null,
+    "metadata": {},
+    "parsed_content": null,
+    "isError": false
+   }
+  },
+  "mcp_resource": {
+   "ok": {
+    "type": "resource",
+    "raw": {
+     "contents": [
+      {
+       "type": "text",
+       "text": "hi"
+      }
+     ]
+    },
+    "content": [
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "type": "text",
+       "text": "hi"
+      },
+      "text": "hi"
+     }
+    ],
+    "metadata": {},
+    "parsed_content": {
+     "type": "text",
+     "mimeType": null,
+     "raw": {
+      "type": "text",
+      "text": "hi"
+     },
+     "text": "hi"
+    },
+    "uri": null,
+    "mimeType": null
+   }
+  },
+  "mcp_tool": {
+   "ok": {
+    "type": "tool_output",
+    "raw": {
+     "content": []
+    },
+    "content": null,
+    "metadata": {},
+    "parsed_content": null,
+    "isError": false
+   }
+  },
+  "mcp_other_dict": {
+   "ok": {
+    "type": "tool_output",
+    "raw": {
+     "x": 1
+    },
+    "content": null,
+    "metadata": {},
+    "parsed_content": null,
+    "isError": false
+   }
+  },
+  "mcp_list": {
+   "error": "ProcessingError",
+   "message": "Failed to parse MCP data: Cannot determine MCP data type"
+  },
+  "mcp_unknown_type": {
+   "error": "ProcessingError",
+   "message": "Failed to parse MCP data: Unknown MCP data type: weird"
+  },
+  "mcp_explicit_resource": {
+   "ok": {
+    "type": "resource",
+    "raw": {
+     "contents": [
+      {
+       "text": "x"
+      }
+     ]
+    },
+    "content": [
+     {
+      "type": "text",
+      "mimeType": null,
+      "raw": {
+       "text": "x"
+      },
+      "text": "x"
+     }
+    ],
+    "metadata": {},
+    "parsed_content": {
+     "type": "text",
+     "mimeType": null,
+     "raw": {
+      "text": "x"
+     },
+     "text": "x"
+    },
+    "uri": null,
+    "mimeType": null
+   }
+  },
+  "mcp_resource_error": {
+   "error": "ProcessingError",
+   "message": "Failed to parse MCP data: Failed to parse resource response: 'str' object has no attribute 'get'"
+  }
+ },
+ "methods": {
+  "list_available": {
+   "document": [
+    "docling",
+    "default"
+   ],
+   "web": [
+    "default"
+   ],
+   "structured": [
+    "default"
+   ],
+   "email": [
+    "default"
+   ],
+   "code": [
+    "default"
+   ],
+   "media": [
+    "default"
+   ],
+   "mcp": []
+  },
+  "parse_document_txt": {
+   "ok": {
+    "text": "Apple Inc. is a technology company. Tim Cook is the CEO.",
+    "metadata": {
+     "file_path": "$FILES/notes.txt",
+     "encoding": "utf-8",
+     "size": 56
+    },
+    "full_text": "Apple Inc. is a technology company. Tim Cook is the CEO."
+   }
+  },
+  "parse_document_missing": {
+   "error": "ValidationError",
+   "message": "Document file not found: $FILES/missing.txt"
+  },
+  "parse_structured_json": {
+   "ok": {
+    "data": {
+     "key": "value",
+     "list": [
+      1,
+      2,
+      3
+     ]
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/data.json",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "parse_structured_bad": {
+   "error": "ValidationError",
+   "message": "Unsupported data format: unknown"
+  },
+  "parse_json_via_structured": {
+   "ok": {
+    "data": {
+     "key": "value",
+     "list": [
+      1,
+      2,
+      3
+     ]
+    },
+    "type": "object",
+    "metadata": {
+     "source": "$FILES/data.json",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "parse_json_string": {
+   "ok": {
+    "data": {
+     "a": 1
+    },
+    "type": "object",
+    "metadata": {
+     "source": "string",
+     "type": "object",
+     "paths": null
+    }
+   }
+  },
+  "parse_csv_fallback": {
+   "ok": {
+    "headers": [
+     "name",
+     "company",
+     "role"
+    ],
+    "rows": [
+     {
+      "name": "Tim Cook",
+      "company": "Apple Inc.",
+      "role": "CEO"
+     },
+     {
+      "name": "Satya Nadella",
+      "company": "Microsoft Corporation",
+      "role": "CEO"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/companies.csv",
+     "delimiter": ",",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "parse_csv_semicolon": {
+   "ok": {
+    "headers": [
+     "a",
+     "b",
+     "c"
+    ],
+    "rows": [
+     {
+      "a": "1",
+      "b": "2",
+      "c": "3"
+     },
+     {
+      "a": "4",
+      "b": "5",
+      "c": "6"
+     }
+    ],
+    "row_count": 2,
+    "metadata": {
+     "file_path": "$FILES/semicolon.csv",
+     "delimiter": ";",
+     "encoding": "utf-8",
+     "has_header": true
+    }
+   }
+  },
+  "parse_media_attr": {
+   "error": "AttributeError",
+   "message": "'MediaParser' object has no attribute 'progress_tracker'"
+  },
+  "parse_pdf_txt": {
+   "ok": {
+    "text": "Apple Inc. is a technology company. Tim Cook is the CEO.",
+    "metadata": {
+     "file_path": "$FILES/notes.txt",
+     "encoding": "utf-8",
+     "size": 56
+    },
+    "full_text": "Apple Inc. is a technology company. Tim Cook is the CEO."
+   }
+  },
+  "parse_docx_txt": {
+   "ok": {
+    "text": "Apple Inc. is a technology company. Tim Cook is the CEO.",
+    "metadata": {
+     "file_path": "$FILES/notes.txt",
+     "encoding": "utf-8",
+     "size": 56
+    },
+    "full_text": "Apple Inc. is a technology company. Tim Cook is the CEO."
+   }
+  },
+  "get_parse_method_default": true,
+  "get_parse_method_missing": true,
+  "custom_ok_document": {
+   "ok": {
+    "custom": true,
+    "nargs": 2
+   }
+  },
+  "custom_fail_document": {
+   "ok": {
+    "text": "Apple Inc. is a technology company. Tim Cook is the CEO.",
+    "metadata": {
+     "file_path": "$FILES/notes.txt",
+     "encoding": "utf-8",
+     "size": 56
+    },
+    "full_text": "Apple Inc. is a technology company. Tim Cook is the CEO."
+   }
+  },
+  "custom_ok_pdf": {
+   "ok": {
+    "custom": true,
+    "nargs": 1
+   }
+  },
+  "custom_ok_csv": {
+   "ok": {
+    "custom": true,
+    "nargs": 2
+   }
+  },
+  "custom_calls": [
+   {
+    "args": [
+     "$FILES/notes.txt",
+     "None"
+    ],
+    "kwargs": {
+     "extra": 1
+    }
+   },
+   {
+    "args": [
+     "$FILES/notes.txt"
+    ],
+    "kwargs": {}
+   },
+   {
+    "args": [
+     "$FILES/companies.csv",
+     ","
+    ],
+    "kwargs": {}
+   }
+  ],
+  "unknown_method": {
+   "ok": {
+    "text": "Apple Inc. is a technology company. Tim Cook is the CEO.",
+    "metadata": {
+     "file_path": "$FILES/notes.txt",
+     "encoding": "utf-8",
+     "size": 56
+    },
+    "full_text": "Apple Inc. is a technology company. Tim Cook is the CEO."
+   }
+  },
+  "method_config_after": {
+   "seen": 1,
+   "extra_kw": 2
+  }
+ },
+ "routes": {
+  "document_html": {
+   "ok": {
+    "metadata": {
+     "title": "Route Page",
+     "description": "d",
+     "keywords": null,
+     "author": null,
+     "og_title": null,
+     "og_description": null,
+     "og_image": null,
+     "og_url": null,
+     "twitter_card": null,
+     "canonical_url": null
+    },
+    "text": "Route PageHeadHello linka1",
+    "html": "<html><head><title>Route Page</title><meta name='description' content='d'></head><body><h1 id='top'>Head</h1><p>Hello <a href='/x' rel='nofollow'>link</a></p><table><tr><th>a</th></tr><tr><td>1</td></tr></table><script>var x=1;</script></body></html>",
+    "links": [
+     {
+      "url": "/x",
+      "text": "link",
+      "title": null,
+      "rel": [
+       "nofollow"
+      ]
+     }
+    ],
+    "images": [],
+    "forms": [],
+    "tables": [
+     {
+      "headers": [],
+      "rows": [
+       [
+        "a"
+       ],
+       [
+        "1"
+       ]
+      ]
+     }
+    ],
+    "structure": {
+     "headings": [
+      {
+       "level": 1,
+       "text": "Head",
+       "id": "top"
+      }
+     ],
+     "sections": []
+    }
+   }
+  },
+  "document_html_text": {
+   "ok": "Route PageHeadHello linka1"
+  },
+  "document_html_text_raw": {
+   "ok": "Route PageHeadHello linka1"
+  },
+  "document_html_metadata": {
+   "error": "AttributeError",
+   "message": "'HTMLData' object has no attribute 'get'"
+  },
+  "document_docx": {
+   "ok": {
+    "metadata": {
+     "title": "Route DOCX",
+     "author": "python-docx",
+     "subject": "",
+     "keywords": "",
+     "comments": "generated by python-docx",
+     "category": "",
+     "created": "2013-12-23 23:15:00+00:00",
+     "modified": "2013-12-23 23:15:00+00:00",
+     "last_modified_by": ""
+    },
+    "full_text": "Heading One\n\nFirst para.",
+    "paragraphs": [
+     "Heading One",
+     "First para."
+    ],
+    "tables": [],
+    "sections": [
+     {
+      "heading": "Heading One",
+      "level": 1,
+      "content": "First para.\n\n",
+      "paragraphs": [
+       "First para."
+      ],
+      "tables": []
+     }
+    ],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 2,
+    "total_tables": 0
+   }
+  },
+  "document_docx_text": {
+   "ok": "Heading One\n\nFirst para."
+  },
+  "document_docx_metadata": {
+   "ok": {
+    "title": "Route DOCX",
+    "author": "python-docx",
+    "subject": "",
+    "keywords": "",
+    "comments": "generated by python-docx",
+    "category": "",
+    "created": "2013-12-23 23:15:00+00:00",
+    "modified": "2013-12-23 23:15:00+00:00",
+    "last_modified_by": ""
+   }
+  },
+  "web_html": {
+   "ok": {
+    "metadata": {
+     "title": null,
+     "description": null,
+     "keywords": null,
+     "author": null,
+     "og_title": null,
+     "og_description": null,
+     "og_image": null,
+     "og_url": null,
+     "twitter_card": null,
+     "canonical_url": null
+    },
+    "text": "x z",
+    "html": "<p>x <a href='y'>z</a></p>",
+    "links": [
+     {
+      "url": "http://h/y",
+      "text": "z",
+      "title": null,
+      "rel": null
+     }
+    ],
+    "images": [],
+    "forms": [],
+    "tables": [],
+    "structure": {
+     "headings": [],
+     "sections": []
+    }
+   }
+  },
+  "web_xml": {
+   "ok": {
+    "root": {
+     "tag": "companies",
+     "text": "",
+     "attributes": {},
+     "children": [
+      {
+       "tag": "company",
+       "text": "",
+       "attributes": {
+        "name": "A"
+       },
+       "children": [],
+       "namespace": null
+      },
+      {
+       "tag": "company",
+       "text": "text",
+       "attributes": {
+        "name": "B"
+       },
+       "children": [],
+       "namespace": null
+      }
+     ],
+     "namespace": null
+    },
+    "namespaces": {},
+    "metadata": {
+     "source": "$FILES/route.xml",
+     "engine": "lxml"
+    }
+   }
+  },
+  "web_bad_type": {
+   "error": "ValidationError",
+   "message": "Unsupported content type: json"
+  },
+  "xml_via_structured": {
+   "ok": {
+    "root": {
+     "tag": "companies",
+     "text": "",
+     "attributes": {},
+     "children": [
+      {
+       "tag": "company",
+       "text": "",
+       "attributes": {
+        "name": "A"
+       },
+       "children": [],
+       "namespace": null
+      },
+      {
+       "tag": "company",
+       "text": "text",
+       "attributes": {
+        "name": "B"
+       },
+       "children": [],
+       "namespace": null
+      }
+     ],
+     "namespace": null
+    },
+    "namespaces": {},
+    "metadata": {
+     "source": "$FILES/route.xml",
+     "engine": "lxml"
+    }
+   }
+  },
+  "structured_xml": {
+   "ok": {
+    "root": {
+     "tag": "companies",
+     "text": "",
+     "attributes": {},
+     "children": [
+      {
+       "tag": "company",
+       "text": "",
+       "attributes": {
+        "name": "A"
+       },
+       "children": [],
+       "namespace": null
+      },
+      {
+       "tag": "company",
+       "text": "text",
+       "attributes": {
+        "name": "B"
+       },
+       "children": [],
+       "namespace": null
+      }
+     ],
+     "namespace": null
+    },
+    "namespaces": {},
+    "metadata": {
+     "source": "$FILES/route.xml",
+     "engine": "lxml"
+    }
+   }
+  },
+  "image_via_media": {
+   "error": "ProcessingError",
+   "message": "Failed to parse image: 'ImageParser' object has no attribute '_extract_metadata'"
+  },
+  "media_attr": {
+   "error": "AttributeError",
+   "message": "'MediaParser' object has no attribute 'progress_tracker'"
+  },
+  "code": {
+   "ok": {
+    "file_path": "$FILES/script.py",
+    "language": "python",
+    "structure": {
+     "functions": [
+      {
+       "name": "f",
+       "line_number": 5,
+       "args": [
+        "a",
+        "b"
+       ],
+       "decorators": []
+      }
+     ],
+     "classes": [
+      {
+       "name": "C",
+       "line_number": 9,
+       "bases": [
+        "object"
+       ]
+      }
+     ],
+     "imports": [
+      "os",
+      "sys.path"
+     ],
+     "variables": [],
+     "constants": []
+    },
+    "comments": [
+     {
+      "text": "comment one",
+      "line_number": 4,
+      "type": "inline",
+      "language": "python"
+     },
+     {
+      "text": "doc",
+      "line_number": 6,
+      "type": "docstring",
+      "language": "python"
+     }
+    ],
+    "dependencies": {
+     "imports": [
+      "os",
+      "sys.path",
+      "os",
+      "sys",
+      "path"
+     ],
+     "external": [],
+     "internal": [],
+     "standard_library": [
+      "os",
+      "sys.path"
+     ]
+    },
+    "line_count": 10,
+    "size": 120
+   }
+  },
+  "email": {
+   "ok": {
+    "headers": {
+     "subject": "Route test",
+     "from_address": "a@example.com",
+     "to_addresses": [
+      "b@example.com",
+      "c@example.com"
+     ],
+     "cc_addresses": [],
+     "bcc_addresses": [],
+     "date": "2024-01-01T10:00:00+00:00",
+     "message_id": null,
+     "in_reply_to": null,
+     "references": [],
+     "custom_headers": {}
+    },
+    "body": {
+     "text": "Body text.\n",
+     "html": null,
+     "attachments": []
+    },
+    "metadata": {
+     "message_id": null,
+     "date": "2024-01-01T10:00:00+00:00"
+    }
+   }
+  },
+  "email_text": {
+   "ok": {
+    "headers": {
+     "subject": "S",
+     "from_address": null,
+     "to_addresses": [],
+     "cc_addresses": [],
+     "bcc_addresses": [],
+     "date": null,
+     "message_id": null,
+     "in_reply_to": null,
+     "references": [],
+     "custom_headers": {}
+    },
+    "body": {
+     "text": "hi\n",
+     "html": null,
+     "attachments": []
+    },
+    "metadata": {
+     "message_id": null,
+     "date": null
+    }
+   }
+  },
+  "convert_xml_json": {
+   "error": "TypeError",
+   "message": "Object of type XMLElement is not JSON serializable"
+  }
+ },
+ "xml_conversions": [
+  {
+   "input": {
+    "first name": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 17"
+   }
+  },
+  {
+   "input": {
+    "1abc": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 7"
+   }
+  },
+  {
+   "input": {
+    "": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 7"
+   }
+  },
+  {
+   "input": {
+    "a b c": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 11"
+   }
+  },
+  {
+   "input": {
+    "ok": {
+     "bad key": 2
+    }
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 18"
+   }
+  },
+  {
+   "input": {
+    "x": "\u0001"
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 9"
+   }
+  },
+  {
+   "input": {
+    "a:b": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "unbound prefix: line 1, column 6"
+   }
+  },
+  {
+   "input": {
+    "xml:lang": "en"
+   },
+   "result": {
+    "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <xml:lang>en</xml:lang>\n</root>\n"
+   }
+  },
+  {
+   "input": {
+    "é": 1
+   },
+   "result": {
+    "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <é>1</é>\n</root>\n"
+   }
+  },
+  {
+   "input": {
+    "a/b": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 9"
+   }
+  },
+  {
+   "input": {
+    "a&b": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 8"
+   }
+  },
+  {
+   "input": {
+    "-x": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 7"
+   }
+  },
+  {
+   "input": {
+    ".x": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 7"
+   }
+  },
+  {
+   "input": {
+    "x-1.y_z": 1
+   },
+   "result": {
+    "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <x-1.y_z>1</x-1.y_z>\n</root>\n"
+   }
+  },
+  {
+   "input": {
+    "a": [
+     {
+      "b c": 1
+     }
+    ]
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 13"
+   }
+  },
+  {
+   "input": {
+    "tab\tkey": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 14"
+   }
+  },
+  {
+   "input": {
+    "k": "a\r\nb\rc"
+   },
+   "result": {
+    "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <k>a\nb\nc</k>\n</root>\n"
+   }
+  },
+  {
+   "input": {
+    "a<b": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 8"
+   }
+  },
+  {
+   "input": {
+    "a>b": 1
+   },
+   "result": {
+    "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <a>b&gt;1</a>\n  b&gt;\n</root>\n"
+   }
+  },
+  {
+   "input": {
+    "a\"b": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 8"
+   }
+  },
+  {
+   "input": {
+    "aé b": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 11"
+   }
+  },
+  {
+   "input": [
+    {
+     "x y": 1
+    }
+   ],
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 10"
+   }
+  },
+  {
+   "input": {
+    "xmlns": 1
+   },
+   "result": {
+    "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <xmlns>1</xmlns>\n</root>\n"
+   }
+  },
+  {
+   "input": {
+    "xmlns:a": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "unbound prefix: line 1, column 6"
+   }
+  },
+  {
+   "input": {
+    ":a": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 7"
+   }
+  },
+  {
+   "input": {
+    "a:": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 9"
+   }
+  },
+  {
+   "input": {
+    "a:b:c": 1
+   },
+   "result": {
+    "error": "ExpatError",
+    "message": "not well-formed (invalid token): line 1, column 10"
+   }
+  },
+  {
+   "input": {
+    "k": "line1\nline2"
+   },
+   "result": {
+    "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <k>line1\nline2</k>\n</root>\n"
+   }
+  },
+  {
+   "input": {
+    "k": true,
+    "n": null,
+    "f": 1.5,
+    "big": 1000000000000000
+   },
+   "result": {
+    "ok": "<?xml version=\"1.0\" ?>\n<root>\n  <k>True</k>\n  <n>None</n>\n  <f>1.5</f>\n  <big>1000000000000000</big>\n</root>\n"
+   }
+  }
+ ],
+ "provenance": {
+  "construct_default": {
+   "error": "ModuleNotFoundError",
+   "message": "No module named 'semantica.parse.parser'"
+  },
+  "construct_tracking": {
+   "error": "ModuleNotFoundError",
+   "message": "No module named 'semantica.parse.parser'"
+  }
+ },
+ "exports": {
+  "all": [
+   "DocumentParser",
+   "WebParser",
+   "HTMLContentParser",
+   "JavaScriptRenderer",
+   "StructuredDataParser",
+   "EmailParser",
+   "EmailHeaders",
+   "EmailBody",
+   "EmailData",
+   "MIMEParser",
+   "EmailThreadAnalyzer",
+   "CodeParser",
+   "CodeStructure",
+   "CodeComment",
+   "SyntaxTreeParser",
+   "CommentExtractor",
+   "DependencyAnalyzer",
+   "MediaParser",
+   "PDFParser",
+   "PDFPage",
+   "PDFMetadata",
+   "DOCXParser",
+   "DocxSection",
+   "DocxMetadata",
+   "PPTXParser",
+   "SlideContent",
+   "PPTXData",
+   "ExcelParser",
+   "ExcelSheet",
+   "ExcelData",
+   "HTMLParser",
+   "HTMLMetadata",
+   "HTMLElement",
+   "JSONParser",
+   "JSONData",
+   "CSVParser",
+   "CSVData",
+   "XMLParser",
+   "XMLElement",
+   "XMLData",
+   "ImageParser",
+   "ImageMetadata",
+   "OCRResult",
+   "MCPParser",
+   "MethodRegistry",
+   "method_registry",
+   "ParseConfig",
+   "parse_config",
+   "parse_document",
+   "parse_web_content",
+   "parse_structured_data",
+   "parse_email",
+   "parse_code",
+   "parse_media",
+   "parse_pdf",
+   "parse_docx",
+   "parse_json",
+   "parse_csv",
+   "parse_xml",
+   "parse_image",
+   "get_parse_method",
+   "list_available_methods",
+   "DoclingParser",
+   "DoclingMetadata"
+  ]
+ }
+}

@@ -1,0 +1,19 @@
+{
+  "profile": "pinned-original-rdf-full-initialization/1",
+  "condition": "Unmodified original NamespaceManager, RDFSerializer, RDFValidator and RDFExporter class ASTs, including their full constructors. Original MCP _get_graph constructs the original ContextGraph and EntityLinker; optional KG backend is unavailable, as explicitly scoped in the old context oracle. Only logger and progress ports are test ports. No namespace, validator, serializer or exporter business is replaced.",
+  "cases": [
+    {"format": "turtle", "exception": {"type": "AttributeError", "message": "'ContextGraph' object has no attribute 'get'"}, "tool_result": {"error": "'ContextGraph' object has no attribute 'get'"}},
+    {"format": "ttl", "exception": {"type": "AttributeError", "message": "'ContextGraph' object has no attribute 'get'"}, "tool_result": {"error": "'ContextGraph' object has no attribute 'get'"}},
+    {"format": "nt", "exception": {"type": "AttributeError", "message": "'ContextGraph' object has no attribute 'get'"}, "tool_result": {"error": "'ContextGraph' object has no attribute 'get'"}},
+    {"format": "xml", "exception": {"type": "AttributeError", "message": "'ContextGraph' object has no attribute 'get'"}, "tool_result": {"error": "'ContextGraph' object has no attribute 'get'"}},
+    {"format": "json-ld", "exception": {"type": "AttributeError", "message": "'ContextGraph' object has no attribute 'get'"}, "tool_result": {"error": "'ContextGraph' object has no attribute 'get'"}}
+  ],
+  "controls": {
+    "serializer_namespace_manager_initialized": true,
+    "exporter_namespace_manager_initialized": true,
+    "validator_initialized": true,
+    "entity_linker_initialized": true,
+    "dictionary_input_serializes_all_five_formats": true,
+    "old_turtle_missing_namespace_manager_is_constructor_bypass_condition": true
+  }
+}

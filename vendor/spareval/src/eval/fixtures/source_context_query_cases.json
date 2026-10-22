@@ -1,0 +1,4600 @@
+{
+  "schema": "semantica.source-context-query-receiving/1",
+  "source_record_sha256": "ea2cd7e1619a8b9fa92734acb8ae3d85608b00be97777e05008e0b0610f5fd58",
+  "source_record_bytes": 181388,
+  "classification": "55 source queries +13 explicitly corrected historical inputs; 10 same-production-consumer protocols; 10 active contracts. Original native/reference observations and source derivations are distinct evidence. No test result is embedded.",
+  "historical_role": "Old frozen/public bytes and candidate receipts remain historical; new SourceContextV1 explicitly receives corrected original errors.",
+  "payload_canonical_sha256": "6af638c4ac79c8f3ae098bf55540dc718762aa6c2919836ed7167a99e1843f16",
+  "counts": {
+    "sealed_queries": 68,
+    "consumer_protocols": 10,
+    "active_contracts": 10
+  },
+  "environment": {
+    "context_semantics": "SourceContextV1",
+    "literal_semantics": "SourceLiteralV1",
+    "group_semantics": "SourceAggregateV1",
+    "numeric_capabilities": "MixedBinary64V1",
+    "hash_runtime": {
+      "kind": "Seeded",
+      "seed": 0,
+      "claim": "Explicit reference configuration, not assumption about old defaults or NativeRandom cross-process order."
+    },
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ]
+    },
+    "numeric_limits": {
+      "max_input_characters": 4096,
+      "max_coefficient_digits": 4096,
+      "max_output_characters": 4096,
+      "max_materialized_power_of_ten": 4096
+    },
+    "integer_text_limit": null,
+    "normalize_literals": true,
+    "case_overrides": "Merge the named case environment_overrides into this environment. In particular decimal_traps replaces traps, and is not an ignored documentary field."
+  },
+  "values": {
+    "I0": {
+      "lexical": "0",
+      "source_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "language_original": null,
+      "ill_typed": false,
+      "cache_family": "Integer",
+      "cache": "0"
+    },
+    "I1": {
+      "lexical": "1",
+      "source_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "language_original": null,
+      "ill_typed": false,
+      "cache_family": "Integer",
+      "cache": "1"
+    },
+    "I2": {
+      "lexical": "2",
+      "source_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "language_original": null,
+      "ill_typed": false,
+      "cache_family": "Integer",
+      "cache": "2"
+    },
+    "I3": {
+      "lexical": "3",
+      "source_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "language_original": null,
+      "ill_typed": false,
+      "cache_family": "Integer",
+      "cache": "3"
+    },
+    "LANG_EN": {
+      "lexical": "v",
+      "source_datatype": null,
+      "language_original": "EN",
+      "ill_typed": null,
+      "cache_family": "String",
+      "cache": "v"
+    },
+    "LANG_en": {
+      "lexical": "v",
+      "source_datatype": null,
+      "language_original": "en",
+      "ill_typed": null,
+      "cache_family": "String",
+      "cache": "v"
+    },
+    "D1": {
+      "lexical": "1",
+      "source_datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "language_original": null,
+      "ill_typed": null,
+      "cache_family": "Decimal",
+      "cache": {
+        "negative": false,
+        "coefficient": "1",
+        "exponent": "0"
+      }
+    },
+    "D3": {
+      "lexical": "3",
+      "source_datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "language_original": null,
+      "ill_typed": null,
+      "cache_family": "Decimal",
+      "cache": {
+        "negative": false,
+        "coefficient": "3",
+        "exponent": "0"
+      }
+    }
+  },
+  "raw_protocol_values": {
+    "None": {
+      "cell": "ExplicitNone"
+    },
+    "E1": {
+      "cell": "ReturnedError",
+      "source_class": "SPARQLError",
+      "source_argument": "same source message",
+      "identity": "E1"
+    },
+    "E2": {
+      "cell": "ReturnedError",
+      "source_class": "SPARQLError",
+      "source_argument": "same source message",
+      "identity": "E2",
+      "distinct_from": "E1"
+    },
+    "M": {
+      "kind": "controlled original exception marker",
+      "identity": "M",
+      "not_sparql_expression_error": true
+    }
+  },
+  "source_query_cases": [
+    {
+      "id": "CQ-D01",
+      "family": "empty_values_variable",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x {} }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_binding_rows": [],
+        "terminal_next": "not_repolled_original_generator_after_error",
+        "source_session_flags": "not_observed_by_diagnostic_runner",
+        "error": {
+          "stage": "evaluate_start",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D04",
+      "family": "optional_values_left_original_plan",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?x {1} { VALUES ?y {2} OPTIONAL { VALUES ?x {3} } } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ]
+            ]
+          }
+        ],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D05",
+      "family": "optional_bind_left_corrected_candidate",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?x {1} { BIND(2 AS ?y) OPTIONAL { VALUES ?x {3} } } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D06",
+      "family": "optional_bind_left_immutable_initial",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { BIND(2 AS ?y) OPTIONAL { VALUES ?x {3} } }",
+        "initial_bindings": {
+          "x": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "lexical": "1"
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ]
+            ]
+          }
+        ],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D07",
+      "family": "extend_forgets_outer_noninitial",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?x {1 2} { BIND(?x + 1 AS ?y) } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ]
+            ]
+          }
+        ],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D08",
+      "family": "extend_preserves_immutable_initial",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { BIND(?x + 1 AS ?y) }",
+        "initial_bindings": {
+          "x": {
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "lexical": "1"
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ]
+            ]
+          }
+        ],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D09",
+      "family": "two_values_lazy_and_scope",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?x {1 1} VALUES ?y {2 2} }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ]
+            ]
+          }
+        ],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D10",
+      "family": "three_values_outer_nonlazy_and_scope",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT ?x ?y ?z WHERE { VALUES ?x {1 1} VALUES ?y {2 2} VALUES ?z {3 3} }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "z"
+                },
+                {
+                  "cache": 3,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "3"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "z"
+                },
+                {
+                  "cache": 3,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "3"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "z"
+                },
+                {
+                  "cache": 3,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "3"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "z"
+                },
+                {
+                  "cache": 3,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "3"
+                }
+              ]
+            ]
+          }
+        ],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D11",
+      "family": "subselect_project_and_hidden_scope",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?x {1} { { SELECT ?y WHERE { BIND(2 AS ?y) BIND(4 AS ?hidden) } } OPTIONAL { VALUES ?x {3} } } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ]
+          }
+        ],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D12",
+      "family": "group_bare_variable_control",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT (COUNT(*) AS ?n) WHERE { VALUES ?x {1 2} } GROUP BY ?x",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "n"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "n"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ]
+          }
+        ],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D13",
+      "family": "group_parenthesized_expression_without_as",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT (COUNT(*) AS ?n) WHERE { VALUES ?x {1 2} } GROUP BY (?x + 1)",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "terminal_next": "not_repolled_original_generator_after_error",
+        "source_session_flags": "not_observed_by_diagnostic_runner",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "Cannot eval thing: None (<class 'NoneType'>)"
+          ],
+          "class": "Exception",
+          "module": "builtins",
+          "text": "Cannot eval thing: None (<class 'NoneType'>)"
+        }
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D14",
+      "family": "group_parenthesized_error_without_as",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT (COUNT(*) AS ?n) WHERE { VALUES ?x {1 2} } GROUP BY (1/0)",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "terminal_next": "not_repolled_original_generator_after_error",
+        "source_session_flags": "not_observed_by_diagnostic_runner",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "Cannot eval thing: None (<class 'NoneType'>)"
+          ],
+          "class": "Exception",
+          "module": "builtins",
+          "text": "Cannot eval thing: None (<class 'NoneType'>)"
+        }
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-D15",
+      "family": "group_expression_explicit_as_control",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_diagnostic",
+      "input": {
+        "query": "SELECT (COUNT(*) AS ?n) WHERE { VALUES ?x {1 2} } GROUP BY (?x + 1 AS ?key)",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "n"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "n"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ]
+          }
+        ],
+        "terminal_next": "None",
+        "source_session_flags": "not_observed_by_diagnostic_runner"
+      },
+      "observation_limits": "Probe counts/internal operations are source-derived, not monkeypatch traces. original_binding_rows local_items order describes original row; receiving must separately distinguish terminal projected column order."
+    },
+    {
+      "id": "CQ-V02",
+      "family": "values_undef_preserves_initial",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES (?x ?y) { (UNDEF 2) (1 UNDEF) } }",
+        "initial_bindings": {
+          "x": {
+            "kind": "DirectString",
+            "lexical": "1",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "normalize": true
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "I1",
+            "y": "I2"
+          },
+          {
+            "x": "I1"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:255-267",
+        "sparql.py:258-261",
+        "sparql.py:412-416"
+      ]
+    },
+    {
+      "id": "CQ-V03",
+      "family": "values_conflict_skips_whole_record",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES (?x ?y) { (2 3) (1 2) } }",
+        "initial_bindings": {
+          "x": {
+            "kind": "DirectString",
+            "lexical": "1",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "normalize": true
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "I1",
+            "y": "I2"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:255-267",
+        "sparql.py:412-416"
+      ]
+    },
+    {
+      "id": "CQ-V04",
+      "family": "values_equal_assignment_uses_incoming",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x { \"v\"@en } }",
+        "initial_bindings": {
+          "x": {
+            "kind": "DirectString",
+            "lexical": "v",
+            "language": "EN",
+            "normalize": true
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "LANG_en"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:255-267",
+        "sparql.py:412-416",
+        "term.py:1395-1408"
+      ]
+    },
+    {
+      "id": "CQ-V05",
+      "family": "no_variables_single_unit_values_explicit_projection",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES () { () } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_error": {
+          "class": "AttributeError",
+          "text": "'list' object has no attribute 'name'"
+        },
+        "rows": 0
+      },
+      "source_anchors": [
+        "algebra.py:609-613",
+        "evaluate.py:270-274",
+        "evaluate.py:571-582"
+      ],
+      "derivation": "Changing only SELECT * to explicit SELECT x leaves ToMultiSet(list) under Project. No SELECT * capability is granted."
+    },
+    {
+      "id": "CQ-V06",
+      "family": "no_variables_zero_rows_values_explicit_projection",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES () {} }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_error": {
+          "class": "AttributeError",
+          "text": "'list' object has no attribute 'name'"
+        },
+        "rows": 0
+      },
+      "source_anchors": [
+        "algebra.py:609-613",
+        "evaluate.py:270-274"
+      ]
+    },
+    {
+      "id": "CQ-J03",
+      "family": "lazy_merge_left_representative",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x { \"v\"@EN } VALUES ?x { \"v\"@en } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "LANG_EN"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:141-153",
+        "sparql.py:198-200"
+      ],
+      "required_observations": {
+        "source_join_mode": "Lazy",
+        "left_rows": 1,
+        "right_starts": 1,
+        "output_source_object": "left_LANG_EN"
+      }
+    },
+    {
+      "id": "CQ-J04",
+      "family": "materialized_merge_right_representative",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?p WHERE { VALUES ?x { \"v\"@EN } VALUES ?p { 0 } VALUES ?x { \"v\"@en } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "LANG_en",
+            "p": "I0"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "algebra.py:792-808",
+        "evaluate.py:156-165",
+        "evalutils.py:64-70"
+      ],
+      "required_observations": {
+        "outer_source_join_mode": "MaterializedRightSet",
+        "right_distinct_rows": 1,
+        "output_source_object": "right_LANG_en"
+      }
+    },
+    {
+      "id": "CQ-O01",
+      "family": "optional_multiple_successes_preserve_duplicates",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?v WHERE { VALUES ?x {1} OPTIONAL { VALUES ?v {2 2} } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "I1",
+            "v": "I2"
+          },
+          {
+            "x": "I1",
+            "v": "I2"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "sparql.py:176-243"
+      ],
+      "required_observations": {
+        "right_probe_starts": 1,
+        "second_probe_starts": 0
+      }
+    },
+    {
+      "id": "CQ-O02",
+      "family": "optional_false_then_true",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?v WHERE { VALUES ?x {1} OPTIONAL { VALUES ?v {0 1} FILTER(?v) } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "I1",
+            "v": "I1"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:183-205",
+        "evalutils.py:73-99"
+      ],
+      "required_observations": {
+        "right_probe_starts": 1,
+        "second_probe_starts": 0,
+        "left_scope": []
+      }
+    },
+    {
+      "id": "CQ-O03",
+      "family": "optional_all_false_second_probe",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?v WHERE { VALUES ?x {1} OPTIONAL { VALUES ?v {0 0} FILTER(?v) } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "I1"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:183-205",
+        "evalutils.py:73-99"
+      ],
+      "required_observations": {
+        "right_probe_starts": 2,
+        "second_probe_starts": 1,
+        "second_probe_rows_examined": 2,
+        "left_scope": []
+      }
+    },
+    {
+      "id": "CQ-O04",
+      "family": "optional_empty_remember_restores_current",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x {1} { OPTIONAL { VALUES ?x {3} } } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "I1"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:183-205",
+        "sparql.py:306-317",
+        "sparql.py:239-243"
+      ],
+      "required_observations": {
+        "right_probe_starts": 2,
+        "left_scope": [],
+        "remembered_local": []
+      }
+    },
+    {
+      "id": "CQ-O05",
+      "family": "optional_second_any_stops_before_float_trap",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?y ?z WHERE { VALUES ?x {1} { BIND(2 AS ?y) OPTIONAL { VALUES ?x {3 1e-1} BIND(?x * 1 AS ?z) } } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:183-205",
+        "evaluate.py:124-138",
+        "operators.py:746-770"
+      ],
+      "environment_overrides": {
+        "decimal_traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow",
+          "FloatOperation"
+        ]
+      },
+      "required_observations": {
+        "first_probe_yields": 0,
+        "second_probe_starts": 1,
+        "second_probe_first_success_x": "I3",
+        "second_probe_tail_polled": false
+      }
+    },
+    {
+      "id": "CQ-O06",
+      "family": "optional_prefix_then_fatal",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?z WHERE { VALUES ?x {1} OPTIONAL { VALUES ?v {1 1e-1} BIND(?v * 1 AS ?z) } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "polls": [
+          {
+            "row": {
+              "x": "I1",
+              "z": "D1"
+            }
+          },
+          {
+            "original_raised": "decimal.FloatOperation",
+            "same_originating_error_object": true
+          }
+        ],
+        "session_decimal_flags_exact": [
+          "FloatOperation"
+        ]
+      },
+      "source_anchors": [
+        "evaluate.py:183-193",
+        "operators.py:746-770"
+      ],
+      "environment_overrides": {
+        "decimal_traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow",
+          "FloatOperation"
+        ]
+      },
+      "source_fuse_after_error": "Original generator terminates; project active cancellation/backend errors share existing fatal fuse contract."
+    },
+    {
+      "id": "CQ-O07",
+      "family": "optional_prefix_limit_one_avoids_tail",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?z WHERE { VALUES ?x {1} OPTIONAL { VALUES ?v {1 1e-1} BIND(?v * 1 AS ?z) } } LIMIT 1",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "I1",
+            "z": "D1"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:183-193",
+        "evaluate.py:509-516"
+      ],
+      "environment_overrides": {
+        "decimal_traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow",
+          "FloatOperation"
+        ]
+      }
+    },
+    {
+      "id": "CQ-O08",
+      "family": "order_forces_optional_tail_before_rows",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?z WHERE { VALUES ?x {1} OPTIONAL { VALUES ?v {1 1e-1} BIND(?v * 1 AS ?z) } } ORDER BY ?x",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_raised": "decimal.FloatOperation",
+        "rows": 0,
+        "session_decimal_flags_exact": [
+          "FloatOperation"
+        ]
+      },
+      "source_anchors": [
+        "evaluate.py:498-508",
+        "evaluate.py:183-193"
+      ],
+      "environment_overrides": {
+        "decimal_traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow",
+          "FloatOperation"
+        ]
+      }
+    },
+    {
+      "id": "CQ-M01",
+      "family": "minus_disjoint_domains_keep_duplicates",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?y WHERE { VALUES ?y {1 1} MINUS { VALUES ?z {2} } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "y": "I1"
+          },
+          {
+            "y": "I1"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:177-180",
+        "evalutils.py:44-49"
+      ]
+    },
+    {
+      "id": "CQ-M02",
+      "family": "minus_shared_equal_removes",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x {1 1} MINUS { VALUES ?x {1} } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evalutils.py:44-49",
+        "sparql.py:151-162"
+      ]
+    },
+    {
+      "id": "CQ-M03",
+      "family": "minus_shared_unequal_keeps",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x {1 1} MINUS { VALUES ?x {2} } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "I1"
+          },
+          {
+            "x": "I1"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evalutils.py:44-49",
+        "sparql.py:151-162"
+      ]
+    },
+    {
+      "id": "CQ-M04",
+      "family": "minus_initial_hidden_key_changes_domain",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?y {1} MINUS { VALUES ?z {2} } }",
+        "initial_bindings": {
+          "x": {
+            "kind": "DirectString",
+            "lexical": "0",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "normalize": true
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:255-267",
+        "sparql.py:401-410",
+        "evalutils.py:44-49"
+      ],
+      "required_observations": {
+        "left_local_keys": [
+          "x",
+          "y"
+        ],
+        "right_local_keys": [
+          "x",
+          "z"
+        ],
+        "shared_initial_key": "x"
+      }
+    },
+    {
+      "id": "CQ-M05",
+      "family": "minus_project_removes_local_but_not_fallback",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?y {1} MINUS { SELECT ?z WHERE { VALUES ?z {2} } } }",
+        "initial_bindings": {
+          "x": {
+            "kind": "DirectString",
+            "lexical": "0",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "normalize": true
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [
+          {
+            "x": "I0",
+            "y": "I1"
+          }
+        ],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "sparql.py:181-200",
+        "evalutils.py:44-49"
+      ],
+      "required_observations": {
+        "right_local_keys": [
+          "z"
+        ],
+        "right_lookup_x": "I0",
+        "compatible": true,
+        "disjoint_local_domain": true
+      }
+    },
+    {
+      "id": "CQ-J05",
+      "family": "materialized_right_fails_even_when_left_empty_or_limit_zero",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag ?v WHERE { { VALUES ?tag {1} FILTER(0) } { SELECT (?x * 1 AS ?v) WHERE { VALUES ?x {1e-1} } LIMIT 1 } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_raised": "decimal.FloatOperation",
+        "rows": 0,
+        "left_polls": 0,
+        "session_decimal_flags_exact": [
+          "FloatOperation"
+        ]
+      },
+      "source_anchors": [
+        "evaluate.py:156-165",
+        "evaluate.py:509-516",
+        "operators.py:746-770"
+      ],
+      "environment_overrides": {
+        "decimal_traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow",
+          "FloatOperation"
+        ]
+      }
+    },
+    {
+      "id": "CQ-J06",
+      "family": "materialized_right_fails_even_when_left_empty_or_limit_zero",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag ?v WHERE { { VALUES ?tag {1} FILTER(0) } { SELECT (?x * 1 AS ?v) WHERE { VALUES ?x {1e-1} } LIMIT 1 } } LIMIT 0",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_raised": "decimal.FloatOperation",
+        "rows": 0,
+        "left_polls": 0,
+        "session_decimal_flags_exact": [
+          "FloatOperation"
+        ]
+      },
+      "source_anchors": [
+        "evaluate.py:156-165",
+        "evaluate.py:509-516",
+        "operators.py:746-770"
+      ],
+      "environment_overrides": {
+        "decimal_traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow",
+          "FloatOperation"
+        ]
+      }
+    },
+    {
+      "id": "CQ-J07",
+      "family": "distinct_limit_zero_defers_materialized_join",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT DISTINCT ?tag ?v WHERE { { VALUES ?tag {1} FILTER(0) } { SELECT (?x * 1 AS ?v) WHERE { VALUES ?x {1e-1} } LIMIT 1 } } LIMIT 0",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "ordered_rows": [],
+        "terminal_next": "None",
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:509-516",
+        "evaluate.py:559-568"
+      ],
+      "environment_overrides": {
+        "decimal_traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow",
+          "FloatOperation"
+        ]
+      },
+      "required_observations": {
+        "inner_join_starts": 0,
+        "right_set_starts": 0
+      }
+    },
+    {
+      "id": "CQ-J08",
+      "family": "left_start_error_precedes_right_set",
+      "layer": "real_prepared_source_query",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "query": "SELECT ?tag ?v WHERE { { SELECT ?tag WHERE { VALUES ?tag {1 2} } ORDER BY (?missing + 1) } { SELECT (?x * 1 AS ?v) WHERE { VALUES ?x {1e-1} } LIMIT 1 } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_raised": "builtins.TypeError",
+        "rows": 0,
+        "right_set_starts": 0,
+        "session_decimal_flags_exact": []
+      },
+      "source_anchors": [
+        "evaluate.py:156-165",
+        "evaluate.py:498-508",
+        "evalutils.py:118-138"
+      ],
+      "environment_overrides": {
+        "decimal_traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow",
+          "FloatOperation"
+        ]
+      },
+      "derivation": "Nonlazy evalJoin obtains left iterable first. Left ORDER eagerly materializes and compares two None keys before right construction."
+    },
+    {
+      "id": "CQ2-S01",
+      "family": "standalone_rhs_original_local_order_and_hash",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x ?v WHERE { VALUES (?x ?v) { (3 \"c\") (1 \"a\") (5 \"e\") (2 \"b\") (4 \"d\") } } LIMIT 99",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 3,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "3"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "c",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "c"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "a",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "a"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 5,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "5"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "e",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "e"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "b",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "b"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 4,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "4"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "d",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "d"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-S02",
+      "family": "materialized_rhs_multi_member_order",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x ?v WHERE { VALUES ?tag { 0 } { SELECT ?x ?v WHERE { VALUES (?x ?v) { (3 \"c\") (1 \"a\") (5 \"e\") (2 \"b\") (4 \"d\") } } LIMIT 99 } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 4,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "4"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "d",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "d"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 5,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "5"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "e",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "e"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "b",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "b"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "a",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "a"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 3,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "3"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "c",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "c"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-S03",
+      "family": "materialized_rhs_limit_first",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x ?v WHERE { VALUES ?tag { 0 } { SELECT ?x ?v WHERE { VALUES (?x ?v) { (3 \"c\") (1 \"a\") (5 \"e\") (2 \"b\") (4 \"d\") } } LIMIT 99 } } LIMIT 1",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 4,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "4"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "d",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "d"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-S04",
+      "family": "materialized_rhs_sample_first",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT (SAMPLE(?x) AS ?first) WHERE { VALUES ?tag { 0 } { SELECT ?x ?v WHERE { VALUES (?x ?v) { (3 \"c\") (1 \"a\") (5 \"e\") (2 \"b\") (4 \"d\") } } LIMIT 99 } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "first"
+                },
+                {
+                  "cache": 4,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "4"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-S05",
+      "family": "materialized_rhs_equal_order_key_stability",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x ?v WHERE { VALUES ?tag { 0 } { SELECT ?x ?v WHERE { VALUES (?x ?v) { (3 \"c\") (1 \"a\") (5 \"e\") (2 \"b\") (4 \"d\") } } LIMIT 99 } } ORDER BY (0)",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 4,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "4"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "d",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "d"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 5,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "5"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "e",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "e"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "b",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "b"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "a",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "a"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 3,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "3"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": "c",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "c"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-S06",
+      "family": "materialized_rhs_group_concat_order",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT (GROUP_CONCAT(?v; SEPARATOR=\"|\") AS ?text) WHERE { VALUES ?tag { 0 } { SELECT ?x ?v WHERE { VALUES (?x ?v) { (3 \"c\") (1 \"a\") (5 \"e\") (2 \"b\") (4 \"d\") } } LIMIT 99 } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "text"
+                },
+                {
+                  "cache": "d|e|b|a|c",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "d|e|b|a|c"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-S07",
+      "family": "minus_multi_member_set",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x {1 2 3 4 5} MINUS { VALUES ?x {5 1 3} } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 2,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "2"
+                }
+              ]
+            ]
+          },
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": 4,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "4"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-C01",
+      "family": "equal_rdf_distinct_decimal_cache_first_representative",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x (100 / ?x AS ?v) WHERE { VALUES ?tag {0} { SELECT ?x WHERE { { BIND(?a AS ?x) } UNION { BIND(?b AS ?x) } } LIMIT 99 } }",
+        "initial_bindings": {
+          "a": {
+            "lexical": "1E+2",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+          },
+          "b": {
+            "lexical": "100",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "a"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1
+                    ],
+                    "exponent": 2,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "1E+2"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "100"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "b"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "exponent": 0,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "100"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "100"
+                }
+              ]
+            ],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1
+                    ],
+                    "exponent": 2,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "1E+2"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "100"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "exponent": -2,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "1.00"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1.00"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None",
+        "object_identity": [
+          "output.x is initial.a"
+        ]
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-C02",
+      "family": "equal_rdf_distinct_decimal_cache_first_representative",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x (100 / ?x AS ?v) WHERE { VALUES ?tag {0} { SELECT ?x WHERE { { BIND(?b AS ?x) } UNION { BIND(?a AS ?x) } } LIMIT 99 } }",
+        "initial_bindings": {
+          "a": {
+            "lexical": "1E+2",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+          },
+          "b": {
+            "lexical": "100",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "a"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1
+                    ],
+                    "exponent": 2,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "1E+2"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "100"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "b"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "exponent": 0,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "100"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "100"
+                }
+              ]
+            ],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "exponent": 0,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "100"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "100"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1
+                    ],
+                    "exponent": 0,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "1"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None",
+        "object_identity": [
+          "output.x is initial.b"
+        ]
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-C03",
+      "family": "equal_language_identity_first_spelling",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?tag {0} { SELECT ?x WHERE { { BIND(\"same\"@EN AS ?x) } UNION { BIND(\"same\"@en AS ?x) } } LIMIT 99 } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": "same",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": "EN",
+                  "lexical": "same"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-C04",
+      "family": "equal_language_identity_first_spelling",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?tag {0} { SELECT ?x WHERE { { BIND(\"same\"@en AS ?x) } UNION { BIND(\"same\"@EN AS ?x) } } LIMIT 99 } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": "same",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": "en",
+                  "lexical": "same"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-C05",
+      "family": "same_plain_identity_error_object_or_string_first",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?tag {0} { SELECT ?x WHERE { { SELECT (MIN(?missing + 1) AS ?x) WHERE {} } UNION { BIND(\"None\" AS ?x) } } LIMIT 99 } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": {
+                    "args": [
+                      null
+                    ],
+                    "class": "NotBoundError",
+                    "family": "Exception",
+                    "module": "rdflib.plugins.sparql.sparql"
+                  },
+                  "cache_type": "rdflib.plugins.sparql.sparql.NotBoundError",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "None"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-C06",
+      "family": "same_plain_identity_error_object_or_string_first",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?tag {0} { SELECT ?x WHERE { { BIND(\"None\" AS ?x) } UNION { SELECT (MIN(?missing + 1) AS ?x) WHERE {} } } LIMIT 99 } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": "None",
+                  "cache_type": "builtins.str",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "None"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-C07",
+      "family": "values_overwrites_equal_initial_with_incoming_cache",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x (100 / ?x AS ?v) WHERE { VALUES ?x {\"100\"^^<http://www.w3.org/2001/XMLSchema#decimal>} }",
+        "initial_bindings": {
+          "x": {
+            "lexical": "1E+2",
+            "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+          }
+        }
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1
+                    ],
+                    "exponent": 2,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "1E+2"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "100"
+                }
+              ]
+            ],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1,
+                      0,
+                      0
+                    ],
+                    "exponent": 0,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "100"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "100"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "v"
+                },
+                {
+                  "cache": {
+                    "digits": [
+                      1
+                    ],
+                    "exponent": 0,
+                    "family": "Decimal",
+                    "sign": 0,
+                    "str": "1"
+                  },
+                  "cache_type": "decimal.Decimal",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None",
+        "object_identity": [
+          "output.x is not initial.x; actual incoming VALUES object retained"
+        ]
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-R01",
+      "family": "real_empty_sample_none_through_lazy_join",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x ?tag WHERE { {SELECT (SAMPLE(?missing) AS ?x) WHERE { FILTER(false) }} VALUES ?tag {1} }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                null
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "tag"
+                },
+                {
+                  "cache": 1,
+                  "cache_type": "builtins.int",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "ill_typed": false,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "1"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-R02",
+      "family": "real_empty_sample_none_conflicts_with_values_assignment",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x WHERE { {SELECT (SAMPLE(?missing) AS ?x) WHERE { FILTER(false) }} VALUES ?x {1} }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-R03",
+      "family": "actual_error_object_literal_alias_identity",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { {SELECT (MIN(?missing + 1) AS ?x) WHERE {}} BIND(?x AS ?y) }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": [
+              [
+                {
+                  "kind": "Variable",
+                  "value": "x"
+                },
+                {
+                  "cache": {
+                    "args": [
+                      null
+                    ],
+                    "class": "NotBoundError",
+                    "family": "Exception",
+                    "module": "rdflib.plugins.sparql.sparql"
+                  },
+                  "cache_type": "rdflib.plugins.sparql.sparql.NotBoundError",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "None"
+                }
+              ],
+              [
+                {
+                  "kind": "Variable",
+                  "value": "y"
+                },
+                {
+                  "cache": {
+                    "args": [
+                      null
+                    ],
+                    "class": "NotBoundError",
+                    "family": "Exception",
+                    "module": "rdflib.plugins.sparql.sparql"
+                  },
+                  "cache_type": "rdflib.plugins.sparql.sparql.NotBoundError",
+                  "datatype": null,
+                  "ill_typed": null,
+                  "kind": "Literal",
+                  "language": null,
+                  "lexical": "None"
+                }
+              ]
+            ]
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None",
+        "object_identity": [
+          "output.x is output.y",
+          "output.x.error_cache is output.y.error_cache"
+        ]
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    },
+    {
+      "id": "CQ2-R04",
+      "family": "actual_error_object_literal_bare_missing_message",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x WHERE { {SELECT (MIN(?missing) AS ?x) WHERE {}} VALUES ?tag {1} }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [
+          {
+            "initial_items": [],
+            "local_items": []
+          }
+        ],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "None"
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct."
+    }
+  ],
+  "historical_correction_query_cases": [
+    {
+      "id": "CH-H01",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SUM(?x) AS ?s) (AVG(?x) AS ?a) (COUNT(*) AS ?c) (SAMPLE(?x) AS ?v) WHERE { VALUES ?x {} }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "SA03-01",
+      "historical_query_pointer": "/query_cases/2/runs/0/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H02",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?g (SUM(?x) AS ?s) (AVG(?x) AS ?a) (COUNT(*) AS ?c) (SAMPLE(?x) AS ?v) WHERE { VALUES (?g ?x) {} } GROUP BY ?g",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "SA03-02",
+      "historical_query_pointer": "/query_cases/2/runs/1/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H03",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?g (COUNT(*) AS ?c) (SAMPLE(?x) AS ?v) WHERE { VALUES (?g ?x) {} } GROUP BY ?g",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "SA03-03",
+      "historical_query_pointer": "/query_cases/2/runs/2/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H04",
+      "family": "parenthesized_group_without_as",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x (COUNT(*) AS ?c) WHERE { VALUES ?x { 1 1 } } GROUP BY (?x + 1)",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "Cannot eval thing: None (<class 'NoneType'>)"
+          ],
+          "class": "Exception",
+          "module": "builtins",
+          "text": "Cannot eval thing: None (<class 'NoneType'>)"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "SA10-01",
+      "historical_query_pointer": "/query_cases/9/runs/0/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H05",
+      "family": "parenthesized_group_without_as",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?c) (SUM(1) AS ?s) (AVG(1) AS ?a) WHERE { VALUES ?row { 1 2 } } GROUP BY (1 / 0)",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [
+          "DivisionByZero"
+        ],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "Cannot eval thing: None (<class 'NoneType'>)"
+          ],
+          "class": "Exception",
+          "module": "builtins",
+          "text": "Cannot eval thing: None (<class 'NoneType'>)"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "SA10-02",
+      "historical_query_pointer": "/query_cases/9/runs/1/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H06",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) (COUNT(?x) AS ?count) (SAMPLE(?x) AS ?sample) WHERE { VALUES ?x {} }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "EX11-01",
+      "historical_query_pointer": "/source_math_cases/28/input/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H07",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) (COUNT(?x) AS ?count) (SAMPLE(?x) AS ?sample) WHERE { VALUES ?x {} } GROUP BY ?x",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "EX11-02",
+      "historical_query_pointer": "/source_math_cases/29/input/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H08",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?g (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES (?g ?x) { } } GROUP BY ?g",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "GQ04",
+      "historical_query_pointer": "/query_cases/3/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H09",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT (GROUP_CONCAT(?x) AS ?v) WHERE { { SELECT (SAMPLE(?missing) AS ?x) WHERE { VALUES ?z { } } } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "GQ05",
+      "historical_query_pointer": "/query_cases/4/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H10",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT (GROUP_CONCAT(?x + 1) AS ?v) WHERE { { SELECT (SAMPLE(?missing) AS ?x) WHERE { VALUES ?z { } } } }",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Ok",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "first_poll",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "GQ18",
+      "historical_query_pointer": "/query_cases/17/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H11",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag {  } } ORDER BY ?missing",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "evaluate_start",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "OQ01-a",
+      "historical_query_pointer": "/source_math_cases/0/input/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H12",
+      "family": "empty_values_translation",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?tag WHERE { VALUES ?tag {  } } ORDER BY (?missing + 1)",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "evaluate_start",
+          "args": [
+            "'list' object has no attribute 'name'"
+          ],
+          "class": "AttributeError",
+          "module": "builtins",
+          "text": "'list' object has no attribute 'name'"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "OQ02-a",
+      "historical_query_pointer": "/source_math_cases/3/input/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    },
+    {
+      "id": "CH-H13",
+      "family": "parenthesized_group_without_as",
+      "layer": "real_prepared_source_query",
+      "evidence": "actual_pinned_original_rdflib_query_observation",
+      "input": {
+        "query": "SELECT ?x (COUNT(*) AS ?c) WHERE { VALUES ?x { 2 1 2 } } GROUP BY (?x + 1) ORDER BY ?x",
+        "initial_bindings": {}
+      },
+      "expected": {
+        "prepare": "Ok",
+        "execute_start": "Err",
+        "original_binding_rows": [],
+        "session_decimal_flags_exact": [],
+        "terminal_next": "source_does_not_define_repoll_after_uncaught_error; receiving_fuse_is_active_contract",
+        "error": {
+          "stage": "evaluate_start",
+          "args": [
+            "Cannot eval thing: None (<class 'NoneType'>)"
+          ],
+          "class": "Exception",
+          "module": "builtins",
+          "text": "Cannot eval thing: None (<class 'NoneType'>)"
+        }
+      },
+      "observation_limits": "Object tokens stripped from expected scalar descriptors. Alias assertions below name only actual within-run identity relations; no original addresses or independent random-seed iteration order are frozen. Local insertion order and terminal selected-column order remain distinct.",
+      "historical_case_id": "OQ25",
+      "historical_query_pointer": "/source_math_cases/36/input/query",
+      "evidence_role": "Explicit post-development source correction of exact old input; old candidate pass not inherited as source parity."
+    }
+  ],
+  "raw_consumer_protocol_cases": [
+    {
+      "id": "CPQ01",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Join",
+        "mode": "lazy",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "LANG_EN"
+              ],
+              [
+                "left",
+                "I1"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [
+              [
+                "x",
+                "LANG_en"
+              ],
+              [
+                "right",
+                "I2"
+              ]
+            ],
+            "initial": []
+          }
+        ]
+      },
+      "expected": {
+        "start": "Ok",
+        "ordered_rows": [
+          [
+            [
+              "x",
+              "LANG_EN"
+            ],
+            [
+              "right",
+              "I2"
+            ],
+            [
+              "left",
+              "I1"
+            ]
+          ]
+        ],
+        "new_row_object": true,
+        "retained_x_object": "LANG_EN",
+        "right_starts": 1
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "evalLazyJoin yields b.merge(a): left values overwrite existing right positions; right-only keys remain before appended left-only keys.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    },
+    {
+      "id": "CPQ02",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Join",
+        "mode": "materialized",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "LANG_EN"
+              ],
+              [
+                "left",
+                "I1"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [
+              [
+                "x",
+                "LANG_en"
+              ],
+              [
+                "right",
+                "I2"
+              ]
+            ],
+            "initial": []
+          }
+        ]
+      },
+      "expected": {
+        "start": "Ok",
+        "ordered_rows": [
+          [
+            [
+              "x",
+              "LANG_en"
+            ],
+            [
+              "left",
+              "I1"
+            ],
+            [
+              "right",
+              "I2"
+            ]
+          ]
+        ],
+        "new_row_object": true,
+        "retained_x_object": "LANG_en",
+        "right_set_members": 1,
+        "right_complete_before_left_first_poll": true
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "_join yields x.merge(y): right values overwrite existing left positions; complete set is constructed before left polling.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    },
+    {
+      "id": "CPQ03",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Join",
+        "mode": "materialized",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R1",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          },
+          {
+            "row_object": "R2",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          }
+        ]
+      },
+      "expected": {
+        "ordered_rows": [
+          [
+            [
+              "x",
+              "E1"
+            ]
+          ]
+        ],
+        "right_set_members": 1,
+        "right_representative_row": "R1",
+        "returned_error_same_arc": "E1",
+        "terminal_next": "None"
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "Frozen row equality sees same actual Exception object; both have same pointer hash. Set retains complete first row object, including its context; merge preserves the value object.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    },
+    {
+      "id": "CPQ04",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Join",
+        "mode": "materialized",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R1",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          },
+          {
+            "row_object": "R2",
+            "local": [
+              [
+                "x",
+                "E2"
+              ]
+            ],
+            "initial": []
+          }
+        ]
+      },
+      "expected": {
+        "ordered_rows": [
+          [
+            [
+              "x",
+              "E1"
+            ]
+          ]
+        ],
+        "right_set_members": 2,
+        "returned_error_same_arc": "E1",
+        "terminal_next": "None",
+        "right_iteration_order": "not_fixed_for_distinct_actual_error_addresses"
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "Distinct Exception objects are unequal even with equal class/args. Only E1 is compatible; single output is deterministic without pinning arbitrary address-dependent right set order.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    },
+    {
+      "id": "CPQ05",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Join",
+        "mode": "materialized",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "None"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [
+              [
+                "x",
+                "None"
+              ]
+            ],
+            "initial": []
+          }
+        ]
+      },
+      "expected": {
+        "ordered_rows": [
+          [
+            [
+              "x",
+              "None"
+            ]
+          ]
+        ],
+        "right_set_members": 1,
+        "terminal_next": "None"
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "ExplicitNone participates as a present value; None equality is true and hash is the fixed source None constant.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    },
+    {
+      "id": "CPQ06",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Join",
+        "mode": "materialized",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "None"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          }
+        ]
+      },
+      "expected": {
+        "ordered_rows": [],
+        "right_set_members": 1,
+        "terminal_next": "None"
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "None and an Exception object compare unequal; compatibility rejects the pair without evaluating either as an expression.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    },
+    {
+      "id": "CPQ07",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Minus",
+        "mode": "materialized",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          }
+        ]
+      },
+      "expected": {
+        "ordered_rows": [],
+        "right_set_members": 1,
+        "terminal_next": "None"
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "Source MINUS tests compatible first then local non-disjointness. Identical Exception value under shared x removes L.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    },
+    {
+      "id": "CPQ08",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Minus",
+        "mode": "materialized",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [
+              [
+                "x",
+                "E2"
+              ]
+            ],
+            "initial": []
+          }
+        ]
+      },
+      "expected": {
+        "ordered_rows": [
+          [
+            [
+              "x",
+              "E1"
+            ]
+          ]
+        ],
+        "output_same_row_object": "L",
+        "returned_error_same_arc": "E1",
+        "terminal_next": "None"
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "Distinct Exception values are incompatible; _minus yields the actual left FrozenBindings object unchanged.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    },
+    {
+      "id": "CPQ09",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Minus",
+        "mode": "materialized",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "E1"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [
+              [
+                "y",
+                "E2"
+              ]
+            ],
+            "initial": []
+          }
+        ]
+      },
+      "expected": {
+        "ordered_rows": [
+          [
+            [
+              "x",
+              "E1"
+            ]
+          ]
+        ],
+        "output_same_row_object": "L",
+        "terminal_next": "None"
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "Right missing x is caught as KeyError by compatible; local domains are disjoint, so left is retained regardless of distinct error values under different keys.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    },
+    {
+      "id": "CPQ10",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "evidence": "fixed_source_derived_not_original_query_observed",
+      "input": {
+        "operation": "Join",
+        "mode": "materialized",
+        "current_local": [],
+        "immutable_initial": [],
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "I1"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [
+              [
+                "y",
+                "I2"
+              ]
+            ],
+            "initial": []
+          },
+          {
+            "raise_original_marker": "M"
+          }
+        ]
+      },
+      "expected": {
+        "start": "Err",
+        "same_error_object": "M",
+        "left_start_calls": 1,
+        "left_polls": 0,
+        "right_set_complete_events": 0,
+        "rows": 0
+      },
+      "source_anchors": [
+        "evaluate.py:141-205",
+        "evalutils.py:58-86",
+        "sparql.py:122-162",
+        "sparql.py:175-243"
+      ],
+      "derivation": "Ordinary evalJoin starts the left child, fully builds set(right), and only then returns _join. A right iterator error propagates the same marker before any left poll.",
+      "receiving_rule": "The compiler and this protocol both invoke the same real consumer helper. Controlled child evaluators/iterators supply listed actual raw rows and marker objects. No replacement sealed query plan, no AST interpreter, no claim ordinary RDF initial bindings construct raw error cells."
+    }
+  ],
+  "active_safety_cases": [
+    {
+      "id": "CA01",
+      "layer": "real_prepared_source_query",
+      "case": "CQ-J05 with arithmetic x+1 replacing float multiply",
+      "input": {
+        "query": "SELECT ?tag ?v WHERE { { VALUES ?tag {1} FILTER(0) } { SELECT (?x + 1 AS ?v) WHERE { VALUES ?x {1} } LIMIT 1 } }",
+        "initial_bindings": {},
+        "backend_fault": {
+          "arm": "after prepare succeeds, immediately before bound execute",
+          "operation": "first subsequent real externalize",
+          "marker": "M"
+        }
+      },
+      "expected": {
+        "execute_start": "Err",
+        "same_backend_error_arc": "M",
+        "left_polls": 0,
+        "key_or_arithmetic_conversion_after_failure": 0
+      },
+      "basis": "Active backend fatal preservation, not original Python Dataset policy."
+    },
+    {
+      "id": "CA02",
+      "layer": "real_prepared_source_query",
+      "case": "CQ-O01 with right BIND(?v+1 AS?z), real Dataset externalize fault on second right row",
+      "expected": {
+        "execute_start": "Ok",
+        "first_poll": "first successful row",
+        "second_poll": "same backend Arc Err",
+        "third_poll": "None",
+        "further_dataset_calls": 0,
+        "prefix_literal_values": {
+          "x": {
+            "lexical": "1",
+            "ill_typed": false
+          },
+          "v": {
+            "lexical": "2",
+            "ill_typed": false
+          },
+          "z": {
+            "lexical": "3",
+            "ill_typed": null
+          }
+        }
+      },
+      "basis": "Active fatal fuse; must preserve first real row prefix.",
+      "input": {
+        "query": "SELECT ?x ?v ?z WHERE { VALUES ?x {1} OPTIONAL { VALUES ?v {2 2} BIND(?v + 1 AS ?z) } }",
+        "initial_bindings": {},
+        "backend_fault": {
+          "arm": "actual OPTIONAL first-probe right ChildPoll ordinal2, before the real poll",
+          "operation": "first subsequent real externalize",
+          "marker": "M"
+        }
+      }
+    },
+    {
+      "id": "CA03",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "input": {
+        "operation": "Join",
+        "mode": "materialized",
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "tag",
+                "I1"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [
+              [
+                "x",
+                "U"
+              ]
+            ],
+            "initial": []
+          }
+        ],
+        "values": {
+          "U": {
+            "source_literal": "Unknown",
+            "rdf_lexical": "100",
+            "rdf_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "object": "U"
+          }
+        }
+      },
+      "expected": {
+        "fault": "UnknownSourceLiteralIdentity",
+        "stage": "execute_start",
+        "left_polls": 0
+      },
+      "basis": "Active reached-fact policy; Unknown source is not an original RDFLib object."
+    },
+    {
+      "id": "CA04",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "input": {
+        "operation": "Minus",
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "U"
+              ]
+            ],
+            "initial": [
+              [
+                "x",
+                "U"
+              ]
+            ]
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [],
+            "initial": [
+              [
+                "x",
+                "U"
+              ]
+            ]
+          }
+        ],
+        "values": {
+          "U": {
+            "source_literal": "Unknown",
+            "rdf_lexical": "100",
+            "rdf_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "object": "U"
+          }
+        },
+        "immutable_initial": [
+          [
+            "x",
+            "U"
+          ]
+        ],
+        "context_ownership": "Both actual input rows use this one immutable initial frame; source local U masks initial V in CA05. No graph/time/bnode/full-context identity claim."
+      },
+      "expected": {
+        "compatible": true,
+        "local_disjoint": true,
+        "left_preserved": true,
+        "unknown_fact_reads": "not instrumented as fictional counter: same actual transport identity must succeed despite unavailable facts"
+      },
+      "basis": "Source same-object equality precedes active metadata reads. Local domain remains empty on right despite fallback."
+    },
+    {
+      "id": "CA05",
+      "layer": "same_production_context_consumer_helper_protocol",
+      "input": {
+        "operation": "Minus",
+        "left_rows": [
+          {
+            "row_object": "L",
+            "local": [
+              [
+                "x",
+                "U"
+              ]
+            ],
+            "initial": [
+              [
+                "x",
+                "V"
+              ]
+            ]
+          }
+        ],
+        "right_rows": [
+          {
+            "row_object": "R",
+            "local": [],
+            "initial": [
+              [
+                "x",
+                "V"
+              ]
+            ]
+          }
+        ],
+        "values": {
+          "U": {
+            "source_literal": "Unknown",
+            "rdf_lexical": "100",
+            "rdf_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "object": "U"
+          },
+          "V": {
+            "source_literal": "Unknown",
+            "rdf_lexical": "100",
+            "rdf_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "object": "V",
+            "distinct_from": "U"
+          }
+        },
+        "immutable_initial": [
+          [
+            "x",
+            "V"
+          ]
+        ],
+        "context_ownership": "Both actual input rows use this one immutable initial frame; source local U masks initial V in CA05. No graph/time/bnode/full-context identity claim."
+      },
+      "expected": {
+        "fault": "UnknownSourceLiteralIdentity",
+        "disjoint_shortcut_before_compatibility": false
+      },
+      "basis": "Source MINUS compatible first; active unavailable-fact refusal at actual comparison."
+    },
+    {
+      "id": "CA06",
+      "layer": "real_prepared_source_query",
+      "input": {
+        "query": "SELECT ?x ?y ?z WHERE { VALUES ?x {1} { BIND(2 AS ?y) OPTIONAL { VALUES ?x {3 1e-1} BIND(?x * 1 AS ?z) } } }",
+        "initial_bindings": {},
+        "cancel": "Set existing cancellation token at actual OPTIONAL second-probe ChildStart boundary, before child start is called; production checks it before further real work."
+      },
+      "expected": {
+        "fault": "Cancelled",
+        "not_unmatched_left": true,
+        "later_right_callbacks": 0
+      },
+      "basis": "Active cancellation at a real observed action, not a synthetic event or original Python cancellation policy. Exact number of cancellation checks is not frozen."
+    },
+    {
+      "id": "CA07",
+      "layer": "actual_shared_source_set_reserve_helper",
+      "input": {
+        "helper": "reserve_set_table",
+        "element_type": "u8",
+        "scratch_initial": [
+          7
+        ],
+        "additional": "usize::MAX"
+      },
+      "expected": {
+        "fault": "Allocation",
+        "equals_calls": 0,
+        "scratch_after": [
+          7
+        ]
+      },
+      "basis": "Real production shared try_reserve_exact capacity/layout refusal. Not whole-query OOM; no artificial global failure switch."
+    },
+    {
+      "id": "CA08",
+      "layer": "actual_prepared_compile_guard",
+      "input": {
+        "compile_protocol": "SourceContext annotation Join(lazy) wrapping SourceValues instead of matching Join; directly invoke actual compiler with source context session",
+        "ordinary_ast_upgrade": "No API can turn arbitrary ordinary AST into sealed prepared identity"
+      },
+      "expected": {
+        "rejected_before_rows": true,
+        "fault": "RawNumericFault::InvalidSourceOrigin",
+        "query_error_wrapper": "QueryEvaluationError::Unexpected; verify typed downcast, never diagnostic text"
+      },
+      "basis": "Active sealed provenance; exact enum payload pending root."
+    },
+    {
+      "id": "CA09",
+      "layer": "actual_prepared_compile_guard",
+      "input": {
+        "queries": [
+          "SELECT ?s WHERE {?s <urn:p> ?o}",
+          "SELECT ?s WHERE {GRAPH <urn:g> {?s <urn:p> ?o}}",
+          "SELECT ?s WHERE {?s <urn:p>+ ?o}",
+          "SELECT ?s WHERE {SERVICE <urn:service> {?s <urn:p> ?o}}",
+          "SELECT ?x WHERE {VALUES ?x {1} FILTER(EXISTS {VALUES ?y {2}})}"
+        ],
+        "lateral": "Actual unsupported AST compiler control if parser has no accepted source syntax; do not claim a syntax error is a successful evaluator guard test."
+      },
+      "expected": {
+        "rejected_before_rows": true
+      },
+      "basis": "No source context privilege expansion to deferred graph consumers."
+    },
+    {
+      "id": "CA10",
+      "layer": "actual_source_decoder",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?x {1} VALUES ?y {2} }",
+        "initial_bindings": {},
+        "backend_fault": {
+          "arm": "At actual top-level lazy Join right ChildRow after its SourceValues row is fully constructed. For this exact disjoint x/y query, source merge and Project clone cells without externalize; the next real externalize is the terminal source-presence decoder.",
+          "operation": "first subsequent real externalize",
+          "marker": "M"
+        },
+        "required_observation": "Require the actual right ChildRow event was reached and no decoder callback preceded arm; backend count/marker identity distinguish this from row construction failure."
+      },
+      "expected": {
+        "same_backend_error_arc": true,
+        "subsequent_next": "None",
+        "no_additional_backend_calls": true
+      },
+      "basis": "Active terminal decoder fatal, distinct from startup/poll faults."
+    }
+  ]
+}

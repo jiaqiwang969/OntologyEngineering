@@ -1,0 +1,59 @@
+{
+  "schema": "oe.private-source-exists-frontend-gate-controls/1",
+  "classification": "active_contract_controls_not_original_query_oracle",
+  "frozen_before_receiving_execution": true,
+  "purpose": "A/B frontend admission must not grant C execution or legacy/public provenance",
+  "queries": [
+    {
+      "id": "FG01",
+      "query": "SELECT (EXISTS { ?s <urn:predicate> ?o } AS ?probe) WHERE {}",
+      "source_overlay": false
+    },
+    {
+      "id": "FG02",
+      "query": "SELECT ?probe WHERE { BIND(EXISTS { ?s <urn:predicate> ?o } AS ?probe) }",
+      "source_overlay": true
+    },
+    {
+      "id": "FG03",
+      "query": "SELECT ?probe WHERE { BIND(NOT EXISTS { ?s <urn:predicate> ?o } AS ?probe) }",
+      "source_overlay": true
+    }
+  ],
+  "controls": [
+    {
+      "id": "FGA01",
+      "actual_path": "new source parser -> existing planner -> source expression from actual Extend -> existing legacy, raw and numeric expression compilers",
+      "expect": "UnsupportedNullableExpression in every compiler before compiling or starting the source child",
+      "observations": {
+        "encoded_variables": 0,
+        "stat_children": 0,
+        "dataset_internalizations": 0,
+        "dataset_scans": 0
+      },
+      "prohibition": "Do not construct a replacement SourceExists, overlay or expression AST"
+    },
+    {
+      "id": "FGA02",
+      "actual_path": "new sealed source prepare -> execute_source_presence",
+      "expect": "Returns QueryEvaluationError::Unexpected with message unsupported nullable expression before creating a result iterator; no Dataset scans",
+      "prohibition": "Do not substitute plan, runtime or compiler"
+    },
+    {
+      "id": "FGA03",
+      "actual_path": "actual source parser expression -> public initial-binding and group-null admission checks",
+      "expect": "source_exists_private_preparation_required",
+      "scope": "Private source expressions cannot enter public AST compatibility checks; this does not change public /1-4 parser behavior"
+    }
+  ],
+  "limits": [
+    "No new source EXISTS execution claimed",
+    "EA-AST07 owner execution remains C",
+    "No original Python behavior assertion from these active gates"
+  ],
+  "previous_draft": {
+    "path": "SOURCE-EXISTS-FRONTEND-GATE-CONTROLS-01.json",
+    "sha256": "8a0e82f79e928c2703c8dc1fbb0167c039c52a5866caf0b68c4767b5a0b242a2"
+  },
+  "pre_execution_review_correction": "FGA02 follows the unchanged error.rs conversion of UnsupportedNullableExpression into Unexpected with the stable message; no typed cause-chain is claimed. No gate execution has run."
+}

@@ -1,0 +1,128 @@
+{
+  "condition": "direct original pure pattern functions; canonical handler cannot supply required entities; corrected profile separately declared",
+  "cases": [
+    {
+      "text": "John Smith works for Acme Inc.",
+      "entities": [
+        {
+          "text": "John Smith",
+          "label": "PERSON",
+          "start_char": 0,
+          "end_char": 10,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        },
+        {
+          "text": "Acme Inc",
+          "label": "PERSON",
+          "start_char": 21,
+          "end_char": 29,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        }
+      ],
+      "expected_relations": [
+        {
+          "source": "John Smith",
+          "type": "works_for",
+          "target": "Acme Inc"
+        }
+      ],
+      "expected_triplets": [
+        {
+          "subject": "John Smith",
+          "predicate": "works_for",
+          "object": "Acme Inc"
+        }
+      ]
+    },
+    {
+      "text": "Alice Wang founded Acme LLC.",
+      "entities": [
+        {
+          "text": "Alice Wang",
+          "label": "PERSON",
+          "start_char": 0,
+          "end_char": 10,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        },
+        {
+          "text": "Acme LLC",
+          "label": "ORG",
+          "start_char": 19,
+          "end_char": 27,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        }
+      ],
+      "expected_relations": [
+        {
+          "source": "Acme LLC",
+          "type": "founded_by",
+          "target": "Alice Wang"
+        }
+      ],
+      "expected_triplets": [
+        {
+          "subject": "Acme LLC",
+          "predicate": "founded_by",
+          "object": "Alice Wang"
+        }
+      ]
+    },
+    {
+      "text": "Acme Inc acquired Bob Smith Company.",
+      "entities": [
+        {
+          "text": "Acme Inc",
+          "label": "PERSON",
+          "start_char": 0,
+          "end_char": 8,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        },
+        {
+          "text": "Bob Smith Company",
+          "label": "PERSON",
+          "start_char": 18,
+          "end_char": 35,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        }
+      ],
+      "expected_relations": [
+        {
+          "source": "Bob Smith Company",
+          "type": "acquired_by",
+          "target": "Acme Inc"
+        }
+      ],
+      "expected_triplets": [
+        {
+          "subject": "Bob Smith Company",
+          "predicate": "acquired_by",
+          "object": "Acme Inc"
+        }
+      ]
+    },
+    {
+      "text": "no capital words here",
+      "entities": [],
+      "expected_relations": [],
+      "expected_triplets": []
+    }
+  ]
+}

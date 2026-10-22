@@ -1,0 +1,2374 @@
+{
+  "schema": "semantica.rule-metadata-source-derived-cases/1",
+  "expectation_origin": "source_derived",
+  "original_execution": false,
+  "source": {
+    "bytes": 2913891,
+    "sha256": "142ddd6fe788b3a716646babc410628aa7606e44ed63b98f5227863f9ea7ba15",
+    "members": [
+      {
+        "member": "semantica/ontology/runtime.py",
+        "bytes": 88713,
+        "sha256": "607a3e51968cddd6d80fa48dc0dc9101438ac616ca242f86bf954da89ccc8c55",
+        "line_count": 2439
+      },
+      {
+        "member": "semantica/reasoning/reasoner.py",
+        "bytes": 19299,
+        "sha256": "0fea54e22a4d2fad6c7dd6c6544eb3549728df58c770d4229e3b60e2fb6fbee6",
+        "line_count": 472
+      },
+      {
+        "member": "semantica/reasoning/explanation_generator.py",
+        "bytes": 16417,
+        "sha256": "bec47e3c3eabda2141566ec6d9f94900054d6b771efb81aed1b68c8a46b4dcb1",
+        "line_count": 454
+      }
+    ],
+    "artifact": "semantica-0.6.5+oe.7-py3-none-any.whl"
+  },
+  "input_interpretation": {
+    "facts": "A string here denotes the original reason(facts=...) text input. It is not RDF.",
+    "rules": "Each ordinary object in an array denotes construction of ForwardRuleDTO(**fields) before calling reason; a string denotes the original string rule. This is a proposed JSON transport adapter, not evidence that the original runtime accepts mappings. Explicit __original_python_type__ overrides this notation only in the negative dict case.",
+    "missing_dto_fields": "confidence defaults 1.0, priority defaults 0; rule_id and text are required.",
+    "nonfinite_numbers": "No NaN/Infinity token is serialized into this JSON; rejection is documented in AUDIT, not pretended as standard JSON input."
+  },
+  "comparison": {
+    "success": "Compare complete normalized result fields and inference sequence; confidence numeric value and original 1.0 output type, not an inferred truth guarantee. conclusions is separately evaluated property.",
+    "failure": "Compare class/stage/message where identified; no claim of new Rust error-code identity or exact interpreter error wording for missing constructor arguments.",
+    "execution": "No original Python module was imported/executed; no Cargo or Rust program was run to generate these expected values. Cases were manually traced from frozen source."
+  },
+  "case_count": 40,
+  "cases": [
+    {
+      "id": "strings_default_ids",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          "IF A(a) THEN B(a)",
+          "IF B(a) THEN C(a)"
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "rule_1",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 1.0,
+              "priority": 0
+            },
+            {
+              "rule_id": "rule_2",
+              "text": "IF B(a) THEN C(a)",
+              "confidence": 1.0,
+              "priority": 0
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "rule_1",
+              "rule_text": "IF A(a) THEN B(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 1.0,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'rule_1'."
+            },
+            {
+              "conclusion": "C(a)",
+              "rule_id": "rule_2",
+              "rule_text": "IF B(a) THEN C(a)",
+              "premises": [
+                "B(a)"
+              ],
+              "confidence": 1.0,
+              "explanation": "Given the premises: B(a), we conclude: C(a) using rule 'rule_2'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)",
+            "C(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)",
+          "C(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "mixed_strings_number_only_strings_before_sort",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          "IF A(a) THEN B(a)",
+          {
+            "rule_id": "custom",
+            "text": "IF B(a) THEN C(a)",
+            "confidence": 0.25,
+            "priority": -2
+          },
+          "IF C(a) THEN D(a)"
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "rule_1",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 1.0,
+              "priority": 0
+            },
+            {
+              "rule_id": "rule_2",
+              "text": "IF C(a) THEN D(a)",
+              "confidence": 1.0,
+              "priority": 0
+            },
+            {
+              "rule_id": "custom",
+              "text": "IF B(a) THEN C(a)",
+              "confidence": 0.25,
+              "priority": -2
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "rule_1",
+              "rule_text": "IF A(a) THEN B(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 1.0,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'rule_1'."
+            },
+            {
+              "conclusion": "C(a)",
+              "rule_id": "custom",
+              "rule_text": "IF B(a) THEN C(a)",
+              "premises": [
+                "B(a)"
+              ],
+              "confidence": 0.25,
+              "explanation": "Given the premises: B(a), we conclude: C(a) using rule 'custom'."
+            },
+            {
+              "conclusion": "D(a)",
+              "rule_id": "rule_2",
+              "rule_text": "IF C(a) THEN D(a)",
+              "premises": [
+                "C(a)"
+              ],
+              "confidence": 1.0,
+              "explanation": "Given the premises: C(a), we conclude: D(a) using rule 'rule_2'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)",
+            "C(a)",
+            "D(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)",
+          "C(a)",
+          "D(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ],
+      "note": "Explicit custom DTO does not increment next_id. First pass B,C; second pass D. Rules result is priority-sorted, inference result is derivation order."
+    },
+    {
+      "id": "dto_defaults_and_text_trim",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "explicit",
+            "text": "  IF A(a) THEN B(a)  "
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "explicit",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 1.0,
+              "priority": 0
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "explicit",
+              "rule_text": "IF A(a) THEN B(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 1.0,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'explicit'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ],
+      "note": "Missing confidence and priority use constructor defaults. rule_id remains exact; text is stripped."
+    },
+    {
+      "id": "descending_priority_and_stable_ties",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "low",
+            "text": "IF A(a) THEN L(a)",
+            "confidence": 0.9,
+            "priority": -1
+          },
+          {
+            "rule_id": "high-first",
+            "text": "IF A(a) THEN H1(a)",
+            "confidence": 0.2,
+            "priority": 4
+          },
+          {
+            "rule_id": "high-second",
+            "text": "IF A(a) THEN H2(a)",
+            "confidence": 0.3,
+            "priority": 4
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "high-first",
+              "text": "IF A(a) THEN H1(a)",
+              "confidence": 0.2,
+              "priority": 4
+            },
+            {
+              "rule_id": "high-second",
+              "text": "IF A(a) THEN H2(a)",
+              "confidence": 0.3,
+              "priority": 4
+            },
+            {
+              "rule_id": "low",
+              "text": "IF A(a) THEN L(a)",
+              "confidence": 0.9,
+              "priority": -1
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "H1(a)",
+              "rule_id": "high-first",
+              "rule_text": "IF A(a) THEN H1(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.2,
+              "explanation": "Given the premises: A(a), we conclude: H1(a) using rule 'high-first'."
+            },
+            {
+              "conclusion": "H2(a)",
+              "rule_id": "high-second",
+              "rule_text": "IF A(a) THEN H2(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.3,
+              "explanation": "Given the premises: A(a), we conclude: H2(a) using rule 'high-second'."
+            },
+            {
+              "conclusion": "L(a)",
+              "rule_id": "low",
+              "rule_text": "IF A(a) THEN L(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.9,
+              "explanation": "Given the premises: A(a), we conclude: L(a) using rule 'low'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "H1(a)",
+            "H2(a)",
+            "L(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "H1(a)",
+          "H2(a)",
+          "L(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "same_conclusion_first_rule_metadata_union_premises",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "B(a)\nA(a)\nA(a)",
+        "rules": [
+          {
+            "rule_id": "later-one",
+            "text": "IF B(a) THEN C(a)",
+            "confidence": 1.0,
+            "priority": -1
+          },
+          {
+            "rule_id": "first-zero",
+            "text": "IF A(a) THEN C(a)",
+            "confidence": 0.0,
+            "priority": 5
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)",
+            "B(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "first-zero",
+              "text": "IF A(a) THEN C(a)",
+              "confidence": 0.0,
+              "priority": 5
+            },
+            {
+              "rule_id": "later-one",
+              "text": "IF B(a) THEN C(a)",
+              "confidence": 1.0,
+              "priority": -1
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "C(a)",
+              "rule_id": "first-zero",
+              "rule_text": "IF A(a) THEN C(a)",
+              "premises": [
+                "A(a)",
+                "B(a)"
+              ],
+              "confidence": 0.0,
+              "explanation": "Given the premises: A(a), B(a), we conclude: C(a) using rule 'first-zero'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)",
+            "C(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "C(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ],
+      "note": "Priority chooses first rule despite input order. Later derivation adds premise only; zero confidence does not block or become max(0,1)."
+    },
+    {
+      "id": "same_priority_first_input_retains_metadata",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)\nB(a)",
+        "rules": [
+          {
+            "rule_id": "first",
+            "text": "IF B(a) THEN C(a)",
+            "confidence": 0.2,
+            "priority": 7
+          },
+          {
+            "rule_id": "second",
+            "text": "IF A(a) THEN C(a)",
+            "confidence": 0.9,
+            "priority": 7
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)",
+            "B(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "first",
+              "text": "IF B(a) THEN C(a)",
+              "confidence": 0.2,
+              "priority": 7
+            },
+            {
+              "rule_id": "second",
+              "text": "IF A(a) THEN C(a)",
+              "confidence": 0.9,
+              "priority": 7
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "C(a)",
+              "rule_id": "first",
+              "rule_text": "IF B(a) THEN C(a)",
+              "premises": [
+                "B(a)",
+                "A(a)"
+              ],
+              "confidence": 0.2,
+              "explanation": "Given the premises: B(a), A(a), we conclude: C(a) using rule 'first'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)",
+            "C(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "C(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "chain_confidence_is_per_rule_not_product",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "a-to-b",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 0.5,
+            "priority": 0
+          },
+          {
+            "rule_id": "b-to-c",
+            "text": "IF B(a) THEN C(a)",
+            "confidence": 0.4,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "a-to-b",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 0.5,
+              "priority": 0
+            },
+            {
+              "rule_id": "b-to-c",
+              "text": "IF B(a) THEN C(a)",
+              "confidence": 0.4,
+              "priority": 0
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "a-to-b",
+              "rule_text": "IF A(a) THEN B(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.5,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'a-to-b'."
+            },
+            {
+              "conclusion": "C(a)",
+              "rule_id": "b-to-c",
+              "rule_text": "IF B(a) THEN C(a)",
+              "premises": [
+                "B(a)"
+              ],
+              "confidence": 0.4,
+              "explanation": "Given the premises: B(a), we conclude: C(a) using rule 'b-to-c'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)",
+            "C(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)",
+          "C(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "zero_confidence_still_chains",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "zero",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 0.0,
+            "priority": 0
+          },
+          {
+            "rule_id": "after-zero",
+            "text": "IF B(a) THEN C(a)",
+            "confidence": 0.8,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "zero",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 0.0,
+              "priority": 0
+            },
+            {
+              "rule_id": "after-zero",
+              "text": "IF B(a) THEN C(a)",
+              "confidence": 0.8,
+              "priority": 0
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "zero",
+              "rule_text": "IF A(a) THEN B(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.0,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'zero'."
+            },
+            {
+              "conclusion": "C(a)",
+              "rule_id": "after-zero",
+              "rule_text": "IF B(a) THEN C(a)",
+              "premises": [
+                "B(a)"
+              ],
+              "confidence": 0.8,
+              "explanation": "Given the premises: B(a), we conclude: C(a) using rule 'after-zero'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)",
+            "C(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)",
+          "C(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "first_derivation_repeated_premises_retained",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "same-premise",
+            "text": "IF A(a) AND A(a) THEN B(a)",
+            "confidence": 0.6,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "same-premise",
+              "text": "IF A(a) AND A(a) THEN B(a)",
+              "confidence": 0.6,
+              "priority": 0
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "same-premise",
+              "rule_text": "IF A(a) AND A(a) THEN B(a)",
+              "premises": [
+                "A(a)",
+                "A(a)"
+              ],
+              "confidence": 0.6,
+              "explanation": "Given the premises: A(a), A(a), we conclude: B(a) using rule 'same-premise'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ],
+      "note": "Dedup applies when merging later derivations. First matched-facts vector preserves condition multiplicity."
+    },
+    {
+      "id": "condition_order_is_part_of_semantic_key",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "B(a)\nA(a)",
+        "rules": [
+          {
+            "rule_id": "ab",
+            "text": "IF A(a) AND B(a) THEN C(a)",
+            "confidence": 0.6,
+            "priority": 0
+          },
+          {
+            "rule_id": "ba",
+            "text": "IF B(a) AND A(a) THEN C(a)",
+            "confidence": 0.8,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)",
+            "B(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "ab",
+              "text": "IF A(a) AND B(a) THEN C(a)",
+              "confidence": 0.6,
+              "priority": 0
+            },
+            {
+              "rule_id": "ba",
+              "text": "IF B(a) AND A(a) THEN C(a)",
+              "confidence": 0.8,
+              "priority": 0
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "C(a)",
+              "rule_id": "ab",
+              "rule_text": "IF A(a) AND B(a) THEN C(a)",
+              "premises": [
+                "A(a)",
+                "B(a)"
+              ],
+              "confidence": 0.6,
+              "explanation": "Given the premises: A(a), B(a), we conclude: C(a) using rule 'ab'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)",
+            "C(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "C(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ],
+      "note": "Reordering conditions is not rejected as duplicate; later premises already exist and are not appended."
+    },
+    {
+      "id": "sorted_fact_bindings_deterministic",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(z)\nA(a)",
+        "rules": [
+          {
+            "rule_id": "var",
+            "text": "IF A(?x) THEN B(?x)",
+            "confidence": 0.25,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)",
+            "A(z)"
+          ],
+          "rules": [
+            {
+              "rule_id": "var",
+              "text": "IF A(?x) THEN B(?x)",
+              "confidence": 0.25,
+              "priority": 0
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "var",
+              "rule_text": "IF A(?x) THEN B(?x)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.25,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'var'."
+            },
+            {
+              "conclusion": "B(z)",
+              "rule_id": "var",
+              "rule_text": "IF A(?x) THEN B(?x)",
+              "premises": [
+                "A(z)"
+              ],
+              "confidence": 0.25,
+              "explanation": "Given the premises: A(z), we conclude: B(z) using rule 'var'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "A(z)",
+            "B(a)",
+            "B(z)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)",
+          "B(z)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "already_known_conclusion_no_inference",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "B(a)\nA(a)",
+        "rules": [
+          {
+            "rule_id": "known",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 0.3,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)",
+            "B(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "known",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 0.3,
+              "priority": 0
+            }
+          ],
+          "inferences": [],
+          "all_facts": [
+            "A(a)",
+            "B(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": []
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "positive_cycle_closes_without_duplicate_result",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "ab",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 0.5,
+            "priority": 0
+          },
+          {
+            "rule_id": "ba",
+            "text": "IF B(a) THEN A(a)",
+            "confidence": 0.7,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "ab",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 0.5,
+              "priority": 0
+            },
+            {
+              "rule_id": "ba",
+              "text": "IF B(a) THEN A(a)",
+              "confidence": 0.7,
+              "priority": 0
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "ab",
+              "rule_text": "IF A(a) THEN B(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.5,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'ab'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "priority_allows_same_pass_chain_at_bound_one",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "tail",
+            "text": "IF B(a) THEN C(a)",
+            "confidence": 0.9,
+            "priority": 1
+          },
+          {
+            "rule_id": "head",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 0.1,
+            "priority": 2
+          }
+        ],
+        "max_iterations": 1
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "head",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 0.1,
+              "priority": 2
+            },
+            {
+              "rule_id": "tail",
+              "text": "IF B(a) THEN C(a)",
+              "confidence": 0.9,
+              "priority": 1
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "head",
+              "rule_text": "IF A(a) THEN B(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.1,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'head'."
+            },
+            {
+              "conclusion": "C(a)",
+              "rule_id": "tail",
+              "rule_text": "IF B(a) THEN C(a)",
+              "premises": [
+                "B(a)"
+              ],
+              "confidence": 0.9,
+              "explanation": "Given the premises: B(a), we conclude: C(a) using rule 'tail'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)",
+            "C(a)"
+          ],
+          "max_iterations": 1,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)",
+          "C(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "bound_probe_detects_late_derivation",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "tail",
+            "text": "IF B(a) THEN C(a)",
+            "confidence": 0.9,
+            "priority": 2
+          },
+          {
+            "rule_id": "head",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 0.1,
+            "priority": 1
+          }
+        ],
+        "max_iterations": 1
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticRuntimeError",
+        "original_message": "forward reasoning did not converge within max_iterations=1",
+        "stage": "runtime_second_closure_probe",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1698,
+          "end_line": 1708
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 217,
+          "end_line": 269
+        }
+      ],
+      "note": "First pass only B. Probe derives C; even if closure finishes during probe, no partial result is returned."
+    },
+    {
+      "id": "later_pass_does_not_merge_into_known_conclusion",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "tail",
+            "text": "IF B(a) THEN D(a)",
+            "confidence": 0.4,
+            "priority": 1
+          },
+          {
+            "rule_id": "head",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 0.2,
+            "priority": 0
+          },
+          {
+            "rule_id": "direct",
+            "text": "IF A(a) THEN D(a)",
+            "confidence": 0.8,
+            "priority": -1
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "tail",
+              "text": "IF B(a) THEN D(a)",
+              "confidence": 0.4,
+              "priority": 1
+            },
+            {
+              "rule_id": "head",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 0.2,
+              "priority": 0
+            },
+            {
+              "rule_id": "direct",
+              "text": "IF A(a) THEN D(a)",
+              "confidence": 0.8,
+              "priority": -1
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "head",
+              "rule_text": "IF A(a) THEN B(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.2,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'head'."
+            },
+            {
+              "conclusion": "D(a)",
+              "rule_id": "direct",
+              "rule_text": "IF A(a) THEN D(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 0.8,
+              "explanation": "Given the premises: A(a), we conclude: D(a) using rule 'direct'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)",
+            "D(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)",
+          "D(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ],
+      "note": "D first appears via direct in pass1. tail matches in pass2 but D was pre-pass-known, so B is not merged and tail metadata is not adopted."
+    },
+    {
+      "id": "text_source_lines_ignore_comments",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)\n# fact note\nA(a)\n",
+        "rules": "\n# rule note\n  IF A(a) THEN B(a)\n",
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "success",
+        "result": {
+          "input_facts": [
+            "A(a)"
+          ],
+          "rules": [
+            {
+              "rule_id": "rule_1",
+              "text": "IF A(a) THEN B(a)",
+              "confidence": 1.0,
+              "priority": 0
+            }
+          ],
+          "inferences": [
+            {
+              "conclusion": "B(a)",
+              "rule_id": "rule_1",
+              "rule_text": "IF A(a) THEN B(a)",
+              "premises": [
+                "A(a)"
+              ],
+              "confidence": 1.0,
+              "explanation": "Given the premises: A(a), we conclude: B(a) using rule 'rule_1'."
+            }
+          ],
+          "all_facts": [
+            "A(a)",
+            "B(a)"
+          ],
+          "max_iterations": 50,
+          "semantics": "semantica.textual-forward-chain.v1",
+          "complete": true
+        },
+        "conclusions": [
+          "B(a)"
+        ]
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        },
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1623,
+          "end_line": 1745
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 204,
+          "end_line": 269
+        },
+        {
+          "member": "semantica/reasoning/reasoner.py",
+          "start_line": 375,
+          "end_line": 415
+        },
+        {
+          "member": "semantica/reasoning/explanation_generator.py",
+          "start_line": 411,
+          "end_line": 422
+        }
+      ]
+    },
+    {
+      "id": "explicit_rule1_collides_with_first_string",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "rule_1",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.0,
+            "priority": 0
+          },
+          "IF B(a) THEN C(a)"
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "duplicate forward rule ID: 'rule_1'",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        }
+      ]
+    },
+    {
+      "id": "explicit_rule2_collides_with_second_string",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          "IF A(a) THEN B(a)",
+          {
+            "rule_id": "rule_2",
+            "text": "IF B(a) THEN C(a)",
+            "confidence": 1.0,
+            "priority": 0
+          },
+          "IF C(a) THEN D(a)"
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "duplicate forward rule ID: 'rule_2'",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        }
+      ]
+    },
+    {
+      "id": "duplicate_explicit_id_even_with_distinct_text",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "same",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.0,
+            "priority": 0
+          },
+          {
+            "rule_id": "same",
+            "text": "IF A(a) THEN C(a)",
+            "confidence": 1.0,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "duplicate forward rule ID: 'same'",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        }
+      ]
+    },
+    {
+      "id": "semantic_duplicate_rejected_despite_metadata_difference",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 0.0,
+            "priority": -9
+          },
+          {
+            "rule_id": "y",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.0,
+            "priority": 9
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "duplicate forward rule conditions/conclusion are ambiguous",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        }
+      ]
+    },
+    {
+      "id": "keyword_case_and_outer_atom_space_duplicate",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) AND B(a) THEN C(a)",
+            "confidence": 1.0,
+            "priority": 0
+          },
+          {
+            "rule_id": "y",
+            "text": "if   A(a)   and   B(a) then   C(a)",
+            "confidence": 1.0,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "duplicate forward rule conditions/conclusion are ambiguous",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        }
+      ]
+    },
+    {
+      "id": "outer_rule_id_whitespace_rejected",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": " x ",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.0,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "forward rule IDs cannot have outer whitespace",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        }
+      ]
+    },
+    {
+      "id": "empty_rule_id_rejected_at_dto_construction",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.0,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule_id must be a non-empty string",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 374,
+          "end_line": 387
+        }
+      ]
+    },
+    {
+      "id": "nonstring_rule_id_rejected_at_dto_construction",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": 7,
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.0,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule_id must be a non-empty string",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 374,
+          "end_line": 387
+        }
+      ]
+    },
+    {
+      "id": "empty_text_rejected_at_dto_construction",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "  ",
+            "confidence": 1.0,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule text must be a non-empty string",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 374,
+          "end_line": 387
+        }
+      ]
+    },
+    {
+      "id": "confidence_boolean",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": true,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule confidence must be a finite number from 0 to 1",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 379,
+          "end_line": 385
+        }
+      ]
+    },
+    {
+      "id": "confidence_string",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": "0.5",
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule confidence must be a finite number from 0 to 1",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 379,
+          "end_line": 385
+        }
+      ]
+    },
+    {
+      "id": "confidence_negative",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": -0.1,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule confidence must be a finite number from 0 to 1",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 379,
+          "end_line": 385
+        }
+      ]
+    },
+    {
+      "id": "confidence_above_one",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.01,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule confidence must be a finite number from 0 to 1",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 379,
+          "end_line": 385
+        }
+      ]
+    },
+    {
+      "id": "priority_boolean",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.0,
+            "priority": true
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule priority must be an integer",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 386,
+          "end_line": 387
+        }
+      ]
+    },
+    {
+      "id": "priority_float",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.0,
+            "priority": 1.0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule priority must be an integer",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 386,
+          "end_line": 387
+        }
+      ]
+    },
+    {
+      "id": "priority_string",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) THEN B(a)",
+            "confidence": 1.0,
+            "priority": "1"
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "ValueError",
+        "original_message": "rule priority must be an integer",
+        "stage": "ForwardRuleDTO.__post_init__",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 386,
+          "end_line": 387
+        }
+      ]
+    },
+    {
+      "id": "empty_rules_rejected",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "forward reasoning requires at least one rule",
+        "stage": "runtime_reason_input",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1663,
+          "end_line": 1668
+        }
+      ]
+    },
+    {
+      "id": "comment_only_iterable_rule_rejected",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          "# no rule"
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "each rule iterable item must contain exactly one rule",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 2032,
+          "end_line": 2037
+        }
+      ]
+    },
+    {
+      "id": "two_lines_in_one_iterable_item_rejected",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          "IF A(a) THEN B(a)\nIF B(a) THEN C(a)"
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "each rule iterable item must contain exactly one rule",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 2032,
+          "end_line": 2037
+        }
+      ]
+    },
+    {
+      "id": "plain_mapping_iterable_element_is_not_original_dto",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(a) THEN B(a)",
+            "__original_python_type__": "dict"
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "every rule must be a string or ForwardRuleDTO",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1988,
+          "end_line": 2065
+        }
+      ],
+      "note": "This case deliberately overrides the fixture DTO-construction convention: pass a literal Python dict element. New JSON wire parsing may construct the generated Rust DTO, but must not call this original accepted input."
+    },
+    {
+      "id": "missing_rule_id_is_not_generated_for_dto",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "text": "IF A(a) THEN B(a)"
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "TypeError",
+        "original_message": "ForwardRuleDTO.__init__() missing 1 required positional argument: 'rule_id'",
+        "stage": "ForwardRuleDTO constructor signature",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 360,
+          "end_line": 372
+        }
+      ],
+      "note": "Class/type decision is source-derived; exact generated dataclass TypeError spelling is Python-version-sensitive and not asserted as independently observed."
+    },
+    {
+      "id": "max_iterations_bool_rejected",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          "IF A(a) THEN B(a)"
+        ],
+        "max_iterations": true
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "max_iterations must be a positive integer",
+        "stage": "runtime_reason_input",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1655,
+          "end_line": 1661
+        }
+      ]
+    },
+    {
+      "id": "unbound_conclusion_rejected",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "facts": "A(a)",
+        "rules": [
+          {
+            "rule_id": "x",
+            "text": "IF A(?x) THEN B(?y)",
+            "confidence": 1.0,
+            "priority": 0
+          }
+        ],
+        "max_iterations": 50
+      },
+      "expected": {
+        "outcome": "error",
+        "original_exception_class": "SemanticInputError",
+        "original_message": "forward rule conclusion contains unbound variables: ?y",
+        "stage": "runtime_rule_normalization",
+        "partial_result_returned": false
+      },
+      "basis": [
+        {
+          "member": "semantica/ontology/runtime.py",
+          "start_line": 1972,
+          "end_line": 1984
+        }
+      ]
+    }
+  ]
+}

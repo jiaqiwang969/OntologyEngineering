@@ -1,1 +1,0 @@
-"""Bounded generic assembly diagnostics."""

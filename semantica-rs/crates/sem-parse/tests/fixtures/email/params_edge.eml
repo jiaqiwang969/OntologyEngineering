@@ -1,0 +1,44 @@
+From: p@example.com
+Subject: parameter edges
+Content-Type: multipart/mixed; boundary="PE"
+
+--PE
+Content-Type: text/plain; charset="utf\"-8"
+
+quoted charset
+--PE
+Content-Type: application/octet-stream; name="a;b.txt"
+Content-Disposition: attachment; filename="a;b.txt"
+
+semicolon name
+--PE
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename=" spaced.txt "
+
+spaced
+--PE
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename*=x-unknown''abc%41.txt
+
+unknown charset 2231
+--PE
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename*=''plain%20name.txt
+
+empty charset 2231
+--PE
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename*=utf-8''one; filename*0=two
+
+mixed continuations
+--PE
+Content-Type: text
+Content-Disposition: attachment; filename="=?x-nope?q?bad?="
+
+bad word charset
+--PE
+Content-Type: text/html
+Content-Disposition: attachment; filename="page.html"
+
+<p>attached html</p>
+--PE--

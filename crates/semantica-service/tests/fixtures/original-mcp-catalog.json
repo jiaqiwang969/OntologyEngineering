@@ -1,0 +1,433 @@
+{
+  "source_commit": "8b2ed123c380fc8abc78507e6e6648e6f5c0052c",
+  "source_sha256": "1273bca55d0ad9a10b65405fedf91394456f6cdf071569ec410d68206cb6f737",
+  "tools": [
+    {
+      "name": "extract_entities",
+      "description": "Extract named entities (people, places, organisations, concepts) from text using Semantica NER.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Input text to extract entities from"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "extract_relations",
+      "description": "Extract relations and (subject, predicate, object) triplets from text.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Input text to extract relations from"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "record_decision",
+      "description": "Record a decision into the Semantica knowledge graph with full context, causal links, and metadata.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "description": "Decision category, e.g. 'loan_approval'"
+          },
+          "scenario": {
+            "type": "string",
+            "description": "Natural-language situation description"
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "Why this decision was made"
+          },
+          "outcome": {
+            "type": "string",
+            "description": "Decision outcome, e.g. 'approved'"
+          },
+          "confidence": {
+            "type": "number",
+            "description": "Confidence score 0–1"
+          },
+          "decision_maker": {
+            "type": "string",
+            "description": "Who/what made the decision"
+          },
+          "valid_from": {
+            "type": "string",
+            "description": "ISO date validity start (optional)"
+          },
+          "valid_until": {
+            "type": "string",
+            "description": "ISO date validity end (optional)"
+          }
+        },
+        "required": [
+          "category",
+          "scenario",
+          "reasoning",
+          "outcome",
+          "confidence"
+        ]
+      }
+    },
+    {
+      "name": "query_decisions",
+      "description": "Query recorded decisions by natural language, category, or get all recent decisions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Natural language query (optional)"
+          },
+          "category": {
+            "type": "string",
+            "description": "Filter by category (optional)"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Max results (default 10)"
+          }
+        }
+      }
+    },
+    {
+      "name": "find_precedents",
+      "description": "Find past decisions similar to a given scenario using hybrid similarity search.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "type": "string",
+            "description": "Scenario description to find precedents for"
+          },
+          "max_results": {
+            "type": "integer",
+            "description": "Max results (default 5)"
+          }
+        },
+        "required": [
+          "scenario"
+        ]
+      }
+    },
+    {
+      "name": "get_causal_chain",
+      "description": "Trace the causal chain upstream or downstream from a decision.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "decision_id": {
+            "type": "string",
+            "description": "Decision ID to trace"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "upstream",
+              "downstream"
+            ],
+            "description": "Trace direction"
+          },
+          "max_depth": {
+            "type": "integer",
+            "description": "Max chain depth (default 5)"
+          }
+        },
+        "required": [
+          "decision_id"
+        ]
+      }
+    },
+    {
+      "name": "add_entity",
+      "description": "Add a node/entity to the Semantica knowledge graph.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique node ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "Human-readable label"
+          },
+          "type": {
+            "type": "string",
+            "description": "Node type, e.g. 'Person', 'Organisation'"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional properties"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "add_relationship",
+      "description": "Add a directed relationship (edge) between two entities in the knowledge graph.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Source node ID"
+          },
+          "target": {
+            "type": "string",
+            "description": "Target node ID"
+          },
+          "type": {
+            "type": "string",
+            "description": "Relationship type, e.g. 'WORKS_AT'"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Additional edge properties"
+          }
+        },
+        "required": [
+          "source",
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "run_reasoning",
+      "description": "Run forward-chaining IF/THEN rules over a set of facts to derive new facts.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "facts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of fact strings, e.g. ['Person(John)', 'Employee(John)']"
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "IF/THEN rule strings, e.g. ['IF Employee(?x) THEN WorkerBee(?x)']"
+          }
+        },
+        "required": [
+          "facts",
+          "rules"
+        ]
+      }
+    },
+    {
+      "name": "get_graph_analytics",
+      "description": "Compute PageRank centrality and community detection over the knowledge graph.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "export_graph",
+      "description": "Export the current knowledge graph. Formats: turtle, ttl, nt, xml, json-ld, json.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string",
+            "enum": [
+              "turtle",
+              "ttl",
+              "nt",
+              "xml",
+              "json-ld",
+              "json"
+            ],
+            "description": "Export format (default: json-ld)"
+          }
+        }
+      }
+    },
+    {
+      "name": "get_graph_summary",
+      "description": "Return a high-level summary of the current knowledge graph: node count, decision count, status.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "list_chapter_packages",
+      "description": "List Semantica's 29 built-in chapter packages and optional normative domain package.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "volume": {
+            "type": "string",
+            "enum": [
+              "vol1",
+              "vol2"
+            ],
+            "description": "Optional book-volume filter."
+          },
+          "include_domain_packages": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include the fixed ISO 26262 normative domain package."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_chapter_package",
+      "description": "Get one allowlisted chapter or normative package manifest by stable package ID.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "type": "string",
+            "description": "Exact built-in Semantica package ID."
+          }
+        },
+        "required": [
+          "package_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "verify_book_sources",
+      "description": "Fail closed if any of the 29 book, guide, TeX, contract, or derived-source bindings has drifted.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "book_root": {
+            "type": "string",
+            "description": "Root of the ontology-engineering checkout containing both books."
+          },
+          "volume": {
+            "type": "string",
+            "enum": [
+              "vol1",
+              "vol2"
+            ],
+            "description": "Optional book-volume filter."
+          }
+        },
+        "required": [
+          "book_root"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "run_chapter_package",
+      "description": "Execute a built-in package scenario through SemanticPackageRunner and return only public DTO data.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "type": "string"
+          },
+          "scenario_id": {
+            "type": "string"
+          },
+          "runtime_commit": {
+            "type": "string"
+          },
+          "runtime_artifact_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{64}$"
+          }
+        },
+        "required": [
+          "package_id",
+          "runtime_commit",
+          "runtime_artifact_sha256"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "verify_chapter_package",
+      "description": "Execute and release-verify a built-in package through SemanticPackageRunner.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "package_id": {
+            "type": "string"
+          },
+          "scenario_id": {
+            "type": "string"
+          },
+          "runtime_commit": {
+            "type": "string"
+          },
+          "runtime_artifact_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-fA-F]{64}$"
+          }
+        },
+        "required": [
+          "package_id",
+          "runtime_commit",
+          "runtime_artifact_sha256"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ],
+  "fixed_resources": [
+    {
+      "uri": "semantica://graph/summary",
+      "name": "Graph Summary",
+      "description": "High-level statistics about the current knowledge graph",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "semantica://decisions/list",
+      "name": "Decisions",
+      "description": "List of all recorded decisions in the graph",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "semantica://schema/info",
+      "name": "Schema Info",
+      "description": "Semantica server info and available capabilities",
+      "mimeType": "application/json"
+    },
+    {
+      "uri": "semantica://packages/registry",
+      "name": "Built-in Semantic Package Registry",
+      "description": "The 29 chapter packages and normative domain package exposed by Semantica.",
+      "mimeType": "application/json"
+    }
+  ],
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    },
+    "resources": {
+      "listChanged": false,
+      "subscribe": false
+    }
+  },
+  "old_version": "0.6.5+oe.7"
+}

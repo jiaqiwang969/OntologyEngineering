@@ -1,0 +1,2664 @@
+{
+ "enums": {
+  "StepStatus": [
+   [
+    "PENDING",
+    "pending",
+    "StepStatus.PENDING",
+    "<StepStatus.PENDING: 'pending'>"
+   ],
+   [
+    "RUNNING",
+    "running",
+    "StepStatus.RUNNING",
+    "<StepStatus.RUNNING: 'running'>"
+   ],
+   [
+    "COMPLETED",
+    "completed",
+    "StepStatus.COMPLETED",
+    "<StepStatus.COMPLETED: 'completed'>"
+   ],
+   [
+    "FAILED",
+    "failed",
+    "StepStatus.FAILED",
+    "<StepStatus.FAILED: 'failed'>"
+   ],
+   [
+    "SKIPPED",
+    "skipped",
+    "StepStatus.SKIPPED",
+    "<StepStatus.SKIPPED: 'skipped'>"
+   ]
+  ],
+  "PipelineStatus": [
+   [
+    "PENDING",
+    "pending",
+    "PipelineStatus.PENDING",
+    "<PipelineStatus.PENDING: 'pending'>"
+   ],
+   [
+    "RUNNING",
+    "running",
+    "PipelineStatus.RUNNING",
+    "<PipelineStatus.RUNNING: 'running'>"
+   ],
+   [
+    "PAUSED",
+    "paused",
+    "PipelineStatus.PAUSED",
+    "<PipelineStatus.PAUSED: 'paused'>"
+   ],
+   [
+    "COMPLETED",
+    "completed",
+    "PipelineStatus.COMPLETED",
+    "<PipelineStatus.COMPLETED: 'completed'>"
+   ],
+   [
+    "FAILED",
+    "failed",
+    "PipelineStatus.FAILED",
+    "<PipelineStatus.FAILED: 'failed'>"
+   ],
+   [
+    "STOPPED",
+    "stopped",
+    "PipelineStatus.STOPPED",
+    "<PipelineStatus.STOPPED: 'stopped'>"
+   ]
+  ],
+  "ErrorSeverity": [
+   [
+    "LOW",
+    "low",
+    "ErrorSeverity.LOW",
+    "<ErrorSeverity.LOW: 'low'>"
+   ],
+   [
+    "MEDIUM",
+    "medium",
+    "ErrorSeverity.MEDIUM",
+    "<ErrorSeverity.MEDIUM: 'medium'>"
+   ],
+   [
+    "HIGH",
+    "high",
+    "ErrorSeverity.HIGH",
+    "<ErrorSeverity.HIGH: 'high'>"
+   ],
+   [
+    "CRITICAL",
+    "critical",
+    "ErrorSeverity.CRITICAL",
+    "<ErrorSeverity.CRITICAL: 'critical'>"
+   ]
+  ],
+  "RetryStrategy": [
+   [
+    "LINEAR",
+    "linear",
+    "RetryStrategy.LINEAR",
+    "<RetryStrategy.LINEAR: 'linear'>"
+   ],
+   [
+    "EXPONENTIAL",
+    "exponential",
+    "RetryStrategy.EXPONENTIAL",
+    "<RetryStrategy.EXPONENTIAL: 'exponential'>"
+   ],
+   [
+    "FIXED",
+    "fixed",
+    "RetryStrategy.FIXED",
+    "<RetryStrategy.FIXED: 'fixed'>"
+   ]
+  ],
+  "ResourceType": [
+   [
+    "CPU",
+    "cpu",
+    "ResourceType.CPU",
+    "<ResourceType.CPU: 'cpu'>"
+   ],
+   [
+    "GPU",
+    "gpu",
+    "ResourceType.GPU",
+    "<ResourceType.GPU: 'gpu'>"
+   ],
+   [
+    "MEMORY",
+    "memory",
+    "ResourceType.MEMORY",
+    "<ResourceType.MEMORY: 'memory'>"
+   ],
+   [
+    "DISK",
+    "disk",
+    "ResourceType.DISK",
+    "<ResourceType.DISK: 'disk'>"
+   ],
+   [
+    "NETWORK",
+    "network",
+    "ResourceType.NETWORK",
+    "<ResourceType.NETWORK: 'network'>"
+   ]
+  ]
+ },
+ "enum_value_error": {
+  "error": {
+   "type": "ValueError",
+   "message": "'bogus' is not a valid StepStatus"
+  }
+ },
+ "records": {
+  "step_repr": "PipelineStep(name='a', step_type='b', config={}, dependencies=[], handler=None, status=<StepStatus.PENDING: 'pending'>, result=None, error=None, delta_mode=False, base_version_id=None, target_version_id=None)",
+  "step_repr_full": "PipelineStep(name='s', step_type='t', config={'k': 1, 'x': 'y', 'f': 0.5, 'n': None, 'b': True, 'l': ['a', 2]}, dependencies=['a', 'b'], handler=None, status=<StepStatus.FAILED: 'failed'>, result={'r': [1, 2]}, error=ValueError('bad'), delta_mode=True, base_version_id='v1', target_version_id=None)",
+  "pipeline_repr": "Pipeline(name='p', steps=[], config={}, metadata={})",
+  "pipeline_repr_steps": "Pipeline(name='p', steps=[PipelineStep(name='a', step_type='t', config={}, dependencies=[], handler=None, status=<StepStatus.PENDING: 'pending'>, result=None, error=None, delta_mode=False, base_version_id=None, target_version_id=None)], config={'parallelism': 2}, metadata={'m': 'v'})",
+  "retry_policy_repr": "RetryPolicy(max_retries=3, backoff_factor=2.0, initial_delay=1.0, max_delay=60.0, strategy=<RetryStrategy.EXPONENTIAL: 'exponential'>, retryable_errors=[])",
+  "retry_policy_repr_errors": "RetryPolicy(max_retries=1, backoff_factor=2.0, initial_delay=1.0, max_delay=60.0, strategy=<RetryStrategy.EXPONENTIAL: 'exponential'>, retryable_errors=[<class 'ValueError'>, <class 'KeyError'>])",
+  "validation_result": "ValidationResult(valid=True, errors=[], warnings=[], metadata={})",
+  "execution_result": "ExecutionResult(success=True, output=None, metadata={}, metrics={}, errors=[])",
+  "failure_recovery": "FailureRecovery(should_retry=False, retry_delay=0.0, recovery_action=None, metadata={})",
+  "recovery_action": [
+   true,
+   0.0,
+   2.5
+  ],
+  "parallel_result": "ParallelExecutionResult(task_id='t', success=True, result=None, error=None, execution_time=0.0)",
+  "resource": "Resource(resource_id='cpu', resource_type=<ResourceType.CPU: 'cpu'>, capacity=4.0, allocated=0.0, metadata={})",
+  "allocation": "ResourceAllocation(allocation_id='a1', resource_id='cpu', resource_type=<ResourceType.CPU: 'cpu'>, amount=1.0, pipeline_id='p', step_name=None, metadata={})",
+  "template": "PipelineTemplate(name='t', description='d', steps=[], config={}, metadata={})"
+ },
+ "add_step": {
+  "returned_type": "PipelineStep",
+  "config": {
+   "foo": "bar",
+   "dependencies": [
+    "x"
+   ],
+   "n": 3
+  },
+  "dependencies": [
+   "x"
+  ],
+  "delta_mode": true,
+  "base_version_id": "v1",
+  "target_version_id": "v2",
+  "same_object": true,
+  "chained_build": {
+   "error": {
+    "type": "AttributeError",
+    "message": "'PipelineStep' object has no attribute 'build'"
+   }
+  },
+  "chained_add_step": {
+   "error": {
+    "type": "AttributeError",
+    "message": "'PipelineStep' object has no attribute 'add_step'"
+   }
+  },
+  "chained_steps": {
+   "error": {
+    "type": "AttributeError",
+    "message": "'PipelineStep' object has no attribute 'steps'"
+   }
+  }
+ },
+ "connect_steps": {
+  "b_deps": [
+   "a",
+   "c"
+  ],
+  "b_config": {
+   "dependencies": [
+    "a",
+    "c"
+   ]
+  },
+  "c_deps": [
+   "a"
+  ],
+  "c_config": {},
+  "missing": {
+   "error": {
+    "type": "ValidationError",
+    "message": "Target step not found: zzz"
+   }
+  },
+  "serialize": "{\n  \"name\": \"pipeline\",\n  \"steps\": [\n    {\n      \"name\": \"a\",\n      \"type\": \"t\",\n      \"config\": {},\n      \"dependencies\": []\n    },\n    {\n      \"name\": \"b\",\n      \"type\": \"t\",\n      \"config\": {\n        \"dependencies\": [\n          \"a\",\n          \"c\"\n        ]\n      },\n      \"dependencies\": [\n        \"a\",\n        \"c\"\n      ]\n    },\n    {\n      \"name\": \"c\",\n      \"type\": \"t\",\n      \"config\": {},\n      \"dependencies\": [\n        \"a\"\n      ]\n    }\n  ],\n  \"config\": {}\n}",
+  "serialize_dict": {
+   "name": "pipeline",
+   "steps": [
+    {
+     "name": "a",
+     "type": "t",
+     "config": {},
+     "dependencies": []
+    },
+    {
+     "name": "b",
+     "type": "t",
+     "config": {
+      "dependencies": [
+       "a",
+       "c"
+      ]
+     },
+     "dependencies": [
+      "a",
+      "c"
+     ]
+    },
+    {
+     "name": "c",
+     "type": "t",
+     "config": {},
+     "dependencies": [
+      "a"
+     ]
+    }
+   ],
+   "config": {}
+  }
+ },
+ "build": {
+  "name": "default_pipeline",
+  "config": {
+   "parallelism": 3
+  },
+  "metadata": {
+   "step_count": 1,
+   "parallelism": 3
+  },
+  "steps": [
+   "only"
+  ],
+  "default_parallelism_metadata": {
+   "step_count": 1,
+   "parallelism": 1
+  }
+ },
+ "build_errors": {
+  "empty": {
+   "error": {
+    "type": "ValidationError",
+    "message": "Pipeline validation failed: ['Pipeline has no steps']"
+   }
+  },
+  "duplicate": {
+   "error": {
+    "type": "ValidationError",
+    "message": "Pipeline validation failed: [\"Duplicate step names found: ['a']\"]"
+   }
+  },
+  "missing_dep": {
+   "error": {
+    "type": "ValidationError",
+    "message": "Pipeline validation failed: [\"Missing dependency 'ghost' for step 'a'\"]"
+   }
+  },
+  "cycle": {
+   "error": {
+    "type": "ValidationError",
+    "message": "Pipeline validation failed: [\"Circular dependency detected: [['a', 'b', 'a']]\"]"
+   }
+  },
+  "blank": {
+   "error": {
+    "type": "ValidationError",
+    "message": "Pipeline validation failed: ['Step missing name', \"Step '' missing type\"]"
+   }
+  }
+ },
+ "build_pipeline": {
+  "name": "config_pipeline",
+  "steps": [
+   [
+    "s1",
+    "t1",
+    {
+     "a": 1
+    },
+    []
+   ],
+   [
+    "s2",
+    "t2",
+    {
+     "dependencies": [
+      "s1"
+     ]
+    },
+    [
+     "s1"
+    ]
+   ]
+  ],
+  "config": {
+   "parallelism": 4
+  },
+  "metadata": {
+   "step_count": 2,
+   "parallelism": 4
+  }
+ },
+ "build_pipeline_errors": {
+  "bad_item": {
+   "error": {
+    "type": "AttributeError",
+    "message": "'str' object has no attribute 'get'"
+   }
+  },
+  "none_steps": {
+   "error": {
+    "type": "TypeError",
+    "message": "object of type 'NoneType' has no len()"
+   }
+  },
+  "bad_config": {
+   "error": {
+    "type": "TypeError",
+    "message": "semantica.pipeline.pipeline_builder.PipelineBuilder.add_step() argument after ** must be a mapping, not NoneType"
+   }
+  },
+  "default_name": "default_pipeline"
+ },
+ "register_step_handler": [
+  "t"
+ ],
+ "get_step": [
+  true
+ ],
+ "serialize_handler": {
+  "error": {
+   "type": "TypeError",
+   "message": "Object of type function is not JSON serializable"
+  }
+ },
+ "builder_validate_pipeline": {
+  "error": {
+   "type": "AttributeError",
+   "message": "'ValidationResult' object has no attribute 'get'"
+  }
+ },
+ "serializer": {
+  "json": "{\n  \"name\": \"ser\",\n  \"steps\": [\n    {\n      \"name\": \"s1\",\n      \"type\": \"t1\",\n      \"config\": {\n        \"source\": \"docs/\"\n      },\n      \"dependencies\": [],\n      \"delta_mode\": true,\n      \"base_version_id\": \"v1\",\n      \"target_version_id\": \"v2\"\n    },\n    {\n      \"name\": \"s2\",\n      \"type\": \"t2\",\n      \"config\": {\n        \"dependencies\": [\n          \"s1\"\n        ],\n        \"weight\": 0.5\n      },\n      \"dependencies\": [\n        \"s1\"\n      ],\n      \"delta_mode\": false,\n      \"base_version_id\": null,\n      \"target_version_id\": null\n    },\n    {\n      \"name\": \"s3\",\n      \"type\": \"t3\",\n      \"config\": {},\n      \"dependencies\": [\n        \"s1\"\n      ],\n      \"delta_mode\": false,\n      \"base_version_id\": null,\n      \"target_version_id\": null\n    }\n  ],\n  \"config\": {\n    \"parallelism\": 2\n  },\n  \"metadata\": {\n    \"step_count\": 3,\n    \"parallelism\": 2\n  }\n}",
+  "dict": {
+   "name": "ser",
+   "steps": [
+    {
+     "name": "s1",
+     "type": "t1",
+     "config": {
+      "source": "docs/"
+     },
+     "dependencies": [],
+     "delta_mode": true,
+     "base_version_id": "v1",
+     "target_version_id": "v2"
+    },
+    {
+     "name": "s2",
+     "type": "t2",
+     "config": {
+      "dependencies": [
+       "s1"
+      ],
+      "weight": 0.5
+     },
+     "dependencies": [
+      "s1"
+     ],
+     "delta_mode": false,
+     "base_version_id": null,
+     "target_version_id": null
+    },
+    {
+     "name": "s3",
+     "type": "t3",
+     "config": {},
+     "dependencies": [
+      "s1"
+     ],
+     "delta_mode": false,
+     "base_version_id": null,
+     "target_version_id": null
+    }
+   ],
+   "config": {
+    "parallelism": 2
+   },
+   "metadata": {
+    "step_count": 3,
+    "parallelism": 2,
+    "version": "2.0",
+    "version_info": {
+     "version": "2.0",
+     "author": "me"
+    }
+   }
+  },
+  "back": {
+   "name": "ser",
+   "steps": [
+    [
+     "s1",
+     "t1",
+     {
+      "source": "docs/"
+     },
+     [],
+     false
+    ],
+    [
+     "s2",
+     "t2",
+     {
+      "dependencies": [
+       "s1"
+      ],
+      "weight": 0.5
+     },
+     [
+      "s1"
+     ],
+     false
+    ],
+    [
+     "s3",
+     "t3",
+     {},
+     [],
+     false
+    ]
+   ],
+   "config": {},
+   "metadata": {
+    "step_count": 3,
+    "parallelism": 1
+   }
+  },
+  "back_from_dict_names": [
+   "s1",
+   "s2",
+   "s3"
+  ],
+  "invalid_json": {
+   "error": {
+    "type": "JSONDecodeError",
+    "message": "Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+   }
+  },
+  "json_list": {
+   "error": {
+    "type": "AttributeError",
+    "message": "'list' object has no attribute 'get'"
+   }
+  },
+  "versioned": {
+   "same": true,
+   "metadata": {
+    "step_count": 3,
+    "parallelism": 2,
+    "version": "2.0",
+    "version_info": {
+     "version": "2.0",
+     "author": "me"
+    }
+   }
+  },
+  "versioned_default": {
+   "version": "1.0",
+   "version_info": {}
+  },
+  "handler_json_has_function": true
+ },
+ "validator": {
+  "builder_valid": {
+   "valid": true,
+   "errors": [],
+   "warnings": [],
+   "metadata": {
+    "step_count": 2
+   }
+  },
+  "builder_empty": {
+   "valid": false,
+   "errors": [
+    "Pipeline has no steps"
+   ],
+   "warnings": [],
+   "metadata": {
+    "step_count": 0
+   }
+  },
+  "builder_duplicates": {
+   "valid": false,
+   "errors": [
+    "Duplicate step names found: ['a', 'b']"
+   ],
+   "warnings": [],
+   "metadata": {
+    "step_count": 4
+   }
+  },
+  "builder_blank": {
+   "valid": false,
+   "errors": [
+    "Step missing name",
+    "Step '' missing type",
+    "Step 'x' missing type"
+   ],
+   "warnings": [],
+   "metadata": {
+    "step_count": 2
+   }
+  },
+  "builder_missing": {
+   "valid": false,
+   "errors": [
+    "Missing dependency 'NON_EXISTENT' for step 'b'"
+   ],
+   "warnings": [
+    "Unreachable steps found: {'b'}"
+   ],
+   "metadata": {
+    "step_count": 2
+   }
+  },
+  "builder_cycles": {
+   "valid": false,
+   "errors": [
+    "Circular dependency detected: [['a', 'c', 'b', 'a'], ['d', 'd']]"
+   ],
+   "warnings": [
+    "Unreachable steps found: {'d', 'b', 'a', 'c'}"
+   ],
+   "metadata": {
+    "step_count": 4
+   }
+  },
+  "builder_cycle_unreachable": {
+   "valid": false,
+   "errors": [
+    "Circular dependency detected: [['x', 'y', 'x']]"
+   ],
+   "warnings": [
+    "Unreachable steps found: {'y', 'x'}"
+   ],
+   "metadata": {
+    "step_count": 3
+   }
+  },
+  "pipeline_warnings": {
+   "valid": true,
+   "errors": [],
+   "warnings": [
+    "Step 'a' has no handler",
+    "Step 'a' has no configuration"
+   ],
+   "metadata": {
+    "step_count": 2
+   }
+  },
+  "pipeline_errors": {
+   "valid": false,
+   "errors": [
+    "Step missing name",
+    "Step missing type",
+    "Missing dependency 'zz' for step ''"
+   ],
+   "warnings": [
+    "Step '' has no handler",
+    "Step '' has no configuration",
+    "Unreachable steps found: {''}"
+   ],
+   "metadata": {
+    "step_count": 1
+   }
+  },
+  "path": {
+   "valid": true,
+   "errors": [],
+   "warnings": [],
+   "metadata": {
+    "step_count": 0
+   }
+  }
+ },
+ "construct_template": {
+  "no_registry": {
+   "valid": true,
+   "errors": [],
+   "warnings": [
+    "Step 'build_foaf' has no handler",
+    "Step 'build_foaf' (construct_template): no construct_template_registry provided \u2014 template existence and required parameters could not be checked."
+   ],
+   "metadata": {
+    "step_count": 1
+   }
+  },
+  "missing_params": {
+   "valid": false,
+   "errors": [
+    "Step 'build_foaf' (construct_template): missing required parameter(s) for template 'person_to_foaf': ['b']."
+   ],
+   "warnings": [
+    "Step 'build_foaf' has no handler"
+   ],
+   "metadata": {
+    "step_count": 1
+   }
+  },
+  "unregistered": {
+   "valid": false,
+   "errors": [
+    "Step 's' (construct_template): template_name 'nope' is not registered in the provided construct_template_registry."
+   ],
+   "warnings": [
+    "Step 's' has no handler"
+   ],
+   "metadata": {
+    "step_count": 1
+   }
+  },
+  "no_template_name": {
+   "valid": false,
+   "errors": [
+    "Step 's' (construct_template): template_name None is not registered in the provided construct_template_registry."
+   ],
+   "warnings": [
+    "Step 's' has no handler"
+   ],
+   "metadata": {
+    "step_count": 1
+   }
+  },
+  "valid": {
+   "valid": true,
+   "errors": [],
+   "warnings": [],
+   "metadata": {
+    "step_count": 1
+   }
+  }
+ },
+ "validate_step": {
+  "allow_no_handler": {
+   "valid": true,
+   "errors": [],
+   "warnings": [
+    "Step 'a' has no configuration"
+   ],
+   "metadata": {}
+  },
+  "default": {
+   "valid": true,
+   "errors": [],
+   "warnings": [
+    "Step 'a' has no handler",
+    "Step 'a' has no configuration"
+   ],
+   "metadata": {}
+  }
+ },
+ "check_dependencies": {
+  "errors": [
+   "Circular dependency detected: [['c', 'c']]",
+   "Missing dependency 'ghost' for step 'b'"
+  ],
+  "warnings": [
+   "Unreachable steps found: {'c'}"
+  ],
+  "circular_dependencies": [
+   [
+    "c",
+    "c"
+   ]
+  ],
+  "reachable_steps": [
+   "a",
+   "b"
+  ],
+  "keys": [
+   "errors",
+   "warnings",
+   "circular_dependencies",
+   "reachable_steps"
+  ],
+  "reachable_chain": [
+   "a",
+   "b",
+   "c",
+   "d"
+  ]
+ },
+ "validate_performance": {
+  "single": {
+   "step_count": 1,
+   "sequential_steps": 0,
+   "warnings": []
+  },
+  "all_sequential": {
+   "step_count": 2,
+   "sequential_steps": 2,
+   "warnings": [
+    "All steps are sequential, consider parallelization"
+   ]
+  },
+  "empty": {
+   "step_count": 0,
+   "sequential_steps": 0,
+   "warnings": [
+    "All steps are sequential, consider parallelization"
+   ]
+  },
+  "many": {
+   "step_count": 101,
+   "sequential_steps": 0,
+   "warnings": [
+    "Pipeline has many steps, may impact performance"
+   ]
+  },
+  "not_a_pipeline": {
+   "error": {
+    "type": "AttributeError",
+    "message": "'str' object has no attribute 'steps'"
+   }
+  }
+ },
+ "engine": {
+  "order": {
+   "success": true,
+   "output": [
+    "a",
+    "b",
+    "c"
+   ],
+   "errors": [],
+   "metrics_keys": [
+    "execution_time",
+    "steps_executed",
+    "steps_failed"
+   ],
+   "metrics": {
+    "steps_executed": 4,
+    "steps_failed": 0
+   },
+   "metadata_keys": [
+    "pipeline_id",
+    "execution_time"
+   ],
+   "metadata_pipeline_id": "order",
+   "calls": [
+    [
+     "a",
+     [
+      "handler",
+      "cpu_cores",
+      "flag"
+     ]
+    ],
+    [
+     "b",
+     [
+      "handler",
+      "dependencies",
+      "cpu_cores",
+      "flag"
+     ]
+    ],
+    [
+     "c",
+     [
+      "handler",
+      "dependencies",
+      "extra",
+      "cpu_cores",
+      "flag"
+     ]
+    ]
+   ],
+   "steps": [
+    {
+     "name": "c",
+     "status": "completed",
+     "result": [
+      "a",
+      "b",
+      "c"
+     ],
+     "error": null
+    },
+    {
+     "name": "a",
+     "status": "completed",
+     "result": [
+      "a"
+     ],
+     "error": null
+    },
+    {
+     "name": "b",
+     "status": "completed",
+     "result": [
+      "a",
+      "b"
+     ],
+     "error": null
+    },
+    {
+     "name": "d",
+     "status": "completed",
+     "result": [
+      "a"
+     ],
+     "error": null
+    }
+   ],
+   "progress": {
+    "total_steps": 4,
+    "completed_steps": 4,
+    "progress_percentage": 100.0,
+    "status": "completed"
+   },
+   "status": "completed",
+   "builder_shares_steps": "completed"
+  },
+  "diamond": {
+   "success": true,
+   "output": [
+    "A",
+    "C",
+    "B",
+    "D"
+   ],
+   "errors": [],
+   "metrics_keys": [
+    "execution_time",
+    "steps_executed",
+    "steps_failed"
+   ],
+   "metrics": {
+    "steps_executed": 4,
+    "steps_failed": 0
+   },
+   "metadata_keys": [
+    "pipeline_id",
+    "execution_time"
+   ],
+   "metadata_pipeline_id": "diamond",
+   "calls": [
+    "A",
+    "C",
+    "B",
+    "D"
+   ]
+  },
+  "empty": {
+   "success": true,
+   "output": {
+    "x": 1
+   },
+   "errors": [],
+   "metrics_keys": [
+    "execution_time",
+    "steps_executed",
+    "steps_failed"
+   ],
+   "metrics": {
+    "steps_executed": 0,
+    "steps_failed": 0
+   },
+   "metadata_keys": [
+    "pipeline_id",
+    "execution_time"
+   ],
+   "metadata_pipeline_id": "empty",
+   "progress": {
+    "total_steps": 0,
+    "completed_steps": 0,
+    "progress_percentage": 0.0,
+    "status": "completed"
+   }
+  },
+  "unknown_progress": {},
+  "unknown_status": null,
+  "failure": {
+   "success": false,
+   "output": null,
+   "errors": [
+    "Oops"
+   ],
+   "metrics_keys": [],
+   "metrics": {},
+   "metadata_keys": [],
+   "metadata_pipeline_id": null,
+   "step": {
+    "name": "step1",
+    "status": "failed",
+    "result": null,
+    "error": {
+     "type": "ValueError",
+     "message": "Oops"
+    }
+   },
+   "status": "failed",
+   "history": [],
+   "progress": {
+    "total_steps": 1,
+    "completed_steps": 0,
+    "progress_percentage": 0.0,
+    "status": "failed"
+   }
+  },
+  "retry_success": {
+   "success": true,
+   "output": "Success",
+   "errors": [],
+   "metrics_keys": [
+    "execution_time",
+    "steps_executed",
+    "steps_failed"
+   ],
+   "metrics": {
+    "steps_executed": 1,
+    "steps_failed": 0
+   },
+   "metadata_keys": [
+    "pipeline_id",
+    "execution_time"
+   ],
+   "metadata_pipeline_id": "retry",
+   "attempts": 3,
+   "history": [
+    {
+     "step_name": "flaky",
+     "step_type": "flaky",
+     "error": "Fail 1",
+     "error_type": "ValueError",
+     "severity": "medium",
+     "retryable": true
+    },
+    {
+     "step_name": "flaky",
+     "step_type": "flaky",
+     "error": "Fail 2",
+     "error_type": "ValueError",
+     "severity": "medium",
+     "retryable": true
+    }
+   ],
+   "step": {
+    "name": "flaky",
+    "status": "completed",
+    "result": "Success",
+    "error": {
+     "type": "ValueError",
+     "message": "Fail 2"
+    }
+   }
+  },
+  "retry_exhausted": {
+   "success": false,
+   "output": null,
+   "errors": [
+    "attempt 3"
+   ],
+   "metrics_keys": [],
+   "metrics": {},
+   "metadata_keys": [],
+   "metadata_pipeline_id": null,
+   "attempts": 3,
+   "history": [
+    {
+     "step_name": "s",
+     "step_type": "t",
+     "error": "attempt 1",
+     "error_type": "RuntimeError",
+     "severity": "medium",
+     "retryable": true
+    },
+    {
+     "step_name": "s",
+     "step_type": "t",
+     "error": "attempt 2",
+     "error_type": "RuntimeError",
+     "severity": "medium",
+     "retryable": true
+    }
+   ]
+  },
+  "not_retryable": {
+   "success": false,
+   "output": null,
+   "errors": [
+    "attempt 1"
+   ],
+   "metrics_keys": [],
+   "metrics": {},
+   "metadata_keys": [],
+   "metadata_pipeline_id": null,
+   "attempts": 1,
+   "history": [
+    {
+     "step_name": "s",
+     "step_type": "t",
+     "error": "attempt 1",
+     "error_type": "RuntimeError",
+     "severity": "medium",
+     "retryable": false
+    }
+   ]
+  },
+  "duplicate_kwargs": {
+   "success": false,
+   "output": null,
+   "errors": [
+    "'cpu_cores'"
+   ],
+   "metrics_keys": [],
+   "metrics": {},
+   "metadata_keys": [],
+   "metadata_pipeline_id": null,
+   "history_errors": [
+    [
+     "TypeError",
+     "__main__.kw_handler() got multiple values for keyword argument 'cpu_cores'"
+    ],
+    [
+     "KeyError",
+     "'cpu_cores'"
+    ]
+   ],
+   "step_error": {
+    "type": "KeyError",
+    "message": "'cpu_cores'"
+   }
+  },
+  "cycle": {
+   "success": false,
+   "output": null,
+   "errors": [
+    "Circular dependency detected in pipeline"
+   ],
+   "metrics_keys": [],
+   "metrics": {},
+   "metadata_keys": [],
+   "metadata_pipeline_id": null,
+   "status": "failed"
+  },
+  "missing_dep": {
+   "success": false,
+   "output": null,
+   "errors": [
+    "Circular dependency detected in pipeline"
+   ],
+   "metrics_keys": [],
+   "metrics": {},
+   "metadata_keys": [],
+   "metadata_pipeline_id": null
+  },
+  "no_resources": {
+   "success": false,
+   "output": null,
+   "errors": [
+    "No resources were allocated - insufficient capacity"
+   ],
+   "metrics_keys": [],
+   "metrics": {},
+   "metadata_keys": [],
+   "metadata_pipeline_id": null
+  },
+  "stop": {
+   "success": true,
+   "output": "s1",
+   "errors": [],
+   "metrics_keys": [
+    "execution_time",
+    "steps_executed",
+    "steps_failed"
+   ],
+   "metrics": {
+    "steps_executed": 1,
+    "steps_failed": 0
+   },
+   "metadata_keys": [
+    "pipeline_id",
+    "execution_time"
+   ],
+   "metadata_pipeline_id": "stop",
+   "steps": [
+    {
+     "name": "s1",
+     "status": "completed",
+     "result": "s1",
+     "error": null
+    },
+    {
+     "name": "s2",
+     "status": "pending",
+     "result": null,
+     "error": null
+    }
+   ],
+   "status": "completed",
+   "progress": {
+    "total_steps": 2,
+    "completed_steps": 1,
+    "progress_percentage": 50.0,
+    "status": "completed"
+   }
+  },
+  "pause": {
+   "success": true,
+   "output": 2,
+   "errors": [],
+   "metrics_keys": [
+    "execution_time",
+    "steps_executed",
+    "steps_failed"
+   ],
+   "metrics": {
+    "steps_executed": 2,
+    "steps_failed": 0
+   },
+   "metadata_keys": [
+    "pipeline_id",
+    "execution_time"
+   ],
+   "metadata_pipeline_id": "pause",
+   "timeline": [
+    [
+     "paused",
+     "paused"
+    ],
+    [
+     "resume"
+    ],
+    [
+     "s2",
+     "running"
+    ]
+   ],
+   "status": "completed"
+  },
+  "delta": {
+   "ok": {
+    "success": true,
+    "output": {
+     "old_graph_uri": "urn:graph:v1",
+     "new_graph_uri": "urn:graph:v2",
+     "added_count": 1
+    },
+    "errors": [],
+    "metrics_keys": [
+     "execution_time",
+     "steps_executed",
+     "steps_failed"
+    ],
+    "metrics": {
+     "steps_executed": 1,
+     "steps_failed": 0
+    },
+    "metadata_keys": [
+     "pipeline_id",
+     "execution_time"
+    ],
+    "metadata_pipeline_id": "delta",
+    "vm_calls": [
+     "v1",
+     "v2"
+    ],
+    "ts_calls": [
+     [
+      "urn:graph:v1",
+      "urn:graph:v2",
+      [
+       "triplet_store",
+       "version_manager"
+      ]
+     ]
+    ]
+   },
+   "extra_option": {
+    "success": true,
+    "output": {
+     "old_graph_uri": "urn:graph:v1",
+     "new_graph_uri": "urn:graph:v2",
+     "added_count": 1
+    },
+    "errors": [],
+    "metrics_keys": [
+     "execution_time",
+     "steps_executed",
+     "steps_failed"
+    ],
+    "metrics": {
+     "steps_executed": 1,
+     "steps_failed": 0
+    },
+    "metadata_keys": [
+     "pipeline_id",
+     "execution_time"
+    ],
+    "metadata_pipeline_id": "delta",
+    "vm_calls": [
+     "v1",
+     "v2"
+    ],
+    "ts_calls": [
+     [
+      "urn:graph:v1",
+      "urn:graph:v2",
+      [
+       "flag",
+       "triplet_store",
+       "version_manager"
+      ]
+     ]
+    ]
+   },
+   "no_manager": {
+    "success": false,
+    "output": null,
+    "errors": [
+     "Step 'delta' requires 'version_manager' and 'triplet_store' in execution options for delta processing."
+    ],
+    "metrics_keys": [],
+    "metrics": {},
+    "metadata_keys": [],
+    "metadata_pipeline_id": null,
+    "vm_calls": [],
+    "ts_calls": []
+   },
+   "no_ids": {
+    "success": false,
+    "output": null,
+    "errors": [
+     "Step 'delta' in delta_mode requires 'base_version_id' and 'target_version_id' to be set."
+    ],
+    "metrics_keys": [],
+    "metrics": {},
+    "metadata_keys": [],
+    "metadata_pipeline_id": null,
+    "vm_calls": [],
+    "ts_calls": []
+   },
+   "base_missing": {
+    "success": false,
+    "output": null,
+    "errors": [
+     "Base version 'v9' not found in storage."
+    ],
+    "metrics_keys": [],
+    "metrics": {},
+    "metadata_keys": [],
+    "metadata_pipeline_id": null,
+    "vm_calls": [
+     "v9",
+     "v2"
+    ],
+    "ts_calls": []
+   },
+   "target_missing": {
+    "success": false,
+    "output": null,
+    "errors": [
+     "Target version 'v9' not found in storage."
+    ],
+    "metrics_keys": [],
+    "metrics": {},
+    "metadata_keys": [],
+    "metadata_pipeline_id": null,
+    "vm_calls": [
+     "v1",
+     "v9"
+    ],
+    "ts_calls": []
+   },
+   "no_uri": {
+    "success": false,
+    "output": null,
+    "errors": [
+     "Both base and target snapshots must contain a 'graph_uri' to compute native store deltas."
+    ],
+    "metrics_keys": [],
+    "metrics": {},
+    "metadata_keys": [],
+    "metadata_pipeline_id": null,
+    "vm_calls": [
+     "v1",
+     "v3"
+    ],
+    "ts_calls": []
+   },
+   "from_config": {
+    "success": true,
+    "output": {
+     "old_graph_uri": "urn:graph:v1",
+     "new_graph_uri": "urn:graph:v2",
+     "added_count": 1
+    },
+    "errors": [],
+    "metrics_keys": [
+     "execution_time",
+     "steps_executed",
+     "steps_failed"
+    ],
+    "metrics": {
+     "steps_executed": 1,
+     "steps_failed": 0
+    },
+    "metadata_keys": [
+     "pipeline_id",
+     "execution_time"
+    ],
+    "metadata_pipeline_id": "delta_cfg",
+    "ts_calls": [
+     [
+      "urn:graph:v1",
+      "urn:graph:v2",
+      []
+     ]
+    ]
+   }
+  },
+  "progress_tracker": {
+   "completion": 60.0,
+   "unknown": 0.0,
+   "steps": [
+    "a",
+    "b"
+   ],
+   "record_keys": [
+    "progress",
+    "timestamp"
+   ],
+   "remaining_none": null,
+   "remaining_clamped": 0,
+   "remaining_half_close_to_10": true
+  }
+ },
+ "classify": {
+  "value": {
+   "error_type": "ValueError",
+   "severity": "medium",
+   "message": "Something wrong",
+   "traceback": "NoneType: None\n"
+  },
+  "validation": {
+   "error_type": "ValidationError",
+   "severity": "low",
+   "message": "bad input",
+   "traceback": "NoneType: None\n"
+  },
+  "processing": {
+   "error_type": "ProcessingError",
+   "severity": "high",
+   "message": "broken",
+   "traceback": "NoneType: None\n"
+  },
+  "timeout": {
+   "error_type": "RuntimeError",
+   "severity": "medium",
+   "message": "Connection timeout",
+   "traceback": "NoneType: None\n"
+  },
+  "memory": {
+   "error_type": "RuntimeError",
+   "severity": "high",
+   "message": "Out of Memory",
+   "traceback": "NoneType: None\n"
+  },
+  "resource": {
+   "error_type": "OSError",
+   "severity": "high",
+   "message": "resource exhausted",
+   "traceback": "NoneType: None\n"
+  },
+  "key": {
+   "error_type": "KeyError",
+   "severity": "medium",
+   "message": "'k'",
+   "traceback": "NoneType: None\n"
+  }
+ },
+ "handle_step_failure": {
+  "lin": {
+   "retry": true,
+   "retry_delay": 0.5,
+   "error_classification": {
+    "error_type": "ValueError",
+    "severity": "medium",
+    "message": "v",
+    "traceback": "NoneType: None\n"
+   },
+   "recovery_action": "retry_with_backoff",
+   "keys": [
+    "retry",
+    "retry_delay",
+    "error_classification",
+    "recovery_action"
+   ]
+  },
+  "fix": {
+   "retry": true,
+   "retry_delay": 0.0,
+   "error_classification": {
+    "error_type": "ValidationError",
+    "severity": "low",
+    "message": "x",
+    "traceback": "NoneType: None\n"
+   },
+   "recovery_action": "retry",
+   "keys": [
+    "retry",
+    "retry_delay",
+    "error_classification",
+    "recovery_action"
+   ]
+  },
+  "cap": {
+   "retry": true,
+   "retry_delay": 7.5,
+   "error_classification": {
+    "error_type": "ProcessingError",
+    "severity": "high",
+    "message": "p",
+    "traceback": "NoneType: None\n"
+   },
+   "recovery_action": "skip_step",
+   "keys": [
+    "retry",
+    "retry_delay",
+    "error_classification",
+    "recovery_action"
+   ]
+  },
+  "only_key": {
+   "retry": false,
+   "retry_delay": 0.0,
+   "error_classification": {
+    "error_type": "ValueError",
+    "severity": "medium",
+    "message": "v",
+    "traceback": "NoneType: None\n"
+   },
+   "recovery_action": "retry_with_backoff",
+   "keys": [
+    "retry",
+    "retry_delay",
+    "error_classification",
+    "recovery_action"
+   ]
+  },
+  "only_lookup": {
+   "retry": true,
+   "retry_delay": 1.0,
+   "error_classification": {
+    "error_type": "KeyError",
+    "severity": "medium",
+    "message": "'k'",
+    "traceback": "NoneType: None\n"
+   },
+   "recovery_action": "retry_with_backoff",
+   "keys": [
+    "retry",
+    "retry_delay",
+    "error_classification",
+    "recovery_action"
+   ]
+  },
+  "default": {
+   "retry": true,
+   "retry_delay": 1.0,
+   "error_classification": {
+    "error_type": "RuntimeError",
+    "severity": "medium",
+    "message": "Connection reset",
+    "traceback": "NoneType: None\n"
+   },
+   "recovery_action": "retry_with_backoff",
+   "keys": [
+    "retry",
+    "retry_delay",
+    "error_classification",
+    "recovery_action"
+   ]
+  }
+ },
+ "error_history": {
+  "all": [
+   {
+    "step_name": "step_lin",
+    "step_type": "lin",
+    "error": "v",
+    "error_type": "ValueError",
+    "severity": "medium",
+    "retryable": true
+   },
+   {
+    "step_name": "step_fix",
+    "step_type": "fix",
+    "error": "x",
+    "error_type": "ValidationError",
+    "severity": "low",
+    "retryable": true
+   },
+   {
+    "step_name": "step_cap",
+    "step_type": "cap",
+    "error": "p",
+    "error_type": "ProcessingError",
+    "severity": "high",
+    "retryable": true
+   },
+   {
+    "step_name": "step_only_key",
+    "step_type": "only_key",
+    "error": "v",
+    "error_type": "ValueError",
+    "severity": "medium",
+    "retryable": false
+   },
+   {
+    "step_name": "step_only_lookup",
+    "step_type": "only_lookup",
+    "error": "'k'",
+    "error_type": "KeyError",
+    "severity": "medium",
+    "retryable": true
+   },
+   {
+    "step_name": "step_default",
+    "step_type": "default",
+    "error": "Connection reset",
+    "error_type": "RuntimeError",
+    "severity": "medium",
+    "retryable": true
+   }
+  ],
+  "filtered": [
+   "step_lin"
+  ],
+  "empty_filter": 6,
+  "cleared": []
+ },
+ "policies": {
+  "default": "RetryPolicy(max_retries=3, backoff_factor=2.0, initial_delay=1.0, max_delay=60.0, strategy=<RetryStrategy.EXPONENTIAL: 'exponential'>, retryable_errors=[])",
+  "custom_defaults": "RetryPolicy(max_retries=5, backoff_factor=3.0, initial_delay=1.0, max_delay=60.0, strategy=<RetryStrategy.EXPONENTIAL: 'exponential'>, retryable_errors=[])",
+  "config_dict": "RetryPolicy(max_retries=7, backoff_factor=2.0, initial_delay=1.0, max_delay=60.0, strategy=<RetryStrategy.EXPONENTIAL: 'exponential'>, retryable_errors=[])",
+  "set": "RetryPolicy(max_retries=3, backoff_factor=2.0, initial_delay=0.5, max_delay=60.0, strategy=<RetryStrategy.LINEAR: 'linear'>, retryable_errors=[])"
+ },
+ "handle_failure": {
+  "linear": [
+   [
+    true,
+    1.5
+   ],
+   [
+    true,
+    3.0
+   ],
+   [
+    true,
+    4.5
+   ],
+   [
+    false,
+    0.0
+   ],
+   [
+    false,
+    0.0
+   ]
+  ],
+  "exponential": [
+   [
+    true,
+    1.5
+   ],
+   [
+    true,
+    3.0
+   ],
+   [
+    true,
+    5.0
+   ],
+   [
+    false,
+    0.0
+   ],
+   [
+    false,
+    0.0
+   ]
+  ],
+  "fixed": [
+   [
+    true,
+    1.5
+   ],
+   [
+    true,
+    1.5
+   ],
+   [
+    true,
+    1.5
+   ],
+   [
+    false,
+    0.0
+   ],
+   [
+    false,
+    0.0
+   ]
+  ],
+  "filtered": [
+   false,
+   true
+  ],
+  "default_count": 1.0
+ },
+ "retry_failed_step": {
+  "retry": true,
+  "delay": 0.0,
+  "action": "retry_with_backoff",
+  "not_retryable": {
+   "error": {
+    "type": "ValueError",
+    "message": "v"
+   }
+  },
+  "history_len": 2
+ },
+ "retry_handler": {
+  "default_policy": "RetryPolicy(max_retries=3, backoff_factor=2.0, initial_delay=1.0, max_delay=60.0, strategy=<RetryStrategy.EXPONENTIAL: 'exponential'>, retryable_errors=[])",
+  "custom_policy": "RetryPolicy(max_retries=5, backoff_factor=1.5, initial_delay=1.0, max_delay=60.0, strategy=<RetryStrategy.EXPONENTIAL: 'exponential'>, retryable_errors=[])",
+  "custom_config": {
+   "default_max_retries": 5,
+   "default_backoff_factor": 1.5,
+   "default_extra": 1
+  },
+  "retry": [
+   true,
+   0.0,
+   "retry_with_backoff"
+  ],
+  "duplicate": {
+   "error": {
+    "type": "TypeError",
+    "message": "semantica.pipeline.failure_handler.FailureHandler() got multiple values for keyword argument 'default_max_retries'"
+   }
+  },
+  "duplicate_backoff": {
+   "error": {
+    "type": "TypeError",
+    "message": "semantica.pipeline.failure_handler.FailureHandler() got multiple values for keyword argument 'default_backoff_factor'"
+   }
+  }
+ },
+ "fallback": {
+  "before": {
+   "strategy": "abort",
+   "service": "db"
+  },
+  "after": {
+   "strategy": "use_cache",
+   "service": "db"
+  },
+  "specific": {
+   "strategy": "skip",
+   "service": "search"
+  },
+  "switch": [
+   true,
+   false
+  ],
+  "strategies": {
+   "default": "use_cache",
+   "search": "skip"
+  },
+  "config": {
+   "mode": "x"
+  }
+ },
+ "error_recovery": {
+  "value": {
+   "analyze": {
+    "error_type": "ValueError",
+    "severity": "medium",
+    "message": "Something wrong",
+    "traceback": "NoneType: None\n"
+   },
+   "recover_action": "retry_with_backoff",
+   "recover_keys": [
+    "recovery_action",
+    "classification"
+   ]
+  },
+  "validation": {
+   "analyze": {
+    "error_type": "ValidationError",
+    "severity": "low",
+    "message": "bad input",
+    "traceback": "NoneType: None\n"
+   },
+   "recover_action": "retry",
+   "recover_keys": [
+    "recovery_action",
+    "classification"
+   ]
+  },
+  "processing": {
+   "analyze": {
+    "error_type": "ProcessingError",
+    "severity": "high",
+    "message": "broken",
+    "traceback": "NoneType: None\n"
+   },
+   "recover_action": "skip_step",
+   "recover_keys": [
+    "recovery_action",
+    "classification"
+   ]
+  },
+  "timeout": {
+   "analyze": {
+    "error_type": "RuntimeError",
+    "severity": "medium",
+    "message": "Connection timeout",
+    "traceback": "NoneType: None\n"
+   },
+   "recover_action": "retry_with_backoff",
+   "recover_keys": [
+    "recovery_action",
+    "classification"
+   ]
+  },
+  "memory": {
+   "analyze": {
+    "error_type": "RuntimeError",
+    "severity": "high",
+    "message": "Out of Memory",
+    "traceback": "NoneType: None\n"
+   },
+   "recover_action": "skip_step",
+   "recover_keys": [
+    "recovery_action",
+    "classification"
+   ]
+  },
+  "resource": {
+   "analyze": {
+    "error_type": "OSError",
+    "severity": "high",
+    "message": "resource exhausted",
+    "traceback": "NoneType: None\n"
+   },
+   "recover_action": "skip_step",
+   "recover_keys": [
+    "recovery_action",
+    "classification"
+   ]
+  },
+  "key": {
+   "analyze": {
+    "error_type": "KeyError",
+    "severity": "medium",
+    "message": "'k'",
+    "traceback": "NoneType: None\n"
+   },
+   "recover_action": "retry_with_backoff",
+   "recover_keys": [
+    "recovery_action",
+    "classification"
+   ]
+  }
+ },
+ "parallel": {
+  "single_worker": {
+   "order": [
+    "t2",
+    "t4",
+    "t3",
+    "t1",
+    "t5"
+   ],
+   "results": [
+    [
+     "t2",
+     true,
+     4,
+     null
+    ],
+    [
+     "t4",
+     true,
+     8,
+     null
+    ],
+    [
+     "t3",
+     true,
+     6,
+     null
+    ],
+    [
+     "t1",
+     true,
+     2,
+     null
+    ],
+    [
+     "t5",
+     false,
+     null,
+     {
+      "type": "ValueError",
+      "message": "boom!"
+     }
+    ]
+   ]
+  },
+  "three_workers_sorted": [
+   [
+    "t0",
+    true,
+    0
+   ],
+   [
+    "t1",
+    true,
+    2
+   ],
+   [
+    "t2",
+    true,
+    4
+   ],
+   [
+    "t3",
+    true,
+    6
+   ],
+   [
+    "t4",
+    true,
+    8
+   ],
+   [
+    "t5",
+    true,
+    10
+   ]
+  ],
+  "empty": [],
+  "zero_workers": {
+   "error": {
+    "type": "ValueError",
+    "message": "max_workers must be greater than 0"
+   }
+  },
+  "option_zero_workers": {
+   "error": {
+    "type": "ValueError",
+    "message": "max_workers must be greater than 0"
+   }
+  },
+  "defaults": {
+   "max_workers": 4,
+   "use_processes": false,
+   "task": "Task(task_id='t', handler=None, args=(), kwargs={}, priority=0)"
+  },
+  "steps_parallel": [
+   6,
+   5,
+   15
+  ],
+  "steps_parallel_fail": {
+   "error": {
+    "type": "ProcessingError",
+    "message": "Step s2 failed: boom"
+   }
+  },
+  "groups": [
+   [
+    "A",
+    "E"
+   ],
+   [
+    "B",
+    "C"
+   ],
+   [
+    "D"
+   ],
+   [
+    "F"
+   ]
+  ],
+  "optimize": {
+   "execution_plan": [
+    {
+     "steps": [
+      "A",
+      "E"
+     ],
+     "parallel": true,
+     "worker_count": 2
+    },
+    {
+     "steps": [
+      "B",
+      "C"
+     ],
+     "parallel": true,
+     "worker_count": 2
+    },
+    {
+     "steps": [
+      "D"
+     ],
+     "parallel": false,
+     "worker_count": 1
+    },
+    {
+     "steps": [
+      "F"
+     ],
+     "parallel": false,
+     "worker_count": 1
+    }
+   ],
+   "total_groups": 4,
+   "max_parallelism": 2,
+   "estimated_workers": 6
+  },
+  "optimize_empty": {
+   "execution_plan": [],
+   "total_groups": 0,
+   "max_parallelism": 1,
+   "estimated_workers": 0
+  },
+  "missing_dep": {
+   "error": {
+    "type": "KeyError",
+    "message": "'ghost'"
+   }
+  },
+  "cycle": {
+   "error": {
+    "type": "RecursionError",
+    "message": "maximum recursion depth exceeded"
+   }
+  },
+  "executor": {
+   "max_workers": 2,
+   "results": [
+    [
+     "a",
+     2
+    ],
+    [
+     "b",
+     4
+    ]
+   ],
+   "max_workers_from_kwargs": 3,
+   "default_workers": 4
+  }
+ },
+ "resources_structure": {
+  "cpu": [
+   "cpu",
+   [
+    "logical_cores"
+   ]
+  ],
+  "memory": [
+   "memory",
+   [
+    "available_gb"
+   ]
+  ],
+  "disk": [
+   "disk",
+   [
+    "total_gb"
+   ]
+  ]
+ },
+ "scheduler": {
+  "keys": [
+   "cpu",
+   "memory",
+   "gpu"
+  ],
+  "allocations": {
+   "cpu": [
+    "cpu",
+    "cpu",
+    1,
+    "test_pipe",
+    null,
+    {},
+    "cpu_test_pipe_default"
+   ],
+   "memory": [
+    "memory",
+    "memory",
+    0.25,
+    "test_pipe",
+    null,
+    {},
+    "memory_test_pipe_default"
+   ],
+   "gpu": [
+    "gpu_0",
+    "gpu",
+    1.0,
+    "test_pipe",
+    null,
+    {
+     "device_id": 0
+    },
+    "gpu_test_pipe_default"
+   ]
+  },
+  "usage_keys": [
+   "cpu",
+   "memory",
+   "disk",
+   "gpu_0"
+  ],
+  "usage_entry_keys": [
+   "capacity",
+   "allocated",
+   "available",
+   "utilization_percent"
+  ],
+  "cpu_allocated": 1.0,
+  "gpu_usage": {
+   "capacity": 1.0,
+   "allocated": 1.0,
+   "available": 0.0,
+   "utilization_percent": 100.0
+  },
+  "gpu_resource": [
+   1.0,
+   {
+    "device_id": 0
+   }
+  ],
+  "live_allocations": 3,
+  "second_gpu": true,
+  "after_release": [
+   0.0,
+   0.0,
+   0.0,
+   0
+  ],
+  "cpu_too_much": true,
+  "memory_too_much": true,
+  "step_allocation_prefix": "cpu_p_s",
+  "type_error": {
+   "error": {
+    "type": "TypeError",
+    "message": "'>=' not supported between instances of 'float' and 'str'"
+   }
+  },
+  "memory_type_error_releases_cpu": [
+   {
+    "type": "TypeError",
+    "message": "'>=' not supported between instances of 'float' and 'NoneType'"
+   },
+   0.0,
+   0
+  ],
+  "no_resources": {
+   "error": {
+    "type": "ValidationError",
+    "message": "No resources were allocated - insufficient capacity"
+   }
+  },
+  "zero_capacity_usage": {
+   "capacity": 0.0,
+   "allocated": 0.0,
+   "available": 0.0,
+   "utilization_percent": 0.0
+  },
+  "optimize": {
+   "0": {
+    "cpu_cores": 0,
+    "memory_gb": 0.0,
+    "parallel_execution": false
+   },
+   "1": {
+    "cpu_cores": 1,
+    "memory_gb": 0.5,
+    "parallel_execution": false
+   },
+   "3": {
+    "cpu_cores": 1.0,
+    "memory_gb": 1.5,
+    "parallel_execution": true
+   },
+   "no_cpu": {
+    "cpu_cores": 0,
+    "memory_gb": 1.0,
+    "parallel_execution": true
+   },
+   "keys": [
+    "recommendations",
+    "available_resources"
+   ]
+  },
+  "exact_fit": true,
+  "exact_fit_then_none": true
+ },
+ "templates": {
+  "list": [
+   "document_processing",
+   "rag_pipeline",
+   "kg_construction",
+   "ontology_generation"
+  ],
+  "by_category": [
+   "rag_pipeline"
+  ],
+  "unknown_category": [],
+  "info": {
+   "document_processing": {
+    "name": "document_processing",
+    "description": "Complete document processing pipeline from ingestion to knowledge graph",
+    "step_count": 6,
+    "config": {
+     "parallelism": 2
+    },
+    "metadata": {
+     "category": "document_processing"
+    }
+   },
+   "rag_pipeline": {
+    "name": "rag_pipeline",
+    "description": "RAG pipeline for question answering",
+    "step_count": 4,
+    "config": {
+     "parallelism": 4
+    },
+    "metadata": {
+     "category": "rag"
+    }
+   },
+   "kg_construction": {
+    "name": "kg_construction",
+    "description": "Knowledge graph construction from multiple sources",
+    "step_count": 6,
+    "config": {
+     "parallelism": 3
+    },
+    "metadata": {
+     "category": "knowledge_graph"
+    }
+   },
+   "ontology_generation": {
+    "name": "ontology_generation",
+    "description": "Ontology generation from extracted data",
+    "step_count": 5,
+    "config": {
+     "parallelism": 1
+    },
+    "metadata": {
+     "category": "ontology"
+    }
+   }
+  },
+  "steps": {
+   "document_processing": [
+    {
+     "name": "ingest",
+     "type": "ingest",
+     "config": {
+      "source": "custom_source"
+     }
+    },
+    {
+     "name": "parse",
+     "type": "parse",
+     "config": {
+      "formats": [
+       "pdf",
+       "docx"
+      ]
+     },
+     "dependencies": [
+      "ingest"
+     ]
+    },
+    {
+     "name": "normalize",
+     "type": "normalize",
+     "config": {
+      "lower": true
+     },
+     "dependencies": [
+      "parse"
+     ]
+    },
+    {
+     "name": "extract",
+     "type": "extract",
+     "config": {
+      "entities": true,
+      "relations": true
+     },
+     "dependencies": [
+      "normalize"
+     ]
+    },
+    {
+     "name": "embed",
+     "type": "embed",
+     "config": {
+      "model": "text-embedding-3-large"
+     },
+     "dependencies": [
+      "extract"
+     ]
+    },
+    {
+     "name": "build_kg",
+     "type": "build_kg",
+     "config": {},
+     "dependencies": [
+      "extract",
+      "embed"
+     ]
+    }
+   ],
+   "rag_pipeline": [
+    {
+     "name": "ingest",
+     "type": "ingest",
+     "config": {
+      "source": "documents/"
+     }
+    },
+    {
+     "name": "chunk",
+     "type": "chunk",
+     "config": {
+      "chunk_size": 512
+     },
+     "dependencies": [
+      "ingest"
+     ]
+    },
+    {
+     "name": "embed",
+     "type": "embed",
+     "config": {},
+     "dependencies": [
+      "chunk"
+     ]
+    },
+    {
+     "name": "store_vectors",
+     "type": "store_vectors",
+     "config": {
+      "store": "weaviate"
+     },
+     "dependencies": [
+      "embed"
+     ]
+    }
+   ],
+   "kg_construction": [
+    {
+     "name": "ingest_sources",
+     "type": "ingest",
+     "config": {
+      "sources": []
+     }
+    },
+    {
+     "name": "extract_entities",
+     "type": "extract",
+     "config": {
+      "entities": true
+     },
+     "dependencies": [
+      "ingest_sources"
+     ]
+    },
+    {
+     "name": "extract_relations",
+     "type": "extract",
+     "config": {
+      "relations": true
+     },
+     "dependencies": [
+      "ingest_sources"
+     ]
+    },
+    {
+     "name": "deduplicate",
+     "type": "deduplicate",
+     "config": {},
+     "dependencies": [
+      "extract_entities"
+     ]
+    },
+    {
+     "name": "resolve_conflicts",
+     "type": "resolve_conflicts",
+     "config": {},
+     "dependencies": [
+      "extract_entities",
+      "extract_relations"
+     ]
+    },
+    {
+     "name": "build_graph",
+     "type": "build_kg",
+     "config": {},
+     "dependencies": [
+      "deduplicate",
+      "resolve_conflicts"
+     ]
+    }
+   ],
+   "ontology_generation": [
+    {
+     "name": "extract_concepts",
+     "type": "extract",
+     "config": {
+      "entities": true
+     }
+    },
+    {
+     "name": "infer_classes",
+     "type": "infer_classes",
+     "config": {},
+     "dependencies": [
+      "extract_concepts"
+     ]
+    },
+    {
+     "name": "infer_properties",
+     "type": "infer_properties",
+     "config": {},
+     "dependencies": [
+      "infer_classes"
+     ]
+    },
+    {
+     "name": "generate_owl",
+     "type": "generate_owl",
+     "config": {},
+     "dependencies": [
+      "infer_classes",
+      "infer_properties"
+     ]
+    },
+    {
+     "name": "validate_ontology",
+     "type": "validate_ontology",
+     "config": {},
+     "dependencies": [
+      "generate_owl"
+     ]
+    }
+   ]
+  },
+  "missing_info": null,
+  "missing": {
+   "error": {
+    "type": "ValidationError",
+    "message": "Template not found: nope"
+   }
+  },
+  "created": {
+   "pipeline_config": {
+    "parallelism": 5
+   },
+   "metadata": {
+    "step_count": 6,
+    "parallelism": 5
+   },
+   "steps": [
+    [
+     "ingest",
+     "ingest",
+     {
+      "dependencies": [],
+      "source": "custom_source"
+     },
+     []
+    ],
+    [
+     "parse",
+     "parse",
+     {
+      "dependencies": [
+       "ingest"
+      ],
+      "formats": [
+       "pdf",
+       "docx"
+      ]
+     },
+     [
+      "ingest"
+     ]
+    ],
+    [
+     "normalize",
+     "normalize",
+     {
+      "dependencies": [
+       "parse"
+      ],
+      "lower": true
+     },
+     [
+      "parse"
+     ]
+    ],
+    [
+     "extract",
+     "extract",
+     {
+      "dependencies": [
+       "normalize"
+      ],
+      "entities": true,
+      "relations": true
+     },
+     [
+      "normalize"
+     ]
+    ],
+    [
+     "embed",
+     "embed",
+     {
+      "dependencies": [
+       "extract"
+      ],
+      "model": "text-embedding-3-large"
+     },
+     [
+      "extract"
+     ]
+    ],
+    [
+     "build_kg",
+     "build_kg",
+     {
+      "dependencies": [
+       "extract",
+       "embed"
+      ]
+     },
+     [
+      "extract",
+      "embed"
+     ]
+    ]
+   ],
+   "template_after": [
+    {
+     "name": "ingest",
+     "type": "ingest",
+     "config": {
+      "source": "custom_source"
+     }
+    },
+    {
+     "name": "parse",
+     "type": "parse",
+     "config": {
+      "formats": [
+       "pdf",
+       "docx"
+      ]
+     },
+     "dependencies": [
+      "ingest"
+     ]
+    },
+    {
+     "name": "normalize",
+     "type": "normalize",
+     "config": {
+      "lower": true
+     },
+     "dependencies": [
+      "parse"
+     ]
+    }
+   ]
+  },
+  "created_plain": [
+   [
+    "ingest",
+    {
+     "dependencies": [],
+     "source": "documents/"
+    },
+    []
+   ],
+   [
+    "chunk",
+    {
+     "dependencies": [
+      "ingest"
+     ],
+     "chunk_size": 512
+    },
+    [
+     "ingest"
+    ]
+   ],
+   [
+    "embed",
+    {
+     "dependencies": [
+      "chunk"
+     ]
+    },
+    [
+     "chunk"
+    ]
+   ],
+   [
+    "store_vectors",
+    {
+     "dependencies": [
+      "embed"
+     ],
+     "store": "weaviate"
+    },
+    [
+     "embed"
+    ]
+   ],
+   {
+    "parallelism": 4
+   }
+  ],
+  "registered": {
+   "name": "custom",
+   "description": "Custom",
+   "step_count": 1,
+   "config": {},
+   "metadata": {}
+  },
+  "registered_build": [
+   [
+    "step1",
+    {
+     "dependencies": []
+    },
+    []
+   ]
+  ],
+  "missing_name": {
+   "error": {
+    "type": "KeyError",
+    "message": "'name'"
+   }
+  },
+  "duplicate_dependencies": {
+   "error": {
+    "type": "TypeError",
+    "message": "semantica.pipeline.pipeline_builder.PipelineBuilder.add_step() got multiple values for keyword argument 'dependencies'"
+   }
+  }
+ },
+ "provenance": {
+  "provenance": true,
+  "success": true,
+  "entries": 1,
+  "entity_id_prefix": "pipeline_",
+  "entity_id_len": 17,
+  "entity_type": "pipeline_run",
+  "agent_id": "agent-7",
+  "agent_type": "software_agent",
+  "is_automated": false,
+  "activity_is_entity": true,
+  "source_document": "unit-test",
+  "metadata_keys": [
+   "duration_seconds",
+   "status",
+   "steps"
+  ],
+  "metadata_steps": 2,
+  "metadata_status": "completed",
+  "started_suffix": "+00:00",
+  "default_agent": "PipelineWithProvenance",
+  "failed_run": [
+   false,
+   "failed",
+   "pipeline_execution",
+   "PipelineWithProvenance",
+   true
+  ],
+  "disabled": [
+   false,
+   true
+  ]
+ }
+}

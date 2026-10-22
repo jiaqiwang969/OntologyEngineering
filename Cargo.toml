@@ -1,0 +1,106 @@
+[workspace]
+members = ["modules/engineering-memory/runtime", "crates/oe-sw-worker", "crates/semantica-json", "crates/semantica-numeric", "crates/semantica-temporal", "crates/semantica-service", "crates/oe-evolution", "crates/oe-code-evaluator", "crates/oe-code-runner", "crates/semantica-contracts", "crates/semantica-runtime", "crates/oe-windows-controller", "crates/oe-nx-worker", "crates/oe-wire", "crates/oe-nx-protocol", "crates/oe-core", "crates/oe-model-credentials", "crates/oe-semantic", "crates/oe-engineering", "crates/oe-knowledge", "crates/oe-browser", "crates/oe-cad", "crates/oe-docs", "crates/oe-dist", "crates/oe-geometry", "crates/oe-cli", "crates/oe-design", "crates/oe-kernel", "crates/oe-contracts"]
+resolver = "3"
+exclude = ["vendor/spargebra", "vendor/spareval", "vendor/sparopt", "vendor/oxttl", "vendor/oxrdfxml", "vendor/oxjsonld", "semantica-rs"]
+
+[patch.crates-io]
+spargebra = { path = "vendor/spargebra" }
+spareval = { path = "vendor/spareval" }
+sparopt = { path = "vendor/sparopt" }
+oxttl = { path = "vendor/oxttl" }
+oxrdfxml = { path = "vendor/oxrdfxml" }
+oxjsonld = { path = "vendor/oxjsonld" }
+
+[workspace.package]
+version = "2.0.0-rc.6"
+edition = "2024"
+rust-version = "1.95"
+publish = false
+
+[workspace.dependencies]
+semantica-json = { path = "crates/semantica-json" }
+semantica-numeric = { path = "crates/semantica-numeric" }
+semantica-temporal = { path = "crates/semantica-temporal" }
+serde_yaml = "=0.9.34"
+semantica-contracts = { path = "crates/semantica-contracts" }
+semantica-runtime = { path = "crates/semantica-runtime" }
+semantica-service = { path = "crates/semantica-service" }
+anyhow = "1.0"
+base64 = "0.22.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["preserve_order", "arbitrary_precision", "raw_value"] }
+# SHA-2 ASM uses GNU .S and cannot be built with MSVC. Consumers opt in only outside Windows.
+sha2 = { version = "=0.10.9" }
+thiserror = "2.0"
+libc = "0.2"
+httpdate = "1.0"
+reqwest = { version = "0.12.28", default-features = false, features = ["blocking", "json", "rustls-tls", "socks"] }
+zip = { version = "6.0", default-features = false, features = ["deflate"] }
+clap = { version = "4.5", features = ["derive"] }
+num-bigint = "0.4"
+chrono = { version = "0.4.43", default-features = false, features = ["std"] }
+rusqlite = { version = "=0.32.1", features = ["bundled", "limits", "backup", "hooks"] }
+unicode-normalization = "=0.1.25"
+# Release programs must not resolve compression through the build host Homebrew.
+xz2 = { version = "=0.1.7", features = ["static"] }
+tar = { version = "=0.4.46", default-features = false }
+url = "=2.5.8"
+shlex = "=2.0.1"
+tempfile = "=3.20.0"
+oe-core = { path = "crates/oe-core" }
+oe-wire = { path = "crates/oe-wire" }
+oe-nx-protocol = { path = "crates/oe-nx-protocol" }
+oe-windows-controller = { path = "crates/oe-windows-controller" }
+oe-model-credentials = { path = "crates/oe-model-credentials" }
+oe-semantic = { path = "crates/oe-semantic" }
+oe-engineering = { path = "crates/oe-engineering" }
+oe-knowledge = { path = "crates/oe-knowledge" }
+oe-browser = { path = "crates/oe-browser" }
+oe-cad = { path = "crates/oe-cad" }
+oe-sw-worker = { path = "crates/oe-sw-worker" }
+oe-dist = { path = "crates/oe-dist" }
+
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+unused_must_use = "deny"
+
+[workspace.lints.clippy]
+await_holding_lock = "deny"
+
+[profile.release]
+lto = "thin"
+strip = "debuginfo"
+
+# Native CPU inference requires optimized tensor and GEMM kernels in review builds.
+# These are new backend dependencies; existing workspace packages keep their profile.
+[profile.dev.package.candle-core]
+opt-level = 3
+[profile.dev.package.candle-nn]
+opt-level = 3
+[profile.dev.package.candle-transformers]
+opt-level = 3
+[profile.dev.package.gemm]
+opt-level = 3
+[profile.dev.package.gemm-common]
+opt-level = 3
+[profile.dev.package.gemm-f32]
+opt-level = 3
+[profile.dev.package.gemm-f64]
+opt-level = 3
+[profile.dev.package.gemm-f16]
+opt-level = 3
+[profile.dev.package.gemm-c32]
+opt-level = 3
+[profile.dev.package.gemm-c64]
+opt-level = 3
+[profile.dev.package.pulp]
+opt-level = 3
+
+# Exact large source identities are checked twice; optimize hashing without
+# changing its algorithm or skipping the post-forward check.
+[profile.dev.package.sha2]
+opt-level = 3
+
+# Keep complete gzip CRC and source checks; optimize the same locked backend.
+[profile.dev.package.zlib-rs]
+opt-level = 3

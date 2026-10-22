@@ -1,0 +1,300 @@
+{
+  "schema": "public.source-literal-supplement-cases/1",
+  "source_record_sha256": "e6aed3f57c5d36cf45637813556866f9198304572840797a71bc92d5e84db994",
+  "source_record_bytes": 11787,
+  "source_refs": {
+    "parser": {
+      "name": "parser.py",
+      "bytes": 51890,
+      "sha256": "9bff0501465fc90fb2da7461b35e6f88ad724272a88fdb89b43945eb958c9fdf"
+    },
+    "term": {
+      "name": "term.py",
+      "bytes": 91610,
+      "sha256": "564280e97c4e64b5b704bd1fff96ebc374ebd2dcc2df134cda62452a3f83c1db"
+    },
+    "float_c": {
+      "name": "floatobject.c",
+      "bytes": 72301,
+      "sha256": "a41f721536339d6df470d03b6d9c7efe8995f64348bb0a6093632d463ac55753"
+    }
+  },
+  "payload_sha256": "f84d7977fe8d6d0b36f99eb8b56c49cc6dee4f64127ddf4d5ef22814ea540dd1",
+  "payload": {
+    "environment": {
+      "literal_semantics": "SourceLiteralV1",
+      "numeric_capabilities": "MixedBinary64V1",
+      "decimal_context": {
+        "precision": 28,
+        "Emin": -999999,
+        "Emax": 999999,
+        "rounding": "HALF_EVEN",
+        "clamp": 0,
+        "traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow"
+        ]
+      },
+      "numeric_limits": {
+        "max_input_characters": 4096,
+        "max_coefficient_digits": 4096,
+        "max_output_characters": 4096,
+        "max_materialized_power_of_ten": 4096
+      },
+      "normalize_literals": true
+    },
+    "cases": [
+      {
+        "id": "NT01",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "kind": "Integer",
+          "sign": "Unsigned",
+          "magnitude": "001"
+        },
+        "expected": {
+          "lexical": "1",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language_original": null,
+          "ill_typed": false,
+          "numeric_cache": {
+            "Integer": "1"
+          },
+          "cache_origin": "QueryNumericToken",
+          "python_truth": true,
+          "flags_after_construction": [],
+          "flags_after_two_truth_reads": [],
+          "transport_clone_preserves_source_object": true,
+          "second_actual_construction_is_new_object": true
+        },
+        "basis": [
+          "parser.py:272-316 actual numeric literal token actions",
+          "term.py:667-725 constructor;1025-1052 __neg__;2124-2128 Python to lexical mapping"
+        ]
+      },
+      {
+        "id": "NT02",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "kind": "Integer",
+          "sign": "Positive",
+          "magnitude": "001"
+        },
+        "expected": {
+          "lexical": "1",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language_original": null,
+          "ill_typed": false,
+          "numeric_cache": {
+            "Integer": "1"
+          },
+          "cache_origin": "QueryNumericToken",
+          "python_truth": true,
+          "flags_after_construction": [],
+          "flags_after_two_truth_reads": [],
+          "transport_clone_preserves_source_object": true,
+          "second_actual_construction_is_new_object": true
+        },
+        "basis": [
+          "parser.py:272-316 actual numeric literal token actions",
+          "term.py:667-725 constructor;1025-1052 __neg__;2124-2128 Python to lexical mapping"
+        ]
+      },
+      {
+        "id": "NT03",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "kind": "Integer",
+          "sign": "Negative",
+          "magnitude": "0"
+        },
+        "expected": {
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language_original": null,
+          "ill_typed": null,
+          "numeric_cache": {
+            "Integer": "0"
+          },
+          "cache_origin": "QueryNumericToken",
+          "python_truth": false,
+          "flags_after_construction": [],
+          "flags_after_two_truth_reads": [],
+          "transport_clone_preserves_source_object": true,
+          "second_actual_construction_is_new_object": true
+        },
+        "basis": [
+          "parser.py:272-316 actual numeric literal token actions",
+          "term.py:667-725 constructor;1025-1052 __neg__;2124-2128 Python to lexical mapping"
+        ]
+      },
+      {
+        "id": "NT04",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "kind": "Decimal",
+          "sign": "Unsigned",
+          "magnitude": "0.00"
+        },
+        "expected": {
+          "lexical": "0.00",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "language_original": null,
+          "ill_typed": false,
+          "numeric_cache": {
+            "Decimal": {
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "-2"
+            }
+          },
+          "cache_origin": "QueryNumericToken",
+          "python_truth": false,
+          "flags_after_construction": [],
+          "flags_after_two_truth_reads": [],
+          "transport_clone_preserves_source_object": true,
+          "second_actual_construction_is_new_object": true
+        },
+        "basis": [
+          "parser.py:272-316 actual numeric literal token actions",
+          "term.py:667-725 constructor;1025-1052 __neg__;2124-2128 Python to lexical mapping"
+        ]
+      },
+      {
+        "id": "NT05",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "kind": "Decimal",
+          "sign": "Positive",
+          "magnitude": "1.50"
+        },
+        "expected": {
+          "lexical": "1.50",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "language_original": null,
+          "ill_typed": false,
+          "numeric_cache": {
+            "Decimal": {
+              "negative": false,
+              "coefficient": "150",
+              "exponent": "-2"
+            }
+          },
+          "cache_origin": "QueryNumericToken",
+          "python_truth": true,
+          "flags_after_construction": [],
+          "flags_after_two_truth_reads": [],
+          "transport_clone_preserves_source_object": true,
+          "second_actual_construction_is_new_object": true
+        },
+        "basis": [
+          "parser.py:272-316 actual numeric literal token actions",
+          "term.py:667-725 constructor;1025-1052 __neg__;2124-2128 Python to lexical mapping"
+        ]
+      },
+      {
+        "id": "NT06",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "kind": "Double",
+          "sign": "Unsigned",
+          "magnitude": "1e0"
+        },
+        "expected": {
+          "lexical": "1.0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#double",
+          "language_original": null,
+          "ill_typed": false,
+          "numeric_cache": {
+            "Binary64Bits": "3ff0000000000000"
+          },
+          "cache_origin": "QueryNumericToken",
+          "python_truth": true,
+          "flags_after_construction": [],
+          "flags_after_two_truth_reads": [],
+          "transport_clone_preserves_source_object": true,
+          "second_actual_construction_is_new_object": true
+        },
+        "basis": [
+          "parser.py:272-316 actual numeric literal token actions",
+          "term.py:667-725 constructor;1025-1052 __neg__;2124-2128 Python to lexical mapping"
+        ]
+      },
+      {
+        "id": "NT07",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "kind": "Double",
+          "sign": "Negative",
+          "magnitude": "0e0"
+        },
+        "expected": {
+          "lexical": "-0.0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#double",
+          "language_original": null,
+          "ill_typed": null,
+          "numeric_cache": {
+            "Binary64Bits": "8000000000000000"
+          },
+          "cache_origin": "QueryNumericToken",
+          "python_truth": false,
+          "flags_after_construction": [],
+          "flags_after_two_truth_reads": [],
+          "transport_clone_preserves_source_object": true,
+          "second_actual_construction_is_new_object": true
+        },
+        "basis": [
+          "parser.py:272-316 actual numeric literal token actions",
+          "term.py:667-725 constructor;1025-1052 __neg__;2124-2128 Python to lexical mapping"
+        ]
+      },
+      {
+        "id": "NT08",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "kind": "Double",
+          "sign": "Unsigned",
+          "magnitude": "1e400"
+        },
+        "expected": {
+          "lexical": "inf",
+          "datatype": "http://www.w3.org/2001/XMLSchema#double",
+          "language_original": null,
+          "ill_typed": false,
+          "numeric_cache": {
+            "Binary64Bits": "7ff0000000000000"
+          },
+          "cache_origin": "QueryNumericToken",
+          "python_truth": true,
+          "flags_after_construction": [],
+          "flags_after_two_truth_reads": [],
+          "transport_clone_preserves_source_object": true,
+          "second_actual_construction_is_new_object": true
+        },
+        "basis": [
+          "parser.py:272-316 actual numeric literal token actions",
+          "term.py:667-725 constructor;1025-1052 __neg__;2124-2128 Python to lexical mapping"
+        ]
+      },
+      {
+        "id": "NT09",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "kind": "Decimal",
+          "sign": "Negative",
+          "magnitude": "1.50"
+        },
+        "expected": {
+          "semantic_error": "original_numeric_token_literal_type_error",
+          "flags_after_failure": []
+        },
+        "basis": [
+          "parser.py:310-312 DECIMAL_NEGATIVE invokes neg(Literal)",
+          "term.py:1049-1052 __neg__ permits int/long/float, not Decimal"
+        ]
+      }
+    ]
+  },
+  "receiving_scope": "Actual shared factory and pure source truth receiving. Parser registry/PB and full EXISTS execution are separate; ErrorObject is runtime-only, not grammar input."
+}

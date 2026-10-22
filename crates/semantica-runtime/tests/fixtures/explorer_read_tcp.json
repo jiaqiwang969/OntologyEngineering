@@ -1,0 +1,2553 @@
+{
+  "schema": "private.original-graph-read-observations/2",
+  "plan_sha256": "18045e94d5a2e6daca956d9aa987d389cdefa2c6dac5e1e7489fdf8be0724c67",
+  "source_unchanged": true,
+  "insertions": [
+    {
+      "kind": "node",
+      "id": "z",
+      "returned": true
+    },
+    {
+      "kind": "node",
+      "id": "轴",
+      "returned": true
+    },
+    {
+      "kind": "node",
+      "id": "a",
+      "returned": true
+    },
+    {
+      "kind": "node",
+      "id": "b",
+      "returned": true
+    },
+    {
+      "kind": "node",
+      "id": "a/b",
+      "returned": true
+    },
+    {
+      "kind": "node",
+      "id": "a%2Fb",
+      "returned": true
+    },
+    {
+      "kind": "node",
+      "id": "A",
+      "returned": true
+    },
+    {
+      "kind": "edge",
+      "id": "edge-z",
+      "returned": true
+    },
+    {
+      "kind": "edge",
+      "id": "edge-a",
+      "returned": true
+    },
+    {
+      "kind": "edge",
+      "id": "edge-a",
+      "returned": false
+    },
+    {
+      "kind": "edge",
+      "id": "edge-b",
+      "returned": true
+    }
+  ],
+  "raw_graph_before": {
+    "nodes": [
+      {
+        "id": "z",
+        "type": "Assembly",
+        "properties": {
+          "content": "Frame"
+        }
+      },
+      {
+        "id": "轴",
+        "type": "Part",
+        "properties": {
+          "x": "2",
+          "y": "3",
+          "note": "中文",
+          "content": "主轴 İ"
+        }
+      },
+      {
+        "id": "a",
+        "type": "Part",
+        "properties": {
+          "x": 0,
+          "y": 1,
+          "note": "Alpha",
+          "content": "Bearing A"
+        }
+      },
+      {
+        "id": "b",
+        "type": "Part",
+        "properties": {
+          "x": 2,
+          "y": 3,
+          "content": "Bearing B"
+        }
+      },
+      {
+        "id": "a/b",
+        "type": "Part",
+        "properties": {
+          "x": true,
+          "y": false,
+          "content": "slash"
+        }
+      },
+      {
+        "id": "a%2Fb",
+        "type": "Other",
+        "properties": {
+          "x": "bad",
+          "y": 0,
+          "content": "percent"
+        }
+      },
+      {
+        "id": "A",
+        "type": "Other",
+        "properties": {
+          "x": -1,
+          "y": -1,
+          "content": "Upper"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-z",
+        "familyId": "edge-z",
+        "source_id": "b",
+        "target_id": "z",
+        "type": "LINKS",
+        "weight": 0.5,
+        "properties": {}
+      },
+      {
+        "id": "edge-a",
+        "familyId": "edge-a",
+        "source_id": "a",
+        "target_id": "b",
+        "type": "LINKS",
+        "weight": 1.0,
+        "properties": {}
+      },
+      {
+        "id": "edge-b",
+        "familyId": "edge-b",
+        "source_id": "轴",
+        "target_id": "a",
+        "type": "LINKS",
+        "weight": 0.0,
+        "properties": {}
+      }
+    ]
+  },
+  "raw_graph_after": {
+    "nodes": [
+      {
+        "id": "z",
+        "type": "Assembly",
+        "properties": {
+          "content": "Frame"
+        }
+      },
+      {
+        "id": "轴",
+        "type": "Part",
+        "properties": {
+          "x": "2",
+          "y": "3",
+          "note": "中文",
+          "content": "主轴 İ"
+        }
+      },
+      {
+        "id": "a",
+        "type": "Part",
+        "properties": {
+          "x": 0,
+          "y": 1,
+          "note": "Alpha",
+          "content": "Bearing A"
+        }
+      },
+      {
+        "id": "b",
+        "type": "Part",
+        "properties": {
+          "x": 2,
+          "y": 3,
+          "content": "Bearing B"
+        }
+      },
+      {
+        "id": "a/b",
+        "type": "Part",
+        "properties": {
+          "x": true,
+          "y": false,
+          "content": "slash"
+        }
+      },
+      {
+        "id": "a%2Fb",
+        "type": "Other",
+        "properties": {
+          "x": "bad",
+          "y": 0,
+          "content": "percent"
+        }
+      },
+      {
+        "id": "A",
+        "type": "Other",
+        "properties": {
+          "x": -1,
+          "y": -1,
+          "content": "Upper"
+        }
+      },
+      {
+        "id": "aa",
+        "type": "Part",
+        "properties": {
+          "content": "Added after first page"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-z",
+        "familyId": "edge-z",
+        "source_id": "b",
+        "target_id": "z",
+        "type": "LINKS",
+        "weight": 0.5,
+        "properties": {}
+      },
+      {
+        "id": "edge-a",
+        "familyId": "edge-a",
+        "source_id": "a",
+        "target_id": "b",
+        "type": "LINKS",
+        "weight": 1.0,
+        "properties": {}
+      },
+      {
+        "id": "edge-b",
+        "familyId": "edge-b",
+        "source_id": "轴",
+        "target_id": "a",
+        "type": "LINKS",
+        "weight": 0.0,
+        "properties": {}
+      }
+    ]
+  },
+  "mutation_result": true,
+  "cases": [
+    {
+      "name": "nodes_all",
+      "path": "/api/graph/nodes",
+      "params": {},
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "b",
+            "type": "Part",
+            "content": "Bearing B",
+            "properties": {
+              "x": 2,
+              "y": 3,
+              "content": "Bearing B"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "z",
+            "type": "Assembly",
+            "content": "Frame",
+            "properties": {
+              "content": "Frame"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"properties\":{\"x\":2,\"y\":3,\"content\":\"Bearing B\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"z\",\"type\":\"Assembly\",\"content\":\"Frame\",\"properties\":{\"content\":\"Frame\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "a41327071c61fc0d50facca7616b7237ad4cbb5d9f64e0769ae8594a6c811d6b",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_page",
+      "path": "/api/graph/nodes",
+      "params": {
+        "limit": 2
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 0,
+        "limit": 2,
+        "next_cursor": "YQ==",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":0,\"limit\":2,\"next_cursor\":\"YQ==\",\"has_more\":true}",
+      "raw_sha256": "9ae6228fd4a23d6f11d211fa8479ed6a89f44934fa11c56b69d239ca82d7d4d2",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_skip",
+      "path": "/api/graph/nodes",
+      "params": {
+        "skip": 2,
+        "limit": 2
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 2,
+        "limit": 2,
+        "next_cursor": "YS9i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":2,\"limit\":2,\"next_cursor\":\"YS9i\",\"has_more\":true}",
+      "raw_sha256": "214f7f7fcc8c30772ca6045894a92a0a21873fbcd199ae2ba2c6271df8d7f621",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_cursor_overrides_skip",
+      "path": "/api/graph/nodes",
+      "params": {
+        "skip": 99,
+        "limit": 2,
+        "cursor": "YQ=="
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 99,
+        "limit": 2,
+        "next_cursor": "YS9i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":99,\"limit\":2,\"next_cursor\":\"YS9i\",\"has_more\":true}",
+      "raw_sha256": "bdbb79d5b6e88502c6aa5d066cde24eb46b2810bdaca362bb53ea2ec604d8cbb",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_cursor_not_found",
+      "path": "/api/graph/nodes",
+      "params": {
+        "skip": 99,
+        "limit": 2,
+        "cursor": "bWlzc2luZw=="
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 99,
+        "limit": 2,
+        "next_cursor": "YQ==",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":99,\"limit\":2,\"next_cursor\":\"YQ==\",\"has_more\":true}",
+      "raw_sha256": "e6d03bc8226961bf247656af2f064aeb7ae8fbd6fadf4dfcb5d9893877b61483",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_cursor_filtered_out",
+      "path": "/api/graph/nodes",
+      "params": {
+        "type": "Part",
+        "skip": 99,
+        "limit": 2,
+        "cursor": "QQ=="
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 4,
+        "skip": 99,
+        "limit": 2,
+        "next_cursor": "YS9i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null}],\"total\":4,\"skip\":99,\"limit\":2,\"next_cursor\":\"YS9i\",\"has_more\":true}",
+      "raw_sha256": "f98b15e47187ebcd608281416a608532680bd313ef3276ba4458c6a4cc2101ff",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_cursor_invalid_base64",
+      "path": "/api/graph/nodes",
+      "params": {
+        "skip": 2,
+        "limit": 2,
+        "cursor": "%%%"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 2,
+        "limit": 2,
+        "next_cursor": "YS9i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":2,\"limit\":2,\"next_cursor\":\"YS9i\",\"has_more\":true}",
+      "raw_sha256": "214f7f7fcc8c30772ca6045894a92a0a21873fbcd199ae2ba2c6271df8d7f621",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_cursor_invalid_utf8",
+      "path": "/api/graph/nodes",
+      "params": {
+        "skip": 2,
+        "limit": 2,
+        "cursor": "_w=="
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 2,
+        "limit": 2,
+        "next_cursor": "YS9i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":2,\"limit\":2,\"next_cursor\":\"YS9i\",\"has_more\":true}",
+      "raw_sha256": "214f7f7fcc8c30772ca6045894a92a0a21873fbcd199ae2ba2c6271df8d7f621",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_cursor_empty",
+      "path": "/api/graph/nodes",
+      "params": {
+        "skip": 2,
+        "limit": 2,
+        "cursor": ""
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 2,
+        "limit": 2,
+        "next_cursor": "YS9i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":2,\"limit\":2,\"next_cursor\":\"YS9i\",\"has_more\":true}",
+      "raw_sha256": "214f7f7fcc8c30772ca6045894a92a0a21873fbcd199ae2ba2c6271df8d7f621",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_cursor_unicode",
+      "path": "/api/graph/nodes",
+      "params": {
+        "limit": 2,
+        "cursor": "6L20"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [],
+        "total": 7,
+        "skip": 0,
+        "limit": 2,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[],\"total\":7,\"skip\":0,\"limit\":2,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "cd0cfd11790401598d96154b16ed80fd8f430bff61402fa33680599df53bb4ce",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_type_exact",
+      "path": "/api/graph/nodes",
+      "params": {
+        "type": "Part"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "b",
+            "type": "Part",
+            "content": "Bearing B",
+            "properties": {
+              "x": 2,
+              "y": 3,
+              "content": "Bearing B"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 4,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"properties\":{\"x\":2,\"y\":3,\"content\":\"Bearing B\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":4,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "0b10086f6ff92313b270a474d9bee511624a02b98f6ace915aae6732b0fcd2bb",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_type_case",
+      "path": "/api/graph/nodes",
+      "params": {
+        "type": "part"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [],
+        "total": 0,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[],\"total\":0,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "4c8234f07efa99bd281e7a105ecee2f4c80c4dcab834281e71f73f6701d7a79d",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_type_empty",
+      "path": "/api/graph/nodes",
+      "params": {
+        "type": ""
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "b",
+            "type": "Part",
+            "content": "Bearing B",
+            "properties": {
+              "x": 2,
+              "y": 3,
+              "content": "Bearing B"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "z",
+            "type": "Assembly",
+            "content": "Frame",
+            "properties": {
+              "content": "Frame"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"properties\":{\"x\":2,\"y\":3,\"content\":\"Bearing B\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"z\",\"type\":\"Assembly\",\"content\":\"Frame\",\"properties\":{\"content\":\"Frame\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "a41327071c61fc0d50facca7616b7237ad4cbb5d9f64e0769ae8594a6c811d6b",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_search_case",
+      "path": "/api/graph/nodes",
+      "params": {
+        "search": "BEARING"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "b",
+            "type": "Part",
+            "content": "Bearing B",
+            "properties": {
+              "x": 2,
+              "y": 3,
+              "content": "Bearing B"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 2,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"properties\":{\"x\":2,\"y\":3,\"content\":\"Bearing B\"},\"valid_from\":null,\"valid_until\":null}],\"total\":2,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "53147ee96d5bd22078829524485619e55dc0091e2a0b82ad37db1b4d201e61e9",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_search_property",
+      "path": "/api/graph/nodes",
+      "params": {
+        "search": "alpha"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 1,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null}],\"total\":1,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "ab6d972dcaab818eeae05e095f21cc3fdc166fe04b83c3fceacf68c2881d33cc",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_search_unicode_content",
+      "path": "/api/graph/nodes",
+      "params": {
+        "search": "主轴"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 1,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":1,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "fd07528c65d1e50085ba5dd32b5642c0267c66fae4e1023bedf151f0278f2c4c",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_search_unicode_property",
+      "path": "/api/graph/nodes",
+      "params": {
+        "search": "中文"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [],
+        "total": 0,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[],\"total\":0,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "4c8234f07efa99bd281e7a105ecee2f4c80c4dcab834281e71f73f6701d7a79d",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_search_escaped_property",
+      "path": "/api/graph/nodes",
+      "params": {
+        "search": "\\u4e2d\\u6587"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 1,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":1,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "fd07528c65d1e50085ba5dd32b5642c0267c66fae4e1023bedf151f0278f2c4c",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_search_spaces",
+      "path": "/api/graph/nodes",
+      "params": {
+        "search": "   "
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "b",
+            "type": "Part",
+            "content": "Bearing B",
+            "properties": {
+              "x": 2,
+              "y": 3,
+              "content": "Bearing B"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "z",
+            "type": "Assembly",
+            "content": "Frame",
+            "properties": {
+              "content": "Frame"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"properties\":{\"x\":2,\"y\":3,\"content\":\"Bearing B\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"z\",\"type\":\"Assembly\",\"content\":\"Frame\",\"properties\":{\"content\":\"Frame\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "a41327071c61fc0d50facca7616b7237ad4cbb5d9f64e0769ae8594a6c811d6b",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_search_unicode_lower",
+      "path": "/api/graph/nodes",
+      "params": {
+        "search": "i̇"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 1,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":1,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "fd07528c65d1e50085ba5dd32b5642c0267c66fae4e1023bedf151f0278f2c4c",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_bbox_inclusive",
+      "path": "/api/graph/nodes",
+      "params": {
+        "bbox": "0,0,2,3"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "b",
+            "type": "Part",
+            "content": "Bearing B",
+            "properties": {
+              "x": 2,
+              "y": 3,
+              "content": "Bearing B"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 4,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"properties\":{\"x\":2,\"y\":3,\"content\":\"Bearing B\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":4,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "0b10086f6ff92313b270a474d9bee511624a02b98f6ace915aae6732b0fcd2bb",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_bbox_single_point",
+      "path": "/api/graph/nodes",
+      "params": {
+        "bbox": "2,3,2,3"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "b",
+            "type": "Part",
+            "content": "Bearing B",
+            "properties": {
+              "x": 2,
+              "y": 3,
+              "content": "Bearing B"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 2,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"properties\":{\"x\":2,\"y\":3,\"content\":\"Bearing B\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":2,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "14cc4be400b6bdd1924bb7337ac1abe7c8d46edd524aec108129ceb39d0a1db8",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_bbox_spaces",
+      "path": "/api/graph/nodes",
+      "params": {
+        "bbox": " -1, -1, 0, 1 "
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 2,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null}],\"total\":2,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "0e4c600ad2f13de1f7546c605ef66ce9cff091066c3b99162a084cdf099677de",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_bbox_reverse",
+      "path": "/api/graph/nodes",
+      "params": {
+        "bbox": "2,3,0,0"
+      },
+      "status": 422,
+      "body": {
+        "detail": "Invalid input"
+      },
+      "raw_utf8": "{\"detail\":\"Invalid input\"}",
+      "raw_sha256": "a045aaaedc79cf3c8c7c1da4f71e07f7b5a4e00336580d62eefc796e1e8b5fb3",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_bbox_bad_count",
+      "path": "/api/graph/nodes",
+      "params": {
+        "bbox": "0,1,2"
+      },
+      "status": 422,
+      "body": {
+        "detail": "Invalid input"
+      },
+      "raw_utf8": "{\"detail\":\"Invalid input\"}",
+      "raw_sha256": "a045aaaedc79cf3c8c7c1da4f71e07f7b5a4e00336580d62eefc796e1e8b5fb3",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_bbox_bad_number",
+      "path": "/api/graph/nodes",
+      "params": {
+        "bbox": "0,x,2,3"
+      },
+      "status": 422,
+      "body": {
+        "detail": "Invalid input"
+      },
+      "raw_utf8": "{\"detail\":\"Invalid input\"}",
+      "raw_sha256": "a045aaaedc79cf3c8c7c1da4f71e07f7b5a4e00336580d62eefc796e1e8b5fb3",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_bbox_nan",
+      "path": "/api/graph/nodes",
+      "params": {
+        "bbox": "nan,0,2,3"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [],
+        "total": 0,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[],\"total\":0,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "4c8234f07efa99bd281e7a105ecee2f4c80c4dcab834281e71f73f6701d7a79d",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_bbox_infinity",
+      "path": "/api/graph/nodes",
+      "params": {
+        "bbox": "-inf,-inf,inf,inf"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "b",
+            "type": "Part",
+            "content": "Bearing B",
+            "properties": {
+              "x": 2,
+              "y": 3,
+              "content": "Bearing B"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 5,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"properties\":{\"x\":2,\"y\":3,\"content\":\"Bearing B\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":5,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "7ca6ab81495910e32c69042200f31d56052339bb7c361ddb8dda02d2b4b1981d",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_limit_zero",
+      "path": "/api/graph/nodes",
+      "params": {
+        "limit": 0
+      },
+      "status": 422,
+      "body": {
+        "detail": [
+          {
+            "type": "greater_than_equal",
+            "loc": [
+              "query",
+              "limit"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "input": "0",
+            "ctx": {
+              "ge": 1
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"greater_than_equal\",\"loc\":[\"query\",\"limit\"],\"msg\":\"Input should be greater than or equal to 1\",\"input\":\"0\",\"ctx\":{\"ge\":1}}]}",
+      "raw_sha256": "a9234848bb181df473de085cf69d1a2bd1e4a51d1c8795e4707d4b66cbb97440",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_limit_large",
+      "path": "/api/graph/nodes",
+      "params": {
+        "limit": 5001
+      },
+      "status": 422,
+      "body": {
+        "detail": [
+          {
+            "type": "less_than_equal",
+            "loc": [
+              "query",
+              "limit"
+            ],
+            "msg": "Input should be less than or equal to 5000",
+            "input": "5001",
+            "ctx": {
+              "le": 5000
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"less_than_equal\",\"loc\":[\"query\",\"limit\"],\"msg\":\"Input should be less than or equal to 5000\",\"input\":\"5001\",\"ctx\":{\"le\":5000}}]}",
+      "raw_sha256": "f2cae314bbdd1f6d3bae914bf851665336e3cf5e91241ab6ba264b42d9080884",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_skip_negative",
+      "path": "/api/graph/nodes",
+      "params": {
+        "skip": -1
+      },
+      "status": 422,
+      "body": {
+        "detail": [
+          {
+            "type": "greater_than_equal",
+            "loc": [
+              "query",
+              "skip"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "input": "-1",
+            "ctx": {
+              "ge": 0
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"greater_than_equal\",\"loc\":[\"query\",\"skip\"],\"msg\":\"Input should be greater than or equal to 0\",\"input\":\"-1\",\"ctx\":{\"ge\":0}}]}",
+      "raw_sha256": "93e9bbdb85ca27ae6c5bccb83bd136a68c4c24fbe274d785f8600b31506b59e9",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_limit_float",
+      "path": "/api/graph/nodes",
+      "params": {
+        "limit": "2.0"
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 0,
+        "limit": 2,
+        "next_cursor": "YQ==",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":0,\"limit\":2,\"next_cursor\":\"YQ==\",\"has_more\":true}",
+      "raw_sha256": "9ae6228fd4a23d6f11d211fa8479ed6a89f44934fa11c56b69d239ca82d7d4d2",
+      "content_type": "application/json"
+    },
+    {
+      "name": "nodes_last_repeated_parameter",
+      "path": "/api/graph/nodes",
+      "params": [
+        [
+          "limit",
+          "1"
+        ],
+        [
+          "limit",
+          "2"
+        ]
+      ],
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 0,
+        "limit": 2,
+        "next_cursor": "YQ==",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":0,\"limit\":2,\"next_cursor\":\"YQ==\",\"has_more\":true}",
+      "raw_sha256": "9ae6228fd4a23d6f11d211fa8479ed6a89f44934fa11c56b69d239ca82d7d4d2",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_all",
+      "path": "/api/graph/edges",
+      "params": {},
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-a",
+            "familyId": "edge-a",
+            "source": "a",
+            "target": "b",
+            "type": "LINKS",
+            "weight": 1.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "edge-b",
+            "familyId": "edge-b",
+            "source": "轴",
+            "target": "a",
+            "type": "LINKS",
+            "weight": 0.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "edge-z",
+            "familyId": "edge-z",
+            "source": "b",
+            "target": "z",
+            "type": "LINKS",
+            "weight": 0.5,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 3,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-a\",\"familyId\":\"edge-a\",\"source\":\"a\",\"target\":\"b\",\"type\":\"LINKS\",\"weight\":1.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null},{\"id\":\"edge-b\",\"familyId\":\"edge-b\",\"source\":\"轴\",\"target\":\"a\",\"type\":\"LINKS\",\"weight\":0.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null},{\"id\":\"edge-z\",\"familyId\":\"edge-z\",\"source\":\"b\",\"target\":\"z\",\"type\":\"LINKS\",\"weight\":0.5,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":3,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "6a9070ae92f01fdf981ec1677280d2bfd2e3b411ddff445ace92ed4ee3fe8b77",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_page",
+      "path": "/api/graph/edges",
+      "params": {
+        "limit": 1
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-a",
+            "familyId": "edge-a",
+            "source": "a",
+            "target": "b",
+            "type": "LINKS",
+            "weight": 1.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 3,
+        "skip": 0,
+        "limit": 1,
+        "next_cursor": "ZWRnZS1h",
+        "has_more": true
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-a\",\"familyId\":\"edge-a\",\"source\":\"a\",\"target\":\"b\",\"type\":\"LINKS\",\"weight\":1.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":3,\"skip\":0,\"limit\":1,\"next_cursor\":\"ZWRnZS1h\",\"has_more\":true}",
+      "raw_sha256": "a59eb6d0cf80fc7eee898066d82f06fa761df4b7dd15df039a6d21c0699c086d",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_skip",
+      "path": "/api/graph/edges",
+      "params": {
+        "skip": 1,
+        "limit": 2
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-b",
+            "familyId": "edge-b",
+            "source": "轴",
+            "target": "a",
+            "type": "LINKS",
+            "weight": 0.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "edge-z",
+            "familyId": "edge-z",
+            "source": "b",
+            "target": "z",
+            "type": "LINKS",
+            "weight": 0.5,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 3,
+        "skip": 1,
+        "limit": 2,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-b\",\"familyId\":\"edge-b\",\"source\":\"轴\",\"target\":\"a\",\"type\":\"LINKS\",\"weight\":0.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null},{\"id\":\"edge-z\",\"familyId\":\"edge-z\",\"source\":\"b\",\"target\":\"z\",\"type\":\"LINKS\",\"weight\":0.5,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":3,\"skip\":1,\"limit\":2,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "395676d80c3951efd2947c5ee19b8aba3b683deb3dd87a777c0de18912d4e2ec",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_cursor_duplicate",
+      "path": "/api/graph/edges",
+      "params": {
+        "cursor": "ZWRnZS1h",
+        "limit": 1
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-b",
+            "familyId": "edge-b",
+            "source": "轴",
+            "target": "a",
+            "type": "LINKS",
+            "weight": 0.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 3,
+        "skip": 0,
+        "limit": 1,
+        "next_cursor": "ZWRnZS1i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-b\",\"familyId\":\"edge-b\",\"source\":\"轴\",\"target\":\"a\",\"type\":\"LINKS\",\"weight\":0.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":3,\"skip\":0,\"limit\":1,\"next_cursor\":\"ZWRnZS1i\",\"has_more\":true}",
+      "raw_sha256": "89bfe7b8787c1285e1b7ebf4ef256a8e068da1dd09789e4d047978feb2351d36",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_cursor_overrides_skip",
+      "path": "/api/graph/edges",
+      "params": {
+        "cursor": "ZWRnZS1h",
+        "skip": 99,
+        "limit": 2
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-b",
+            "familyId": "edge-b",
+            "source": "轴",
+            "target": "a",
+            "type": "LINKS",
+            "weight": 0.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "edge-z",
+            "familyId": "edge-z",
+            "source": "b",
+            "target": "z",
+            "type": "LINKS",
+            "weight": 0.5,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 3,
+        "skip": 99,
+        "limit": 2,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-b\",\"familyId\":\"edge-b\",\"source\":\"轴\",\"target\":\"a\",\"type\":\"LINKS\",\"weight\":0.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null},{\"id\":\"edge-z\",\"familyId\":\"edge-z\",\"source\":\"b\",\"target\":\"z\",\"type\":\"LINKS\",\"weight\":0.5,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":3,\"skip\":99,\"limit\":2,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "0adecbbfc365577582cd3276e36d4312985e7a8c4e085a092722271dd93ea632",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_cursor_missing",
+      "path": "/api/graph/edges",
+      "params": {
+        "cursor": "bWlzc2luZw==",
+        "skip": 99,
+        "limit": 2
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-a",
+            "familyId": "edge-a",
+            "source": "a",
+            "target": "b",
+            "type": "LINKS",
+            "weight": 1.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "edge-b",
+            "familyId": "edge-b",
+            "source": "轴",
+            "target": "a",
+            "type": "LINKS",
+            "weight": 0.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 3,
+        "skip": 99,
+        "limit": 2,
+        "next_cursor": "ZWRnZS1i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-a\",\"familyId\":\"edge-a\",\"source\":\"a\",\"target\":\"b\",\"type\":\"LINKS\",\"weight\":1.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null},{\"id\":\"edge-b\",\"familyId\":\"edge-b\",\"source\":\"轴\",\"target\":\"a\",\"type\":\"LINKS\",\"weight\":0.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":3,\"skip\":99,\"limit\":2,\"next_cursor\":\"ZWRnZS1i\",\"has_more\":true}",
+      "raw_sha256": "1db193aa05845794048c1379af2ee285d264054fd0cbc76a395800ee427059c6",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_cursor_invalid",
+      "path": "/api/graph/edges",
+      "params": {
+        "cursor": "%%%",
+        "skip": 1,
+        "limit": 1
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-b",
+            "familyId": "edge-b",
+            "source": "轴",
+            "target": "a",
+            "type": "LINKS",
+            "weight": 0.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 3,
+        "skip": 1,
+        "limit": 1,
+        "next_cursor": "ZWRnZS1i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-b\",\"familyId\":\"edge-b\",\"source\":\"轴\",\"target\":\"a\",\"type\":\"LINKS\",\"weight\":0.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":3,\"skip\":1,\"limit\":1,\"next_cursor\":\"ZWRnZS1i\",\"has_more\":true}",
+      "raw_sha256": "1c976b4e5a1de9d2768f3290bf69e75b6d19ee34c28ca3fc0015ee2bd66c19f5",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_type",
+      "path": "/api/graph/edges",
+      "params": {
+        "type": "SUPPORTS"
+      },
+      "status": 200,
+      "body": {
+        "edges": [],
+        "total": 0,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"edges\":[],\"total\":0,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "2b4043bf13a5ee5d7f1ddbfd9d5d8dd3bce6b8450f103fb3956528ce3715ffcc",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_source",
+      "path": "/api/graph/edges",
+      "params": {
+        "source": "a"
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-a",
+            "familyId": "edge-a",
+            "source": "a",
+            "target": "b",
+            "type": "LINKS",
+            "weight": 1.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 1,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-a\",\"familyId\":\"edge-a\",\"source\":\"a\",\"target\":\"b\",\"type\":\"LINKS\",\"weight\":1.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":1,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "9ca108c1225d477bb628e5fef8996291e9238f2f666193ad9acc742c04388b83",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_target",
+      "path": "/api/graph/edges",
+      "params": {
+        "target": "a"
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-b",
+            "familyId": "edge-b",
+            "source": "轴",
+            "target": "a",
+            "type": "LINKS",
+            "weight": 0.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 1,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-b\",\"familyId\":\"edge-b\",\"source\":\"轴\",\"target\":\"a\",\"type\":\"LINKS\",\"weight\":0.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":1,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "0b3afd37b717747df24e39fa038a854d3f9ad525655763c6cdb35358bb0010a2",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_all_filters",
+      "path": "/api/graph/edges",
+      "params": {
+        "source": "a",
+        "type": "LINKS",
+        "target": "b"
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-a",
+            "familyId": "edge-a",
+            "source": "a",
+            "target": "b",
+            "type": "LINKS",
+            "weight": 1.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 1,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-a\",\"familyId\":\"edge-a\",\"source\":\"a\",\"target\":\"b\",\"type\":\"LINKS\",\"weight\":1.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":1,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "9ca108c1225d477bb628e5fef8996291e9238f2f666193ad9acc742c04388b83",
+      "content_type": "application/json"
+    },
+    {
+      "name": "edges_source_empty",
+      "path": "/api/graph/edges",
+      "params": {
+        "source": ""
+      },
+      "status": 200,
+      "body": {
+        "edges": [
+          {
+            "id": "edge-a",
+            "familyId": "edge-a",
+            "source": "a",
+            "target": "b",
+            "type": "LINKS",
+            "weight": 1.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "edge-b",
+            "familyId": "edge-b",
+            "source": "轴",
+            "target": "a",
+            "type": "LINKS",
+            "weight": 0.0,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "edge-z",
+            "familyId": "edge-z",
+            "source": "b",
+            "target": "z",
+            "type": "LINKS",
+            "weight": 0.5,
+            "properties": {},
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 3,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"edges\":[{\"id\":\"edge-a\",\"familyId\":\"edge-a\",\"source\":\"a\",\"target\":\"b\",\"type\":\"LINKS\",\"weight\":1.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null},{\"id\":\"edge-b\",\"familyId\":\"edge-b\",\"source\":\"轴\",\"target\":\"a\",\"type\":\"LINKS\",\"weight\":0.0,\"properties\":{},\"valid_from\":null,\"valid_until\":null},{\"id\":\"edge-z\",\"familyId\":\"edge-z\",\"source\":\"b\",\"target\":\"z\",\"type\":\"LINKS\",\"weight\":0.5,\"properties\":{},\"valid_from\":null,\"valid_until\":null}],\"total\":3,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "6a9070ae92f01fdf981ec1677280d2bfd2e3b411ddff445ace92ed4ee3fe8b77",
+      "content_type": "application/json"
+    },
+    {
+      "name": "node_a",
+      "path": "/api/graph/node/a",
+      "params": {},
+      "status": 200,
+      "body": {
+        "id": "a",
+        "type": "Part",
+        "content": "Bearing A",
+        "properties": {
+          "x": 0,
+          "y": 1,
+          "note": "Alpha",
+          "content": "Bearing A"
+        },
+        "valid_from": null,
+        "valid_until": null
+      },
+      "raw_utf8": "{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null}",
+      "raw_sha256": "66369c2dd04d163c65bb184d677e579e399d11462634f6f48f271616d51435ab",
+      "content_type": "application/json"
+    },
+    {
+      "name": "node_unicode",
+      "path": "/api/graph/node/%E8%BD%B4",
+      "params": {},
+      "status": 200,
+      "body": {
+        "id": "轴",
+        "type": "Part",
+        "content": "主轴 İ",
+        "properties": {
+          "x": "2",
+          "y": "3",
+          "note": "中文",
+          "content": "主轴 İ"
+        },
+        "valid_from": null,
+        "valid_until": null
+      },
+      "raw_utf8": "{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}",
+      "raw_sha256": "a839dccb6f20b4ed8cc947ddaac0bf932af5ca422aad840cf7e1f5e891cbd630",
+      "content_type": "application/json"
+    },
+    {
+      "name": "node_slash",
+      "path": "/api/graph/node/a%2Fb",
+      "params": {},
+      "status": 404,
+      "body": {
+        "detail": "Not Found"
+      },
+      "raw_utf8": "{\"detail\":\"Not Found\"}",
+      "raw_sha256": "37ec4665a8102d115ffd1ac20dae94c98b4dac64b0c1a68228aa2a531caeb35d",
+      "content_type": "application/json"
+    },
+    {
+      "name": "node_percent",
+      "path": "/api/graph/node/a%252Fb",
+      "params": {},
+      "status": 200,
+      "body": {
+        "id": "a%2Fb",
+        "type": "Other",
+        "content": "percent",
+        "properties": {
+          "x": "bad",
+          "y": 0,
+          "content": "percent"
+        },
+        "valid_from": null,
+        "valid_until": null
+      },
+      "raw_utf8": "{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null}",
+      "raw_sha256": "5f52ce3df952a749350587ce3d88e179e044e35eefef9e917a13b7eac53b81aa",
+      "content_type": "application/json"
+    },
+    {
+      "name": "node_missing",
+      "path": "/api/graph/node/missing",
+      "params": {},
+      "status": 404,
+      "body": {
+        "detail": "Node 'missing' not found"
+      },
+      "raw_utf8": "{\"detail\":\"Node 'missing' not found\"}",
+      "raw_sha256": "a7d8a0f9d7b1989e65e57987d7fd41fe220209272744cbdfb741d54948b32b85",
+      "content_type": "application/json"
+    },
+    {
+      "name": "neighbors_depth1",
+      "path": "/api/graph/node/a/neighbors",
+      "params": {
+        "depth": 1
+      },
+      "status": 200,
+      "body": [
+        {
+          "id": "b",
+          "type": "Part",
+          "content": "Bearing B",
+          "relationship": "LINKS",
+          "weight": 1.0,
+          "hop": 1
+        }
+      ],
+      "raw_utf8": "[{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"relationship\":\"LINKS\",\"weight\":1.0,\"hop\":1}]",
+      "raw_sha256": "9b5b685ddbfdf94f30c5f8841e59ae737c609d47f68b3e92291e7272f5fa6948",
+      "content_type": "application/json"
+    },
+    {
+      "name": "neighbors_depth2",
+      "path": "/api/graph/node/a/neighbors",
+      "params": {
+        "depth": 2
+      },
+      "status": 200,
+      "body": [
+        {
+          "id": "b",
+          "type": "Part",
+          "content": "Bearing B",
+          "relationship": "LINKS",
+          "weight": 1.0,
+          "hop": 1
+        },
+        {
+          "id": "z",
+          "type": "Assembly",
+          "content": "Frame",
+          "relationship": "LINKS",
+          "weight": 0.5,
+          "hop": 2
+        }
+      ],
+      "raw_utf8": "[{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"relationship\":\"LINKS\",\"weight\":1.0,\"hop\":1},{\"id\":\"z\",\"type\":\"Assembly\",\"content\":\"Frame\",\"relationship\":\"LINKS\",\"weight\":0.5,\"hop\":2}]",
+      "raw_sha256": "790a5b56007128a490bf422efe5e84b5cd19fbea4624ad4e07a6d4f85fe3b4ab",
+      "content_type": "application/json"
+    },
+    {
+      "name": "neighbors_missing",
+      "path": "/api/graph/node/missing/neighbors",
+      "params": {},
+      "status": 200,
+      "body": [],
+      "raw_utf8": "[]",
+      "raw_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "content_type": "application/json"
+    },
+    {
+      "name": "neighbors_bad_depth",
+      "path": "/api/graph/node/a/neighbors",
+      "params": {
+        "depth": 6
+      },
+      "status": 422,
+      "body": {
+        "detail": [
+          {
+            "type": "less_than_equal",
+            "loc": [
+              "query",
+              "depth"
+            ],
+            "msg": "Input should be less than or equal to 5",
+            "input": "6",
+            "ctx": {
+              "le": 5
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"less_than_equal\",\"loc\":[\"query\",\"depth\"],\"msg\":\"Input should be less than or equal to 5\",\"input\":\"6\",\"ctx\":{\"le\":5}}]}",
+      "raw_sha256": "589715cfa7dde13f6b43f46751ea792f547df996f4a0800c6447b8babd407276",
+      "content_type": "application/json"
+    },
+    {
+      "name": "before_mutation_page",
+      "path": "/api/graph/nodes",
+      "params": {
+        "limit": 2
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 7,
+        "skip": 0,
+        "limit": 2,
+        "next_cursor": "YQ==",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null}],\"total\":7,\"skip\":0,\"limit\":2,\"next_cursor\":\"YQ==\",\"has_more\":true}",
+      "raw_sha256": "9ae6228fd4a23d6f11d211fa8479ed6a89f44934fa11c56b69d239ca82d7d4d2",
+      "content_type": "application/json"
+    },
+    {
+      "name": "after_mutation_cursor",
+      "path": "/api/graph/nodes",
+      "params": {
+        "limit": 2,
+        "cursor": "YQ=="
+      },
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 8,
+        "skip": 0,
+        "limit": 2,
+        "next_cursor": "YS9i",
+        "has_more": true
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null}],\"total\":8,\"skip\":0,\"limit\":2,\"next_cursor\":\"YS9i\",\"has_more\":true}",
+      "raw_sha256": "4a1de4af127bf8fbbbaf7da1fda07104a4e0423ae35391b7b1f76f5f59f064fa",
+      "content_type": "application/json"
+    },
+    {
+      "name": "after_mutation_all",
+      "path": "/api/graph/nodes",
+      "params": {},
+      "status": 200,
+      "body": {
+        "nodes": [
+          {
+            "id": "A",
+            "type": "Other",
+            "content": "Upper",
+            "properties": {
+              "x": -1,
+              "y": -1,
+              "content": "Upper"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a",
+            "type": "Part",
+            "content": "Bearing A",
+            "properties": {
+              "x": 0,
+              "y": 1,
+              "note": "Alpha",
+              "content": "Bearing A"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a%2Fb",
+            "type": "Other",
+            "content": "percent",
+            "properties": {
+              "x": "bad",
+              "y": 0,
+              "content": "percent"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "a/b",
+            "type": "Part",
+            "content": "slash",
+            "properties": {
+              "x": true,
+              "y": false,
+              "content": "slash"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "aa",
+            "type": "Part",
+            "content": "Added after first page",
+            "properties": {
+              "content": "Added after first page"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "b",
+            "type": "Part",
+            "content": "Bearing B",
+            "properties": {
+              "x": 2,
+              "y": 3,
+              "content": "Bearing B"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "z",
+            "type": "Assembly",
+            "content": "Frame",
+            "properties": {
+              "content": "Frame"
+            },
+            "valid_from": null,
+            "valid_until": null
+          },
+          {
+            "id": "轴",
+            "type": "Part",
+            "content": "主轴 İ",
+            "properties": {
+              "x": "2",
+              "y": "3",
+              "note": "中文",
+              "content": "主轴 İ"
+            },
+            "valid_from": null,
+            "valid_until": null
+          }
+        ],
+        "total": 8,
+        "skip": 0,
+        "limit": 100,
+        "next_cursor": null,
+        "has_more": false
+      },
+      "raw_utf8": "{\"nodes\":[{\"id\":\"A\",\"type\":\"Other\",\"content\":\"Upper\",\"properties\":{\"x\":-1,\"y\":-1,\"content\":\"Upper\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a\",\"type\":\"Part\",\"content\":\"Bearing A\",\"properties\":{\"x\":0,\"y\":1,\"note\":\"Alpha\",\"content\":\"Bearing A\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a%2Fb\",\"type\":\"Other\",\"content\":\"percent\",\"properties\":{\"x\":\"bad\",\"y\":0,\"content\":\"percent\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"a/b\",\"type\":\"Part\",\"content\":\"slash\",\"properties\":{\"x\":true,\"y\":false,\"content\":\"slash\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"aa\",\"type\":\"Part\",\"content\":\"Added after first page\",\"properties\":{\"content\":\"Added after first page\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"b\",\"type\":\"Part\",\"content\":\"Bearing B\",\"properties\":{\"x\":2,\"y\":3,\"content\":\"Bearing B\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"z\",\"type\":\"Assembly\",\"content\":\"Frame\",\"properties\":{\"content\":\"Frame\"},\"valid_from\":null,\"valid_until\":null},{\"id\":\"轴\",\"type\":\"Part\",\"content\":\"主轴 İ\",\"properties\":{\"x\":\"2\",\"y\":\"3\",\"note\":\"中文\",\"content\":\"主轴 İ\"},\"valid_from\":null,\"valid_until\":null}],\"total\":8,\"skip\":0,\"limit\":100,\"next_cursor\":null,\"has_more\":false}",
+      "raw_sha256": "4f5c71476e8bbbb61d2b9a537c61b3afe172ce1f7a5bcfa08aa41958ee2eb3af",
+      "content_type": "application/json"
+    }
+  ],
+  "scope": "Historical development oracle before Rust implementation; no held-out, full route or engineering qualification."
+}

@@ -1,0 +1,211 @@
+{
+  "rows": [
+    {
+      "call": {
+        "method": "add_nodes",
+        "args": [
+          [
+            {
+              "id": "a",
+              "content": "bearing",
+              "properties": {
+                "z_last": "zeta",
+                "a_first": "alpha"
+              }
+            }
+          ]
+        ],
+        "kwargs": {}
+      },
+      "result": 1,
+      "index_documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "entity",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "zeta alpha",
+          "confidence": null,
+          "tags": []
+        }
+      }
+    },
+    {
+      "call": {
+        "method": "add_nodes",
+        "args": [
+          [
+            {
+              "id": "b",
+              "content": "shaft"
+            }
+          ]
+        ],
+        "kwargs": {}
+      },
+      "result": 1,
+      "index_documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "entity",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "zeta alpha",
+          "confidence": null,
+          "tags": []
+        },
+        "b": {
+          "node_id": "b",
+          "normalized_id": "b",
+          "node_type": "entity",
+          "exact_terms": [
+            "b",
+            "shaft"
+          ],
+          "tokens": [
+            "b",
+            "shaft"
+          ],
+          "primary_text": "b shaft",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      }
+    },
+    {
+      "call": {
+        "method": "add_node",
+        "args": [
+          "a",
+          "Part",
+          "repaired"
+        ],
+        "kwargs": {
+          "z_last": "lastvalue",
+          "a_first": "firstvalue"
+        }
+      },
+      "result": true,
+      "index_documents": {
+        "b": {
+          "node_id": "b",
+          "normalized_id": "b",
+          "node_type": "entity",
+          "exact_terms": [
+            "b",
+            "shaft"
+          ],
+          "tokens": [
+            "b",
+            "shaft"
+          ],
+          "primary_text": "b shaft",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        },
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "repaired"
+          ],
+          "tokens": [
+            "a",
+            "repaired"
+          ],
+          "primary_text": "a repaired",
+          "secondary_text": "lastvalue firstvalue",
+          "confidence": null,
+          "tags": []
+        }
+      }
+    },
+    {
+      "call": {
+        "method": "add_nodes",
+        "args": [
+          [
+            {
+              "id": "c"
+            }
+          ]
+        ],
+        "kwargs": {}
+      },
+      "result": 1,
+      "index_documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "repaired"
+          ],
+          "tokens": [
+            "a",
+            "repaired"
+          ],
+          "primary_text": "a repaired",
+          "secondary_text": "lastvalue firstvalue",
+          "confidence": null,
+          "tags": []
+        },
+        "b": {
+          "node_id": "b",
+          "normalized_id": "b",
+          "node_type": "entity",
+          "exact_terms": [
+            "b",
+            "shaft"
+          ],
+          "tokens": [
+            "b",
+            "shaft"
+          ],
+          "primary_text": "b shaft",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        },
+        "c": {
+          "node_id": "c",
+          "normalized_id": "c",
+          "node_type": "entity",
+          "exact_terms": [
+            "c"
+          ],
+          "tokens": [
+            "c"
+          ],
+          "primary_text": "c",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      }
+    }
+  ],
+  "source_freeze_sha256": "ff16ffce9224190ef6f5813fcb912953dc42031b4d91201a46fca6f45f4a2991",
+  "source_unchanged": true
+}

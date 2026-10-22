@@ -1,0 +1,50 @@
+[package]
+name = "oe-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "oev2"
+path = "src/main.rs"
+
+[dependencies]
+oe-model-credentials.workspace = true
+oe-docs = { path = "../oe-docs" }
+anyhow.workspace = true
+clap.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+serde.workspace = true
+oe-core.workspace = true
+oe-semantic.workspace = true
+oe-engineering.workspace = true
+oe-knowledge.workspace = true
+oe-browser.workspace = true
+oe-cad.workspace = true
+oe-dist.workspace = true
+oe-nx-protocol.workspace = true
+oe-design = { path = "../oe-design" }
+oe-kernel = { path = "../oe-kernel" }
+oe-contracts = { path = "../oe-contracts" }
+oe-evolution = { path = "../oe-evolution" }
+semantica-contracts.workspace = true
+semantica-runtime.workspace = true
+semantica-service.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+libc.workspace = true
+
+[build-dependencies]
+serde_json.workspace = true
+sha2.workspace = true
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[target.'cfg(not(windows))'.build-dependencies]
+sha2 = { workspace = true, features = ["asm"] }

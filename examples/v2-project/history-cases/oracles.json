@@ -1,0 +1,71 @@
+{
+  "cases": [
+    {
+      "label": "unchanged-stable-source-ids",
+      "expected_requires_review": [],
+      "expected_stale_adoptions": []
+    },
+    {
+      "label": "unchanged-digest-aliases",
+      "expected_requires_review": [],
+      "expected_stale_adoptions": []
+    },
+    {
+      "label": "object-only-retained-adoption",
+      "expected_requires_review": [
+        "adopt-bracket",
+        "report-current-reference",
+        "use-bracket"
+      ],
+      "expected_stale_adoptions": [
+        "adopt-bracket",
+        "use-bracket"
+      ]
+    },
+    {
+      "label": "temperature-only-retained-adoption",
+      "expected_requires_review": [
+        "adopt-bracket",
+        "use-bracket"
+      ],
+      "expected_stale_adoptions": [
+        "adopt-bracket",
+        "use-bracket"
+      ]
+    },
+    {
+      "label": "source-only-retained-adoption",
+      "expected_requires_review": [
+        "adopt-bracket",
+        "report-current-reference",
+        "use-bracket"
+      ],
+      "expected_stale_adoptions": [
+        "adopt-bracket",
+        "use-bracket"
+      ]
+    },
+    {
+      "label": "all-changes-retained-adoption",
+      "expected_requires_review": [
+        "adopt-bracket",
+        "report-current-reference",
+        "use-bracket"
+      ],
+      "expected_stale_adoptions": [
+        "adopt-bracket",
+        "use-bracket"
+      ]
+    },
+    {
+      "label": "all-changes-pending-review",
+      "expected_requires_review": [
+        "adopt-bracket",
+        "report-current-reference",
+        "use-bracket"
+      ],
+      "expected_stale_adoptions": []
+    }
+  ],
+  "scope": "An adopted decision under changed linked conditions/source must not remain a fresh adoption; historical content remains available"
+}

@@ -1,0 +1,25 @@
+From: e@example.com
+Subject: boundary edges
+Content-Type: multipart/mixed; boundary=plain-b
+Content-Transfer-Encoding: base64
+
+
+
+--plain-b  
+--plain-b
+Content-Type: text/plain
+
+first
+--plain-b
+Content-Type: multipart/alternative; boundary="in"
+
+--in
+Content-Type: text/plain
+
+inner
+--in--
+--plain-b
+Content-Type: text/html
+
+<p>last</p>
+--plain-b--

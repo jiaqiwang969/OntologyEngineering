@@ -1,0 +1,2113 @@
+{
+ "schema": "semantica.migration-ledger/1",
+ "scope_sha256": "b1470d9980755811c815be24cdc041740de5f55e28232c327f0845d160455226",
+ "module": "sem-change",
+ "entries": [
+  {
+   "id": "semantica/change_management/__init__.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|ChangeLogEntry|40",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/change_log.rs::ChangeLogEntry"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_test_change_log::test_change_log_entry__test_valid_change_log_entry"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|VersionStorage|43",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|InMemoryVersionStorage|44",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_test_version_storage::test_in_memory_version_storage__test_save_and_get_snapshot"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|SQLiteVersionStorage|45",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_test_version_storage::test_sqlite_version_storage__test_save_and_get_snapshot"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|compute_checksum|48",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/version_storage.rs::compute_checksum"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_test_version_storage::test_checksum_utilities__test_compute_checksum_deterministic"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|verify_checksum|49",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/version_storage.rs::verify_checksum"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_test_version_storage::test_checksum_utilities__test_verify_checksum_valid"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|BaseVersionManager|52",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/managers.rs::BaseVersionManager"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_managers::test_base_version_manager_trait_objects"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|TemporalVersionManager|53",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_test_integration_realworld::test_healthcare_compliance__test_patient_record_audit_trail"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|OntologyVersionManager|54",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/managers.rs::OntologyVersionManager"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_test_integration_realworld::test_financial_compliance__test_sox_change_control"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|VersionManager|57",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_ontology_version_manager::test_version_manager_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/__init__.py|python_export|OntologyVersion|58",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/lib.rs",
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::OntologyVersion"
+   ],
+   "tests": [
+    "change_init::test_change_management_exports",
+    "change_ontology_version_manager::test_ontology_version_dataclass"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|class|ChangeLogEntry|40",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::ChangeLogEntry"
+   ],
+   "tests": [
+    "change_change_log::test_change_log_entry_timestamp_validation_matches_oracle",
+    "change_change_log::test_change_log_entry_email_validation_matches_oracle",
+    "change_change_log::test_change_log_entry_description_validation_matches_oracle",
+    "change_test_change_log::test_change_log_entry__test_valid_change_log_entry"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|method|ChangeLogEntry.create_now|91",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::ChangeLogEntry::create_now"
+   ],
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_create_now_class_method",
+    "change_change_log::test_change_log_entry_create_now_shape"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|class|MutationRecord|115",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::MutationRecord"
+   ],
+   "tests": [
+    "change_change_log::test_mutation_record_fields",
+    "change_managers::test_temporal_tags_mutations_attach_and_restore_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|class|Severity|132",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::Severity"
+   ],
+   "tests": [
+    "change_change_log::test_severity_and_change_category_members"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|class|ChangeCategory|139",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::ChangeCategory"
+   ],
+   "tests": [
+    "change_change_log::test_severity_and_change_category_members"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|class|ImpactReport|146",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::ImpactReport"
+   ],
+   "tests": [
+    "change_change_log::test_impact_report_to_dict"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|method|ImpactReport.to_dict|155",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::ImpactReport::to_dict"
+   ],
+   "tests": [
+    "change_change_log::test_impact_report_to_dict",
+    "change_change_log::test_generate_change_report_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|class|ChangeLogAnalyzer|167",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::ChangeLogAnalyzer"
+   ],
+   "tests": [
+    "change_change_log::test_change_log_analyzer_analyze_and_constants"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|method|ChangeLogAnalyzer.analyze|175",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::ChangeLogAnalyzer::analyze"
+   ],
+   "tests": [
+    "change_change_log::test_change_log_analyzer_analyze_and_constants",
+    "change_change_log::test_generate_change_report_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_log.py|function|generate_change_report|276",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/change_log.rs::generate_change_report"
+   ],
+   "tests": [
+    "change_change_log::test_generate_change_report_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/change_management_usage.md|tracked_file||0",
+   "disposition": "retained",
+   "retained": [
+    {
+     "path": "semantica-rs/crates/sem-change/docs/change_management_usage.md",
+     "sha256": "91f1d1659adf719502d7fd5dacdf38404f30be54bca9fd07d634865b732356a1"
+    }
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|class|BaseVersionManager|39",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::BaseVersionManager",
+    "semantica-rs/crates/sem-change/src/managers.rs::init_storage"
+   ],
+   "tests": [
+    "change_managers::test_base_version_manager_trait_objects",
+    "change_managers::test_init_storage_picks_backend"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|BaseVersionManager.create_snapshot|65",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::BaseVersionManager::create_snapshot"
+   ],
+   "tests": [
+    "change_managers::test_base_version_manager_trait_objects"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|placeholder|create_snapshot|65",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::BaseVersionManager::create_snapshot"
+   ],
+   "tests": [
+    "change_managers::test_base_version_manager_trait_objects"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|BaseVersionManager.compare_versions|72",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::BaseVersionManager::compare_versions"
+   ],
+   "tests": [
+    "change_managers::test_base_version_manager_trait_objects",
+    "change_managers::test_temporal_compare_versions_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|placeholder|compare_versions|72",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::BaseVersionManager::compare_versions"
+   ],
+   "tests": [
+    "change_managers::test_base_version_manager_trait_objects",
+    "change_managers::test_temporal_compare_versions_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|BaseVersionManager.list_versions|78",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::BaseVersionManager::list_versions"
+   ],
+   "tests": [
+    "change_managers::test_base_version_manager_trait_objects",
+    "change_test_integration_realworld::test_healthcare_compliance__test_hipaa_access_logging"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|BaseVersionManager.get_version|82",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::BaseVersionManager::get_version"
+   ],
+   "tests": [
+    "change_managers::test_base_version_manager_trait_objects",
+    "change_test_integration_realworld::test_data_corruption_recovery__test_recovery_from_valid_snapshot"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|BaseVersionManager.verify_checksum|86",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::BaseVersionManager::verify_checksum"
+   ],
+   "tests": [
+    "change_managers::test_base_version_manager_trait_objects",
+    "change_test_integration_realworld::test_healthcare_compliance__test_phi_data_integrity"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|class|TemporalVersionManager|91",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager"
+   ],
+   "tests": [
+    "change_managers::test_temporal_create_snapshot_matches_oracle",
+    "change_test_integration_realworld::test_healthcare_compliance__test_patient_record_audit_trail"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.create_snapshot|120",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::create_snapshot",
+    "semantica-rs/crates/sem-change/src/managers.rs::SnapshotOptions"
+   ],
+   "tests": [
+    "change_managers::test_temporal_create_snapshot_matches_oracle",
+    "change_test_integration_realworld::test_large_scale_production__test_large_graph_performance"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.compare_versions|196",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::compare_versions"
+   ],
+   "tests": [
+    "change_managers::test_temporal_compare_versions_matches_oracle",
+    "change_test_performance::test_version_manager_performance__test_version_comparison_performance"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.prune_versions|362",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::prune_versions",
+    "semantica-rs/crates/sem-change/src/managers.rs::TripletStoreQuery"
+   ],
+   "tests": [
+    "change_managers::test_temporal_prune_versions_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.attach_to_graph|414",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::attach_to_graph",
+    "semantica-rs/crates/sem-change/src/managers.rs::MutationTrackedGraph",
+    "semantica-rs/crates/sem-change/src/managers.rs::MutationCallback"
+   ],
+   "tests": [
+    "change_managers::test_temporal_tags_mutations_attach_and_restore_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.record_mutation|424",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::record_mutation"
+   ],
+   "tests": [
+    "change_managers::test_temporal_tags_mutations_attach_and_restore_match_oracle",
+    "change_managers::test_temporal_manager_with_sqlite_storage_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.tag_version|452",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::tag_version"
+   ],
+   "tests": [
+    "change_managers::test_temporal_tags_mutations_attach_and_restore_match_oracle",
+    "change_managers::test_temporal_manager_with_sqlite_storage_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.list_tags|462",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::list_tags"
+   ],
+   "tests": [
+    "change_managers::test_temporal_tags_mutations_attach_and_restore_match_oracle",
+    "change_managers::test_temporal_manager_with_sqlite_storage_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.diff|468",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::diff"
+   ],
+   "tests": [
+    "change_managers::test_temporal_compare_versions_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.get_node_history|474",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::get_node_history"
+   ],
+   "tests": [
+    "change_managers::test_temporal_tags_mutations_attach_and_restore_match_oracle",
+    "change_managers::test_temporal_manager_with_sqlite_storage_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|TemporalVersionManager.restore_snapshot|480",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::TemporalVersionManager::restore_snapshot"
+   ],
+   "tests": [
+    "change_managers::test_temporal_tags_mutations_attach_and_restore_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|class|OntologyVersionManager|515",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::OntologyVersionManager"
+   ],
+   "tests": [
+    "change_managers::test_ontology_version_manager_matches_oracle",
+    "change_test_integration_realworld::test_financial_compliance__test_sox_change_control"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|OntologyVersionManager.create_snapshot|542",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::OntologyVersionManager::create_snapshot"
+   ],
+   "tests": [
+    "change_managers::test_ontology_version_manager_matches_oracle",
+    "change_test_performance::test_version_manager_performance__test_ontology_version_manager_performance"
+   ]
+  },
+  {
+   "id": "semantica/change_management/managers.py|method|OntologyVersionManager.compare_versions|584",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/managers.rs::OntologyVersionManager::compare_versions"
+   ],
+   "tests": [
+    "change_managers::test_ontology_version_manager_matches_oracle",
+    "change_test_integration_realworld::test_financial_compliance__test_sox_change_control"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|class|OntologyVersion|49",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::OntologyVersion"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_ontology_version_dataclass",
+    "change_ontology_version_manager::test_version_manager_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|class|VersionManager|60",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle",
+    "change_ontology_version_manager::test_version_manager_with_custom_namespace_manager_and_config"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|method|VersionManager.create_version|100",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager::create_version",
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::CreateVersionOptions"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle",
+    "change_ontology_version_manager::test_version_manager_with_custom_namespace_manager_and_config"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|method|VersionManager.generate_element_iri|176",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager::generate_element_iri"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle",
+    "change_ontology_version_manager::test_version_manager_with_custom_namespace_manager_and_config"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|method|VersionManager.compare_versions|199",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager::compare_versions"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|method|VersionManager.diff_ontologies|299",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager::diff_ontologies"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|method|VersionManager.get_version|391",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager::get_version"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|method|VersionManager.get_latest_version|395",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager::get_latest_version"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|method|VersionManager.list_versions|401",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager::list_versions"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|method|VersionManager.migrate_ontology|405",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager::migrate_ontology"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/ontology_version_manager.py|method|VersionManager.resolve_versioned_imports|433",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/ontology_version_manager.rs::VersionManager::resolve_versioned_imports"
+   ],
+   "tests": [
+    "change_ontology_version_manager::test_version_manager_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs",
+    "semantica-rs/crates/sem-change/src/pycompat.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs",
+    "semantica-rs/crates/sem-change/src/pycompat.rs"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|function|create_graph_snapshot_record|55",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::create_graph_snapshot_record"
+   ],
+   "tests": [
+    "change_version_storage::test_create_graph_snapshot_record_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|class|VersionStorage|87",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract",
+    "change_init::test_change_management_exports"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.save|96",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::save"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|save|96",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::save"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.get|101",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::get"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|get|101",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::get"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.list_all|106",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::list_all"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|list_all|106",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::list_all"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.exists|111",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::exists"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|exists|111",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::exists"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.delete|116",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::delete"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|delete|116",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::delete"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.save_tag|122",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::save_tag"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|save_tag|122",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::save_tag"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.get_tag|127",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::get_tag"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|get_tag|127",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::get_tag"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.list_tags|132",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::list_tags"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|list_tags|132",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::list_tags"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.save_mutation|137",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::save_mutation"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|save_mutation|137",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::save_mutation"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.get_entity_history|142",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::get_entity_history"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|get_entity_history|142",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::get_entity_history"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|VersionStorage.assign_version_to_unlabeled_mutations|147",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::assign_version_to_unlabeled_mutations"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|placeholder|assign_version_to_unlabeled_mutations|147",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::VersionStorage::assign_version_to_unlabeled_mutations"
+   ],
+   "tests": [
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|class|InMemoryVersionStorage|152",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_test_version_storage::test_in_memory_version_storage__test_save_and_get_snapshot"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.save|168",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::save"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_test_version_storage::test_in_memory_version_storage__test_save_and_get_snapshot",
+    "change_test_version_storage::test_in_memory_version_storage__test_save_duplicate_label_raises_error"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.get|182",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::get"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_test_version_storage::test_in_memory_version_storage__test_data_isolation"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.list_all|191",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::list_all"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_test_version_storage::test_in_memory_version_storage__test_list_all_with_snapshots"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.exists|212",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::exists"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_test_version_storage::test_in_memory_version_storage__test_exists_method"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.delete|217",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::delete"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_test_version_storage::test_in_memory_version_storage__test_delete_method"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.save_tag|226",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::save_tag"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_version_storage::test_in_memory_storage_isolates_mutations_and_tags"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.get_tag|230",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::get_tag"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_version_storage::test_in_memory_storage_isolates_mutations_and_tags"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.list_tags|234",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::list_tags"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_version_storage::test_in_memory_storage_isolates_mutations_and_tags"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.save_mutation|238",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::save_mutation"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_version_storage::test_in_memory_storage_isolates_mutations_and_tags"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.get_entity_history|242",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::get_entity_history"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_version_storage::test_in_memory_storage_isolates_mutations_and_tags"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|InMemoryVersionStorage.assign_version_to_unlabeled_mutations|246",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::InMemoryVersionStorage::assign_version_to_unlabeled_mutations"
+   ],
+   "tests": [
+    "change_version_storage::test_in_memory_storage_matches_oracle",
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|class|SQLiteVersionStorage|253",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_test_version_storage::test_sqlite_version_storage__test_database_initialization",
+    "change_version_storage::test_sqlite_storage_reads_database_written_by_original"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.save|317",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::save"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_test_version_storage::test_sqlite_version_storage__test_save_and_get_snapshot",
+    "change_test_version_storage::test_sqlite_version_storage__test_save_duplicate_label_raises_error"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.get|359",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::get"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_test_version_storage::test_sqlite_version_storage__test_persistence_across_instances"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.list_all|383",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::list_all"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_test_version_storage::test_sqlite_version_storage__test_list_all_with_ordering"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.exists|418",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::exists"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_test_version_storage::test_sqlite_version_storage__test_exists_method"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.delete|431",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::delete"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_test_version_storage::test_sqlite_version_storage__test_delete_method"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.save_tag|451",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::save_tag"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.get_tag|469",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::get_tag"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_version_storage::test_sqlite_storage_reads_database_written_by_original"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.list_tags|482",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::list_tags"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_version_storage::test_sqlite_storage_reads_database_written_by_original"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.save_mutation|494",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::save_mutation"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.get_entity_history|519",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::get_entity_history"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_version_storage::test_sqlite_storage_reads_database_written_by_original"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|method|SQLiteVersionStorage.assign_version_to_unlabeled_mutations|548",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::SQLiteVersionStorage::assign_version_to_unlabeled_mutations"
+   ],
+   "tests": [
+    "change_version_storage::test_sqlite_storage_matches_oracle",
+    "change_version_storage::test_version_storage_trait_contract"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|function|compute_checksum|570",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::compute_checksum"
+   ],
+   "tests": [
+    "change_version_storage::test_compute_checksum_matches_oracle",
+    "change_test_version_storage::test_checksum_utilities__test_compute_checksum_deterministic"
+   ]
+  },
+  {
+   "id": "semantica/change_management/version_storage.py|function|verify_checksum|585",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/version_storage.rs::verify_checksum"
+   ],
+   "tests": [
+    "change_version_storage::test_verify_checksum_matches_oracle",
+    "change_test_version_storage::test_checksum_utilities__test_verify_checksum_valid"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|class|NamespaceManager|42",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_iris_match_oracle",
+    "change_namespace_manager::test_namespace_manager_enables_progress_tracker"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.get_base_uri|91",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::get_base_uri"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_iris_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.generate_class_iri|102",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::generate_class_iri"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_iris_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.generate_property_iri|128",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::generate_property_iri"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_iris_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.generate_individual_iri|154",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::generate_individual_iri"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_iris_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.register_namespace|178",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::register_namespace"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_namespaces_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.get_namespace|189",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::get_namespace"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_namespaces_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.get_all_namespaces|201",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::get_all_namespaces"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_namespaces_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.get_skos_uri|210",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::get_skos_uri"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_namespaces_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.build_concept_scheme_uri|223",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::build_concept_scheme_uri"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_iris_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.get_alignment_predicates|239",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::get_alignment_predicates"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_namespaces_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/ontology/namespace_manager.py|method|NamespaceManager.validate_iri|288",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-change/src/namespace_manager.rs::NamespaceManager::validate_iri"
+   ],
+   "tests": [
+    "change_namespace_manager::test_namespace_manager_validate_iri_matches_oracle"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_valid_change_log_entry|17",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_valid_change_log_entry"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_valid_change_log_entry"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_change_log_entry_with_optional_fields|31",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_change_log_entry_with_optional_fields"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_change_log_entry_with_optional_fields"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_invalid_timestamp_format|44",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_invalid_timestamp_format"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_invalid_timestamp_format"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_invalid_email_format|53",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_invalid_email_format"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_invalid_email_format"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_empty_description|62",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_empty_description"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_empty_description"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_description_too_long|71",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_description_too_long"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_description_too_long"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_description_exactly_500_chars|81",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_description_exactly_500_chars"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_description_exactly_500_chars"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_create_now_class_method|91",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_create_now_class_method"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_create_now_class_method"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_create_now_with_optional_fields|107",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_create_now_with_optional_fields"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_create_now_with_optional_fields"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_various_valid_email_formats|119",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_various_valid_email_formats"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_various_valid_email_formats"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_various_invalid_email_formats|137",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_various_invalid_email_formats"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_various_invalid_email_formats"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_change_log.py|original_test_function|test_various_valid_timestamp_formats|156",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_change_log::test_change_log_entry__test_various_valid_timestamp_formats"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_change_log.rs::test_change_log_entry__test_various_valid_timestamp_formats"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_patient_record_audit_trail|41",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_healthcare_compliance__test_patient_record_audit_trail"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_healthcare_compliance__test_patient_record_audit_trail"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_hipaa_access_logging|133",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_healthcare_compliance__test_hipaa_access_logging"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_healthcare_compliance__test_hipaa_access_logging"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_phi_data_integrity|170",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_healthcare_compliance__test_phi_data_integrity"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_healthcare_compliance__test_phi_data_integrity"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_financial_transaction_audit|210",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_financial_compliance__test_financial_transaction_audit"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_financial_compliance__test_financial_transaction_audit"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_sox_change_control|298",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_financial_compliance__test_sox_change_control"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_financial_compliance__test_sox_change_control"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_clinical_trial_data_integrity|349",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_pharmaceutical_compliance__test_clinical_trial_data_integrity"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_pharmaceutical_compliance__test_clinical_trial_data_integrity"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_electronic_signature_validation|446",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_pharmaceutical_compliance__test_electronic_signature_validation"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_pharmaceutical_compliance__test_electronic_signature_validation"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_high_volume_snapshots|474",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_large_scale_production__test_high_volume_snapshots"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_large_scale_production__test_high_volume_snapshots"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_large_graph_performance|505",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_large_scale_production__test_large_graph_performance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_large_scale_production__test_large_graph_performance"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_concurrent_write_load|546",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_large_scale_production__test_concurrent_write_load"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_large_scale_production__test_concurrent_write_load"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_detect_corrupted_data|600",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_data_corruption_recovery__test_detect_corrupted_data"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_data_corruption_recovery__test_detect_corrupted_data"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_checksum_mismatch_detection|625",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_data_corruption_recovery__test_checksum_mismatch_detection"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_data_corruption_recovery__test_checksum_mismatch_detection"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_recovery_from_valid_snapshot|647",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_data_corruption_recovery__test_recovery_from_valid_snapshot"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_data_corruption_recovery__test_recovery_from_valid_snapshot"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_storage_backend_migration|680",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_migration_upgrade__test_storage_backend_migration"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_migration_upgrade__test_storage_backend_migration"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_backward_compatibility|727",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_migration_upgrade__test_backward_compatibility"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_migration_upgrade__test_backward_compatibility"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_empty_graph_operations|750",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_edge_cases_stress__test_empty_graph_operations"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_edge_cases_stress__test_empty_graph_operations"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_unicode_and_special_characters|768",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_edge_cases_stress__test_unicode_and_special_characters"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_edge_cases_stress__test_unicode_and_special_characters"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_deeply_nested_structures|798",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_edge_cases_stress__test_deeply_nested_structures"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_edge_cases_stress__test_deeply_nested_structures"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_very_long_descriptions|833",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_edge_cases_stress__test_very_long_descriptions"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_edge_cases_stress__test_very_long_descriptions"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_rapid_version_creation|859",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_edge_cases_stress__test_rapid_version_creation"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_edge_cases_stress__test_rapid_version_creation"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_daily_snapshot_workflow|887",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_long_running_workflows__test_daily_snapshot_workflow"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_long_running_workflows__test_daily_snapshot_workflow"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_integration_realworld.py|original_test_function|test_version_retention_policy|920",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_integration_realworld::test_long_running_workflows__test_version_retention_policy"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_integration_realworld.rs::test_long_running_workflows__test_version_retention_policy"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_inmemory_storage_performance|114",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_storage_performance__test_inmemory_storage_performance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_storage_performance__test_inmemory_storage_performance"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_sqlite_storage_performance|156",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_storage_performance__test_sqlite_storage_performance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_storage_performance__test_sqlite_storage_performance"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_storage_comparison|206",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_storage_performance__test_storage_comparison"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_storage_performance__test_storage_comparison"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_temporal_version_manager_performance|258",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_version_manager_performance__test_temporal_version_manager_performance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_version_manager_performance__test_temporal_version_manager_performance"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_version_comparison_performance|296",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_version_manager_performance__test_version_comparison_performance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_version_manager_performance__test_version_comparison_performance"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_ontology_version_manager_performance|325",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_version_manager_performance__test_ontology_version_manager_performance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_version_manager_performance__test_ontology_version_manager_performance"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_checksum_performance|372",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_checksum_performance__test_checksum_performance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_checksum_performance__test_checksum_performance"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_concurrent_storage_operations|412",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_concurrency_performance__test_concurrent_storage_operations"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_concurrency_performance__test_concurrent_storage_operations"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_concurrent_version_manager_operations|471",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_concurrency_performance__test_concurrent_version_manager_operations"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_concurrency_performance__test_concurrent_version_manager_operations"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_performance.py|original_test_function|test_memory_usage_scaling|528",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_performance::test_memory_usage__test_memory_usage_scaling"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_performance.rs::test_memory_usage__test_memory_usage_scaling"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_save_and_get_snapshot|37",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_in_memory_version_storage__test_save_and_get_snapshot"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_in_memory_version_storage__test_save_and_get_snapshot"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_save_snapshot_without_label_raises_error|47",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_in_memory_version_storage__test_save_snapshot_without_label_raises_error"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_in_memory_version_storage__test_save_snapshot_without_label_raises_error"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_save_duplicate_label_raises_error|55",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_in_memory_version_storage__test_save_duplicate_label_raises_error"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_in_memory_version_storage__test_save_duplicate_label_raises_error"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_get_nonexistent_snapshot_returns_none|62",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_in_memory_version_storage__test_get_nonexistent_snapshot_returns_none"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_in_memory_version_storage__test_get_nonexistent_snapshot_returns_none"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_list_all_empty_storage|67",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_in_memory_version_storage__test_list_all_empty_storage"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_in_memory_version_storage__test_list_all_empty_storage"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_list_all_with_snapshots|72",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_in_memory_version_storage__test_list_all_with_snapshots"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_in_memory_version_storage__test_list_all_with_snapshots"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_exists_method|94",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_in_memory_version_storage__test_exists_method"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_in_memory_version_storage__test_exists_method"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_delete_method|102",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_in_memory_version_storage__test_delete_method"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_in_memory_version_storage__test_delete_method"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_data_isolation|112",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_in_memory_version_storage__test_data_isolation"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_in_memory_version_storage__test_data_isolation"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_database_initialization|151",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_sqlite_version_storage__test_database_initialization"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_sqlite_version_storage__test_database_initialization"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_save_and_get_snapshot|165",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_sqlite_version_storage__test_save_and_get_snapshot"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_sqlite_version_storage__test_save_and_get_snapshot"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_save_duplicate_label_raises_error|176",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_sqlite_version_storage__test_save_duplicate_label_raises_error"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_sqlite_version_storage__test_save_duplicate_label_raises_error"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_persistence_across_instances|183",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_sqlite_version_storage__test_persistence_across_instances"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_sqlite_version_storage__test_persistence_across_instances"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_list_all_with_ordering|195",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_sqlite_version_storage__test_list_all_with_ordering"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_sqlite_version_storage__test_list_all_with_ordering"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_exists_method|215",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_sqlite_version_storage__test_exists_method"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_sqlite_version_storage__test_exists_method"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_delete_method|222",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_sqlite_version_storage__test_delete_method"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_sqlite_version_storage__test_delete_method"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_directory_creation|232",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_sqlite_version_storage__test_directory_creation"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_sqlite_version_storage__test_directory_creation"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_compute_checksum_deterministic|248",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_checksum_utilities__test_compute_checksum_deterministic"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_checksum_utilities__test_compute_checksum_deterministic"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_compute_checksum_different_data|262",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_checksum_utilities__test_compute_checksum_different_data"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_checksum_utilities__test_compute_checksum_different_data"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_compute_checksum_order_independence|272",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_checksum_utilities__test_compute_checksum_order_independence"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_checksum_utilities__test_compute_checksum_order_independence"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_verify_checksum_valid|282",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_checksum_utilities__test_verify_checksum_valid"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_checksum_utilities__test_verify_checksum_valid"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_verify_checksum_invalid|292",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_checksum_utilities__test_verify_checksum_invalid"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_checksum_utilities__test_verify_checksum_invalid"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_verify_checksum_missing|302",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_checksum_utilities__test_verify_checksum_missing"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_checksum_utilities__test_verify_checksum_missing"
+   ]
+  },
+  {
+   "id": "tests/change_management/test_version_storage.py|original_test_function|test_verify_checksum_with_modified_data|311",
+   "disposition": "ported_test",
+   "tests": [
+    "change_test_version_storage::test_checksum_utilities__test_verify_checksum_with_modified_data"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-change/tests/change_test_version_storage.rs::test_checksum_utilities__test_verify_checksum_with_modified_data"
+   ]
+  }
+ ]
+}

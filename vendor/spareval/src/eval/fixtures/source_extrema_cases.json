@@ -1,0 +1,2030 @@
+{
+  "schema": "public.source-extrema-receiving-cases/1",
+  "source_record_sha256": "6df0965cedb36486e13c20876eab75315fb77e42c5af66a0b4278e3dbe5e55fa",
+  "classification": "source_math_unobserved_and_separate_active_contracts",
+  "context": {
+    "rdflib_version": "7.6.0",
+    "cpython_version": "3.13.11",
+    "backend": "CPython C decimal source pinned below for comparisons; source-derived, not observed",
+    "DAWG_LITERAL_COLLATION": false,
+    "normalize_literals": true,
+    "query_numeric_capabilities": "mixed-binary64-v1",
+    "query_group_semantics": "source-group/1",
+    "query_literal_semantics": "source-literal/1",
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "flags_initial": []
+    },
+    "numeric_limits": {
+      "max_input_characters": 4096,
+      "max_coefficient_digits": 4096,
+      "max_output_characters": 4096,
+      "max_materialized_power_of_ten": 4096
+    },
+    "integer_text_limit": null,
+    "query_rows": "ordered VALUES/UNION or single initial binding; not unspecified backend scan order",
+    "case_overrides": "Each operation/run/query receives a fresh context unless explicitly a single query. Context/limit overrides replace named fields only."
+  },
+  "source_math_cases": [
+    {
+      "id": "EX01-01",
+      "family": "EX01",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { { BIND(?seed AS ?x) } UNION { VALUES ?x { <urn:z> \"a\" } } }",
+        "initial": [
+          {
+            "variable": "seed",
+            "origin": "UnknownNormalized",
+            "kind": "BNode",
+            "value": "node-z",
+            "classification": "NonLiteral"
+          }
+        ]
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "node-z",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "node-z"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "a",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "a"
+              }
+            }
+          }
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:668-725",
+        "term:2241-2278"
+      ],
+      "derivation": "_val ranks BNode before IRI before Literal. The selected BNode is a str subclass and becomes a plain String-cached Literal; source rank is independent of lexical node-z/urn:z/a."
+    },
+    {
+      "id": "EX02-01",
+      "family": "EX02",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { \"x\" \"x\"^^<http://www.w3.org/2001/XMLSchema#string> } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "x",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "x"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "x",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "x"
+              }
+            }
+          }
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:1194-1250",
+        "term:1447-1455"
+      ],
+      "derivation": "Actual source identity differs by datatype, but both cached strings compare GT=false and value EQ=true. Both extrema retain the first representative; the final datatype tie-break is never reached."
+    },
+    {
+      "id": "EX02-02",
+      "family": "EX02",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { \"x\"^^<http://www.w3.org/2001/XMLSchema#string> \"x\" } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "x",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "x"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "x",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "x"
+              }
+            }
+          }
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:1194-1250",
+        "term:1447-1455"
+      ],
+      "derivation": "Actual source identity differs by datatype, but both cached strings compare GT=false and value EQ=true. Both extrema retain the first representative; the final datatype tie-break is never reached."
+    },
+    {
+      "id": "EX03-01",
+      "family": "EX03",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { \"x\"@EN \"x\"@en } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "x",
+              "datatype": null,
+              "language_original": "EN",
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "x"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "x",
+              "datatype": null,
+              "language_original": "EN",
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "x"
+              }
+            }
+          }
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:1395-1408",
+        "term:668-677"
+      ],
+      "derivation": "Tuple EQ uses case-insensitive language equality and identical lexical form, so neither cache comparison nor case-sensitive language ordering executes. Both selected language strings remain EN."
+    },
+    {
+      "id": "EX03-02",
+      "family": "EX03",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { \"z\"@EN \"a\"@en } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "z",
+              "datatype": null,
+              "language_original": "EN",
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "z"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "a",
+              "datatype": null,
+              "language_original": "en",
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "a"
+              }
+            }
+          }
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:1205-1211",
+        "term:1243-1250",
+        "term:1447-1455"
+      ],
+      "derivation": "Different lexical forms fail identity EQ. Raw language EN sorts before en before lexical comparison; candidate a@en is greater, so MIN remains z@EN and MAX becomes a@en."
+    },
+    {
+      "id": "EX04-06",
+      "family": "EX04",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { 9007199254740993 \"9007199254740992\"^^<http://www.w3.org/2001/XMLSchema#double> } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "9007199254740992",
+              "datatype": "http://www.w3.org/2001/XMLSchema#double",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Binary64",
+                "bits": "0x4340000000000000"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "9007199254740993",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "9007199254740993"
+              }
+            }
+          }
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542",
+        "term:1182-1192",
+        "term:1427-1438"
+      ],
+      "derivation": "Integer/Binary64 numeric caches compare exactly; copying the selected query typed Literal preserves its original lexical, datatype and cached float."
+    },
+    {
+      "id": "EX05-01",
+      "family": "EX05",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { { BIND(?left AS ?x) } UNION { BIND(?right AS ?x) } }",
+        "initial": [
+          {
+            "variable": "left",
+            "origin": "KnownSourceCached",
+            "literal": {
+              "kind": "Literal",
+              "lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#double",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Binary64",
+                "bits": "0x3ff0000000000000"
+              }
+            }
+          },
+          {
+            "variable": "right",
+            "origin": "KnownSourceCached",
+            "literal": {
+              "kind": "Literal",
+              "lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#double",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "negative": false,
+                "coefficient": "10",
+                "exponent": "-1"
+              }
+            }
+          }
+        ],
+        "context_override": {
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "FloatOperation"
+          ]
+        }
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#double",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Binary64",
+                "bits": "0x3ff0000000000000"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#double",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Binary64",
+                "bits": "0x3ff0000000000000"
+              }
+            }
+          }
+        ],
+        "flags_exact": [],
+        "numeric_comparison_required": false
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:1395-1408",
+        "term:668-677"
+      ],
+      "derivation": "Literal(float(1), datatype=double) and Literal(Decimal(1.0), datatype=double) legally have identical RDF/source identity and distinct caches. Tuple identity EQ short-circuits; FloatOperation trap is not reached. First cache survives all transport and finish."
+    },
+    {
+      "id": "EX05-02",
+      "family": "EX05",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { { BIND(?left AS ?x) } UNION { BIND(?right AS ?x) } }",
+        "initial": [
+          {
+            "variable": "left",
+            "origin": "KnownSourceCached",
+            "literal": {
+              "kind": "Literal",
+              "lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#double",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "negative": false,
+                "coefficient": "10",
+                "exponent": "-1"
+              }
+            }
+          },
+          {
+            "variable": "right",
+            "origin": "KnownSourceCached",
+            "literal": {
+              "kind": "Literal",
+              "lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#double",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Binary64",
+                "bits": "0x3ff0000000000000"
+              }
+            }
+          }
+        ],
+        "context_override": {
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "FloatOperation"
+          ]
+        }
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#double",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "negative": false,
+                "coefficient": "10",
+                "exponent": "-1"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#double",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "negative": false,
+                "coefficient": "10",
+                "exponent": "-1"
+              }
+            }
+          }
+        ],
+        "flags_exact": [],
+        "numeric_comparison_required": false
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:1395-1408",
+        "term:668-677"
+      ],
+      "derivation": "Literal(float(1), datatype=double) and Literal(Decimal(1.0), datatype=double) legally have identical RDF/source identity and distinct caches. Tuple identity EQ short-circuits; FloatOperation trap is not reached. First cache survives all transport and finish."
+    },
+    {
+      "id": "EX06-04",
+      "family": "EX06",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { \"sNaN7\"^^<http://www.w3.org/2001/XMLSchema#decimal> \"sNaN7\"^^<http://www.w3.org/2001/XMLSchema#decimal> } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "sNaN7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "special": "NaN",
+                "negative": false,
+                "signaling": true,
+                "payload": "7"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "sNaN7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "special": "NaN",
+                "negative": false,
+                "signaling": true,
+                "payload": "7"
+              }
+            }
+          }
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:1395-1408",
+        "term:668-677"
+      ],
+      "derivation": "Identical source Literal identity makes tuple EQ true without invoking numeric NaN equality, even under default InvalidOperation trap."
+    },
+    {
+      "id": "EX06-05",
+      "family": "EX06",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { 1 \"NaN7\"^^<http://www.w3.org/2001/XMLSchema#decimal> } }",
+        "context_override": {
+          "traps": [
+            "DivisionByZero",
+            "Overflow"
+          ]
+        }
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "NaN7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "special": "NaN",
+                "negative": false,
+                "signaling": false,
+                "payload": "7"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "flags_exact": [
+          "InvalidOperation"
+        ]
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542",
+        "term:1182-1192",
+        "term:1243-1250",
+        "term:1427-1438"
+      ],
+      "derivation": "With InvalidOperation untrapped, numeric GT involving qNaN returns false and numeric EQ returns false. Literal LT therefore returns true in either direction; MIN chooses the second and MAX retains the first. This is not a strict weak order."
+    },
+    {
+      "id": "EX06-06",
+      "family": "EX06",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { \"NaN7\"^^<http://www.w3.org/2001/XMLSchema#decimal> 1 } }",
+        "context_override": {
+          "traps": [
+            "DivisionByZero",
+            "Overflow"
+          ]
+        }
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "NaN7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Decimal",
+                "special": "NaN",
+                "negative": false,
+                "signaling": false,
+                "payload": "7"
+              }
+            }
+          }
+        ],
+        "flags_exact": [
+          "InvalidOperation"
+        ]
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542",
+        "term:1182-1192",
+        "term:1243-1250",
+        "term:1427-1438"
+      ],
+      "derivation": "With InvalidOperation untrapped, numeric GT involving qNaN returns false and numeric EQ returns false. Literal LT therefore returns true in either direction; MIN chooses the second and MAX retains the first. This is not a strict weak order."
+    },
+    {
+      "id": "EX06-07",
+      "family": "EX06",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "queries": [
+          "SELECT (MIN(?x) AS ?v) WHERE { VALUES ?x { 0.1e0 \"0.1\"^^<http://www.w3.org/2001/XMLSchema#decimal> } }",
+          "SELECT (MAX(?x) AS ?v) WHERE { VALUES ?x { 0.1e0 \"0.1\"^^<http://www.w3.org/2001/XMLSchema#decimal> } }"
+        ],
+        "context_override": {
+          "traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow",
+            "FloatOperation"
+          ]
+        }
+      },
+      "expected": {
+        "each_query": {
+          "error_class": "decimal.FloatOperation",
+          "stage": "group_update",
+          "rows": [],
+          "flags_exact": [
+            "FloatOperation"
+          ]
+        },
+        "minimum_source_trace": [
+          "candidate Literal.__lt__",
+          "candidate numeric __gt__ emits/traps FloatOperation",
+          "Literal.__lt__ catches TypeError -> NotImplemented",
+          "current Literal.__gt__ reflected emits/traps FloatOperation",
+          "uncaught FloatOperation"
+        ],
+        "maximum_source_trace": [
+          "candidate Literal.__gt__ emits/traps FloatOperation",
+          "uncaught FloatOperation"
+        ]
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "_decimal:3178-3245",
+        "_decimal:4656-4711",
+        "floatobject:407-542",
+        "term:1243-1250",
+        "object:994-1038",
+        "_pydecimal:309-329"
+      ],
+      "derivation": "FloatOperation inherits TypeError. LT must return NotImplemented and allow the reflected GT; it must neither return false nor translate the trap to a caught SPARQLTypeError. The final sticky flags alone do not prove that internal trace."
+    },
+    {
+      "id": "EX07-01",
+      "family": "EX07",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { \"999\"^^<http://www.w3.org/2001/XMLSchema#byte> 1 } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "999",
+              "datatype": "http://www.w3.org/2001/XMLSchema#byte",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "999"
+              }
+            }
+          }
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "algebra:183-210",
+        "term:668-689",
+        "term:1182-1192"
+      ],
+      "derivation": "The query typed-literal path copies an existing String Literal and overrides datatype: cached int999 but ill_typed=None. Numeric fast path is eligible despite byte range, giving 1<999."
+    },
+    {
+      "id": "EX07-02",
+      "family": "EX07",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { { BIND(?seed AS ?x) } UNION { VALUES ?x { 1 } } }",
+        "initial": [
+          {
+            "variable": "seed",
+            "origin": "DirectString",
+            "lexical": "999",
+            "datatype": "http://www.w3.org/2001/XMLSchema#byte",
+            "normalize": true
+          }
+        ]
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "999",
+              "datatype": "http://www.w3.org/2001/XMLSchema#byte",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "999"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "selected_seed_before_finish": {
+          "kind": "Literal",
+          "lexical": "999",
+          "datatype": "http://www.w3.org/2001/XMLSchema#byte",
+          "language_original": null,
+          "ill_typed": true,
+          "cache": {
+            "family": "Integer",
+            "value": "999"
+          }
+        },
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:679-689",
+        "term:1933-1940",
+        "term:1194-1203",
+        "term:668-677"
+      ],
+      "derivation": "Direct string byte999 is ill_typed=True. Numeric fast path is disabled; datatype byte is lexically before integer under DAWG=false. MIN selects byte999 and Literal(existing) resets its ill_typed to None only at finish."
+    },
+    {
+      "id": "EX07-03",
+      "family": "EX07",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { VALUES ?x { \"b\"^^<http://www.w3.org/2001/XMLSchema#integer> \"a\"^^<http://www.w3.org/2001/XMLSchema#integer> } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "a",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "None"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "b",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "None"
+              }
+            }
+          }
+        ],
+        "flags_exact": [],
+        "minimum_source_trace": [
+          "candidate GT uses lexical a>b -> false",
+          "candidate .eq raises TypeError for two uncastable distinct integer lexicals",
+          "LT catches -> NotImplemented",
+          "reflected current GT uses lexical b>a -> true"
+        ]
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "term:1213-1250",
+        "term:1479-1493"
+      ],
+      "derivation": "Cast-failed None is known, not Unknown. Matching lexical datatype fallback and reflected GT determine MIN; a direct .eq TypeError must not become an unhandled fatal here."
+    },
+    {
+      "id": "EX08-01",
+      "family": "EX08",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "queries": [
+          "SELECT (MIN(?missing) AS ?v) WHERE {}",
+          "SELECT (MIN(?missing + 1) AS ?v) WHERE {}"
+        ]
+      },
+      "expected": {
+        "runs": [
+          {
+            "rows": [
+              {}
+            ],
+            "flags_exact": []
+          },
+          {
+            "rows": [
+              {
+                "v": {
+                  "kind": "Literal",
+                  "lexical": "None",
+                  "datatype": null,
+                  "language_original": null,
+                  "ill_typed": null,
+                  "cache": {
+                    "family": "ErrorObject",
+                    "class": "NotBoundError",
+                    "argument": {
+                      "kind": "None"
+                    },
+                    "same_identity_as": "selected-returned-error"
+                  }
+                }
+              }
+            ],
+            "flags_exact": [],
+            "cache_identity": "the NotBoundError(None) actually produced by this expression"
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "evalutils:117-134",
+        "parserutils:81-92",
+        "parserutils:219-227",
+        "sparql:35-42",
+        "term:695-725"
+      ],
+      "derivation": "Bare _eval(variable) raises NotBoundError and update skips. The expression operand raises NotBoundError() with argument None; Expr catches and returns that object, Extremum selects it, and Literal(error) caches that same object while its lexical is None."
+    },
+    {
+      "id": "EX08-02",
+      "family": "EX08",
+      "layer": "accumulator_protocol",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "aggregate_kinds": [
+          "MIN",
+          "MAX"
+        ],
+        "sequences": [
+          [
+            "RaisedNotBound",
+            "RdfInteger1"
+          ],
+          [
+            "RaisedSPARQLTypeError",
+            "RdfInteger1"
+          ],
+          [
+            "ReturnedNotBound(None)",
+            "RdfInteger1"
+          ],
+          [
+            "ReturnedNotBound(None)",
+            "ReturnedNotBound(None)"
+          ]
+        ]
+      },
+      "expected": {
+        "per_sequence": [
+          {
+            "selected": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "raw_evaluations": 2
+          },
+          {
+            "selected": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "raw_evaluations": 2
+          },
+          {
+            "error_class": "TypeError",
+            "stage": "update",
+            "raw_evaluations": 2
+          },
+          {
+            "error_class": "TypeError",
+            "stage": "update",
+            "raw_evaluations": 2
+          }
+        ]
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "object:994-1038"
+      ],
+      "derivation": "Only the two explicitly caught raised classes skip. A returned NotBound object can become selected; its _val key is None. Comparing None to a tuple, or two None keys, raises ordinary TypeError."
+    },
+    {
+      "id": "EX09-01",
+      "family": "EX09",
+      "layer": "real_query_with_actual_accumulator_trace",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(DISTINCT ?x) AS ?min) (MAX(DISTINCT ?x) AS ?max) WHERE { VALUES ?x { UNDEF 1 } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "raw_evaluations_per_aggregate": 2,
+        "distinct_gate_evaluations": 0,
+        "seen_insertions": 0,
+        "flags_exact": []
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "aggregates:38-58"
+      ],
+      "derivation": "Extremum overrides use_row=dont_care even for DISTINCT. Missing is raised inside the one update evaluation and skipped; it cannot become a DISTINCT-gate fatal."
+    },
+    {
+      "id": "EX09-02",
+      "family": "EX09",
+      "layer": "real_query_with_actual_accumulator_trace",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "queries": [
+          "SELECT (MIN(DISTINCT ?missing + 1) AS ?v) WHERE { VALUES ?row { 1 2 } }",
+          "SELECT (MAX(DISTINCT ?missing + 1) AS ?v) WHERE { VALUES ?row { 1 2 } }"
+        ]
+      },
+      "expected": {
+        "each_query": {
+          "error_class": "TypeError",
+          "stage": "second_group_update",
+          "rows": [],
+          "raw_evaluations": 2,
+          "distinct_gate_evaluations": 0,
+          "seen_insertions": 0,
+          "flags_exact": []
+        }
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "parserutils:219-227",
+        "object:994-1038"
+      ],
+      "derivation": "The returned error from row1 is selected. Row2 must still evaluate and compare None key with None key; DISTINCT cannot suppress it or add a second operand evaluation."
+    },
+    {
+      "id": "EX10-01",
+      "family": "EX10",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (SAMPLE(?v) AS ?sample) (COUNT(?v) AS ?count) (GROUP_CONCAT(?v; SEPARATOR=\"|\") AS ?text) WHERE { { SELECT (MIN(1/0) AS ?v) WHERE {} } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "sample": {
+              "kind": "Literal",
+              "lexical": "divide by 0",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "ErrorObject",
+                "class": "SPARQLError",
+                "argument": {
+                  "kind": "Text",
+                  "value": "divide by 0"
+                },
+                "same_identity_as": "selected-returned-error"
+              }
+            },
+            "count": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            },
+            "text": {
+              "kind": "Literal",
+              "lexical": "divide by 0",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "divide by 0"
+              }
+            }
+          }
+        ],
+        "flags_exact": [
+          "DivisionByZero"
+        ],
+        "cache_alias_identity": "sample ErrorObject is the exact selected inner error Arc, while text cache is String"
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "operators:746-772",
+        "term:695-725",
+        "term:2091-2110",
+        "evaluate:125-138",
+        "aggregates:225-297"
+      ],
+      "derivation": "The inner aggregate produces an RDF Literal, not a returned-error cell, so alias Extend preserves it. SAMPLE preserves the object cache, COUNT counts it, and GC consumes its Literal text into a new plain String-cached result."
+    },
+    {
+      "id": "EX11-01",
+      "family": "EX11",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) (COUNT(?x) AS ?count) (SAMPLE(?x) AS ?sample) WHERE { VALUES ?x {} }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "lexical": "0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "0"
+              }
+            },
+            "sample": {
+              "kind": "ExplicitNone"
+            }
+          }
+        ],
+        "absent": [
+          "min",
+          "max"
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "evaluate:474-492",
+        "aggregates:182-196",
+        "aggregates:61-101",
+        "aggregates:225-248",
+        "evaluate:125-138"
+      ],
+      "derivation": "Implicit empty group creates an accumulator: MIN/MAX stay unbound, COUNT finishes0, pending SAMPLE binds None which alias carries as ExplicitNone. Explicit empty grouping creates no accumulator and yields one empty binding."
+    },
+    {
+      "id": "EX11-02",
+      "family": "EX11",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) (COUNT(?x) AS ?count) (SAMPLE(?x) AS ?sample) WHERE { VALUES ?x {} } GROUP BY ?x"
+      },
+      "expected": {
+        "rows": [
+          {}
+        ],
+        "absent": [
+          "min",
+          "max",
+          "count",
+          "sample"
+        ],
+        "flags_exact": []
+      },
+      "basis": [
+        "evaluate:474-492",
+        "aggregates:182-196",
+        "aggregates:61-101",
+        "aggregates:225-248",
+        "evaluate:125-138"
+      ],
+      "derivation": "Implicit empty group creates an accumulator: MIN/MAX stay unbound, COUNT finishes0, pending SAMPLE binds None which alias carries as ExplicitNone. Explicit empty grouping creates no accumulator and yields one empty binding."
+    },
+    {
+      "id": "EX12-01",
+      "family": "EX12",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT ?g (MIN(1/?x) AS ?m) WHERE { VALUES (?g ?x) { (1 1) (2 0) (2 0) } } GROUP BY ?g"
+      },
+      "expected": {
+        "rows": [],
+        "error_class": "TypeError",
+        "stage": "third_input_row_group_update",
+        "flags_exact": [
+          "DivisionByZero"
+        ],
+        "groups_finished": 0
+      },
+      "basis": [
+        "aggregates:182-222",
+        "evalutils:179-189",
+        "bltinmodule:1797-1908",
+        "tupleobject:641-665",
+        "evaluate:474-488",
+        "operators:746-772",
+        "object:994-1038"
+      ],
+      "derivation": "Group1 can hold a finite result but no group is finished until all updates complete. Group2 first receives a returned divide-by-zero error, then comparison of two None keys raises ordinary TypeError. No group1 prefix may escape this update failure."
+    },
+    {
+      "id": "EX12-02",
+      "family": "EX12",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "queries": [
+          "SELECT (MIN(0.1e0 * 1) AS ?v) WHERE {} LIMIT 0",
+          "SELECT (MIN(0.1e0 * 1) AS ?v) WHERE {} LIMIT 1"
+        ]
+      },
+      "expected": {
+        "runs": [
+          {
+            "rows": [],
+            "flags_exact": [],
+            "raw_evaluations": 0
+          },
+          {
+            "rows": [
+              {
+                "v": {
+                  "kind": "Literal",
+                  "lexical": "0.1000000000000000055511151231",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                  "language_original": null,
+                  "ill_typed": null,
+                  "cache": {
+                    "family": "Decimal",
+                    "negative": false,
+                    "coefficient": "1000000000000000055511151231",
+                    "exponent": "-28"
+                  }
+                }
+              }
+            ],
+            "flags_exact": [
+              "FloatOperation",
+              "Inexact",
+              "Rounded"
+            ],
+            "raw_evaluations": 1
+          }
+        ]
+      },
+      "basis": [
+        "evaluate:462-492",
+        "evaluate:509-516",
+        "itertoolsmodule:1796-1820",
+        "operators:746-772",
+        "_decimal:2410-2530",
+        "_decimal:2860-2908"
+      ],
+      "derivation": "LIMIT0 does not demand the Group generator. LIMIT1 converts binary64 0.1 exactly to Decimal then multiplies1 under p28, giving coefficient1000000000000000055511151231 exp-28. Finish copies this existing Literal without an extra arithmetic operation.",
+      "integer_math_certificate": {
+        "binary64_exact_numerator": "3602879701896397",
+        "binary64_exact_denominator": "36028797018963968",
+        "target_decimal_exponent": "-28",
+        "integer_division": "(numerator * 10^28) = quotient * denominator + remainder",
+        "quotient": "1000000000000000055511151231",
+        "remainder": "9289197412155392",
+        "denominator_minus_twice_remainder": "17450402194653184",
+        "conclusion": "Positive nonzero remainder is below half; p28 HALF_EVEN keeps coefficient1000000000000000055511151231 and signals Inexact,Rounded. Certificate used only exact integer arithmetic; no float/Decimal/oracle execution."
+      }
+    },
+    {
+      "id": "EX10-02",
+      "family": "EX10",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) (COUNT(DISTINCT ?x) AS ?count) WHERE { { SELECT (MIN(1/0) AS ?x) WHERE {} } UNION { VALUES ?x { \"divide by 0\" } } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "divide by 0",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "ErrorObject",
+                "class": "SPARQLError",
+                "argument": {
+                  "kind": "Text",
+                  "value": "divide by 0"
+                },
+                "same_identity_as": "selected-inner-returned-error"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "divide by 0",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "ErrorObject",
+                "class": "SPARQLError",
+                "argument": {
+                  "kind": "Text",
+                  "value": "divide by 0"
+                },
+                "same_identity_as": "selected-inner-returned-error"
+              }
+            },
+            "count": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "flags_exact": [
+          "DivisionByZero"
+        ],
+        "cache_identity": "selected inner error Arc preserved in both returned Literals",
+        "source_identity_equal": true
+      },
+      "basis": [
+        "aggregates:182-222",
+        "aggregates:38-101",
+        "evalutils:179-189",
+        "tupleobject:641-665",
+        "term:1395-1408",
+        "term:668-725",
+        "operators:746-772"
+      ],
+      "derivation": "The inner MIN yields a plain Literal with ErrorObject cache; the other branch yields a plain String-cached Literal with the identical lexical. Source Literal equality/hash ignores both caches. COUNT DISTINCT is1, and MIN/MAX retain the first cache without attempting ErrorObject/String numeric or object comparison."
+    },
+    {
+      "id": "EX10-03",
+      "family": "EX10",
+      "layer": "real_query",
+      "evidence_class": "source_or_exact_math_not_observed",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) (COUNT(DISTINCT ?x) AS ?count) WHERE { { VALUES ?x { \"divide by 0\" } } UNION { SELECT (MIN(1/0) AS ?x) WHERE {} } }"
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "divide by 0",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "divide by 0"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "divide by 0",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "divide by 0"
+              }
+            },
+            "count": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "Integer",
+                "value": "1"
+              }
+            }
+          }
+        ],
+        "flags_exact": [
+          "DivisionByZero"
+        ],
+        "cache_identity": "String first representative",
+        "source_identity_equal": true
+      },
+      "basis": [
+        "aggregates:182-222",
+        "aggregates:38-101",
+        "evalutils:179-189",
+        "tupleobject:641-665",
+        "term:1395-1408",
+        "term:668-725",
+        "operators:746-772"
+      ],
+      "derivation": "The inner MIN yields a plain Literal with ErrorObject cache; the other branch yields a plain String-cached Literal with the identical lexical. Source Literal equality/hash ignores both caches. COUNT DISTINCT is1, and MIN/MAX retain the first cache without attempting ErrorObject/String numeric or object comparison."
+    }
+  ],
+  "active_contract_cases": [
+    {
+      "id": "EA01",
+      "family": "EX12",
+      "status": "root_boundary_locked_pending_final_freeze",
+      "input": {
+        "query": "SELECT ?g (MIN(?x) AS ?m) WHERE { VALUES (?g ?x) { (1 <urn:a>) (2 <urn:abcdefg>) } } GROUP BY ?g",
+        "limits_override": {
+          "max_output_characters": 6
+        },
+        "also_run_with_limit": 1
+      },
+      "rationale": "Output-only budget at new Literal construction. Default input4096 and coefficient4096 keep the Decimal context valid. Source says finish is lazy; the resource ceiling/error label is an active contract, not original Python.",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "expected": {
+        "without_limit": {
+          "prefix_rows": [
+            {
+              "g": {
+                "kind": "Literal",
+                "lexical": "1",
+                "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                "language_original": null,
+                "ill_typed": false,
+                "cache": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              },
+              "m": {
+                "kind": "Literal",
+                "lexical": "urn:a",
+                "datatype": null,
+                "language_original": null,
+                "ill_typed": null,
+                "cache": {
+                  "family": "String",
+                  "value": "urn:a"
+                }
+              }
+            }
+          ],
+          "then": {
+            "error": "RawNumericFault::Core(ResourceLimit)",
+            "operation": "output_characters",
+            "next": "None"
+          }
+        },
+        "with_limit1": {
+          "rows": [
+            {
+              "g": {
+                "kind": "Literal",
+                "lexical": "1",
+                "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                "language_original": null,
+                "ill_typed": false,
+                "cache": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              },
+              "m": {
+                "kind": "Literal",
+                "lexical": "urn:a",
+                "datatype": null,
+                "language_original": null,
+                "ill_typed": null,
+                "cache": {
+                  "family": "String",
+                  "value": "urn:a"
+                }
+              }
+            }
+          ],
+          "no_second_finish": true
+        },
+        "flags_exact": []
+      }
+    },
+    {
+      "id": "EA02",
+      "family": "EX05",
+      "status": "root_boundary_locked_pending_final_freeze",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?v) WHERE {}",
+        "initial": [
+          {
+            "variable": "x",
+            "origin": "UnknownNormalized",
+            "rdf_literal": {
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ]
+      },
+      "rationale": "Singleton Literal(existing) has a proven copy transition; it must not invent cache or source datatype provenance, nor blanket-reject an unused comparison.",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "Literal",
+              "rdf_lexical": "7",
+              "rdf_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "source_datatype": {
+                "fact": "Unknown"
+              },
+              "language_original": {
+                "fact": "Unknown"
+              },
+              "ill_typed": {
+                "fact": "Known",
+                "value": null
+              },
+              "cached_value_kind": {
+                "fact": "Unknown"
+              },
+              "numeric_cache": {
+                "state": "UnknownNumeric"
+              }
+            }
+          }
+        ],
+        "numeric_or_identity_comparison": false,
+        "flags_exact": []
+      }
+    },
+    {
+      "id": "EA03",
+      "family": "EX05",
+      "status": "root_boundary_locked_pending_final_freeze",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?v) WHERE { { BIND(?seed AS ?x) } UNION { VALUES ?x { 1 } } }",
+        "initial": [
+          {
+            "variable": "seed",
+            "origin": "UnknownNormalized",
+            "rdf_literal": {
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ]
+      },
+      "rationale": "The first actual branch requiring unknown identity/cache must fail closed; exact typed fault priority remains an interface lock item, not source parity.",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "expected": {
+        "rows": [],
+        "fatal_kind": "RawNumericFault::UnknownSourceLiteralIdentity",
+        "stage": "second row comparison",
+        "after_error": "None, no more backend calls"
+      }
+    },
+    {
+      "id": "EA05",
+      "family": "EX12",
+      "status": "root_boundary_locked_pending_final_freeze",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?v) WHERE {}",
+        "initial": [
+          {
+            "variable": "x",
+            "origin": "DirectString",
+            "lexical": "abc",
+            "datatype": null,
+            "normalize": true
+          }
+        ],
+        "dataset_fault": {
+          "operation": "externalize",
+          "arm": "after successful prepare, before execute_source_presence",
+          "fail_on": "first externalize after arm"
+        }
+      },
+      "rationale": "Initial binding is actually internalized before arming. Bare-variable raw lookup during Group demand must use the real codec; no substitute evaluator or fabricated error. Compiler must not externalize the variable early.",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "expected": {
+        "first_poll": "Err(original Dataset error identity)",
+        "next": "None",
+        "rows": [],
+        "externalize_calls_after_arm": 1
+      }
+    },
+    {
+      "id": "EA06",
+      "family": "EX12",
+      "status": "root_boundary_locked_pending_final_freeze",
+      "input": {
+        "query": "SELECT (MIN(0.1e0 * 1) AS ?v) WHERE {}",
+        "cancel": "after execute_source_presence returns iterator, before first next"
+      },
+      "rationale": "Explicit active cancellation contract; source generator laziness explains no arithmetic before demand, but Python has no corresponding cancellation token.",
+      "evidence_class": "active_safety_contract_not_original_python_parity",
+      "expected": {
+        "first_poll": "QueryEvaluationError::Cancelled",
+        "next": "None",
+        "flags_exact": [],
+        "raw_evaluations": 0
+      }
+    },
+    {
+      "id": "EA07",
+      "family": "EX12",
+      "layer": "real_query",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE {}",
+        "initial": [
+          {
+            "variable": "x",
+            "origin": "DirectString",
+            "lexical": "abcdefg",
+            "datatype": null,
+            "normalize": true
+          }
+        ],
+        "limits_override": {
+          "max_output_characters": 6
+        }
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "abcdefg",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "abcdefg"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "lexical": "abcdefg",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "abcdefg"
+              }
+            }
+          }
+        ],
+        "flags_exact": []
+      },
+      "rationale": "Known String Literal construction checks input4096, so length7 is valid. Existing Literal copy has neither an additional input parse/budget nor an output budget; length7 must survive max_output6. This distinguishes copy from new Literal(node/error).",
+      "status": "derived_from_locked_boundary_pending_root_case_review",
+      "evidence_class": "active_safety_contract_not_original_python_parity"
+    },
+    {
+      "id": "EA08",
+      "family": "EX12",
+      "layer": "real_query",
+      "input": {
+        "query": "SELECT (MIN(1/0) AS ?v) WHERE {}",
+        "limits_override": {
+          "max_output_characters": 6
+        }
+      },
+      "expected": {
+        "first_poll": "Err",
+        "fatal_kind": "RawNumericFault::Core(ResourceLimit)",
+        "operation": "output_characters",
+        "stage": "aggregate_finish_new_Literal(error)",
+        "rows": [],
+        "next": "None",
+        "flags_exact": [
+          "DivisionByZero"
+        ]
+      },
+      "rationale": "Input/query constructors are within valid default limits; selected source error text divide by 0 has11 characters. New Literal(error) applies output budget before publication, preserving prior DivisionByZero.",
+      "status": "derived_from_locked_boundary_pending_root_case_review",
+      "evidence_class": "active_safety_contract_not_original_python_parity"
+    },
+    {
+      "id": "EA09",
+      "family": "EX10",
+      "layer": "carrier_constructor",
+      "input": {
+        "rdf_literal": {
+          "lexical": "divide by 0",
+          "datatype": null
+        },
+        "source_metadata_common": {
+          "datatype": "Absent",
+          "language_original": {
+            "fact": "Known",
+            "value": null
+          },
+          "ill_typed": {
+            "fact": "Known",
+            "value": null
+          }
+        },
+        "source_error": {
+          "class": "SPARQLError",
+          "argument": {
+            "kind": "Text",
+            "value": "divide by 0"
+          }
+        },
+        "mismatched_pairs": [
+          {
+            "source_cached_value_kind": "ErrorObject",
+            "actual_numeric_cache": "NotNumeric"
+          },
+          {
+            "source_cached_value_kind": "String",
+            "actual_numeric_cache": "ErrorObject(source_error)"
+          }
+        ]
+      },
+      "expected": {
+        "each_pair": "RawNumericFault::InvalidSourceOrigin",
+        "no_cell_returned": true
+      },
+      "rationale": "Strict actual-payload versus source-cache fact validation. Neither metadata-only ErrorObject nor an actual ErrorObject mislabeled String is accepted. This is an active trusted-carrier shape contract, not a Python rejection claim.",
+      "status": "derived_from_locked_boundary_pending_root_case_review",
+      "evidence_class": "active_safety_contract_not_original_python_parity"
+    },
+    {
+      "id": "EA10",
+      "family": "EX08",
+      "layer": "accumulator_protocol",
+      "input": {
+        "aggregate_kinds": [
+          "MIN",
+          "MAX"
+        ],
+        "steps": [
+          {
+            "kind": "ReturnedError",
+            "error_source": "Unknown",
+            "diagnostic": "not an original exception argument"
+          }
+        ]
+      },
+      "expected": {
+        "update": "selects actual returned ErrorValue",
+        "finish_error": "RawNumericFault::UnknownSourceErrorText",
+        "no_literal_returned": true,
+        "raw_evaluations": 1
+      },
+      "rationale": "An opaque diagnostic cannot be promoted to original str(error). Selection does not need its text; new Literal(error) finish does, and only then rejects by the existing typed source-text fault.",
+      "status": "derived_from_locked_boundary_pending_root_case_review",
+      "evidence_class": "active_safety_contract_not_original_python_parity"
+    },
+    {
+      "id": "EA11",
+      "family": "EX05",
+      "layer": "real_query",
+      "input": {
+        "query": "SELECT (MIN(?x) AS ?min) (MAX(?x) AS ?max) WHERE { { BIND(?seed AS ?x) } UNION { VALUES ?x { <urn:a> } } }",
+        "initial": [
+          {
+            "variable": "seed",
+            "origin": "UnknownNormalized",
+            "rdf_literal": {
+              "lexical": "7",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "rows": [
+          {
+            "min": {
+              "kind": "Literal",
+              "lexical": "urn:a",
+              "datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache": {
+                "family": "String",
+                "value": "urn:a"
+              }
+            },
+            "max": {
+              "kind": "Literal",
+              "rdf_lexical": "7",
+              "rdf_datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "source_datatype": {
+                "fact": "Unknown"
+              },
+              "language_original": {
+                "fact": "Unknown"
+              },
+              "ill_typed": {
+                "fact": "Known",
+                "value": null
+              },
+              "cached_value_kind": {
+                "fact": "Unknown"
+              },
+              "numeric_cache": {
+                "state": "UnknownNumeric"
+              }
+            }
+          }
+        ],
+        "flags_exact": [],
+        "literal_identity_or_cache_consumption": false
+      },
+      "rationale": "_val rank IRI2 versus Literal3 resolves before identity of the second tuple component. MIN chooses IRI and constructs plain output; MAX retains/copies the unknown Literal. Unknown facts must not be demanded by an unused comparison branch.",
+      "status": "derived_from_locked_boundary_pending_root_case_review",
+      "evidence_class": "active_safety_contract_not_original_python_parity"
+    }
+  ],
+  "reused_source_cases": [
+    {
+      "id": "MM01",
+      "queries": [
+        "SELECT (MIN(?x) AS ?v) WHERE { VALUES ?x {<urn:x>} }",
+        "SELECT (MAX(?x) AS ?v) WHERE { VALUES ?x {<urn:x>} }"
+      ],
+      "expected_row": {
+        "v": {
+          "kind": "literal",
+          "lexical": "urn:x",
+          "datatype": null,
+          "language": null
+        }
+      },
+      "basis": [
+        "aggregates:205-216",
+        "term:679-693"
+      ],
+      "notes": "Selected IRI is reconstructed by Literal, taking the string-constructor branch; output is not an IRI."
+    },
+    {
+      "id": "MM02",
+      "queries": [
+        "SELECT (MIN(1/0) AS ?v) WHERE { VALUES ?row {1} }",
+        "SELECT (MAX(1/0) AS ?v) WHERE { VALUES ?row {1} }"
+      ],
+      "expected_row": {
+        "v": {
+          "kind": "literal",
+          "lexical": "divide by 0",
+          "datatype": null,
+          "language": null
+        }
+      },
+      "expected_private_cache": {
+        "family": "SPARQLError object",
+        "same_object_as_selected": true
+      },
+      "basis": [
+        "aggregates:205-216",
+        "operators:758-772",
+        "term:695-724",
+        "term:2091-2110"
+      ],
+      "notes": "Plain output Literal retains selected error object as _value; alias receives a Literal and does not suppress it. Numeric-only cache is insufficient to claim full object cache parity."
+    },
+    {
+      "id": "MM03",
+      "state_inputs": [
+        {
+          "sequence": [
+            "ExplicitNone",
+            "Rdf(integer1)"
+          ],
+          "expected_selected": "Rdf(integer1)"
+        },
+        {
+          "sequence": [
+            "Rdf(integer1)",
+            "ExplicitNone"
+          ],
+          "expected_error": "TypeError during key comparison"
+        }
+      ],
+      "basis": [
+        "aggregates:205-225",
+        "evalutils:179-189",
+        "builtin:1838-1889"
+      ],
+      "notes": "None is the accumulator sentinel, not an ordinary smallest key. _val(None) returns None; tuple and None are not orderable. Error is not caught by Extremum.update."
+    },
+    {
+      "id": "MM04",
+      "queries": [
+        "SELECT (MIN(?x) AS ?v) WHERE { VALUES ?x { \"01\"^^<http://www.w3.org/2001/XMLSchema#integer> \"1\"^^<http://www.w3.org/2001/XMLSchema#integer> } }",
+        "SELECT (MAX(?x) AS ?v) WHERE { VALUES ?x { \"01\"^^<http://www.w3.org/2001/XMLSchema#integer> \"1\"^^<http://www.w3.org/2001/XMLSchema#integer> } }"
+      ],
+      "expected_row": {
+        "v": {
+          "kind": "literal",
+          "lexical": "01",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null
+        }
+      },
+      "basis": [
+        "term:1182-1192",
+        "term:1243-1251",
+        "term:1430-1445",
+        "builtin:1863-1889",
+        "aggregates:205-235"
+      ],
+      "notes": "Equal numeric values preserve the first representative; Literal(existing) preserves lexical and cached value, resets _ill_typed to None. Distinct modifier introduces no use_row double evaluation for MIN/MAX."
+    }
+  ],
+  "reused_record_sha256": "19ebfb25e122b559dffd1eccbcc384a48d007e7b8cc0f9c6c68c6dd75681c679",
+  "counts": {
+    "source_math_cases": 26,
+    "active_contract_cases": 10,
+    "reused_source_cases": 4
+  },
+  "payload_canonical_sha256": "59f6850d634564bedfc67741265b6f3f4eeaa7206e04d75ebeaccbc995c3a867",
+  "revision": {
+    "previous_source_record_sha256": "9cb28bb8ab35653f2490037f627925fbe8c4b92b0fffa51563f8c1c9367fb497",
+    "current_record_number": 2,
+    "classification": "EA01_post_exposure_development_replay; all_other_expected_objects_preserved",
+    "corrected_case_ids": [
+      "EA01"
+    ],
+    "source_math_and_reused_MM_expectations_unchanged": true
+  }
+}

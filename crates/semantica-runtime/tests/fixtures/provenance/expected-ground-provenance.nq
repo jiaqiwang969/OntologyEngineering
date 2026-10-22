@@ -1,0 +1,24 @@
+<urn:example:activity:extract:1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Activity> <urn:example:prov:session:t1> .
+<urn:example:activity:extract:1> <http://www.w3.org/ns/prov#qualifiedAssociation> <urn:example:association:1> <urn:example:prov:session:t1> .
+<urn:example:activity:extract:1> <http://www.w3.org/ns/prov#used> <urn:example:message:1> <urn:example:prov:session:t1> .
+<urn:example:activity:extract:1> <http://www.w3.org/ns/prov#wasAssociatedWith> <urn:example:agent:codex> <urn:example:prov:session:t1> .
+<urn:example:agent:codex> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Agent> <urn:example:prov:session:t1> .
+<urn:example:agent:codex> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#SoftwareAgent> <urn:example:prov:session:t1> .
+<urn:example:association:1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Association> <urn:example:prov:session:t1> .
+<urn:example:association:1> <http://www.w3.org/ns/prov#agent> <urn:example:agent:codex> <urn:example:prov:session:t1> .
+<urn:example:association:1> <http://www.w3.org/ns/prov#hadRole> <urn:example:role:extractor> <urn:example:prov:session:t1> .
+<urn:example:candidate:1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> <urn:example:prov:session:t1> .
+<urn:example:candidate:1> <http://www.w3.org/ns/prov#wasAttributedTo> <urn:example:agent:codex> <urn:example:prov:session:t1> .
+<urn:example:candidate:1> <http://www.w3.org/ns/prov#wasDerivedFrom> <urn:example:message:1> <urn:example:prov:session:t1> .
+<urn:example:candidate:1> <http://www.w3.org/ns/prov#wasGeneratedBy> <urn:example:activity:extract:1> <urn:example:prov:session:t1> .
+<urn:example:candidate:1> <urn:semantica:provenance:sourceSpan> <urn:example:span:1> <urn:example:prov:session:t1> .
+<urn:example:message:1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> <urn:example:prov:session:t1> .
+<urn:example:message:1> <urn:semantica:provenance:byteCount> "64"^^<http://www.w3.org/2001/XMLSchema#integer> <urn:example:prov:session:t1> .
+<urn:example:message:1> <urn:semantica:provenance:sourceSha256> "c5dfa8fe77a805836a7b19754809508867dc8414792d625b60eec8bec9b8251c" <urn:example:prov:session:t1> .
+<urn:example:span:1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:semantica:provenance:SourceSpan> <urn:example:prov:session:t1> .
+<urn:example:span:1> <http://www.w3.org/ns/prov#value> "孔距改为32 mm。" <urn:example:prov:session:t1> .
+<urn:example:span:1> <urn:semantica:provenance:endByte> "29"^^<http://www.w3.org/2001/XMLSchema#integer> <urn:example:prov:session:t1> .
+<urn:example:span:1> <urn:semantica:provenance:sourceEntity> <urn:example:message:1> <urn:example:prov:session:t1> .
+<urn:example:span:1> <urn:semantica:provenance:sourceSha256> "c5dfa8fe77a805836a7b19754809508867dc8414792d625b60eec8bec9b8251c" <urn:example:prov:session:t1> .
+<urn:example:span:1> <urn:semantica:provenance:spanSha256> "8fcbcc6dd2f10861bf0e432f3004a60db746f8bf072aa66a21ab53251db6f881" <urn:example:prov:session:t1> .
+<urn:example:span:1> <urn:semantica:provenance:startByte> "9"^^<http://www.w3.org/2001/XMLSchema#integer> <urn:example:prov:session:t1> .

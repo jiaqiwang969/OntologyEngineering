@@ -1,0 +1,63 @@
+{
+  "source_member_sha256": "72dd5cf261e84e566760c780c5ffc9630b589082b9154ee95fc6a6d0d861bd02",
+  "ordinary": [
+    {
+      "literal": "Extract relations between entities from the provided text.\nReturn the result as a JSON object with a \"relations\" key containing the list of relations.\nEach relation must have 'subject', 'predicate', and 'object' fields.\n\nExample output (JSON format only):\n{\n  \"relations\": [\n    {\"subject\": \"Entity A\", \"predicate\": \"related_to\", \"object\": \"Entity B\", \"confidence\": 0.95},\n    {\"subject\": \"Subject Entity\", \"predicate\": \"action_verb\", \"object\": \"Object Entity\", \"confidence\": 0.90}\n  ]\n}\n\nInstructions:\n1. Extract relations ONLY from the text provided below.\n2. Do not include any relations from the example above.\n3. Use the provided entities list as a reference for subjects and objects.\n4. "
+    },
+    {
+      "field": "relation_types_instruction"
+    },
+    {
+      "literal": "\n\nText to extract from:\n"
+    },
+    {
+      "field": "text"
+    },
+    {
+      "literal": "\nEntities found in text: "
+    },
+    {
+      "field": "entities_str"
+    }
+  ],
+  "temporal": [
+    {
+      "literal": "Extract relations between entities from the provided text, along with temporal validity information for each relation.\nReturn the result as a JSON object with a \"relations\" key. Each relation must have:\n'subject', 'predicate', 'object', 'confidence', 'valid_from', 'valid_until', 'temporal_confidence', 'temporal_source_text'.\n\nTEMPORAL EXTRACTION RULES:\n- valid_from: ISO 8601 date or exact phrase from the text for when this relation became valid. Set to null if no temporal signal is present.\n- valid_until: ISO 8601 date or exact phrase for when this relation ceased. Set to null if open-ended or absent.\n- temporal_confidence (float 0.0–1.0) — calibrated as follows:\n    1.00 = full ISO date (\"2022-03-15\", \"March 15, 2022\")\n    0.90 = explicit year + month (\"March 2022\", \"2022-03\")\n    0.85 = explicit year only (\"in 2022\", \"since 2021\", \"from 2019\")\n    0.75 = quarter (\"Q3 2023\", \"Q2 2021\")\n    0.65 = named season or approximate range (\"summer 2022\", \"early 2020s\", \"mid-2022\")\n    0.50 = vague relative with computable anchor (\"last year\", \"three months ago\")\n    0.35 = highly vague relative (\"recently\", \"years ago\", \"in the past\")\n    0.00 = no temporal signal present for this relation\n- temporal_source_text: the EXACT verbatim substring from the source text that contains the temporal signal. Set to null when temporal_confidence is 0.0.\n\nIMPORTANT: Do NOT invent or guess dates. If the text contains no temporal signal for a relation, set valid_from and valid_until to null and temporal_confidence to 0.0.\n\nFew-shot examples (do NOT include these in your output):\n  Text: \"Apple acquired Beats in May 2014.\"\n  → valid_from: \"2014-05-01\", valid_until: null, temporal_confidence: 0.90, temporal_source_text: \"May 2014\"\n\n  Text: \"The CEO has led the company since Q3 2020.\"\n  → valid_from: \"Q3 2020\", valid_until: null, temporal_confidence: 0.75, temporal_source_text: \"since Q3 2020\"\n\n  Text: \"Last year, Google partnered with Samsung.\"\n  → valid_from: \"last year\", valid_until: null, temporal_confidence: 0.50, temporal_source_text: \"Last year\"\n\n  Text: \"The firm was under enhanced supervision between Q2 and Q4 2021.\"\n  → valid_from: \"Q2 2021\", valid_until: \"Q4 2021\", temporal_confidence: 0.75, temporal_source_text: \"between Q2 and Q4 2021\"\n\n  Text: \"Microsoft develops Windows.\"\n  → valid_from: null, valid_until: null, temporal_confidence: 0.00, temporal_source_text: null\n\nExample JSON output format:\n{\n  \"relations\": [\n    {\n      \"subject\": \"Apple\", \"predicate\": \"acquired\", \"object\": \"Beats\",\n      \"confidence\": 0.97,\n      \"valid_from\": \"2014-05-01\", \"valid_until\": null,\n      \"temporal_confidence\": 0.90, \"temporal_source_text\": \"May 2014\"\n    }\n  ]\n}\n\nInstructions:\n1. Extract relations ONLY from the text provided below.\n2. Do not include any relations from the examples above.\n3. Use the provided entities list as a reference for subjects and objects.\n4. "
+    },
+    {
+      "field": "relation_types_instruction"
+    },
+    {
+      "literal": "\n\nText to extract from:\n"
+    },
+    {
+      "field": "text"
+    },
+    {
+      "literal": "\nEntities found in text: "
+    },
+    {
+      "field": "entities_str"
+    }
+  ],
+  "instructions": [
+    {
+      "kind": "preferred",
+      "parts": [
+        {
+          "literal": "\nPreferred relation types: "
+        },
+        {
+          "field": "relation_types_str"
+        },
+        {
+          "literal": ".\nYou may also use related or similar relation types if they better capture the relationship (e.g., variations, synonyms, or domain-specific relations).\nIf a relation doesn't fit any of the preferred types, use the most appropriate type from the preferred list or a closely related type that accurately describes the relationship."
+        }
+      ]
+    },
+    {
+      "kind": "default",
+      "literal": "\nExtract meaningful relationships between entities. Use appropriate relation types that accurately describe how entities are connected.\nCommon relation types include: related_to, part_of, located_in, created_by, uses, depends_on, interacts_with, and similar variations."
+    }
+  ]
+}

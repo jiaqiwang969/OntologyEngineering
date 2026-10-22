@@ -1,0 +1,141 @@
+{
+  "cases": [
+    {
+      "expected": "source_integrity_matched_engineering_unknown",
+      "id": "span_exact_utf8"
+    },
+    {
+      "expected": "reject_source_sha_mismatch",
+      "id": "source_byte_change",
+      "mutation": "replace32with35"
+    },
+    {
+      "expected": "reject_utf8_boundary",
+      "id": "inside_utf8_byte",
+      "start_byte": 10
+    },
+    {
+      "expected": "reject_quote_mismatch",
+      "id": "quote_not_at_range",
+      "quote": "孔距改为35 mm。"
+    },
+    {
+      "end_byte": 65,
+      "expected": "reject_range",
+      "id": "oversized_span"
+    },
+    {
+      "expected": "reject_batch_and_keep_session_revision_snapshot_cache",
+      "id": "duplicate_record_id_different_content"
+    },
+    {
+      "expected": "qualifiedAssociation_subject_is_activity_not_entity",
+      "id": "qualified_role_attaches_activity"
+    },
+    {
+      "expected": "report_typed_edges_without_overwriting_original_source",
+      "id": "derivation_and_revision_are_distinct"
+    },
+    {
+      "expected": "old_source_and_record_queryable_new_event_explicit",
+      "id": "invalidation_retains_original"
+    },
+    {
+      "expected": "lineage_reports_missing_reference_no_integrity_pass",
+      "id": "missing_origin"
+    },
+    {
+      "expected": "terminate_each_iri_once_bounded_result_with_cycle_marker",
+      "id": "lineage_cycle"
+    },
+    {
+      "expected": "root_only_and_partial_if_ancestors_exist",
+      "id": "max_levels1"
+    },
+    {
+      "expected": "explicit_budget_error_or_unknown_coverage_no_complete",
+      "id": "maximum_nodes_exceeded"
+    },
+    {
+      "expected": "causal_assertion_not_validated_never_infer_engineering_causality",
+      "id": "history_not_physical_cause"
+    },
+    {
+      "expected": "same_project_adoption_unchanged",
+      "id": "asserted_success_or_confidence1"
+    },
+    {
+      "expected": "RDFC10_SHA256_snapshot_equal_with_input_order_change",
+      "id": "prov_projection_is_order_invariant"
+    },
+    {
+      "expected": "new_profile_record_digest_changes",
+      "id": "quote_or_entity_id_tamper"
+    },
+    {
+      "expected": "existing_verify_entry_rejects_changed_raw_or_selected_block_before_projection",
+      "id": "conversation_archive_binding"
+    },
+    {
+      "expected": "raw_record_sha_and_decoded_text_sha_bound_separately_derived_from_explicit_never_same_byte_span",
+      "id": "escaped_archive_projection_has_separate_identity"
+    }
+  ],
+  "ground_prov_oracle": {
+    "bytes": 3294,
+    "canonicalization": "semantica.rdfc-1.0-sha256/1",
+    "dataset_sha256": "3db1708c07b505d35b0b628974b01a3ad4ba8b320d1a3b8c78f9e592787b703b",
+    "file": "expected-ground-provenance.nq",
+    "kind": "independently_authored_ground_dataset_no_blank_nodes",
+    "named_graph": "urn:example:prov:session:t1",
+    "quad_count": 24,
+    "scope": "serialization/projection expectations, not all PROV constraints"
+  },
+  "lineage_oracle": {
+    "all_entity_derivation_and_revision_nodes": [
+      "urn:example:candidate:1",
+      "urn:example:candidate:2",
+      "urn:example:message:1",
+      "urn:example:message:2"
+    ],
+    "candidate1_relations": {
+      "derived_from": [
+        "urn:example:message:1"
+      ]
+    },
+    "derivation_only_nodes": [
+      "urn:example:candidate:2",
+      "urn:example:message:2"
+    ],
+    "invalidation_preserves_original_entities": true,
+    "max_levels1_coverage": "partial",
+    "max_levels1_nodes": [
+      "urn:example:candidate:2"
+    ],
+    "relations": {
+      "derived_from": [
+        "urn:example:message:2"
+      ],
+      "revision_of": [
+        "urn:example:candidate:1"
+      ]
+    },
+    "root": "urn:example:candidate:2"
+  },
+  "schema": "semantica.provenance-preimplementation-expectations/1",
+  "source": {
+    "byte_count": 64,
+    "content": "用户：孔距改为32 mm。\n助手：需重做强度校核。\n",
+    "source_id": "urn:example:session:t1:message:1",
+    "source_sha256": "c5dfa8fe77a805836a7b19754809508867dc8414792d625b60eec8bec9b8251c"
+  },
+  "status": "independent_expectations_not_executed",
+  "valid_span": {
+    "end_byte": 29,
+    "quote": "孔距改为32 mm。",
+    "source_id": "urn:example:session:t1:message:1",
+    "source_sha256": "c5dfa8fe77a805836a7b19754809508867dc8414792d625b60eec8bec9b8251c",
+    "span_sha256": "8fcbcc6dd2f10861bf0e432f3004a60db746f8bf072aa66a21ab53251db6f881",
+    "start_byte": 9
+  }
+}

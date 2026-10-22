@@ -1,0 +1,170 @@
+{
+  "schema": "original-rdflib-describe-modifier-oracle/1",
+  "rdflib_version": "7.6.0",
+  "source_files": [
+    {
+      "name": "evaluate.py",
+      "bytes": 21870,
+      "sha256": "991944f756398773c4ddf0da0bf5a3c2285f2a67140c9976a8a806ba5d8402be"
+    },
+    {
+      "name": "sparql.py",
+      "bytes": 15855,
+      "sha256": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f"
+    },
+    {
+      "name": "processor.py",
+      "bytes": 4963,
+      "sha256": "f6f5786782c8d5c0518e1c2564ba9b444690189c539c286a21c48d437fef67e8"
+    },
+    {
+      "name": "algebra.py",
+      "bytes": 60938,
+      "sha256": "22441c48e62b22c40ec17a1ffaf5360b7b08cfb971cfe8ad59a599e8766d81b3"
+    }
+  ],
+  "original15_sha256": "4c52d96181c741c1a3cdb675517eb83cf7aaf7fd1575aeea45b18bd886d6f2e1",
+  "captured_before_modifier_production_source": true,
+  "namespaces": {
+    "ex": "urn:"
+  },
+  "network": "blocked in private interpreter",
+  "scope": "Finite original Describe-only target projection DISTINCT then Slice controls; no SELECT default, aggregate reassignment, full SPARQL or engineering qualification claim",
+  "cases": [
+    {
+      "id": "original_modifier_visible_only",
+      "query": "DESCRIBE ?s WHERE { ?s ex:tag ?tag } ORDER BY ?tag LIMIT 1 OFFSET 1",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "bindings": {
+        "s": "<urn:part>"
+      },
+      "kind": "DESCRIBE",
+      "triples": [],
+      "triple_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "original_modifier_hidden_unused",
+      "query": "DESCRIBE ?s WHERE { ?s ex:tag ?tag } ORDER BY ?tag LIMIT 1 OFFSET 1",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "bindings": {
+        "s": "<urn:part>",
+        "unused": "<urn:other>"
+      },
+      "kind": "DESCRIBE",
+      "triples": [],
+      "triple_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "original_modifier_no_initial",
+      "query": "DESCRIBE ?s WHERE { ?s ex:tag ?tag } ORDER BY ?tag LIMIT 1 OFFSET 1",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "bindings": {},
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:other> <urn:name> \"bearing\"@en .",
+        "<urn:other> <urn:note> \"catalog\" .",
+        "<urn:other> <urn:tag> \"A\" ."
+      ],
+      "triple_count": 3,
+      "actual_original_execution": true
+    },
+    {
+      "id": "first_unique_target_is_kept",
+      "query": "DESCRIBE ?s WHERE { ?s ex:tag ?tag } ORDER BY ?tag LIMIT 1 OFFSET 0",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "bindings": {
+        "s": "<urn:part>",
+        "unused": "<urn:other>"
+      },
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "actual_original_execution": true
+    },
+    {
+      "id": "offset_after_unique_projection_is_empty",
+      "query": "DESCRIBE ?s WHERE { ?s ex:tag ?tag } ORDER BY ?tag LIMIT 2 OFFSET 1",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "bindings": {
+        "s": "<urn:part>",
+        "unused": "<urn:other>"
+      },
+      "kind": "DESCRIBE",
+      "triples": [],
+      "triple_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "whole_projected_tuple_distinct_not_resource_only",
+      "query": "DESCRIBE ?s ?tag WHERE { ?s ex:tag ?tag } ORDER BY ?tag LIMIT 1 OFFSET 1",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "bindings": {
+        "s": "<urn:part>",
+        "unused": "<urn:other>"
+      },
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "actual_original_execution": true
+    },
+    {
+      "id": "ordering_on_hidden_tag_precedes_target_projection",
+      "query": "DESCRIBE ?s WHERE { ?s ex:tag ?tag } ORDER BY ?s ?tag LIMIT 1 OFFSET 1",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "bindings": {},
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "actual_original_execution": true
+    },
+    {
+      "id": "language_context_read_before_distinct_slice",
+      "query": "DESCRIBE ?s WHERE { ?s ex:name ?name FILTER(?wanted = ?name) ?s ex:tag ?tag } ORDER BY ?tag LIMIT 1 OFFSET 1",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "bindings": {
+        "s": "<urn:part>",
+        "wanted": "\"shaft\"@en",
+        "unused": "<urn:other>"
+      },
+      "kind": "DESCRIBE",
+      "triples": [],
+      "triple_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "nested_context_read_before_distinct_slice",
+      "query": "DESCRIBE ?s WHERE { { SELECT ?s ?tag WHERE { ?s ex:tag ?tag FILTER(?gate=ex:other) } } } ORDER BY ?tag LIMIT 1 OFFSET 1",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "bindings": {
+        "s": "<urn:part>",
+        "gate": "<urn:other>"
+      },
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "actual_original_execution": true
+    }
+  ]
+}

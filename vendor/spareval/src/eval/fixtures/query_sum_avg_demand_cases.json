@@ -1,0 +1,123 @@
+{
+  "schema": "public.synthetic-source-math-fixture/1",
+  "source_record_id": "QUERY-SUM-AVG-DEMAND-SUPPLEMENT-01",
+  "source_record_sha256": "a66e658c20a014f949a45ca301f2d460871d636f28aca21e87f8464502b0cfce",
+  "environment": {
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "initial_flags": []
+    },
+    "numeric_limits": {
+      "max_input_characters": 10000,
+      "max_coefficient_digits": 10064,
+      "max_output_characters": 10064,
+      "max_materialized_power_of_ten": 10064
+    },
+    "integer_text_limit": 4096,
+    "normalize_literals": true,
+    "default_query_capability": "mixed-binary64-v1",
+    "conversion_resource_policy": "binary64-conversion-budget-v1",
+    "scalar_target_assumption": "IEEE754 binary64; default nearest ties-even; gradual underflow; no fast-math/reassociation/FMA contraction across source steps. Target runtime qualification remains later receiving work.",
+    "context_basis": "Explicit fixture configuration, not observation of a historical mutable Python process.",
+    "limits_basis": "Active bounded receiving configuration, not original Python acceptance limits. Core converter inputs are already constructed values; input loading is not the lexical API under test.",
+    "group_semantics": "source-group/1",
+    "builtin_sum_source_branch": "Pinned CPython 3.13.11 ordinary #ifndef SLOW_SUM branch. Historical build flags are not newly observed."
+  },
+  "cases": [
+    {
+      "id": "SGD01",
+      "query": "SELECT (SUM(0.1e0 * 1) AS ?s) WHERE {} LIMIT 0",
+      "numeric_capability": "mixed-binary64-v1",
+      "group_semantics": "source-group/1",
+      "decimal_signals_after_prepare_exact": [],
+      "decimal_signals_after_execute_before_first_poll_exact": [],
+      "decimal_signals_after_query_exact": [],
+      "expect": {
+        "kind": "solutions",
+        "order": "source_sequence",
+        "rows": []
+      }
+    },
+    {
+      "id": "SGD02",
+      "query": "SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE {} LIMIT 0",
+      "numeric_capability": "mixed-binary64-v1",
+      "group_semantics": "source-group/1",
+      "decimal_signals_after_prepare_exact": [],
+      "decimal_signals_after_execute_before_first_poll_exact": [],
+      "decimal_signals_after_query_exact": [],
+      "expect": {
+        "kind": "solutions",
+        "order": "source_sequence",
+        "rows": []
+      }
+    },
+    {
+      "id": "SGD03",
+      "query": "SELECT (SUM(0.1e0 * 1) AS ?s) WHERE {} LIMIT 1",
+      "numeric_capability": "mixed-binary64-v1",
+      "group_semantics": "source-group/1",
+      "decimal_signals_after_prepare_exact": [],
+      "decimal_signals_after_execute_before_first_poll_exact": [],
+      "decimal_signals_after_query_exact": [
+        "FloatOperation",
+        "Inexact",
+        "Rounded"
+      ],
+      "expect": {
+        "kind": "solutions",
+        "order": "source_sequence",
+        "rows": [
+          {
+            "s": {
+              "kind": "literal",
+              "lexical": "0.1000000000000000055511151231",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+            }
+          }
+        ]
+      },
+      "checkpoint": {
+        "binding": "s",
+        "cache": {
+          "state": "Known",
+          "value": {
+            "family": "Decimal",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1000000000000000055511151231",
+              "exponent": "-28"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "SGD04",
+      "query": "SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE {} LIMIT 1",
+      "numeric_capability": "mixed-binary64-v1",
+      "group_semantics": "source-group/1",
+      "decimal_signals_after_prepare_exact": [],
+      "decimal_signals_after_execute_before_first_poll_exact": [],
+      "decimal_signals_after_query_exact": [],
+      "expect": {
+        "kind": "fatal_after_prefix",
+        "prefix_rows": [],
+        "semantic_category": "UncaughtSparql",
+        "failure_stage": "first_poll_distinct_gate",
+        "next_after_fatal": "None"
+      },
+      "source_error_kind": "NotBound"
+    }
+  ]
+}

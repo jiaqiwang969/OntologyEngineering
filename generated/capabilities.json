@@ -1,0 +1,462 @@
+[
+  {
+    "effects": "当前Peekaboo后台；既有Chrome/明确目标/真实应用前后检查；自有传输进程和私有回执；不改用户浏览器",
+    "failures": "旧live后端先拒绝；连接/权限/provider或焦点未知不回退；派发后未知不重试；只清理仍后台的自有目标",
+    "kind": "adapter",
+    "name": "browser",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "有界浏览器动作与观察",
+    "rustPath": "crates/oe-browser",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "adapter",
+    "name": "cad",
+    "platform": "各平台软件接收、原生NX/浏览器分别核验；对应范围见来源",
+    "purpose": "NX 运输、供应商资源、设计证据与工艺交接",
+    "rustPath": "crates/oe-cad",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "pipeline",
+    "name": "cli",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "唯一 oev2 命令入口",
+    "rustPath": "crates/oe-cli",
+    "status": "source_only"
+  },
+  {
+    "effects": "private immutable inputs; owned process evidence under var; no native devices or external providers",
+    "failures": "explicit failed/partial/unknown; no silent denominator reduction",
+    "kind": "adapter",
+    "name": "code_evaluator",
+    "platform": "aarch64-apple-darwin pinned Rust 1.95.0; other platforms unverified",
+    "purpose": "code_evaluator: fixed finite local code comparison, not Project or package governance",
+    "rustPath": "crates/oe-code-evaluator",
+    "status": "source_only"
+  },
+  {
+    "effects": "private immutable inputs; owned process evidence under var; no native devices or external providers",
+    "failures": "explicit failed/partial/unknown; no silent denominator reduction",
+    "kind": "pipeline",
+    "name": "code_evolution",
+    "platform": "aarch64-apple-darwin pinned Rust 1.95.0; other platforms unverified",
+    "purpose": "code_evolution: fixed finite local code comparison, not Project or package governance",
+    "rustPath": "crates/oe-evolution",
+    "status": "source_only"
+  },
+  {
+    "effects": "private immutable inputs; owned process evidence under var; no native devices or external providers",
+    "failures": "explicit failed/partial/unknown; no silent denominator reduction",
+    "kind": "adapter",
+    "name": "code_runner",
+    "platform": "aarch64-apple-darwin pinned Rust 1.95.0; other platforms unverified",
+    "purpose": "code_runner: fixed finite local code comparison, not Project or package governance",
+    "rustPath": "crates/oe-code-runner",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "contract",
+    "name": "contracts",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "ggen 生成的共享类型、状态、接口和约束",
+    "rustPath": "crates/oe-contracts",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "contract",
+    "name": "core",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "路径、文件身份、原子持久化与有界进程",
+    "rustPath": "crates/oe-core",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "pipeline",
+    "name": "design",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "注释规范、确定 RDF、真实 ggen、漂移和影响",
+    "rustPath": "crates/oe-design",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "pipeline",
+    "name": "dist",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "显式分发清单、ZIP64 与接收字节校验",
+    "rustPath": "crates/oe-dist",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "pipeline",
+    "name": "docs",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "复用有源报告与书源合同；工程图示HTML/SVG和当前性验证",
+    "rustPath": "crates/oe-docs",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "pipeline",
+    "name": "engineering",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "情景路由、工程 Harness、判断、制造报告与有源图示绑定",
+    "rustPath": "crates/oe-engineering",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "adapter",
+    "name": "geometry",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "几何输入、有限图元投影与离散状态检查；受控外部原生结果另验",
+    "rustPath": "crates/oe-geometry",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "governance",
+    "name": "kernel",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "工程 Project 当前条件、范围审查、章节与经验适配、回执和治理；通用 RDF/SHACL/rules 委托唯一 semantic_runtime",
+    "rustPath": "crates/oe-kernel",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "pipeline",
+    "name": "knowledge",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "有界检索、注册、原页与反馈",
+    "rustPath": "crates/oe-knowledge",
+    "status": "source_only"
+  },
+  {
+    "effects": "Neutral provider source reads or existing controlled process only; model/Project0",
+    "failures": "Source/process/content drift, malformed or oversized TSV, false receipt authority, expired deadline reject; original raw retained",
+    "kind": "calculation",
+    "name": "knowledge_ocr_page5",
+    "platform": "Current local Darwin original188 development page; all original platform/runtime/provider loading remain required unknown",
+    "purpose": "Existing source/content adapter; no new owner, client, Project, registry, model or budget ledger",
+    "rustPath": "crates/oe-knowledge",
+    "status": "source_only"
+  },
+  {
+    "effects": "Actual source-bound reads and explicit local144dpi render;new private output artifacts only;OCR/model/engineering Project writes0",
+    "failures": "Source/row/tool/process/PNG drift,public receipt authority attempts,unknown removal and false projection reject",
+    "kind": "calculation",
+    "name": "knowledge_page_content4",
+    "platform": "Existing Unix Poppler process boundary;current aarch64 Darwin fixture;all other original platforms/formats remain required unknown",
+    "purpose": "Pure source/content preparation in existing knowledge owner, borrowing sole Poppler process core;no Project/model/registry/OCR owner",
+    "rustPath": "crates/oe-knowledge",
+    "status": "source_only"
+  },
+  {
+    "effects": "Read current registration/index/PDF and selected sources; four original Poppler calls and two Tesseract calls; append fresh private raw artifacts only; model/Project writes0",
+    "failures": "Wrong registered document/page/count, source/tool drift, malformed/full stream rejection, deadline expiry or public authority fabrication reject; original process artifacts retained",
+    "kind": "pipeline",
+    "name": "knowledge_registered_ocr6",
+    "platform": "Current local Darwin selected registered development page; other platforms and full original13494/19/19/22 scope required unknown",
+    "purpose": "Same registered knowledge owner with one crate-private OCR execution shared by old5 and explicit6; no second Project/model/Dataset/registry/budget owner",
+    "rustPath": "crates/oe-knowledge",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "contract",
+    "name": "model_credentials",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "显式选择的单个凭据文件与普通模型HTTP接口；不自动发现账号或轮换凭据",
+    "rustPath": "crates/oe-model-credentials",
+    "status": "source_only"
+  },
+  {
+    "effects": "Content-only generated DTOs; private reader binary reads a declared regular raw file; no native dispatch, environment or SDK authorization",
+    "failures": "Invalid UTF8/NUL/size/line limits and replay mismatch reject; delayed/malformed/unrecognized textual records remain retained unknowns",
+    "kind": "calculation",
+    "name": "native_runtime5_diagnostic_content",
+    "platform": "Bounded UTF8 content parsing; current raw version fixtures are Rust1.95 aarch64-apple-darwin; actual runtime and all-platform closure unknown",
+    "purpose": "Pure diagnostic content parser and exact byte replay inside existing code_evolution; no new runtime owner",
+    "rustPath": "crates/oe-evolution",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "contract",
+    "name": "nx_protocol",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "任务、状态、有限帧与身份",
+    "rustPath": "crates/oe-nx-protocol",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "adapter",
+    "name": "nx_worker",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "NX SDK 原生 worker、当前模型圆边选择与有界参考尺寸；Windows 与实机另验",
+    "rustPath": "crates/oe-nx-worker",
+    "status": "source_only"
+  },
+  {
+    "effects": "source/read-only query; no filesystem/project mutation or automatic adoption",
+    "failures": "explicit structured failure and unknown scope; no fallback Python or silent source conversion",
+    "kind": "contract",
+    "name": "semantic_contracts",
+    "platform": "Rust native local; declared formats and budgets; no external provider or device authorization",
+    "purpose": "真实ggen从工程本体指导的规范产生中性请求/结果/失败及ports，落实同一体系的表达合同；工程Project保持唯一身份",
+    "rustPath": "crates/semantica-contracts",
+    "status": "source_only"
+  },
+  {
+    "effects": "有界求值/显式私有状态更新，旧公共语义不改；显式query options/profile2按RDFLib7.6 modifier-key投影Distinct→Slice执行、真正目标与initial上下文分别保留，含无初始绑定新对照；neutral parser/modifier默认及无bindings旧1 wire不改，共用target/context缺陷修复同时使旧query_with_options/runner1隐藏参数错误拒绝恢复原4triples；MINUS/重赋值/aggregate守护不改，源码纳入编译和真实ggen来源闭包",
+    "failures": "语法/资源/remote拒绝和未验边界保留；不复制Python执行或修改RDF身份",
+    "kind": "calculation",
+    "name": "semantic_evaluator",
+    "platform": "pinned Rust1.95 offline; same oxigraph0.5.11/spareval0.2.7 evaluator; no provider/device authorization",
+    "purpose": "唯一spareval0.2.7 Rust求值器的受控本地补丁，保留typed初始上下文可读取值、原Project显式域与MINUS/子查询语义；DESCRIBE原目标槽与application context编码槽独立，同一Dataset/语义引擎",
+    "rustPath": "vendor/spareval",
+    "status": "source_only"
+  },
+  {
+    "effects": "Only source/Value conversion and bytes serialization; no graph/Project/model/registry/adoption/history effects",
+    "failures": "Malformed/duplicate/nonfinite/nesting and wrong container shape errors remain explicit; already-corrupted Value cannot be restored from absent original bytes",
+    "kind": "calculation",
+    "name": "semantic_json",
+    "platform": "Pure Rust memory operations; host actually tested, Windows/WASM execution separate",
+    "purpose": "Single neutral JSON interpretation/serialization and finite Python hash/set owner; generated DTOs preserve literal objects, typed scalars and recursive Value containers; upper wire/provider adapters delegate",
+    "rustPath": "crates/semantica-json",
+    "status": "source_only"
+  },
+  {
+    "effects": "Local staged JSON-LD expansion/conversion with actual emitted quad and explicit source facts",
+    "failures": "Syntax, construction, pairing, normalization and existing budget errors cannot publish or clear existing caches; remote context is unavailable under explicit offline authority",
+    "kind": "calculation",
+    "name": "semantic_jsonld_source_parser",
+    "platform": "Rust1.95 offline oxjsonld0.2.6; all other lock selections unchanged",
+    "purpose": "Subcomponent of existing semantic_runtime owner; retain JSON scalar origin, explicit datatype, language spelling and Graph wrapper placement before native conversion erases distinctions",
+    "rustPath": "vendor/oxjsonld",
+    "status": "source_only"
+  },
+  {
+    "effects": "Prepare/decode only; unique Harness owns all dispatch reservations and credential pool",
+    "failures": "No silent Base recovery; actual completion and HTTP identity separated; 62 third-party dispatch operators remain unknown",
+    "kind": "calculation",
+    "name": "semantic_litellm_wrapper",
+    "platform": "Rust injected completion; finite OpenAI/Groq protocol adapter, synthetic loopback verification only",
+    "purpose": "Original LiteLLM wrapper shallow options, response forms and structured JSON recovery; explicitly separate SDK dispatch",
+    "rustPath": "crates/semantica-runtime",
+    "status": "source_only"
+  },
+  {
+    "effects": "Pure in-memory numeric operations with explicit context and resource budgets; no Dataset, AST interpreter, process-global Decimal context, Project decision or engineering adoption",
+    "failures": "Invalid operands/context/lexical form, integer text limits, resource faults and configured Decimal traps are distinct; Integer/Decimal and explicit mixed Binary64 query policies belong to consumers; arbitrary query integration, cross-platform float environment and public nullable /5 remain unqualified",
+    "kind": "calculation",
+    "name": "semantic_numeric",
+    "platform": "Rust1.95; locked num-bigint0.4.8, num-integer0.1.47 and num-traits0.2.19; Python reference adaptation with retained PSF license; platform execution requires its own receipt",
+    "purpose": "One shared Rust owner for exact BigInt and Decimal coefficient/exponent primitives, exact Binary64-to-Decimal construction, bounded reverse conversion, scalar Binary64 operations, two-float source sum, exact integer ratio division and exact numeric relations with reached signals, explicit HALF_EVEN context operations, numeric signals, lexical conversion and bounded formatting; consumers retain their own RDF, duration and expression policies",
+    "rustPath": "crates/semantica-numeric",
+    "status": "source_only"
+  },
+  {
+    "effects": "SourceProvider read of exact caller assets only; no filesystem/model/native OCR or Project mutation",
+    "failures": "Source hash/mutation, unsupported PNG subset/frames/chunks, CRC/zlib/tails/decoded caps, invalid UTF8/TSV coordinates/confidence/line budget and replay changes reject",
+    "kind": "calculation",
+    "name": "semantic_page_content3",
+    "platform": "Pure Rust source content; actual real PNG fixture is current aarch64 Darwin; all original formats/provider/runtime/platform closure remain required unknown",
+    "purpose": "Source content helper in existing neutral semantic runtime; no new Project/Dataset/registry/credential/dispatcher/owner",
+    "rustPath": "crates/semantica-runtime",
+    "status": "source_only"
+  },
+  {
+    "effects": "Only injected caller state; no credential, call budget, transport, graph or fallback authority",
+    "failures": "Exact original unknown-name and constructor exception categories; opaque Python objects/SDK internals remain separately uncovered",
+    "kind": "state_machine",
+    "name": "semantic_provider_factory",
+    "platform": "Rust neutral local; finite JSON and explicit Python list/tuple/dict/scalar profile",
+    "purpose": "Original dynamic provider registry, all-kwargs instance reuse and caller-injected construction; no production global state",
+    "rustPath": "crates/semantica-runtime",
+    "status": "source_only"
+  },
+  {
+    "effects": "Bounded local parse of supplied source only; no alternate Dataset, query registry, fact authority or runtime owner",
+    "failures": "Original syntax and aggregate/reassignment/remote policy failures remain; compatibility and original errors separately observed",
+    "kind": "calculation",
+    "name": "semantic_query_parser",
+    "platform": "Rust1.95 offline spargebra0.4.7 same upstream commit and retained MIT/Apache licenses",
+    "purpose": "Pinned parser subcomponent of the same semantic owner; neutral default grammar and existing numeric patch stay, explicit profile2 genuinely lowers Describe modifier keys and separately returns selected target metadata",
+    "rustPath": "vendor/spargebra",
+    "status": "source_only"
+  },
+  {
+    "effects": "Local algebra transport only, no second Dataset or interpreter; default AST construction remains, private chain consumers must bypass the complete optimizer",
+    "failures": "Conservative chain type/optimizer handling is not whole-optimizer qualification; unsupported private expressions/operators, full numeric/context/wrapper gaps and source-binding failures remain explicit",
+    "kind": "calculation",
+    "name": "semantic_query_planner",
+    "platform": "Rust1.95 offline, pinned Oxigraph commit0e81a29d27575ab69e7f85ea9c7f1058b277fcd0, original MIT OR Apache-2.0 licenses retained",
+    "purpose": "Pinned sparopt0.3.7 planner subcomponent of the existing semantic_evaluator owner; preserve explicitly requested arithmetic sequence shape, operator order and nested expression boundaries through the same algebra transport",
+    "rustPath": "vendor/sparopt",
+    "status": "source_only"
+  },
+  {
+    "effects": "Bounded local source parse using the existing recognizer; facts follow actual parser emissions into the same DatasetSession stage",
+    "failures": "Strict native syntax failures remain. Source-specific explicit typed rdf:langString is admitted only under private opt-in and independent observation. Input/dataset/source binding failures cannot publish staged data or clear prior caches.",
+    "kind": "calculation",
+    "name": "semantic_rdf_parser",
+    "platform": "Rust1.95 offline oxttl0.2.4 with unchanged pinned dependency selections and retained MIT/Apache licenses",
+    "purpose": "Parser subcomponent of the existing semantic_runtime owner. Capture plain versus explicit datatype and original language spelling before native RDF1.1 representation erases it; source/core identity remains bound to the actual parsed quad.",
+    "rustPath": "vendor/oxttl",
+    "status": "source_only"
+  },
+  {
+    "effects": "Local staged RDF/XML parsing with original input/dataset limits and per-emission source/native facts",
+    "failures": "Original strict native syntax unchanged; private empty-language reset follows original RDFLib. Paired-fact, syntax, source-normalization and budget errors cannot publish or clear existing caches.",
+    "kind": "calculation",
+    "name": "semantic_rdf_xml_parser",
+    "platform": "Rust1.95 offline oxrdfxml0.2.4 with unchanged other lock selections",
+    "purpose": "Implementation subcomponent of existing semantic_runtime owner; preserve origin before native RDF terms erase plain/typed and language spelling distinctions, including reification clones.",
+    "rustPath": "vendor/oxrdfxml",
+    "status": "source_only"
+  },
+  {
+    "effects": "Caller-owned content/event store only; no second Project/version owner or credentials/budget/publication authority",
+    "failures": "Malformed original data, source/actor/baseline drift, out-of-order lifecycle and unknown gates stay explicit",
+    "kind": "governance",
+    "name": "semantic_refinery",
+    "platform": "portable Rust data profile; native/platform/rights/full suite separately verified",
+    "purpose": "Neutral original refinery DTO validation and the single governed content/event algorithm",
+    "rustPath": "crates/semantica-runtime",
+    "status": "source_only"
+  },
+  {
+    "effects": "受控内存dataset/session修订、包加载身份、缓存和Datalog状态；来源只读，准备输出由工程适配持久化",
+    "failures": "explicit structured failure and unknown scope; no fallback Python or silent source conversion",
+    "kind": "calculation",
+    "name": "semantic_runtime",
+    "platform": "Rust native local; declared formats and budgets; no external provider or device authorization",
+    "purpose": "工程本体代码化核心的通用实现：Rust RDF/SHACL/rules/query/dataset/books，工程规则与编排委托同一算法；中性层不反依赖oe-*工程/知识/CAD/模型服务",
+    "rustPath": "crates/semantica-runtime",
+    "status": "source_only"
+  },
+  {
+    "effects": "Validate/construct/dump candidates; no model credentials, graph, Project, adoption or registry authority",
+    "failures": "Unknown model/profile/unsupported shape and budgets fail closed; invalid fields return issues",
+    "kind": "calculation",
+    "name": "semantic_schema",
+    "platform": "portable Rust; JSON profile independently verified; original Python/nonfinite domains separate",
+    "purpose": "Single neutral validator and explicit original model APIs driven exclusively by genuine-ggen model descriptors",
+    "rustPath": "crates/semantica-runtime",
+    "status": "source_only"
+  },
+  {
+    "effects": "同一session事务性ContextGraph变更、决策观测与query缓存；host显式装载ContextGraph记录到同一Dataset；累计byte/call预算由同一注入budget；无模型、凭据、工程事实采纳或版本选择",
+    "failures": "显式legacy只读入口保留未连接；native工具按实际backend/原始异常/修正版profile分别取证；query/source/revision/预算失败不得当完成；原profile差异单列",
+    "kind": "adapter",
+    "name": "semantic_service",
+    "platform": "Rust native stdio and in-process ports; HTTP/SSE/WebSocket/WASM not_connected; Windows not_run",
+    "purpose": "工程本体代码化核心的中性服务：原MCP目录/stdio协议、同一DatasetSession查询与显式ContextGraph记录投影；工程Project/采用/版本/模型凭据由上层唯一owner提供",
+    "rustPath": "crates/semantica-service",
+    "status": "source_only"
+  },
+  {
+    "effects": "Pure in-memory fixed source date/time and calendar Duration parsing, caller-owned Decimal operations and immutable temporal values; consumer-specific budgets, constructor facts, failures and engineering authority remain with existing owners",
+    "failures": "Explicit parse failure distinct from lexical-preservation policy; incompatible naive/aware comparison is distinct from Literal fallback; arbitrary Python datetime/tzinfo/fold, timezone databases, complete arithmetic/API and unreceived calendar error constructors remain outside received scope",
+    "kind": "calculation",
+    "name": "semantic_temporal",
+    "platform": "Rust1.95, existing locked chrono0.4.43 with std only; native target execution needs its own acceptance",
+    "purpose": "Shared temporal parsing/value leaf extracted from the existing semantic_runtime normalizer, used by that runtime and the same semantic_evaluator; not a second Dataset, query engine, engineering decision or adoption owner",
+    "rustPath": "crates/semantica-temporal",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "adapter",
+    "name": "semantic_transport",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "旧资产及工作室来源运输，Rust书籍执行与发布证据适配；旧Python执行退役，历史身份不升级",
+    "rustPath": "crates/oe-semantic",
+    "status": "source_only"
+  },
+  {
+    "effects": "Neutral provider source reads or existing controlled process only; model/Project0",
+    "failures": "Source/process/content drift, malformed or oversized TSV, false receipt authority, expired deadline reject; original raw retained",
+    "kind": "calculation",
+    "name": "semantic_tsv_source5",
+    "platform": "Current local Darwin original188 development page; all original platform/runtime/provider loading remain required unknown",
+    "purpose": "Existing source/content adapter; no new owner, client, Project, registry, model or budget ledger",
+    "rustPath": "crates/semantica-runtime",
+    "status": "source_only"
+  },
+  {
+    "effects": "Dispatch candidates only through existing authority, report validation/retry observations; never engineer adoption",
+    "failures": "Budget/credential/unknown/schema failures remain separate; original SDK Instructor profile not granted by manual parity",
+    "kind": "pipeline",
+    "name": "semantic_typed",
+    "platform": "Portable Rust; explicit finite JSON/manual profile",
+    "purpose": "Original manual typed generation and schema validation through an injected shared call authority",
+    "rustPath": "crates/semantica-runtime",
+    "status": "source_only"
+  },
+  {
+    "effects": "只新建显式launch目录和日志，以CREATE_NO_WINDOW启动同目录精确worker；不切焦点、不操作foreign",
+    "failures": "启动错误原件、worker真实失败和600秒outcome unknown分别保存；未知不终止、不重试",
+    "kind": "adapter",
+    "name": "sw_session_host",
+    "platform": "Windows x86_64 MSVC GUI子系统；非Windows和session0拒绝",
+    "purpose": "同一受控SW worker在InteractiveToken会话的无窗口Rust启动与实际进程/stream/终态回收",
+    "rustPath": "crates/oe-sw-worker/src/session_host.rs",
+    "status": "source_only"
+  },
+  {
+    "effects": "显式新目录和owned非输入桌面；既有CAD不附着不关闭",
+    "failures": "未知COM结果和未观测退出保留，禁止重试写入；worker须在首次CoInitializeEx前关联自身线程到同一非输入桌面，输入前台由原桌面只读线程观察，释放COM/STA后才恢复自身关联；不SwitchDesktop、不改COM注册策略",
+    "kind": "adapter",
+    "name": "sw_worker",
+    "platform": "Windows x86_64 MSVC；其他平台仅合同检查",
+    "purpose": "SolidWorks 原生 STA COM、有限零件任务与真实 owned 进程/文件证据；实际 CAD 另验",
+    "rustPath": "crates/oe-sw-worker",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "adapter",
+    "name": "windows_controller",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "Windows 受控任务进程与工作区",
+    "rustPath": "crates/oe-windows-controller",
+    "status": "source_only"
+  },
+  {
+    "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
+    "failures": "保留失败、未知、局部结果与恢复身份",
+    "kind": "contract",
+    "name": "wire",
+    "platform": "macOS/Linux 本地；Windows/NX/浏览器按各自证据",
+    "purpose": "严格 JSON、规范摘要与 Unicode 比较",
+    "rustPath": "crates/oe-wire",
+    "status": "source_only"
+  }
+]

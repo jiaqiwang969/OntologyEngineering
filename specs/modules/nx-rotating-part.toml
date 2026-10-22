@@ -1,0 +1,204 @@
+schema="oev2.design-fragment/2"
+
+[[sources]]
+id="nx2412_controlled_cylinder_sdk"
+identity="NX2412 uf_modl_primitives.h fd286c6229355eb4ca864081d897427a5319992a61a030731fa7030b8d12ab18: UF_MODL_create_cyl1 bottom-centre/direction, UF_NULLSIGN new body; uf_modl.h dfc277d0e465de943e548c5ec4c435a1f36f716a91b5f5ca75c7a25d8869d8d4 face16 cylinder/22 plane. Header copies stay private; native execution separate."
+role="Installed vendor ABI/semantics, source only until actual current build/native validation"
+applicability="NX2412 controlled new cylinder; no header redistribution/old cad-agent execution"
+
+[[types]]
+identity="Explicit source bytes and declared feature/object geometry, not native tag or physical adoption"
+name="NxCylinderIntent"
+contract_group="engineering"
+meaning="v2现NX owner有限正圆柱/mm/+Z源意图合同；旧fixture/schema保持；采用、Windows及native证据分别验收"
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="意图版本"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+allowed_values=["oev2.nx-cylinder-intent/1"]
+[[types.fields]]
+name="object"
+rust_type="ObjectIdentity"
+required=true
+format="typed"
+meaning="源当前工程对象声明"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+[[types.fields]]
+name="feature_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="独立意图特征ID；native tag非持久ID"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+[[types.fields]]
+name="unit"
+rust_type="String"
+required=true
+format="typed"
+meaning="本有限profile的长度单位"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+allowed_values=["mm"]
+[[types.fields]]
+name="coordinate_system"
+rust_type="String"
+required=true
+format="typed"
+meaning="明确当前part绝对Cartesian坐标声明"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+allowed_values=["absolute_part_cartesian"]
+[[types.fields]]
+name="origin_mm"
+rust_type="Vec<f64>"
+required=true
+format="typed"
+meaning="底面中心三维坐标"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+[[types.fields]]
+name="axis_direction"
+rust_type="Vec<f64>"
+required=true
+format="typed"
+meaning="精确+Z；不得静默归一或扩任意轴"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+[[types.fields]]
+name="diameter_mm"
+rust_type="f64"
+required=true
+format="typed"
+meaning="独立直径设计输入"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+[[types.fields]]
+name="length_mm"
+rust_type="f64"
+required=true
+format="typed"
+meaning="独立轴向长度设计输入"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+[[types.fields]]
+name="source_role"
+rust_type="String"
+required=true
+format="typed"
+meaning="软件fixture与独立设计声明，不授物理采用"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+allowed_values=["independent_software_fixture", "independent_design_declaration"]
+
+[[types]]
+identity="Explicit source bytes and declared feature/object geometry, not native tag or physical adoption"
+name="NxCylinderCreateParameters"
+contract_group="engineering"
+meaning="v2现NX owner有限正圆柱/mm/+Z源意图合同；旧fixture/schema保持；采用、Windows及native证据分别验收"
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="新参数版本"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+allowed_values=["oev2.nx-rotating-part-params/1"]
+[[types.fields]]
+name="action"
+rust_type="String"
+required=true
+format="typed"
+meaning="仅新建单圆柱独立实体"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+allowed_values=["create_cylinder_solid"]
+[[types.fields]]
+name="intent"
+rust_type="ArtifactReference"
+required=true
+format="typed"
+meaning="worker输入manifest内意图实际原字节SHA，不只是JSON自称"
+unit="明确mm/+Z；非计量合格或材料/摩擦证据"
+precision="Rust有限输入/真实源bytes校验；几何匹配阈值不是制造公差"
+write="agent维护源意图；Rust重核，native只按已验证有限值调用"
+applicability="单新体正圆柱；非阶梯/任意轴/Journal/旧cad-agent/参考件定案"
+acceptance="输入源/坐标/拓扑/完整circle/save与独立新process reopen分别核；unknown不署pass"
+
+[[constraints]]
+id="nx_cylinder_source_and_geometry"
+requirement="req_engineering"
+module="nx_worker"
+check="execute"
+rust_path="crates/oe-nx-worker/src/geometry.rs"
+statement="New create_cylinder_solid and inspect_cylinder_solid use actual Job inputs intent bytes/hash before part mutation. Finite128KiB strict intent, mm, exact+Z and bounded positive dimensions/origin, explicit source object/feature ID. UF_NULLSIGN via SDK ABI creates a new body; no negated negative sign or journal. Existing source/controlled representation/complete ownbody, exact bound recomputation, cylinder+two plane topology and original model_edges unique full-circle checks stay mandatory. Native save/input bytes and distinct-process reopen remain separate; no physical/machining/reference-part adoption inferred."
+severity="error"
+
+[[validations]]
+id="nx_cylinder_software_boundaries"
+module="nx_worker"
+constraint="nx_cylinder_source_and_geometry"
+behavior="source_bound_cylinder_intent_and_independent_geometry_controls"
+rust_path="crates/oe-nx-worker/tests/rotating_part.rs"
+oracle="Independent nonzero-origin/+Z dimensional intent; invalid unit/axis/dimension/schema/source digest and missing intent refuse with zero part mutation. Wrong radius/length/axis/face/topology/circle membership/owner/partial codes fail, not bbox-only. Existing fixture callbacks remain synthetic and no native PASS is fabricated."
+scope="macOS local software tests; current Windows/vendor ABI/build/create-save/freshprocess only from separate actual records"
+
+[[validations]]
+id="nx_cylinder_local_cli_bound_input"
+module="cad"
+constraint="nx_cylinder_source_and_geometry"
+behavior="cylinder_plan_uses_actual_source_bytes_and_existing_nx_prepare_coordinate_boundary"
+rust_path="crates/oe-cad/tests/rotating_part.rs"
+oracle="Intent byteSHA read from actual bounded regular file, exact worker input member mapping, raw source preserved; no connection/CAD/API during local plan. Unknown target/native/engineering qualification retained."
+scope="local software source/parameter planning, no remote write"
+
+[[validations]]
+id="nx_cylinder_independent_complete_observation"
+module="nx_worker"
+constraint="nx_cylinder_source_and_geometry"
+behavior="independent_frozen_cylinder_shape_and_negative_controls"
+rust_path="crates/oe-nx-worker/tests/rotating_part_observation.rs"
+oracle="Independent author frozen A/B source values and twelve complete observation controls: old circle owner/catalog/code semantics, fullface unique u32 tags, 1e-9 directions, ExactBounds recomputation, controlled representation, actual mass summary/raw47/unit/body and independent max1e-5mm3/1e-6rel volume predicate. Synthetic inputs are not native execution or physical adoption."
+scope="Finite local software oracle; current Windows/native A/B and distinct-process reopen separately verified"

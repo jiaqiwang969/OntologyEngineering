@@ -1,0 +1,3505 @@
+{
+  "schema": "private.source-native-path-scan-receiving/1",
+  "candidate_results_used": false,
+  "source_record_sha256": "c6e37f6cad2381c07a2d8c83c5352a8adee7618c2fc5e4b2b22f0b50b07e1361",
+  "cases": [
+    {
+      "input": {
+        "id": "PN01",
+        "dataset": "base",
+        "path": {
+          "kind": "named",
+          "iri": "urn:ex:q"
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_18",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN02",
+        "dataset": "base",
+        "path": {
+          "kind": "inverse",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          }
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN03",
+        "dataset": "base",
+        "path": {
+          "kind": "sequence",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:q"
+            },
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_20",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_20",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        2,
+        3
+      ]
+    },
+    {
+      "input": {
+        "id": "PN04",
+        "dataset": "base",
+        "path": {
+          "kind": "sequence",
+          "args": [
+            {
+              "kind": "sequence",
+              "args": [
+                {
+                  "kind": "named",
+                  "iri": "urn:ex:q"
+                },
+                {
+                  "kind": "named",
+                  "iri": "urn:ex:p"
+                }
+              ]
+            },
+            {
+              "kind": "named",
+              "iri": "urn:ex:q"
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_20",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_17",
+            "lexical": "a",
+            "datatype": null,
+            "language": null,
+            "ill_typed": null,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a')",
+            "hash": 4644417185603328019
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_21",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_20",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        4
+      ]
+    },
+    {
+      "input": {
+        "id": "PN05",
+        "dataset": "base",
+        "path": {
+          "kind": "alternative",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            },
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_19",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_20",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "input": {
+        "id": "PN06",
+        "dataset": "base",
+        "path": {
+          "kind": "alternative",
+          "args": [
+            {
+              "kind": "alternative",
+              "args": [
+                {
+                  "kind": "named",
+                  "iri": "urn:ex:q"
+                },
+                {
+                  "kind": "named",
+                  "iri": "urn:ex:p"
+                }
+              ]
+            },
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_20",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_21",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3
+      ]
+    },
+    {
+      "input": {
+        "id": "PN07",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "?"
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "input": {
+        "id": "PN08",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "*"
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_12",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_3",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        5,
+        5,
+        7,
+        7
+      ]
+    },
+    {
+      "input": {
+        "id": "PN09",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "+"
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_12",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_3",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        4,
+        4,
+        6,
+        6
+      ]
+    },
+    {
+      "input": {
+        "id": "PN10",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "*"
+        },
+        "subject": {
+          "kind": "named",
+          "iri": "urn:ex:a"
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_20",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "input": {
+        "id": "PN11",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "*"
+        },
+        "subject": null,
+        "object": {
+          "kind": "named",
+          "iri": "urn:ex:b"
+        }
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_20",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_12",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          }
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1,
+        2
+      ]
+    },
+    {
+      "input": {
+        "id": "PN12",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "*"
+        },
+        "subject": {
+          "kind": "named",
+          "iri": "urn:ex:missing"
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:missing",
+            "object_token": "object_20",
+            "hash": -7331820587960973627,
+            "repr": "rdflib.term.URIRef('urn:ex:missing')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN13",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "*"
+        },
+        "subject": null,
+        "object": {
+          "kind": "named",
+          "iri": "urn:ex:missing"
+        }
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:missing",
+            "object_token": "object_20",
+            "hash": -7331820587960973627,
+            "repr": "rdflib.term.URIRef('urn:ex:missing')"
+          }
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN14",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "*"
+        },
+        "subject": {
+          "kind": "error"
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "Exception",
+            "module": "rdflib.plugins.sparql.sparql",
+            "class_name": "NotBoundError",
+            "args": [
+              null
+            ]
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN15",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "*"
+        },
+        "subject": {
+          "kind": "literal",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "normalize": false
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_12",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_3",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        5,
+        5,
+        7,
+        7
+      ]
+    },
+    {
+      "input": {
+        "id": "PN16",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "?"
+        },
+        "subject": {
+          "kind": "literal",
+          "lexical": "",
+          "datatype": null,
+          "normalize": false
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "input": {
+        "id": "PN17",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "*"
+        },
+        "subject": {
+          "kind": "literal",
+          "lexical": "false",
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "normalize": false
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_12",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_3",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        5,
+        5,
+        7,
+        7
+      ]
+    },
+    {
+      "input": {
+        "id": "PN18",
+        "dataset": "base",
+        "path": {
+          "kind": "sequence",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            },
+            {
+              "kind": "named",
+              "iri": "urn:ex:q"
+            }
+          ]
+        },
+        "subject": null,
+        "object": {
+          "kind": "literal",
+          "lexical": "a",
+          "datatype": null,
+          "normalize": false
+        }
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_20",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "Literal",
+            "object_token": "object_21",
+            "lexical": "a",
+            "datatype": null,
+            "language": null,
+            "ill_typed": null,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a')",
+            "hash": 4644417185603328019
+          }
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN19",
+        "dataset": "base",
+        "path": {
+          "kind": "negated",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN20",
+        "dataset": "base",
+        "path": {
+          "kind": "negated",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            },
+            {
+              "kind": "named",
+              "iri": "urn:ex:q"
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN21",
+        "dataset": "base",
+        "path": {
+          "kind": "negated",
+          "args": [
+            {
+              "kind": "inverse",
+              "arg": {
+                "kind": "named",
+                "iri": "urn:ex:q"
+              }
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_2",
+            "lexical": "1",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.int",
+            "cache": 1,
+            "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+            "hash": 8497766722161585720
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_20",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_0",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          }
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_20",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_3",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          }
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_8",
+            "lexical": "1",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.int",
+            "cache": 1,
+            "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+            "hash": 8497766722161585720
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_20",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_6",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          }
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_11",
+            "lexical": "01",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.int",
+            "cache": 1,
+            "repr": "rdflib.term.Literal('01', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+            "hash": -6783971947208886399
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_20",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_9",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          }
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_20",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_12",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          }
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_17",
+            "lexical": "a",
+            "datatype": null,
+            "language": null,
+            "ill_typed": null,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a')",
+            "hash": 4644417185603328019
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_20",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_15",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          }
+        ]
+      ],
+      "scan_starts_after_poll": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        7
+      ]
+    },
+    {
+      "input": {
+        "id": "PN22",
+        "dataset": "base",
+        "path": {
+          "kind": "negated",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:q"
+            },
+            {
+              "kind": "untranslated",
+              "name": "InversePath",
+              "fields": []
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [],
+      "scan_starts_after_error": 1
+    },
+    {
+      "input": {
+        "id": "PN23",
+        "dataset": "base",
+        "path": {
+          "kind": "negated",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            },
+            {
+              "kind": "untranslated",
+              "name": "InversePath",
+              "fields": []
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [],
+      "scan_starts_after_error": 1
+    },
+    {
+      "input": {
+        "id": "PN24",
+        "dataset": "base",
+        "path": {
+          "kind": "inverse",
+          "arg": {
+            "kind": "sequence",
+            "args": [
+              {
+                "kind": "named",
+                "iri": "urn:ex:q"
+              },
+              {
+                "kind": "named",
+                "iri": "urn:ex:p"
+              }
+            ]
+          }
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_20",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_21",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_21",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        2,
+        3
+      ]
+    },
+    {
+      "input": {
+        "id": "PN25",
+        "dataset": "base",
+        "path": {
+          "kind": "sequence",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:q"
+            },
+            {
+              "kind": "inverse",
+              "arg": {
+                "kind": "named",
+                "iri": "urn:ex:q"
+              }
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_21",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_21",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "Literal",
+            "object_token": "object_5",
+            "lexical": "a",
+            "datatype": "http://www.w3.org/2001/XMLSchema#string",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+            "hash": -5635284436390693945
+          }
+        ]
+      ],
+      "scan_starts_after_poll": [
+        2,
+        3,
+        3
+      ]
+    },
+    {
+      "input": {
+        "id": "PN26",
+        "dataset": "base",
+        "path": {
+          "kind": "sequence",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:q"
+            },
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            }
+          ]
+        },
+        "subject": {
+          "kind": "named",
+          "iri": "urn:ex:a"
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_21",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_14",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_20",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        2,
+        2
+      ]
+    },
+    {
+      "input": {
+        "id": "PN27",
+        "dataset": "base",
+        "path": {
+          "kind": "sequence",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:q"
+            },
+            {
+              "kind": "named",
+              "iri": "urn:ex:p"
+            }
+          ]
+        },
+        "subject": null,
+        "object": {
+          "kind": "literal",
+          "lexical": "a",
+          "datatype": null,
+          "normalize": false
+        }
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:p",
+            "object_token": "object_20",
+            "hash": -4701215664052978997,
+            "repr": "rdflib.term.URIRef('urn:ex:p')"
+          },
+          {
+            "kind": "Literal",
+            "object_token": "object_21",
+            "lexical": "a",
+            "datatype": null,
+            "language": null,
+            "ill_typed": null,
+            "cache_type": "builtins.str",
+            "cache": "a",
+            "repr": "rdflib.term.Literal('a')",
+            "hash": 4644417185603328019
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_15",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          }
+        ]
+      ],
+      "scan_starts_after_poll": [
+        2,
+        2
+      ]
+    },
+    {
+      "input": {
+        "id": "PN28",
+        "dataset": "base",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:q"
+          },
+          "mod": "*"
+        },
+        "subject": null,
+        "object": {
+          "kind": "error"
+        }
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:q",
+            "object_token": "object_19",
+            "hash": 4437612433972393264,
+            "repr": "rdflib.term.URIRef('urn:ex:q')"
+          },
+          {
+            "kind": "Exception",
+            "module": "rdflib.plugins.sparql.sparql",
+            "class_name": "NotBoundError",
+            "args": [
+              null
+            ]
+          }
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN29",
+        "dataset": "cycles",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:e"
+          },
+          "mod": "*"
+        },
+        "subject": {
+          "kind": "named",
+          "iri": "urn:ex:a"
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_44",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_26",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1,
+        2,
+        3,
+        3,
+        4
+      ]
+    },
+    {
+      "input": {
+        "id": "PN30",
+        "dataset": "cycles",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:e"
+          },
+          "mod": "+"
+        },
+        "subject": {
+          "kind": "named",
+          "iri": "urn:ex:a"
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_44",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_26",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        2,
+        3,
+        3,
+        4
+      ]
+    },
+    {
+      "input": {
+        "id": "PN31",
+        "dataset": "cycles",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:e"
+          },
+          "mod": "*"
+        },
+        "subject": null,
+        "object": {
+          "kind": "named",
+          "iri": "urn:ex:d"
+        }
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_44",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_27",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_15",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_6",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          }
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        4
+      ]
+    },
+    {
+      "input": {
+        "id": "PN32",
+        "dataset": "cycles",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:e"
+          },
+          "mod": "*"
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_36",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_26",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_6",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_17",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_29",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_15",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_17",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_26",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_39",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        6,
+        6,
+        6,
+        10,
+        10,
+        10,
+        14,
+        14,
+        14,
+        15
+      ]
+    },
+    {
+      "input": {
+        "id": "PN33",
+        "dataset": "cycles",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:e"
+          },
+          "mod": "?"
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    {
+      "input": {
+        "id": "PN34",
+        "dataset": "cycles",
+        "path": {
+          "kind": "sequence",
+          "args": [
+            {
+              "kind": "repeat",
+              "arg": {
+                "kind": "named",
+                "iri": "urn:ex:e"
+              },
+              "mod": "*"
+            },
+            {
+              "kind": "repeat",
+              "arg": {
+                "kind": "named",
+                "iri": "urn:ex:e"
+              },
+              "mod": "?"
+            }
+          ]
+        },
+        "subject": {
+          "kind": "named",
+          "iri": "urn:ex:a"
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_47",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_46",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_47",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_44",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_46",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_44",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_46",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_44",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_17",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_46",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_26",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_46",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_26",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_44",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1,
+        1,
+        2,
+        3,
+        3,
+        4,
+        5,
+        6,
+        7,
+        7,
+        7,
+        8,
+        9
+      ]
+    },
+    {
+      "input": {
+        "id": "PN35",
+        "dataset": "cycles",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "alternative",
+            "args": [
+              {
+                "kind": "named",
+                "iri": "urn:ex:e"
+              },
+              {
+                "kind": "named",
+                "iri": "urn:ex:f"
+              }
+            ]
+          },
+          "mod": "+"
+        },
+        "subject": {
+          "kind": "named",
+          "iri": "urn:ex:a"
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_46",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_44",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_44",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_44",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_26",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_44",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_26",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_46",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1,
+        2,
+        3,
+        4,
+        8
+      ]
+    },
+    {
+      "input": {
+        "id": "PN36",
+        "dataset": "cycles",
+        "path": {
+          "kind": "sequence",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:e"
+            },
+            {
+              "kind": "inverse",
+              "arg": {
+                "kind": "named",
+                "iri": "urn:ex:e"
+              }
+            }
+          ]
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_45",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_45",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_45",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_17",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_45",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_29",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_45",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_29",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          }
+        ],
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_45",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_29",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          }
+        ]
+      ],
+      "scan_starts_after_poll": [
+        2,
+        3,
+        4,
+        5,
+        5,
+        5,
+        6,
+        6,
+        6,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "input": {
+        "id": "PN37",
+        "dataset": "cycles",
+        "path": {
+          "kind": "sequence",
+          "args": [
+            {
+              "kind": "named",
+              "iri": "urn:ex:e"
+            },
+            {
+              "kind": "named",
+              "iri": "urn:ex:f"
+            }
+          ]
+        },
+        "subject": {
+          "kind": "literal",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "normalize": false
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "Literal",
+            "object_token": "object_45",
+            "lexical": "0",
+            "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+            "language": null,
+            "ill_typed": false,
+            "cache_type": "builtins.int",
+            "cache": 0,
+            "repr": "rdflib.term.Literal('0', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+            "hash": -7139167054472368061
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN38",
+        "dataset": "cycles",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:e"
+          },
+          "mod": "*"
+        },
+        "subject": {
+          "kind": "error"
+        },
+        "object": null
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "Exception",
+            "module": "rdflib.plugins.sparql.sparql",
+            "class_name": "NotBoundError",
+            "args": [
+              null
+            ]
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        0,
+        1
+      ]
+    },
+    {
+      "input": {
+        "id": "PN39",
+        "dataset": "cycles",
+        "path": {
+          "kind": "repeat",
+          "arg": {
+            "kind": "named",
+            "iri": "urn:ex:e"
+          },
+          "mod": "+"
+        },
+        "subject": {
+          "kind": "named",
+          "iri": "urn:ex:a"
+        },
+        "object": {
+          "kind": "named",
+          "iri": "urn:ex:a"
+        }
+      },
+      "scan_starts": [
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_44",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_26",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_43",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        3,
+        4
+      ]
+    },
+    {
+      "input": {
+        "id": "PN40",
+        "dataset": "cycles",
+        "path": {
+          "kind": "inverse",
+          "arg": {
+            "kind": "sequence",
+            "args": [
+              {
+                "kind": "named",
+                "iri": "urn:ex:e"
+              },
+              {
+                "kind": "named",
+                "iri": "urn:ex:f"
+              }
+            ]
+          }
+        },
+        "subject": null,
+        "object": null
+      },
+      "scan_starts": [
+        [
+          null,
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:e",
+            "object_token": "object_44",
+            "hash": -8182137191164316118,
+            "repr": "rdflib.term.URIRef('urn:ex:e')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:b",
+            "object_token": "object_38",
+            "hash": 6745148452486595697,
+            "repr": "rdflib.term.URIRef('urn:ex:b')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:c",
+            "object_token": "object_8",
+            "hash": -1076999870454964790,
+            "repr": "rdflib.term.URIRef('urn:ex:c')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:a",
+            "object_token": "object_17",
+            "hash": -8254708020879158069,
+            "repr": "rdflib.term.URIRef('urn:ex:a')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_29",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_29",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ],
+        [
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:d",
+            "object_token": "object_29",
+            "hash": 2693107044265346868,
+            "repr": "rdflib.term.URIRef('urn:ex:d')"
+          },
+          {
+            "kind": "URIRef",
+            "value": "urn:ex:f",
+            "object_token": "object_45",
+            "hash": 2080953863235733067,
+            "repr": "rdflib.term.URIRef('urn:ex:f')"
+          },
+          null
+        ]
+      ],
+      "scan_starts_after_poll": [
+        2,
+        3,
+        7
+      ]
+    }
+  ]
+}

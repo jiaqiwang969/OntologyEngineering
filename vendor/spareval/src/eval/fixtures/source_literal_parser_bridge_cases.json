@@ -1,0 +1,246 @@
+{
+  "schema": "public.source-literal-parser-bridge-cases/1",
+  "source_record": "SOURCE-LITERAL-PARSER-BRIDGE-FROZEN-02.json",
+  "source_record_sha256": "04a072ca2b02cbe8f24c48ae96f24b3649f9e67318c3f7fd5f5f92025a23145e",
+  "classification": "Original fixed source derivation for unchanged cases and explicit Rust bridge policies, plus two newly observed original grammar controls after a Rust diagnostic exposed a source-path inference error. Corrected BP04 is development replay; no Rust values define expectations.",
+  "payload_sha256": "5995286966d8782dc95f0b234721d9d44fede72116558c11c750a858b84280b6",
+  "payload": {
+    "environment": {
+      "literal_semantics": "SourceLiteralV1",
+      "numeric_capabilities": "MixedBinary64V1",
+      "decimal_context": {
+        "precision": 28,
+        "Emin": -999999,
+        "Emax": 999999,
+        "rounding": "HALF_EVEN",
+        "clamp": 0,
+        "traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow"
+        ]
+      },
+      "numeric_limits": {
+        "max_input_characters": 4096,
+        "max_coefficient_digits": 4096,
+        "max_output_characters": 4096,
+        "max_materialized_power_of_ten": 4096
+      },
+      "normalize_literals": true,
+      "context_semantics": "SourceContextV1",
+      "group_semantics": "SourceAggregateV1",
+      "hash_policy": {
+        "seeded": 0
+      }
+    },
+    "source_query_cases": [
+      {
+        "id": "BQ01",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "query": "SELECT ?x ?y WHERE { VALUES ?x { 1 1 } BIND(2 AS ?y) }",
+          "initial_bindings": []
+        },
+        "expected": {
+          "rows": [
+            {
+              "x": "1",
+              "y": "2"
+            },
+            {
+              "x": "1",
+              "y": "2"
+            }
+          ],
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "ill_typed": false,
+          "x_source_objects_same_between_rows": false,
+          "y_source_objects_same_between_rows": true,
+          "source_flags": [],
+          "second_terminal_poll_none": true
+        },
+        "basis": [
+          "parser.py272-316 constructs each numeric occurrence as a Literal",
+          "evalutils.py118-126 returns actual Literal expression unchanged",
+          "evaluate.py124-138 evalExtend merges selected cell without reconstructing Literal",
+          "evaluate.py255-268 evalValues preserves incoming cell object"
+        ]
+      }
+    ],
+    "bridge_controls": [
+      {
+        "id": "BP01",
+        "classification": "active_actual_grammar_occurrence_transport",
+        "input": {
+          "query": "SELECT ?x ?y WHERE { VALUES ?x { 1 1 } BIND(2 AS ?y) }",
+          "actual_entry": "SparqlParser.parse_query_rdflib760_source_exists_frontend with wrappers around production registry hooks, plus independent bound prepare for BQ01"
+        },
+        "expected": {
+          "constructor_callback_count": 3,
+          "unique_occurrence_count": 3,
+          "occurrence_indices": [
+            0,
+            1,
+            2
+          ],
+          "same_rdf_different_span_source_objects_distinct": true,
+          "actual_ast_leaf_resolves_original_constructed_object": true,
+          "two_truth_calls_per_actual_ast_literal_do_not_increase_construct_count": true,
+          "flags_after_truth_and_lower_reverse": [],
+          "lower_reverse_preserves_occurrence": true
+        },
+        "boundary": "Callback count is project bridge policy, not a claim that Python internally constructs exactly3 Literal objects. Wrappers forward real factory and never compute expectations."
+      },
+      {
+        "id": "BP02",
+        "classification": "active_preparation_scope",
+        "input": {
+          "query": "SELECT (1 AS ?x) WHERE {}",
+          "registries": 2,
+          "shared_numeric_session": true
+        },
+        "expected": {
+          "equal_rdf": true,
+          "same_source_object": false,
+          "both_first_indices": 0,
+          "foreign_registry_resolve_error": "InvalidSourceOrigin",
+          "foreign_registry_truth_error": "InvalidSourceOrigin",
+          "foreign_error_is_typed": true,
+          "flags": []
+        }
+      },
+      {
+        "id": "BP03",
+        "classification": "active_occurrence_description_and_owner",
+        "input": {
+          "query": "SELECT (1 AS ?x) WHERE {}",
+          "tampering": [
+            "rdf_lexical",
+            "datatype",
+            "origin",
+            "registry_resolve_occurrence_removed",
+            "resolve_stamped_literal_without_registry"
+          ]
+        },
+        "expected": {
+          "each_error": "InvalidSourceOrigin",
+          "original_leaf_still_resolves_same_object": true,
+          "flags": []
+        },
+        "boundary": "Removing occurrence is rejected by registry.resolve; generic old resolver None-path stays its historical constructor. This control does not forbid legitimate old unstamped inputs."
+      },
+      {
+        "id": "BP04",
+        "classification": "original_observed_unary_decimal_query_post_exposure_correction",
+        "input": {
+          "query": "SELECT (-1.50 AS ?x) WHERE {}"
+        },
+        "expected": {
+          "stage": "complete",
+          "rows": [
+            {
+              "x": "-1.50"
+            }
+          ],
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "ill_typed": null,
+          "numeric_cache": {
+            "family": "Decimal",
+            "negative": true,
+            "coefficient": "150",
+            "exponent": -2
+          },
+          "numeric_flags": [],
+          "result_source_object_same_as_unsigned_operand": false,
+          "unsigned_operand": {
+            "lexical": "1.50",
+            "ill_typed": false
+          }
+        },
+        "basis": [
+          "Original parser.py1048-1055 UnaryExpression consumes - before PrimaryExpression: unsigned Decimal1.50 is cached in UnaryMinus(expr).",
+          "operators.py738-739 returns Literal(-numeric(expr.expr)), yielding Decimal -1.50 and object-construction ill_typed=None. This is distinct from negative numeric-token Literal.__neg__.",
+          "Retained original BP04 query was observed through fixed original runtime in plain/trace after candidate failure; corrected case is exposed development replay, not a fresh blind oracle."
+        ]
+      },
+      {
+        "id": "BP05",
+        "classification": "fixed_source_flags_and_active_no_reconstruction",
+        "input": {
+          "query": "SELECT ?x ?y WHERE { VALUES ?x { 1 2 } BIND(\"bad\"^^<http://www.w3.org/2001/XMLSchema#decimal> AS ?y) }",
+          "environment_overrides": {
+            "decimal_traps": []
+          }
+        },
+        "expected": {
+          "rows": [
+            {
+              "x": "1",
+              "y": "bad"
+            },
+            {
+              "x": "2",
+              "y": "bad"
+            }
+          ],
+          "y_cache_family": "DecimalQuietNaN",
+          "y_source_objects_same_between_rows": true,
+          "flags_after_prepare": [
+            "InvalidOperation"
+          ],
+          "flags_after_execution": [
+            "InvalidOperation"
+          ],
+          "truth_of_output_y": true,
+          "flags_after_truth": [
+            "InvalidOperation"
+          ]
+        },
+        "basis": [
+          "ST22 exact typedexistingLiteral invalid Decimal source construction, untrapped qNaN cache and sticky InvalidOperation",
+          "Actual selected Literal reused by BIND across input rows; no reconstruction at later facts/compile/decoder. Callback count itself is covered separately by BP01."
+        ]
+      },
+      {
+        "id": "BP06",
+        "classification": "original_observed_negative_numeric_token_failure_with_active_typed_transport",
+        "input": {
+          "query": "SELECT ?x WHERE { VALUES ?x { -1.50 } }"
+        },
+        "expected": {
+          "stage": "prepare",
+          "original_stage": "parse_query",
+          "original_exception_class": "TypeError",
+          "original_exception_args": [
+            "Not a number; rdflib.term.Literal('1.50', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#decimal'))"
+          ],
+          "fault": "ParserLiteralType",
+          "numeric_flags": [],
+          "no_dataset_conversion": true
+        },
+        "basis": [
+          "Original VALUES data production uses negative Decimal token, whose parse action invokes Literal.__neg__; cached Decimal is rejected at parser.py312-315/term.py1049-1052.",
+          "This newly observed input supplements the retained original BP04 SELECT; it does not replace that query or change NT09.",
+          "Typed boxed RawNumericFault through source parser/prepare is a separate active transport contract."
+        ]
+      }
+    ]
+  },
+  "not_claimed": [
+    "Seven complete EXISTS translation AST invariants are not covered by these literal-only queries.",
+    "No execution of a SourceExists node, graph/EXISTS context, publicprofile5 or formal release.",
+    "No original constructor callback count observation.",
+    "No synthetic replacement AST executed through a prepared-query entry.",
+    "BP04 is post-exposure corrected development replay; successful Rust receiving is not implied by four original processes."
+  ],
+  "correction_history": {
+    "prior_frozen_record": "SOURCE-LITERAL-PARSER-BRIDGE-FROZEN-01.json",
+    "prior_frozen_sha256": "c4c199e68d0c0cb23deeaaeb8c79e75811e3858a64d41b383facc96940e1142c",
+    "prior_public_sha256": "01bc2738a6725b854c6c022f3a9f51e2d934fe0d5fdf21aad9df20c8c7176b95",
+    "changed_input": false,
+    "changed_case": "BP04",
+    "new_case": "BP06",
+    "original_processes": 4,
+    "exposure": "Source correction after Rust receiving failure, backed by pinned original observations; old oracle/public/failed receipts retained."
+  }
+}

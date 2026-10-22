@@ -1,0 +1,89 @@
+{
+  "schema": "public.source-literal-supplement-cases/1",
+  "source_record_sha256": "c407fab01a3232abd195842ee6bc5707232d574bdf03e6b26ffd7b3b9119f502",
+  "source_record_bytes": 4438,
+  "source_refs": {
+    "term": {
+      "name": "term.py",
+      "bytes": 91610,
+      "sha256": "564280e97c4e64b5b704bd1fff96ebc374ebd2dcc2df134cda62452a3f83c1db"
+    },
+    "sparql": {
+      "name": "sparql.py",
+      "bytes": 15855,
+      "sha256": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f"
+    },
+    "object_c": {
+      "name": "object.c",
+      "bytes": 85282,
+      "sha256": "a8f28e2d8ff6763ea8d5eb481e45c582c7018f78e2889dae2c2a46cfee91693c"
+    },
+    "exceptions_c": {
+      "name": "exceptions.c",
+      "bytes": 111541,
+      "sha256": "310babf80c5c284a1dfd2dd88564a1b61aea5b9f2f14a5b988fadbde038a10c9"
+    }
+  },
+  "payload_sha256": "0f601e1b017141fca063bb6a204b5753ff1e3dfcf99b768f494ca30d8b689b50",
+  "payload": {
+    "environment": {
+      "literal_semantics": "SourceLiteralV1",
+      "numeric_capabilities": "MixedBinary64V1",
+      "decimal_context": {
+        "precision": 28,
+        "Emin": -999999,
+        "Emax": 999999,
+        "rounding": "HALF_EVEN",
+        "clamp": 0,
+        "traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow"
+        ]
+      },
+      "numeric_limits": {
+        "max_input_characters": 4096,
+        "max_coefficient_digits": 4096,
+        "max_output_characters": 4096,
+        "max_materialized_power_of_ten": 4096
+      },
+      "normalize_literals": true
+    },
+    "cases": [
+      {
+        "id": "ET01",
+        "classification": "fixed_original_source_derivation_runtime_object_only",
+        "input": {
+          "source_exception": {
+            "class": "SPARQLError",
+            "argument": ""
+          },
+          "literal_constructor": "Literal(actual_exception_object)"
+        },
+        "expected": {
+          "lexical": "",
+          "source_datatype": {
+            "state": "absent"
+          },
+          "language_original": null,
+          "ill_typed": null,
+          "cached_family": "ErrorObject",
+          "same_original_exception_instance": true,
+          "python_truth": true,
+          "truth_reads": 2,
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "literal_source_object_unchanged": true
+        },
+        "basis": [
+          "sparql.py:35-37 adds no __bool__/__len__; actual Exception argument is the empty string",
+          "term.py:667,695-725 actual object preserved in _value; unsupported object lexical is str(object)",
+          "exceptions.c:119-129 BaseException_str of one argument; BaseException type has no number or sequence truth slots at460-461; Exception inherits BaseException",
+          "term.py:1016-1023 reads bool(non-None cached object)",
+          "object.c:1894-1928 PyObject_IsTrue falls back to true when no boolean/length slot exists"
+        ]
+      }
+    ]
+  },
+  "receiving_scope": "Actual shared factory and pure source truth receiving. Parser registry/PB and full EXISTS execution are separate; ErrorObject is runtime-only, not grammar input."
+}

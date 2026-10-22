@@ -1,0 +1,13 @@
+---
+to: out/checks.rq
+sparql:
+  constraints: 'SELECT ?name ?check WHERE { ?c <urn:oev2:design:kind> "Constraint" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:check> ?check } ORDER BY ?name'
+---
+# Generated constraint coverage query. A missing execution mapping is a finding.
+PREFIX oe: <urn:oev2:design:>
+SELECT ?constraint ?check WHERE {
+  VALUES (?constraint ?check) {
+{% for c in constraints %}    (oe:{{ c.name }} "{{ c.check }}")
+{% endfor %}  }
+  FILTER NOT EXISTS { ?implementation oe:executes ?constraint }
+} ORDER BY ?constraint

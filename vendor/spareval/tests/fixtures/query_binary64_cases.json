@@ -1,0 +1,2232 @@
+{
+  "schema": "source-derived-public-receiving-fixture/1",
+  "source_record_id": "QUERY-BINARY64-FROZEN-01",
+  "source_record_sha256": "69974deeacb163228a361b5b3d03de93ee2fe437c1d5a95361b7d7de62ed34dd",
+  "source_status": "frozen_source_math_not_observed",
+  "authorship_disclosure": "Frozen source/math expectations and this receiving adapter share an author; no original Python or candidate output generated expected answers. Runtime receiving is separate.",
+  "payload_canonical_sha256": "5835a77c9bccf887eca76aa767ca9ff13070fe625336f25af4c770ff2c047b1d",
+  "capability_contract": {
+    "old_default": "integer-decimal-v1",
+    "new_explicit": "mixed-binary64-v1",
+    "original_new_signature_and_default_preserved": true,
+    "new_api": "QueryNumericSession::new_with_capabilities(decimal,limits,integer_text_limit,normalize_literals,QueryNumericCapabilities::MixedBinary64V1)",
+    "session_immutable_capability": true,
+    "prepare_signature_unchanged": true,
+    "all_pipeline_components_bind_same_session": true,
+    "public_profile_added": false,
+    "old_float_leaf_ebv_count_sample_transport_preserved": true,
+    "old_QN24_remains_active_unmodified": true
+  },
+  "explicit_environment": {
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "initial_flags": []
+    },
+    "numeric_limits": {
+      "max_input_characters": 10000,
+      "max_coefficient_digits": 10064,
+      "max_output_characters": 10064,
+      "max_materialized_power_of_ten": 10064
+    },
+    "integer_text_limit": 4096,
+    "normalize_literals": true,
+    "default_query_capability": "mixed-binary64-v1",
+    "conversion_resource_policy": "binary64-conversion-budget-v1",
+    "scalar_target_assumption": "IEEE754 binary64; default nearest ties-even; gradual underflow; no fast-math/reassociation/FMA contraction across source steps. Target runtime qualification remains later receiving work.",
+    "context_basis": "Explicit fixture configuration, not observation of a historical mutable Python process.",
+    "limits_basis": "Active bounded receiving configuration, not original Python acceptance limits. Core converter inputs are already constructed values; input loading is not the lexical API under test."
+  },
+  "query_cases": [
+    {
+      "id": "BQ01",
+      "title": "Original QN24 texts accepted only in explicit mixed capability",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "decimal_from_float",
+        "decimal_round",
+        "float_repr"
+      ],
+      "derivation": "First float becomes exact Decimal then rounds at multiply; later float changes state to binary64. Old QN24 is still required under its old configuration.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (0.1e0 * 1 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.1000000000000000055511151231",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [
+            "FloatOperation",
+            "Inexact",
+            "Rounded"
+          ],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1000000000000000055511151231",
+                    "exponent": "-28"
+                  }
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "P-QB01"
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0.1e0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fb999999999999a"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ02",
+      "title": "Flat float-state RHS asymmetry and nested restart",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "decimal_from_float",
+        "decimal_multiply",
+        "float_operand_conversion"
+      ],
+      "derivation": "Integer RHS is accepted by float arithmetic. Decimal RHS is not. A nested chain restarts its own Decimal(first) constructor and retains resulting scale.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0.5e0 * 2 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0.5e0 * 2.0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "MixedNumericTypeError",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "python_exception_class": "TypeError",
+          "failure_stage": "multiplicative float state encounters Decimal RHS"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0.5e0 / 2 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.25",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fd0000000000000"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0.5e0 / 2.0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "MixedNumericTypeError",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "python_exception_class": "TypeError",
+          "failure_stage": "float state division by Decimal RHS"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ((1 * 0.5e0) * 2.0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [
+            "FloatOperation"
+          ],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "100",
+                    "exponent": "-2"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ03",
+      "title": "Decimal-to-float does not use decimal context precision",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "additive",
+        "decimal_to_float"
+      ],
+      "derivation": "Exact 9/8 needs no binary rounding; p3 Decimal arithmetic would change it, but conversion performs no Decimal arithmetic or flags.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1.125 + 0e0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.125",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "context_override": {
+            "precision": 3
+          },
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff2000000000000"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (0e0 + 1.125 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.125",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff2000000000000"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1.125 - 0.5e0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.625",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "context_override": {
+            "precision": 3
+          },
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fe4000000000000"
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "P-QB03-sub-left"
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (0.5e0 - 1.125 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "-0.625",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "context_override": {
+            "precision": 3
+          },
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "bfe4000000000000"
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "P-QB03-sub-right"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ04",
+      "title": "xsd:float remains binary64 and promotion is independent of family",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "additive",
+        "promotion",
+        "python_literal",
+        "float_operand_conversion"
+      ],
+      "derivation": "Both RDF float types use Python binary64. Derived integer datatype promotes through integer; result datatype follows source promotion.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (\"16777217\"^^xsd:float + 0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "16777217.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "4170000010000000"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (\"1.5\"^^xsd:float + \"1\"^^xsd:byte AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "2.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "4004000000000000"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ05",
+      "title": "Unary keeps binary64 zero sign rules and defaults result dtype",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "unary",
+        "float_unary",
+        "python_literal"
+      ],
+      "derivation": "Unary applies to Python float and constructs a new Literal without requested dtype. Positive/negative zero rules are not Decimal unary rules.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x ?p ?m WHERE { VALUES ?x { \"-0.0\"^^xsd:float } BIND(+?x AS ?p) BIND(-?x AS ?m) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "-0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                },
+                "p": {
+                  "kind": "literal",
+                  "lexical": "-0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                },
+                "m": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "x",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "8000000000000000"
+                }
+              }
+            },
+            {
+              "binding": "p",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "8000000000000000"
+                }
+              }
+            },
+            {
+              "binding": "m",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "0000000000000000"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ06",
+      "title": "Float zero division enters local SPARQL domain and real consumers",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "float_scalar",
+        "expr_catch",
+        "count",
+        "sample",
+        "bind_project",
+        "filter_boundary",
+        "aggregate_alias",
+        "decimal_divide"
+      ],
+      "derivation": "The scalar zero check raises, the source multiplicative catch creates SPARQLError, and Expr returns it. COUNT counts; SAMPLE internally retains the first error but its source projection alias Extend leaves final ?s absent. Decimal DivisionByZero trap changes only the Decimal route; float zero division still raises.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?v WHERE { BIND(1 / -0e0 AS ?v) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {}
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "raw_expression_result": {
+            "kind": "ReturnedError",
+            "error_kind": "OtherSparql",
+            "diagnostic": "divide by 0"
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(DISTINCT (1 / 0e0)) AS ?c) WHERE { VALUES ?row { 1 2 } }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "raw_expression_evaluations": 4,
+          "returned_error_identity_assertions": {
+            "object_count": 4,
+            "all_pairwise_distinct": true,
+            "kind": "OtherSparql",
+            "diagnostic": "divide by 0"
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SAMPLE(1 / 0e0) AS ?s) WHERE { VALUES ?row { 1 2 } }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {}
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "raw_expression_evaluations": 1,
+          "aggregate_internal_result": {
+            "kind": "ReturnedError",
+            "error_kind": "OtherSparql",
+            "diagnostic": "divide by 0",
+            "retains_first_raw_error_identity": true
+          },
+          "alias_boundary": "Source hidden aggregate result passes through actual Extend to ?s; Extend sees SPARQLError and leaves ?s absent."
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?row WHERE { VALUES ?row { 1 2 } FILTER(1 / 0e0) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": []
+          },
+          "decimal_signals_after_query_exact": []
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1e0 / 0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {}
+            ]
+          },
+          "decimal_signals_after_query_exact": [
+            "FloatOperation",
+            "DivisionByZero"
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1e0 / 0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "Infinity",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [
+            "FloatOperation",
+            "DivisionByZero"
+          ],
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "Overflow"
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "infinity",
+                    "negative": false
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 / 0e0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {}
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "Overflow"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "BQ07",
+      "title": "First float constructor trap is fatal; later float does not construct Decimal",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "decimal_from_float",
+        "expr_catch",
+        "group"
+      ],
+      "derivation": "FloatOperation is inside the try but outside its two caught classes. Group yields no partial row. Later float conversion is Decimal-to-float and emits no flag.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(0.5e0 * 1) AS ?c) WHERE { VALUES ?row { 1 2 } }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "Core.DecimalTrap",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "primary_signal": "FloatOperation",
+            "required_signals": [
+              "FloatOperation"
+            ]
+          },
+          "decimal_signals_after_query_exact": [
+            "FloatOperation"
+          ],
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "DivisionByZero",
+              "Overflow",
+              "FloatOperation"
+            ]
+          },
+          "python_exception_class": "FloatOperation",
+          "raw_expression_evaluations": 1
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0.5e0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "DivisionByZero",
+              "Overflow",
+              "FloatOperation"
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fe0000000000000"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ08",
+      "title": "Raw tail failure versus nested first constructor has source ordering",
+      "classification": "source_order_plus_explicit_dataset_fatal_safety",
+      "source_refs": [
+        "chain_order",
+        "expr_catch",
+        "multiplicative",
+        "decimal_from_float"
+      ],
+      "derivation": "Complete raw tail lookup precedes flat math; a nested child executes before outer tail. Raised missing first is caught by its own expression before tail lookup.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(0.5e0 * ?fatal) AS ?c) WHERE { VALUES ?row { 1 2 } }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "Dataset",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "original_error_downcast": "ConversionFailure",
+            "same_error_token": true,
+            "failing_externalize_calls": 1,
+            "calls_after_second_poll": 1
+          },
+          "decimal_signals_after_query_exact": [],
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "DivisionByZero",
+              "Overflow",
+              "FloatOperation"
+            ]
+          },
+          "dataset_fixture": {
+            "kind": "actual QueryableDataset with original ConversionFailure identity",
+            "initial_binding": {
+              "fatal": {
+                "kind": "named_node",
+                "iri": "urn:query-numeric-fatal"
+              }
+            },
+            "prepare_then_arm": true,
+            "arm_point": "After prepare completes, reset fault counter and arm BEFORE calling bound execute_presence. If internal observation separates compilation from execution, arm after compilation but BEFORE plan(input). Group execution may be eager; do not wait until an iterator has already been returned.",
+            "externalize": "Only the named node selects an injected real Result::Err; other values forward to existing RDF storage."
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT((0.5e0 * 1) * ?fatal) AS ?c) WHERE { VALUES ?row { 1 2 } }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "Core.DecimalTrap",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "primary_signal": "FloatOperation",
+            "required_signals": [
+              "FloatOperation"
+            ],
+            "failing_externalize_calls": 0,
+            "calls_after_second_poll": 0
+          },
+          "decimal_signals_after_query_exact": [
+            "FloatOperation"
+          ],
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "DivisionByZero",
+              "Overflow",
+              "FloatOperation"
+            ]
+          },
+          "dataset_fixture": {
+            "kind": "actual QueryableDataset with original ConversionFailure identity",
+            "initial_binding": {
+              "fatal": {
+                "kind": "named_node",
+                "iri": "urn:query-numeric-fatal"
+              }
+            },
+            "prepare_then_arm": true,
+            "arm_point": "After prepare completes, reset fault counter and arm BEFORE calling bound execute_presence. If internal observation separates compilation from execution, arm after compilation but BEFORE plan(input). Group execution may be eager; do not wait until an iterator has already been returned.",
+            "externalize": "Only the named node selects an injected real Result::Err; other values forward to existing RDF storage."
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(?missing * ?fatal) AS ?c) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "context_override": {
+            "traps": [
+              "InvalidOperation",
+              "DivisionByZero",
+              "Overflow",
+              "FloatOperation"
+            ]
+          },
+          "dataset_fixture": {
+            "kind": "actual QueryableDataset with original ConversionFailure identity",
+            "initial_binding": {
+              "fatal": {
+                "kind": "named_node",
+                "iri": "urn:query-numeric-fatal"
+              }
+            },
+            "prepare_then_arm": true,
+            "arm_point": "After prepare completes, reset fault counter and arm BEFORE calling bound execute_presence. If internal observation separates compilation from execution, arm after compilation but BEFORE plan(input). Group execution may be eager; do not wait until an iterator has already been returned.",
+            "externalize": "Only the named node selects an injected real Result::Err; other values forward to existing RDF storage."
+          },
+          "failing_externalize_calls": 0,
+          "raw_expression_result": {
+            "kind": "ReturnedError",
+            "error_kind": "NotBound"
+          }
+        }
+      ]
+    },
+    {
+      "id": "BQ09",
+      "title": "Huge integer float conversion differs from initial Decimal integer path",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "integer_to_float",
+        "decimal_to_float",
+        "multiplicative",
+        "additive",
+        "float_scalar"
+      ],
+      "derivation": "10^400 exceeds binary64. Multiplication first constructs Decimal integer, whose conversion permits Infinity; float Infinity*zero yields NaN without Decimal signals.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (?x + 0e0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "Binary64.IntegerOverflow",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "initial_bindings": {
+            "x": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              "construction_provenance": "Original Python-object Literal(10**400); explicit already constructed input."
+            }
+          },
+          "python_exception_class": "OverflowError",
+          "failure_stage": "integer conversion during additive operation"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (?x * 0e0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "nan",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "initial_bindings": {
+            "x": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                }
+              },
+              "construction_provenance": "Original Python-object Literal(10**400); explicit already constructed input."
+            }
+          },
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "classification": "NaN",
+                  "sign_and_payload": "not asserted"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ10",
+      "title": "sNaN Decimal conversion versus unsupported mixed operand type",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "decimal_to_float",
+        "additive",
+        "multiplicative",
+        "float_operand_conversion"
+      ],
+      "derivation": "Only additive coerces Decimal against float. These distinct fatal classes occur with no new Decimal flags.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (\"sNaN\"^^xsd:decimal + 0e0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "Binary64.SignalingNaNConversion",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "python_exception_class": "ValueError",
+          "failure_stage": "Decimal-to-float before datatype promotion"
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0e0 * \"sNaN\"^^xsd:decimal AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "MixedNumericTypeError",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "python_exception_class": "TypeError",
+          "failure_stage": "float/Decimal multiplication; no Decimal-to-float conversion"
+        }
+      ]
+    },
+    {
+      "id": "BQ11",
+      "title": "Infinity times zero distinguishes Decimal catch from float NaN",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "decimal_from_float",
+        "decimal_multiply",
+        "float_scalar"
+      ],
+      "derivation": "Default Decimal InvalidOperation trap is caught only on the first path; float state ordinary arithmetic adds no Decimal signal.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?v WHERE { BIND(\"INF\"^^xsd:double * 0 AS ?v) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {}
+            ]
+          },
+          "decimal_signals_after_query_exact": [
+            "FloatOperation",
+            "InvalidOperation"
+          ],
+          "raw_expression_result": {
+            "kind": "ReturnedError",
+            "error_kind": "OtherSparql",
+            "diagnostic": "divide by 0"
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * \"INF\"^^xsd:double * 0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "nan",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "classification": "NaN",
+                  "sign_and_payload": "not asserted"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ12",
+      "title": "Float overflow and subnormal rounding are not Decimal arithmetic",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "decimal_from_float",
+        "decimal_round",
+        "float_scalar",
+        "float_repr"
+      ],
+      "derivation": "Float state overflows/underflows without Decimal flags. First float stays exact Decimal until its actual multiply and rounds p28; input lexical-to-bits is independently proved.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * \"1.7976931348623157e308\"^^xsd:double * 2 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "inf",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "7ff0000000000000"
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "P-BC19",
+            "P-BC27"
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (\"1.7976931348623157e308\"^^xsd:double * 2 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "359538626972463141629054847500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [
+            "FloatOperation",
+            "Inexact",
+            "Rounded"
+          ],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "3595386269724631416290548475",
+                    "exponent": "281"
+                  }
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "P-BC19",
+            "P-QB12"
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * \"5e-324\"^^xsd:double / 2 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "0000000000000000"
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "P-BC18",
+            "P-BC28"
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * \"-5e-324\"^^xsd:double / 2 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "-0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "8000000000000000"
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "P-BC18",
+            "P-BC29"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ13",
+      "title": "Parser-preserved nesting exposes each binary64 rounding step",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "additive",
+        "chain_order",
+        "float_scalar"
+      ],
+      "derivation": "Flat first addition rounds away one; nested subtraction is exactly -(2^53-1), so the final addition is exactly one.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (9007199254740992e0 + 1e0 - 9007199254740992e0 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "0000000000000000"
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "P-BC31"
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (9007199254740992e0 + (1e0 - 9007199254740992e0) AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              }
+            }
+          ],
+          "proof_refs": [
+            "P-BC32"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ14",
+      "title": "Same RDF retains different source-backed numeric family and scale",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "python_literal",
+        "literal_cache",
+        "rdf_identity",
+        "multiplicative",
+        "count"
+      ],
+      "derivation": "Both input RDF terms are exactly identical, but one cached Python object is float and one Decimal. RDF equality/hash ignores the cache; arithmetic uses each actual cell.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tag ?x ?v WHERE { { { BIND(1 AS ?tag) BIND(?left AS ?x) } UNION { BIND(2 AS ?tag) BIND(?right AS ?x) } } BIND(?x * 1 AS ?v) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "x": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              },
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "x": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [
+            "FloatOperation"
+          ],
+          "initial_bindings": {
+            "left": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "1.0",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              },
+              "construction_provenance": "term.py695-704: Python-object Literal(1.0, datatype=XSD.decimal), original float value retained"
+            },
+            "right": {
+              "origin": "DirectString",
+              "input_lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          },
+          "checkpoints": [
+            {
+              "binding": "x",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              },
+              "row_selector": {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            },
+            {
+              "binding": "x",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "10",
+                    "exponent": "-1"
+                  }
+                }
+              },
+              "row_selector": {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "0"
+                  }
+                }
+              },
+              "row_selector": {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Decimal",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "10",
+                    "exponent": "-1"
+                  }
+                }
+              },
+              "row_selector": {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(?x) AS ?all) (COUNT(DISTINCT ?x) AS ?distinct) WHERE { { BIND(?left AS ?x) } UNION { BIND(?right AS ?x) } }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "all": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "distinct": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "initial_bindings": {
+            "left": {
+              "origin": "KnownCached",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "1.0",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff0000000000000"
+                }
+              },
+              "construction_provenance": "term.py695-704: Python-object Literal(1.0, datatype=XSD.decimal), original float value retained"
+            },
+            "right": {
+              "origin": "DirectString",
+              "input_lexical": "1.0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          }
+        }
+      ],
+      "carrier_assertions": {
+        "initial_rdf_equal": true,
+        "hash_byte_stream_equal": true,
+        "clone_preserves_each_cache": true,
+        "global_rdf_to_cache_map_forbidden": true
+      }
+    },
+    {
+      "id": "BQ15",
+      "title": "Typed VALUES through BIND, Project, SAMPLE, COUNT and FILTER",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "values",
+        "bind_project",
+        "sample",
+        "count",
+        "ebv",
+        "additive"
+      ],
+      "derivation": "Typed query input keeps lexical1.50 and binary64 cache; SAMPLE passes it unchanged; COUNT yields known integer; later addition uses both actual caches and promotion.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?s ?c ?v WHERE { { SELECT (SAMPLE(?y) AS ?s) (COUNT(?y) AS ?c) WHERE { VALUES ?x { \"1.50\"^^xsd:float } BIND(?x AS ?y) } } BIND(?s + ?c AS ?v) FILTER(?s) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1.50",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "2.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff8000000000000"
+                }
+              }
+            },
+            {
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "4004000000000000"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ16",
+      "title": "DirectString normalization changes RDF text but not cached float",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "literal_cache",
+        "sample",
+        "additive",
+        "float_repr"
+      ],
+      "derivation": "Original string construction consults normalize; stored Python float remains identical and must not be reconstructed from a generic AST.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?s ?v WHERE { { SELECT (SAMPLE(?x) AS ?s) WHERE { BIND(?input AS ?x) } } BIND(?s + 1 AS ?v) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "2.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "initial_bindings": {
+            "input": {
+              "origin": "DirectString",
+              "input_lexical": "01.50",
+              "datatype": "http://www.w3.org/2001/XMLSchema#float",
+              "normalize": true
+            }
+          },
+          "checkpoints": [
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff8000000000000"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "4004000000000000"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?s ?v WHERE { { SELECT (SAMPLE(?x) AS ?s) WHERE { BIND(?input AS ?x) } } BIND(?s + 1 AS ?v) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "01.50",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "2.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#float"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "initial_bindings": {
+            "input": {
+              "origin": "DirectString",
+              "input_lexical": "01.50",
+              "datatype": "http://www.w3.org/2001/XMLSchema#float",
+              "normalize": false
+            }
+          },
+          "checkpoints": [
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3ff8000000000000"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "4004000000000000"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ17",
+      "title": "Actual float EBV and RDF DISTINCT ignore numeric zero equality",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "ebv",
+        "float_ebv",
+        "rdf_identity",
+        "count"
+      ],
+      "derivation": "Pinned executable EBV uses bool(float): NaN true, either zero false. Equal cached values do not collapse distinct RDF lexical forms.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { VALUES ?x { \"0.0\"^^xsd:double \"-0.0\"^^xsd:double \"NaN\"^^xsd:double \"INF\"^^xsd:double \"-INF\"^^xsd:double \"0.5\"^^xsd:double } FILTER(?x) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "NaN",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "INF",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "-INF",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              },
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "0.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": []
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(DISTINCT ?x) AS ?c) WHERE { VALUES ?x { \"1.0\"^^xsd:double \"1.00\"^^xsd:double } }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": []
+        }
+      ]
+    },
+    {
+      "id": "BQ18",
+      "title": "Unknown float transport remains usable while consumption refuses",
+      "classification": "active_cache_and_fatal_safety_not_parity",
+      "source_refs": [
+        "sample",
+        "count",
+        "cache_safety"
+      ],
+      "derivation": "Missing provenance is not reconstructed from normalized RDF. Bare FILTER fatal propagation is active safety, not original broad-catch parity.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SAMPLE(?y) AS ?s) (COUNT(?y) AS ?c) WHERE { BIND(?x AS ?y) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.5",
+                "datatype": "http://www.w3.org/2001/XMLSchema#double"
+              },
+              "cache": {
+                "state": "Unknown"
+              }
+            }
+          },
+          "checkpoints": [
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Unknown"
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (?x + 1 AS ?v) WHERE {}",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnknownNumericCache",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.5",
+                "datatype": "http://www.w3.org/2001/XMLSchema#double"
+              },
+              "cache": {
+                "state": "Unknown"
+              }
+            }
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { FILTER(?x) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnknownNumericCache",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "0.5",
+                "datatype": "http://www.w3.org/2001/XMLSchema#double"
+              },
+              "cache": {
+                "state": "Unknown"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "BQ19",
+      "title": "Fatal mixed type error reaches every actual consumer and stops",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "expr_catch",
+        "count",
+        "sample",
+        "filter_boundary",
+        "group"
+      ],
+      "derivation": "Original Expr-only FILTER and aggregates do not catch Python TypeError. Rust first-error fusion/no partial rows is separately required active safety.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(DISTINCT (1 * 0.5e0 * 2.0)) AS ?c) WHERE { VALUES ?row { 1 2 } }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "MixedNumericTypeError",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "python_exception_class": "TypeError",
+          "raw_expression_evaluations": 1
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SAMPLE(1 * 0.5e0 * 2.0) AS ?s) WHERE { VALUES ?row { 1 2 } }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "MixedNumericTypeError",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "python_exception_class": "TypeError",
+          "raw_expression_evaluations": 1
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?row WHERE { VALUES ?row { 1 2 } FILTER(1 * 0.5e0 * 2.0) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "MixedNumericTypeError",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          },
+          "decimal_signals_after_query_exact": [],
+          "python_exception_class": "TypeError"
+        }
+      ]
+    },
+    {
+      "id": "BQ20",
+      "title": "Capability extension does not restrict existing float leaf consumers",
+      "classification": "source_values_with_explicit_capability_compatibility_contract",
+      "source_refs": [
+        "count",
+        "sample",
+        "ebv",
+        "float_ebv"
+      ],
+      "derivation": "Both explicitly bound capabilities permit existing float leaf construction/EBV/COUNT/SAMPLE; only arithmetic permission changes. Old default QN24 still rejects its two unchanged arithmetic texts.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(0.5e0) AS ?c) (SAMPLE(0.5e0) AS ?s) WHERE { FILTER(0.5e0) }",
+          "capability": "integer-decimal-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fe0000000000000"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(0.5e0) AS ?c) (SAMPLE(0.5e0) AS ?s) WHERE { FILTER(0.5e0) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": [],
+          "checkpoints": [
+            {
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "family": "Binary64",
+                  "bits_hex": "3fe0000000000000"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BQ21",
+      "title": "Final decoder preserves actual Dataset failure after mixed arithmetic",
+      "classification": "active_dataset_identity_and_iterator_fusion_not_parity",
+      "source_refs": [
+        "bind_project",
+        "cache_safety"
+      ],
+      "derivation": "Numeric BIND succeeds with known binary64; only final externalization of the selected named-node fault term fails. This is a real backend Result::Err, not a numeric error object or synthetic RDF error.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?v ?fatal WHERE { BIND(1 * 0.5e0 AS ?v) }",
+          "capability": "mixed-binary64-v1",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "Dataset",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "original_error_downcast": "ConversionFailure",
+            "same_error_token": true,
+            "failing_externalize_calls": 1,
+            "calls_after_second_poll": 1
+          },
+          "decimal_signals_after_query_exact": [],
+          "dataset_fixture": {
+            "kind": "actual QueryableDataset with original ConversionFailure identity",
+            "initial_binding": {
+              "fatal": {
+                "kind": "named_node",
+                "iri": "urn:query-numeric-fatal"
+              }
+            },
+            "prepare_then_arm": true,
+            "arm_point": "After prepare completes, reset fault counter and arm BEFORE calling bound execute_presence. If internal observation separates compilation from execution, arm after compilation but BEFORE plan(input). Group execution may be eager; do not wait until an iterator has already been returned.",
+            "externalize": "Only the named node selects an injected real Result::Err; other values forward to existing RDF storage.",
+            "required_failure_boundary": "final presence decoder, after actual numeric BIND"
+          }
+        }
+      ]
+    }
+  ],
+  "compatibility_controls": [
+    {
+      "id": "COMPAT-QN24-1",
+      "capability": "integer-decimal-v1",
+      "invocation": "existing default QueryNumericSession::new and explicit IntegerDecimalV1 must agree",
+      "source_record": "QUERY-NUMERIC-FROZEN-02.json",
+      "source_json_pointer": "/cases/23/runs/0",
+      "unchanged_frozen_run": {
+        "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (0.1e0 * 1 AS ?v) WHERE {}",
+        "expect": {
+          "kind": "fatal",
+          "semantic_category": "UnsupportedNumericFamily",
+          "first_poll": "Err",
+          "subsequent_poll": "None",
+          "rows_emitted": 0,
+          "family": "binary64"
+        }
+      },
+      "additional_decimal_signals_after_query_exact": [
+        "FloatOperation"
+      ]
+    },
+    {
+      "id": "COMPAT-QN24-2",
+      "capability": "integer-decimal-v1",
+      "invocation": "existing default QueryNumericSession::new and explicit IntegerDecimalV1 must agree",
+      "source_record": "QUERY-NUMERIC-FROZEN-02.json",
+      "source_json_pointer": "/cases/23/runs/1",
+      "unchanged_frozen_run": {
+        "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0.1e0 AS ?v) WHERE {}",
+        "expect": {
+          "kind": "fatal",
+          "semantic_category": "UnsupportedNumericFamily",
+          "first_poll": "Err",
+          "subsequent_poll": "None",
+          "rows_emitted": 0,
+          "family": "binary64"
+        }
+      },
+      "additional_decimal_signals_after_query_exact": []
+    }
+  ]
+}

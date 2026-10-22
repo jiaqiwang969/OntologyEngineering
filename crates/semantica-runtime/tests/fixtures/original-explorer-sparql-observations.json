@@ -1,0 +1,2101 @@
+{
+  "cases": [
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_select_returns_expected_columns_and_rows",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s ?label WHERE { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?label }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s",
+          "label"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript",
+            "label": "JavaScript programming language"
+          },
+          {
+            "s": "http://semantica.local/entity/python",
+            "label": "Python programming language"
+          },
+          {
+            "s": "http://semantica.local/entity/web_dev",
+            "label": "Web Development"
+          }
+        ],
+        "total": 3,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_ask_query_returns_boolean_like_result",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "ASK { ?s <http://www.w3.org/2000/01/rdf-schema#label> \"Python programming language\" }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "result"
+        ],
+        "rows": [
+          {
+            "result": "true"
+          }
+        ],
+        "total": 1,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_construct_query_succeeds",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "CONSTRUCT { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?label } WHERE { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?label }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "subject",
+          "predicate",
+          "object"
+        ],
+        "rows": [
+          {
+            "subject": "http://semantica.local/entity/python",
+            "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+            "object": "Python programming language"
+          },
+          {
+            "subject": "http://semantica.local/entity/javascript",
+            "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+            "object": "JavaScript programming language"
+          },
+          {
+            "subject": "http://semantica.local/entity/web_dev",
+            "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+            "object": "Web Development"
+          }
+        ],
+        "total": 3,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_describe_query_succeeds",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DESCRIBE <http://semantica.local/entity/python>"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "subject",
+          "predicate",
+          "object"
+        ],
+        "rows": [
+          {
+            "subject": "http://semantica.local/entity/python",
+            "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "object": "http://semantica.local/entity/language"
+          },
+          {
+            "subject": "http://semantica.local/entity/python",
+            "predicate": "http://semantica.local/prop/popularity",
+            "object": "high"
+          },
+          {
+            "subject": "http://semantica.local/entity/python",
+            "predicate": "http://semantica.local/prop/used_in",
+            "object": "http://semantica.local/entity/web_dev"
+          },
+          {
+            "subject": "http://semantica.local/entity/python",
+            "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+            "object": "Python programming language"
+          }
+        ],
+        "total": 4,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_lowercase_query_keyword_is_accepted",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "select ?s where { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript"
+          },
+          {
+            "s": "http://semantica.local/entity/python"
+          }
+        ],
+        "total": 2,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_select_with_no_results_returns_empty_rows",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/nonexistent> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/hacked> }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/hacked> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE DATA { <http://semantica.local/entity/python> a <http://semantica.local/entity/language> }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DELETE DATA { <http://semantica.local/entity/python> a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE WHERE { ?s ?p ?o }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DELETE WHERE { ?s ?p ?o }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP GRAPH <http://example.org/g>]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DROP GRAPH <http://example.org/g>"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "CLEAR ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR GRAPH <http://example.org/g>]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "CLEAR GRAPH <http://example.org/g>"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[LOAD <http://example.org/data.ttl>]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "LOAD <http://example.org/data.ttl>"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CREATE GRAPH <http://example.org/g>]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "CREATE GRAPH <http://example.org/g>"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[MODIFY <http://example.org/g> DELETE { ?s ?p ?o } WHERE { ?s ?p ?o }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "MODIFY <http://example.org/g> DELETE { ?s ?p ?o } WHERE { ?s ?p ?o }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": ""
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[   ]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "   "
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[not a sparql query at all]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "not a sparql query at all"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[# comment\\nDROP ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "# comment\nDROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_parser",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s ?p ?o } ; DROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[DROP ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/y> }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/y> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[# comment\\nDROP ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "# comment\nDROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": ""
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_forbidden_keyword_check",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s ?p ?o } ; DROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_malformed_syntax_without_forbidden_keywords_still_fails_in_parser",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s ?p ?o } ; ASK { ?x ?y ?z }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Expected end of text, found ';'  (at char 29), (line:1, col:30)",
+        "error_line": 1,
+        "error_column": 30
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_malformed_query_returns_error_without_crashing",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { this is not valid sparql syntax"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Expected SelectQuery, found 'this'  (at char 18), (line:1, col:19)",
+        "error_line": 1,
+        "error_column": 19
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_malformed_query_error_includes_line_and_column_when_present",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { $$$ invalid $$$ }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Expected SelectQuery, found '$'  (at char 18), (line:1, col:19)",
+        "error_line": 1,
+        "error_column": 19
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_row_cap_truncates_results",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript"
+          }
+        ],
+        "total": 1,
+        "truncated": true,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 1,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_result_below_cap_is_not_marked_truncated",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript"
+          },
+          {
+            "s": "http://semantica.local/entity/python"
+          }
+        ],
+        "total": 2,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_row_cap_truncates_construct_results",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "CONSTRUCT { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?label } WHERE { ?s <http://www.w3.org/2000/01/rdf-schema#label> ?label }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "subject",
+          "predicate",
+          "object"
+        ],
+        "rows": [
+          {
+            "subject": "http://semantica.local/entity/python",
+            "predicate": "http://www.w3.org/2000/01/rdf-schema#label",
+            "object": "Python programming language"
+          }
+        ],
+        "total": 1,
+        "truncated": true,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 1,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_query_timeout_returns_clean_error_not_a_crash",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Query timed out after 30 seconds.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": true
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_oversized_graph_returns_clean_error_not_a_crash",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Graph has more than 1 nodes. SPARQL queries are limited to graphs with at most 1 nodes to prevent excessive memory usage. Use the REST API for large graph operations.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 1,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_oversized_query_returns_distinct_length_error",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s ?p ?o }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Query exceeds the maximum allowed length of 10 characters (28 received). Please shorten your query.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_oversized_query_never_touches_the_graph",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s ?p ?o }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Query exceeds the maximum allowed length of 10 characters (28 received). Please shorten your query.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_query_exactly_at_length_limit_is_accepted",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "ASK {}"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "result"
+        ],
+        "rows": [
+          {
+            "result": "true"
+          }
+        ],
+        "total": 1,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 6
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_node_properties_are_projected_as_literals_excluding_reserved_keys",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?p ?v WHERE { <http://semantica.local/entity/python> ?p ?v }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "p",
+          "v"
+        ],
+        "rows": [
+          {
+            "p": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            "v": "http://semantica.local/entity/language"
+          },
+          {
+            "p": "http://www.w3.org/2000/01/rdf-schema#label",
+            "v": "Python programming language"
+          },
+          {
+            "p": "http://semantica.local/prop/popularity",
+            "v": "high"
+          },
+          {
+            "p": "http://semantica.local/prop/used_in",
+            "v": "http://semantica.local/entity/web_dev"
+          }
+        ],
+        "total": 4,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_edges_are_projected_with_their_relationship_type",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?o WHERE { <http://semantica.local/entity/python> <http://semantica.local/prop/used_in> ?o }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "o"
+        ],
+        "rows": [
+          {
+            "o": "http://semantica.local/entity/web_dev"
+          }
+        ],
+        "total": 1,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_concurrent_requests_all_complete_successfully",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript"
+          },
+          {
+            "s": "http://semantica.local/entity/python"
+          }
+        ],
+        "total": 2,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_concurrent_requests_all_complete_successfully",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript"
+          },
+          {
+            "s": "http://semantica.local/entity/python"
+          }
+        ],
+        "total": 2,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_concurrent_requests_all_complete_successfully",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript"
+          },
+          {
+            "s": "http://semantica.local/entity/python"
+          }
+        ],
+        "total": 2,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_concurrent_requests_all_complete_successfully",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript"
+          },
+          {
+            "s": "http://semantica.local/entity/python"
+          }
+        ],
+        "total": 2,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_concurrent_requests_all_complete_successfully",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript"
+          },
+          {
+            "s": "http://semantica.local/entity/python"
+          }
+        ],
+        "total": 2,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_concurrent_requests_all_complete_successfully",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [
+          "s"
+        ],
+        "rows": [
+          {
+            "s": "http://semantica.local/entity/javascript"
+          },
+          {
+            "s": "http://semantica.local/entity/python"
+          }
+        ],
+        "total": 2,
+        "truncated": false,
+        "error": null,
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    }
+  ],
+  "reports": [
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_select_returns_expected_columns_and_rows",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_select_returns_expected_columns_and_rows",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_select_returns_expected_columns_and_rows",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_ask_query_returns_boolean_like_result",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_ask_query_returns_boolean_like_result",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_ask_query_returns_boolean_like_result",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_construct_query_succeeds",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_construct_query_succeeds",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_construct_query_succeeds",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_describe_query_succeeds",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_describe_query_succeeds",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_describe_query_succeeds",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_lowercase_query_keyword_is_accepted",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_lowercase_query_keyword_is_accepted",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_lowercase_query_keyword_is_accepted",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_select_with_no_results_returns_empty_rows",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_select_with_no_results_returns_empty_rows",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_select_with_no_results_returns_empty_rows",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/hacked> }]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/hacked> }]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/hacked> }]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE DATA { <http://semantica.local/entity/python> a <http://semantica.local/entity/language> }]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE DATA { <http://semantica.local/entity/python> a <http://semantica.local/entity/language> }]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE DATA { <http://semantica.local/entity/python> a <http://semantica.local/entity/language> }]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE WHERE { ?s ?p ?o }]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE WHERE { ?s ?p ?o }]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE WHERE { ?s ?p ?o }]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP ALL]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP ALL]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP ALL]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP GRAPH <http://example.org/g>]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP GRAPH <http://example.org/g>]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP GRAPH <http://example.org/g>]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR ALL]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR ALL]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR ALL]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR GRAPH <http://example.org/g>]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR GRAPH <http://example.org/g>]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR GRAPH <http://example.org/g>]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[LOAD <http://example.org/data.ttl>]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[LOAD <http://example.org/data.ttl>]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[LOAD <http://example.org/data.ttl>]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CREATE GRAPH <http://example.org/g>]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CREATE GRAPH <http://example.org/g>]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CREATE GRAPH <http://example.org/g>]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[MODIFY <http://example.org/g> DELETE { ?s ?p ?o } WHERE { ?s ?p ?o }]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[MODIFY <http://example.org/g> DELETE { ?s ?p ?o } WHERE { ?s ?p ?o }]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[MODIFY <http://example.org/g> DELETE { ?s ?p ?o } WHERE { ?s ?p ?o }]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[   ]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[   ]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[   ]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[not a sparql query at all]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[not a sparql query at all]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[not a sparql query at all]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[# comment\\nDROP ALL]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[# comment\\nDROP ALL]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[# comment\\nDROP ALL]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_parser",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_parser",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_parser",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[DROP ALL]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[DROP ALL]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[DROP ALL]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/y> }]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/y> }]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/y> }]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[# comment\\nDROP ALL]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[# comment\\nDROP ALL]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[# comment\\nDROP ALL]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[]",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[]",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[]",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_forbidden_keyword_check",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_forbidden_keyword_check",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_forbidden_keyword_check",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_malformed_syntax_without_forbidden_keywords_still_fails_in_parser",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_malformed_syntax_without_forbidden_keywords_still_fails_in_parser",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_malformed_syntax_without_forbidden_keywords_still_fails_in_parser",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_malformed_query_returns_error_without_crashing",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_malformed_query_returns_error_without_crashing",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_malformed_query_returns_error_without_crashing",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_malformed_query_error_includes_line_and_column_when_present",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_malformed_query_error_includes_line_and_column_when_present",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_malformed_query_error_includes_line_and_column_when_present",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_row_cap_truncates_results",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_row_cap_truncates_results",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_row_cap_truncates_results",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_result_below_cap_is_not_marked_truncated",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_result_below_cap_is_not_marked_truncated",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_result_below_cap_is_not_marked_truncated",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_row_cap_truncates_construct_results",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_row_cap_truncates_construct_results",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_row_cap_truncates_construct_results",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_query_timeout_returns_clean_error_not_a_crash",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_query_timeout_returns_clean_error_not_a_crash",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_query_timeout_returns_clean_error_not_a_crash",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_oversized_graph_returns_clean_error_not_a_crash",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_oversized_graph_returns_clean_error_not_a_crash",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_oversized_graph_returns_clean_error_not_a_crash",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_oversized_query_returns_distinct_length_error",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_oversized_query_returns_distinct_length_error",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_oversized_query_returns_distinct_length_error",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_oversized_query_never_touches_the_graph",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_oversized_query_never_touches_the_graph",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_oversized_query_never_touches_the_graph",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_query_exactly_at_length_limit_is_accepted",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_query_exactly_at_length_limit_is_accepted",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_query_exactly_at_length_limit_is_accepted",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_node_properties_are_projected_as_literals_excluding_reserved_keys",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_node_properties_are_projected_as_literals_excluding_reserved_keys",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_node_properties_are_projected_as_literals_excluding_reserved_keys",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_edges_are_projected_with_their_relationship_type",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_edges_are_projected_with_their_relationship_type",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_edges_are_projected_with_their_relationship_type",
+      "when": "teardown",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_concurrent_requests_all_complete_successfully",
+      "when": "setup",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_concurrent_requests_all_complete_successfully",
+      "when": "call",
+      "outcome": "passed"
+    },
+    {
+      "nodeid": "workspace/tests/explorer/test_sparql_route.py::test_concurrent_requests_all_complete_successfully",
+      "when": "teardown",
+      "outcome": "passed"
+    }
+  ],
+  "scope": "Original tests with transparent transport observer; test mock/limit conditions preserved per request. Response ordering observed, not canonicalized. Mocked timeout is not real cancellation evidence."
+}

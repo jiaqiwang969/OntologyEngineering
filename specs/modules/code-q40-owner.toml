@@ -1,0 +1,531 @@
+schema="oev2.design-fragment/2"
+
+[[constraints]]
+id="code_artifact_composed_generation2"
+requirement="req_code_evolution"
+module="code_evolution"
+check="verify"
+rust_path="crates/oe-evolution/src/generation_artifact.rs"
+statement="CodeSourceArtifact explicitly verifies original generation/1 or actual composed generation/2. Original /1 receipt/status guards remain. /2 retains its original schema, exact current receipt and drift-generation equality; bounded existing composition owner re-reads all declared sources, source locators, normalized Design and original resource limits. Recorded compiled/current composition sets, source_inputs and every actual generated product must agree with the candidate manifest. Checking a selected candidate never compares against the fixed driver's own normalizer capture. No caller-created /1 projection, missing fragments, changed products, resource expansion, native-build qualification or adoption follows."
+severity="error"
+
+[[validations]]
+id="code_artifact_actual_composed_products"
+module="code_evolution"
+constraint="code_artifact_composed_generation2"
+behavior="composed_generation_matches_actual_source_and_products"
+rust_path="crates/oe-evolution/src/generation_artifact.rs"
+oracle="Read actual current generated/2 from locked ggen and current complete source manifest; the same bounded source and generated-product owners accept their exact values. Full Q40 preparation and owner receiving validate actual candidate/baseline runner binaries separately."
+scope="Current source and generation consistency only; not independent ggen correctness or native five-stage build qualification."
+
+[[validations]]
+id="code_artifact_composed_counterexamples"
+module="code_evolution"
+constraint="code_artifact_composed_generation2"
+behavior="composed_generation_rejects_lost_rebound_or_forged_inputs"
+rust_path="crates/oe-evolution/src/generation_artifact.rs"
+oracle="Starting from actual current /2, alter one source identity, compiled capture, required source input, generated digest, resource budget, manifest identity or relative root. Each must fail; keep original source/generation bytes and legacy /1 verification semantics. No changed generation record is substituted for the original."
+scope="Seven private structural counterexamples plus real positive source binding; actual Q40/legacy process evidence remains separate."
+
+[[sources]]
+id="q40_pinned_source_expectations"
+identity="Original structured-rule source-derived fixture SHA256273f849482ac2212ba7c1865ef69546c16e30d39d3e884c3fae6affb8bc8dea3; independent projected oracle fb556d112c0302389240f83b536c82aa7e5079a36be7c2cec2645a9d8a5b51ce; catalog31a5ac5f7b95b976c75d809293f613fbd0fb946d0a330fd48d4064550981bbc4"
+role="40 ordered source-derived expected cases, 16 full successes and24 typed refusals; not original Python runtime observations"
+applicability="Development replay; original full scope13494,19modules,19protocols,22owners and whole engineering/selection criteria remain unknown"
+
+[[types]]
+name="CodeSemanticReplayOutcome"
+contract_group="engineering"
+meaning="Typed observation of successful reason result or an exact observed semantic refusal, independent of actual process completion"
+identity="Complete original request canonical SHA plus actual stage and preserved semantic result/failure"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="status"
+meaning="Explicit nested outcome protocol; an outer crash or timeout cannot serialize this as success"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+allowed_values=["oev2.code-semantic-replay-outcome/1"]
+
+[[types.fields]]
+name="request_sha256"
+rust_type="String"
+required=true
+format="sha256"
+meaning="Canonical identity of complete request including metadata and iteration type before decoding"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="outcome"
+rust_type="String"
+required=true
+format="status"
+meaning="Actual semantic success or classified refusal reached within a completed runner; never infrastructure failure"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+allowed_values=["success", "rejected"]
+
+[[types.fields]]
+name="stage"
+rust_type="String"
+required=true
+format="status"
+meaning="Actual top-level request decoding or invocation of the generated SemanticReasonPort"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+allowed_values=["request_decode", "reason"]
+
+[[types.fields]]
+name="reason_port_invoked"
+rust_type="bool"
+required=true
+format="typed"
+meaning="True only after the generated reason port was actually invoked; boolean iteration decode refusal remains false"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="result"
+rust_type="Option<SemanticReasonResult>"
+required=false
+format="object"
+meaning="Complete port result on success only; absence on refusal means no partial closure is promoted"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="failure"
+rust_type="Option<SemanticRuntimeFailure>"
+required=false
+format="object"
+meaning="Actual classified port failure or typed decode failure; original nonempty diagnostic retained"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="condition"
+rust_type="Option<String>"
+required=false
+format="text"
+meaning="Exact independently fixed rejection condition, not a generic failure bucket; absent on success"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types]]
+name="CodeScopeCaseRelation"
+contract_group="engineering"
+meaning="Catalog-declared link from one fixed observation to one original identity with an explicit evidence role"
+identity="Exact original scope ID, fixed case ID and catalog role; observation is derived from actual candidate slot"
+
+[[types.fields]]
+name="scope_id"
+rust_type="String"
+required=true
+format="id"
+meaning="One unchanged member of the original13494 inventory; does not remove other identities"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="case_id"
+rust_type="String"
+required=true
+format="id"
+meaning="One of all40 fixed source-derived cases, including correct refusals and adapter negatives"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="role"
+rust_type="String"
+required=true
+format="status"
+meaning="Whether evidence concerns an API slice, wire DTO slice, backend dependency or adapter guard; no role upgrades whole behavior"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+allowed_values=["api_subcontract", "dto_wire_subcontract", "backend_dependency", "adapter_guard"]
+
+[[types.fields]]
+name="observation"
+rust_type="String"
+required=true
+format="status"
+meaning="Fresh comparator slot state; missing, unsupported or incomplete remains unknown; failed never counts as matched"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+allowed_values=["matched", "failed", "unknown"]
+
+[[types.fields]]
+name="behavior_status"
+rust_type="String"
+required=true
+format="status"
+meaning="Whole API/class behavior remains unknown even when this local case matches"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+allowed_values=["unknown"]
+
+[[types]]
+name="CodeScopeWitnessReport2"
+contract_group="engineering"
+meaning="Explicit Q40 wrapper around shared complete-scope observation; fixed catalog supplies every role, caller supplies no matches"
+identity="Existing fresh dispatcher, full immutable scope, fixed independent oracle and catalog identities"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="status"
+meaning="Explicit report/2; old report/1 parser and validator cannot accept it"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+allowed_values=["oev2.code-scope-witness-report/2"]
+
+[[types.fields]]
+name="observation"
+rust_type="CodeScopeWitnessReport"
+required=true
+format="object"
+meaning="Shared full13494 observation with internal schema oev2.code-scope-witness-observation/2; all whole statuses unknown"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="catalog_sha256"
+rust_type="String"
+required=true
+format="sha256"
+meaning="Exact compiled independent Q40 role/case catalog identity, distinct from oracle and source fixture SHA"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="relations"
+rust_type="Vec<CodeScopeCaseRelation>"
+required=true
+format="array"
+meaning="Every fixed catalog relation in frozen order with status derived from actual slots; none inferred from claimed coverage"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types]]
+name="CodeScopeAssociationIndex2"
+contract_group="engineering"
+meaning="Explicit role wrapper for the same candidate-source association owner, not a second registry or inventory"
+identity="Same candidate manifest/mapping snapshot, owner POLICY/context and fresh witness reference inside retained inventory"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="status"
+meaning="New index/2 envelope distinguishes Q40 evidence roles from original six-case index entry"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+allowed_values=["oev2.code-scope-association-index/2"]
+
+[[types.fields]]
+name="inventory"
+rust_type="CodeScopeAssociationIndex"
+required=true
+format="object"
+meaning="Unchanged shared inventory DTO contains all13494 IDs and exact candidate-only source mappings, with unknown whole eligibility"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="catalog_sha256"
+rust_type="String"
+required=true
+format="sha256"
+meaning="Matches independently frozen catalog used by the fresh /2 witness, never a caller-selected catalog"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[types.fields]]
+name="relations"
+rust_type="Vec<CodeScopeCaseRelation>"
+required=true
+format="array"
+meaning="Exact guarded witness roles/states copied only after same-owner source and raw-stream validation"
+unit="Exact identity or scoped observation; no engineering pass unit"
+precision="Original Unicode/ordered preserved JSON and SHA256; no numeric narrowing or unknown-to-zero coercion"
+write="Existing owner derives from fresh execution and independently frozen inputs; callers cannot mint accepted evidence"
+applicability="Explicit local-semantic-replay/2 and scope-witness/2 only; prior /1 is unchanged"
+acceptance="Generated closed shape plus the designated owner cross-field, source, budget and version checks"
+
+[[constraints]]
+id="q40_runner_actual_port"
+requirement="req_code_evolution"
+module="code_runner"
+check="execute"
+rust_path="crates/oe-code-runner/src/semantic_outcome.rs"
+statement="Only actual generated reason-port outcomes may form a typed observation. The one original boolean-iteration top-level decoding refusal is separately observed. Every success preserves full result/request SHA; classified input/convergence refusals preserve exact phase/code/condition/message and no result. Other decoding/schema/resource/tool/process errors remain failed. Runner accepts only input, never an oracle. Complete invocation1MiB, original semantic bounds and process deadline remain."
+severity="error"
+
+[[constraints]]
+id="q40_independent_outcome_comparison"
+requirement="req_code_evolution"
+module="code_evaluator"
+check="equivalent"
+rust_path="crates/oe-code-evaluator/src/semantic_outcome.rs"
+statement="Independent comparator does not link runtime and requires completed outer process/runner, bound source/input/conditions and necessary checks before typed comparison. Exact full success and rejection condition/phase/code/message compare; only boolean integer decoding diagnostic wording is unpinned but retained nonempty. Missing/failed/unsupported stay in40 denominator. Adapter coverage gain is explicitly local_adapter_coverage_gain, not improved reasoning, engineering usefulness or eligibility."
+severity="error"
+
+[[constraints]]
+id="q40_full_scope_roles"
+requirement="req_engineering"
+module="code_evolution"
+check="validate_report"
+rust_path="crates/oe-evolution/src/scope_witness/q40.rs"
+statement="Explicit request/dispatch/report2 selects only compiled source-derived40 catalog. Original /1 six-case oracle/19 protocol remains byte and acceptance unchanged. All13494 IDs retained exactly once; immutable40 primary relations distinguish27API11DTO2adapter guards. No backend success is inferred. Original19modules/19protocols22owner gaps and full API behavior stay unknown. No supplied matched fields or custom catalog; failed/missing slots are retained."
+severity="error"
+
+[[constraints]]
+id="q40_same_owner_association"
+requirement="req_engineering"
+module="engineering"
+check="execute"
+rust_path="crates/oe-engineering/src/code_qualification.rs"
+statement="Existing CodeArtifactEligibilityExecutor context/POLICY dispatches exactly once, validates all original streams/source snapshots, then wraps the same candidate-only complete inventory with fixed /2 roles. No second registry, Project or source authority. Candidate, driver and version owner roots keep their existing roles. Final source/context rechecks remain after CandidateSnapshot; late I/O failure retains diagnostic artifacts without implying transactional rollback. Old finite results and new Q40 results remain eligibility unknown."
+severity="error"
+
+[[validations]]
+id="q40_all_outcomes"
+module="code_runner"
+constraint="q40_runner_actual_port"
+behavior="source_q40_all16_successes_and24_typed_rejections_are_exact"
+rust_path="crates/oe-code-runner/tests/support/q40_outcome.rs"
+oracle="Original source-derived40 fixed expectations, full16 results and24 exact phased refusals, actual generated port and request hash"
+scope="Private draft pending actual generation/build/tests; installed owner and all raw process evidence require independent current execution"
+
+[[validations]]
+id="q40_big_integer"
+module="code_runner"
+constraint="q40_runner_actual_port"
+behavior="adapter_preserves_adjacent_arbitrary_integer_priorities_and_full_result"
+rust_path="crates/oe-code-runner/tests/support/q40_outcome.rs"
+oracle="Independent additional large-integer control; not counted as a41st original case"
+scope="Private draft pending actual generation/build/tests; installed owner and all raw process evidence require independent current execution"
+
+[[validations]]
+id="q40_resource_errors"
+module="code_runner"
+constraint="q40_runner_actual_port"
+behavior="unclassified_decode_contract_and_resource_errors_are_not_semantic_rejections"
+rust_path="crates/oe-code-runner/tests/support/q40_outcome.rs"
+oracle="Actual unsupported shape, schema, counts and budgets cannot become expected semantic refusals"
+scope="Private draft pending actual generation/build/tests; installed owner and all raw process evidence require independent current execution"
+
+[[validations]]
+id="q40_plain_mapping"
+module="code_runner"
+constraint="q40_runner_actual_port"
+behavior="plain_mapping_marker_is_preserved_and_actual_condition_is_wire_guard"
+rust_path="crates/oe-code-runner/tests/support/q40_outcome.rs"
+oracle="Exposed marker is a wire guard; removing marker is an explicit different request, not original Python dict equivalence"
+scope="Private draft pending actual generation/build/tests; installed owner and all raw process evidence require independent current execution"
+
+[[validations]]
+id="q40_compare_expectations"
+module="code_evaluator"
+constraint="q40_independent_outcome_comparison"
+behavior="independent_all40_typed_expectations_validate_without_runtime_link"
+rust_path="crates/oe-code-evaluator/tests/support/q40_outcome.rs"
+oracle="Full frozen40 shapes with no semantic algorithm linked; caller passes and request identity drift rejected"
+scope="Private draft pending actual generation/build/tests; installed owner and all raw process evidence require independent current execution"
+
+[[validations]]
+id="q40_compare_success"
+module="code_evaluator"
+constraint="q40_independent_outcome_comparison"
+behavior="full_success_result_keeps_priority_confidence_premise_order_and_completeness"
+rust_path="crates/oe-code-evaluator/tests/support/q40_outcome.rs"
+oracle="Mutations to typed result order, numeric metadata, request identity and completeness reject"
+scope="Private draft pending actual generation/build/tests; installed owner and all raw process evidence require independent current execution"
+
+[[validations]]
+id="q40_compare_reject"
+module="code_evaluator"
+constraint="q40_independent_outcome_comparison"
+behavior="rejection_requires_exact_condition_phase_and_preserved_failure"
+rust_path="crates/oe-code-evaluator/tests/support/q40_outcome.rs"
+oracle="Wrong refusal cannot replace expected refusal; decode stage separated from runtime failure"
+scope="Private draft pending actual generation/build/tests; installed owner and all raw process evidence require independent current execution"
+
+[[validations]]
+id="q40_compare_process"
+module="code_evaluator"
+constraint="q40_independent_outcome_comparison"
+behavior="expected_semantic_rejection_never_matches_outer_failure_missing_checks_or_identity_drift"
+rust_path="crates/oe-code-evaluator/tests/support/q40_outcome.rs"
+oracle="Pure assessor synthetic mutations prove fail-closed logic only; no actual process or qualification is claimed"
+scope="Private draft pending actual generation/build/tests; installed owner and all raw process evidence require independent current execution"
+
+[[contract_cases]]
+id="q40_role_adapter"
+target_type="CodeScopeCaseRelation"
+input_json="{\"scope_id\":\"original-id\",\"case_id\":\"fixed-case\",\"role\":\"adapter_guard\",\"observation\":\"unknown\",\"behavior_status\":\"unknown\"}"
+expected_valid=true
+oracle="Closed shared role shape; complete original inventory and actual case/source identity remain owner checks"
+
+[[contract_cases]]
+id="q40_role_promotion"
+target_type="CodeScopeCaseRelation"
+input_json="{\"scope_id\":\"original-id\",\"case_id\":\"fixed-case\",\"role\":\"api_subcontract\",\"observation\":\"matched\",\"behavior_status\":\"passed\"}"
+expected_valid=false
+oracle="Closed shared role shape; complete original inventory and actual case/source identity remain owner checks"
+
+
+[[validations]]
+id="q40_scope_structure_1"
+module="code_evolution"
+constraint="q40_full_scope_roles"
+behavior="q40_bindings_preserve_every_original_id_and_all40_fixed_cases"
+rust_path="crates/oe-evolution/tests/q40_scope.rs"
+oracle="Independent complete original ID set and fixed catalog roles; missing, duplicated, relabeled or self-promoted observations and version drift reject"
+scope="Structural synthetic report tests only; no actual owner dispatch or current binary behavior is certified"
+
+[[validations]]
+id="q40_scope_structure_2"
+module="code_evolution"
+constraint="q40_full_scope_roles"
+behavior="q40_bindings_reject_deleted_duplicate_relabelled_and_missing_case_rows"
+rust_path="crates/oe-evolution/tests/q40_scope.rs"
+oracle="Independent complete original ID set and fixed catalog roles; missing, duplicated, relabeled or self-promoted observations and version drift reject"
+scope="Structural synthetic report tests only; no actual owner dispatch or current binary behavior is certified"
+
+[[validations]]
+id="q40_scope_structure_3"
+module="code_evolution"
+constraint="q40_full_scope_roles"
+behavior="report2_keeps_unknown_whole_behavior_and_rejects_role_or_observation_forgery"
+rust_path="crates/oe-evolution/tests/q40_scope.rs"
+oracle="Independent complete original ID set and fixed catalog roles; missing, duplicated, relabeled or self-promoted observations and version drift reject"
+scope="Structural synthetic report tests only; no actual owner dispatch or current binary behavior is certified"
+
+[[validations]]
+id="q40_scope_structure_4"
+module="code_evolution"
+constraint="q40_full_scope_roles"
+behavior="selected_report_dispatch_rejects_schema_relabelling_and_legacy_request"
+rust_path="crates/oe-evolution/tests/q40_scope.rs"
+oracle="Independent complete original ID set and fixed catalog roles; missing, duplicated, relabeled or self-promoted observations and version drift reject"
+scope="Structural synthetic report tests only; no actual owner dispatch or current binary behavior is certified"
+
+[[validations]]
+id="q40_owner_publication_1"
+module="engineering"
+constraint="q40_same_owner_association"
+behavior="q40_owner_wrapper_preserves_inventory_roles_and_explicit_wire_version"
+rust_path="crates/oe-engineering/src/code_qualification/q40_publication_tests.rs"
+oracle="Actual private wrapper serializes complete13494 inventory and40 role rows in explicit index/2 while old wrapper remains exact index/1; actual retained-file parser rejects cross-version reading. Synthetic objects establish publication shape only, not a fresh witness."
+scope="Actual private publication functions and filesystem failures with synthetic typed objects; no driver or80slot execution. Fresh owner integration and installed CLI are separate required acceptance."
+
+[[validations]]
+id="q40_owner_publication_2"
+module="engineering"
+constraint="q40_same_owner_association"
+behavior="q40_owner_final_read_rejects_changed_bytes_and_rebound_roles_without_receipt"
+rust_path="crates/oe-engineering/src/code_qualification/q40_publication_tests.rs"
+oracle="Real changed index bytes fail original ArtifactReference identity; even refreshed file hash cannot change catalog role records relative to the bound report. Failure leaves index diagnostics but writes no final receipt."
+scope="Actual private publication functions and filesystem failures with synthetic typed objects; no driver or80slot execution. Fresh owner integration and installed CLI are separate required acceptance."
+
+[[validations]]
+id="q40_owner_publication_3"
+module="engineering"
+constraint="q40_same_owner_association"
+behavior="q40_owner_final_guard_runs_before_retained_read_and_failure_keeps_originals"
+rust_path="crates/oe-engineering/src/code_qualification/q40_publication_tests.rs"
+oracle="Actual original artifact checker rejects changed private input before terminal publication; removing retained index inside the final guard proves the read occurs after that guard. Production still supplies real snapshot then current-input checks; this test does not execute that complete source/stream closure."
+scope="Actual private publication functions and filesystem failures with synthetic typed objects; no driver or80slot execution. Fresh owner integration and installed CLI are separate required acceptance."
+
+[[validations]]
+id="q40_owner_publication_4"
+module="engineering"
+constraint="q40_same_owner_association"
+behavior="q40_owner_failed_result_has_no_index_and_receipt_write_cannot_overwrite"
+rust_path="crates/oe-engineering/src/code_qualification/q40_publication_tests.rs"
+oracle="Existing receipt file cannot be overwritten, prior bytes and index remain; a failed result is retained with unknown eligibility and no index. Synthetic publication tests are not actual runner failure evidence."
+scope="Actual private publication functions and filesystem failures with synthetic typed objects; no driver or80slot execution. Fresh owner integration and installed CLI are separate required acceptance."
+
+[[validations]]
+id="q40_owner_actual"
+module="engineering"
+constraint="q40_same_owner_association"
+behavior="actual_q40_owner_association_preserves80_runs_full_scope_and_catalog_roles"
+rust_path="crates/oe-engineering/tests/q40_owner.rs"
+oracle="Actual independent old/new programs, eighty complete raw runs, current candidate-only mappings, all13494 IDs and fixed roles; manifest differences distinguish candidate from driver. Both actual selected artifacts retain generation/2, exact generation in the real drift check, and a fresh read from their own source roots; no legacy projection or fixed-driver source substitution."
+scope="Explicitly ignored until OE_Q40_QUALIFICATION_FIXTURE has genuine source-bound binaries, independent oracle and actual comparison; source-only mapping is not execution."
+
+[[validations]]
+id="q40_owner_drift"
+module="engineering"
+constraint="q40_same_owner_association"
+behavior="q40_owner_rejects_rebound_scope_or_descriptor_before_dispatch"
+rust_path="crates/oe-engineering/tests/q40_owner.rs"
+oracle="Private source descriptor drift, fully rebound missing-case and missing-ID requests reject before dispatch; frozen originals untouched."
+scope="Explicitly ignored until OE_Q40_QUALIFICATION_FIXTURE has genuine source-bound binaries, independent oracle and actual comparison; source-only mapping is not execution."

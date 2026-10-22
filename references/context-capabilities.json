@@ -1,57 +1,65 @@
 {
-  "schema": "ontology-engineering.context-capabilities/v1",
-  "model": "jev-1.13.0",
-  "purpose": "operational route candidates, not semantic verdicts or permissions",
+  "schema": "ontology-engineering.context-capabilities/v3",
+  "purpose": "Capability descriptions for the current Agent to consult under the user task; no automatic routing, semantic verdict, or execution authority.",
   "capabilities": [
     {
       "id": "cad",
-      "source": "skills/cad-agent/SKILL.md",
-      "capability": "零件、图纸、装配、机构或原生 CAD 的创建、编辑、回读与几何关系检查。通过 NXOpen/Journal 直接执行 Siemens NX，不使用 CAD MCP；Fusion 已退出当前工具范围，不作为备用执行器。机械设计、机构学、接口、公差与原生证据方法保留。外购标准件优先米思米中国；涉及原理、选型、装配或失效时复用父本体的供应商工程知识入口，从当前项目对象、功能、工况和缺口检索带来源的段落，核适用性后回到设计决定；知识解释本身不要求启动CAD。本能力包含账号会话核验、完整型号与参数配置、按工程用途将实际格式和规格/图纸/目录等资源交给 Jev 选择、下载取证、NX 导入保存和独立重开，以及供应商身份与 BOM 关联；不固定 STEP，失败反馈与剩余需求进入下一轮资料选择；新任务和异常诊断先查供应商资料取得经验，把适用正文、条件差异及来源带入候选选择，回写采用与验证结果；采购价格、交期或制造方案的比较按本轮需求联动制造能力。下载不证明机械适用或供货，用户指定的任务范围和停止指令优先；纯文字解释、教学说明或改写不需要实际建模或下载。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "零件、图纸、装配、机构或原生 CAD 的创建、编辑、回读与几何关系检查。通过本根 v2 Rust CAD 模块、NX controller/worker 和明确的 NX 原生 SDK 执行 Siemens NX；缺少能力在 v2 内补齐并验证，不调用原 cad-agent 的脚本、环境、MCP、Journal runner 或旧默认配置，也不作为失败备用；Fusion 已退出当前工具范围，不作为备用执行器。机械设计、机构学、接口、公差与原生证据方法保留。外购标准件优先米思米中国；涉及原理、选型、装配或失效时复用父本体的供应商工程知识入口，从当前项目对象、功能、工况和缺口检索带来源的段落，核适用性后回到设计决定；知识解释本身不要求启动CAD。本能力包含账号会话核验、完整型号与参数配置、按工程用途将实际格式和规格/图纸/目录等资源交给当前 Agent 按任务和来源核查后选择、下载取证、NX 导入保存和独立重开，以及供应商身份与 BOM 关联；不固定 STEP，失败反馈与剩余需求进入下一轮资料选择；新任务和异常诊断先查供应商资料取得经验，把适用正文、条件差异及来源带入候选选择，回写采用与验证结果；采购价格、交期或制造方案的比较按本轮需求联动制造能力。下载不证明机械适用或供货，用户指定的任务范围和停止指令优先；纯文字解释、教学说明或改写不需要实际建模或下载。",
+      "historical_source": "skills/cad-agent/SKILL.md"
     },
     {
       "id": "manufacturing",
-      "source": "skills/manufacturing-process-cost/SKILL.md",
-      "capability": "本轮需要制定或修改制造路线、工序、设备供应商选择、检验实施方案、费用或交期安排。仅检查现成资料、解释测量不确定度、运行现成语义审查或核对来源版本，不自动需要重新做制造方案。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "本轮需要制定或修改制造路线、工序、设备供应商选择、检验实施方案、费用或交期安排。仅检查现成资料、解释测量不确定度、运行现成语义审查或核对来源版本，不自动需要重新做制造方案。",
+      "historical_source": "skills/manufacturing-process-cost/SKILL.md"
     },
     {
       "id": "evidence",
-      "source": "skills/engineering-evidence-methods/SKILL.md",
-      "capability": "本轮需要判断测量、模型、对照、来源、报价或时段承诺是否支持某项工程结论，或因新条件而重审相关支持依据。单纯读取原生属性或解释概念时按实际需要，不强制加入。 供应商目录知识沿根入口的上下文检索取得原页、条件和反例候选，再复核其是否支持当前对象和配置；不得把原文存在或模型相关性当成工程成立。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "本轮需要判断测量、模型、对照、来源、报价或时段承诺是否支持某项工程结论，或因新条件而重审相关支持依据。单纯读取原生属性或解释概念时按实际需要，不强制加入。 供应商目录知识沿根入口的上下文检索取得原页、条件和反例候选，再复核其是否支持当前对象和配置；不得把原文存在或模型相关性当成工程成立。",
+      "historical_source": "skills/engineering-evidence-methods/SKILL.md"
     },
     {
       "id": "project_modeling",
-      "source": "references/semantic-engagement-contract.md",
-      "capability": "本轮需要建立或维护项目中的对象身份、角色、关系、功能、主张、证据支持或工作依赖表示，包括实例、别名和活动状态的有依据更新。只运行已经准备好的RDF检查，或原样提取几何属性，不自动需要新建或修改知识表示。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "本轮需要建立或维护项目中的对象身份、角色、关系、功能、主张、证据支持或工作依赖表示，包括实例、别名和活动状态的有依据更新。只运行已经准备好的RDF检查，或原样提取几何属性，不自动需要新建或修改知识表示。",
+      "historical_source": "references/semantic-engagement-contract.md"
     },
     {
       "id": "semantic_review",
-      "source": "references/semantic-engagement-contract.md",
-      "capability": "在现有受控包上运行正式语义查询、约束、案例或有范围的项目证据审查；仅只读检查运行时和能力目录不算执行了项目审查。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "在现有受控包上运行正式语义查询、约束、案例或有范围的项目证据审查；仅只读检查运行时和能力目录不算执行了项目审查。",
+      "historical_source": "references/semantic-engagement-contract.md"
     },
     {
       "id": "semantic_integration",
-      "source": "docs/method-bootstrap.md",
-      "capability": "本轮需要安装或修复source-locked Semantica入口、初始化工作区、准备或修正项目binding，或者因证据变化而重新准备当前task和证据摘要。只用已有匹配输入运行审查不需要重新接入。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "本轮需要构建或修复 v2 Rust 内核与明确的原生工具入口、初始化工作区、准备或修正项目binding，或者因证据变化而重新准备当前task和证据摘要。只用已有匹配输入运行审查不需要重新接入。",
+      "historical_source": "docs/method-bootstrap.md"
     },
     {
       "id": "ontology_evolution",
-      "source": "skills/domain-ontology-loop/SKILL.md",
-      "capability": "本轮明确要处理可复用的概念、关系、CQ或规则表达缺口，形成行业语义包候选、回归或治理。必须区别于建立一个新项目、记录项目事实、维护别名、补齐数据或修复task；这些本身不需要行业本体演化。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "本轮明确要处理可复用的概念、关系、CQ或规则表达缺口，形成行业语义包候选、回归或治理。必须区别于建立一个新项目、记录项目事实、维护别名、补齐数据或修复task；这些本身不需要行业本体演化。",
+      "historical_source": "skills/domain-ontology-loop/SKILL.md"
     },
     {
       "id": "book",
-      "source": "SKILL.md",
-      "capability": "本轮明确要求编写或修订工程书、教材或章节，包括更新书内示例与来源引用。新书使用standard-to-book，已有书稿沿相应作者工作流维护。解释一个术语、普通方案报告、补项目事实或修改语义包本身不要求编书。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "本轮明确要求编写或修订工程书、教材或章节，包括更新书内示例与来源引用。新书使用standard-to-book，已有书稿沿相应作者工作流维护。解释一个术语、普通方案报告、补项目事实或修改语义包本身不要求编书。",
+      "historical_source": "SKILL.md"
     },
     {
       "id": "browser",
-      "source": "references/jev-browser-tool.md",
-      "capability": "本轮需要在实际网页中定位控件、选择配置、填写已确认字段或读取交互后的结果。可调用固定版本的 Jev Ultrafast 浏览器工具；工具只处理有界网页子任务，遵守用户指定的浏览器方式、账号和不干扰要求。真实登录、下载落盘和工程验收另行检查，模型 DONE 只提出完成。普通概念讨论、静态网页阅读、工具安装或设计整体工程 loop，不因此需要运行浏览器；工具接入不表示已有通用工程循环控制器。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "本轮需要在实际网页中定位控件、选择配置、填写已确认字段或读取交互后的结果。当前 Agent 依据实际页面组织明确动作，通过 Rust 浏览器工具与后台 Peekaboo 观察和操作，遵守用户指定的浏览器方式、账号和不干扰要求。每次动作保存来源与实际结果；真实登录、下载落盘和工程验收分别检查。普通概念讨论、静态网页阅读或安装工具不自动需要操作浏览器。"
     },
     {
       "id": "external_specialist",
-      "source": "session skill inventory",
-      "capability": "当前任务明确需要工程本体内部以外的现有专门工具或 skill，如电子设计、Abaqus 实际求解、视频感知、PDF 提取；普通文字讨论、内部 CAD 或已有证据分析不自动需要外部专业执行。"
+      "source": "docs/CAPABILITIES.md",
+      "capability": "当前任务明确需要工程本体内部以外的现有专门工具或 skill，如电子设计、Abaqus 实际求解、视频感知、PDF 提取；普通文字讨论、内部 CAD 或已有证据分析不自动需要外部专业执行。",
+      "historical_source": "session skill inventory"
     }
   ]
 }

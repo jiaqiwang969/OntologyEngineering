@@ -1,0 +1,980 @@
+schema="oev2.design-fragment/2"
+
+[[constraints]]
+id="design_source_composition2"
+requirement="req_delivery"
+module="design"
+check="require_current"
+rust_path="crates/oe-design/src/composition.rs"
+statement="Explicit TOML oev2.design/2 root binds all relative fragment paths/formats/original SHA. Each file retains4MiB; root+all fragments fixed8MiB and32files. One merged original Design AST retains complete metadata/requirements/modules/platform/checks/interfaces/source scopes; no parallel Project or renderer. Nested manifest/cycle/link/outside/alias/repeat/duplicate definition/unknown fields fail. Formal2 execution requires exact current compiler capture of root/all actual fragments; old1 serde/4MiB/normalization and input meaning remain."
+severity="error"
+
+[[constraints]]
+id="design_composition2_generation_publication"
+requirement="req_delivery"
+module="design"
+check="run_composed"
+rust_path="crates/oe-design/src/generation.rs"
+statement="Same AST/RDF/locked ggen produces actual2 normalized envelope retaining complete semantic AST1 plus source2 raw-file identity/field byte/line locators. Generation2 source_inputs include root+every fragment; source/current compiler capture rechecked after actual generation and before original atomic publish. Lost/unread/changed/forgedSHA/uncaptured input/downgrade preserve previous generation. Flat1 and composed2 equivalent semantics keep contract/check/interface products byte equal; generation/source envelope and original schema identity remain distinct. Existing derived model/output/template budgets stay independent and bounded."
+severity="error"
+
+[[validations]]
+id="verify_design_composition2_original_metadata"
+module="design"
+constraint="design_source_composition2"
+behavior="composition2_preserves_complete_flat_semantics_and_original_field_locations"
+rust_path="crates/oe-design/tests/composition.rs"
+oracle="Freeze complete current flat1 input before composition implementation; exact canonical semantic AST and original annotations retain requirements/modules/types/constraints/interfaces/source/machine/validation/semantic models. Actual parser locators refer to unchanged original bytes, including multiline Unicode fields. Input2 public normalization retains its new envelope, never resigns old wire1."
+scope="Finite source transport/one semantic store, no semantic review/engineering adoption/full migration qualification"
+
+[[validations]]
+id="verify_design_composition2_source_rejections"
+module="design"
+constraint="design_source_composition2"
+behavior="composition2_rejects_missing_hash_path_link_duplicate_nested_and_budgets"
+rust_path="crates/oe-design/tests/composition.rs"
+oracle="Original1 >4MiB refuses and1 imports never ignored;2 root/file4MiB/total8MiB/32file boundaries source-bound, no symlink/hardlink/alias/outside/nesting/cycle/repeated path/definition/unknown fields/partial read. Whole source drift/uncompiled scope rejects without modifying existing outputs."
+scope="Exact independent input mutations and all existing metadata validation; budget change is versioned source composition only"
+
+[[validations]]
+id="verify_design_composition2_actual_generation"
+module="design"
+constraint="design_composition2_generation_publication"
+behavior="composition2_actual_ggen_products_bind_all_sources_and_atomic_refusal"
+rust_path="crates/oe-design/tests/composition_generation.rs"
+oracle="Actual locked ggen, current compiled2 source and same semantic flat1 generate identical contracts/checks/interfaces; fragment edit with updated root SHA requires new current compile/ggen and propagates actual products. Changes/lost/forged root-source/staged schema downgrade/uncaptured inputs cannot publish; prior generated version retained. Check/CLI use full2 inputs and expose actual root/fragment identity. Original failures remain separate."
+scope="Explicit current producer and source closure, no mock renderer; actual integration original/1 generated-wire history preserved"
+
+[[constraints]]
+id="design_composition_anchored_source_read"
+requirement="req_delivery"
+module="design"
+check="require_current"
+rust_path="crates/oe-design/src/composition.rs"
+statement="runtime read与current/build capture共享source_reader：Unix逐父目录no-follow fd及leaf nonblock/no-follow，打开后regular/nlink/4MiB；读后核held/current父dev/ino与file dev/ino/size/mtime/ctime。逻辑原路径不先canonicalize到替代来源。Windows复用现有StableRoot/PinnedFile，原/1 probe及/2 source/capture/atomic budgets保留。"
+severity="error"
+
+[[validations]]
+id="verify_composition_anchored_parent"
+module="design"
+constraint="design_composition_anchored_source_read"
+behavior="composition_source_anchored_parent_replacement_refuses"
+rust_path="build_support/source_reader.rs"
+oracle="pin父fd后把原父rename并替换成外部symlink；实际打开fd仍是原inode，最终当前路径验证拒绝，外部字节不读取/改写。另真实FIFO read/probe无writer在1s内拒绝，原阻塞/终止/清理原件保留。"
+scope="macOS受控真实filesystem与shared runtime/build读取；Windows运行另验"
+
+[[validations]]
+id="verify_composition_source_leaf_identity"
+module="design"
+constraint="design_composition_anchored_source_read"
+behavior="composition_source_same_mtime_leaf_replacement_refuses"
+rust_path="build_support/source_reader.rs"
+oracle="等大小/等mtime不同inode的新regular源替换原路径；不能仅按mtime信任，读后拒绝。"
+scope="实际inode与持有fd，不用mock verdict"
+
+[[validations]]
+id="verify_composition_source_content_and_probe"
+module="design"
+constraint="design_composition_anchored_source_read"
+behavior="composition_source_content_change_and_regular_probes_remain_bounded"
+rust_path="build_support/source_reader.rs"
+oracle="内容写变并还原mtime仍拒；原regular bytes成功，4MiB cap/legacy missing、malformed及overcap probe保持；symlink/hardlink/directory/FIFO具体拒绝，全部/2输入和原传播仍核。"
+scope="有界source IO，不证明全19/19/22/13494/55或平台资格"
+
+[[validations]]
+id="verify_composition_legacy_probe_io"
+module="design"
+constraint="design_composition_anchored_source_read"
+behavior="composition_capture_legacy_probe_preserves_caps_and_rejects_links"
+rust_path="crates/oe-design/tests/composition_io.rs"
+oracle="实际current_capture对missing/malformed/over4MiB及旧schema1保持empty；普通read仍拒超限，目录/叶符号链接/悬空链接具体失败而不当作missing。"
+scope="原compile probe含义与读取保护；不授予缺源码/新schema2输入执行权"
+
+[[constraints]]
+id="generation_directory_history_identity"
+requirement="req_delivery"
+module="core"
+check="unique_private_dir"
+rust_path="crates/oe-core/src/lib.rs"
+statement="CLI execution/stage/bootstrap/CLI publication共享oe-core独占目录owner：actual PID+Unix nanos+process serial+32有限AlreadyExists重试，不读/复用/删/覆写旧history；stem只存储候选名不授予时间/PID/source truth。路径/链接/非碰撞原错继续拒；stage仍在合法generation prefix，source/capture/receipt/pub守卫顺序保持。"
+severity="error"
+
+[[validations]]
+id="verify_shared_execution_history_collision"
+module="core"
+constraint="generation_directory_history_identity"
+behavior="execution_directory_same_pid_history_and_collisions_create_new_records"
+rust_path="crates/oe-cli/src/execution_directory.rs"
+oracle="同PID旧dir、同nonce受控实际mkdir碰撞保留旧字节并分配新dir；CLI已委托唯一core owner。Root原stage history/fresh同producer和bootstrap publication after-ggen旧marker实证保留，新current对应caller实际复验。"
+scope="有范围生成记录缺陷；旧CLI publication只源码同类，不能冒旧版实跑"
+
+[[validations]]
+id="verify_shared_directory_collision_budget"
+module="core"
+constraint="generation_directory_history_identity"
+behavior="execution_directory_collision_budget_never_overwrites_history"
+rust_path="crates/oe-cli/src/execution_directory.rs"
+oracle="相同共享reserve owner32全部预置候选后明确拒，全部marker字节/数量不变；新unique owner没有改新建含义。"
+scope="actual filesystem私有目录，不代表全平台/原库资格"
+
+[[validations]]
+id="verify_shared_directory_path_guard"
+module="core"
+constraint="generation_directory_history_identity"
+behavior="execution_directory_path_and_link_guards_do_not_become_collision_retries"
+rust_path="crates/oe-cli/src/execution_directory.rs"
+oracle="同owner parent traversal/链接失败，碰撞后重查路径，不将link/race作为重试许可；不跟随外部目标。"
+scope="macOS受控路径检查；Windows运行未知"
+
+[[constraints]]
+id="bootstrap_composed_normalized_envelope"
+requirement="req_delivery"
+module="design"
+check="main"
+rust_path="crates/oe-design/src/bin/oev2-design-bootstrap.rs"
+statement="bootstrap normalize与CLI normalize在实际/2输入共用loaded composition/require_current/normalized/verify，完整normalized-design/2与source2 sidecar绑定root和全部fragment及locator；同内存AST1/model不冒/1公开wire。两normalize与ggen共用source_bytes canonical完整evidence及16MiB gate，不pretty膨胀或删locator；旧/1仍原canonical/model/execution，预算及来源拒绝保持；两个实际当前入口分别取证。"
+severity="error"
+
+
+[[constraints]]
+id="design_composition_reference3_representation"
+requirement="req_delivery"
+module="design"
+check="normalized"
+rust_path="crates/oe-design/src/composition.rs"
+statement="Explicit input design/3 selects normalized-design/3 with complete semantic AST1 and source_ref instead of embedded source. source_ref reuses complete identity2 fields, fixed design-composition-source.json product and canonical SHA256; complete source2 sidecar retains root, every fragment raw byte/hash and every original field locator. No fact or locator is omitted. Old input1/2 and normalized1/2 meanings and bounds remain unchanged."
+severity="error"
+
+[[constraints]]
+id="design_composition_reference3_publication"
+requirement="req_delivery"
+module="design"
+check="composition_envelope"
+rust_path="crates/oe-design/src/generation.rs"
+statement="Generation3 and drift3 identify input3/normalized3. Actual publish requires matching versions, complete current compiler capture, exact original input3 sources, normalized3 identity, actual canonical sidecar bytes/hash, complete products and unchanged independent source/model/artifact limits before existing atomic exchange. Missing, forged, reformatted, changed or downgraded evidence preserves previous generation."
+severity="error"
+
+[[constraints]]
+id="design_composition_reference3_feedback"
+requirement="req_delivery"
+module="code_evolution"
+check="verify_composed"
+rust_path="crates/oe-evolution/src/generation_artifact.rs"
+statement="RRSI code-artifact receiving recognizes generation3/drift3 without resigning1/2. Re-read actual receipt, actual root input version, complete manifest/inputs/products, compilation binding, full sidecar and normalized output before admitting evidence; retain all former source/native/engineering qualification obligations."
+severity="error"
+
+[[validations]]
+id="verify_reference3_composition3_preserves_ast_rdf_and_complete_source_reference"
+constraint="design_composition_reference3_representation"
+behavior="composition3_preserves_ast_rdf_and_complete_source_reference"
+rust_path="crates/oe-design/tests/composition.rs"
+module="design"
+oracle="Frozen1/2 foundation and original byte limits; explicit3 AST/RDF equality, complete source locators/hash and independent malformed-version/reference controls. Actual locked ggen, CLI and RRSI receiving also required."
+scope="Versioned representation and source custody only. No relaxed budgets, no semantic omission, no independent release or engineering acceptance."
+
+[[validations]]
+id="verify_reference3_composition3_keeps_complete_source_budget_and_input_limits"
+constraint="design_composition_reference3_representation"
+behavior="composition3_keeps_complete_source_budget_and_input_limits"
+rust_path="crates/oe-design/tests/composition.rs"
+module="design"
+oracle="Frozen1/2 foundation and original byte limits; explicit3 AST/RDF equality, complete source locators/hash and independent malformed-version/reference controls. Actual locked ggen, CLI and RRSI receiving also required."
+scope="Versioned representation and source custody only. No relaxed budgets, no semantic omission, no independent release or engineering acceptance."
+
+[[validations]]
+id="verify_reference3_composition3_rejects_forged_reference_and_noncanonical_or_incomplete_source"
+constraint="design_composition_reference3_publication"
+behavior="composition3_rejects_forged_reference_and_noncanonical_or_incomplete_source"
+rust_path="crates/oe-design/tests/composition.rs"
+module="design"
+oracle="Frozen1/2 foundation and original byte limits; explicit3 AST/RDF equality, complete source locators/hash and independent malformed-version/reference controls. Actual locked ggen, CLI and RRSI receiving also required."
+scope="Versioned representation and source custody only. No relaxed budgets, no semantic omission, no independent release or engineering acceptance."
+
+[[validations]]
+id="verify_reference3_composition3_envelope_preserves_old_pairs_and_rejects_mixed_versions"
+constraint="design_composition_reference3_publication"
+behavior="composition3_envelope_preserves_old_pairs_and_rejects_mixed_versions"
+rust_path="crates/oe-design/src/generation.rs"
+module="design"
+oracle="Frozen1/2 foundation and original byte limits; explicit3 AST/RDF equality, complete source locators/hash and independent malformed-version/reference controls. Actual locked ggen, CLI and RRSI receiving also required."
+scope="Versioned representation and source custody only. No relaxed budgets, no semantic omission, no independent release or engineering acceptance."
+
+[[validations]]
+id="verify_reference3_composed_generation_matches_actual_source_and_products"
+constraint="design_composition_reference3_feedback"
+behavior="composed_generation_matches_actual_source_and_products"
+rust_path="crates/oe-evolution/src/generation_artifact.rs"
+module="code_evolution"
+oracle="Frozen1/2 foundation and original byte limits; explicit3 AST/RDF equality, complete source locators/hash and independent malformed-version/reference controls. Actual locked ggen, CLI and RRSI receiving also required."
+scope="Versioned representation and source custody only. No relaxed budgets, no semantic omission, no independent release or engineering acceptance."
+
+[[validations]]
+id="verify_reference3_composed_generation_rejects_lost_rebound_or_forged_inputs"
+constraint="design_composition_reference3_feedback"
+behavior="composed_generation_rejects_lost_rebound_or_forged_inputs"
+rust_path="crates/oe-evolution/src/generation_artifact.rs"
+module="code_evolution"
+oracle="Frozen1/2 foundation and original byte limits; explicit3 AST/RDF equality, complete source locators/hash and independent malformed-version/reference controls. Actual locked ggen, CLI and RRSI receiving also required."
+scope="Versioned representation and source custody only. No relaxed budgets, no semantic omission, no independent release or engineering acceptance."
+
+[[constraints]]
+id="design_grouped4_representation"
+requirement="req_delivery"
+module="design"
+check="load"
+rust_path="crates/oe-design/src/composition.rs"
+statement="Explicit design/4 requires validation_encoding oev2.validation-groups/1. Only fragment/3 admits nonempty groups/defaults/cases; old1/2/3 and fragment2 retain their meanings and reject the new field. Explicit id/behavior plus five required defaults and optional per-case overrides expand into original Validation/Design; no synthesized IDs or deleted requirements. Full cross-reference, metadata and duplicate checks remain."
+severity="error"
+
+[[constraints]]
+id="design_grouped4_expansion_budget"
+requirement="req_delivery"
+module="design"
+check="expand"
+rust_path="crates/oe-design/src/composition/groups.rs"
+statement="Input4 counts every flat, foundation and grouped Validation in one10000-row and8MiB compact-JSON-array budget. UTF8/JSON escapes/brackets/commas are counted by bounded serialization before cloning shared values. Existing32files/4MiB-file/8MiB-input/16MiB-artifact/256MiB-public budgets are unchanged."
+severity="error"
+
+[[constraints]]
+id="design_grouped4_source_origins"
+requirement="req_delivery"
+module="design"
+check="load"
+rust_path="crates/oe-design/src/composition.rs"
+statement="Source3 keeps every original parser byte/line/key locator and adds sorted validation-ID origins for all seven expanded fields, each referencing an actual case or default path in its captured fragment. Normalized4 references the canonical complete source3 by original identity2. No fabricated expanded-source offsets or silent drop of overrides."
+severity="error"
+
+[[constraints]]
+id="design_grouped4_publication"
+requirement="req_delivery"
+module="design"
+check="composition_envelope"
+rust_path="crates/oe-design/src/generation.rs"
+statement="Generation4/drift4 require input4/normalized4/source3 actual canonical bytes, all compiler-captured root/fragments, full products and current source binding before existing atomic publication. All mixed versions, source drift, missing/forged origins and unsupported encoding refuse; old1/2/3 publication checks retain original meaning."
+severity="error"
+
+[[constraints]]
+id="design_grouped4_feedback"
+requirement="req_delivery"
+module="code_evolution"
+check="verify_composed"
+rust_path="crates/oe-evolution/src/generation_artifact.rs"
+statement="RRSI artifact receiving verifies actual generation4/drift4 root/capture/manifest/products/source3 and normalized4 via the same Rust owner; grouping grants no release, native, engineering or method-benefit qualification. Complete prior validations and failures remain independently required."
+severity="error"
+
+[[validations]]
+id="verify_groups4_grouped4_preserves_full_design_and_rdf"
+module="design"
+constraint="design_grouped4_representation"
+behavior="grouped4_preserves_full_design_and_rdf"
+rust_path="crates/oe-design/tests/validation_groups.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_grouped4_origins_resolve_exact_defaults_and_overrides"
+module="design"
+constraint="design_grouped4_source_origins"
+behavior="grouped4_origins_resolve_exact_defaults_and_overrides"
+rust_path="crates/oe-design/tests/validation_groups.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_grouped4_rejects_implicit_old_admission_and_unknown_fields"
+module="design"
+constraint="design_grouped4_representation"
+behavior="grouped4_rejects_implicit_old_admission_and_unknown_fields"
+rust_path="crates/oe-design/tests/validation_groups.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_grouped4_rejects_missing_duplicate_invalid_and_empty_cases"
+module="design"
+constraint="design_grouped4_representation"
+behavior="grouped4_rejects_missing_duplicate_invalid_and_empty_cases"
+rust_path="crates/oe-design/tests/validation_groups.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_grouped4_expansion_is_bounded_before_cloning"
+module="design"
+constraint="design_grouped4_expansion_budget"
+behavior="grouped4_expansion_is_bounded_before_cloning"
+rust_path="crates/oe-design/tests/validation_groups.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_grouped4_source_drift_forged_origins_and_recovery"
+module="design"
+constraint="design_grouped4_publication"
+behavior="grouped4_source_drift_forged_origins_and_recovery"
+rust_path="crates/oe-design/tests/validation_groups.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_grouped4_counts_flat_and_foundation_rows_with_exact_json_bytes"
+module="design"
+constraint="design_grouped4_expansion_budget"
+behavior="grouped4_counts_flat_and_foundation_rows_with_exact_json_bytes"
+rust_path="crates/oe-design/tests/validation_groups.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_grouped4_all_overrides_resolve_to_actual_case_fields"
+module="design"
+constraint="design_grouped4_source_origins"
+behavior="grouped4_all_overrides_resolve_to_actual_case_fields"
+rust_path="crates/oe-design/tests/validation_groups.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_composition4_envelope_rejects_every_mixed_pair_and_missing_source"
+module="design"
+constraint="design_grouped4_publication"
+behavior="composition4_envelope_rejects_every_mixed_pair_and_missing_source"
+rust_path="crates/oe-design/src/generation.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_composed_generation_matches_actual_source_and_products"
+module="code_evolution"
+constraint="design_grouped4_feedback"
+behavior="composed_generation_matches_actual_source_and_products"
+rust_path="crates/oe-evolution/src/generation_artifact.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+[[validations]]
+id="verify_groups4_composed_generation_rejects_lost_rebound_or_forged_inputs"
+module="code_evolution"
+constraint="design_grouped4_feedback"
+behavior="composed_generation_rejects_lost_rebound_or_forged_inputs"
+rust_path="crates/oe-evolution/src/generation_artifact.rs"
+oracle="Frozen complete old5555 Validation records and full original Design retained; independent flat/group fixtures, original source locators and source/encoding/budget/version mutations. Actual pinned ggen/check, current compiler and RRSI receiving required."
+scope="Versioned representation and exact source custody only; full63 acceptance and original failures retained. Method benefit, formal release and engineering adoption remain separate."
+
+
+# Existing module-owner declarations, moved losslessly from foundation.
+[[modules]]
+id = "wire"
+kind = "contract"
+rust_path = "crates/oe-wire"
+purpose = "严格 JSON、规范摘要与 Unicode 比较"
+realizes = ["req_project", "req_delivery"]
+depends_on = ["semantic_json"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts"]
+
+
+
+[[modules]]
+id = "core"
+kind = "contract"
+rust_path = "crates/oe-core"
+purpose = "路径、文件身份、原子持久化与有界进程"
+realizes = ["req_project", "req_delivery"]
+depends_on = ["wire", "windows_controller"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["nested_process_budget_counterexample", "v1_contracts"]
+
+
+
+[[modules]]
+id = "model_credentials"
+kind = "contract"
+rust_path = "crates/oe-model-credentials"
+purpose = "显式选择的单个凭据文件与普通模型HTTP接口；不自动发现账号或轮换凭据"
+realizes = ["req_understanding", "req_semantic_platform"]
+depends_on = ["semantic_contracts"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts"]
+
+
+
+[[modules]]
+id = "semantic_transport"
+kind = "adapter"
+rust_path = "crates/oe-semantic"
+purpose = "旧资产及工作室来源运输，Rust书籍执行与发布证据适配；旧Python执行退役，历史身份不升级"
+realizes = ["req_semantics", "req_knowledge"]
+depends_on = ["core", "windows_controller", "semantic_runtime", "semantic_contracts", "semantic_service", "semantic_refinery", "contracts"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts", "semantica_oe7_complete", "book_source_rust_gate"]
+
+
+
+[[modules]]
+id = "engineering"
+kind = "pipeline"
+rust_path = "crates/oe-engineering"
+purpose = "情景路由、工程 Harness、判断、制造报告与有源图示绑定"
+realizes = ["req_understanding", "req_harness", "req_engineering"]
+depends_on = ["semantic_transport", "model_credentials"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts", "incad_design_source_protocol", "design_attempt_existing_engineering_owners", "design_comparison_existing_owners", "anatomy_projection_source"]
+
+
+
+[[modules]]
+id = "knowledge"
+kind = "pipeline"
+rust_path = "crates/oe-knowledge"
+purpose = "有界检索、注册、原页与反馈"
+realizes = ["req_knowledge"]
+depends_on = ["semantic_transport"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts", "incad_design_source_protocol"]
+
+
+
+[[modules]]
+id = "browser"
+kind = "adapter"
+rust_path = "crates/oe-browser"
+purpose = "有界浏览器动作与观察"
+realizes = ["req_supplier"]
+depends_on = ["core"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "当前Peekaboo后台；既有Chrome/明确目标/真实应用前后检查；自有传输进程和私有回执；不改用户浏览器"
+failures = "旧live后端先拒绝；连接/权限/provider或焦点未知不回退；派发后未知不重试；只清理仍后台的自有目标"
+status = "source_only"
+source_refs = ["v1_contracts", "peekaboo_current_background_policy"]
+
+
+
+[[modules]]
+id = "cad"
+kind = "adapter"
+rust_path = "crates/oe-cad"
+purpose = "NX 运输、供应商资源、设计证据与工艺交接"
+realizes = ["req_engineering", "req_supplier", "req_project", "req_delivery"]
+depends_on = ["core", "browser", "contracts", "nx_worker", "sw_worker"]
+platform = "各平台软件接收、原生NX/浏览器分别核验；对应范围见来源"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts", "solidworks_external_mcp_source", "solidworks_installed_native_api", "cad_correspondence_declared_scope1", "cad_correspondence_frozen_software1"]
+
+
+
+[[modules]]
+id = "geometry"
+kind = "adapter"
+rust_path = "crates/oe-geometry"
+purpose = "几何输入、有限图元投影与离散状态检查；受控外部原生结果另验"
+realizes = ["req_engineering"]
+depends_on = ["core", "contracts"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts", "anatomy_projection_source"]
+
+
+
+[[modules]]
+id = "nx_protocol"
+kind = "contract"
+rust_path = "crates/oe-nx-protocol"
+purpose = "任务、状态、有限帧与身份"
+realizes = ["req_engineering"]
+depends_on = ["wire"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts"]
+
+
+
+[[modules]]
+id = "nx_worker"
+kind = "adapter"
+rust_path = "crates/oe-nx-worker"
+purpose = "NX SDK 原生 worker、当前模型圆边选择与有界参考尺寸；Windows 与实机另验"
+realizes = ["req_engineering"]
+depends_on = ["nx_protocol", "contracts"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts"]
+
+
+
+[[modules]]
+id = "windows_controller"
+kind = "adapter"
+rust_path = "crates/oe-windows-controller"
+purpose = "Windows 受控任务进程与工作区"
+realizes = ["req_engineering"]
+depends_on = ["nx_protocol"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts"]
+
+
+
+[[modules]]
+id = "docs"
+kind = "pipeline"
+rust_path = "crates/oe-docs"
+purpose = "复用有源报告与书源合同；工程图示HTML/SVG和当前性验证"
+realizes = ["req_delivery"]
+depends_on = ["engineering", "semantic_transport", "geometry", "contracts", "kernel"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts", "anatomy_projection_source"]
+
+
+
+[[modules]]
+id = "dist"
+kind = "pipeline"
+rust_path = "crates/oe-dist"
+purpose = "显式分发清单、ZIP64 与接收字节校验"
+realizes = ["req_delivery"]
+depends_on = ["core"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts"]
+
+
+
+[[modules]]
+id = "cli"
+kind = "pipeline"
+rust_path = "crates/oe-cli"
+purpose = "唯一 oev2 命令入口"
+realizes = ["req_delivery", "req_understanding"]
+depends_on = ["engineering", "cad", "knowledge", "design", "kernel", "semantic_service", "model_credentials"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts"]
+
+
+
+[[modules]]
+id = "design"
+kind = "pipeline"
+rust_path = "crates/oe-design"
+purpose = "注释规范、确定 RDF、真实 ggen、漂移和影响"
+realizes = ["req_delivery", "req_semantics"]
+depends_on = ["core"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts", "rrsi_method"]
+
+
+
+[[modules]]
+id = "kernel"
+kind = "governance"
+rust_path = "crates/oe-kernel"
+purpose = "工程 Project 当前条件、范围审查、章节与经验适配、回执和治理；通用 RDF/SHACL/rules 委托唯一 semantic_runtime"
+realizes = ["req_semantics", "req_project", "req_harness", "req_knowledge"]
+depends_on = ["core", "semantic_transport", "contracts", "cad", "semantic_runtime", "semantic_contracts"]
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts", "w3c_shacl_property", "w3c_xsd_floating"]
+
+
+
+[[modules]]
+id = "contracts"
+kind = "contract"
+rust_path = "crates/oe-contracts"
+purpose = "ggen 生成的共享类型、状态、接口和约束"
+realizes = ["req_project", "req_semantics"]
+depends_on = []
+platform = "macOS/Linux 本地；Windows/NX/浏览器按各自证据"
+effects = "输入只读；显式输出与状态写 var；适配动作由任务授权"
+failures = "保留失败、未知、局部结果与恢复身份"
+status = "source_only"
+source_refs = ["v1_contracts"]
+
+
+
+[[modules]]
+id = "semantic_contracts"
+contract_group = "semantic"
+kind = "contract"
+rust_path = "crates/semantica-contracts"
+purpose = "真实ggen从工程本体指导的规范产生中性请求/结果/失败及ports，落实同一体系的表达合同；工程Project保持唯一身份"
+realizes = ["req_semantic_platform", "req_semantics"]
+depends_on = ["semantic_json"]
+platform = "Rust native local; declared formats and budgets; no external provider or device authorization"
+effects = "source/read-only query; no filesystem/project mutation or automatic adoption"
+failures = "explicit structured failure and unknown scope; no fallback Python or silent source conversion"
+status = "source_only"
+source_refs = ["semantica_oe7_complete", "rrsi_method"]
+
+
+
+[[modules]]
+id = "semantic_runtime"
+contract_group = "semantic"
+kind = "calculation"
+rust_path = "crates/semantica-runtime"
+purpose = "工程本体代码化核心的通用实现：Rust RDF/SHACL/rules/query/dataset/books，工程规则与编排委托同一算法；中性层不反依赖oe-*工程/知识/CAD/模型服务"
+realizes = ["req_semantic_platform", "req_semantics"]
+depends_on = ["semantic_contracts", "semantic_evaluator", "semantic_json", "semantic_numeric", "semantic_temporal"]
+platform = "Rust native local; declared formats and budgets; no external provider or device authorization"
+effects = "受控内存dataset/session修订、包加载身份、缓存和Datalog状态；来源只读，准备输出由工程适配持久化"
+failures = "explicit structured failure and unknown scope; no fallback Python or silent source conversion"
+status = "source_only"
+source_refs = ["semantica_oe7_complete", "rrsi_method", "semantica_original_datalog_port"]
+
+
+
+[[modules]]
+id = "code_evolution"
+contract_group = "engineering"
+kind = "pipeline"
+rust_path = "crates/oe-evolution"
+purpose = "code_evolution: fixed finite local code comparison, not Project or package governance"
+realizes = ["req_code_evolution"]
+platform = "aarch64-apple-darwin pinned Rust 1.95.0; other platforms unverified"
+effects = "private immutable inputs; owned process evidence under var; no native devices or external providers"
+failures = "explicit failed/partial/unknown; no silent denominator reduction"
+status = "source_only"
+depends_on = ["core", "contracts", "design"]
+source_refs = ["nested_process_budget_counterexample", "rrsi_code_protocol", "runtime_reproduction2_tool_contracts"]
+
+
+
+[[modules]]
+id = "code_evaluator"
+contract_group = "engineering"
+kind = "adapter"
+rust_path = "crates/oe-code-evaluator"
+purpose = "code_evaluator: fixed finite local code comparison, not Project or package governance"
+realizes = ["req_code_evolution"]
+platform = "aarch64-apple-darwin pinned Rust 1.95.0; other platforms unverified"
+effects = "private immutable inputs; owned process evidence under var; no native devices or external providers"
+failures = "explicit failed/partial/unknown; no silent denominator reduction"
+status = "source_only"
+depends_on = ["core", "contracts"]
+source_refs = ["rrsi_code_protocol"]
+
+
+
+[[modules]]
+id = "code_runner"
+contract_group = "engineering"
+kind = "adapter"
+rust_path = "crates/oe-code-runner"
+purpose = "code_runner: fixed finite local code comparison, not Project or package governance"
+realizes = ["req_code_evolution"]
+platform = "aarch64-apple-darwin pinned Rust 1.95.0; other platforms unverified"
+effects = "private immutable inputs; owned process evidence under var; no native devices or external providers"
+failures = "explicit failed/partial/unknown; no silent denominator reduction"
+status = "source_only"
+depends_on = ["core", "contracts", "semantic_runtime"]
+source_refs = ["rrsi_code_protocol", "pinned_rdflib_dataset_c14n_v2", "pinned_code_runner_snapshot12"]
+
+
+
+[[modules]]
+id = "semantic_evaluator"
+contract_group = "semantic"
+kind = "calculation"
+rust_path = "vendor/spareval"
+purpose = "唯一spareval0.2.7 Rust求值器的受控本地补丁，保留typed初始上下文可读取值、原Project显式域与MINUS/子查询语义；DESCRIBE原目标槽与application context编码槽独立，同一Dataset/语义引擎"
+realizes = ["req_semantic_platform", "req_semantics"]
+depends_on = ["semantic_query_planner", "semantic_numeric", "semantic_json", "semantic_temporal"]
+platform = "pinned Rust1.95 offline; same oxigraph0.5.11/spareval0.2.7 evaluator; no provider/device authorization"
+effects = "有界求值/显式私有状态更新，旧公共语义不改；显式query options/profile2按RDFLib7.6 modifier-key投影Distinct→Slice执行、真正目标与initial上下文分别保留，含无初始绑定新对照；neutral parser/modifier默认及无bindings旧1 wire不改，共用target/context缺陷修复同时使旧query_with_options/runner1隐藏参数错误拒绝恢复原4triples；MINUS/重赋值/aggregate守护不改，源码纳入编译和真实ggen来源闭包"
+failures = "语法/资源/remote拒绝和未验边界保留；不复制Python执行或修改RDF身份"
+status = "source_only"
+source_refs = ["spareval_027_pinned", "rdflib_760_bindings", "sparql11_minus", "sparopt_037_pinned"]
+
+
+
+[[modules]]
+id = "semantic_service"
+contract_group = "semantic"
+kind = "adapter"
+rust_path = "crates/semantica-service"
+purpose = "工程本体代码化核心的中性服务：原MCP目录/stdio协议、同一DatasetSession查询与显式ContextGraph记录投影；工程Project/采用/版本/模型凭据由上层唯一owner提供"
+realizes = ["req_semantic_platform", "req_semantics"]
+depends_on = ["semantic_contracts", "semantic_runtime"]
+platform = "Rust native stdio and in-process ports; HTTP/SSE/WebSocket/WASM not_connected; Windows not_run"
+effects = "同一session事务性ContextGraph变更、决策观测与query缓存；host显式装载ContextGraph记录到同一Dataset；累计byte/call预算由同一注入budget；无模型、凭据、工程事实采纳或版本选择"
+failures = "显式legacy只读入口保留未连接；native工具按实际backend/原始异常/修正版profile分别取证；query/source/revision/预算失败不得当完成；原profile差异单列"
+status = "source_only"
+source_refs = ["semantica_oe7_complete", "rrsi_method"]
+
+
+
+[[modules]]
+id = "semantic_json"
+contract_group = "semantic"
+kind = "calculation"
+rust_path = "crates/semantica-json"
+purpose = "Single neutral JSON interpretation/serialization and finite Python hash/set owner; generated DTOs preserve literal objects, typed scalars and recursive Value containers; upper wire/provider adapters delegate"
+realizes = ["req_semantic_platform", "req_semantics"]
+depends_on = []
+platform = "Pure Rust memory operations; host actually tested, Windows/WASM execution separate"
+effects = "Only source/Value conversion and bytes serialization; no graph/Project/model/registry/adoption/history effects"
+failures = "Malformed/duplicate/nonfinite/nesting and wrong container shape errors remain explicit; already-corrupted Value cannot be restored from absent original bytes"
+status = "source_only"
+source_refs = ["neutral_json_identity", "source_cpython313_set"]
+
+
+
+[[modules]]
+id = "semantic_provider_factory"
+contract_group = "semantic"
+kind = "state_machine"
+rust_path = "crates/semantica-runtime"
+purpose = "Original dynamic provider registry, all-kwargs instance reuse and caller-injected construction; no production global state"
+realizes = ["req_semantic_platform"]
+depends_on = ["semantic_contracts", "semantic_json"]
+platform = "Rust neutral local; finite JSON and explicit Python list/tuple/dict/scalar profile"
+effects = "Only injected caller state; no credential, call budget, transport, graph or fallback authority"
+failures = "Exact original unknown-name and constructor exception categories; opaque Python objects/SDK internals remain separately uncovered"
+status = "source_only"
+source_refs = ["semantica_provider_factory_original"]
+
+
+
+[[modules]]
+id = "semantic_litellm_wrapper"
+contract_group = "semantic"
+kind = "calculation"
+rust_path = "crates/semantica-runtime"
+purpose = "Original LiteLLM wrapper shallow options, response forms and structured JSON recovery; explicitly separate SDK dispatch"
+realizes = ["req_semantic_platform"]
+depends_on = ["semantic_contracts", "semantic_json", "semantic_runtime"]
+platform = "Rust injected completion; finite OpenAI/Groq protocol adapter, synthetic loopback verification only"
+effects = "Prepare/decode only; unique Harness owns all dispatch reservations and credential pool"
+failures = "No silent Base recovery; actual completion and HTTP identity separated; 62 third-party dispatch operators remain unknown"
+status = "source_only"
+source_refs = ["semantica_provider_factory_original"]
+
+
+
+[[modules]]
+id = "semantic_schema"
+contract_group = "semantic"
+kind = "calculation"
+rust_path = "crates/semantica-runtime"
+purpose = "Single neutral validator and explicit original model APIs driven exclusively by genuine-ggen model descriptors"
+realizes = ["semantic_typed_models_complete"]
+platform = "portable Rust; JSON profile independently verified; original Python/nonfinite domains separate"
+effects = "Validate/construct/dump candidates; no model credentials, graph, Project, adoption or registry authority"
+failures = "Unknown model/profile/unsupported shape and budgets fail closed; invalid fields return issues"
+status = "source_only"
+depends_on = ["semantic_contracts"]
+source_refs = ["semantica_typed_models_original"]
+
+
+
+[[modules]]
+id = "semantic_typed"
+kind = "pipeline"
+rust_path = "crates/semantica-runtime"
+purpose = "Original manual typed generation and schema validation through an injected shared call authority"
+realizes = ["semantic_typed_models_complete"]
+platform = "Portable Rust; explicit finite JSON/manual profile"
+effects = "Dispatch candidates only through existing authority, report validation/retry observations; never engineer adoption"
+failures = "Budget/credential/unknown/schema failures remain separate; original SDK Instructor profile not granted by manual parity"
+status = "source_only"
+depends_on = ["semantic_schema", "semantic_contracts"]
+source_refs = ["semantica_typed_models_original"]
+
+
+
+[[modules]]
+id = "semantic_refinery"
+contract_group = "semantic"
+kind = "governance"
+rust_path = "crates/semantica-runtime"
+purpose = "Neutral original refinery DTO validation and the single governed content/event algorithm"
+realizes = ["semantic_refinery_original_contracts"]
+platform = "portable Rust data profile; native/platform/rights/full suite separately verified"
+effects = "Caller-owned content/event store only; no second Project/version owner or credentials/budget/publication authority"
+failures = "Malformed original data, source/actor/baseline drift, out-of-order lifecycle and unknown gates stay explicit"
+status = "source_only"
+depends_on = ["semantic_contracts"]
+source_refs = ["semantica_refinery_original"]
+
+
+[[modules]]
+id = "native_runtime5_diagnostic_content"
+contract_group = "engineering"
+kind = "calculation"
+rust_path = "crates/oe-evolution"
+purpose = "Pure diagnostic content parser and exact byte replay inside existing code_evolution; no new runtime owner"
+realizes = ["req_native_runtime5_diagnostic_content"]
+platform = "Bounded UTF8 content parsing; current raw version fixtures are Rust1.95 aarch64-apple-darwin; actual runtime and all-platform closure unknown"
+effects = "Content-only generated DTOs; private reader binary reads a declared regular raw file; no native dispatch, environment or SDK authorization"
+failures = "Invalid UTF8/NUL/size/line limits and replay mismatch reject; delayed/malformed/unrecognized textual records remain retained unknowns"
+status = "source_only"
+depends_on = ["core", "contracts"]
+source_refs = ["native_runtime5_frozen_raw_versions"]
+
+
+
+[[modules]]
+id = "semantic_page_content3"
+contract_group = "semantic"
+kind = "calculation"
+rust_path = "crates/semantica-runtime"
+purpose = "Source content helper in existing neutral semantic runtime; no new Project/Dataset/registry/credential/dispatcher/owner"
+realizes = ["req_semantic_page_content3"]
+depends_on = ["semantic_contracts", "semantic_json"]
+platform = "Pure Rust source content; actual real PNG fixture is current aarch64 Darwin; all original formats/provider/runtime/platform closure remain required unknown"
+effects = "SourceProvider read of exact caller assets only; no filesystem/model/native OCR or Project mutation"
+failures = "Source hash/mutation, unsupported PNG subset/frames/chunks, CRC/zlib/tails/decoded caps, invalid UTF8/TSV coordinates/confidence/line budget and replay changes reject"
+status = "source_only"
+source_refs = ["semantic_page_content3_original_and_fixed_criteria"]
+
+
+
+[[modules]]
+id = "knowledge_page_content4"
+kind = "calculation"
+rust_path = "crates/oe-knowledge"
+purpose = "Pure source/content preparation in existing knowledge owner, borrowing sole Poppler process core;no Project/model/registry/OCR owner"
+realizes = ["req_knowledge_page_content4"]
+depends_on = ["contracts", "semantic_contracts", "semantic_page_content3"]
+platform = "Existing Unix Poppler process boundary;current aarch64 Darwin fixture;all other original platforms/formats remain required unknown"
+effects = "Actual source-bound reads and explicit local144dpi render;new private output artifacts only;OCR/model/engineering Project writes0"
+failures = "Source/row/tool/process/PNG drift,public receipt authority attempts,unknown removal and false projection reject"
+status = "source_only"
+source_refs = ["knowledge_page_content4_original_and_24_criteria"]
+
+
+
+[[modules]]
+id = "semantic_tsv_source5"
+contract_group = "semantic"
+kind = "calculation"
+rust_path = "crates/semantica-runtime"
+purpose = "Existing source/content adapter; no new owner, client, Project, registry, model or budget ledger"
+realizes = ["req_semantic_tsv_source5"]
+depends_on = ["semantic_contracts", "semantic_page_content3"]
+platform = "Current local Darwin original188 development page; all original platform/runtime/provider loading remain required unknown"
+effects = "Neutral provider source reads or existing controlled process only; model/Project0"
+failures = "Source/process/content drift, malformed or oversized TSV, false receipt authority, expired deadline reject; original raw retained"
+status = "source_only"
+source_refs = ["stage3_fixed_source_and_independent20"]
+
+
+
+[[modules]]
+id = "knowledge_ocr_page5"
+kind = "calculation"
+rust_path = "crates/oe-knowledge"
+purpose = "Existing source/content adapter; no new owner, client, Project, registry, model or budget ledger"
+realizes = ["req_knowledge_ocr_page5"]
+depends_on = ["contracts", "semantic_contracts", "semantic_tsv_source5", "knowledge_page_content4"]
+platform = "Current local Darwin original188 development page; all original platform/runtime/provider loading remain required unknown"
+effects = "Neutral provider source reads or existing controlled process only; model/Project0"
+failures = "Source/process/content drift, malformed or oversized TSV, false receipt authority, expired deadline reject; original raw retained"
+status = "source_only"
+source_refs = ["stage3_fixed_source_and_independent20"]
+
+
+
+[[modules]]
+id = "knowledge_registered_ocr6"
+kind = "pipeline"
+rust_path = "crates/oe-knowledge"
+purpose = "Same registered knowledge owner with one crate-private OCR execution shared by old5 and explicit6; no second Project/model/Dataset/registry/budget owner"
+realizes = ["req_knowledge_registered_ocr6"]
+depends_on = ["contracts", "semantic_contracts", "knowledge_ocr_page5", "knowledge_page_content4", "semantic_tsv_source5"]
+platform = "Current local Darwin selected registered development page; other platforms and full original13494/19/19/22 scope required unknown"
+effects = "Read current registration/index/PDF and selected sources; four original Poppler calls and two Tesseract calls; append fresh private raw artifacts only; model/Project writes0"
+failures = "Wrong registered document/page/count, source/tool drift, malformed/full stream rejection, deadline expiry or public authority fabrication reject; original process artifacts retained"
+status = "source_only"
+source_refs = ["registered_ocr6_frozen_source_and_criteria"]
+
+
+
+[[modules]]
+id = "sw_worker"
+kind = "adapter"
+rust_path = "crates/oe-sw-worker"
+purpose = "SolidWorks 原生 STA COM、有限零件任务与真实 owned 进程/文件证据；实际 CAD 另验"
+realizes = ["req_engineering"]
+depends_on = ["contracts", "windows_controller", "wire"]
+platform = "Windows x86_64 MSVC；其他平台仅合同检查"
+effects = "显式新目录和owned非输入桌面；既有CAD不附着不关闭"
+failures = "未知COM结果和未观测退出保留，禁止重试写入；worker须在首次CoInitializeEx前关联自身线程到同一非输入桌面，输入前台由原桌面只读线程观察，释放COM/STA后才恢复自身关联；不SwitchDesktop、不改COM注册策略"
+status = "source_only"
+source_refs = ["solidworks_installed_native_api"]
+
+# Native SolidWorks worker; exact Windows API and process/file owners, no alternate Project registry.
+
+
+
+[[modules]]
+id = "sw_session_host"
+kind = "adapter"
+rust_path = "crates/oe-sw-worker/src/session_host.rs"
+purpose = "同一受控SW worker在InteractiveToken会话的无窗口Rust启动与实际进程/stream/终态回收"
+realizes = ["req_engineering"]
+depends_on = ["sw_worker", "windows_controller", "wire"]
+platform = "Windows x86_64 MSVC GUI子系统；非Windows和session0拒绝"
+effects = "只新建显式launch目录和日志，以CREATE_NO_WINDOW启动同目录精确worker；不切焦点、不操作foreign"
+failures = "启动错误原件、worker真实失败和600秒outcome unknown分别保存；未知不终止、不重试"
+status = "source_only"
+source_refs = ["solidworks_installed_native_api", "solidworks_owned_process_method"]
+
+
+
+[[modules]]
+id = "semantic_query_parser"
+contract_group = "semantic"
+kind = "calculation"
+rust_path = "vendor/spargebra"
+purpose = "Pinned parser subcomponent of the same semantic owner; neutral default grammar and existing numeric patch stay, explicit profile2 genuinely lowers Describe modifier keys and separately returns selected target metadata"
+realizes = ["req_semantic_platform", "req_semantics"]
+depends_on = []
+platform = "Rust1.95 offline spargebra0.4.7 same upstream commit and retained MIT/Apache licenses"
+effects = "Bounded local parse of supplied source only; no alternate Dataset, query registry, fact authority or runtime owner"
+failures = "Original syntax and aggregate/reassignment/remote policy failures remain; compatibility and original errors separately observed"
+status = "source_only"
+source_refs = ["spareval_027_pinned", "rdflib_760_describe_modifier"]
+

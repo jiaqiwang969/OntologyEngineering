@@ -1,0 +1,317 @@
+schema="oev2.design-fragment/2"
+[[sources]]
+id="semantica_original_named_graph_validation"
+identity="Semantica0.6.5+oe.7 wheel142ddd6fe788b3a716646babc410628aa7606e44ed63b98f5227863f9ea7ba15; ontology/runtime.py validate lines1749-1830 and _validate_graph_name lines2326-2332"
+role="Original explicit graph_name selects only that Graph, including an absent name's empty view, and reports the unchanged runtime revision"
+applicability="Source-derived single named-IRI semantics only; original graph_name=None passes the full Dataset and remains a separate compatibility scope; no original Python executed"
+
+[[types]]
+name="SemanticNamedGraphValidationRequest"
+contract_group="semantic"
+meaning="Original full dataset and Turtle shapes with independent source identities and an explicit named-IRI selector; default-graph entry points remain unchanged"
+identity="Canonical complete typed request SHA plus exact original dataset/shapes UTF-8 SHA256; selector is not a load graph override"
+
+[[types.fields]]
+name="schema"
+meaning="Explicit named-graph validation transport version"
+rust_type="String"
+required=true
+format="status"
+unit="identity or original RDF terms"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Generated shape checks plus actual shared Rust owner and independent selected-graph counterexamples"
+allowed_values=["semantica.named-graph-validation-request/1"]
+
+[[types.fields]]
+name="data"
+meaning="Complete original TriG or N-Quads UTF-8 dataset, including default and unselected graphs; source bytes are never trimmed or flattened"
+rust_type="String"
+required=true
+format="raw_utf8"
+unit="UTF-8 bytes"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="At most original 16 MiB decoded input; actual default Dataset owner still enforces complete 100000-quads / 16 MiB serialized size"
+
+[[types.fields]]
+name="data_sha256"
+meaning="SHA256 of complete original data bytes, not a hash of only selected triples or a caller-supplied graph snapshot"
+rust_type="String"
+required=true
+format="sha256"
+unit="SHA256"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Recomputed before parsing; changed whitespace with old SHA rejects"
+
+[[types.fields]]
+name="dataset_format"
+meaning="Explicit syntax retaining graph names; never inferred from a file extension or source content"
+rust_type="String"
+required=true
+format="status"
+unit="identity or original RDF terms"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Generated shape checks plus actual shared Rust owner and independent selected-graph counterexamples"
+allowed_values=["trig", "nquads"]
+
+[[types.fields]]
+name="shapes"
+meaning="Complete original Turtle shapes bytes; empty or invalid shapes follow existing parser/preflight semantics; no dataset shapes syntax or remote fetch"
+rust_type="String"
+required=true
+format="raw_utf8"
+unit="UTF-8 bytes"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="At most original 16 MiB decoded input and original shape-quad/SHACL budgets; no-target view still receives full shape preflight"
+
+[[types.fields]]
+name="shapes_sha256"
+meaning="SHA256 of original complete shape bytes before parsing, independent of data identity"
+rust_type="String"
+required=true
+format="sha256"
+unit="SHA256"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Recomputed before parsing; false SHA cannot be hidden by empty selection or invalid shape syntax"
+
+[[types.fields]]
+name="graph_name"
+meaning="Required absolute IRI selecting one existing or empty named graph; it is not the default graph, a blank graph name or a union selector"
+rust_type="String"
+required=true
+format="text"
+unit="absolute IRI UTF-8 bytes"
+precision="Exact NamedNode identity; no trimming, URI repair or default fallback; explicit bound equals existing 16 MiB MAX_BYTES"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Original absent-name empty-view behavior retained; invalid or over-budget selector rejects without changing the source session"
+
+[[types]]
+name="SemanticNamedGraphValidationResult"
+contract_group="semantic"
+meaning="Actual bounded SHACL report for one explicit named graph, with full original sources and unchanged validation revision; conformance is not engineering adoption"
+identity="Request/source/shape SHA256, exact selector and actual pre/post validation revision"
+
+[[types.fields]]
+name="schema"
+meaning="Explicit named-graph validation result transport version"
+rust_type="String"
+required=true
+format="status"
+unit="identity or original RDF terms"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Generated shape checks plus actual shared Rust owner and independent selected-graph counterexamples"
+allowed_values=["semantica.named-graph-validation-result/1"]
+
+[[types.fields]]
+name="request_sha256"
+meaning="SHA256 of canonical complete typed request; original data/shapes, selector and format all remain bound"
+rust_type="String"
+required=true
+format="sha256"
+unit="SHA256"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Different source whitespace, selector or format changes request identity; full-source SHA remains distinct from selected-view contents"
+
+[[types.fields]]
+name="data_sha256"
+meaning="Rechecked complete original dataset source identity"
+rust_type="String"
+required=true
+format="sha256"
+unit="SHA256"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Generated shape checks plus actual shared Rust owner and independent selected-graph counterexamples"
+
+[[types.fields]]
+name="shapes_sha256"
+meaning="Rechecked complete original Turtle shape source identity"
+rust_type="String"
+required=true
+format="sha256"
+unit="SHA256"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Generated shape checks plus actual shared Rust owner and independent selected-graph counterexamples"
+
+[[types.fields]]
+name="graph_name"
+meaning="Exact validated named IRI; no inference of source presence from a legal selector"
+rust_type="String"
+required=true
+format="text"
+unit="absolute IRI"
+precision="Exact original UTF-8 bytes, RDF terms and declared identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Generated shape checks plus actual shared Rust owner and independent selected-graph counterexamples"
+
+[[types.fields]]
+name="selected_quad_count"
+meaning="Count of triples actually projected from the selected named graph; zero remains visible"
+rust_type="u64"
+required=true
+format="typed"
+unit="triples"
+precision="Exact count under existing complete Dataset budget"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Foreign/default graph quads do not count or supply obligations; absent name reports zero"
+
+[[types.fields]]
+name="revision_before"
+meaning="Actual DatasetSession revision after source load and immediately before immutable validation"
+rust_type="u64"
+required=true
+format="typed"
+unit="session revision"
+precision="Observed integer, not a caller declaration"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Validation never calls publish/load/clear or constructs a new authoritative session view"
+
+[[types.fields]]
+name="revision_after"
+meaning="Actual same-session revision after validation; equals revision_before for every successful report"
+rust_type="u64"
+required=true
+format="typed"
+unit="session revision"
+precision="Observed integer; no RDFC snapshot required to manufacture stability"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="Success, nonconformance and errors leave original data, revision, package registry and caches unchanged"
+
+[[types.fields]]
+name="report"
+meaning="Unmodified bounded SHACL report from validate_dataset on only the selected triples, retaining full findings, focus coverage, scope and supported-profile metadata"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+unit="RDF terms and validation observations"
+precision="Original focus/path/value/source-shape/component/severity/messages and loaded blank-node/literal identities"
+write="Caller declares source and selection; same Rust owner validates and observes"
+applicability="Explicit named-IRI graph validation; no implicit union, source mutation or engineering adoption"
+acceptance="A missing property in this graph cannot be repaired by another graph; empty target sets are not engineering evidence; unsupported input remains error/unknown"
+
+[[interfaces]]
+name="SemanticNamedGraphValidationPort"
+module="semantic_runtime"
+method="validate_named_graph"
+input="SemanticNamedGraphValidationRequest"
+output="SemanticNamedGraphValidationResult"
+error="SemanticRuntimeFailure"
+effects="One local default-resource source load for stateless request; immutable single-graph validation thereafter, no existing Project/Dataset/cache mutation or adoption"
+rust_path="crates/semantica-runtime/src/runtime.rs"
+implementation="RustSemanticRuntime"
+
+[[constraints]]
+id="semantic_explicit_named_graph_validation"
+requirement="req_semantic_platform"
+module="semantic_runtime"
+check="validate_named_graph"
+rust_path="crates/semantica-runtime/src/dataset.rs"
+statement="Immutable DatasetSession borrows the complete source, enforces default100000-quads/16MiB before selection even for a larger context profile, selects exact NamedNode IRI and copies original s/p/o terms into a temporary default graph for the existing SHACL evaluator. Preserve blank identity, literals, shape preflight, constraint activation, all findings, absence/empty target semantics, revision/cache/package state. Never remove the old validate_dataset named-graph guard or implicitly flatten/default/union data. No snapshot/RDFC prerequisite adds a new blank-node rejection to validation."
+severity="error"
+
+[[constraints]]
+id="semantic_named_graph_source_transport"
+requirement="req_semantic_platform"
+module="semantic_runtime"
+check="execute_named_graph_validation"
+rust_path="crates/semantica-runtime/src/runtime.rs"
+statement="Generated request/result/port bind original complete data/shapes SHA, explicit trig/nquads and named IRI, full canonical request SHA and actual pre/post validation revision. Decoded data/shapes/selector each retain existing MAX_BYTES16MiB before cloning/hashing. New transport is bounded by 6*(data16MiB+shapes16MiB+selector16MiB)+4096 = 288MiB+4KiB, covering worst-case JSON escaping without narrowing either original file's capacity. This transport allowance does not raise RDF, full-Dataset, query or SHACL evaluation bounds. kernel validate-named uses the same strict JSON/private path/execution guard, outputs nonconformance with exit1, and leaves every old json_input/validate/BookRunner/promoted-review contract unchanged."
+severity="error"
+
+[[validations]]
+id="verify_named_graph_source_cases_preserve_selection_and_request_identity"
+module="semantic_runtime"
+constraint="semantic_named_graph_source_transport"
+behavior="named_graph_source_cases_preserve_selection_and_request_identity"
+rust_path="crates/semantica-runtime/tests/named_graph.rs"
+oracle="Source-derived exact good/bad/other/absent graph results and full findings; metadata/format/request/source hashes retained. Both original data and shapes at legal independent byte limits remain transportable."
+scope="Independently source-derived single named-IRI graph profile and current Rust execution; original graph_name=None whole-Dataset backend behavior, full SHACL/13494 migration and engineering adoption remain open"
+
+[[validations]]
+id="verify_named_graph_validation_preserves_session_and_original_default_guard"
+module="semantic_runtime"
+constraint="semantic_explicit_named_graph_validation"
+behavior="named_graph_validation_preserves_session_and_original_default_guard"
+rust_path="crates/semantica-runtime/tests/named_graph.rs"
+oracle="Actual same-session validation leaves complete quads, revision, caches and registered packages unchanged; old mixed-Dataset validate_dataset continues refusal."
+scope="Independently source-derived single named-IRI graph profile and current Rust execution; original graph_name=None whole-Dataset backend behavior, full SHACL/13494 migration and engineering adoption remain open"
+
+[[validations]]
+id="verify_named_graph_blank_terms_and_language_literals_keep_loaded_identity"
+module="semantic_runtime"
+constraint="semantic_explicit_named_graph_validation"
+behavior="named_graph_blank_terms_and_language_literals_keep_loaded_identity"
+rust_path="crates/semantica-runtime/tests/named_graph.rs"
+oracle="Selected loaded blank-node focus, literal language/datatype and exact source terms survive direct projection; foreign graphs cannot supply values."
+scope="Independently source-derived single named-IRI graph profile and current Rust execution; original graph_name=None whole-Dataset backend behavior, full SHACL/13494 migration and engineering adoption remain open"
+
+[[validations]]
+id="verify_named_graph_contract_rejects_source_shape_schema_format_and_selector_drift"
+module="semantic_runtime"
+constraint="semantic_named_graph_source_transport"
+behavior="named_graph_contract_rejects_source_shape_schema_format_and_selector_drift"
+rust_path="crates/semantica-runtime/tests/named_graph.rs"
+oracle="One-byte source/shape changes with old SHA reject before parsing, including malformed RDF; unsupported schema/format, invalid/over-budget IRI and decoded budget reject without fallback."
+scope="Independently source-derived single named-IRI graph profile and current Rust execution; original graph_name=None whole-Dataset backend behavior, full SHACL/13494 migration and engineering adoption remain open"
+
+[[validations]]
+id="verify_named_graph_empty_selection_preserves_shape_preflight_and_activation"
+module="semantic_runtime"
+constraint="semantic_explicit_named_graph_validation"
+behavior="named_graph_empty_selection_preserves_shape_preflight_and_activation"
+rust_path="crates/semantica-runtime/tests/named_graph.rs"
+oracle="Legal absent graph selects zero triples; targetNode minCount still violates, targetClass has zero coverage; invalid shapes still reject and recent deactivated-constraint behavior remains."
+scope="Independently source-derived single named-IRI graph profile and current Rust execution; original graph_name=None whole-Dataset backend behavior, full SHACL/13494 migration and engineering adoption remain open"
+
+[[validations]]
+id="verify_named_graph_selection_cannot_bypass_full_dataset_budget"
+module="semantic_runtime"
+constraint="semantic_explicit_named_graph_validation"
+behavior="named_graph_selection_cannot_bypass_full_dataset_budget"
+rust_path="crates/semantica-runtime/tests/named_graph.rs"
+oracle="A small selected graph cannot hide full source quads/bytes beyond original limits or enlarge SHACL via context50k; no truncated partial success."
+scope="Independently source-derived single named-IRI graph profile and current Rust execution; original graph_name=None whole-Dataset backend behavior, full SHACL/13494 migration and engineering adoption remain open"
+
+[[contract_cases]]
+id="named_graph_request_explicit_schema"
+target_type="SemanticNamedGraphValidationRequest"
+input_json="{\"schema\":\"semantica.named-graph-validation-request/1\",\"data\":\"\",\"data_sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"dataset_format\":\"nquads\",\"shapes\":\"\",\"shapes_sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"graph_name\":\"urn:graph\"}"
+expected_valid=true
+oracle="Generated shape accepts explicit source/selection fields; actual source digest and SHACL checks remain runtime responsibilities"
+
+[[contract_cases]]
+id="named_graph_request_rejects_implicit_graph_syntax"
+target_type="SemanticNamedGraphValidationRequest"
+input_json="{\"schema\":\"semantica.named-graph-validation-request/1\",\"data\":\"\",\"data_sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"dataset_format\":\"turtle\",\"shapes\":\"\",\"shapes_sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"graph_name\":\"urn:graph\"}"
+expected_valid=false
+oracle="New named-graph wire declares dataset syntax explicitly; unsupported input does not fall back"
+
+[[contract_cases]]
+id="named_graph_request_rejects_unknown_schema"
+target_type="SemanticNamedGraphValidationRequest"
+input_json="{\"schema\":\"semantica.named-graph-validation-request/99\",\"data\":\"\",\"data_sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"dataset_format\":\"trig\",\"shapes\":\"\",\"shapes_sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"graph_name\":\"urn:graph\"}"
+expected_valid=false
+oracle="Unknown wire version rejects"

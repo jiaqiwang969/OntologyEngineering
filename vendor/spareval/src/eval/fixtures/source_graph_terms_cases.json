@@ -1,0 +1,428 @@
+{
+  "schema": "source-graph-terms-transport-cases/1",
+  "source_record_sha256": "0554a023b7d7ee4765b42e33692bf51fd63bfe280636af98da1a2bf4eebf0382",
+  "candidate_results_used": false,
+  "qualification_scope": "Literal occurrence transport and BGP variable membership only; actual full queries were original baselines, not received graph execution.",
+  "cases": [
+    {
+      "id": "GT01",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s ?p ?o }",
+      "bgps": [
+        {
+          "variables": [
+            "o",
+            "p",
+            "s"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "o",
+        "p",
+        "s"
+      ]
+    },
+    {
+      "id": "GT02",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?x :p ?x }",
+      "bgps": [
+        {
+          "variables": [
+            "x"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "x"
+      ]
+    },
+    {
+      "id": "GT03",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p 01 }",
+      "bgps": [
+        {
+          "variables": [
+            "s"
+          ],
+          "literals": [
+            {
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ]
+        }
+      ],
+      "projection_members": [
+        "s"
+      ]
+    },
+    {
+      "id": "GT04",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p \"01\"^^xsd:integer; :q \"1\"^^xsd:integer }",
+      "bgps": [
+        {
+          "variables": [
+            "s"
+          ],
+          "literals": [
+            {
+              "lexical": "01",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('01', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": -6783971947208886399
+            },
+            {
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ]
+        }
+      ],
+      "projection_members": [
+        "s"
+      ]
+    },
+    {
+      "id": "GT05",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :q ?z . ?s :p ?x . ?z :r ?x }",
+      "bgps": [
+        {
+          "variables": [
+            "s",
+            "x",
+            "z"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "s",
+        "x",
+        "z"
+      ]
+    },
+    {
+      "id": "GT06",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p \"a\"; :q \"a\"^^xsd:string }",
+      "bgps": [
+        {
+          "variables": [
+            "s"
+          ],
+          "literals": [
+            {
+              "lexical": "a",
+              "datatype": null,
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a')",
+              "hash": 4644417185603328019
+            },
+            {
+              "lexical": "a",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string",
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+              "hash": -5635284436390693945
+            }
+          ]
+        }
+      ],
+      "projection_members": [
+        "s"
+      ]
+    },
+    {
+      "id": "GT07",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p \"a\"@ZH-cn }",
+      "bgps": [
+        {
+          "variables": [
+            "s"
+          ],
+          "literals": [
+            {
+              "lexical": "a",
+              "datatype": null,
+              "language": "ZH-cn",
+              "ill_typed": null,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a', lang='ZH-cn')",
+              "hash": 8544877311193039719
+            }
+          ]
+        }
+      ],
+      "projection_members": [
+        "s"
+      ]
+    },
+    {
+      "id": "GT08",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p \"bad\"^^xsd:integer }",
+      "bgps": [
+        {
+          "variables": [
+            "s"
+          ],
+          "literals": [
+            {
+              "lexical": "bad",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.NoneType",
+              "cache": null,
+              "repr": "rdflib.term.Literal('bad', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8143584025489731440
+            }
+          ]
+        }
+      ],
+      "projection_members": [
+        "s"
+      ]
+    },
+    {
+      "id": "GT12",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p ?o OPTIONAL { ?s :q ?z } }",
+      "bgps": [
+        {
+          "variables": [
+            "o",
+            "s"
+          ],
+          "literals": []
+        },
+        {
+          "variables": [
+            "s",
+            "z"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "o",
+        "s",
+        "z"
+      ]
+    },
+    {
+      "id": "GT15",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p ?p . ?s :q ?p }",
+      "bgps": [
+        {
+          "variables": [
+            "p",
+            "s"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "p",
+        "s"
+      ]
+    },
+    {
+      "id": "GT16",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { :a :p ?o }",
+      "bgps": [
+        {
+          "variables": [
+            "o"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "o"
+      ]
+    },
+    {
+      "id": "GT17",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { :a :p 1 }",
+      "bgps": [
+        {
+          "variables": [],
+          "literals": [
+            {
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ]
+        }
+      ],
+      "projection_members": []
+    },
+    {
+      "id": "GT18",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { :missing :p ?o }",
+      "bgps": [
+        {
+          "variables": [
+            "o"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "o"
+      ]
+    },
+    {
+      "id": "GT19",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p ?o }",
+      "bgps": [
+        {
+          "variables": [
+            "o",
+            "s"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "o",
+        "s"
+      ]
+    },
+    {
+      "id": "GT20",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { :a ?p ?o }",
+      "bgps": [
+        {
+          "variables": [
+            "o",
+            "p"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "o",
+        "p"
+      ]
+    },
+    {
+      "id": "GT21",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { :a :p ?o }",
+      "bgps": [
+        {
+          "variables": [
+            "o"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "o"
+      ]
+    },
+    {
+      "id": "GT22",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p ?o }",
+      "bgps": [
+        {
+          "variables": [
+            "o",
+            "s"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "o",
+        "s"
+      ]
+    },
+    {
+      "id": "GT23",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p ?o FILTER(?o = 1) }",
+      "bgps": [
+        {
+          "variables": [
+            "o",
+            "s"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "o",
+        "s"
+      ]
+    },
+    {
+      "id": "GT24",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { { SELECT ?s WHERE { ?s :p ?o } } }",
+      "bgps": [
+        {
+          "variables": [
+            "o",
+            "s"
+          ],
+          "literals": []
+        }
+      ],
+      "projection_members": [
+        "s"
+      ]
+    }
+  ],
+  "syntax_mapping_cases": [
+    {
+      "id": "GT11",
+      "name": "GroupGraphPatternSub",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT ?e WHERE { BIND(EXISTS { ?s :p \"a\"; :q \"a\" } AS ?e) }",
+      "variables": [
+        "s"
+      ],
+      "variable_set_iteration": [
+        "s"
+      ]
+    },
+    {
+      "id": "GT11",
+      "name": "TriplesBlock",
+      "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT ?e WHERE { BIND(EXISTS { ?s :p \"a\"; :q \"a\" } AS ?e) }",
+      "variables": [
+        "s"
+      ],
+      "variable_set_iteration": [
+        "s"
+      ]
+    }
+  ]
+}

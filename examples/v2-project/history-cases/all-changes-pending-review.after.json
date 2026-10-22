@@ -1,0 +1,88 @@
+{
+  "schema": "oev2.project/1",
+  "project_id": "synthetic-installation-bracket",
+  "revision": "project-record-B",
+  "purpose": "Track historical adoption and review dependencies after bracket/report/temperature changes; no new field test",
+  "objects": {
+    "installation-bracket": "B",
+    "unchanged-fixture": "F1"
+  },
+  "conditions": {
+    "operating-temperature": "room-temperature plus 60 degC; room exact value unknown"
+  },
+  "evidence": {
+    "1bc2f780ba1227865aacf54324abcd7fc355fcf4d5bf5d13af3d77b14e6067e8": "1bc2f780ba1227865aacf54324abcd7fc355fcf4d5bf5d13af3d77b14e6067e8",
+    "610a7354a973932e508d4399b5f192b96b5e45159d351e103f7db4cd44308fdd": "610a7354a973932e508d4399b5f192b96b5e45159d351e103f7db4cd44308fdd",
+    "cdf1c439720ace0eb955549d0e8b72bd09507f0001a1a204988f5e9684283b3a": "cdf1c439720ace0eb955549d0e8b72bd09507f0001a1a204988f5e9684283b3a",
+    "fixture-independent-report": "cdf1c439720ace0eb955549d0e8b72bd09507f0001a1a204988f5e9684283b3a",
+    "supplier-measurement-report": "1bc2f780ba1227865aacf54324abcd7fc355fcf4d5bf5d13af3d77b14e6067e8"
+  },
+  "decisions": [
+    {
+      "id": "adopt-bracket",
+      "object_id": "installation-bracket",
+      "object_revision": "B",
+      "condition_scope": "room-temperature plus 60 degC",
+      "source_sha256": "1bc2f780ba1227865aacf54324abcd7fc355fcf4d5bf5d13af3d77b14e6067e8",
+      "conclusion": "unknown",
+      "adopted": false,
+      "basis": [
+        "supplier-measurement-report",
+        "operating-temperature"
+      ]
+    },
+    {
+      "id": "use-bracket",
+      "object_id": "installation-bracket",
+      "object_revision": "B",
+      "condition_scope": "room-temperature plus 60 degC",
+      "source_sha256": "1bc2f780ba1227865aacf54324abcd7fc355fcf4d5bf5d13af3d77b14e6067e8",
+      "conclusion": "unknown",
+      "adopted": false,
+      "basis": [
+        "adopt-bracket"
+      ]
+    },
+    {
+      "id": "report-current-reference",
+      "object_id": "installation-bracket",
+      "object_revision": "B",
+      "condition_scope": "room-temperature plus 60 degC",
+      "source_sha256": "1bc2f780ba1227865aacf54324abcd7fc355fcf4d5bf5d13af3d77b14e6067e8",
+      "conclusion": "unknown",
+      "adopted": false,
+      "basis": [
+        "supplier-measurement-report"
+      ]
+    },
+    {
+      "id": "fixture-adopt",
+      "object_id": "unchanged-fixture",
+      "object_revision": "F1",
+      "condition_scope": "unchanged-fixture-scope",
+      "source_sha256": "cdf1c439720ace0eb955549d0e8b72bd09507f0001a1a204988f5e9684283b3a",
+      "conclusion": "supported",
+      "adopted": true,
+      "basis": [
+        "fixture-independent-report"
+      ]
+    }
+  ],
+  "dependencies": {
+    "adopt-bracket": [
+      "installation-bracket",
+      "operating-temperature",
+      "supplier-measurement-report"
+    ],
+    "fixture-adopt": [
+      "fixture-independent-report",
+      "unchanged-fixture"
+    ],
+    "report-current-reference": [
+      "supplier-measurement-report"
+    ],
+    "use-bracket": [
+      "adopt-bracket"
+    ]
+  }
+}

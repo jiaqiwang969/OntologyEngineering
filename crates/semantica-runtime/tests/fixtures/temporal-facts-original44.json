@@ -1,0 +1,1884 @@
+{
+  "cases": [
+    {
+      "id": "empty",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "missing-collections",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "title": "opaque"
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "unrelated",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "B",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "entity-start",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "four-times",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-02T00:00:00Z",
+              "superseded_at": "2024-01-08T00:00:00Z",
+              "note": {
+                "source": "original"
+              }
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-02T00:00:00Z",
+              "superseded_at": "2024-01-08T00:00:00Z",
+              "note": {
+                "source": "original"
+              }
+            }
+          },
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "modified",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-02T00:00:00Z",
+              "superseded_at": "2024-01-08T00:00:00Z",
+              "note": {
+                "source": "original"
+              }
+            }
+          },
+          {
+            "timestamp": "2024-01-08T00:00:00Z",
+            "change_type": "modified",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-02T00:00:00Z",
+              "superseded_at": "2024-01-08T00:00:00Z",
+              "note": {
+                "source": "original"
+              }
+            }
+          },
+          {
+            "timestamp": "2024-01-09T00:00:00Z",
+            "change_type": "removed",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z",
+              "recorded_at": "2024-01-02T00:00:00Z",
+              "superseded_at": "2024-01-08T00:00:00Z",
+              "note": {
+                "source": "original"
+              }
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "recorded-equals-start",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z",
+              "recorded_at": "2024-01-01T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z",
+              "recorded_at": "2024-01-01T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-03T00:00:00Z",
+            "change_type": "removed",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z",
+              "recorded_at": "2024-01-01T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "duplicate-modified-kept",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z",
+              "recorded_at": "2024-01-03T00:00:00Z",
+              "superseded_at": "2024-01-03T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z",
+              "recorded_at": "2024-01-03T00:00:00Z",
+              "superseded_at": "2024-01-03T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-03T00:00:00Z",
+            "change_type": "modified",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z",
+              "recorded_at": "2024-01-03T00:00:00Z",
+              "superseded_at": "2024-01-03T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-03T00:00:00Z",
+            "change_type": "modified",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z",
+              "recorded_at": "2024-01-03T00:00:00Z",
+              "superseded_at": "2024-01-03T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-05T00:00:00Z",
+            "change_type": "removed",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z",
+              "recorded_at": "2024-01-03T00:00:00Z",
+              "superseded_at": "2024-01-03T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "stable-equal-order",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            },
+            {
+              "id": "A",
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          ],
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-02T00:00:00Z"
+            }
+          ]
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 1,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "modified",
+            "origin_kind": "relationships",
+            "origin_index": 0,
+            "fact": {
+              "source": "A",
+              "target": "B",
+              "recorded_at": "2024-01-02T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "removed",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "removed",
+            "origin_kind": "entities",
+            "origin_index": 1,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-02T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "end-only",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": null,
+              "valid_until": "2024-01-03T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-03T00:00:00Z",
+            "change_type": "removed",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": null,
+              "valid_until": "2024-01-03T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "recorded-without-start",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": null,
+              "valid_until": null,
+              "recorded_at": "2024-01-04T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-04T00:00:00Z",
+            "change_type": "modified",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": null,
+              "valid_until": null,
+              "recorded_at": "2024-01-04T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "incident-edges",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "valid_from": "2024-01-02T00:00:00Z"
+            },
+            {
+              "source": "C",
+              "target": "A",
+              "valid_from": "2024-01-01T00:00:00Z"
+            },
+            {
+              "source": "B",
+              "target": "C",
+              "valid_from": "2024-01-03T00:00:00Z"
+            }
+          ]
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "relationships",
+            "origin_index": 1,
+            "fact": {
+              "source": "C",
+              "target": "A",
+              "valid_from": "2024-01-01T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "relationships",
+            "origin_index": 0,
+            "fact": {
+              "source": "A",
+              "target": "B",
+              "valid_from": "2024-01-02T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "name-fallback-id-null",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "name": "A",
+              "valid_from": "2024-01-01T00:00:00Z"
+            },
+            {
+              "id": null,
+              "name": "A",
+              "valid_from": "2024-01-02T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "name": "A",
+              "valid_from": "2024-01-01T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "missing-id-empty-string",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "valid_from": "2024-01-01T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "valid_from": "2024-01-01T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "null-selector",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": null,
+              "valid_from": "2024-01-01T00:00:00Z"
+            }
+          ],
+          "relationships": [
+            {
+              "target": "B",
+              "recorded_at": "2024-01-02T00:00:00Z"
+            }
+          ]
+        },
+        "entity_id": null,
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": null,
+              "valid_from": "2024-01-01T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "modified",
+            "origin_kind": "relationships",
+            "origin_index": 0,
+            "fact": {
+              "target": "B",
+              "recorded_at": "2024-01-02T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "boolean-selector",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": true,
+              "valid_from": "2024-01-01T00:00:00Z"
+            },
+            {
+              "id": "True",
+              "valid_from": "2024-01-02T00:00:00Z"
+            },
+            {
+              "id": "true",
+              "valid_from": "2024-01-03T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": true,
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": true,
+              "valid_from": "2024-01-01T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 1,
+            "fact": {
+              "id": "True",
+              "valid_from": "2024-01-02T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "float-and-integer-symbols",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": 1,
+              "valid_from": "2024-01-01T00:00:00Z"
+            },
+            {
+              "id": 1.0,
+              "valid_from": "2024-01-02T00:00:00Z"
+            },
+            {
+              "id": "1.0",
+              "valid_from": "2024-01-03T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": 1.0,
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 1,
+            "fact": {
+              "id": 1.0,
+              "valid_from": "2024-01-02T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-03T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 2,
+            "fact": {
+              "id": "1.0",
+              "valid_from": "2024-01-03T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "big-integer-selector",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": 9007199254740993,
+              "valid_from": "2024-01-01T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "9007199254740993",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": 9007199254740993,
+              "valid_from": "2024-01-01T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "offsets-and-padding",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-1-1",
+              "recorded_at": "2024-01-01T08:00:00+08:00",
+              "valid_until": "2024-01-02T01:00:00+01:00"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-1-1",
+              "recorded_at": "2024-01-01T08:00:00+08:00",
+              "valid_until": "2024-01-02T01:00:00+01:00"
+            }
+          },
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "removed",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-1-1",
+              "recorded_at": "2024-01-01T08:00:00+08:00",
+              "valid_until": "2024-01-02T01:00:00+01:00"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "microseconds-order",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00.000002Z",
+              "recorded_at": "2024-01-01T00:00:00.000001Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00.000001Z",
+            "change_type": "modified",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00.000002Z",
+              "recorded_at": "2024-01-01T00:00:00.000001Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-01T00:00:00.000002Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00.000002Z",
+              "recorded_at": "2024-01-01T00:00:00.000001Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "inverted-not-validated",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-05T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "change_type": "removed",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-05T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          },
+          {
+            "timestamp": "2024-01-05T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 0,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-05T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "unmatched-invalid-time-ignored",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "B",
+              "valid_from": "invalid"
+            },
+            {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [
+          {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "change_type": "added",
+            "origin_kind": "entities",
+            "origin_index": 1,
+            "fact": {
+              "id": "A",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": null
+            }
+          }
+        ],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "selected-invalid-date",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-02-30"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": true
+    },
+    {
+      "id": "open-start-invalid",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "OPEN"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-recorded",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "timeline",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "recorded_at": "bad"
+            }
+          ],
+          "relationships": []
+        },
+        "entity_id": "A",
+        "revision": null,
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": true
+    },
+    {
+      "id": "empty-originals",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z"
+        },
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "three-classes",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "wide",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-08T00:00:00Z"
+          },
+          {
+            "id": "small",
+            "valid_from": "2024-01-04T00:00:00Z",
+            "valid_until": "2024-01-05T00:00:00Z"
+          },
+          {
+            "id": "left",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-04T00:00:00Z"
+          },
+          {
+            "id": "touch",
+            "valid_from": "2024-01-05T00:00:00Z",
+            "valid_until": "2024-01-08T00:00:00Z"
+          },
+          {
+            "id": "before",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-02T00:00:00Z"
+          },
+          {
+            "id": "after",
+            "valid_from": "2024-01-07T00:00:00Z",
+            "valid_until": "2024-01-09T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "wide",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            }
+          }
+        ],
+        "partial": [
+          {
+            "index": 1,
+            "fact": {
+              "id": "small",
+              "valid_from": "2024-01-04T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          },
+          {
+            "index": 2,
+            "fact": {
+              "id": "left",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-04T00:00:00Z"
+            }
+          }
+        ],
+        "unaffected": [
+          {
+            "index": 3,
+            "fact": {
+              "id": "touch",
+              "valid_from": "2024-01-05T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            }
+          },
+          {
+            "index": 4,
+            "fact": {
+              "id": "before",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          },
+          {
+            "index": 5,
+            "fact": {
+              "id": "after",
+              "valid_from": "2024-01-07T00:00:00Z",
+              "valid_until": "2024-01-09T00:00:00Z"
+            }
+          }
+        ]
+      },
+      "expected_error": false
+    },
+    {
+      "id": "revision-contains-original-is-partial",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-01T00:00:00Z",
+          "valid_until": "2024-01-08T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-03T00:00:00Z",
+            "valid_until": "2024-01-05T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          }
+        ],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "zero-revision-at-end-is-contained",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-05T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-03T00:00:00Z",
+            "valid_until": "2024-01-05T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          }
+        ],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "equal-zero-contained",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-03T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-03T00:00:00Z",
+            "valid_until": "2024-01-03T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z"
+            }
+          }
+        ],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "zero-original-inside-is-partial",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-02T00:00:00Z",
+          "valid_until": "2024-01-04T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-03T00:00:00Z",
+            "valid_until": "2024-01-03T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-03T00:00:00Z"
+            }
+          }
+        ],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "open-original",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "OPEN"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "OPEN"
+            }
+          }
+        ],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "open-revision",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "OPEN"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-05T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          }
+        ],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "missing-starts-and-unbounded",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {},
+        "facts": [
+          {},
+          {
+            "id": "finite",
+            "valid_from": "2024-01-03T00:00:00Z",
+            "valid_until": "2024-01-05T00:00:00Z"
+          },
+          {
+            "valid_until": "2024-01-02T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [
+          {
+            "index": 0,
+            "fact": {}
+          }
+        ],
+        "partial": [
+          {
+            "index": 1,
+            "fact": {
+              "id": "finite",
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          },
+          {
+            "index": 2,
+            "fact": {
+              "valid_until": "2024-01-02T00:00:00Z"
+            }
+          }
+        ],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "null-and-open-equivalent",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-01T00:00:00Z",
+          "valid_until": null
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "OPEN"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "OPEN"
+            }
+          }
+        ],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "offset-equivalence",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "valid_from": "2024-01-03T08:00:00+08:00",
+          "valid_until": "2024-01-05T08:00:00+08:00"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-03T00:00:00Z",
+            "valid_until": "2024-01-05T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-03T00:00:00Z",
+              "valid_until": "2024-01-05T00:00:00Z"
+            }
+          }
+        ],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "duplicate-order-preserved",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-08T00:00:00Z"
+          },
+          {
+            "id": "f",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-08T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            }
+          },
+          {
+            "index": 1,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z"
+            }
+          }
+        ],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "invalid-recorded-revision",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z",
+          "recorded_at": "bad"
+        },
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-recorded-original",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-08T00:00:00Z",
+            "recorded_at": "bad"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": true
+    },
+    {
+      "id": "invalid-superseded",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-08T00:00:00Z",
+            "superseded_at": "bad"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": true
+    },
+    {
+      "id": "inverted-revision-empty-kept",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-05T00:00:00Z",
+          "valid_until": "2024-01-03T00:00:00Z"
+        },
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    },
+    {
+      "id": "inverted-revision-nonempty-fails",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-05T00:00:00Z",
+          "valid_until": "2024-01-03T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-08T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": true
+    },
+    {
+      "id": "inverted-original-fails",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-08T00:00:00Z",
+            "valid_until": "2024-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": true
+    },
+    {
+      "id": "open-start-fails",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "OPEN",
+          "valid_until": null
+        },
+        "facts": []
+      },
+      "expected": {
+        "events": [],
+        "affected": [],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": true
+    },
+    {
+      "id": "irrelevant-fields-retained",
+      "request": {
+        "schema": "semantica.temporal-facts-request/1",
+        "operation": "revision-impact",
+        "graph": null,
+        "entity_id": null,
+        "revision": {
+          "id": "r",
+          "valid_from": "2024-01-03T00:00:00Z",
+          "valid_until": "2024-01-05T00:00:00Z"
+        },
+        "facts": [
+          {
+            "id": "f",
+            "valid_from": "2024-01-01T00:00:00Z",
+            "valid_until": "2024-01-08T00:00:00Z",
+            "recorded_at": null,
+            "superseded_at": null,
+            "opaque": {
+              "claim": "unreviewed",
+              "values": [
+                null,
+                true,
+                1
+              ]
+            }
+          }
+        ]
+      },
+      "expected": {
+        "events": [],
+        "affected": [
+          {
+            "index": 0,
+            "fact": {
+              "id": "f",
+              "valid_from": "2024-01-01T00:00:00Z",
+              "valid_until": "2024-01-08T00:00:00Z",
+              "recorded_at": null,
+              "superseded_at": null,
+              "opaque": {
+                "claim": "unreviewed",
+                "values": [
+                  null,
+                  true,
+                  1
+                ]
+              }
+            }
+          }
+        ],
+        "partial": [],
+        "unaffected": []
+      },
+      "expected_error": false
+    }
+  ]
+}

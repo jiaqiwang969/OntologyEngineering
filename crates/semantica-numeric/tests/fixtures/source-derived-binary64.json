@@ -1,0 +1,697 @@
+{
+  "status": "frozen_before_candidate_implementation",
+  "created_utc": "2026-10-10T01:05:17.091219+00:00",
+  "activity": {
+    "original_python_or_decimal_executed": false,
+    "candidate_executed": false,
+    "candidate_used_for_expected": false,
+    "tools_used": "Read source files and official tagged C source; Python standard-library JSON/hash/filesystem and integer-only bit arithmetic/powers/cross-multiplication. No Decimal import, float construction, float repr, float.as_integer_ratio, original library call, Cargo or Rust execution."
+  },
+  "source_ranges": {
+    "pydecimal_float_operation": {
+      "source": "pydecimal",
+      "lines": [
+        309,
+        321
+      ]
+    },
+    "pydecimal_constructor_float": {
+      "source": "pydecimal",
+      "lines": [
+        570,
+        581
+      ]
+    },
+    "pydecimal_from_float": {
+      "source": "pydecimal",
+      "lines": [
+        586,
+        628
+      ]
+    },
+    "pydecimal_special_parser": {
+      "source": "pydecimal",
+      "lines": [
+        463,
+        492
+      ]
+    },
+    "pydecimal_raise_error": {
+      "source": "pydecimal",
+      "lines": [
+        3964,
+        3985
+      ]
+    },
+    "float_repr": {
+      "source": "floatobject",
+      "lines": [
+        375,
+        389
+      ]
+    },
+    "float_as_integer_ratio": {
+      "source": "floatobject",
+      "lines": [
+        1572,
+        1620
+      ]
+    },
+    "float_nan_repr": {
+      "source": "pystrtod",
+      "lines": [
+        [
+          862,
+          873
+        ],
+        [
+          1004,
+          1037
+        ]
+      ]
+    }
+  },
+  "interface_contract": {
+    "input_identity": "Raw64-bit IEEE754 binary64 identity, including zero sign and nonfinite bits. Input captions are explanations, not parsing instructions.",
+    "explicit_conversion": "from_float exact construction; ignores arithmetic context and FloatOperation trap/flags; no precision rounding.",
+    "constructor_conversion": "Separate pure-Python Decimal(float, context) semantic boundary: record FloatOperation before conversion; trap produces no value. Not context.create_decimal_from_float, which rounds after exact construction.",
+    "finite_representation": "negative bool, unsigned decimal coefficient string and signed decimal exponent string. Preserve source reduced-ratio scale, not float display scale.",
+    "special_representation": "Infinity retains sign. Selected quiet NaN becomes positive quiet with empty payload because reference uses float repr; not generic Decimal NaN representation policy.",
+    "limits": {
+      "max_input_characters": 4096,
+      "max_coefficient_digits": 4096,
+      "max_output_characters": 4096,
+      "max_materialized_power_of_ten": 4096
+    },
+    "limits_scope": "All selected exact finite results fit these explicit core budgets. This corpus does not derive original Python resource-limit behavior or require accepting arbitrary over-budget requests."
+  },
+  "contexts": {
+    "tiny_precision_float_untrapped": {
+      "precision": 3,
+      "rounding": "HALF_EVEN",
+      "emin": "-9",
+      "emax": "9",
+      "clamp": 0,
+      "initial_flags": [],
+      "ignored_flags": [],
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow",
+        "Underflow",
+        "Inexact",
+        "Rounded"
+      ]
+    },
+    "tiny_precision_with_float_trap": {
+      "precision": 3,
+      "rounding": "HALF_EVEN",
+      "emin": "-9",
+      "emax": "9",
+      "clamp": 0,
+      "initial_flags": [],
+      "ignored_flags": [],
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow",
+        "Underflow",
+        "Inexact",
+        "Rounded",
+        "FloatOperation"
+      ]
+    }
+  },
+  "case_count": 16,
+  "cases": [
+    {
+      "id": "BF01_POSITIVE_ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "0000000000000000",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "0",
+          "exponent": "0"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 0,
+        "fraction": "0",
+        "significand": "0",
+        "binary_power": -1074,
+        "reduced_unsigned_numerator": "0",
+        "denominator_power_of_two": 0,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "Positive zero preserves coefficient0/exponent0.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF02_NEGATIVE_ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "8000000000000000",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": true,
+          "coefficient": "0",
+          "exponent": "0"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 1,
+        "raw_exponent": 0,
+        "fraction": "0",
+        "significand": "0",
+        "binary_power": -1074,
+        "reduced_unsigned_numerator": "0",
+        "denominator_power_of_two": 0,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "copysign preserves the negative zero sign; reduced ratio is0/1.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF03_POINT_ONE_EXACT",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "3fb999999999999a",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "1000000000000000055511151231257827021181583404541015625",
+          "exponent": "-55"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 1019,
+        "fraction": "2702159776422298",
+        "significand": "7205759403792794",
+        "binary_power": -56,
+        "reduced_unsigned_numerator": "3602879701896397",
+        "denominator_power_of_two": 55,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "Binary64 nearest0.1 has reduced numerator3602879701896397 and denominator2^55; exact result is not Decimal lexical0.1.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF04_INTEGRAL_ONE_NO_FLOAT_SCALE",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "3ff0000000000000",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "1",
+          "exponent": "0"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 1023,
+        "fraction": "0",
+        "significand": "4503599627370496",
+        "binary_power": -52,
+        "reduced_unsigned_numerator": "1",
+        "denominator_power_of_two": 0,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "Integral1.0 converts to coefficient1/exponent0; float display .0 is not Decimal scale.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF05_ONE_AND_HALF",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "3ff8000000000000",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "15",
+          "exponent": "-1"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 1023,
+        "fraction": "2251799813685248",
+        "significand": "6755399441055744",
+        "binary_power": -52,
+        "reduced_unsigned_numerator": "3",
+        "denominator_power_of_two": 1,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "3/2 becomes15*10^-1 exactly.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF06_BELOW_TWO_POW_53",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "433fffffffffffff",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "9007199254740991",
+          "exponent": "0"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 1075,
+        "fraction": "4503599627370495",
+        "significand": "9007199254740991",
+        "binary_power": 0,
+        "reduced_unsigned_numerator": "9007199254740991",
+        "denominator_power_of_two": 0,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "Largest consecutive integer before2^53:9007199254740991.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF07_TWO_POW_53",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "4340000000000000",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "9007199254740992",
+          "exponent": "0"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 1076,
+        "fraction": "0",
+        "significand": "4503599627370496",
+        "binary_power": 1,
+        "reduced_unsigned_numerator": "9007199254740992",
+        "denominator_power_of_two": 0,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "2^53 remains9007199254740992; do not route through a decimal display or machine integer truncation.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF08_NEXT_AFTER_TWO_POW_53",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "4340000000000001",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "9007199254740994",
+          "exponent": "0"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 1076,
+        "fraction": "1",
+        "significand": "4503599627370497",
+        "binary_power": 1,
+        "reduced_unsigned_numerator": "9007199254740994",
+        "denominator_power_of_two": 0,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "Next representable value is2^53+2=9007199254740994.2^53+1 is not a separate binary64 input; this oracle does not test decimal-string-to-float parsing.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF09_SMALLEST_NORMAL",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "0010000000000000",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "2225073858507201383090232717332404064219215980462331830553327416887204434813918195854283159012511020564067339731035811005152434161553460108856012385377718821130777993532002330479610147442583636071921565046942503734208375250806650616658158948720491179968591639648500635908770118304874799780887753749949451580451605050915399856582470818645113537935804992115981085766051992433352114352390148795699609591288891602992641511063466313393663477586513029371762047325631781485664350872122828637642044846811407613911477062801689853244110024161447421618567166150540154285084716752901903161322778896729707373123334086988983175067838846926092773977972858659654941091369095406136467568702398678315290680984617210924625396728515625",
+          "exponent": "-1022"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 1,
+        "fraction": "0",
+        "significand": "4503599627370496",
+        "binary_power": -1074,
+        "reduced_unsigned_numerator": "1",
+        "denominator_power_of_two": 1022,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "2^-1022 becomes5^1022*10^-1022; exact construction ignores precision3/Emin-9.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF10_SMALLEST_SUBNORMAL",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "0000000000000001",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "4940656458412465441765687928682213723650598026143247644255856825006755072702087518652998363616359923797965646954457177309266567103559397963987747960107818781263007131903114045278458171678489821036887186360569987307230500063874091535649843873124733972731696151400317153853980741262385655911710266585566867681870395603106249319452715914924553293054565444011274801297099995419319894090804165633245247571478690147267801593552386115501348035264934720193790268107107491703332226844753335720832431936092382893458368060106011506169809753078342277318329247904982524730776375927247874656084778203734469699533647017972677717585125660551199131504891101451037862738167250955837389733598993664809941164205702637090279242767544565229087538682506419718265533447265625",
+          "exponent": "-1074"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 0,
+        "fraction": "1",
+        "significand": "1",
+        "binary_power": -1074,
+        "reduced_unsigned_numerator": "1",
+        "denominator_power_of_two": 1074,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "2^-1074 becomes5^1074*10^-1074; it is nonzero and must not flush to zero or incur a rounding/underflow signal.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF11_LARGEST_FINITE",
+      "classification": "source_and_mathematical_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "7fefffffffffffff",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368",
+          "exponent": "0"
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "mathematics": {
+        "binary_sign": 0,
+        "raw_exponent": 2046,
+        "fraction": "4503599627370495",
+        "significand": "9007199254740991",
+        "binary_power": 971,
+        "reduced_unsigned_numerator": "179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368",
+        "denominator_power_of_two": 0,
+        "decimal_identity": "n / 2^k = (n * 5^k) * 10^-k; common powers of two removed before decimal construction; zero uses k=0."
+      },
+      "basis": "(2^53-1)*2^971 is an exact integer with exponent0; finite conversion ignores context Emax9.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "float_as_integer_ratio"
+      ]
+    },
+    {
+      "id": "BF12_POSITIVE_INFINITY",
+      "classification": "source_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "7ff0000000000000",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "infinity",
+          "negative": false
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "basis": "repr(+Infinity) suppliesinf and the Decimal special parser retains positive Infinity.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "pydecimal_special_parser",
+        "float_repr",
+        "float_nan_repr"
+      ]
+    },
+    {
+      "id": "BF13_NEGATIVE_INFINITY",
+      "classification": "source_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "fff0000000000000",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "infinity",
+          "negative": true
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "basis": "repr(-Infinity) supplies-inf and the Decimal special parser retains negative Infinity.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "pydecimal_special_parser",
+        "float_repr",
+        "float_nan_repr"
+      ]
+    },
+    {
+      "id": "BF14_NEGATIVE_QUIET_NAN_PAYLOAD_ERASED",
+      "classification": "source_derivation",
+      "operation": "binary64.from_float_exact",
+      "input": {
+        "bits_hex": "fff8000000000042",
+        "format": "IEEE754 binary64 bits; hexadecimal is endian-independent u64 identity"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "nan",
+          "negative": false,
+          "signaling": false,
+          "payload": ""
+        },
+        "signals_exact": [],
+        "ambient_flags_after": []
+      },
+      "basis": "The selected negative quiet NaN includes payload0x42. CPython float repr emitsnan without sign/payload; Decimal.from_float routes specials through that repr, yielding positive quiet NaN with no payload. This does not qualify arbitrary signaling-NaN hardware behavior.",
+      "source_refs": [
+        "pydecimal_from_float",
+        "pydecimal_special_parser",
+        "float_repr",
+        "float_nan_repr"
+      ]
+    },
+    {
+      "id": "BF15_CONSTRUCTOR_FLOAT_SIGNAL_WITHOUT_ROUNDING",
+      "classification": "source_derivation",
+      "operation": "binary64.decimal_constructor",
+      "input": {
+        "bits_hex": "3fb999999999999a",
+        "format": "IEEE754 binary64 bits"
+      },
+      "ambient_context": "tiny_precision_float_untrapped",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "1000000000000000055511151231257827021181583404541015625",
+          "exponent": "-55"
+        },
+        "signals_exact": [
+          "FloatOperation"
+        ],
+        "ambient_flags_after": [
+          "FloatOperation"
+        ]
+      },
+      "basis": "The float constructor raises/records FloatOperation then copies exact Decimal.from_float fields. Precision3, E bounds and traps for Inexact/Rounded do not round this construction. No ignored flags or prior flags are present.",
+      "source_refs": [
+        "pydecimal_constructor_float",
+        "pydecimal_from_float",
+        "pydecimal_raise_error"
+      ]
+    },
+    {
+      "id": "BF16_CONSTRUCTOR_FLOAT_TRAP_PRECEDES_CONVERSION",
+      "classification": "source_derivation",
+      "operation": "binary64.decimal_constructor",
+      "input": {
+        "bits_hex": "3fb999999999999a",
+        "format": "IEEE754 binary64 bits"
+      },
+      "ambient_context": "tiny_precision_with_float_trap",
+      "expected": {
+        "kind": "trap",
+        "primary": "FloatOperation",
+        "result_absent": true,
+        "conversion_not_reached": true,
+        "signals_exact": [
+          "FloatOperation"
+        ],
+        "ambient_flags_after": [
+          "FloatOperation"
+        ]
+      },
+      "basis": "The pinned pure-Python _raise_error sets FloatOperation then raises when trapped. Constructor does not reach from_float. These exact flags describe this pure-Python source branch, not newly observed C-backend trap parity.",
+      "source_refs": [
+        "pydecimal_constructor_float",
+        "pydecimal_raise_error"
+      ]
+    }
+  ],
+  "remaining_unknowns": [
+    "No mixed integer/Decimal/float arithmetic or promotion is qualified.",
+    "No float formatting, RDF datatype handling, numeric cached-value transport, EBV/comparison, query aggregate or public nullable profile is qualified.",
+    "No signaling-NaN hardware behavior, host fenv exception state, FloatOperation comparisons, C-backend complete flags, custom ignored flags or persistent context accumulation is qualified.",
+    "Context.create_decimal_from_float rounds afterward and remains a separate consumer; source excerpt is not a tested implementation.",
+    "This oracle is source/mathematics, not an execution of old Python or a newly observed equivalence result."
+  ],
+  "acceptance_gate": "Implement a single exact conversion owner and compare all16 expectations without regenerating them from candidate output; constructor/explicit signal separation is a distinct boundary. Future execution must bind this file hash and actual source; no installation or full Semantica completion inferred.",
+  "schema": "oev2.numeric-binary64-frozen-cases/1",
+  "source_record_sha256": "f06930161fcbe451e0fcdfa6e118c46d44af6f5aeb059b10dcc97266efa92892",
+  "source_record_basename": "BINARY64-FROZEN-01.json",
+  "author": "nullable_contracts",
+  "independence": "Expectations were frozen from pinned source and integer mathematics before the binary64 candidate was read or implemented. This public derivative changes source location metadata only; cases, contexts, interface and remaining unknowns are identical.",
+  "sources": {
+    "pydecimal": {
+      "bytes": 227526,
+      "sha256": "17882dbd5622aac99793a261a21ff70b3bde28e274ea1c3f0372599df164f440",
+      "origin": "Retained pinned Python3.13.11 library source; read as bytes only.",
+      "upstream_member": "Lib/_pydecimal.py"
+    },
+    "floatobject": {
+      "bytes": 72301,
+      "sha256": "a41f721536339d6df470d03b6d9c7efe8995f64348bb0a6093632d463ac55753",
+      "url": "https://raw.githubusercontent.com/python/cpython/v3.13.11/Objects/floatobject.c",
+      "origin": "Fetched official CPython version-tag source solely to verify integer-ratio/repr call paths; not execution or a compiler build identity.",
+      "upstream_member": "Objects/floatobject.c"
+    },
+    "pystrtod": {
+      "bytes": 41092,
+      "sha256": "4f630125a735cf92b7d24a200fe038ce3957e34ce18152c8648d50f7c1126a0c",
+      "url": "https://raw.githubusercontent.com/python/cpython/v3.13.11/Python/pystrtod.c",
+      "origin": "Fetched official CPython version-tag source; both special-output branches discard NaN sign while retaining Infinity sign.",
+      "upstream_member": "Python/pystrtod.c"
+    }
+  }
+}

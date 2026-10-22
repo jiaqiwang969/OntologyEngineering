@@ -1,0 +1,1423 @@
+{
+  "schema": "public.source-triples-query-observations/1",
+  "candidate_results_used": false,
+  "source_records": {
+    "projection": "4f356070da677f7caf46ba73bb53fcdc79d6dbd4ad9519eedf65db05792e7865",
+    "execution": "360d96d8dc3368aaec9dd3baa64a4b0dd6ab5e8973474777dbb23d4f8119aa10",
+    "gt10_fixture": "c6e9bed1fec3e0328095f52386f365444eb3d0f29202ebafae1874762ef23988",
+    "gt10_original": "0554a023b7d7ee4765b42e33692bf51fd63bfe280636af98da1a2bf4eebf0382"
+  },
+  "data_inputs": [
+    {
+      "subject": "urn:ex:a",
+      "predicate": "urn:ex:p",
+      "lexical": "01",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "normalize": false
+    },
+    {
+      "subject": "urn:ex:a",
+      "predicate": "urn:ex:p",
+      "lexical": "1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "normalize": true
+    },
+    {
+      "subject": "urn:ex:a",
+      "predicate": "urn:ex:q",
+      "object_iri": "urn:ex:b"
+    },
+    {
+      "subject": "urn:ex:b",
+      "predicate": "urn:ex:p",
+      "lexical": "a",
+      "datatype": null,
+      "normalize": true
+    },
+    {
+      "subject": "urn:ex:b",
+      "predicate": "urn:ex:q",
+      "lexical": "a",
+      "datatype": "http://www.w3.org/2001/XMLSchema#string",
+      "normalize": true
+    },
+    {
+      "subject": "urn:ex:b",
+      "predicate": "urn:ex:r",
+      "lexical": "1",
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "normalize": true
+    }
+  ],
+  "graph_queries": [
+    {
+      "input": {
+        "id": "GT10",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { ?s :p \"a\" } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_22",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Literal('a')]], '_vars': {rdflib.term.Variable('s')}}], '_vars': {rdflib.term.Variable('s')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR01",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { ?s :p ?o } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_21",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('o')]], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR02",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { ?s ?p ?o } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_21",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), rdflib.term.Variable('p'), rdflib.term.Variable('o')]], '_vars': {rdflib.term.Variable('p'), rdflib.term.Variable('s'), rdflib.term.Variable('o')}}], '_vars': {rdflib.term.Variable('p'), rdflib.term.Variable('s'), rdflib.term.Variable('o')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR03",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { ?s :p \"a\", \"b\" } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_24",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Literal('a'), rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Literal('b')]], '_vars': {rdflib.term.Variable('s')}}], '_vars': {rdflib.term.Variable('s')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR04",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { ?s :p ?o; :q ?z } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_23",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('o'), rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:q'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('z')]], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o'), rdflib.term.Variable('z')}}], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o'), rdflib.term.Variable('z')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR05",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { ?s :p ?o . ?o :q ?z } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_24",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('o')], [rdflib.term.Variable('o'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:q'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('z')]], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o'), rdflib.term.Variable('z')}}], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o'), rdflib.term.Variable('z')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR06",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { _:v :p ?v; :q _:w } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_23",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.BNode('v'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('v'), rdflib.term.BNode('v'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:q'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.BNode('w')]], '_vars': {rdflib.term.Variable('v')}}], '_vars': {rdflib.term.Variable('v')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR07",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { ?s (:p) ?o } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_21",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('o')]], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR08",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { { SELECT ?s WHERE { ?s :p ?o } } } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_22",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [GroupOrUnionGraphPattern_{'graph': [SubSelect_{'projection': [vars_{'var': rdflib.term.Variable('s'), '_vars': {rdflib.term.Variable('s')}}], 'where': GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('o')]], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}, '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}], '_vars': {rdflib.term.Variable('s')}}], '_vars': {rdflib.term.Variable('s')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR09",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (NOT EXISTS { ?s :p ?o } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_21",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('o')]], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR10",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { <urn:ex:a> <urn:ex:p> \"a\" } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_22",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.URIRef('urn:ex:a'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Literal('a')]], '_vars': set()}], '_vars': set()}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR11",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { ?s :p \"01\"^^xsd:integer, 1; :q \"a\"@ZH-cn } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_26",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Literal('01', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer')), rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:p'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer')), rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('urn:ex:q'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Literal('a', lang='ZH-cn')]], '_vars': {rdflib.term.Variable('s')}}], '_vars': {rdflib.term.Variable('s')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR12",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT (EXISTS { ?s a ?o } AS ?e) WHERE {}",
+        "initial": []
+      },
+      "status": "original_error",
+      "rows": [],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_21",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": [],
+      "error_stage": "first_poll",
+      "original_boundary": "next(bindings)",
+      "error": {
+        "kind": "Exception",
+        "module": "builtins",
+        "class_name": "Exception",
+        "args": [
+          "What do I do with this CompValue? GroupGraphPatternSub_GroupGraphPatternSub_{'part': [TriplesBlock_{'triples': [[rdflib.term.Variable('s'), PathAlternative_{'part': [PathSequence_{'part': [PathElt_{'part': rdflib.term.URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), '_vars': set()}], '_vars': set()}], '_vars': set()}, rdflib.term.Variable('o')]], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}], '_vars': {rdflib.term.Variable('s'), rdflib.term.Variable('o')}}"
+        ]
+      }
+    },
+    {
+      "input": {
+        "id": "TR13",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p 1, \"01\"^^xsd:integer }",
+        "initial": []
+      },
+      "status": "observed_complete",
+      "rows": [
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_18",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:a",
+              "object_token": "object_0",
+              "hash": -8254708020879158069,
+              "repr": "rdflib.term.URIRef('urn:ex:a')"
+            }
+          ]
+        ]
+      ],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "s",
+          "object_token": "object_18",
+          "hash": 2596591447644543717,
+          "repr": "rdflib.term.Variable('s')"
+        }
+      ],
+      "flags": []
+    },
+    {
+      "input": {
+        "id": "TR14",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :p ?o; :q ?z }",
+        "initial": []
+      },
+      "status": "observed_complete",
+      "rows": [
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_18",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:a",
+              "object_token": "object_9",
+              "hash": -8254708020879158069,
+              "repr": "rdflib.term.URIRef('urn:ex:a')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_19",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_11",
+              "lexical": "01",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('01', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": -6783971947208886399
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_20",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_14",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_18",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:a",
+              "object_token": "object_0",
+              "hash": -8254708020879158069,
+              "repr": "rdflib.term.URIRef('urn:ex:a')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_19",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_2",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_20",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_14",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_18",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_15",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_19",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_17",
+              "lexical": "a",
+              "datatype": null,
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a')",
+              "hash": 4644417185603328019
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_20",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_5",
+              "lexical": "a",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+              "hash": -5635284436390693945
+            }
+          ]
+        ]
+      ],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "s",
+          "object_token": "object_18",
+          "hash": 2596591447644543717,
+          "repr": "rdflib.term.Variable('s')"
+        },
+        {
+          "kind": "Variable",
+          "value": "o",
+          "object_token": "object_19",
+          "hash": -5901137867518748650,
+          "repr": "rdflib.term.Variable('o')"
+        },
+        {
+          "kind": "Variable",
+          "value": "z",
+          "object_token": "object_20",
+          "hash": -2334729728626958586,
+          "repr": "rdflib.term.Variable('z')"
+        }
+      ],
+      "flags": []
+    },
+    {
+      "input": {
+        "id": "TR15",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s :q ?z . ?z :p ?o }",
+        "initial": []
+      },
+      "status": "observed_complete",
+      "rows": [
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_18",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:a",
+              "object_token": "object_12",
+              "hash": -8254708020879158069,
+              "repr": "rdflib.term.URIRef('urn:ex:a')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_19",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_14",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_21",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_17",
+              "lexical": "a",
+              "datatype": null,
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a')",
+              "hash": 4644417185603328019
+            }
+          ]
+        ]
+      ],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "s",
+          "object_token": "object_18",
+          "hash": 2596591447644543717,
+          "repr": "rdflib.term.Variable('s')"
+        },
+        {
+          "kind": "Variable",
+          "value": "z",
+          "object_token": "object_19",
+          "hash": -2334729728626958586,
+          "repr": "rdflib.term.Variable('z')"
+        },
+        {
+          "kind": "Variable",
+          "value": "o",
+          "object_token": "object_21",
+          "hash": -5901137867518748650,
+          "repr": "rdflib.term.Variable('o')"
+        }
+      ],
+      "flags": []
+    },
+    {
+      "input": {
+        "id": "TR16",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { ?s (:p) ?o }",
+        "initial": []
+      },
+      "status": "observed_complete",
+      "rows": [
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_18",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:a",
+              "object_token": "object_9",
+              "hash": -8254708020879158069,
+              "repr": "rdflib.term.URIRef('urn:ex:a')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_19",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_11",
+              "lexical": "01",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('01', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": -6783971947208886399
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_18",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:a",
+              "object_token": "object_0",
+              "hash": -8254708020879158069,
+              "repr": "rdflib.term.URIRef('urn:ex:a')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_19",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_2",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_18",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_15",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_19",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_17",
+              "lexical": "a",
+              "datatype": null,
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a')",
+              "hash": 4644417185603328019
+            }
+          ]
+        ]
+      ],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "s",
+          "object_token": "object_18",
+          "hash": 2596591447644543717,
+          "repr": "rdflib.term.Variable('s')"
+        },
+        {
+          "kind": "Variable",
+          "value": "o",
+          "object_token": "object_19",
+          "hash": -5901137867518748650,
+          "repr": "rdflib.term.Variable('o')"
+        }
+      ],
+      "flags": []
+    },
+    {
+      "input": {
+        "id": "TR17",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT ?v ?o ?z WHERE { _:v :p ?o; :q ?z }",
+        "initial": []
+      },
+      "status": "observed_complete",
+      "rows": [
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_19",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_11",
+              "lexical": "01",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('01', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": -6783971947208886399
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_20",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_14",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_19",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_2",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_20",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_14",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_19",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_17",
+              "lexical": "a",
+              "datatype": null,
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a')",
+              "hash": 4644417185603328019
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_20",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_5",
+              "lexical": "a",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+              "hash": -5635284436390693945
+            }
+          ]
+        ]
+      ],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "v",
+          "object_token": "object_23",
+          "hash": -8023175999307709035,
+          "repr": "rdflib.term.Variable('v')"
+        },
+        {
+          "kind": "Variable",
+          "value": "o",
+          "object_token": "object_24",
+          "hash": -5901137867518748650,
+          "repr": "rdflib.term.Variable('o')"
+        },
+        {
+          "kind": "Variable",
+          "value": "z",
+          "object_token": "object_25",
+          "hash": -2334729728626958586,
+          "repr": "rdflib.term.Variable('z')"
+        }
+      ],
+      "flags": []
+    },
+    {
+      "input": {
+        "id": "TR18",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT ?e WHERE { BIND(EXISTS { ?s :p ?o; :q ?z } AS ?e) }",
+        "initial": []
+      },
+      "status": "observed_complete",
+      "rows": [
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "e",
+              "object_token": "object_21",
+              "hash": -1017399452914718599,
+              "repr": "rdflib.term.Variable('e')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_25",
+              "lexical": "true",
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.bool",
+              "cache": true,
+              "repr": "rdflib.term.Literal('true', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#boolean'))",
+              "hash": 289723668461657122
+            }
+          ]
+        ]
+      ],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_24",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": []
+    },
+    {
+      "input": {
+        "id": "TR19",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT ?e WHERE { BIND(NOT EXISTS { ?s :p \"a\", \"b\" } AS ?e) }",
+        "initial": []
+      },
+      "status": "observed_complete",
+      "rows": [
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "e",
+              "object_token": "object_21",
+              "hash": -1017399452914718599,
+              "repr": "rdflib.term.Variable('e')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_26",
+              "lexical": "true",
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.bool",
+              "cache": true,
+              "repr": "rdflib.term.Literal('true', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#boolean'))",
+              "hash": 289723668461657122
+            }
+          ]
+        ]
+      ],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "e",
+          "object_token": "object_25",
+          "hash": -1017399452914718599,
+          "repr": "rdflib.term.Variable('e')"
+        }
+      ],
+      "flags": []
+    },
+    {
+      "input": {
+        "id": "TR20",
+        "query": "PREFIX : <urn:ex:> PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT * WHERE { BIND(1 AS ?n) ?s :p ?o; :q ?z }",
+        "initial": []
+      },
+      "status": "observed_complete",
+      "rows": [
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "n",
+              "object_token": "object_19",
+              "hash": 8992654815908061125,
+              "repr": "rdflib.term.Variable('n')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_18",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_20",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:a",
+              "object_token": "object_9",
+              "hash": -8254708020879158069,
+              "repr": "rdflib.term.URIRef('urn:ex:a')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_21",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_11",
+              "lexical": "01",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('01', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": -6783971947208886399
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_22",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_14",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "n",
+              "object_token": "object_19",
+              "hash": 8992654815908061125,
+              "repr": "rdflib.term.Variable('n')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_18",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_20",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:a",
+              "object_token": "object_0",
+              "hash": -8254708020879158069,
+              "repr": "rdflib.term.URIRef('urn:ex:a')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_21",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_2",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_22",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_14",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ]
+        ],
+        [
+          [
+            {
+              "kind": "Variable",
+              "value": "n",
+              "object_token": "object_19",
+              "hash": 8992654815908061125,
+              "repr": "rdflib.term.Variable('n')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_18",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "repr": "rdflib.term.Literal('1', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#integer'))",
+              "hash": 8497766722161585720
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "s",
+              "object_token": "object_20",
+              "hash": 2596591447644543717,
+              "repr": "rdflib.term.Variable('s')"
+            },
+            {
+              "kind": "URIRef",
+              "value": "urn:ex:b",
+              "object_token": "object_15",
+              "hash": 6745148452486595697,
+              "repr": "rdflib.term.URIRef('urn:ex:b')"
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "o",
+              "object_token": "object_21",
+              "hash": -5901137867518748650,
+              "repr": "rdflib.term.Variable('o')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_17",
+              "lexical": "a",
+              "datatype": null,
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a')",
+              "hash": 4644417185603328019
+            }
+          ],
+          [
+            {
+              "kind": "Variable",
+              "value": "z",
+              "object_token": "object_22",
+              "hash": -2334729728626958586,
+              "repr": "rdflib.term.Variable('z')"
+            },
+            {
+              "kind": "Literal",
+              "object_token": "object_5",
+              "lexical": "a",
+              "datatype": "http://www.w3.org/2001/XMLSchema#string",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.str",
+              "cache": "a",
+              "repr": "rdflib.term.Literal('a', datatype=rdflib.term.URIRef('http://www.w3.org/2001/XMLSchema#string'))",
+              "hash": -5635284436390693945
+            }
+          ]
+        ]
+      ],
+      "columns": [
+        {
+          "kind": "Variable",
+          "value": "s",
+          "object_token": "object_20",
+          "hash": 2596591447644543717,
+          "repr": "rdflib.term.Variable('s')"
+        },
+        {
+          "kind": "Variable",
+          "value": "n",
+          "object_token": "object_19",
+          "hash": 8992654815908061125,
+          "repr": "rdflib.term.Variable('n')"
+        },
+        {
+          "kind": "Variable",
+          "value": "o",
+          "object_token": "object_21",
+          "hash": -5901137867518748650,
+          "repr": "rdflib.term.Variable('o')"
+        },
+        {
+          "kind": "Variable",
+          "value": "z",
+          "object_token": "object_22",
+          "hash": -2334729728626958586,
+          "repr": "rdflib.term.Variable('z')"
+        }
+      ],
+      "flags": []
+    }
+  ],
+  "scope": "21 full original inputs:13 first-poll untranslated projection EXISTS/NOT EXISTS exceptions and8 normal-terminal source graph queries. Actual resolved-IRI/literal grammar reductions preserve flat comma/semicolon rows and named path wrapper syntax. Post-PName representation only; raw pre-PName ParseResults, true path operators, nested collection/reifier containers, illegal triples rows, native lifecycle, independent acceptance, public profile and installation remain unqualified."
+}

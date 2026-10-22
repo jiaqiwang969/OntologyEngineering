@@ -1,0 +1,227 @@
+{
+  "schema": "oev2.runner-snapshot-fixed-development-cases/1",
+  "pinned_semantica_commit": "8b2ed123c380fc8abc78507e6e6648e6f5c0052c",
+  "original_oracle_sha256": "0d98b8b9c193f8c740d6c87e5b60b46774a41103231c40043507d21adec84bf8",
+  "fixed_input_sha256": "aecbedfe670613bfa3b46f15845097542f30e7415f06fd3830cc0bac73184454",
+  "case_count": 12,
+  "cases": [
+    {
+      "case_id": "empty-load",
+      "input": {
+        "data": "",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "quad_count": 0,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": ""
+      }
+    },
+    {
+      "case_id": "named-iri",
+      "input": {
+        "data": "<urn:s> <urn:p> \"hello\" <urn:g> .\n",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "f648386c228c483f3fa965bac693c1e156f9e1602e2e4458924d8b8257de46f3",
+        "quad_count": 1,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "<urn:s> <urn:p> \"hello\" <urn:g> ."
+      }
+    },
+    {
+      "case_id": "mixed-default-named",
+      "input": {
+        "data": "<urn:s> <urn:p> \"hello\" .\n<urn:s> <urn:p> \"hello\" <urn:g> .\n",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "a543a5bb216aab4df65e240edc9c33bd428190be5cce083f58e58620f09661de",
+        "quad_count": 2,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "<urn:s> <urn:p> \"hello\" .\n<urn:s> <urn:p> \"hello\" <urn:g> ."
+      }
+    },
+    {
+      "case_id": "blank-cycle4",
+      "input": {
+        "data": "_:a <urn:p> _:b .\n_:b <urn:p> _:c .\n_:c <urn:p> _:d .\n_:d <urn:p> _:a .\n",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "ea3f3abbdb42d2afe2311fbb12743222488f2c1ec31ab39ed94a948055e5588d",
+        "quad_count": 4,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "_:cb168380ebf388341162092fad1fe0fa5aefbcb05e6e90fc344ee0059a17b2a0a49 <urn:p> _:cb227df30938200ec6a77a21489a78fac685f5f96219758d1ea41c45b8d3aa545ea .\n_:cb1b35a86370d6060dc3d0283214673c2b1b09c27bae6424ff579558b9e2804c9d3 <urn:p> _:cb230b3dd6eb35e6fea6997ca22d9a1e75ee3376dbc6424cc881063e8b4f8b5ff5b .\n_:cb227df30938200ec6a77a21489a78fac685f5f96219758d1ea41c45b8d3aa545ea <urn:p> _:cb1b35a86370d6060dc3d0283214673c2b1b09c27bae6424ff579558b9e2804c9d3 .\n_:cb230b3dd6eb35e6fea6997ca22d9a1e75ee3376dbc6424cc881063e8b4f8b5ff5b <urn:p> _:cb168380ebf388341162092fad1fe0fa5aefbcb05e6e90fc344ee0059a17b2a0a49 ."
+      }
+    },
+    {
+      "case_id": "blank-graph-subject-share",
+      "input": {
+        "data": "_:g <urn:p> \"a\" _:g .\n",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "67b266823e6347a82be1142544e11d6ddd6bfa3f91a6b0e306eb03964b237580",
+        "quad_count": 1,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "_:cb0 <urn:p> \"a\" _:cb0 ."
+      }
+    },
+    {
+      "case_id": "unicode-iri",
+      "input": {
+        "data": "<urn:零件> <urn:属性> \"螺栓😀\" <urn:图> .\n",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "5427665165f1411d72f457f51e626e2da27d758cf5d37af2fc8061d0cc91de05",
+        "quad_count": 1,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "<urn:零件> <urn:属性> \"螺栓😀\" <urn:图> ."
+      }
+    },
+    {
+      "case_id": "plain-and-xsdstring-samegraph",
+      "input": {
+        "data": "<urn:s> <urn:p> \"a\" .\n<urn:s> <urn:p> \"a\"^^<http://www.w3.org/2001/XMLSchema#string> .\n",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "414c8c9209fc7decff01c57ff445816063116cc38370c640304f53e7f82fec45",
+        "quad_count": 2,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "<urn:s> <urn:p> \"a\" .\n<urn:s> <urn:p> \"a\"^^<http://www.w3.org/2001/XMLSchema#string> ."
+      }
+    },
+    {
+      "case_id": "duplicate-quad",
+      "input": {
+        "data": "<urn:s> <urn:p> \"same\" .\n<urn:s> <urn:p> \"same\" .\n",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "64de5254ddac7363b84ad8534610c828019ed96097d858499e63b2b8d2cdf70e",
+        "quad_count": 1,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "<urn:s> <urn:p> \"same\" ."
+      }
+    },
+    {
+      "case_id": "typed-numeric-normalization",
+      "input": {
+        "data": "<urn:s> <urn:p> \"01\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n<urn:s> <urn:p> \"1\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "87404817218f67d06bf715e702015aee42753e282e31bd12438bc54db2848b12",
+        "quad_count": 1,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "<urn:s> <urn:p> \"1\"^^<http://www.w3.org/2001/XMLSchema#integer> ."
+      }
+    },
+    {
+      "case_id": "literal-multiline",
+      "input": {
+        "data": "<urn:s> <urn:p> \"a\\nb\" .\n",
+        "format": "nquads",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "05f6329ed1ee60a035832468345e4b692d58cffc17dfb2d7e9a2efedca0762e6",
+        "quad_count": 1,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "<urn:s> <urn:p> \"\"\"a\nb\"\"\" ."
+      }
+    },
+    {
+      "case_id": "ntriples-language-no-final-newline",
+      "input": {
+        "data": "<urn:s> <urn:p> \"bonjour\"@fr .",
+        "format": "ntriples",
+        "graph_name": null,
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "6fc79e7acf242d06db45b1b89e53e13b16d4194421882734c7f4c489e7c4ce19",
+        "quad_count": 1,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "<urn:s> <urn:p> \"bonjour\"@fr ."
+      }
+    },
+    {
+      "case_id": "ntriples-dateTime-explicit-graph",
+      "input": {
+        "data": "<urn:s> <urn:p> \"2024-01-02T03:04:05Z\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .\n",
+        "format": "ntriples",
+        "graph_name": "urn:design",
+        "created_at": "2026-08-19T00:00:00Z"
+      },
+      "expected_snapshot": {
+        "schema_version": "1.0",
+        "algorithm": "semantica-rdf-dataset-c14n-v2",
+        "dataset_sha256": "a7e8c65f732cf65b34aedf442a1df2e37e8e16067e430c33f211da9dfd8b62bb",
+        "quad_count": 1,
+        "revision": 1,
+        "created_at": "2026-08-19T00:00:00Z",
+        "canonical_nquads": "<urn:s> <urn:p> \"2024-01-02T03:04:05+00:00\"^^<http://www.w3.org/2001/XMLSchema#dateTime> <urn:design> ."
+      }
+    }
+  ],
+  "expected_from_rust": false,
+  "original_scope_unchanged": true
+}

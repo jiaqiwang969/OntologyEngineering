@@ -1,0 +1,1182 @@
+{
+  "schema": "source-derived-public-receiving-fixture/1",
+  "source_record_id": "QUERY-BINARY64-FROZEN-01",
+  "source_record_sha256": "69974deeacb163228a361b5b3d03de93ee2fe437c1d5a95361b7d7de62ed34dd",
+  "source_status": "frozen_source_math_not_observed",
+  "authorship_disclosure": "Frozen source/math expectations and this receiving adapter share an author; no original Python or candidate output generated expected answers. Runtime receiving is separate.",
+  "payload_canonical_sha256": "e9de2004d1f979f9bb37f82a5dbf37dc9d2b9375bf481ef66008223d2a83247a",
+  "explicit_environment": {
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "initial_flags": []
+    },
+    "numeric_limits": {
+      "max_input_characters": 10000,
+      "max_coefficient_digits": 10064,
+      "max_output_characters": 10064,
+      "max_materialized_power_of_ten": 10064
+    },
+    "integer_text_limit": 4096,
+    "normalize_literals": true,
+    "default_query_capability": "mixed-binary64-v1",
+    "conversion_resource_policy": "binary64-conversion-budget-v1",
+    "scalar_target_assumption": "IEEE754 binary64; default nearest ties-even; gradual underflow; no fast-math/reassociation/FMA contraction across source steps. Target runtime qualification remains later receiving work.",
+    "context_basis": "Explicit fixture configuration, not observation of a historical mutable Python process.",
+    "limits_basis": "Active bounded receiving configuration, not original Python acceptance limits. Core converter inputs are already constructed values; input loading is not the lexical API under test."
+  },
+  "core_cases": [
+    {
+      "id": "BC01",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "9007199254740993"
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "4340000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "integer_to_float"
+      ],
+      "proof_refs": [
+        "P-BC01"
+      ]
+    },
+    {
+      "id": "BC02",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "-9007199254740993"
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "c340000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "integer_to_float"
+      ],
+      "proof_refs": [
+        "P-BC02"
+      ]
+    },
+    {
+      "id": "BC03",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "9007199254740995"
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "4340000000000002"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "integer_to_float"
+      ],
+      "proof_refs": [
+        "P-BC03"
+      ]
+    },
+    {
+      "id": "BC04",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "-9007199254740995"
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "c340000000000002"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "integer_to_float"
+      ],
+      "proof_refs": [
+        "P-BC04"
+      ]
+    },
+    {
+      "id": "BC05",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "18014398509481983"
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "4350000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "integer_to_float"
+      ],
+      "proof_refs": [
+        "P-BC05"
+      ]
+    },
+    {
+      "id": "BC06",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791"
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "7fefffffffffffff"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "integer_to_float"
+      ],
+      "proof_refs": [
+        "P-BC06"
+      ]
+    },
+    {
+      "id": "BC07",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497792"
+      },
+      "classification": "source_derived_not_observed",
+      "expected": {
+        "kind": "fault",
+        "reason": "IntegerOverflow",
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "integer_to_float"
+      ],
+      "proof_refs": [
+        "P-BC07"
+      ]
+    },
+    {
+      "id": "BC08",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497792"
+      },
+      "classification": "source_derived_not_observed",
+      "expected": {
+        "kind": "fault",
+        "reason": "IntegerOverflow",
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "integer_to_float"
+      ],
+      "proof_refs": [
+        "P-BC08"
+      ]
+    },
+    {
+      "id": "BC09",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "100000000000000011102230246251565404236316680908203125",
+          "exponent": "-53"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "3ff0000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC09"
+      ]
+    },
+    {
+      "id": "BC10",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "100000000000000033306690738754696212708950042724609375",
+          "exponent": "-53"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "3ff0000000000002"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC10"
+      ]
+    },
+    {
+      "id": "BC11",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "100000000000000011102230246251565404236316680908203126",
+          "exponent": "-53"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "3ff0000000000001"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC11"
+      ]
+    },
+    {
+      "id": "BC12",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791",
+          "exponent": "0"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "7fefffffffffffff"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC12"
+      ]
+    },
+    {
+      "id": "BC13",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497792",
+          "exponent": "0"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "7ff0000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC13"
+      ]
+    },
+    {
+      "id": "BC14",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "24703282292062327208828439643411068618252990130716238221279284125033775363510437593264991818081799618989828234772285886546332835517796989819938739800539093906315035659515570226392290858392449105184435931802849936536152500319370457678249219365623669863658480757001585769269903706311928279558551332927834338409351978015531246597263579574622766465272827220056374006485499977096599470454020828166226237857393450736339007967761930577506740176324673600968951340535537458516661134223766678604162159680461914467291840300530057530849048765391711386591646239524912623653881879636239373280423891018672348497668235089863388587925628302755995657524455507255189313690836254779186948667994968324049705821028513185451396213837722826145437693412532098591327667236328125",
+          "exponent": "-1075"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC14"
+      ]
+    },
+    {
+      "id": "BC15",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": true,
+          "coefficient": "24703282292062327208828439643411068618252990130716238221279284125033775363510437593264991818081799618989828234772285886546332835517796989819938739800539093906315035659515570226392290858392449105184435931802849936536152500319370457678249219365623669863658480757001585769269903706311928279558551332927834338409351978015531246597263579574622766465272827220056374006485499977096599470454020828166226237857393450736339007967761930577506740176324673600968951340535537458516661134223766678604162159680461914467291840300530057530849048765391711386591646239524912623653881879636239373280423891018672348497668235089863388587925628302755995657524455507255189313690836254779186948667994968324049705821028513185451396213837722826145437693412532098591327667236328125",
+          "exponent": "-1075"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "8000000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC15"
+      ]
+    },
+    {
+      "id": "BC16",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "74109846876186981626485318930233205854758970392148714663837852375101326090531312779794975454245398856969484704316857659638998506553390969459816219401617281718945106978546710679176872575177347315553307795408549809608457500958111373034747658096871009590975442271004757307809711118935784838675653998783503015228055934046593739791790738723868299395818481660169122019456499931289798411362062484498678713572180352209017023903285791732520220528974020802906854021606612375549983402671300035812486479041385743401875520901590172592547146296175134159774938718574737870961645638908718119841271673056017045493004705269590165763776884908267986972573366521765567941072508764337560846003984904972149117463085539556354188641513168478436313080237596295773983001708984375",
+          "exponent": "-1075"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000002"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC16"
+      ]
+    },
+    {
+      "id": "BC17",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "222507385850720113605740979670913197593481954635164564802342610972482222202107694551652952390813508791414915891303962110687008643869459464552765720740782062174337998814106326732925355228688137214901298112245145188984905722230728525513315575501591439747639798341180199932396254828901710708185069063066665599493827577257201576306269066333264756530000924588831643303777979186961204949739037782970490505108060994073026293712895895000358379996720725430436028407889577179615094551674824347103070260914462157228988025818254518032570701886087211312807951223342628836862232150377566662250398253433597456888442390026549819838548794829220689472168983109969836584681402285424333066033985088644580400103493397042756718644338377048603786162277173854562306587467901408672332763671875",
+          "exponent": "-1075"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "0010000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC17"
+      ]
+    },
+    {
+      "id": "BC18",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "5",
+          "exponent": "-324"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000001"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC18"
+      ]
+    },
+    {
+      "id": "BC19",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "17976931348623157",
+          "exponent": "292"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "7fefffffffffffff"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float",
+        "binary64_format"
+      ],
+      "proof_refs": [
+        "P-BC19"
+      ]
+    },
+    {
+      "id": "BC20",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "1",
+          "exponent": "1000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "7ff0000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float"
+      ],
+      "proof_refs": [],
+      "reasoning": "10^1000000 > 2^1024; no power materialization is needed.",
+      "numeric_limits_override": {
+        "max_materialized_power_of_ten": 0,
+        "max_output_characters": 0
+      }
+    },
+    {
+      "id": "BC21",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": true,
+          "coefficient": "1",
+          "exponent": "-1000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "8000000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float"
+      ],
+      "proof_refs": [],
+      "reasoning": "10^-1000000 < 2^-1075; underflow retains negative sign.",
+      "numeric_limits_override": {
+        "max_materialized_power_of_ten": 0,
+        "max_output_characters": 0
+      }
+    },
+    {
+      "id": "BC22",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "nan",
+          "negative": false,
+          "signaling": true,
+          "payload": "7"
+        }
+      },
+      "classification": "source_derived_not_observed",
+      "expected": {
+        "kind": "fault",
+        "reason": "SignalingNaNConversion",
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float"
+      ],
+      "proof_refs": []
+    },
+    {
+      "id": "BC23",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "nan",
+          "negative": true,
+          "signaling": false,
+          "payload": "7"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "classification": "NaN",
+          "sign_and_payload": "not asserted"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float"
+      ],
+      "proof_refs": [],
+      "reasoning": "Only NaN class is frozen; no platform payload/sign assumption."
+    },
+    {
+      "id": "BC24",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": true,
+          "coefficient": "0",
+          "exponent": "1000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "8000000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "decimal_to_float"
+      ],
+      "proof_refs": [],
+      "numeric_limits_override": {
+        "max_materialized_power_of_ten": 0,
+        "max_output_characters": 0
+      }
+    },
+    {
+      "id": "BC25",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Add",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "3fb999999999999a"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "3fc999999999999a"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "3fd3333333333334"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [
+        "P-BC25"
+      ]
+    },
+    {
+      "id": "BC26",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Divide",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "3ff0000000000000"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "4024000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "3fb999999999999a"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [
+        "P-BC26"
+      ]
+    },
+    {
+      "id": "BC27",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Multiply",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "7fefffffffffffff"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "4000000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "7ff0000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [
+        "P-BC27"
+      ]
+    },
+    {
+      "id": "BC28",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Divide",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000001"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "4000000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [
+        "P-BC28"
+      ]
+    },
+    {
+      "id": "BC29",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Divide",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "8000000000000001"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "4000000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "8000000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [
+        "P-BC29"
+      ]
+    },
+    {
+      "id": "BC30",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Multiply",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000001"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "3ff8000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000002"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [
+        "P-BC30"
+      ]
+    },
+    {
+      "id": "BC31",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Add",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "4340000000000000"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "3ff0000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "4340000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [
+        "P-BC31"
+      ]
+    },
+    {
+      "id": "BC32",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Subtract",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "3ff0000000000000"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "4340000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "c33fffffffffffff"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [
+        "P-BC32"
+      ]
+    },
+    {
+      "id": "BC33",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Divide",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "7ff0000000000000"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000000"
+        }
+      },
+      "classification": "source_derived_not_observed",
+      "expected": {
+        "kind": "fault",
+        "reason": "ZeroDivision",
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [],
+      "reasoning": "Denominator check precedes hardware division even for Inf or NaN numerator."
+    },
+    {
+      "id": "BC34",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Divide",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "7ff8000000000001"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "8000000000000000"
+        }
+      },
+      "classification": "source_derived_not_observed",
+      "expected": {
+        "kind": "fault",
+        "reason": "ZeroDivision",
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [],
+      "reasoning": "Denominator check precedes hardware division even for Inf or NaN numerator."
+    },
+    {
+      "id": "BC35",
+      "operation": "apply_binary64_binary",
+      "input": {
+        "op": "Multiply",
+        "left": {
+          "family": "Binary64",
+          "bits_hex": "7ff0000000000000"
+        },
+        "right": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "classification": "NaN",
+          "sign_and_payload": "not asserted"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_scalar"
+      ],
+      "proof_refs": [],
+      "reasoning": "IEEE754 Inf times zero is NaN; no Decimal operation or Decimal signal."
+    },
+    {
+      "id": "BC36",
+      "operation": "apply_binary64_unary",
+      "input": {
+        "op": "Plus",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "8000000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "8000000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_unary"
+      ],
+      "proof_refs": []
+    },
+    {
+      "id": "BC37",
+      "operation": "apply_binary64_unary",
+      "input": {
+        "op": "Minus",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "8000000000000000"
+        }
+      },
+      "classification": "source_and_mathematical_derivation",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "0000000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "float_unary"
+      ],
+      "proof_refs": []
+    },
+    {
+      "id": "BA01",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "1234"
+      },
+      "classification": "active_resource_contract_not_parity",
+      "expected": {
+        "kind": "fault",
+        "reason": "Core.ResourceLimit",
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "conversion_budget"
+      ],
+      "proof_refs": [],
+      "numeric_limits_override": {
+        "max_coefficient_digits": 3
+      },
+      "expected_operation": "coefficient_digits"
+    },
+    {
+      "id": "BA02",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "100",
+          "exponent": "-2"
+        }
+      },
+      "classification": "active_resource_contract_not_parity",
+      "expected": {
+        "kind": "fault",
+        "reason": "Core.ResourceLimit",
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "conversion_budget"
+      ],
+      "proof_refs": [],
+      "numeric_limits_override": {
+        "max_materialized_power_of_ten": 1
+      },
+      "expected_operation": "materialized_power_of_ten",
+      "reasoning": "Original exponent budget is checked before removing scale zeros; mathematical value is one."
+    },
+    {
+      "id": "BA03",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "1",
+          "exponent": "0"
+        }
+      },
+      "classification": "active_resource_contract_not_parity",
+      "expected": {
+        "kind": "value",
+        "value": {
+          "family": "Binary64",
+          "bits_hex": "3ff0000000000000"
+        },
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "conversion_budget"
+      ],
+      "proof_refs": [],
+      "numeric_limits_override": {
+        "max_materialized_power_of_ten": 0,
+        "max_output_characters": 0
+      }
+    },
+    {
+      "id": "BA04",
+      "operation": "binary64_from_decimal",
+      "input": {
+        "family": "Decimal",
+        "value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "0",
+          "exponent": "100"
+        }
+      },
+      "classification": "active_resource_contract_not_parity",
+      "expected": {
+        "kind": "fault",
+        "reason": "Core.ResourceLimit",
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "conversion_budget"
+      ],
+      "proof_refs": [],
+      "numeric_limits_override": {
+        "max_input_characters": 1
+      },
+      "expected_operation": "coefficient_digits",
+      "reasoning": "Existing check_value validates exponent representation before the zero shortcut."
+    },
+    {
+      "id": "BA05",
+      "operation": "binary64_from_integer",
+      "input": {
+        "family": "Integer",
+        "value": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "classification": "source_overflow_with_active_no_string_conversion_control",
+      "expected": {
+        "kind": "fault",
+        "reason": "IntegerOverflow",
+        "decimal_signals_added_exact": []
+      },
+      "source_refs": [
+        "integer_to_float",
+        "conversion_budget"
+      ],
+      "proof_refs": [],
+      "numeric_limits_override": {
+        "max_input_characters": 0,
+        "max_output_characters": 0,
+        "max_materialized_power_of_ten": 0
+      },
+      "integer_text_limit_override": 128,
+      "reasoning": "Already constructed 401-digit BigInt is within coefficient budget. Core conversion has no text-limit parameter and must not invoke a lexical/formatting entry; actual float overflow wins."
+    }
+  ]
+}

@@ -1,0 +1,664 @@
+{
+  "schema": "semantica.named-graph-source-derived-cases/1",
+  "expectation_origin": "source_derived",
+  "original_execution": false,
+  "source": {
+    "artifact": "semantica-0.6.5+oe.7-py3-none-any.whl",
+    "sha256": "142ddd6fe788b3a716646babc410628aa7606e44ed63b98f5227863f9ea7ba15",
+    "member": "semantica/ontology/runtime.py",
+    "member_sha256": "607a3e51968cddd6d80fa48dc0dc9101438ac616ca242f86bf954da89ccc8c55",
+    "selection_lines": [
+      1774,
+      1806
+    ],
+    "report_lines": [
+      1820,
+      1828
+    ],
+    "selector_lines": [
+      2326,
+      2332
+    ]
+  },
+  "scope": "Explicit absolute-IRI named graph, inference none, current bounded Rust SHACL owner. No whole-Dataset default equivalence, original Python execution or engineering adoption. Complete fixed findings are independently derived; report profile/scope reuse current owner.",
+  "case_count": 16,
+  "cases": [
+    {
+      "id": "selected_good",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetClass ex:Record; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "305c2c33f4c684b4d536e04ef67686aba03e19b4c12ed8e815090c8c15302cfc",
+        "graph_name": "urn:ex:good"
+      },
+      "expected": {
+        "selected_quad_count": 2,
+        "conforms": true,
+        "findings": [],
+        "violation_count": 0,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "selected_bad_ignores_default_and_other",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetClass ex:Record; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "305c2c33f4c684b4d536e04ef67686aba03e19b4c12ed8e815090c8c15302cfc",
+        "graph_name": "urn:ex:bad"
+      },
+      "expected": {
+        "selected_quad_count": 1,
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:ex:part>",
+            "path": "<urn:ex:name>",
+            "component": "minCount",
+            "value": null,
+            "message": "name required",
+            "source_shape": "<urn:ex:requiredName>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#MinCountConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "kind": "literal",
+                "value": "name required",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null
+              }
+            ]
+          }
+        ],
+        "violation_count": 1,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "selected_other_no_inherited_targets",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetClass ex:Record; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "305c2c33f4c684b4d536e04ef67686aba03e19b4c12ed8e815090c8c15302cfc",
+        "graph_name": "urn:ex:other"
+      },
+      "expected": {
+        "selected_quad_count": 1,
+        "conforms": true,
+        "findings": [],
+        "violation_count": 0,
+        "focus_count": 0,
+        "focus_nodes": [],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "absent_graph_class_target",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetClass ex:Record; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "305c2c33f4c684b4d536e04ef67686aba03e19b4c12ed8e815090c8c15302cfc",
+        "graph_name": "urn:ex:absent"
+      },
+      "expected": {
+        "selected_quad_count": 0,
+        "conforms": true,
+        "findings": [],
+        "violation_count": 0,
+        "focus_count": 0,
+        "focus_nodes": [],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "absent_graph_explicit_target",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetNode ex:part; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "8e14d173e921b9c9556803485ca05c21f6fade57033f4b7f734001c2961a2135",
+        "graph_name": "urn:ex:absent"
+      },
+      "expected": {
+        "selected_quad_count": 0,
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:ex:part>",
+            "path": "<urn:ex:name>",
+            "component": "minCount",
+            "value": null,
+            "message": "name required",
+            "source_shape": "<urn:ex:requiredName>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#MinCountConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "kind": "literal",
+                "value": "name required",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null
+              }
+            ]
+          }
+        ],
+        "violation_count": 1,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "unrelated_graph_changes_do_not_repair_selected_bad",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"changed default\" . }\nex:good { ex:part a ex:Record; ex:name \"changed good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"changed other\" . }\n<urn:ex:foreign> { <urn:foreign> <urn:p> \"foreign\" . }\n",
+        "data_sha256": "cf3d0b502358dac1699c9166b7c5492e56059bb7be62904e87e018ceff3a4fce",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetClass ex:Record; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "305c2c33f4c684b4d536e04ef67686aba03e19b4c12ed8e815090c8c15302cfc",
+        "graph_name": "urn:ex:bad"
+      },
+      "expected": {
+        "selected_quad_count": 1,
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:ex:part>",
+            "path": "<urn:ex:name>",
+            "component": "minCount",
+            "value": null,
+            "message": "name required",
+            "source_shape": "<urn:ex:requiredName>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#MinCountConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "kind": "literal",
+                "value": "name required",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null
+              }
+            ]
+          }
+        ],
+        "violation_count": 1,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "selected_graph_repair_changes_result",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record; ex:name \"repaired\" . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "a2c506dd40dd4a17daaf4cac58718ff9be3dbff4d8a3234e3478f96b7f1e2929",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetClass ex:Record; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "305c2c33f4c684b4d536e04ef67686aba03e19b4c12ed8e815090c8c15302cfc",
+        "graph_name": "urn:ex:bad"
+      },
+      "expected": {
+        "selected_quad_count": 2,
+        "conforms": true,
+        "findings": [],
+        "violation_count": 0,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "nquads_same_selected_graph_scope",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "<urn:ex:part> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:ex:Record> .\n<urn:ex:part> <urn:ex:name> \"default\" .\n<urn:ex:part> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:ex:Record> <urn:ex:good> .\n<urn:ex:part> <urn:ex:name> \"good\" <urn:ex:good> .\n<urn:ex:part> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:ex:Record> <urn:ex:bad> .\n<urn:ex:part> <urn:ex:name> \"must not repair bad\" <urn:ex:other> .\n",
+        "data_sha256": "b6f1b71798abcc098abae09f65ed3ee41bcef73e2677578bf333234e18b9742e",
+        "dataset_format": "nquads",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetClass ex:Record; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "305c2c33f4c684b4d536e04ef67686aba03e19b4c12ed8e815090c8c15302cfc",
+        "graph_name": "urn:ex:bad"
+      },
+      "expected": {
+        "selected_quad_count": 1,
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:ex:part>",
+            "path": "<urn:ex:name>",
+            "component": "minCount",
+            "value": null,
+            "message": "name required",
+            "source_shape": "<urn:ex:requiredName>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#MinCountConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "kind": "literal",
+                "value": "name required",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null
+              }
+            ]
+          }
+        ],
+        "violation_count": 1,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "sparql_bad_does_not_see_neighbor_names",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> . @prefix sh: <http://www.w3.org/ns/shacl#> . ex:shape a sh:NodeShape; sh:targetNode ex:part; sh:sparql ex:C . ex:C sh:message \"local name\"; sh:select \"SELECT $this ?value WHERE { $this <urn:ex:name> ?value }\" .\n",
+        "shapes_sha256": "dd878a1b0f841533e2514e810398b460513f792c786e1b36df26bcf364abbd9b",
+        "graph_name": "urn:ex:bad"
+      },
+      "expected": {
+        "selected_quad_count": 1,
+        "conforms": true,
+        "findings": [],
+        "violation_count": 0,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "sparql_selected_language_literal",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"Bonjour\"@fr . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "7adcf4865ccdd2dd6a9069d2cf33aa85e03470541cab8d535d12ff6a46e4dd90",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> . @prefix sh: <http://www.w3.org/ns/shacl#> . ex:shape a sh:NodeShape; sh:targetNode ex:part; sh:sparql ex:C . ex:C sh:message \"local name\"; sh:select \"SELECT $this ?value WHERE { $this <urn:ex:name> ?value }\" .\n",
+        "shapes_sha256": "dd878a1b0f841533e2514e810398b460513f792c786e1b36df26bcf364abbd9b",
+        "graph_name": "urn:ex:good"
+      },
+      "expected": {
+        "selected_quad_count": 2,
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:ex:part>",
+            "path": null,
+            "component": "sparql",
+            "value": "\"Bonjour\"@fr",
+            "message": "local name",
+            "source_shape": "<urn:ex:shape>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#SPARQLConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "kind": "literal",
+                "value": "local name",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null
+              }
+            ]
+          }
+        ],
+        "violation_count": 1,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "foreign_subclass_does_not_create_selected_target",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex:<urn:ex:>. @prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>. ex:good {ex:part a ex:Child.} ex:other {ex:Child rdfs:subClassOf ex:Record.}\n",
+        "data_sha256": "a3bad3723d4807d7283ebdec7815d7fbdd21ff552990440697e7a344bec0ee2c",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetClass ex:Record; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "305c2c33f4c684b4d536e04ef67686aba03e19b4c12ed8e815090c8c15302cfc",
+        "graph_name": "urn:ex:good"
+      },
+      "expected": {
+        "selected_quad_count": 1,
+        "conforms": true,
+        "findings": [],
+        "violation_count": 0,
+        "focus_count": 0,
+        "focus_nodes": [],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "selected_subclass_creates_target",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex:<urn:ex:>. @prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>. ex:good {ex:part a ex:Child. ex:Child rdfs:subClassOf ex:Record.} ex:other {ex:Child rdfs:subClassOf ex:Record.}\n",
+        "data_sha256": "162bde77fd12b270b22a6777241b4a08d01f7258fb24487dfec15e47dbdd11a2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> .\n@prefix sh: <http://www.w3.org/ns/shacl#> .\nex:shape a sh:NodeShape; sh:targetClass ex:Record; sh:property ex:requiredName .\nex:requiredName sh:path ex:name; sh:minCount 1; sh:message \"name required\" .\n",
+        "shapes_sha256": "305c2c33f4c684b4d536e04ef67686aba03e19b4c12ed8e815090c8c15302cfc",
+        "graph_name": "urn:ex:good"
+      },
+      "expected": {
+        "selected_quad_count": 2,
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:ex:part>",
+            "path": "<urn:ex:name>",
+            "component": "minCount",
+            "value": null,
+            "message": "name required",
+            "source_shape": "<urn:ex:requiredName>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#MinCountConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "kind": "literal",
+                "value": "name required",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null
+              }
+            ]
+          }
+        ],
+        "violation_count": 1,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "inactive_sparql_stays_inactive_in_selected_graph",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> . @prefix sh: <http://www.w3.org/ns/shacl#> . ex:shape a sh:NodeShape; sh:targetNode ex:part; sh:sparql ex:C . ex:C sh:deactivated true; sh:message \"local name\"; sh:select \"SELECT $this ?value WHERE { $this <urn:ex:name> ?value }\" .\n",
+        "shapes_sha256": "87caa830f98f9666ce63c43b3c7041298dd1a3a69e237289c1be0f4cd57f5d79",
+        "graph_name": "urn:ex:good"
+      },
+      "expected": {
+        "selected_quad_count": 2,
+        "conforms": true,
+        "findings": [],
+        "violation_count": 0,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "active_sparql_stays_active_in_selected_graph",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> . @prefix sh: <http://www.w3.org/ns/shacl#> . ex:shape a sh:NodeShape; sh:targetNode ex:part; sh:sparql ex:C . ex:C sh:deactivated false; sh:message \"local name\"; sh:select \"SELECT $this ?value WHERE { $this <urn:ex:name> ?value }\" .\n",
+        "shapes_sha256": "c357c205d052ed7cdac1d17a2794947749fe79e1baf333e37f3406900d50651b",
+        "graph_name": "urn:ex:good"
+      },
+      "expected": {
+        "selected_quad_count": 2,
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:ex:part>",
+            "path": null,
+            "component": "sparql",
+            "value": "\"good\"",
+            "message": "local name",
+            "source_shape": "<urn:ex:shape>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#SPARQLConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "kind": "literal",
+                "value": "local name",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null
+              }
+            ]
+          }
+        ],
+        "violation_count": 1,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "inactive_parent_still_suppresses_checks",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> . @prefix sh: <http://www.w3.org/ns/shacl#> . ex:shape a sh:NodeShape; sh:deactivated true; sh:targetNode ex:part; sh:sparql ex:C . ex:C sh:message \"local name\"; sh:select \"SELECT $this ?value WHERE { $this <urn:ex:name> ?value }\" .\n",
+        "shapes_sha256": "274d922b46f5f1d19acc70b98a9dfef86ede5547943ec38eedcfa1ff3953d977",
+        "graph_name": "urn:ex:good"
+      },
+      "expected": {
+        "selected_quad_count": 2,
+        "conforms": true,
+        "findings": [],
+        "violation_count": 0,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    },
+    {
+      "id": "inactive_constraint_preserves_core_and_active_sibling",
+      "expectation_origin": "source_derived",
+      "original_execution": false,
+      "input": {
+        "schema": "semantica.named-graph-validation-request/1",
+        "data": "@prefix ex: <urn:ex:> .\n{ ex:part a ex:Record; ex:name \"default\" . }\nex:good { ex:part a ex:Record; ex:name \"good\" . }\nex:bad { ex:part a ex:Record . }\nex:other { ex:part ex:name \"must not repair bad\" . }\n",
+        "data_sha256": "3c4e3962467d0eb70729dc5f1eec5375615da2c80071886496da5625112426f2",
+        "dataset_format": "trig",
+        "shapes": "@prefix ex: <urn:ex:> . @prefix sh: <http://www.w3.org/ns/shacl#> . ex:shape a sh:NodeShape; sh:targetNode ex:part; sh:nodeKind sh:Literal; sh:sparql ex:C; sh:sparql ex:Active . ex:C sh:deactivated true; sh:message \"local name\"; sh:select \"SELECT $this ?value WHERE { $this <urn:ex:name> ?value }\" .\nex:Active sh:message \"active name\"; sh:select \"SELECT $this ?value WHERE { $this <urn:ex:name> ?value }\" .\n",
+        "shapes_sha256": "68f4d46f67e4e2030737972bdf4e44be3bd696e40c09567dae84fed4b9b8b687",
+        "graph_name": "urn:ex:good"
+      },
+      "expected": {
+        "selected_quad_count": 2,
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:ex:part>",
+            "path": null,
+            "component": "nodeKind",
+            "value": "<urn:ex:part>",
+            "message": "RDF node kind differs",
+            "source_shape": "<urn:ex:shape>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#NodeKindConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": []
+          },
+          {
+            "focus": "<urn:ex:part>",
+            "path": null,
+            "component": "sparql",
+            "value": "\"good\"",
+            "message": "active name",
+            "source_shape": "<urn:ex:shape>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#SPARQLConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "kind": "literal",
+                "value": "active name",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null
+              }
+            ]
+          }
+        ],
+        "violation_count": 2,
+        "focus_count": 1,
+        "focus_nodes": [
+          {
+            "kind": "iri",
+            "value": "urn:ex:part"
+          }
+        ],
+        "revision_before": 1,
+        "revision_after": 1
+      }
+    }
+  ],
+  "invalid_selectors": [
+    "",
+    "relative/path",
+    "urn:bad graph",
+    "_:blank",
+    " urn:ex:good",
+    "urn:ex:good "
+  ],
+  "invalid_schema": "semantica.named-graph-validation-request/0",
+  "invalid_formats": [
+    "turtle",
+    "ntriples",
+    "rdfxml",
+    "trig ",
+    "unknown"
+  ],
+  "malformed_empty_view_shapes": "@prefix sh:<http://www.w3.org/ns/shacl#>. <urn:shape> sh:deactivated \"true\" .",
+  "malformed_empty_view_error": "shacl_boolean_parameter_invalid:deactivated",
+  "coverage_addenda": [
+    "Same-session exact complete N-Quads, revision, count, query cache, low-blank snapshot and package list before/after success and failure",
+    "Loaded blank identity and language literal in findings; no reparse/remap of selected triples",
+    "Full input source and shape digest changes, schema/format/IRI/unknownfield refusal",
+    "Full-store >100000 quad bound including Context50k source while selected view is empty; source/shapes bytes max+1",
+    "Original validate_dataset guard remains exact; no BookRunner/promoted-review wire changes"
+  ]
+}

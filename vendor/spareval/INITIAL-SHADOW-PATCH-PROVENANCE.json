@@ -1,0 +1,73 @@
+{
+  "schema": "spareval-initial-shadow-local-patch-provenance/1",
+  "package": "spareval",
+  "version": "0.2.7",
+  "licenses": [
+    "MIT",
+    "Apache-2.0"
+  ],
+  "upstream_and_prior_patches": {
+    "schema": "oev2.describe-dependency-patch-provenance/2",
+    "implementation_policy": "rdflib760-describe-context/2",
+    "upstream": {
+      "commit": "0e81a29d27575ab69e7f85ea9c7f1058b277fcd0",
+      "spargebra_version": "0.4.7",
+      "spareval_version": "0.2.7",
+      "spargebra_parser": {
+        "bytes": 111962,
+        "sha256": "543761e57e824d6dcf0e33c2f0fdb7b3eb19c3f9402f4a1b003addcdbec714b4",
+        "source": "https://github.com/oxigraph/oxigraph/blob/0e81a29d27575ab69e7f85ea9c7f1058b277fcd0/lib/spargebra/src/parser.rs"
+      },
+      "spareval_eval": {
+        "bytes": 185225,
+        "sha256": "2f791b5c88e01259f5136818efd77d4da89ecc9329727c174284753c07987da5"
+      }
+    },
+    "patched_baseline": {
+      "spargebra_parser": {
+        "bytes": 112202,
+        "sha256": "314375922fbdd8e813a8c7bcba9d473cc04a751942870d59d9226155cdcf3d65"
+      },
+      "spareval_eval": {
+        "bytes": 189994,
+        "sha256": "facef1b025e1fffe4404efce08bf4c311d577a83f13443edd0c1cc85058b8601"
+      }
+    },
+    "licenses": {
+      "choice": "MIT OR Apache-2.0",
+      "LICENSE-MIT": "1f4f6736adc52ebfda18bb84947e0ef492bd86a408c0e83872efb75ed5e02838",
+      "LICENSE-APACHE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    "reference": {
+      "original15_sha256": "4c52d96181c741c1a3cdb675517eb83cf7aaf7fd1575aeea45b18bd886d6f2e1",
+      "describe_original17_sha256": "798f9b31a55270bc2f7970982ef91eee6bdb0d97579d2527403c98cd6534710c",
+      "describe_modifier_original9_sha256": "b2dbc7305da110e1d73353aafa74739704ea0e084c498cf692ec138a844b21bc",
+      "rdflib_algebra_760_sha256": "22441c48e62b22c40ec17a1ffaf5360b7b08cfb971cfe8ad59a599e8766d81b3",
+      "source": "https://github.com/RDFLib/rdflib/blob/7.6.0/rdflib/plugins/sparql/algebra.py",
+      "sorted_target_original2_sha256": "45e4cf6e8c87260cf8d7ddc08ecd724a31c8d098f9d652292a116a6a001dd881"
+    },
+    "changes": {
+      "spareval": "Same pinned evaluator: parser-derived target variables, key output slots and application substitutions have distinct domains. Only selected target indices are enumerated.",
+      "spargebra": "Explicit parse_query_rdflib760 builds genuine key Project/Distinct/Slice and returns selected target metadata; original first-child projections affect keys only. Neutral parser/default query productions and numeric patch unchanged."
+    },
+    "limits": "Finite original modifier/key compatibility and genuine target domain; tied order has no unique parity result, original wildcard errors and child-IRI target spill preserved separately. No complete DESCRIBE/SPARQL/19/19/22/13494/55 qualification."
+  },
+  "pre_increment_source": [
+    {
+      "path": "vendor/spareval/src/eval.rs",
+      "bytes": 191185,
+      "sha256": "edde1ce26dabd019c9b0fb51dd26b3812cdd7773d210754fc0761af4aa69e893"
+    },
+    {
+      "path": "vendor/spareval/src/lib.rs",
+      "bytes": 46448,
+      "sha256": "5772f4417f4d7213fc5580c6fdb953c568a58d7ff3db369d76b131f4c54e2107"
+    }
+  ],
+  "original_reference": {
+    "evaluate.py": "991944f756398773c4ddf0da0bf5a3c2285f2a67140c9976a8a806ba5d8402be",
+    "sparql.py": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f",
+    "aggregates.py": "ae64a464f9e290eedd04c923916b388364bf7858c605d6e191da48a45584ab29"
+  },
+  "scope": "Explicit initial-shadow3 computed origin markers, context restoration and selected Project/Group-key propagation. Default target sets empty. RDF term/tuple domain/Eq/Hash and ordinary combine compatibility unchanged; no query rewrites/second Dataset; complete74 old observations stay independent."
+}

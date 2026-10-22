@@ -1,0 +1,711 @@
+{
+  "schema": "private.datalog67.cases/1",
+  "expectation_origin": "source_and_hand_derived_before_candidate",
+  "comparison": "Exact fact/binding sets and graph-added count; original raw arrays and partial failure state retained. Stateless transport does not claim original persistent exception-state equivalence.",
+  "cases": [
+    {
+      "id": "empty",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [],
+          "edges": []
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [],
+        "rows": null,
+        "graph_facts_added": 0,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "node",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [
+            {
+              "id": "Part A",
+              "type": "Part"
+            }
+          ],
+          "edges": []
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "part(part_a)"
+        ],
+        "rows": null,
+        "graph_facts_added": 1,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "edge-default",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [],
+          "edges": [
+            {
+              "source": "a",
+              "target": "b"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "connected_to(a, b)"
+        ],
+        "rows": null,
+        "graph_facts_added": 1,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "chain",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [],
+          "edges": [
+            {
+              "source": "drawing",
+              "target": "assembly",
+              "type": "depends"
+            },
+            {
+              "source": "assembly",
+              "target": "part",
+              "type": "depends"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [
+          "affected(X, Y) :- depends(X, Y).",
+          "affected(X, Y) :- depends(X, Z), affected(Z, Y)."
+        ],
+        "query": {
+          "pattern": "affected(?object, part)",
+          "bindings": {}
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "affected(assembly, part)",
+          "affected(drawing, assembly)",
+          "affected(drawing, part)",
+          "depends(assembly, part)",
+          "depends(drawing, assembly)"
+        ],
+        "rows": [
+          {
+            "object": "assembly"
+          },
+          {
+            "object": "drawing"
+          }
+        ],
+        "graph_facts_added": 2,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "existing-fact",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [],
+          "edges": [
+            {
+              "source": "drawing",
+              "target": "assembly",
+              "type": "depends"
+            }
+          ]
+        },
+        "facts": [
+          "depends(drawing, assembly)"
+        ],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "depends(drawing, assembly)"
+        ],
+        "rows": null,
+        "graph_facts_added": 0,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "duplicate-edges",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [],
+          "edges": [
+            {
+              "source": "drawing",
+              "target": "assembly",
+              "type": "depends"
+            },
+            {
+              "source": "drawing",
+              "target": "assembly",
+              "type": "depends"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "depends(drawing, assembly)"
+        ],
+        "rows": null,
+        "graph_facts_added": 1,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "unknown-record",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [
+            {
+              "unknown": "keep raw"
+            }
+          ],
+          "edges": [
+            {
+              "unrecognized": "edge"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [],
+        "rows": null,
+        "graph_facts_added": 0,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "missing-target",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [
+            {
+              "id": "",
+              "type": "part"
+            }
+          ],
+          "edges": [
+            {
+              "source": "a"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [],
+        "rows": null,
+        "graph_facts_added": 0,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "name-id-precedence",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [
+            {
+              "id": "primary",
+              "name": "other",
+              "type": "part"
+            }
+          ],
+          "edges": [
+            {
+              "source": "a",
+              "source_id": "ignored",
+              "source_name": "ignored2",
+              "target_name": "b",
+              "relation": "depends"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "depends(a, b)",
+          "part(primary)"
+        ],
+        "rows": null,
+        "graph_facts_added": 2,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "scalar-values",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [
+            {
+              "id": 7,
+              "type": "number"
+            }
+          ],
+          "edges": [
+            {
+              "subject": null,
+              "predicate": "value",
+              "object": true
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "number(7)",
+          "value(none, true)"
+        ],
+        "rows": null,
+        "graph_facts_added": 2,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "normalized-collision",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [
+            {
+              "id": "Part A",
+              "type": "part"
+            },
+            {
+              "id": "part_a",
+              "type": "PART"
+            }
+          ],
+          "edges": []
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "part(part_a)"
+        ],
+        "rows": null,
+        "graph_facts_added": 1,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "mixed-dictionary",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [
+            {
+              "name": "a",
+              "type": "part"
+            }
+          ],
+          "edges": [
+            {
+              "subject": "a",
+              "predicate": "Depends On",
+              "object": "b"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "depends_on(a, b)",
+          "part(a)"
+        ],
+        "rows": null,
+        "graph_facts_added": 2,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "cycle",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [],
+          "edges": [
+            {
+              "source": "a",
+              "target": "b",
+              "type": "depends"
+            },
+            {
+              "source": "b",
+              "target": "a",
+              "type": "depends"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [
+          "affected(X, Y) :- depends(X, Y).",
+          "affected(X, Y) :- depends(X, Z), affected(Z, Y)."
+        ],
+        "query": {
+          "pattern": "affected(?x, ?x)",
+          "bindings": {}
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "affected(a, a)",
+          "affected(a, b)",
+          "affected(b, a)",
+          "affected(b, b)",
+          "depends(a, b)",
+          "depends(b, a)"
+        ],
+        "rows": [
+          {
+            "x": "a"
+          },
+          {
+            "x": "b"
+          }
+        ],
+        "graph_facts_added": 2,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "unicode-term",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [
+            {
+              "id": "导向 板",
+              "type": "part"
+            }
+          ],
+          "edges": []
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "part(导向_板)"
+        ],
+        "rows": null,
+        "graph_facts_added": 1,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "prior-and-graph-join",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [
+            {
+              "id": "part",
+              "type": "part"
+            }
+          ],
+          "edges": [
+            {
+              "source": "assembly",
+              "target": "part",
+              "type": "depends"
+            }
+          ]
+        },
+        "facts": [
+          "loaded(assembly)"
+        ],
+        "rules": [
+          "needs(Y) :- loaded(X), depends(X, Y)."
+        ],
+        "query": {
+          "pattern": "needs(?id)",
+          "bindings": {}
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "depends(assembly, part)",
+          "loaded(assembly)",
+          "needs(part)",
+          "part(part)"
+        ],
+        "rows": [
+          {
+            "id": "part"
+          }
+        ],
+        "graph_facts_added": 2,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "ground-query",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [],
+          "edges": [
+            {
+              "source": "drawing",
+              "target": "assembly",
+              "type": "depends"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [],
+        "query": {
+          "pattern": "depends(drawing, assembly)",
+          "bindings": {}
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "depends(drawing, assembly)"
+        ],
+        "rows": [],
+        "graph_facts_added": 1,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "graph-empty-argument",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [],
+          "edges": [
+            {
+              "source": "drawing",
+              "target": "assembly",
+              "type": "depends"
+            },
+            {
+              "subject": "",
+              "predicate": "depends",
+              "object": "b"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "error",
+        "closure": [],
+        "rows": null,
+        "graph_facts_added": null,
+        "error_fragment": "empty arguments"
+      }
+    },
+    {
+      "id": "bad-rule-after-graph",
+      "request": {
+        "schema": "semantica.datalog-graph-request/1",
+        "graph": {
+          "nodes": [],
+          "edges": [
+            {
+              "source": "drawing",
+              "target": "assembly",
+              "type": "depends"
+            }
+          ]
+        },
+        "facts": [],
+        "rules": [
+          "not-a-rule"
+        ],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "error",
+        "closure": [],
+        "rows": null,
+        "graph_facts_added": null,
+        "error_fragment": "missing ':-'"
+      }
+    }
+  ],
+  "original_source_sha256": "901676257437fd056203ea572bb750f84c528b1693a5ef8149c68d5725a3c78d"
+}

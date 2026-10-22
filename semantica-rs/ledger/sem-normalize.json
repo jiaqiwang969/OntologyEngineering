@@ -1,0 +1,3326 @@
+{
+ "schema": "semantica.migration-ledger/1",
+ "scope_sha256": "b1470d9980755811c815be24cdc041740de5f55e28232c327f0845d160455226",
+ "module": "sem-normalize",
+ "entries": [
+  {
+   "id": "semantica/normalize/__init__.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|TextNormalizer|181",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::TextNormalizer"
+   ],
+   "tests": [
+    "normalize_init::test_text_exports",
+    "normalize_test_text_normalizer::test_text_normalizer__test_init"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|UnicodeNormalizer|182",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::UnicodeNormalizer"
+   ],
+   "tests": [
+    "normalize_init::test_text_exports",
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_normalize_unicode_forms"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|WhitespaceNormalizer|183",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::WhitespaceNormalizer"
+   ],
+   "tests": [
+    "normalize_init::test_text_exports",
+    "normalize_test_text_normalizer::test_whitespace_normalizer__test_normalize_whitespace_basic"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|SpecialCharacterProcessor|184",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::SpecialCharacterProcessor"
+   ],
+   "tests": [
+    "normalize_init::test_text_exports",
+    "normalize_test_text_normalizer::test_special_character_processor__test_normalize_punctuation"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|EntityNormalizer|186",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityNormalizer"
+   ],
+   "tests": [
+    "normalize_init::test_entity_exports",
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_normalize_entity_basic"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|AliasResolver|187",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::AliasResolver"
+   ],
+   "tests": [
+    "normalize_init::test_entity_exports",
+    "normalize_entity_normalizer::test_alias_resolver_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|EntityDisambiguator|188",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityDisambiguator"
+   ],
+   "tests": [
+    "normalize_init::test_entity_exports",
+    "normalize_entity_normalizer::test_entity_disambiguator_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|NameVariantHandler|189",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::NameVariantHandler"
+   ],
+   "tests": [
+    "normalize_init::test_entity_exports",
+    "normalize_test_entity_normalizer::test_name_variant_handler__test_normalize_name_format"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|DateNormalizer|191",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::DateNormalizer"
+   ],
+   "tests": [
+    "normalize_init::test_date_exports",
+    "normalize_test_date_normalizer::test_date_normalizer__test_normalize_date_iso"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|TimeZoneNormalizer|192",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TimeZoneNormalizer"
+   ],
+   "tests": [
+    "normalize_init::test_date_exports",
+    "normalize_test_date_normalizer::test_time_zone_normalizer__test_normalize_timezone_obj"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|RelativeDateProcessor|193",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::RelativeDateProcessor"
+   ],
+   "tests": [
+    "normalize_init::test_date_exports",
+    "normalize_test_date_normalizer::test_relative_date_processor__test_process_relative_expression"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|TemporalExpressionParser|194",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TemporalExpressionParser"
+   ],
+   "tests": [
+    "normalize_init::test_date_exports",
+    "normalize_date_normalizer::test_temporal_expressions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|NumberNormalizer|196",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::NumberNormalizer"
+   ],
+   "tests": [
+    "normalize_init::test_number_exports",
+    "normalize_test_number_normalizer::test_number_normalizer__test_normalize_number_string"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|UnitConverter|197",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::UnitConverter"
+   ],
+   "tests": [
+    "normalize_init::test_number_exports",
+    "normalize_test_number_normalizer::test_unit_converter__test_convert"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|CurrencyNormalizer|198",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::CurrencyNormalizer"
+   ],
+   "tests": [
+    "normalize_init::test_number_exports",
+    "normalize_test_number_normalizer::test_currency_normalizer__test_parse_currency"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|ScientificNotationHandler|199",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::ScientificNotationHandler"
+   ],
+   "tests": [
+    "normalize_init::test_number_exports",
+    "normalize_test_number_normalizer::test_scientific_notation_handler__test_parse_scientific"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|DataCleaner|201",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataCleaner"
+   ],
+   "tests": [
+    "normalize_init::test_data_cleaning_exports",
+    "normalize_test_data_cleaner::test_data_cleaner__test_clean_data_comprehensive"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|DuplicateDetector|202",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DuplicateDetector"
+   ],
+   "tests": [
+    "normalize_init::test_data_cleaning_exports",
+    "normalize_test_data_cleaner::test_duplicate_detector__test_detect_exact_duplicates"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|DataValidator|203",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataValidator"
+   ],
+   "tests": [
+    "normalize_init::test_data_cleaning_exports",
+    "normalize_test_data_cleaner::test_data_validator__test_validate_valid_record"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|MissingValueHandler|204",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::MissingValueHandler"
+   ],
+   "tests": [
+    "normalize_init::test_data_cleaning_exports",
+    "normalize_test_data_cleaner::test_missing_value_handler__test_identify_missing_values"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|DuplicateGroup|205",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DuplicateGroup"
+   ],
+   "tests": [
+    "normalize_init::test_data_cleaning_exports",
+    "normalize_test_data_cleaner::test_duplicate_detector__test_resolve_duplicates_keep_first"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|ValidationResult|206",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::ValidationResult"
+   ],
+   "tests": [
+    "normalize_init::test_data_cleaning_exports",
+    "normalize_test_data_cleaner::test_data_validator__test_validate_valid_record"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|TextCleaner|208",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner"
+   ],
+   "tests": [
+    "normalize_init::test_text_exports",
+    "normalize_test_normalize::test_text_cleaner__test_clean_html"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|LanguageDetector|210",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs::LanguageDetector"
+   ],
+   "tests": [
+    "normalize_init::test_language_and_encoding_exports",
+    "normalize_test_language_detector::test_language_detector__test_detect_short_text"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|EncodingHandler|212",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs::EncodingHandler"
+   ],
+   "tests": [
+    "normalize_init::test_language_and_encoding_exports",
+    "normalize_test_encoding_handler::test_encoding_handler__test_detect_encoding"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|MethodRegistry|214",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/registry.rs::MethodRegistry"
+   ],
+   "tests": [
+    "normalize_init::test_registry_and_config_exports",
+    "normalize_registry::test_registry_trace_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|method_registry|215",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/registry.rs::method_registry"
+   ],
+   "tests": [
+    "normalize_init::test_registry_and_config_exports"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|normalize_text|216",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_text"
+   ],
+   "tests": [
+    "normalize_init::test_function_exports",
+    "normalize_test_integration::test_normalize_integration__test_normalize_text_integration"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|clean_text|217",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::clean_text"
+   ],
+   "tests": [
+    "normalize_init::test_function_exports",
+    "normalize_methods::test_text_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|normalize_entity|218",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_entity"
+   ],
+   "tests": [
+    "normalize_init::test_function_exports",
+    "normalize_test_integration::test_normalize_integration__test_normalize_entity_integration"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|resolve_aliases|219",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::resolve_aliases"
+   ],
+   "tests": [
+    "normalize_init::test_function_exports",
+    "normalize_methods::test_entity_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|disambiguate_entity|220",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::disambiguate_entity"
+   ],
+   "tests": [
+    "normalize_init::test_function_exports",
+    "normalize_methods::test_entity_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|normalize_date|221",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_date"
+   ],
+   "tests": [
+    "normalize_init::test_date_exports",
+    "normalize_test_integration::test_normalize_integration__test_normalize_date_integration"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|normalize_time|222",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_time"
+   ],
+   "tests": [
+    "normalize_init::test_date_exports",
+    "normalize_methods::test_date_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|normalize_number|223",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_number"
+   ],
+   "tests": [
+    "normalize_init::test_number_exports",
+    "normalize_test_integration::test_normalize_integration__test_normalize_number_integration"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|normalize_quantity|224",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_quantity"
+   ],
+   "tests": [
+    "normalize_init::test_number_exports",
+    "normalize_test_integration::test_normalize_integration__test_normalize_number_integration"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|clean_data|225",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::clean_data"
+   ],
+   "tests": [
+    "normalize_init::test_data_cleaning_exports",
+    "normalize_test_integration::test_normalize_integration__test_clean_data_integration"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|detect_duplicates|226",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::detect_duplicates"
+   ],
+   "tests": [
+    "normalize_init::test_data_cleaning_exports",
+    "normalize_methods::test_data_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|detect_language|227",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::detect_language"
+   ],
+   "tests": [
+    "normalize_init::test_language_and_encoding_exports",
+    "normalize_methods::test_language_and_encoding_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|handle_encoding|228",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::handle_encoding"
+   ],
+   "tests": [
+    "normalize_init::test_language_and_encoding_exports",
+    "normalize_methods::test_language_and_encoding_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|get_normalize_method|229",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::get_normalize_method"
+   ],
+   "tests": [
+    "normalize_init::test_function_exports",
+    "normalize_methods::test_registry_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|list_available_methods|230",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/methods.rs::list_available_methods"
+   ],
+   "tests": [
+    "normalize_init::test_function_exports",
+    "normalize_methods::test_registry_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|NormalizeConfig|232",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/config.rs::NormalizeConfig"
+   ],
+   "tests": [
+    "normalize_init::test_registry_and_config_exports",
+    "normalize_config::test_config_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/__init__.py|python_export|normalize_config|233",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/lib.rs",
+    "semantica-rs/crates/sem-normalize/src/config.rs::normalize_config"
+   ],
+   "tests": [
+    "normalize_init::test_registry_and_config_exports"
+   ]
+  },
+  {
+   "id": "semantica/normalize/config.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/config.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/config.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/config.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/config.py|class|NormalizeConfig|46",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/config.rs::NormalizeConfig"
+   ],
+   "tests": [
+    "normalize_config::test_config_files_match_oracle",
+    "normalize_config::test_config_operations_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/config.py|method|NormalizeConfig.set|126",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/config.rs::NormalizeConfig::set"
+   ],
+   "tests": [
+    "normalize_config::test_config_operations_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/config.py|method|NormalizeConfig.get|130",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/config.rs::NormalizeConfig::get"
+   ],
+   "tests": [
+    "normalize_config::test_config_operations_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/config.py|method|NormalizeConfig.set_method_config|151",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/config.rs::NormalizeConfig::set_method_config"
+   ],
+   "tests": [
+    "normalize_config::test_config_operations_match_oracle",
+    "normalize_config::test_method_config_persists_keyword_arguments_like_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/config.py|method|NormalizeConfig.get_method_config|155",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/config.rs::NormalizeConfig::get_method_config"
+   ],
+   "tests": [
+    "normalize_config::test_config_operations_match_oracle",
+    "normalize_config::test_method_config_persists_keyword_arguments_like_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/config.py|method|NormalizeConfig.get_all|159",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/config.rs::NormalizeConfig::get_all"
+   ],
+   "tests": [
+    "normalize_config::test_config_files_match_oracle",
+    "normalize_config::test_config_operations_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|class|DuplicateGroup|42",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DuplicateGroup"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_resolve_duplicates_keep_first",
+    "normalize_data_cleaner::test_duplicate_detector_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|class|ValidationResult|62",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::ValidationResult"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_validator__test_validate_valid_record",
+    "normalize_data_cleaner::test_data_validator_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|class|DataCleaner|80",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataCleaner"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_cleaner__test_clean_data_comprehensive",
+    "normalize_data_cleaner::test_clean_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DataCleaner.clean_data|130",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataCleaner::clean_data"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_cleaner__test_clean_data_comprehensive",
+    "normalize_test_data_cleaner::test_data_cleaner__test_clean_data_fill_missing",
+    "normalize_data_cleaner::test_clean_data_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DataCleaner.detect_duplicates|202",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataCleaner::detect_duplicates"
+   ],
+   "tests": [
+    "normalize_data_cleaner::test_data_cleaner_delegates_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DataCleaner.validate_data|231",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataCleaner::validate_data"
+   ],
+   "tests": [
+    "normalize_data_cleaner::test_data_cleaner_delegates_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DataCleaner.handle_missing_values|255",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataCleaner::handle_missing_values"
+   ],
+   "tests": [
+    "normalize_data_cleaner::test_data_cleaner_delegates_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|class|DuplicateDetector|282",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DuplicateDetector"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_detect_exact_duplicates",
+    "normalize_data_cleaner::test_duplicate_detector_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DuplicateDetector.detect_duplicates|325",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DuplicateDetector::detect_duplicates"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_detect_exact_duplicates",
+    "normalize_test_data_cleaner::test_duplicate_detector__test_detect_fuzzy_duplicates",
+    "normalize_data_cleaner::test_duplicate_detector_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DuplicateDetector.calculate_similarity|393",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DuplicateDetector::calculate_similarity"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_calculate_similarity",
+    "normalize_data_cleaner::test_duplicate_detector_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DuplicateDetector.resolve_duplicates|484",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DuplicateDetector::resolve_duplicates"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_resolve_duplicates_keep_first",
+    "normalize_test_data_cleaner::test_duplicate_detector__test_resolve_duplicates_merge",
+    "normalize_data_cleaner::test_duplicate_detector_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|class|DataValidator|546",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataValidator"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_validator__test_validate_valid_record",
+    "normalize_data_cleaner::test_data_validator_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DataValidator.validate_dataset|581",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataValidator::validate_dataset"
+   ],
+   "tests": [
+    "normalize_data_cleaner::test_data_validator_matches_oracle",
+    "normalize_data_cleaner::test_data_cleaner_delegates_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DataValidator.validate_record|618",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataValidator::validate_record"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_validator__test_validate_valid_record",
+    "normalize_test_data_cleaner::test_data_validator__test_validate_missing_required",
+    "normalize_test_data_cleaner::test_data_validator__test_validate_wrong_type",
+    "normalize_data_cleaner::test_data_validator_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|DataValidator.check_data_types|672",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::DataValidator::check_data_types"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_validator__test_check_data_types",
+    "normalize_data_cleaner::test_data_validator_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|class|MissingValueHandler|719",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::MissingValueHandler"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_identify_missing_values",
+    "normalize_data_cleaner::test_missing_value_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|MissingValueHandler.identify_missing_values|757",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::MissingValueHandler::identify_missing_values"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_identify_missing_values",
+    "normalize_data_cleaner::test_missing_value_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|MissingValueHandler.handle_missing_values|801",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::MissingValueHandler::handle_missing_values"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_handle_missing_remove",
+    "normalize_test_data_cleaner::test_missing_value_handler__test_handle_missing_fill",
+    "normalize_data_cleaner::test_missing_value_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/data_cleaner.py|method|MissingValueHandler.impute_values|885",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/data_cleaner.rs::MissingValueHandler::impute_values"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_handle_missing_impute_mean",
+    "normalize_data_cleaner::test_missing_value_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs",
+    "semantica-rs/crates/sem-normalize/src/datetime.rs",
+    "semantica-rs/crates/sem-normalize/src/dateutil.rs",
+    "semantica-rs/crates/sem-normalize/src/zoneinfo.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs",
+    "semantica-rs/crates/sem-normalize/src/datetime.rs",
+    "semantica-rs/crates/sem-normalize/src/dateutil.rs",
+    "semantica-rs/crates/sem-normalize/src/zoneinfo.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|class|DateNormalizer|53",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::DateNormalizer"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_date_normalizer__test_normalize_date_iso",
+    "normalize_date_normalizer::test_normalize_date_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|DateNormalizer.normalize_date|102",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::DateNormalizer::normalize_date"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_date_normalizer__test_normalize_date_iso",
+    "normalize_test_date_normalizer::test_date_normalizer__test_normalize_date_relative",
+    "normalize_test_date_normalizer::test_date_normalizer__test_normalize_timezone",
+    "normalize_date_normalizer::test_normalize_date_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|DateNormalizer.normalize_time|164",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::DateNormalizer::normalize_time"
+   ],
+   "tests": [
+    "normalize_date_normalizer::test_normalize_time_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|DateNormalizer.process_relative_date|196",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::DateNormalizer::process_relative_date"
+   ],
+   "tests": [
+    "normalize_date_normalizer::test_relative_dates_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|DateNormalizer.parse_temporal_expression|218",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::DateNormalizer::parse_temporal_expression"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_date_normalizer__test_parse_temporal_expression",
+    "normalize_date_normalizer::test_temporal_expressions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|class|TimeZoneNormalizer|242",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TimeZoneNormalizer"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_time_zone_normalizer__test_normalize_timezone_obj",
+    "normalize_date_normalizer::test_time_zone_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|TimeZoneNormalizer.normalize_timezone|277",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TimeZoneNormalizer::normalize_timezone"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_time_zone_normalizer__test_normalize_timezone_obj",
+    "normalize_date_normalizer::test_time_zone_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|TimeZoneNormalizer.convert_to_utc|305",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TimeZoneNormalizer::convert_to_utc"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_date_normalizer__test_normalize_timezone",
+    "normalize_date_normalizer::test_time_zone_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|TimeZoneNormalizer.handle_dst_transitions|331",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TimeZoneNormalizer::handle_dst_transitions"
+   ],
+   "tests": [
+    "normalize_date_normalizer::test_time_zone_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|class|RelativeDateProcessor|350",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::RelativeDateProcessor"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_relative_date_processor__test_process_relative_expression",
+    "normalize_date_normalizer::test_relative_dates_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|RelativeDateProcessor.process_relative_expression|391",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::RelativeDateProcessor::process_relative_expression"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_relative_date_processor__test_process_relative_expression",
+    "normalize_date_normalizer::test_relative_dates_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|RelativeDateProcessor.calculate_date_offset|463",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::RelativeDateProcessor::calculate_date_offset"
+   ],
+   "tests": [
+    "normalize_date_normalizer::test_relative_dates_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|RelativeDateProcessor.handle_relative_terms|482",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::RelativeDateProcessor::handle_relative_terms"
+   ],
+   "tests": [
+    "normalize_date_normalizer::test_relative_dates_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|class|TemporalExpressionParser|499",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TemporalExpressionParser"
+   ],
+   "tests": [
+    "normalize_date_normalizer::test_temporal_expressions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|TemporalExpressionParser.parse_temporal_expression|532",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TemporalExpressionParser::parse_temporal_expression"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_date_normalizer__test_parse_temporal_expression",
+    "normalize_date_normalizer::test_temporal_expressions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|TemporalExpressionParser.extract_date_components|570",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TemporalExpressionParser::extract_date_components"
+   ],
+   "tests": [
+    "normalize_date_normalizer::test_temporal_expressions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|TemporalExpressionParser.extract_time_components|603",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TemporalExpressionParser::extract_time_components"
+   ],
+   "tests": [
+    "normalize_date_normalizer::test_temporal_expressions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/date_normalizer.py|method|TemporalExpressionParser.process_temporal_ranges|636",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/date_normalizer.rs::TemporalExpressionParser::process_temporal_ranges"
+   ],
+   "tests": [
+    "normalize_date_normalizer::test_temporal_expressions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs",
+    "semantica-rs/crates/sem-normalize/src/chardet.rs",
+    "semantica-rs/crates/sem-normalize/src/codecs.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs",
+    "semantica-rs/crates/sem-normalize/src/chardet.rs",
+    "semantica-rs/crates/sem-normalize/src/codecs.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|class|EncodingHandler|40",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs::EncodingHandler"
+   ],
+   "tests": [
+    "normalize_test_encoding_handler::test_encoding_handler__test_detect_encoding",
+    "normalize_encoding_handler::test_configuration_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|method|EncodingHandler.detect|91",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs::EncodingHandler::detect"
+   ],
+   "tests": [
+    "normalize_test_encoding_handler::test_encoding_handler__test_detect_encoding",
+    "normalize_encoding_handler::test_detect_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|method|EncodingHandler.detect_file|125",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs::EncodingHandler::detect_file"
+   ],
+   "tests": [
+    "normalize_encoding_handler::test_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|method|EncodingHandler.convert_to_utf8|162",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs::EncodingHandler::convert_to_utf8"
+   ],
+   "tests": [
+    "normalize_test_encoding_handler::test_encoding_handler__test_convert_to_utf8",
+    "normalize_encoding_handler::test_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|method|EncodingHandler.convert_file_to_utf8|208",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs::EncodingHandler::convert_file_to_utf8"
+   ],
+   "tests": [
+    "normalize_encoding_handler::test_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|method|EncodingHandler.remove_bom|273",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs::EncodingHandler::remove_bom"
+   ],
+   "tests": [
+    "normalize_test_encoding_handler::test_encoding_handler__test_remove_bom",
+    "normalize_encoding_handler::test_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|method|EncodingHandler.handle_encoding_error|304",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs::EncodingHandler::handle_encoding_error"
+   ],
+   "tests": [
+    "normalize_encoding_handler::test_handle_encoding_error_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/encoding_handler.py|method|EncodingHandler.validate_encoding|341",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/encoding_handler.rs::EncodingHandler::validate_encoding"
+   ],
+   "tests": [
+    "normalize_test_encoding_handler::test_encoding_handler__test_validate_encoding",
+    "normalize_encoding_handler::test_conversions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|class|EntityNormalizer|40",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityNormalizer"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_normalize_entity_basic",
+    "normalize_entity_normalizer::test_entity_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|EntityNormalizer.normalize_entity|89",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityNormalizer::normalize_entity"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_normalize_entity_basic",
+    "normalize_entity_normalizer::test_entity_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|EntityNormalizer.resolve_aliases|144",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityNormalizer::resolve_aliases"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_resolve_aliases",
+    "normalize_entity_normalizer::test_entity_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|EntityNormalizer.disambiguate_entity|169",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityNormalizer::disambiguate_entity"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_disambiguate_entity",
+    "normalize_entity_normalizer::test_entity_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|EntityNormalizer.link_entities|198",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityNormalizer::link_entities"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_link_entities",
+    "normalize_entity_normalizer::test_entity_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|class|AliasResolver|229",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::AliasResolver"
+   ],
+   "tests": [
+    "normalize_entity_normalizer::test_alias_resolver_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|AliasResolver.resolve_aliases|263",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::AliasResolver::resolve_aliases"
+   ],
+   "tests": [
+    "normalize_entity_normalizer::test_alias_resolver_matches_oracle",
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_resolve_aliases"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|AliasResolver.map_variants|291",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::AliasResolver::map_variants"
+   ],
+   "tests": [
+    "normalize_entity_normalizer::test_alias_resolver_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|AliasResolver.handle_cultural_variations|309",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::AliasResolver::handle_cultural_variations"
+   ],
+   "tests": [
+    "normalize_entity_normalizer::test_alias_resolver_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|class|EntityDisambiguator|329",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityDisambiguator"
+   ],
+   "tests": [
+    "normalize_entity_normalizer::test_entity_disambiguator_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|EntityDisambiguator.disambiguate|362",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityDisambiguator::disambiguate"
+   ],
+   "tests": [
+    "normalize_entity_normalizer::test_entity_disambiguator_matches_oracle",
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_disambiguate_entity"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|EntityDisambiguator.classify_entity_type|393",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityDisambiguator::classify_entity_type"
+   ],
+   "tests": [
+    "normalize_entity_normalizer::test_entity_disambiguator_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|EntityDisambiguator.calculate_confidence|421",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::EntityDisambiguator::calculate_confidence"
+   ],
+   "tests": [
+    "normalize_entity_normalizer::test_entity_disambiguator_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|class|NameVariantHandler|442",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::NameVariantHandler"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_name_variant_handler__test_normalize_name_format",
+    "normalize_entity_normalizer::test_name_variant_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|NameVariantHandler.process_variants|481",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::NameVariantHandler::process_variants"
+   ],
+   "tests": [
+    "normalize_entity_normalizer::test_name_variant_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|NameVariantHandler.normalize_name_format|504",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::NameVariantHandler::normalize_name_format"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_name_variant_handler__test_normalize_name_format",
+    "normalize_entity_normalizer::test_name_variant_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/entity_normalizer.py|method|NameVariantHandler.handle_titles_and_honorifics|543",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/entity_normalizer.rs::NameVariantHandler::handle_titles_and_honorifics"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_name_variant_handler__test_handle_titles",
+    "normalize_entity_normalizer::test_name_variant_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|class|LanguageDetector|45",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs::LanguageDetector"
+   ],
+   "tests": [
+    "normalize_test_language_detector::test_language_detector__test_detect_short_text",
+    "normalize_language_detector::test_detector_without_langdetect_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|method|LanguageDetector.detect|97",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs::LanguageDetector::detect"
+   ],
+   "tests": [
+    "normalize_test_language_detector::test_language_detector__test_detect_language",
+    "normalize_test_language_detector::test_language_detector__test_detect_short_text",
+    "normalize_language_detector::test_detector_without_langdetect_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|method|LanguageDetector.detect_with_confidence|133",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs::LanguageDetector::detect_with_confidence"
+   ],
+   "tests": [
+    "normalize_test_language_detector::test_language_detector__test_detect_with_confidence",
+    "normalize_language_detector::test_detector_without_langdetect_matches_oracle",
+    "normalize_language_detector::test_backend_results_flow_through_like_langdetect"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|method|LanguageDetector.detect_multiple|175",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs::LanguageDetector::detect_multiple"
+   ],
+   "tests": [
+    "normalize_language_detector::test_detector_without_langdetect_matches_oracle",
+    "normalize_language_detector::test_backend_results_flow_through_like_langdetect"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|method|LanguageDetector.detect_batch|214",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs::LanguageDetector::detect_batch"
+   ],
+   "tests": [
+    "normalize_language_detector::test_detector_without_langdetect_matches_oracle",
+    "normalize_language_detector::test_whatlang_backend_gives_the_pinned_guesses"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|method|LanguageDetector.detect_batch_with_confidence|230",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs::LanguageDetector::detect_batch_with_confidence"
+   ],
+   "tests": [
+    "normalize_language_detector::test_detector_without_langdetect_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|method|LanguageDetector.is_language|248",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs::LanguageDetector::is_language"
+   ],
+   "tests": [
+    "normalize_language_detector::test_detector_without_langdetect_matches_oracle",
+    "normalize_language_detector::test_backend_results_flow_through_like_langdetect"
+   ]
+  },
+  {
+   "id": "semantica/normalize/language_detector.py|method|LanguageDetector.get_language_name|278",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/language_detector.rs::LanguageDetector::get_language_name"
+   ],
+   "tests": [
+    "normalize_test_language_detector::test_language_detector__test_get_language_name",
+    "normalize_language_detector::test_get_language_name_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|normalize_text|142",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_text"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_normalize_text_integration",
+    "normalize_methods::test_text_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|clean_text|190",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::clean_text"
+   ],
+   "tests": [
+    "normalize_methods::test_text_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|normalize_entity|234",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_entity"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_normalize_entity_integration",
+    "normalize_methods::test_entity_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|resolve_aliases|286",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::resolve_aliases"
+   ],
+   "tests": [
+    "normalize_methods::test_entity_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|disambiguate_entity|333",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::disambiguate_entity"
+   ],
+   "tests": [
+    "normalize_methods::test_entity_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|normalize_date|378",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_date"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_normalize_date_integration",
+    "normalize_methods::test_date_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|normalize_time|435",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_time"
+   ],
+   "tests": [
+    "normalize_methods::test_date_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|normalize_number|474",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_number"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_normalize_number_integration",
+    "normalize_methods::test_number_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|normalize_quantity|520",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::normalize_quantity"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_normalize_number_integration",
+    "normalize_methods::test_number_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|clean_data|564",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::clean_data"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_clean_data_integration",
+    "normalize_methods::test_data_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|detect_duplicates|628",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::detect_duplicates"
+   ],
+   "tests": [
+    "normalize_methods::test_data_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|detect_language|677",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::detect_language"
+   ],
+   "tests": [
+    "normalize_methods::test_language_and_encoding_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|handle_encoding|726",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::handle_encoding"
+   ],
+   "tests": [
+    "normalize_methods::test_language_and_encoding_functions_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|get_normalize_method|794",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::get_normalize_method"
+   ],
+   "tests": [
+    "normalize_methods::test_registry_functions_match_oracle",
+    "normalize_registry::test_registry_trace_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/methods.py|function|list_available_methods|799",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/methods.rs::list_available_methods"
+   ],
+   "tests": [
+    "normalize_methods::test_registry_functions_match_oracle",
+    "normalize_registry::test_registry_trace_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/normalize_provenance.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/normalize_provenance.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/normalize_provenance.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/normalize_provenance.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/normalize_provenance.py|class|NormalizerWithProvenance|19",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/normalize_provenance.rs::NormalizerWithProvenance"
+   ],
+   "tests": [
+    "normalize_normalize_provenance::test_constructor_fails_like_the_original",
+    "normalize_normalize_provenance::test_normalize_tracks_provenance",
+    "normalize_normalize_provenance::test_with_manager_records_into_the_given_manager"
+   ]
+  },
+  {
+   "id": "semantica/normalize/normalize_provenance.py|method|NormalizerWithProvenance.normalize|44",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/normalize_provenance.rs::NormalizerWithProvenance::normalize"
+   ],
+   "tests": [
+    "normalize_normalize_provenance::test_normalize_tracks_provenance",
+    "normalize_normalize_provenance::test_normalize_without_provenance",
+    "normalize_normalize_provenance::test_failing_normalizer_tracks_nothing"
+   ]
+  },
+  {
+   "id": "semantica/normalize/normalize_provenance.py|python_export|NormalizerWithProvenance|69",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/normalize_provenance.rs::NormalizerWithProvenance"
+   ],
+   "tests": [
+    "normalize_normalize_provenance::test_constructor_fails_like_the_original",
+    "normalize_normalize_provenance::test_normalize_tracks_provenance",
+    "normalize_normalize_provenance::test_with_manager_records_into_the_given_manager"
+   ]
+  },
+  {
+   "id": "semantica/normalize/normalize_usage.md|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/normalize_usage.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|class|NumberNormalizer|41",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::NumberNormalizer"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_number_normalizer__test_normalize_number_string",
+    "normalize_number_normalizer::test_normalize_number_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|NumberNormalizer.normalize_number|91",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::NumberNormalizer::normalize_number"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_number_normalizer__test_normalize_number_string",
+    "normalize_number_normalizer::test_normalize_number_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|NumberNormalizer.normalize_quantity|164",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::NumberNormalizer::normalize_quantity"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_number_normalizer__test_normalize_quantity",
+    "normalize_number_normalizer::test_quantities_units_and_currency_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|NumberNormalizer.convert_units|208",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::NumberNormalizer::convert_units"
+   ],
+   "tests": [
+    "normalize_number_normalizer::test_quantities_units_and_currency_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|NumberNormalizer.process_currency|228",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::NumberNormalizer::process_currency"
+   ],
+   "tests": [
+    "normalize_number_normalizer::test_quantities_units_and_currency_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|class|UnitConverter|253",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::UnitConverter"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_unit_converter__test_convert",
+    "normalize_number_normalizer::test_unit_converter_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|UnitConverter.convert_units|355",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::UnitConverter::convert_units"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_unit_converter__test_convert",
+    "normalize_number_normalizer::test_quantities_units_and_currency_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|UnitConverter.validate_units|390",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::UnitConverter::validate_units"
+   ],
+   "tests": [
+    "normalize_number_normalizer::test_unit_converter_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|UnitConverter.get_conversion_factor|426",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::UnitConverter::get_conversion_factor"
+   ],
+   "tests": [
+    "normalize_number_normalizer::test_unit_converter_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|UnitConverter.normalize_unit|451",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::UnitConverter::normalize_unit"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_unit_converter__test_normalize_unit",
+    "normalize_number_normalizer::test_unit_converter_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|class|CurrencyNormalizer|506",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::CurrencyNormalizer"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_currency_normalizer__test_parse_currency",
+    "normalize_number_normalizer::test_currency_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|CurrencyNormalizer.normalize_currency|574",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::CurrencyNormalizer::normalize_currency"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_currency_normalizer__test_parse_currency",
+    "normalize_test_number_normalizer::test_currency_normalizer__test_currency_codes_match_boundaries_without_matching_words",
+    "normalize_number_normalizer::test_currency_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|CurrencyNormalizer.convert_currency|645",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::CurrencyNormalizer::convert_currency"
+   ],
+   "tests": [
+    "normalize_number_normalizer::test_currency_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|CurrencyNormalizer.validate_currency_code|670",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::CurrencyNormalizer::validate_currency_code"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_currency_normalizer__test_symbol_currencies_are_validated_as_supported_codes",
+    "normalize_number_normalizer::test_currency_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|class|ScientificNotationHandler|686",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::ScientificNotationHandler"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_scientific_notation_handler__test_parse_scientific",
+    "normalize_number_normalizer::test_scientific_notation_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|ScientificNotationHandler.parse_scientific_notation|719",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::ScientificNotationHandler::parse_scientific_notation"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_scientific_notation_handler__test_parse_scientific",
+    "normalize_number_normalizer::test_scientific_notation_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|ScientificNotationHandler.convert_to_scientific|742",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::ScientificNotationHandler::convert_to_scientific"
+   ],
+   "tests": [
+    "normalize_number_normalizer::test_scientific_notation_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/number_normalizer.py|method|ScientificNotationHandler.normalize_precision|763",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/number_normalizer.rs::ScientificNotationHandler::normalize_precision"
+   ],
+   "tests": [
+    "normalize_number_normalizer::test_scientific_notation_handler_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/registry.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/registry.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/registry.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/registry.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/registry.py|class|MethodRegistry|46",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/registry.rs::MethodRegistry"
+   ],
+   "tests": [
+    "normalize_registry::test_registry_trace_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/registry.py|method|MethodRegistry.register|60",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/registry.rs::MethodRegistry::register"
+   ],
+   "tests": [
+    "normalize_registry::test_registry_trace_matches_oracle",
+    "normalize_test_integration::test_normalize_integration__test_registry_custom_method"
+   ]
+  },
+  {
+   "id": "semantica/normalize/registry.py|method|MethodRegistry.get|74",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/registry.rs::MethodRegistry::get"
+   ],
+   "tests": [
+    "normalize_registry::test_registry_trace_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/registry.py|method|MethodRegistry.list_all|88",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/registry.rs::MethodRegistry::list_all"
+   ],
+   "tests": [
+    "normalize_registry::test_registry_trace_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/registry.py|method|MethodRegistry.unregister|103",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/registry.rs::MethodRegistry::unregister"
+   ],
+   "tests": [
+    "normalize_registry::test_registry_trace_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/registry.py|method|MethodRegistry.clear|115",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/registry.rs::MethodRegistry::clear"
+   ],
+   "tests": [
+    "normalize_registry::test_registry_trace_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs",
+    "semantica-rs/crates/sem-normalize/src/htmltext.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs",
+    "semantica-rs/crates/sem-normalize/src/htmltext.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|class|TextCleaner|46",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner"
+   ],
+   "tests": [
+    "normalize_test_normalize::test_text_cleaner__test_clean_html",
+    "normalize_text_cleaner::test_clean_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|method|TextCleaner.clean|94",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner::clean"
+   ],
+   "tests": [
+    "normalize_test_normalize::test_text_cleaner__test_clean_html",
+    "normalize_test_normalize::test_text_cleaner__test_clean_whitespace",
+    "normalize_test_normalize::test_text_cleaner__test_clean_unicode",
+    "normalize_text_cleaner::test_clean_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|method|TextCleaner.remove_html|152",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner::remove_html"
+   ],
+   "tests": [
+    "normalize_text_cleaner::test_remove_html_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|method|TextCleaner.normalize_whitespace|198",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner::normalize_whitespace"
+   ],
+   "tests": [
+    "normalize_text_cleaner::test_whitespace_and_unicode_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|method|TextCleaner.normalize_unicode|223",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner::normalize_unicode"
+   ],
+   "tests": [
+    "normalize_text_cleaner::test_whitespace_and_unicode_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|method|TextCleaner.remove_special_chars|250",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner::remove_special_chars"
+   ],
+   "tests": [
+    "normalize_text_cleaner::test_remove_special_chars_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|method|TextCleaner.sanitize|285",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner::sanitize"
+   ],
+   "tests": [
+    "normalize_text_cleaner::test_sanitize_and_trim_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|method|TextCleaner.trim|320",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner::trim"
+   ],
+   "tests": [
+    "normalize_text_cleaner::test_sanitize_and_trim_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_cleaner.py|method|TextCleaner.clean_batch|348",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_cleaner.rs::TextCleaner::clean_batch"
+   ],
+   "tests": [
+    "normalize_text_cleaner::test_clean_batch_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|class|TextNormalizer|42",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::TextNormalizer"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_init",
+    "normalize_text_normalizer::test_normalize_text_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|TextNormalizer.normalize|94",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::TextNormalizer::normalize"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_normalize_overloaded_method",
+    "normalize_text_normalizer::test_normalize_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|TextNormalizer.normalize_text|120",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::TextNormalizer::normalize_text"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_normalize_text_basic",
+    "normalize_test_text_normalizer::test_text_normalizer__test_normalize_delegation",
+    "normalize_text_normalizer::test_normalize_text_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|TextNormalizer.clean_text|198",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::TextNormalizer::clean_text"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_clean_text",
+    "normalize_text_normalizer::test_clean_text_standardize_format_and_batch_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|TextNormalizer.standardize_format|213",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::TextNormalizer::standardize_format"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_standardize_format",
+    "normalize_text_normalizer::test_clean_text_standardize_format_and_batch_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|TextNormalizer.process_batch|239",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::TextNormalizer::process_batch"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_process_batch",
+    "normalize_text_normalizer::test_clean_text_standardize_format_and_batch_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|class|UnicodeNormalizer|256",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::UnicodeNormalizer"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_normalize_unicode_forms",
+    "normalize_text_normalizer::test_unicode_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|UnicodeNormalizer.normalize_unicode|289",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::UnicodeNormalizer::normalize_unicode"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_normalize_unicode_forms",
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_normalize_failure_fallback",
+    "normalize_text_normalizer::test_unicode_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|UnicodeNormalizer.handle_encoding|316",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::UnicodeNormalizer::handle_encoding"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_handle_encoding",
+    "normalize_text_normalizer::test_unicode_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|UnicodeNormalizer.process_special_chars|346",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::UnicodeNormalizer::process_special_chars"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_process_special_chars_replacement",
+    "normalize_text_normalizer::test_unicode_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|class|WhitespaceNormalizer|376",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::WhitespaceNormalizer"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_whitespace_normalizer__test_normalize_whitespace_basic",
+    "normalize_text_normalizer::test_whitespace_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|WhitespaceNormalizer.normalize_whitespace|409",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::WhitespaceNormalizer::normalize_whitespace"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_whitespace_normalizer__test_normalize_whitespace_basic",
+    "normalize_text_normalizer::test_whitespace_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|WhitespaceNormalizer.handle_line_breaks|443",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::WhitespaceNormalizer::handle_line_breaks"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_whitespace_normalizer__test_handle_line_breaks",
+    "normalize_text_normalizer::test_whitespace_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|WhitespaceNormalizer.process_indentation|470",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::WhitespaceNormalizer::process_indentation"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_whitespace_normalizer__test_process_indentation",
+    "normalize_text_normalizer::test_whitespace_normalizer_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|class|SpecialCharacterProcessor|494",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::SpecialCharacterProcessor"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_special_character_processor__test_normalize_punctuation",
+    "normalize_text_normalizer::test_special_character_processor_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|SpecialCharacterProcessor.process_special_chars|526",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::SpecialCharacterProcessor::process_special_chars"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_special_character_processor__test_process_special_chars_integration",
+    "normalize_text_normalizer::test_special_character_processor_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|SpecialCharacterProcessor.normalize_punctuation|552",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::SpecialCharacterProcessor::normalize_punctuation"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_special_character_processor__test_normalize_punctuation",
+    "normalize_text_normalizer::test_special_character_processor_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/normalize/text_normalizer.py|method|SpecialCharacterProcessor.process_diacritics|581",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/src/text_normalizer.rs::SpecialCharacterProcessor::process_diacritics"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_special_character_processor__test_process_diacritics_remove",
+    "normalize_test_text_normalizer::test_special_character_processor__test_process_diacritics_normalize",
+    "normalize_text_normalizer::test_special_character_processor_matches_oracle"
+   ]
+  },
+  {
+   "id": "tests/normalize/__init__.py|original_empty_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/common/mod.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/__init__.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/common/mod.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/__init__.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/common/mod.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/__init__.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/common/mod.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_clean_data_comprehensive|23",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_cleaner__test_clean_data_comprehensive"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_clean_data_fill_missing|45",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_cleaner__test_clean_data_fill_missing"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_detect_exact_duplicates|81",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_detect_exact_duplicates"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_detect_fuzzy_duplicates|95",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_detect_fuzzy_duplicates"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_calculate_similarity|129",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_calculate_similarity"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_resolve_duplicates_keep_first|143",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_resolve_duplicates_keep_first"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_resolve_duplicates_merge|156",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_duplicate_detector__test_resolve_duplicates_merge"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_validate_valid_record|183",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_validator__test_validate_valid_record"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_validate_missing_required|189",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_validator__test_validate_missing_required"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_validate_wrong_type|195",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_validator__test_validate_wrong_type"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_check_data_types|201",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_data_validator__test_check_data_types"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_identify_missing_values|219",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_identify_missing_values"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_handle_missing_remove|225",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_handle_missing_remove"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_handle_missing_fill|233",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_handle_missing_fill"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_handle_missing_impute_mean|242",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_handle_missing_impute_mean"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_handle_missing_impute_median|255",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_handle_missing_impute_median"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_data_cleaner.py|original_test_function|test_handle_missing_impute_zero|265",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_data_cleaner.rs"
+   ],
+   "tests": [
+    "normalize_test_data_cleaner::test_missing_value_handler__test_handle_missing_impute_zero"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_date_normalizer.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_date_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_date_normalizer.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_date_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_date_normalizer.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_date_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_date_normalizer.py|original_test_function|test_normalize_date_iso|16",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_date_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_date_normalizer__test_normalize_date_iso"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_date_normalizer.py|original_test_function|test_normalize_date_relative|26",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_date_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_date_normalizer__test_normalize_date_relative"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_date_normalizer.py|original_test_function|test_normalize_timezone|39",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_date_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_date_normalizer__test_normalize_timezone"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_date_normalizer.py|original_test_function|test_parse_temporal_expression|47",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_date_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_date_normalizer__test_parse_temporal_expression"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_date_normalizer.py|original_test_function|test_normalize_timezone_obj|59",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_date_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_time_zone_normalizer__test_normalize_timezone_obj"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_date_normalizer.py|original_test_function|test_process_relative_expression|73",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_date_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_date_normalizer::test_relative_date_processor__test_process_relative_expression"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_encoding_handler.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_encoding_handler.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_encoding_handler.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_encoding_handler.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_encoding_handler.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_encoding_handler.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_encoding_handler.py|original_test_function|test_detect_encoding|10",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_encoding_handler.rs"
+   ],
+   "tests": [
+    "normalize_test_encoding_handler::test_encoding_handler__test_detect_encoding"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_encoding_handler.py|original_test_function|test_convert_to_utf8|26",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_encoding_handler.rs"
+   ],
+   "tests": [
+    "normalize_test_encoding_handler::test_encoding_handler__test_convert_to_utf8"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_encoding_handler.py|original_test_function|test_remove_bom|34",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_encoding_handler.rs"
+   ],
+   "tests": [
+    "normalize_test_encoding_handler::test_encoding_handler__test_remove_bom"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_encoding_handler.py|original_test_function|test_validate_encoding|43",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_encoding_handler.rs"
+   ],
+   "tests": [
+    "normalize_test_encoding_handler::test_encoding_handler__test_validate_encoding"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_entity_normalizer.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_entity_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_entity_normalizer.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_entity_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_entity_normalizer.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_entity_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_entity_normalizer.py|original_test_function|test_normalize_entity_basic|20",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_entity_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_normalize_entity_basic"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_entity_normalizer.py|original_test_function|test_resolve_aliases|23",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_entity_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_resolve_aliases"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_entity_normalizer.py|original_test_function|test_disambiguate_entity|29",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_entity_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_disambiguate_entity"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_entity_normalizer.py|original_test_function|test_link_entities|35",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_entity_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_entity_normalizer__test_link_entities"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_entity_normalizer.py|original_test_function|test_normalize_name_format|46",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_entity_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_name_variant_handler__test_normalize_name_format"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_entity_normalizer.py|original_test_function|test_handle_titles|50",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_entity_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_entity_normalizer::test_name_variant_handler__test_handle_titles"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|original_test_function|test_normalize_text_integration|13",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_normalize_text_integration"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|original_test_function|test_normalize_date_integration|23",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_normalize_date_integration"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|original_test_function|test_normalize_number_integration|36",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_normalize_number_integration"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|original_test_function|test_normalize_entity_integration|46",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_normalize_entity_integration"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|original_test_function|test_clean_data_integration|51",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_clean_data_integration"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|original_test_function|test_config_override|67",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_config_override"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_integration.py|original_test_function|test_registry_custom_method|76",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_integration.rs"
+   ],
+   "tests": [
+    "normalize_test_integration::test_normalize_integration__test_registry_custom_method"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_language_detector.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_language_detector.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_language_detector.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_language_detector.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_language_detector.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_language_detector.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_language_detector.py|original_test_function|test_detect_language|14",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_language_detector.rs"
+   ],
+   "tests": [
+    "normalize_test_language_detector::test_language_detector__test_detect_language"
+   ],
+   "original_result": "skipped"
+  },
+  {
+   "id": "tests/normalize/test_language_detector.py|original_test_function|test_detect_short_text|28",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_language_detector.rs"
+   ],
+   "tests": [
+    "normalize_test_language_detector::test_language_detector__test_detect_short_text"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_language_detector.py|original_test_function|test_detect_with_confidence|33",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_language_detector.rs"
+   ],
+   "tests": [
+    "normalize_test_language_detector::test_language_detector__test_detect_with_confidence"
+   ],
+   "original_result": "skipped"
+  },
+  {
+   "id": "tests/normalize/test_language_detector.py|original_test_function|test_get_language_name|40",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_language_detector.rs"
+   ],
+   "tests": [
+    "normalize_test_language_detector::test_language_detector__test_get_language_name"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|original_test_function|test_normalize_text_case|10",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ],
+   "tests": [
+    "normalize_test_normalize::test_text_normalizer__test_normalize_text_case"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|original_test_function|test_normalize_unicode_integration|17",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ],
+   "tests": [
+    "normalize_test_normalize::test_text_normalizer__test_normalize_unicode_integration"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|original_test_function|test_process_special_chars_integration|24",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ],
+   "tests": [
+    "normalize_test_normalize::test_text_normalizer__test_process_special_chars_integration"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|original_test_function|test_component_access|30",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ],
+   "tests": [
+    "normalize_test_normalize::test_text_normalizer__test_component_access"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|original_test_function|test_clean_html|41",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ],
+   "tests": [
+    "normalize_test_normalize::test_text_cleaner__test_clean_html"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|original_test_function|test_clean_whitespace|46",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ],
+   "tests": [
+    "normalize_test_normalize::test_text_cleaner__test_clean_whitespace"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_normalize.py|original_test_function|test_clean_unicode|51",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_normalize.rs"
+   ],
+   "tests": [
+    "normalize_test_normalize::test_text_cleaner__test_clean_unicode"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_test_function|test_normalize_number_string|13",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_number_normalizer__test_normalize_number_string"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_test_function|test_normalize_quantity|16",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_number_normalizer__test_normalize_quantity"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_test_function|test_convert|29",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_unit_converter__test_convert"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_test_function|test_normalize_unit|35",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_unit_converter__test_normalize_unit"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_test_function|test_parse_currency|43",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_currency_normalizer__test_parse_currency"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_test_function|test_symbol_currencies_are_validated_as_supported_codes|52",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_currency_normalizer__test_symbol_currencies_are_validated_as_supported_codes"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_test_function|test_currency_codes_match_boundaries_without_matching_words|58",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_currency_normalizer__test_currency_codes_match_boundaries_without_matching_words"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_number_normalizer.py|original_test_function|test_parse_scientific|74",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_number_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_number_normalizer::test_scientific_notation_handler__test_parse_scientific"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_init|48",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_init"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_text_basic|57",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_normalize_text_basic"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_empty_string|70",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_normalize_empty_string"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_case_options|75",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_normalize_case_options"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_delegation|96",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_normalize_delegation"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_clean_text|128",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_clean_text"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_standardize_format|137",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_standardize_format"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_process_batch|150",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_process_batch"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_overloaded_method|156",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_normalize_overloaded_method"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_error_handling|176",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_text_normalizer__test_normalize_error_handling"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_unicode_forms|198",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_normalize_unicode_forms"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_none|207",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_normalize_none"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_failure_fallback|213",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_normalize_failure_fallback"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_handle_encoding|220",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_handle_encoding"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_process_special_chars_replacement|240",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_unicode_normalizer__test_process_special_chars_replacement"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_whitespace_basic|253",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_whitespace_normalizer__test_normalize_whitespace_basic"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_handle_line_breaks|259",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_whitespace_normalizer__test_handle_line_breaks"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_process_indentation|270",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_whitespace_normalizer__test_process_indentation"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_normalize_punctuation|288",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_special_character_processor__test_normalize_punctuation"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_process_diacritics_remove|296",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_special_character_processor__test_process_diacritics_remove"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_process_diacritics_normalize|305",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_special_character_processor__test_process_diacritics_normalize"
+   ]
+  },
+  {
+   "id": "tests/normalize/test_text_normalizer.py|original_test_function|test_process_special_chars_integration|314",
+   "disposition": "ported_test",
+   "rust": [
+    "semantica-rs/crates/sem-normalize/tests/normalize_test_text_normalizer.rs"
+   ],
+   "tests": [
+    "normalize_test_text_normalizer::test_special_character_processor__test_process_special_chars_integration"
+   ]
+  }
+ ]
+}

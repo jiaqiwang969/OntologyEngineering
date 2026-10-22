@@ -1,1 +1,0 @@
-"""Bounded generic mechanism diagnostics."""

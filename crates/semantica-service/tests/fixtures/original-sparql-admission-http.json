@@ -1,0 +1,587 @@
+{
+  "original_source": "var/explorer-sparql-original-review-01/ORIGINAL-HTTP-OBSERVATIONS-02.json",
+  "original_sha256": "4c974e92b7ec31f8237fc1f99c0c04e80d01ffd549c91eb6f86af02858d9f152",
+  "cases": [
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/hacked> }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/hacked> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE DATA { <http://semantica.local/entity/python> a <http://semantica.local/entity/language> }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DELETE DATA { <http://semantica.local/entity/python> a <http://semantica.local/entity/language> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DELETE WHERE { ?s ?p ?o }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DELETE WHERE { ?s ?p ?o }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[DROP GRAPH <http://example.org/g>]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DROP GRAPH <http://example.org/g>"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "CLEAR ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CLEAR GRAPH <http://example.org/g>]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "CLEAR GRAPH <http://example.org/g>"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[LOAD <http://example.org/data.ttl>]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "LOAD <http://example.org/data.ttl>"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[CREATE GRAPH <http://example.org/g>]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "CREATE GRAPH <http://example.org/g>"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[MODIFY <http://example.org/g> DELETE { ?s ?p ?o } WHERE { ?s ?p ?o }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "MODIFY <http://example.org/g> DELETE { ?s ?p ?o } WHERE { ?s ?p ?o }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": ""
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[   ]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "   "
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[not a sparql query at all]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "not a sparql query at all"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_write_and_non_read_queries_are_rejected_by_allowlist[# comment\\nDROP ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "# comment\nDROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_parser",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s ?p ?o } ; DROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": false,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[DROP ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "DROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/y> }]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "INSERT DATA { <http://semantica.local/entity/x> a <http://semantica.local/entity/y> }"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[# comment\\nDROP ALL]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "# comment\nDROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_allowlist_rejected_query_never_touches_the_graph[]",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": ""
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    },
+    {
+      "test_id": "workspace/tests/explorer/test_sparql_route.py::test_multi_statement_injection_is_rejected_by_forbidden_keyword_check",
+      "method": "POST",
+      "path": "/api/sparql",
+      "request": {
+        "query": "SELECT ?s WHERE { ?s ?p ?o } ; DROP ALL"
+      },
+      "status": 200,
+      "response": {
+        "columns": [],
+        "rows": [],
+        "total": 0,
+        "truncated": false,
+        "error": "Only SELECT, ASK, CONSTRUCT, and DESCRIBE queries are permitted.",
+        "error_line": null,
+        "error_column": null
+      },
+      "limits": {
+        "_SPARQL_MAX_ROWS": 5000,
+        "_SPARQL_TIMEOUT_S": 30,
+        "_SPARQL_MAX_CONCURRENT": 4,
+        "_SPARQL_MAX_GRAPH_NODES": 50000,
+        "_SPARQL_MAX_QUERY_LEN": 10000
+      },
+      "original_test_mocks": {
+        "graph_builder": true,
+        "async_wait_for": false
+      }
+    }
+  ],
+  "scope": "All twenty original captured read-only admission responses; mocked graph-builder cases retain that identity. No parser/timeout/capacity compatibility claim."
+}

@@ -1,0 +1,232 @@
+{
+  "schema": "semantica.shacl-deactivation-fixtures/1",
+  "oracle": "W3C SHACL Recommendation 2017-07-20 sections 2.1.6, 5.2, 5.3; independent synthetic input fixed before runtime repair. Existing local profile parameter errors remain explicit.",
+  "source": "https://www.w3.org/TR/2017/REC-shacl-20170720/#sparql-constraints-validation",
+  "scope": "Constraint activation only; no full SHACL, legacy-library parity or engineering adoption claim.",
+  "cases": [
+    {
+      "id": "constraint_true",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated true; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "conforms": true,
+        "findings": []
+      }
+    },
+    {
+      "id": "constraint_one",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated \"1\"^^xsd:boolean; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "conforms": true,
+        "findings": []
+      }
+    },
+    {
+      "id": "constraint_false",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated false; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:part>",
+            "path": null,
+            "component": "sparql",
+            "value": "\"12\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+            "message": "force-limit",
+            "source_shape": "<urn:ForceShape>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#SPARQLConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "value": "force-limit",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null,
+                "kind": "literal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "constraint_zero",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated \"0\"^^xsd:boolean; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:part>",
+            "path": null,
+            "component": "sparql",
+            "value": "\"12\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+            "message": "force-limit",
+            "source_shape": "<urn:ForceShape>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#SPARQLConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "value": "force-limit",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null,
+                "kind": "literal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "constraint_absent",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:part>",
+            "path": null,
+            "component": "sparql",
+            "value": "\"12\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+            "message": "force-limit",
+            "source_shape": "<urn:ForceShape>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#SPARQLConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "value": "force-limit",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null,
+                "kind": "literal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "parent_deactivated",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:deactivated true; sh:sparql <urn:C> .\n<urn:C> sh:deactivated false; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "conforms": true,
+        "findings": []
+      }
+    },
+    {
+      "id": "sibling_constraint_retained",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:Active>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated true; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n<urn:Active> sh:message \"active-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:part>",
+            "path": null,
+            "component": "sparql",
+            "value": "\"12\"^^<http://www.w3.org/2001/XMLSchema#integer>",
+            "message": "active-limit",
+            "source_shape": "<urn:ForceShape>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#SPARQLConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": [
+              {
+                "value": "active-limit",
+                "datatype": "http://www.w3.org/2001/XMLSchema#string",
+                "language": null,
+                "kind": "literal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "core_constraint_retained",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:nodeKind sh:Literal; sh:sparql <urn:C> .\n<urn:C> sh:deactivated true; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "conforms": false,
+        "findings": [
+          {
+            "focus": "<urn:part>",
+            "path": null,
+            "component": "nodeKind",
+            "value": "<urn:part>",
+            "message": "RDF node kind differs",
+            "source_shape": "<urn:ForceShape>",
+            "source_constraint_component": "http://www.w3.org/ns/shacl#NodeKindConstraintComponent",
+            "severity": "http://www.w3.org/ns/shacl#Violation",
+            "messages": []
+          }
+        ]
+      }
+    },
+    {
+      "id": "reject_string",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated \"true\"; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "error": "shacl_boolean_parameter_invalid:deactivated"
+      }
+    },
+    {
+      "id": "reject_invalid_boolean",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated \"maybe\"^^xsd:boolean; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "error": "shacl_boolean_parameter_invalid:deactivated"
+      }
+    },
+    {
+      "id": "reject_multiple",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated true, false; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "error": "shacl_parameter_cardinality:deactivated"
+      }
+    },
+    {
+      "id": "reject_invalid_without_target",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:C> sh:deactivated \"true\"; sh:message \"force-limit\"; sh:select \"SELECT $this ?value WHERE { $this <urn:force> ?value . FILTER(?value > 10) }\" .\n",
+      "expected": {
+        "error": "shacl_boolean_parameter_invalid:deactivated"
+      }
+    },
+    {
+      "id": "active_invalid_query",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated false; sh:select \"not a query\" .",
+      "expected": {
+        "error": null
+      }
+    },
+    {
+      "id": "reject_inactive_missing_select",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated true .\n",
+      "expected": {
+        "error": "shacl_sparql_select_missing"
+      }
+    },
+    {
+      "id": "reject_inactive_multiple_select",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated true; sh:select \"SELECT $this WHERE {}\", \"SELECT $this WHERE { FILTER(false) }\" .\n",
+      "expected": {
+        "error": "shacl_parameter_cardinality:select"
+      }
+    },
+    {
+      "id": "reject_inactive_iri_select",
+      "data": "<urn:part> <urn:force> 12 .\n",
+      "shapes": "@prefix sh: <http://www.w3.org/ns/shacl#> . @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n<urn:ForceShape> a sh:NodeShape; sh:targetNode <urn:part>; sh:sparql <urn:C> .\n<urn:C> sh:deactivated true; sh:select <urn:not-literal> .\n",
+      "expected": {
+        "error": "shacl_parameter_must_be_literal"
+      }
+    }
+  ]
+}

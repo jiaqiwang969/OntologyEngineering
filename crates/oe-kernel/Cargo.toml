@@ -1,0 +1,32 @@
+[package]
+name = "oe-kernel"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+semantica-contracts.workspace = true
+semantica-runtime = { workspace = true, features = ["source-session-local-v1"] }
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+oe-core.workspace = true
+oe-wire.workspace = true
+oe-semantic.workspace = true
+oe-contracts = { path = "../oe-contracts" }
+oe-knowledge.workspace = true
+oe-cad.workspace = true
+oxigraph = { version = "=0.5.11", default-features = false }
+oxsdatatypes = "=0.2.3"
+spargebra = "=0.4.7"
+regex = "1.12"
+zip.workspace = true
+
+[dev-dependencies]
+libc.workspace = true
+base64.workspace = true
+tempfile.workspace = true
+
+[lints]
+workspace = true

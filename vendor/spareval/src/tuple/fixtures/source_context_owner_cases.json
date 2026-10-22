@@ -1,0 +1,1034 @@
+{
+  "schema": "spareval.source-context-owner-receiving/1",
+  "source_record_sha256": "b9aeb9841ea106723b9d9249305f4b6533efac01b7165a61838d89b86a24b75c",
+  "classification": "source-derived primitives; consumer active boundaries remain separate until actual integration receiving",
+  "source_file_sha256": {
+    "evaluate": "991944f756398773c4ddf0da0bf5a3c2285f2a67140c9976a8a806ba5d8402be",
+    "sparql": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f",
+    "operators": "349d36859ec3dca3b56e33d43786d034a33f3c1a1ba1eef71a13bf95a0809437"
+  },
+  "canonical_payload_sha256": "4d51d1eabbbebd74e7fb62a20b9fc7b76bb277d3c677a60a85587ac7798f0966",
+  "payload": {
+    "encoding": {
+      "ordered_bindings": "Every bindings/local array is ordered. String values refer to the source_object entries below; JSON null is ExplicitNone. Absent entries are missing bindings.",
+      "identity_labels": "C/D/etc denote actual shared/new owner identities, never invented ID equality standing in for real shared storage.",
+      "source_values": {
+        "A": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:A",
+          "source_object": "A"
+        },
+        "A_equal_new": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:A",
+          "source_object": "A_equal_new"
+        },
+        "A_equal_new_2": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:A",
+          "source_object": "A_equal_new_2"
+        },
+        "B": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:B",
+          "source_object": "B"
+        },
+        "I": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:I",
+          "source_object": "I"
+        },
+        "J": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:J",
+          "source_object": "J"
+        },
+        "L": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:L",
+          "source_object": "L"
+        },
+        "R": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:R",
+          "source_object": "R"
+        },
+        "N": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:N",
+          "source_object": "N"
+        },
+        "Q": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:Q",
+          "source_object": "Q"
+        },
+        "Y": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:Y",
+          "source_object": "Y"
+        },
+        "Z": {
+          "kind": "NamedNode",
+          "iri": "urn:context-owner:Z",
+          "source_object": "Z"
+        }
+      },
+      "expected_count": {
+        "source_derived_primitive_cases": 13,
+        "active_consumer_boundary_contracts": 2
+      }
+    },
+    "source_contract": {
+      "row": "FrozenBindings has an immutable local mapping snapshot and a reference to its real QueryContext owner. Local domain/hash/equality ignore owner bindings.",
+      "lookup": "Frozen lookup reads local then owner.initBindings only. QueryContext lookup reads current context.bindings and maps missing to None.",
+      "owner_lifetime": "A frozen row holds the same live owner even if owner.bindings subsequently receives a new assignment; immutable row local cells do not change.",
+      "clone_thaw": "QueryContext.clone/thaw choose supplied mapping only if locally nonempty, else the receiver current bindings; constructor then updates immutable initial in place and appends only new initial keys. A new QueryContext is created.",
+      "row_producers": "project/remember/forget create fresh row identity preserving self.ctx. merge preserves left ctx and local right overwrite order. QueryContext.solution creates a fresh row with self ctx. Group outputs use the aggregate call ctx. VALUES push creates a fresh ctx per attempted row.",
+      "opaque_value_objects": "Copying binding cells preserves RDF cache/source payload object identity, None and original ErrorValue identity; copying a frozen row for transport preserves its row identity/hash cache.",
+      "immutable_initial_scope": "Sealed execution has one immutable initial mapping shared across owners; raw API CO11 explicitly distinguishes receiver and frozen owners without broadening sealed initial mutation support.",
+      "excluded": "Graph switching/dataset/time/prologue/bnodes are not qualified by this binding owner baseline. Context token/name alone is not evidence of complete QueryContext parity."
+    },
+    "primitive_cases": [
+      {
+        "id": "CO01",
+        "title": "Frozen lookup sees local then initial, never owner bindings",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:180-193",
+          "sparql.py:386-395"
+        ],
+        "input": {
+          "owner": "C",
+          "owner_constructor_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "initial": [
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "frozen_local": []
+        },
+        "operations": [
+          "construct C using given bindings and initial",
+          "construct F=FrozenBindings(C,[])",
+          "read F[x], F[i], and C[x]"
+        ],
+        "expected": {
+          "owner_bindings": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "frozen_local": [],
+          "frozen_x": "KeyError",
+          "frozen_i": "I",
+          "context_x": "A",
+          "frozen_owner": "same C"
+        }
+      },
+      {
+        "id": "CO02",
+        "title": "Empty frozen thaw falls back to its owner, not just initial",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:258-262",
+          "sparql.py:306-317",
+          "sparql.py:430-436",
+          "operators.py:587"
+        ],
+        "input": {
+          "owner": "C",
+          "owner_constructor_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "initial": [
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "frozen_local": []
+        },
+        "operations": [
+          "F=FrozenBindings(C,[])",
+          "D=F.ctx.thaw(F)"
+        ],
+        "expected": {
+          "D_bindings": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "D_owner": "new distinct from C",
+          "D_initial": "same initial mapping object as C",
+          "C_bindings_unchanged": true
+        }
+      },
+      {
+        "id": "CO03",
+        "title": "A local ExplicitNone makes frozen nonempty for thaw",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:126-130",
+          "sparql.py:306-314"
+        ],
+        "input": {
+          "owner": "C",
+          "owner_constructor_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "initial": [
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "frozen_local": [
+            [
+              "z",
+              null
+            ]
+          ]
+        },
+        "operations": [
+          "F=FrozenBindings(C,[[z,None]])",
+          "D=C.thaw(F)"
+        ],
+        "expected": {
+          "D_bindings": [
+            [
+              "z",
+              null
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "x_present": false,
+          "D_initial": "same initial mapping object as C",
+          "D_owner": "new distinct from C"
+        }
+      },
+      {
+        "id": "CO04",
+        "title": "Solution empty selector and Frozen project empty have different domains but retained owner",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:195-202",
+          "sparql.py:403-413"
+        ],
+        "input": {
+          "owner": "C",
+          "owner_constructor_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "initial": [
+            [
+              "i",
+              "I"
+            ]
+          ]
+        },
+        "operations": [
+          "F=C.solution([])",
+          "H=transport clone of F",
+          "P=F.project([])",
+          "Q=F.project([x,i])"
+        ],
+        "expected": {
+          "F_local": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "H_local": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "P_local": [],
+          "Q_local": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "owners": "F,H,P,Q all refer to the same C",
+          "row_identity": "H same frozen object as F; P and Q fresh and distinct from F and each other",
+          "new_frozen_raw_hash_cache": "F,P,Q initially None",
+          "cells": "All retained A/I references keep the input object identity"
+        }
+      },
+      {
+        "id": "CO05",
+        "title": "Forget and remember preserve self owner even after emptying domain",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:214-243"
+        ],
+        "input": {
+          "before_owner": "B",
+          "before_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "self_owner": "C",
+          "owner_constructor_bindings": [
+            [
+              "q",
+              "Q"
+            ]
+          ],
+          "initial": [
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "frozen_local": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "z",
+              "Z"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ]
+        },
+        "operations": [
+          "F=FrozenBindings(C, given local)",
+          "P=F.forget(B,_except=[])",
+          "R=F.remember([])",
+          "D=R.ctx.thaw(R)"
+        ],
+        "expected": {
+          "P_local": [
+            [
+              "z",
+              "Z"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "R_local": [],
+          "P_owner": "same C",
+          "R_owner": "same C",
+          "P_R_identity": "new frozen objects, not F and not each other",
+          "D_bindings": [
+            [
+              "q",
+              "Q"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "D_owner": "new distinct from C"
+        }
+      },
+      {
+        "id": "CO06",
+        "title": "Directional merge inherits left ctx and right overwrites only local",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:195-202"
+        ],
+        "input": {
+          "left_owner": "L",
+          "left_owner_bindings": [
+            [
+              "a",
+              "A"
+            ]
+          ],
+          "right_owner": "R",
+          "right_owner_bindings": [
+            [
+              "b",
+              "B"
+            ]
+          ],
+          "shared_initial": [
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "left_local": [
+            [
+              "x",
+              "L"
+            ]
+          ],
+          "right_local": [
+            [
+              "x",
+              "R"
+            ],
+            [
+              "y",
+              "Y"
+            ]
+          ]
+        },
+        "operations": [
+          "M=left.merge(right)",
+          "N=right.merge(left)",
+          "M0=M.project([]); N0=N.project([])",
+          "DM=M0.ctx.thaw(M0); DN=N0.ctx.thaw(N0)"
+        ],
+        "expected": {
+          "M_local": [
+            [
+              "x",
+              "R"
+            ],
+            [
+              "y",
+              "Y"
+            ]
+          ],
+          "M_owner": "same L",
+          "N_local": [
+            [
+              "x",
+              "L"
+            ],
+            [
+              "y",
+              "Y"
+            ]
+          ],
+          "N_owner": "same R",
+          "DM_bindings": [
+            [
+              "a",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "DN_bindings": [
+            [
+              "b",
+              "B"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "owners_bindings_unchanged": true,
+          "M_N_identity": "fresh frozen objects",
+          "raw_hash_cache": "None until each new row is hashed"
+        }
+      },
+      {
+        "id": "CO07",
+        "title": "Frozen snapshot stays fixed while its owner subsequently adds a binding",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:180-193",
+          "sparql.py:306-317",
+          "sparql.py:403-421"
+        ],
+        "input": {
+          "owner": "C",
+          "owner_constructor_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "initial": [
+            [
+              "i",
+              "I"
+            ]
+          ]
+        },
+        "operations": [
+          "F=C.solution()",
+          "C[y]=Y (new key, no conflict)",
+          "P=F.project([])",
+          "D=P.ctx.thaw(P)",
+          "E=F.ctx.thaw(F)"
+        ],
+        "expected": {
+          "C_bindings_after": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ],
+            [
+              "y",
+              "Y"
+            ]
+          ],
+          "F_local_after": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "F_lookup_y": "KeyError",
+          "F_owner": "same live C",
+          "D_bindings": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ],
+            [
+              "y",
+              "Y"
+            ]
+          ],
+          "E_bindings": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "D_E_owners": "two new distinct contexts, both retain C initial mapping object"
+        }
+      },
+      {
+        "id": "CO08",
+        "title": "Constructor and push reapply initial without moving an existing key",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:73-76",
+          "sparql.py:258-262",
+          "sparql.py:306-317",
+          "sparql.py:422-427"
+        ],
+        "input": {
+          "owner": "C",
+          "constructor_bindings": [
+            [
+              "z",
+              "Z"
+            ],
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "initial": [
+            [
+              "x",
+              "I"
+            ],
+            [
+              "i",
+              "J"
+            ]
+          ]
+        },
+        "operations": [
+          "construct C",
+          "D=C.push()",
+          "F=D.solution()"
+        ],
+        "expected": {
+          "C_bindings": [
+            [
+              "z",
+              "Z"
+            ],
+            [
+              "x",
+              "I"
+            ],
+            [
+              "i",
+              "J"
+            ]
+          ],
+          "D_bindings": [
+            [
+              "z",
+              "Z"
+            ],
+            [
+              "x",
+              "I"
+            ],
+            [
+              "i",
+              "J"
+            ]
+          ],
+          "F_local": [
+            [
+              "z",
+              "Z"
+            ],
+            [
+              "x",
+              "I"
+            ],
+            [
+              "i",
+              "J"
+            ]
+          ],
+          "D_owner": "new distinct from C",
+          "F_owner": "same D",
+          "D_initial": "same initial mapping object as C",
+          "parent_unchanged": true
+        }
+      },
+      {
+        "id": "CO09",
+        "title": "Aggregate output owner is evalAggregateJoin argument ctx, not a child-row owner",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "evaluate.py:462-492"
+        ],
+        "input": {
+          "group_call_owner": "G",
+          "G_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "shared_initial": [
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "child_row_owner": "V",
+          "V_bindings": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "v",
+              "B"
+            ]
+          ],
+          "aggregate_finished_local": [
+            [
+              "agg",
+              "N"
+            ]
+          ]
+        },
+        "operations": [
+          "construct F=FrozenBindings(G,aggregate_finished_local), exactly the producer at line488",
+          "construct E=FrozenBindings(G), exactly the empty explicit-group producer at line492",
+          "D=E.ctx.thaw(E)"
+        ],
+        "expected": {
+          "F_local": [
+            [
+              "agg",
+              "N"
+            ]
+          ],
+          "E_local": [],
+          "F_E_owner": "same G, never V",
+          "D_bindings": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "F_E_new_frozen_identity": true,
+          "qualification_layer": "Raw producer contract. Genuine Group query integration must separately assert the actual producer attached G; this primitive alone is not a query test."
+        }
+      },
+      {
+        "id": "CO10",
+        "title": "VALUES push owns the assigned incoming object and leaves parent unchanged",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "evaluate.py:255-267",
+          "sparql.py:414-427"
+        ],
+        "input": {
+          "parent_owner": "C",
+          "constructor_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "initial": [
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "values_records": [
+            [
+              [
+                "x",
+                "A_equal_new"
+              ]
+            ],
+            [
+              [
+                "x",
+                "A_equal_new_2"
+              ]
+            ]
+          ]
+        },
+        "operations": [
+          "For each record create D=C.push()",
+          "D[x]=incoming source-equal value; yield F=D.solution()"
+        ],
+        "expected": {
+          "parent_bindings": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "first_local": [
+            [
+              "x",
+              "A_equal_new"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "second_local": [
+            [
+              "x",
+              "A_equal_new_2"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "first_owner_bindings": [
+            [
+              "x",
+              "A_equal_new"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "second_owner_bindings": [
+            [
+              "x",
+              "A_equal_new_2"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "owners": "two distinct new child contexts; neither is C",
+          "incoming_object_identity_retained": true,
+          "initial": "same immutable mapping object for C and both children",
+          "qualification_layer": "Push/assign/solution protocol on actual carrier operations; real VALUES compiler integration is a separate required check."
+        }
+      },
+      {
+        "id": "CO11",
+        "title": "Thaw receiver determines context metadata; frozen owner is not silently substituted",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:306-317",
+          "sparql.py:430-436"
+        ],
+        "input": {
+          "receiver_owner": "A_ctx",
+          "receiver_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "receiver_initial": [
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "frozen_owner": "B_ctx",
+          "B_bindings": [
+            [
+              "y",
+              "B"
+            ]
+          ],
+          "B_initial": [
+            [
+              "j",
+              "J"
+            ]
+          ],
+          "frozen_local": [
+            [
+              "z",
+              "Z"
+            ]
+          ]
+        },
+        "operations": [
+          "F=FrozenBindings(B_ctx,[[z,Z]])",
+          "D=A_ctx.thaw(F)",
+          "E=F.ctx.thaw(F)"
+        ],
+        "expected": {
+          "D_bindings": [
+            [
+              "z",
+              "Z"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "D_initial": "same A_ctx initial",
+          "E_bindings": [
+            [
+              "z",
+              "Z"
+            ],
+            [
+              "j",
+              "J"
+            ]
+          ],
+          "E_initial": "same B_ctx initial",
+          "D_E_contexts": "new and distinct",
+          "qualification_layer": "Original raw API permits these independent initial maps. Ordinary sealed query execution retains its one shared immutable initial owner."
+        }
+      },
+      {
+        "id": "CO12",
+        "title": "clean uses the same false-empty clone fallback",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:306-317",
+          "sparql.py:428-429"
+        ],
+        "input": {
+          "owner": "C",
+          "owner_constructor_bindings": [
+            [
+              "x",
+              "A"
+            ]
+          ],
+          "initial": [
+            [
+              "i",
+              "I"
+            ]
+          ]
+        },
+        "operations": [
+          "D=C.clean()"
+        ],
+        "expected": {
+          "D_bindings": [
+            [
+              "x",
+              "A"
+            ],
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "D_owner": "new distinct from C",
+          "D_initial": "same initial mapping object as C",
+          "not_an_empty_binding_context": true
+        }
+      },
+      {
+        "id": "CO13",
+        "title": "Owner facts are excluded from local equality and raw hash",
+        "classification": "source_derived_primitive_not_originally_executed",
+        "source_anchors": [
+          "sparql.py:126-145",
+          "sparql.py:178-193"
+        ],
+        "input": {
+          "left_owner_bindings": [
+            [
+              "a",
+              "A"
+            ]
+          ],
+          "right_owner_bindings": [
+            [
+              "b",
+              "B"
+            ]
+          ],
+          "shared_initial": [
+            [
+              "i",
+              "I"
+            ]
+          ],
+          "left_local": [
+            [
+              "x",
+              "L"
+            ]
+          ],
+          "right_local": [
+            [
+              "x",
+              "L"
+            ]
+          ],
+          "hash_callback_words": {
+            "key_x": 5,
+            "value_L": 9
+          }
+        },
+        "operations": [
+          "hash each distinct frozen local object using the existing source raw-hash algorithm",
+          "compare mappings by local entries",
+          "change owner by adding a new key only"
+        ],
+        "expected": {
+          "mapping_equal": true,
+          "raw_hash_each": 12,
+          "owner_change_keeps_local_hash_cache": 12,
+          "local_rows_unchanged": true,
+          "row_objects_distinct": true,
+          "owner_does_not_trigger_extra_hash_or_equal_callbacks": true
+        }
+      }
+    ],
+    "active_boundary_contracts": [
+      {
+        "id": "COA01",
+        "classification": "active_safety_consumer_contract_not_source_parity",
+        "input": {
+          "actual_cancel_token": "cancelled before EXISTS child start",
+          "frozen_row": "empty local with real noninitial owner bindings"
+        },
+        "expected": {
+          "fault": "QueryEvaluationError::Cancelled",
+          "child_start_calls": 0,
+          "backend_calls_after_cancel": 0,
+          "no_boolean_result": true,
+          "subsequent_poll_if_stream_exists": "None"
+        },
+        "receiving_layer": "Actual compiled EXISTS/consumer token check after its implementation. Pure owner helper must not manufacture an error or be counted as full-consumer acceptance."
+      },
+      {
+        "id": "COA02",
+        "classification": "active_safety_real_dataset_boundary_not_source_parity",
+        "input": {
+          "owner_operations": [
+            "solution",
+            "project/forget transport",
+            "thaw"
+          ],
+          "backend_fault": "Actual Dataset externalization error object armed at a frozen specified receiving boundary"
+        },
+        "expected": {
+          "pure_owner_operations_externalize_calls": 0,
+          "pure_owner_operations_internalize_calls": 0,
+          "same_cell_payloads_and_error_Arc_retained": true,
+          "on_actual_codec_failure": "Preserve the exact original Dataset error object/type; no false Boolean, source replacement error or retry",
+          "after_actual_fatal": "fused, no additional backend access"
+        },
+        "receiving_layer": "Real codec/compiled consumer; arm location and exact ordinal must be fixed in the actual query/protocol fixture before running. No fake Dataset callback or asserted passed result from a pure owner helper."
+      }
+    ],
+    "actual_receiving_requirements": [
+      "13 source primitive cases must call actual carrier owner operations, including live owner mutation and retained initial reference checks.",
+      "CO09/CO10 additionally require real Group/VALUES integration coverage in the full EXISTS query receiving; primitive protocol alone does not certify producer wiring.",
+      "COA01/COA02 are pending consumer boundary obligations, not primitive tests already passed. Their exact executable cases belong to the subsequently frozen full query/protocol fixture."
+    ]
+  }
+}

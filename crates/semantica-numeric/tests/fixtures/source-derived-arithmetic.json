@@ -1,0 +1,2883 @@
+{
+  "schema": "oev2.numeric-core-frozen-cases/1",
+  "status": "independent_source_and_mathematical_expected_values_not_executed",
+  "created_utc": "2026-10-10 00:19:19 UTC",
+  "author": "nullable_carrier_review",
+  "objective": "Concrete independent acceptance inputs for the next shared semantica-numeric primitive owner. No source interpreter, candidate implementation output, query AST, or SPARQL catch machinery supplies the expected answers.",
+  "activity": {
+    "original_python_executed": false,
+    "python_decimal_imported": false,
+    "cargo_or_compilation_executed": false,
+    "candidate_implementation_executed": false,
+    "workspace_source_modified": false,
+    "private_json_created_exclusively": true,
+    "new_original_observations": 0
+  },
+  "independence": {
+    "basis": "Read pinned reference and original sources; derive exact coefficients/exponents by integer arithmetic and decimal rounding rules. Constants were authored before the future shared core is implemented. Record-writing and schema checks do not execute arithmetic implementations.",
+    "prior_authorship": "This reviewer authored portions of prior chain transport and tests; these new numeric expectations are independently derived from the pinned sources and mathematics, not from those bounded numeric outputs.",
+    "evidence_classes": [
+      "source_derivation",
+      "mathematical_derivation",
+      "source_and_mathematical_derivation",
+      "active_safety_contract_not_parity"
+    ],
+    "not_claimed": "No observation of the original application's active Decimal context; no parity claim for the C decimal engine's complete trapped flags; no public nullable profile qualification."
+  },
+  "interface_contract": {
+    "proposal": "DecimalContext::apply(op, &a, Option<&b>, &NumericLimits) -> Result<NumericOutcome<DecimalValue>, NumericFault>; exact parse/format and exact integer operations are distinct core entry points. Names are test-adapter operations, not a demand to expose a query API.",
+    "operations": [
+      "integer.parse",
+      "integer.add",
+      "integer.subtract",
+      "integer.multiply",
+      "integer.plus",
+      "integer.minus",
+      "decimal.parse_exact",
+      "decimal.add",
+      "decimal.subtract",
+      "decimal.multiply",
+      "decimal.divide",
+      "decimal.plus",
+      "decimal.minus",
+      "decimal.format_fixed"
+    ],
+    "decimal_value": "finite{negative:bool, coefficient:nonnegative decimal digit string with no leading zeros except 0, exponent:signed base-10 integer string}; infinity{negative}; nan{negative, signaling, payload:canonical digit string or empty}. Trailing coefficient zeros are meaningful. Exponent uses a string so no JSON/i64 precision loss is assumed.",
+    "integer_value": "{kind:integer, decimal:canonical signed base-10 string}; arbitrary precision subject to explicit resource/input limits, with no implicit Decimal rounding.",
+    "expected_value": "Compare kind/sign/coefficient/exponent/payload exactly. Numerical equality alone is insufficient for scale and signed zero. If fixed is present, separately assert no-precision fixed formatting matches it without reparsing the value.",
+    "traps": "For kind=trap, assert primary, result_absent and every signals_required item. signals_exact=null means complete trapped flag parity is deliberately not claimed. source_condition names the reference internal condition and is diagnostic metadata, not an extra mandatory public subtype.",
+    "signals": "Successful/untrapped outcomes require exactly signals_exact, treated as an unordered set. Collect signals for each operation with initially clear flags; a library with sticky Context flags must clear them before each step or expose a per-operation delta.",
+    "inputs": "Each {decimal:text} operand is independently constructed exactly, without context rounding; {integer:text} is an exact BigInt. A {ref:name} consumes the saved DecimalValue directly, never fixed-formats/reparses it. Parsing operands is not an implicit unary-plus operation.",
+    "sequences": "Execute steps in listed order; save the actual value after a successful step and compare that intermediate value before using it. Do not reassociate or compute a rational exact end result before one final rounding.",
+    "context": "All context fields are explicit test parameters. decimal28 models the pinned source DefaultContext only. decimal3 contexts are intentionally selected synthetic core controls, not original application observations.",
+    "safety_limits": {
+      "max_input_characters": 4096,
+      "max_coefficient_digits": 4096,
+      "max_output_characters": 4096,
+      "max_materialized_power_of_ten": 4096,
+      "integer_text_limit": 4096
+    },
+    "safety_note": "Limits are a proposed active safety contract. Extreme exponent cases compare compact coefficient/exponent tuples; they must not first expand 10^abs(exponent). No budget failure may masquerade as an arithmetic SPARQL/type error.",
+    "prohibited_oracles": [
+      "Executing old Python/_decimal/_pydecimal to fill this record",
+      "Reading expected values back from the future Rust implementation",
+      "Trimming coefficient zeros to make scale assertions pass",
+      "Using f64 intermediates for BigInt or Decimal tests",
+      "Changing these frozen cases merely to match a candidate result"
+    ]
+  },
+  "contexts": {
+    "integer": {
+      "decimal_context_not_applied": true,
+      "integer_text_limit": 4096
+    },
+    "decimal28": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "emin": "-999999",
+      "emax": "999999",
+      "clamp": 0,
+      "capitals": 1,
+      "traps": [
+        "DivisionByZero",
+        "Overflow",
+        "InvalidOperation"
+      ]
+    },
+    "decimal28_untrapped": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "emin": "-999999",
+      "emax": "999999",
+      "clamp": 0,
+      "capitals": 1,
+      "traps": []
+    },
+    "decimal3": {
+      "precision": 3,
+      "rounding": "HALF_EVEN",
+      "emin": "-999999",
+      "emax": "999999",
+      "clamp": 0,
+      "capitals": 1,
+      "traps": []
+    },
+    "decimal3_small": {
+      "precision": 3,
+      "rounding": "HALF_EVEN",
+      "emin": "-2",
+      "emax": "2",
+      "clamp": 0,
+      "capitals": 1,
+      "traps": []
+    },
+    "decimal3_clamp1": {
+      "precision": 3,
+      "rounding": "HALF_EVEN",
+      "emin": "-2",
+      "emax": "2",
+      "clamp": 1,
+      "capitals": 1,
+      "traps": []
+    }
+  },
+  "sources": [
+    {
+      "id": "pydecimal",
+      "sha256": "17882dbd5622aac99793a261a21ff70b3bde28e274ea1c3f0372599df164f440",
+      "bytes": 227526,
+      "role": "Pinned pure-Python Decimal reference source; read only. Not a new execution or proof that the historical application used this engine/default context."
+    },
+    {
+      "id": "term",
+      "sha256": "564280e97c4e64b5b704bd1fff96ebc374ebd2dcc2df134cda62452a3f83c1db",
+      "bytes": 91610
+    },
+    {
+      "id": "operators",
+      "sha256": "349d36859ec3dca3b56e33d43786d034a33f3c1a1ba1eef71a13bf95a0809437",
+      "bytes": 36752
+    },
+    {
+      "id": "prior-design",
+      "sha256": "c754d799f744ed026b527544825b88d77ce2d63a910d69efa9baeee348420d1b",
+      "bytes": 23632,
+      "role": "Historical source-derived plan; stale statements about pre-chain implementation are not current capability assertions."
+    }
+  ],
+  "source_ranges": [
+    {
+      "id": "pydecimal-constructor",
+      "source": "pydecimal",
+      "lines": [
+        435,
+        511
+      ],
+      "basis": "Exact string/int/Decimal construction; no arithmetic context rounding."
+    },
+    {
+      "id": "pydecimal-unary",
+      "source": "pydecimal",
+      "lines": [
+        1005,
+        1048
+      ],
+      "basis": "Unary plus/minus round; HalfEven clears the sign of an exactly zero input."
+    },
+    {
+      "id": "pydecimal-add-sub",
+      "source": "pydecimal",
+      "lines": [
+        1070,
+        1178
+      ],
+      "basis": "Preferred exponent, zero signs, exact accumulation followed by _fix."
+    },
+    {
+      "id": "pydecimal-multiply",
+      "source": "pydecimal",
+      "lines": [
+        1180,
+        1235
+      ],
+      "basis": "XOR signs, sum exponents, zero/special handling, per-op _fix."
+    },
+    {
+      "id": "pydecimal-divide",
+      "source": "pydecimal",
+      "lines": [
+        1237,
+        1301
+      ],
+      "basis": "Special/zero order, quotient and remainder, ideal exponent, _fix."
+    },
+    {
+      "id": "pydecimal-nan",
+      "source": "pydecimal",
+      "lines": [
+        658,
+        689
+      ],
+      "basis": "sNaN precedence and quiet-NaN propagation."
+    },
+    {
+      "id": "pydecimal-fix-nan",
+      "source": "pydecimal",
+      "lines": [
+        1562,
+        1572
+      ],
+      "basis": "Payload shortening at operation precision."
+    },
+    {
+      "id": "pydecimal-fix",
+      "source": "pydecimal",
+      "lines": [
+        1574,
+        1666
+      ],
+      "basis": "Precision, Etiny/Etop, overflow, subnormal/underflow, clamping and signals."
+    },
+    {
+      "id": "pydecimal-half-even",
+      "source": "pydecimal",
+      "lines": [
+        1703,
+        1709
+      ],
+      "basis": "Exact ties keep an even retained coefficient digit."
+    },
+    {
+      "id": "pydecimal-signals",
+      "source": "pydecimal",
+      "lines": [
+        95,
+        329
+      ],
+      "basis": "Signal conditions, default untrapped results and condition-to-signal mapping."
+    },
+    {
+      "id": "pydecimal-raise-error",
+      "source": "pydecimal",
+      "lines": [
+        3964,
+        3984
+      ],
+      "basis": "Set the mapped flag, return default when untrapped, otherwise immediately raise."
+    },
+    {
+      "id": "pydecimal-exponent-bounds",
+      "source": "pydecimal",
+      "lines": [
+        4007,
+        4014
+      ],
+      "basis": "Etiny=Emin-prec+1 and Etop=Emax-prec+1."
+    },
+    {
+      "id": "pydecimal-default-context",
+      "source": "pydecimal",
+      "lines": [
+        6014,
+        6022
+      ],
+      "basis": "Source DefaultContext values; mutable prototype, not observed application state."
+    },
+    {
+      "id": "pydecimal-fixed-format",
+      "source": "pydecimal",
+      "lines": [
+        3684,
+        3773
+      ],
+      "basis": "Fixed formatting retains stored fractional zeros and has special positive-exponent zero handling."
+    },
+    {
+      "id": "operators-numeric-and-python-int",
+      "source": "operators",
+      "lines": [
+        738,
+        773
+      ],
+      "basis": "Unary numeric operations and multiplicative conversion of first operand to Decimal."
+    },
+    {
+      "id": "operators-numeric-datatypes",
+      "source": "operators",
+      "lines": [
+        1047,
+        1078
+      ],
+      "basis": "Numeric datatype admission then existing Literal.toPython cached value."
+    },
+    {
+      "id": "operators-additive-promotion",
+      "source": "operators",
+      "lines": [
+        824,
+        846
+      ],
+      "basis": "Additive value calculations and separate RDF datatype promotion."
+    },
+    {
+      "id": "term-normalized-cache",
+      "source": "term",
+      "lines": [
+        641,
+        725
+      ],
+      "basis": "String input is parsed into value before normalization changes lexical text; _value retains that original object."
+    },
+    {
+      "id": "term-decimal-format",
+      "source": "term",
+      "lines": [
+        2091,
+        2130
+      ],
+      "basis": "Decimal output uses fixed formatting; integers map to xsd:integer."
+    },
+    {
+      "id": "term-rdf-identity",
+      "source": "term",
+      "lines": [
+        1313,
+        1407
+      ],
+      "basis": "Literal equality/hash depend on lexical string, language and datatype, separately from cached numeric value."
+    }
+  ],
+  "case_count": 70,
+  "cases": [
+    {
+      "id": "INT-ARBITRARY-PARSE",
+      "classification": "mathematical_derivation",
+      "steps": [
+        {
+          "operation": "integer.parse",
+          "context": "integer",
+          "operands": [
+            {
+              "text": "1000000000000000000000000000000000000000000000000000000000000"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "integer",
+              "decimal": "1000000000000000000000000000000000000000000000000000000000000"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "The core integer representation has no i64 bound; this 61-digit construction is below the explicit text budget.",
+      "source_refs": [
+        "operators-numeric-and-python-int"
+      ]
+    },
+    {
+      "id": "INT-ADD-PAST-I64",
+      "classification": "mathematical_derivation",
+      "steps": [
+        {
+          "operation": "integer.add",
+          "context": "integer",
+          "operands": [
+            {
+              "integer": "9223372036854775807"
+            },
+            {
+              "integer": "1"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "integer",
+              "decimal": "9223372036854775808"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "Exact integer addition; no Decimal context.",
+      "source_refs": [
+        "operators-numeric-and-python-int"
+      ]
+    },
+    {
+      "id": "INT-SUB-NEGATIVE-LARGE",
+      "classification": "mathematical_derivation",
+      "steps": [
+        {
+          "operation": "integer.subtract",
+          "context": "integer",
+          "operands": [
+            {
+              "integer": "0"
+            },
+            {
+              "integer": "1000000000000000000000000000000000000000000000000000000000000"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "integer",
+              "decimal": "-1000000000000000000000000000000000000000000000000000000000000"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "0 - 10^60 = -10^60.",
+      "source_refs": [
+        "operators-numeric-and-python-int"
+      ]
+    },
+    {
+      "id": "INT-MUL-EXACT-CORE-ONLY",
+      "classification": "mathematical_derivation",
+      "steps": [
+        {
+          "operation": "integer.multiply",
+          "context": "integer",
+          "operands": [
+            {
+              "integer": "1000000000000000000000000000000000000000000000000000000000001"
+            },
+            {
+              "integer": "999999999999999999999999999999999999999999999999999999999999"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "integer",
+              "decimal": "999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "(10^60+1)(10^60-1)=10^120-1. Primitive test only: RDFLib multiplicative chains instead convert first to Decimal and round each operation.",
+      "source_refs": [
+        "operators-numeric-and-python-int"
+      ]
+    },
+    {
+      "id": "INT-UNARY-MINUS-PAST-I64",
+      "classification": "mathematical_derivation",
+      "steps": [
+        {
+          "operation": "integer.minus",
+          "context": "integer",
+          "operands": [
+            {
+              "integer": "-9223372036854775808"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "integer",
+              "decimal": "9223372036854775808"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "Exact integer unary negation remains unbounded.",
+      "source_refs": [
+        "operators-numeric-and-python-int"
+      ]
+    },
+    {
+      "id": "INT-UNARY-PLUS-IDENTITY",
+      "classification": "mathematical_derivation",
+      "steps": [
+        {
+          "operation": "integer.plus",
+          "context": "integer",
+          "operands": [
+            {
+              "integer": "1000000000000000000000000000000000000000000000000000000000000"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "integer",
+              "decimal": "1000000000000000000000000000000000000000000000000000000000000"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "Integer unary plus does not round to Decimal precision.",
+      "source_refs": [
+        "operators-numeric-and-python-int"
+      ]
+    },
+    {
+      "id": "DEC-PARSE-SCALE",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.parse_exact",
+          "context": "decimal28",
+          "operands": [
+            {
+              "text": "1.2300"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "12300",
+              "exponent": "-4"
+            },
+            "signals_exact": [],
+            "fixed": "1.2300"
+          }
+        }
+      ],
+      "basis": "Constructor preserves sign/coefficient/exponent without context rounding; fixed formatting is a separate operation.",
+      "source_refs": [
+        "pydecimal-constructor",
+        "pydecimal-fixed-format"
+      ]
+    },
+    {
+      "id": "DEC-PARSE-NEGATIVE-ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.parse_exact",
+          "context": "decimal28",
+          "operands": [
+            {
+              "text": "-0E+3"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": true,
+              "coefficient": "0",
+              "exponent": "3"
+            },
+            "signals_exact": [],
+            "fixed": "-0"
+          }
+        }
+      ],
+      "basis": "Constructor preserves sign/coefficient/exponent without context rounding; fixed formatting is a separate operation.",
+      "source_refs": [
+        "pydecimal-constructor",
+        "pydecimal-fixed-format"
+      ]
+    },
+    {
+      "id": "DEC-PARSE-BEYOND-PRECISION",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.parse_exact",
+          "context": "decimal28",
+          "operands": [
+            {
+              "text": "12345678901234567890123456789"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "12345678901234567890123456789",
+              "exponent": "0"
+            },
+            "signals_exact": [],
+            "fixed": "12345678901234567890123456789"
+          }
+        }
+      ],
+      "basis": "Constructor preserves sign/coefficient/exponent without context rounding; fixed formatting is a separate operation.",
+      "source_refs": [
+        "pydecimal-constructor",
+        "pydecimal-fixed-format"
+      ]
+    },
+    {
+      "id": "DEC-PARSE-POSITIVE-EXPONENT",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.parse_exact",
+          "context": "decimal28",
+          "operands": [
+            {
+              "text": "1E+2"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1",
+              "exponent": "2"
+            },
+            "signals_exact": [],
+            "fixed": "100"
+          }
+        }
+      ],
+      "basis": "Constructor preserves sign/coefficient/exponent without context rounding; fixed formatting is a separate operation.",
+      "source_refs": [
+        "pydecimal-constructor",
+        "pydecimal-fixed-format"
+      ]
+    },
+    {
+      "id": "DEC-PARSE-SNAN-PAYLOAD",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.parse_exact",
+          "context": "decimal28",
+          "operands": [
+            {
+              "text": "-sNaN0042"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": true,
+              "signaling": true,
+              "payload": "42"
+            },
+            "signals_exact": [],
+            "fixed": "-sNaN42"
+          }
+        }
+      ],
+      "basis": "Constructor preserves sign/coefficient/exponent without context rounding; fixed formatting is a separate operation.",
+      "source_refs": [
+        "pydecimal-constructor",
+        "pydecimal-fixed-format"
+      ]
+    },
+    {
+      "id": "DEC-ADD-PREFERRED-SCALE",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1.20"
+            },
+            {
+              "decimal": "2.30"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "350",
+              "exponent": "-2"
+            },
+            "signals_exact": [],
+            "fixed": "3.50"
+          }
+        }
+      ],
+      "basis": "Align at the minimum input exponent -2; the exact coefficient sum is 350.",
+      "source_refs": [
+        "pydecimal-add-sub",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-SUB-CANCELLATION-SCALE",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.subtract",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1.200"
+            },
+            {
+              "decimal": "1.2"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "-3"
+            },
+            "signals_exact": [],
+            "fixed": "0.000"
+          }
+        }
+      ],
+      "basis": "Exact cancellation uses the minimum exponent -3; HalfEven gives positive zero.",
+      "source_refs": [
+        "pydecimal-add-sub",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-ADD-NEGATIVE-ZEROS",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "-0.00"
+            },
+            {
+              "decimal": "-0.000"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": true,
+              "coefficient": "0",
+              "exponent": "-3"
+            },
+            "signals_exact": [],
+            "fixed": "-0.000"
+          }
+        }
+      ],
+      "basis": "Both zero signs are negative and the preferred exponent is -3.",
+      "source_refs": [
+        "pydecimal-add-sub",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-ADD-MIXED-SIGNED-ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "-0.00"
+            },
+            {
+              "decimal": "0.0"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "-2"
+            },
+            "signals_exact": [],
+            "fixed": "0.00"
+          }
+        }
+      ],
+      "basis": "Mixed zero signs yield positive zero under HalfEven.",
+      "source_refs": [
+        "pydecimal-add-sub",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-HALF-EVEN-P28-EVEN",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1234567890123456789012345678.5"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1234567890123456789012345678",
+              "exponent": "0"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "1234567890123456789012345678"
+          }
+        }
+      ],
+      "basis": "At precision 28, exact half follows an even final retained digit 8.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-HALF-EVEN-P28-ODD",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1234567890123456789012345679.5"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1234567890123456789012345680",
+              "exponent": "0"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "1234567890123456789012345680"
+          }
+        }
+      ],
+      "basis": "At precision 28, exact half follows odd 9, producing the next even integer.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-HALF-EVEN-NEGATIVE",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3",
+          "operands": [
+            {
+              "decimal": "-1.245"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": true,
+              "coefficient": "124",
+              "exponent": "-2"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "-1.24"
+          }
+        }
+      ],
+      "basis": "Rounding applies to coefficient magnitude; a negative tie with even 4 rounds toward the even value.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-HALF-EVEN-ODD-P3",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3",
+          "operands": [
+            {
+              "decimal": "1.255"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "126",
+              "exponent": "-2"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "1.26"
+          }
+        }
+      ],
+      "basis": "An exact half following retained odd 5 rounds up to 6.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-ROUND-ONLY-ZEROS",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3",
+          "operands": [
+            {
+              "decimal": "1.2300"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "123",
+              "exponent": "-2"
+            },
+            "signals_exact": [
+              "Rounded"
+            ],
+            "fixed": "1.23"
+          }
+        }
+      ],
+      "basis": "Discarding zero digits signals Rounded but not Inexact.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-ROUND-CARRY",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3",
+          "operands": [
+            {
+              "decimal": "9.995"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "100",
+              "exponent": "-1"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "10.0"
+          }
+        }
+      ],
+      "basis": "999.5 coefficient tie rounds to 1000, then precision correction shifts one digit to exponent -1.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-UNARY-PLUS-CLEARS-NEGATIVE-ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "-0.00"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "-2"
+            },
+            "signals_exact": [],
+            "fixed": "0.00"
+          }
+        }
+      ],
+      "basis": "Under HalfEven unary plus returns copy_abs for a zero.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-UNARY-MINUS-CLEARS-NEGATIVE-ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.minus",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "-0.00"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "-2"
+            },
+            "signals_exact": [],
+            "fixed": "0.00"
+          }
+        }
+      ],
+      "basis": "Under HalfEven unary minus also returns copy_abs for a zero.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-MUL-SCALE",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.multiply",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1.20"
+            },
+            {
+              "decimal": "2.0"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "2400",
+              "exponent": "-3"
+            },
+            "signals_exact": [],
+            "fixed": "2.400"
+          }
+        }
+      ],
+      "basis": "Multiplication adds input exponents and retains exact coefficient trailing zeros.",
+      "source_refs": [
+        "pydecimal-multiply",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-MUL-SIGNED-ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.multiply",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "-0.00"
+            },
+            {
+              "decimal": "2.0"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": true,
+              "coefficient": "0",
+              "exponent": "-3"
+            },
+            "signals_exact": [],
+            "fixed": "-0.000"
+          }
+        }
+      ],
+      "basis": "Multiplication XORs signs and sums exponents even for zero.",
+      "source_refs": [
+        "pydecimal-multiply",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-MUL-ROUND-AT-P3",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.multiply",
+          "context": "decimal3",
+          "operands": [
+            {
+              "decimal": "9.99"
+            },
+            {
+              "decimal": "9.99"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "998",
+              "exponent": "-1"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "99.8"
+          }
+        }
+      ],
+      "basis": "Exact product 99.8001 rounds at this operation to three significant digits.",
+      "source_refs": [
+        "pydecimal-multiply",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-DIV-TERMINATING",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1"
+            },
+            {
+              "decimal": "8"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "125",
+              "exponent": "-3"
+            },
+            "signals_exact": [],
+            "fixed": "0.125"
+          }
+        }
+      ],
+      "basis": "1/8 terminates exactly; no digits discarded.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-DIV-RECURRING-THIRD",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1"
+            },
+            {
+              "decimal": "3"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "3333333333333333333333333333",
+              "exponent": "-28"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "0.3333333333333333333333333333"
+          }
+        }
+      ],
+      "basis": "Long division repeats 3; retain 28 digits, discarded remainder is nonzero.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-DIV-RECURRING-TWOTHIRDS",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "2"
+            },
+            {
+              "decimal": "3"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "6666666666666666666666666667",
+              "exponent": "-28"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "0.6666666666666666666666666667"
+          }
+        }
+      ],
+      "basis": "The 29th digit is 6, rounding the 28th retained 6 upward.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-DIV-NEGATIVE-THIRD",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "-1"
+            },
+            {
+              "decimal": "3"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": true,
+              "coefficient": "3333333333333333333333333333",
+              "exponent": "-28"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "-0.3333333333333333333333333333"
+          }
+        }
+      ],
+      "basis": "Sign XOR is independent of recurring quotient rounding.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-DIV-PREFERRED-SCALE",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "2.00"
+            },
+            {
+              "decimal": "2"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "100",
+              "exponent": "-2"
+            },
+            "signals_exact": [],
+            "fixed": "1.00"
+          }
+        }
+      ],
+      "basis": "Exact quotient moves toward ideal exponent (-2)-0=-2.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-DIV-SCALE-NONINTEGER",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1.00"
+            },
+            {
+              "decimal": "2"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "50",
+              "exponent": "-2"
+            },
+            "signals_exact": [],
+            "fixed": "0.50"
+          }
+        }
+      ],
+      "basis": "An exact quotient retains exponent -2 when representable.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-DIV-POSITIVE-EXPONENT-CACHE",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "100"
+            },
+            {
+              "decimal": "1E+2"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "100",
+              "exponent": "-2"
+            },
+            "signals_exact": [],
+            "fixed": "1.00"
+          }
+        }
+      ],
+      "basis": "Ideal quotient exponent is 0-2=-2; coefficient 100 preserves it.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-DIV-ZERO-PREFERRED-EXPONENT",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "0E+3"
+            },
+            {
+              "decimal": "1E+4"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "-1"
+            },
+            "signals_exact": [],
+            "fixed": "0.0"
+          }
+        }
+      ],
+      "basis": "Zero quotient exponent is exactly 3-4=-1 before context bounds.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-DIV-NEGATIVE-ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "0"
+            },
+            {
+              "decimal": "-1"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": true,
+              "coefficient": "0",
+              "exponent": "0"
+            },
+            "signals_exact": [],
+            "fixed": "-0"
+          }
+        }
+      ],
+      "basis": "Quotient sign is XOR; arithmetic division preserves negative zero.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-SEQUENCE-ROUND-EACH-OP",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal3",
+          "operands": [
+            {
+              "decimal": "1.00"
+            },
+            {
+              "decimal": "3"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "333",
+              "exponent": "-3"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "0.333"
+          },
+          "save": "q"
+        },
+        {
+          "operation": "decimal.multiply",
+          "context": "decimal3",
+          "operands": [
+            {
+              "ref": "q"
+            },
+            {
+              "decimal": "3"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "999",
+              "exponent": "-3"
+            },
+            "signals_exact": [],
+            "fixed": "0.999"
+          }
+        }
+      ],
+      "basis": "The second operation consumes the first rounded value. A rational calculation rounded only at the end would incorrectly yield 1; adapter must not defer context rounding.",
+      "source_refs": [
+        "pydecimal-divide",
+        "pydecimal-multiply",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-SEQUENCE-NO-REASSOCIATION",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal3",
+          "operands": [
+            {
+              "decimal": "1000"
+            },
+            {
+              "decimal": "1"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "100",
+              "exponent": "1"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded"
+            ],
+            "fixed": "1000"
+          },
+          "save": "sum"
+        },
+        {
+          "operation": "decimal.subtract",
+          "context": "decimal3",
+          "operands": [
+            {
+              "ref": "sum"
+            },
+            {
+              "decimal": "1000"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "0"
+            },
+            "signals_exact": [],
+            "fixed": "0"
+          }
+        }
+      ],
+      "basis": "1000+1 rounds to 1.00E3; subtracting 1000 then gives zero at minimum operand exponent 0. Reassociation/exact-end rounding would give 1.",
+      "source_refs": [
+        "pydecimal-add-sub",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-EMIN-NORMAL",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1E-999999"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1",
+              "exponent": "-999999"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "Adjusted exponent equals Emin, so the result is normal.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-EMIN-SUBNORMAL",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1E-1000000"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1",
+              "exponent": "-1000000"
+            },
+            "signals_exact": [
+              "Subnormal"
+            ]
+          }
+        }
+      ],
+      "basis": "Adjusted exponent is below Emin, but exact coefficient fits Etiny.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-ETINY-EXACT",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1E-1000026"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1",
+              "exponent": "-1000026"
+            },
+            "signals_exact": [
+              "Subnormal"
+            ]
+          }
+        }
+      ],
+      "basis": "Etiny = Emin - precision + 1 = -1000026; exact subnormal causes no Underflow.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-BELOW-ETINY-HALF",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "5E-1000027"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "-1000026"
+            },
+            "signals_exact": [
+              "Clamped",
+              "Inexact",
+              "Rounded",
+              "Subnormal",
+              "Underflow"
+            ]
+          }
+        }
+      ],
+      "basis": "Exact halfway rounds to even zero at Etiny; inexact subnormal and clamping are all signaled.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-EMAX-EXACT",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1E+999999"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1",
+              "exponent": "999999"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "Adjusted exponent equals Emax and does not overflow.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-SMALL-EXACT-SUBNORMAL",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3_small",
+          "operands": [
+            {
+              "decimal": "0.001"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1",
+              "exponent": "-3"
+            },
+            "signals_exact": [
+              "Subnormal"
+            ],
+            "fixed": "0.001"
+          }
+        }
+      ],
+      "basis": "p3 Emin=-2 => Etiny=-4; this subnormal is exact.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-SMALL-UNDERFLOW-NONZERO",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3_small",
+          "operands": [
+            {
+              "decimal": "0.00015"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "2",
+              "exponent": "-4"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded",
+              "Subnormal",
+              "Underflow"
+            ],
+            "fixed": "0.0002"
+          }
+        }
+      ],
+      "basis": "A half tie at Etiny follows retained odd coefficient 1 and rounds up to 2.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-SMALL-UNDERFLOW-NEGATIVE-ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3_small",
+          "operands": [
+            {
+              "decimal": "-0.00001"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": true,
+              "coefficient": "0",
+              "exponent": "-4"
+            },
+            "signals_exact": [
+              "Clamped",
+              "Inexact",
+              "Rounded",
+              "Subnormal",
+              "Underflow"
+            ],
+            "fixed": "-0.0000"
+          }
+        }
+      ],
+      "basis": "A nonzero negative input rounds to negative zero, unlike exact-zero unary sign clearing.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-SMALL-SUBNORMAL-ROUNDS-NORMAL",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3_small",
+          "operands": [
+            {
+              "decimal": "0.00999"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "100",
+              "exponent": "-4"
+            },
+            "signals_exact": [
+              "Inexact",
+              "Rounded",
+              "Subnormal",
+              "Underflow"
+            ],
+            "fixed": "0.0100"
+          }
+        }
+      ],
+      "basis": "Before-rounding adjusted exponent is below Emin; rounding into normal range does not erase Underflow/Subnormal.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-SMALL-ZERO-LOW-CLAMP",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3_small",
+          "operands": [
+            {
+              "decimal": "0E-9"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "-4"
+            },
+            "signals_exact": [
+              "Clamped"
+            ],
+            "fixed": "0.0000"
+          }
+        }
+      ],
+      "basis": "A zero's exponent clamps to Etiny without Inexact, Rounded, or Underflow.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-SMALL-ZERO-HIGH-CLAMP",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3_small",
+          "operands": [
+            {
+              "decimal": "0E+9"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "2"
+            },
+            "signals_exact": [
+              "Clamped"
+            ],
+            "fixed": "0"
+          }
+        }
+      ],
+      "basis": "clamp=0 permits zero exponent only through Emax=2.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even"
+      ]
+    },
+    {
+      "id": "DEC-CLAMP-FOLD-DOWN",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3_clamp1",
+          "operands": [
+            {
+              "decimal": "1E+2"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "100",
+              "exponent": "0"
+            },
+            "signals_exact": [
+              "Clamped"
+            ],
+            "fixed": "100"
+          }
+        }
+      ],
+      "basis": "With p3 Emax2 clamp1, Etop=0; append two coefficient zeros rather than changing numerical value.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix"
+      ]
+    },
+    {
+      "id": "DEC-OVERFLOW-UNTRAPPED",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.multiply",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "1E+999999"
+            },
+            {
+              "decimal": "10"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "infinity",
+              "negative": false
+            },
+            "signals_exact": [
+              "Inexact",
+              "Overflow",
+              "Rounded"
+            ]
+          }
+        }
+      ],
+      "basis": "Adjusted exponent becomes 1000000>Emax; HalfEven untrapped result is Infinity.",
+      "source_refs": [
+        "pydecimal-multiply",
+        "pydecimal-fix",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-ROUNDING-CARRY-OVERFLOW",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3_small",
+          "operands": [
+            {
+              "decimal": "9.995E+2"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "infinity",
+              "negative": false
+            },
+            "signals_exact": [
+              "Inexact",
+              "Overflow",
+              "Rounded"
+            ]
+          }
+        }
+      ],
+      "basis": "At p3,Emax2, the tie rounds 999.5 to 1000, which exceeds Emax.",
+      "source_refs": [
+        "pydecimal-unary",
+        "pydecimal-fix",
+        "pydecimal-half-even",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-DIV-ZERO-UNTRAPPED",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "1"
+            },
+            {
+              "decimal": "0"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "infinity",
+              "negative": false
+            },
+            "signals_exact": [
+              "DivisionByZero"
+            ]
+          }
+        }
+      ],
+      "basis": "Finite nonzero divided by zero yields signed Infinity if the trap is disabled.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-divide",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-DIV-NEGATIVE-ZERO-UNTRAPPED",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "1"
+            },
+            {
+              "decimal": "-0"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "infinity",
+              "negative": true
+            },
+            "signals_exact": [
+              "DivisionByZero"
+            ]
+          }
+        }
+      ],
+      "basis": "DivisionByZero output sign follows operand-sign XOR.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-divide",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-ZERO-DIV-ZERO-UNTRAPPED",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "0"
+            },
+            {
+              "decimal": "0"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": false,
+              "signaling": false,
+              "payload": ""
+            },
+            "signals_exact": [
+              "InvalidOperation"
+            ]
+          }
+        }
+      ],
+      "basis": "DivisionUndefined maps to the public InvalidOperation signal; untrapped result is positive quiet NaN.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-divide",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-INF-MUL-ZERO-UNTRAPPED",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.multiply",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "Infinity"
+            },
+            {
+              "decimal": "0"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": false,
+              "signaling": false,
+              "payload": ""
+            },
+            "signals_exact": [
+              "InvalidOperation"
+            ]
+          }
+        }
+      ],
+      "basis": "Infinity times zero is InvalidOperation, independently of precision.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-multiply",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-OPPOSITE-INFINITIES-ADD",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "Infinity"
+            },
+            {
+              "decimal": "-Infinity"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": false,
+              "signaling": false,
+              "payload": ""
+            },
+            "signals_exact": [
+              "InvalidOperation"
+            ]
+          }
+        }
+      ],
+      "basis": "Opposite infinities cannot be added.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-add-sub",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-INF-DIV-INF-UNTRAPPED",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "Infinity"
+            },
+            {
+              "decimal": "Infinity"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": false,
+              "signaling": false,
+              "payload": ""
+            },
+            "signals_exact": [
+              "InvalidOperation"
+            ]
+          }
+        }
+      ],
+      "basis": "Infinity divided by Infinity is InvalidOperation.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-divide",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-INF-DIV-ZERO",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "Infinity"
+            },
+            {
+              "decimal": "0"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "infinity",
+              "negative": false
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "The infinity branch precedes finite division-by-zero checks; this does not signal DivisionByZero.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-divide",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-QNAN-PROPAGATION",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "-NaN42"
+            },
+            {
+              "decimal": "1"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": true,
+              "signaling": false,
+              "payload": "42"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "Quiet NaN retains sign/payload and propagates without InvalidOperation.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-add-sub",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-SNAN-QUIETING",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "-sNaN42"
+            },
+            {
+              "decimal": "1"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": true,
+              "signaling": false,
+              "payload": "42"
+            },
+            "signals_exact": [
+              "InvalidOperation"
+            ]
+          }
+        }
+      ],
+      "basis": "Untrapped signaling NaN becomes quiet but retains sign/payload.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-add-sub",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-SNAN-PRECEDES-QNAN",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "NaN11"
+            },
+            {
+              "decimal": "sNaN22"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": false,
+              "signaling": false,
+              "payload": "22"
+            },
+            "signals_exact": [
+              "InvalidOperation"
+            ]
+          }
+        }
+      ],
+      "basis": "Right signaling NaN takes precedence over left quiet NaN.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-add-sub",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-QNAN-LEFT-PRECEDENCE",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "NaN11"
+            },
+            {
+              "decimal": "NaN22"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": false,
+              "signaling": false,
+              "payload": "11"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "Absent signaling NaNs, left quiet NaN is returned.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-add-sub",
+        "pydecimal-signals"
+      ]
+    },
+    {
+      "id": "DEC-QNAN-PAYLOAD-PRECISION",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.plus",
+          "context": "decimal3",
+          "operands": [
+            {
+              "decimal": "NaN12345"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "nan",
+              "negative": false,
+              "signaling": false,
+              "payload": "345"
+            },
+            "signals_exact": []
+          }
+        }
+      ],
+      "basis": "NaN payload truncates to the last precision digits when clamp=0.",
+      "source_refs": [
+        "pydecimal-nan",
+        "pydecimal-fix-nan",
+        "pydecimal-unary"
+      ]
+    },
+    {
+      "id": "DEC-FINITE-DIV-INFINITY",
+      "classification": "source_and_mathematical_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28_untrapped",
+          "operands": [
+            {
+              "decimal": "-1"
+            },
+            {
+              "decimal": "Infinity"
+            }
+          ],
+          "expected": {
+            "kind": "value",
+            "value": {
+              "kind": "finite",
+              "negative": true,
+              "coefficient": "0",
+              "exponent": "-1000026"
+            },
+            "signals_exact": [
+              "Clamped"
+            ]
+          }
+        }
+      ],
+      "basis": "Finite/infinity returns signed zero at Etiny and signals Clamped.",
+      "source_refs": [
+        "pydecimal-divide"
+      ]
+    },
+    {
+      "id": "DEC-DIV-ZERO-TRAP",
+      "classification": "source_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1"
+            },
+            {
+              "decimal": "0"
+            }
+          ],
+          "expected": {
+            "kind": "trap",
+            "primary": "DivisionByZero",
+            "result_absent": true,
+            "signals_required": [
+              "DivisionByZero"
+            ],
+            "signals_exact": null,
+            "signals_exact_reason": "The pinned pure-Python reference raises immediately in _raise_error; complete trapped signal-set parity with the C decimal engine has not been observed. Only primary/no-result and required primary flag are acceptance requirements here.",
+            "source_condition": "DivisionByZero"
+          }
+        }
+      ],
+      "basis": "Default traps apply. The numeric core exposes the trap; SPARQL catch conversion belongs to the expression adapter.",
+      "source_refs": [
+        "pydecimal-signals",
+        "pydecimal-raise-error",
+        "pydecimal-divide"
+      ]
+    },
+    {
+      "id": "DEC-ZERO-DIV-ZERO-TRAP",
+      "classification": "source_derivation",
+      "steps": [
+        {
+          "operation": "decimal.divide",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "0"
+            },
+            {
+              "decimal": "0"
+            }
+          ],
+          "expected": {
+            "kind": "trap",
+            "primary": "InvalidOperation",
+            "result_absent": true,
+            "signals_required": [
+              "InvalidOperation"
+            ],
+            "signals_exact": null,
+            "signals_exact_reason": "The pinned pure-Python reference raises immediately in _raise_error; complete trapped signal-set parity with the C decimal engine has not been observed. Only primary/no-result and required primary flag are acceptance requirements here.",
+            "source_condition": "DivisionUndefined"
+          }
+        }
+      ],
+      "basis": "Default traps apply. The numeric core exposes the trap; SPARQL catch conversion belongs to the expression adapter.",
+      "source_refs": [
+        "pydecimal-signals",
+        "pydecimal-raise-error",
+        "pydecimal-divide"
+      ]
+    },
+    {
+      "id": "DEC-SNAN-TRAP",
+      "classification": "source_derivation",
+      "steps": [
+        {
+          "operation": "decimal.add",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "sNaN7"
+            },
+            {
+              "decimal": "1"
+            }
+          ],
+          "expected": {
+            "kind": "trap",
+            "primary": "InvalidOperation",
+            "result_absent": true,
+            "signals_required": [
+              "InvalidOperation"
+            ],
+            "signals_exact": null,
+            "signals_exact_reason": "The pinned pure-Python reference raises immediately in _raise_error; complete trapped signal-set parity with the C decimal engine has not been observed. Only primary/no-result and required primary flag are acceptance requirements here.",
+            "source_condition": "InvalidOperation"
+          }
+        }
+      ],
+      "basis": "Default traps apply. The numeric core exposes the trap; SPARQL catch conversion belongs to the expression adapter.",
+      "source_refs": [
+        "pydecimal-signals",
+        "pydecimal-raise-error",
+        "pydecimal-nan"
+      ]
+    },
+    {
+      "id": "DEC-OVERFLOW-TRAP",
+      "classification": "source_derivation",
+      "steps": [
+        {
+          "operation": "decimal.multiply",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1E+999999"
+            },
+            {
+              "decimal": "10"
+            }
+          ],
+          "expected": {
+            "kind": "trap",
+            "primary": "Overflow",
+            "result_absent": true,
+            "signals_required": [
+              "Overflow"
+            ],
+            "signals_exact": null,
+            "signals_exact_reason": "The pinned pure-Python reference raises immediately in _raise_error; complete trapped signal-set parity with the C decimal engine has not been observed. Only primary/no-result and required primary flag are acceptance requirements here.",
+            "source_condition": "Overflow"
+          }
+        }
+      ],
+      "basis": "Default traps apply. The numeric core exposes the trap; SPARQL catch conversion belongs to the expression adapter.",
+      "source_refs": [
+        "pydecimal-signals",
+        "pydecimal-raise-error",
+        "pydecimal-multiply"
+      ]
+    },
+    {
+      "id": "DEC-INVALID-CONSTRUCTOR-TRAP",
+      "classification": "source_derivation",
+      "steps": [
+        {
+          "operation": "decimal.parse_exact",
+          "context": "decimal28",
+          "operands": [
+            {
+              "text": "not-a-decimal"
+            }
+          ],
+          "expected": {
+            "kind": "trap",
+            "primary": "InvalidOperation",
+            "result_absent": true,
+            "signals_required": [
+              "InvalidOperation"
+            ],
+            "signals_exact": null,
+            "source_condition": "ConversionSyntax"
+          }
+        }
+      ],
+      "basis": "Pinned Decimal string constructor maps invalid syntax to InvalidOperation/ConversionSyntax; this does not specify RDF invalid-literal handling.",
+      "source_refs": [
+        "pydecimal-constructor",
+        "pydecimal-signals",
+        "pydecimal-raise-error"
+      ]
+    },
+    {
+      "id": "DEC-OUTPUT-RESOURCE-BOUND",
+      "classification": "active_safety_contract_not_parity",
+      "steps": [
+        {
+          "operation": "decimal.format_fixed",
+          "context": "decimal28",
+          "operands": [
+            {
+              "decimal": "1E+1000000"
+            }
+          ],
+          "limits_override": {
+            "max_output_characters": 128
+          },
+          "expected": {
+            "kind": "resource_fault",
+            "category": "output_characters",
+            "result_absent": true,
+            "numeric_trap": false
+          }
+        }
+      ],
+      "basis": "Active safety contract: output expansion is checked before allocation. Exact parse is not context rounding; formatting must not silently turn a budget fault into Overflow/NaN.",
+      "source_refs": [
+        "pydecimal-fixed-format"
+      ]
+    }
+  ],
+  "rdf_cached_numeric_boundary": {
+    "status": "source_derived_adapter_dependency_not_core_completion",
+    "source_refs": [
+      "term-normalized-cache",
+      "term-decimal-format",
+      "term-rdf-identity",
+      "pydecimal-divide",
+      "pydecimal-fixed-format"
+    ],
+    "fact": "The original Literal constructor retains its parsed Decimal value while replacing lexical text during normalization. Positive exponent information can disappear from the real RDF lexical string. A global numeric cache keyed only by RDF term identity cannot restore per-object construction metadata.",
+    "cases": [
+      {
+        "id": "RDF-CACHE-POSITIVE-EXPONENT",
+        "construction": {
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+          "input_lexical": "1E+2",
+          "normalize": true
+        },
+        "expected_rdf_lexical": "100",
+        "expected_cached_value": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "1",
+          "exponent": "2"
+        },
+        "operation": "Decimal('100') / cached rhs",
+        "expected_result": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "100",
+          "exponent": "-2"
+        },
+        "expected_fixed": "1.00",
+        "reparse_normalized_rhs_control": {
+          "value": {
+            "kind": "finite",
+            "negative": false,
+            "coefficient": "1",
+            "exponent": "0"
+          },
+          "fixed": "1"
+        },
+        "basis": "term.py682 parses before691-693 replace lexical;724 retains value. Exact division uses ideal exponent0-2."
+      },
+      {
+        "id": "RDF-CACHE-ZERO-EXPONENT",
+        "construction": [
+          {
+            "input_lexical": "0E+3",
+            "normalized_lexical": "0",
+            "cached": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "0",
+              "exponent": "3"
+            }
+          },
+          {
+            "input_lexical": "1E+4",
+            "normalized_lexical": "10000",
+            "cached": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1",
+              "exponent": "4"
+            }
+          }
+        ],
+        "operation": "cached lhs / cached rhs",
+        "expected_result": {
+          "kind": "finite",
+          "negative": false,
+          "coefficient": "0",
+          "exponent": "-1"
+        },
+        "expected_fixed": "0.0",
+        "reparse_normalized_operands_control": {
+          "value": {
+            "kind": "finite",
+            "negative": false,
+            "coefficient": "0",
+            "exponent": "0"
+          },
+          "fixed": "0"
+        },
+        "basis": "Zero division retains exponent difference3-4; reconstituting from normalized RDF strings loses both positive exponents."
+      },
+      {
+        "id": "RDF-IDENTITY-NOT-CACHE-IDENTITY",
+        "constructions": [
+          {
+            "input_lexical": "1E+2",
+            "normalize": true
+          },
+          {
+            "input_lexical": "100",
+            "normalize": true
+          }
+        ],
+        "same_datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+        "expected_rdf_lexical": "100",
+        "expected_rdf_equal": true,
+        "expected_equal_hashes": true,
+        "expected_cached_exponents": [
+          "2",
+          "0"
+        ],
+        "basis": "RDF term equality/hash in term.py1313-1407 ignores cached numeric value. Carry cached metadata per cell or object provenance without altering RDF identity."
+      }
+    ],
+    "required_future_receiving": "Prove real BIND/Group/SAMPLE projection and re-read retain known cached metadata when available; distinguish imports with unknown pre-normalization metadata. These cases do not authorize fabricated RDF datatypes, sentinel terms, a second Dataset, or a global RDF-term-to-cache map.",
+    "undecided": "Exact Rust carrier API and treatment of normalized RDF imports with unknown construction provenance remain a separate design/acceptance decision."
+  },
+  "remaining_unknowns": [
+    "Actual historical application Decimal context may differ from mutable DefaultContext; transitive initialization and active-context observation were not executed.",
+    "The C _decimal engine may collect more flags before a trapped exception than this pure-Python reference; exact complete trapped flag sets remain unqualified.",
+    "C Decimal constructor hard exponent/payload domain limits and Python integer text-limit configuration are not inferred from arbitrary-size internal BigInt representation.",
+    "Binary64/float-to-Decimal exact conversion, FloatOperation flags, float/decimal mixing and RDFLib binary64 xsd:float differences require their own cases; FloatOperation is reserved in the signal model but not falsely covered here.",
+    "Rounding modes other than HALF_EVEN, quantize, remainder/divide-integer, power, square root and transcendental operations are outside this core case set.",
+    "RDF datatype promotion, derived integer validity/normalization, invalid numeric RDF lexicals, RDF EBV/comparison and private per-cell cached metadata are adapter work; successful core tests do not complete them.",
+    "RDFLib catches InvalidOperation/ZeroDivisionError around multiplicative expressions, while additive/unary catch boundaries differ. This belongs to the existing expression compiler/adapter, not the numeric core.",
+    "No legacy normalizer corpus, public all-targets build, /1-4 regression, native behavior or public /5 qualification is claimed by this record."
+  ],
+  "acceptance_gate": {
+    "required": "A Rust test adapter must run all 70 cases against the one shared numeric core, checking every intermediate tuple and signal assertion. Active safety cases are reported separately from parity/source-derived cases. Candidate implementation must not regenerate these expectations.",
+    "reject_examples": [
+      "Final-only rounding gives1 for DEC-SEQUENCE-ROUND-EACH-OP instead of0.999",
+      "Normalized-only numeric cache gives1 for RHS1E2 instead of1.00",
+      "A numeric-value-only comparator hides signed zero/scale differences",
+      "Fixed i64 or fixed18-place Decimal cannot pass arbitrary integer/recurring precision cases"
+    ],
+    "completeness_limit": "Passing this set proves this explicit finite primitive surface under its stated contexts and budgets. It does not prove every Decimal operation/input domain or RDFLib query equivalence."
+  },
+  "source_record_sha256": "17537b2c280da7ba85fe2939a05081653661564e340bb65c7ce5bd73f257a21a",
+  "distribution_note": "Public derivative omits local source paths only. All case values, contexts, classifications, source digests and limitations equal the original independently frozen record."
+}

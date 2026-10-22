@@ -1,0 +1,26 @@
+{
+  "schema": "oev2.harness-checkpoint-input/1",
+  "task_id": "understand-fixture-repeatability",
+  "context": "合成示例：试制夹具的重复定位结果出现差异，载荷、温度和装夹步骤仍未核实。",
+  "request": "先判断需要补充哪些条件和证据，再组织下一步分析。",
+  "harness": {
+    "project_id": "synthetic-fixture-study",
+    "decision_id": "select-next-investigation",
+    "object_id": "fixture-concept",
+    "revision": "r1",
+    "problem_class": "condition-dependent-repeatability",
+    "goal": "明确重复定位差异的适用条件与下一项验证",
+    "conditions": ["当前为方案讨论，尚无受控实测记录"],
+    "constraints": ["本轮不启动 CAD、仿真或设备动作"],
+    "unknowns": ["实际载荷", "温度变化", "装夹步骤一致性", "测量方法与不确定度"],
+    "semantic_modules": [],
+    "review_requests": [],
+    "observations": [],
+    "checkpoint_policy": {
+      "schema": "oev2.harness-checkpoint-policy/1",
+      "mode": "verified_no_model",
+      "byte_budget": 16777216,
+      "reason": "保存合成案例的原始条件与未知，供后续调查；本次未执行模型或设备动作"
+    }
+  }
+}

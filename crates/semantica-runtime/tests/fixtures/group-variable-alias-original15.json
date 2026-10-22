@@ -1,0 +1,698 @@
+{
+  "schema": "semantica.original-variable-group-alias-fixture/1",
+  "complete_original_observation_sha256": "988fd4a073614ecd050efc527b85fa61b21c19364fa59b58df40f4bce247871b",
+  "source_version": "RDFLib7.6.0 exact original source/interpreter pins retained in private actual observation",
+  "cases": [
+    {
+      "input": {
+        "id": "group_alias_part",
+        "group": "group_alias",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?s AS ?group) ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {
+          "group": "<urn:part>"
+        },
+        "complete_input_sha256": "11179208e249806149c2946b3721c59937cbd6c78df7a99376c789bdf0b8a608"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "11179208e249806149c2946b3721c59937cbd6c78df7a99376c789bdf0b8a608",
+        "id": "group_alias_part",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "group_alias_other",
+        "group": "group_alias",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?s AS ?group) ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {
+          "group": "<urn:other>"
+        },
+        "complete_input_sha256": "4bbd029fdc47dce1f076e1ef6ba68bd023b2cf18910a581cfdcf2a7bf26f48fc"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "4bbd029fdc47dce1f076e1ef6ba68bd023b2cf18910a581cfdcf2a7bf26f48fc",
+        "id": "group_alias_other",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "group_alias_no_initial",
+        "group": "additional_no_initial_error_parser_controls",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?s AS ?group) ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "2ca0422cd1f29a7b93a0caf123c731c373eb44ebf746c15e4244847f821fc997"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "2ca0422cd1f29a7b93a0caf123c731c373eb44ebf746c15e4244847f821fc997",
+        "id": "group_alias_no_initial",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "plain_group_variable_control",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?s (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY ?s ORDER BY ?s",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "324a514dc1112863f1aec20e3f3a937f7c747047b371a47f5feef896d971948f"
+      },
+      "original": {
+        "columns": [
+          "s",
+          "count"
+        ],
+        "complete_input_sha256": "324a514dc1112863f1aec20e3f3a937f7c747047b371a47f5feef896d971948f",
+        "id": "plain_group_variable_control",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "s": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "s": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "expression_group_alias_control",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (STR(?s) AS ?group) ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "e84ec989d9a873a231751d705ba9b1a8d99dd257ba3e2bc674e5b7926e51a7a3"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "e84ec989d9a873a231751d705ba9b1a8d99dd257ba3e2bc674e5b7926e51a7a3",
+        "id": "expression_group_alias_control",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "Literal",
+              "n3": "\"urn:other\""
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "Literal",
+              "n3": "\"urn:part\""
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "two_variable_group_aliases",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group ?label (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?s AS ?group) (?tag AS ?label) ORDER BY ?group ?label",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "24f6c6c7462d7897b6c3485735b0358b1f1c73256dabb1df43723355f99b2c54"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "label",
+          "count"
+        ],
+        "complete_input_sha256": "24f6c6c7462d7897b6c3485735b0358b1f1c73256dabb1df43723355f99b2c54",
+        "id": "two_variable_group_aliases",
+        "kind": "SELECT",
+        "row_count": 3,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            },
+            "label": {
+              "kind": "Literal",
+              "n3": "\"A\""
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            },
+            "label": {
+              "kind": "Literal",
+              "n3": "\"A\""
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            },
+            "label": {
+              "kind": "Literal",
+              "n3": "\"B\""
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "nested_group_variable_alias",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group ?count WHERE { { SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?s AS ?group) } } ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "8641b6028a284768dfa77dffd7d16721bd9c2e6ea82d8ef0c7c89d80fb2d098d"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "8641b6028a284768dfa77dffd7d16721bd9c2e6ea82d8ef0c7c89d80fb2d098d",
+        "id": "nested_group_variable_alias",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "having_variable_group_alias",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?s AS ?group) HAVING(COUNT(?tag)>1) ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "825985791d7208927a79c8fdc8f94d2d0082c2d483a801de2b2d61a259f98be5"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "825985791d7208927a79c8fdc8f94d2d0082c2d483a801de2b2d61a259f98be5",
+        "id": "having_variable_group_alias",
+        "kind": "SELECT",
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "language_term_group_alias",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:name ?name ; ex:tag ?tag } GROUP BY (?name AS ?group) ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "3a8921fe7f955a83c2f405b3b72c8563baee1845afa3dbdf4128c41fc177c6a7"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "3a8921fe7f955a83c2f405b3b72c8563baee1845afa3dbdf4128c41fc177c6a7",
+        "id": "language_term_group_alias",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "Literal",
+              "n3": "\"bearing\"@en"
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "Literal",
+              "n3": "\"shaft\"@en"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "query_target_redeclared",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?tag (COUNT(?s) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?s AS ?tag) ORDER BY ?tag",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "994f89b8a45569267b42f4fee73e54225025c48140a7629b23dfa433e3aec2b3"
+      },
+      "original": {
+        "columns": [
+          "tag",
+          "count"
+        ],
+        "complete_input_sha256": "994f89b8a45569267b42f4fee73e54225025c48140a7629b23dfa433e3aec2b3",
+        "id": "query_target_redeclared",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "tag": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "tag": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "duplicate_alias_target",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?s AS ?group) (?tag AS ?group) ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "b29d85a461406e0b3b609b89e12c2c4ec5c3d0cf7713992e5d7d7c0f0df1fe53"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "b29d85a461406e0b3b609b89e12c2c4ec5c3d0cf7713992e5d7d7c0f0df1fe53",
+        "id": "duplicate_alias_target",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "Literal",
+              "n3": "\"A\""
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "Literal",
+              "n3": "\"B\""
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "self_alias_query_target",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?s (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?s AS ?s) ORDER BY ?s",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "eb241bcb252e2ad4c55bc028ba458fc39fecf9599c0c8464d00fc734eb50919b"
+      },
+      "original": {
+        "columns": [
+          "s",
+          "count"
+        ],
+        "complete_input_sha256": "eb241bcb252e2ad4c55bc028ba458fc39fecf9599c0c8464d00fc734eb50919b",
+        "id": "self_alias_query_target",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "s": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "s": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "unbound_variable_group_alias",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY (?missing AS ?group) ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "e1413a3883b1e20044bfe019e71ed237a7fbaf1406ae6dd226f969bee55446f3"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "e1413a3883b1e20044bfe019e71ed237a7fbaf1406ae6dd226f969bee55446f3",
+        "id": "unbound_variable_group_alias",
+        "kind": "SELECT",
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"3\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": null
+          }
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "empty_group_alias_unresolved_control",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:absent ?tag } GROUP BY (?s AS ?group)",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "7e272eb8bf0973866ec63ea09c1dd746e16377bd9dba8d9b7c358c4f7190f443"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "7e272eb8bf0973866ec63ea09c1dd746e16377bd9dba8d9b7c358c4f7190f443",
+        "id": "empty_group_alias_unresolved_control",
+        "kind": "SELECT",
+        "row_count": 1,
+        "rows": [
+          {}
+        ],
+        "status": "observed"
+      }
+    },
+    {
+      "input": {
+        "id": "minus_domain_group_alias",
+        "group": "group_alias_residual_control",
+        "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+        "rdf_format": "turtle",
+        "query": "SELECT ?group (COUNT(?tag) AS ?count) WHERE { ?s ex:tag ?tag MINUS { ?other ex:absent ?y } } GROUP BY (?s AS ?group) ORDER BY ?group",
+        "namespaces": {
+          "ex": "urn:"
+        },
+        "bindings": {},
+        "complete_input_sha256": "071993a559cf15e691fa98432f5920fc62f4fa195086b1158b63b5e7bfe8c85f"
+      },
+      "original": {
+        "columns": [
+          "group",
+          "count"
+        ],
+        "complete_input_sha256": "071993a559cf15e691fa98432f5920fc62f4fa195086b1158b63b5e7bfe8c85f",
+        "id": "minus_domain_group_alias",
+        "kind": "SELECT",
+        "row_count": 2,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            }
+          },
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            },
+            "group": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            }
+          }
+        ],
+        "status": "observed"
+      }
+    }
+  ],
+  "scope": "All15 exact complete inputs and original results preserved. Process/path/tool receipts remain private; original None keys/empty-group/permissive declaration observations are not erased."
+}

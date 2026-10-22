@@ -1,0 +1,557 @@
+{
+  "schema": "semantica.datalog-port-original-cases/1",
+  "expectation_origin": "source_derived_and_hand_derived_before_candidate",
+  "comparison": "Datalog original facts and row bindings have set semantics; original raw arrays retained separately. No ordered SPARQL gold changes.",
+  "cases": [
+    {
+      "id": "empty",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [],
+        "rows": null,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "one-fact",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "parent(tom, bob)"
+        ],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "parent(tom, bob)"
+        ],
+        "rows": null,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "duplicates",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "parent(tom, bob)",
+          "parent(tom, bob)"
+        ],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "parent(tom, bob)"
+        ],
+        "rows": null,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "dictionary",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          {
+            "subject": "Tom Smith",
+            "predicate": "Parent Of",
+            "object": "Bob"
+          }
+        ],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "parent_of(tom_smith, bob)"
+        ],
+        "rows": null,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "dictionary-skipped",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          {
+            "unknown": "not-a-fact"
+          }
+        ],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [],
+        "rows": null,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "edge-dictionary",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          {
+            "source": "a",
+            "target": "b",
+            "type": "depends"
+          }
+        ],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "depends(a, b)"
+        ],
+        "rows": null,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "entity-dictionary",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          {
+            "id": "a",
+            "type": "part"
+          }
+        ],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "part(a)"
+        ],
+        "rows": null,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "one-rule",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "parent(tom, bob)"
+        ],
+        "rules": [
+          "ancestor(X, Y) :- parent(X, Y)."
+        ],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "ancestor(tom, bob)",
+          "parent(tom, bob)"
+        ],
+        "rows": null,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "recursive",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "edge(a, b)",
+          "edge(b, c)",
+          "edge(c, d)"
+        ],
+        "rules": [
+          "path(X, Y) :- edge(X, Y).",
+          "path(X, Y) :- edge(X, Z), path(Z, Y)."
+        ],
+        "query": {
+          "pattern": "path(a, ?y)",
+          "bindings": {}
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "edge(a, b)",
+          "edge(b, c)",
+          "edge(c, d)",
+          "path(a, b)",
+          "path(a, c)",
+          "path(a, d)",
+          "path(b, c)",
+          "path(b, d)",
+          "path(c, d)"
+        ],
+        "rows": [
+          {
+            "y": "b"
+          },
+          {
+            "y": "c"
+          },
+          {
+            "y": "d"
+          }
+        ],
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "cycle",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "edge(a, b)",
+          "edge(b, a)"
+        ],
+        "rules": [
+          "path(X, Y) :- edge(X, Y).",
+          "path(X, Y) :- edge(X, Z), path(Z, Y)."
+        ],
+        "query": {
+          "pattern": "path(?x, ?x)",
+          "bindings": {}
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "edge(a, b)",
+          "edge(b, a)",
+          "path(a, a)",
+          "path(a, b)",
+          "path(b, a)",
+          "path(b, b)"
+        ],
+        "rows": [
+          {
+            "x": "a"
+          },
+          {
+            "x": "b"
+          }
+        ],
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "join",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "parent(tom, bob)",
+          "parent(bob, ann)"
+        ],
+        "rules": [
+          "grandparent(X, Y) :- parent(X, Z), parent(Z, Y)."
+        ],
+        "query": {
+          "pattern": "grandparent(tom, ?Y)",
+          "bindings": {}
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "grandparent(tom, ann)",
+          "parent(bob, ann)",
+          "parent(tom, bob)"
+        ],
+        "rows": [
+          {
+            "Y": "ann"
+          }
+        ],
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "repeated-variable",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "edge(a, b)",
+          "edge(c, c)"
+        ],
+        "rules": [
+          "self(X) :- edge(X, X)."
+        ],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "edge(a, b)",
+          "edge(c, c)",
+          "self(c)"
+        ],
+        "rows": null,
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "prebound",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "edge(a, b)",
+          "edge(b, c)",
+          "edge(c, d)"
+        ],
+        "rules": [
+          "path(X, Y) :- edge(X, Y).",
+          "path(X, Y) :- edge(X, Z), path(Z, Y)."
+        ],
+        "query": {
+          "pattern": "path(a, ?y)",
+          "bindings": {
+            "y": "c"
+          }
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "edge(a, b)",
+          "edge(b, c)",
+          "edge(c, d)",
+          "path(a, b)",
+          "path(a, c)",
+          "path(a, d)",
+          "path(b, c)",
+          "path(b, d)",
+          "path(c, d)"
+        ],
+        "rows": [
+          {
+            "y": "c"
+          }
+        ],
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "ground-query",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "parent(tom, bob)"
+        ],
+        "rules": [],
+        "query": {
+          "pattern": "parent(tom, bob)",
+          "bindings": {}
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "parent(tom, bob)"
+        ],
+        "rows": [],
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "no-match",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "parent(tom, bob)"
+        ],
+        "rules": [],
+        "query": {
+          "pattern": "parent(sarah, ?Y)",
+          "bindings": {}
+        },
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "success",
+        "closure": [
+          "parent(tom, bob)"
+        ],
+        "rows": [],
+        "error_fragment": null
+      }
+    },
+    {
+      "id": "variable-fact",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "parent(Tom, bob)"
+        ],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "error",
+        "closure": [],
+        "rows": null,
+        "error_fragment": "constants"
+      }
+    },
+    {
+      "id": "empty-argument",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "parent(tom, )"
+        ],
+        "rules": [],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "error",
+        "closure": [],
+        "rows": null,
+        "error_fragment": "Empty argument"
+      }
+    },
+    {
+      "id": "bad-rule",
+      "request": {
+        "schema": "semantica.datalog-request/1",
+        "facts": [
+          "parent(tom, bob)"
+        ],
+        "rules": [
+          "not-a-rule"
+        ],
+        "query": null,
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "outcome": "error",
+        "closure": [],
+        "rows": null,
+        "error_fragment": "missing ':-'"
+      }
+    }
+  ],
+  "original_execution": true,
+  "original_source_sha256": "901676257437fd056203ea572bb750f84c528b1693a5ef8149c68d5725a3c78d",
+  "original_observations_sha256": "ed6712686ad846a2703ce9e69059022563a6cb16275d43e08bf8eb2fff118cad"
+}

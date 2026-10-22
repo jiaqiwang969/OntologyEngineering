@@ -1,0 +1,3462 @@
+{
+  "schema": "semantica.datalog-session-originals/1",
+  "source": "Semantica0.6.5+oe.7 datalog_reasoner.py sha256901676257437fd056203ea572bb750f84c528b1693a5ef8149c68d5725a3c78d; frozen22 histories/94actions matched the pinned original before candidate",
+  "cases": [
+    {
+      "id": "empty-derive-clear",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "snapshot"
+          },
+          {
+            "action_id": "s2",
+            "operation": "derive"
+          },
+          {
+            "action_id": "s3",
+            "operation": "clear"
+          },
+          {
+            "action_id": "s4",
+            "operation": "snapshot"
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "snapshot",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "derive",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "clear",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "snapshot",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "query-without-rules",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "query",
+            "query": {
+              "pattern": "p(?x)",
+              "bindings": {}
+            }
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_fact",
+            "fact": {
+              "unknown": "x"
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": false,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": false,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)"
+          ],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "query-auto-derive",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "rule": "q(X) :- p(X)."
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "query": {
+              "pattern": "q(?x)",
+              "bindings": {}
+            }
+          },
+          {
+            "action_id": "s4",
+            "operation": "snapshot"
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "snapshot",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)",
+            "q(a)"
+          ],
+          "rule_count": 1,
+          "derived": true
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "incremental-facts-and-rules",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "rule": "q(X) :- p(X)."
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive"
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_fact",
+            "fact": "p(b)"
+          },
+          {
+            "action_id": "s5",
+            "operation": "query",
+            "query": {
+              "pattern": "q(?x)",
+              "bindings": {}
+            }
+          },
+          {
+            "action_id": "s6",
+            "operation": "add_rule",
+            "rule": "r(X) :- q(X)."
+          },
+          {
+            "action_id": "s7",
+            "operation": "query",
+            "query": {
+              "pattern": "r(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "p(b)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s5",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "p(b)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "p(b)",
+                "q(a)",
+                "q(b)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              },
+              {
+                "x": "b"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s6",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "p(b)",
+                "q(a)",
+                "q(b)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "p(b)",
+                "q(a)",
+                "q(b)"
+              ],
+              "rule_count": 2,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s7",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "p(b)",
+                "q(a)",
+                "q(b)"
+              ],
+              "rule_count": 2,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "p(b)",
+                "q(a)",
+                "q(b)",
+                "r(a)",
+                "r(b)"
+              ],
+              "rule_count": 2,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              },
+              {
+                "x": "b"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)",
+            "p(b)",
+            "q(a)",
+            "q(b)",
+            "r(a)",
+            "r(b)"
+          ],
+          "rule_count": 2,
+          "derived": true
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "duplicates-preserve-derived",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "rule": "q(X) :- p(X)."
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive"
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s5",
+            "operation": "add_fact",
+            "fact": {
+              "unknown": 1
+            }
+          },
+          {
+            "action_id": "s6",
+            "operation": "query",
+            "query": {
+              "pattern": "q(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": false,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s5",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": false,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s6",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)",
+            "q(a)"
+          ],
+          "rule_count": 1,
+          "derived": true
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "duplicate-rule-invalidates",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "rule": "q(X) :- p(X)."
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive"
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_rule",
+            "rule": "q(X) :- p(X)."
+          },
+          {
+            "action_id": "s5",
+            "operation": "query",
+            "query": {
+              "pattern": "q(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 2,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s5",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 2,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 2,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)",
+            "q(a)"
+          ],
+          "rule_count": 2,
+          "derived": true
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "clear-removes-facts-and-rules",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "rule": "q(X) :- p(X)."
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive"
+          },
+          {
+            "action_id": "s4",
+            "operation": "clear"
+          },
+          {
+            "action_id": "s5",
+            "operation": "add_fact",
+            "fact": "p(b)"
+          },
+          {
+            "action_id": "s6",
+            "operation": "query",
+            "query": {
+              "pattern": "q(?x)",
+              "bindings": {}
+            }
+          },
+          {
+            "action_id": "s7",
+            "operation": "add_rule",
+            "rule": "r(X) :- p(X)."
+          },
+          {
+            "action_id": "s8",
+            "operation": "query",
+            "query": {
+              "pattern": "r(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "clear",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s5",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s6",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [],
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s7",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(b)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s8",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(b)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(b)",
+                "r(b)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "x": "b"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(b)",
+            "r(b)"
+          ],
+          "rule_count": 1,
+          "derived": true
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "fact-error-keeps-prior",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "fact": "p( )"
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "query": {
+              "pattern": "p(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "failed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)"
+          ],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": false
+      }
+    },
+    {
+      "id": "rule-error-keeps-derived",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "rule": "q(X) :- p(X)."
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive"
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_rule",
+            "rule": "invalid"
+          },
+          {
+            "action_id": "s5",
+            "operation": "query",
+            "query": {
+              "pattern": "q(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "derive",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "failed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s5",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)",
+            "q(a)"
+          ],
+          "rule_count": 1,
+          "derived": true
+        },
+        "all_actions_succeeded": false
+      }
+    },
+    {
+      "id": "query-syntax-error-after-derive",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "rule": "q(X) :- p(X)."
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "query": {
+              "pattern": "invalid",
+              "bindings": {}
+            }
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "query": {
+              "pattern": "q(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "failed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)",
+            "q(a)"
+          ],
+          "rule_count": 1,
+          "derived": true
+        },
+        "all_actions_succeeded": false
+      }
+    },
+    {
+      "id": "query-empty-variable-after-derive",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "rule": "q(X) :- p(X)."
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "query": {
+              "pattern": "q(?)",
+              "bindings": {}
+            }
+          },
+          {
+            "action_id": "s4",
+            "operation": "snapshot"
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "failed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "snapshot",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "q(a)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)",
+            "q(a)"
+          ],
+          "rule_count": 1,
+          "derived": true
+        },
+        "all_actions_succeeded": false
+      }
+    },
+    {
+      "id": "graph-edge-failure-retains-prefix",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(s)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "load_graph",
+            "graph": {
+              "edges": [
+                {
+                  "source": "a",
+                  "target": "b",
+                  "type": "edge"
+                },
+                {
+                  "subject": "",
+                  "predicate": "p",
+                  "object": "x"
+                },
+                {
+                  "source": "c",
+                  "target": "d"
+                }
+              ],
+              "nodes": [
+                {
+                  "id": "e",
+                  "type": "item"
+                }
+              ]
+            }
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "query": {
+              "pattern": "edge(a, ?to)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(s)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "load_graph",
+            "state_before": {
+              "facts": [
+                "p(s)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "failed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "p(s)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "p(s)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "p(s)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [
+              {
+                "to": "b"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "edge(a, b)",
+            "p(s)"
+          ],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": false
+      }
+    },
+    {
+      "id": "graph-node-failure-retains-prefix",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "graph": {
+              "edges": [
+                {
+                  "source": "a",
+                  "target": "b",
+                  "type": "edge"
+                }
+              ],
+              "nodes": [
+                {
+                  "id": "n",
+                  "type": "item"
+                },
+                {
+                  "subject": "",
+                  "predicate": "p",
+                  "object": "x"
+                },
+                {
+                  "id": "z",
+                  "type": "item"
+                }
+              ]
+            }
+          },
+          {
+            "action_id": "s2",
+            "operation": "snapshot"
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "failed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "item(n)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "snapshot",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "item(n)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "item(n)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "edge(a, b)",
+            "item(n)"
+          ],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": false
+      }
+    },
+    {
+      "id": "graph-repeat-does-not-invalidate",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "graph": {
+              "edges": [
+                {
+                  "source": "a",
+                  "target": "b",
+                  "type": "edge"
+                },
+                {
+                  "source": "a",
+                  "target": "b",
+                  "type": "edge"
+                }
+              ],
+              "nodes": [
+                {
+                  "id": "n",
+                  "type": "item"
+                },
+                {
+                  "id": 0,
+                  "type": "item"
+                }
+              ]
+            }
+          },
+          {
+            "action_id": "s2",
+            "operation": "derive"
+          },
+          {
+            "action_id": "s3",
+            "operation": "load_graph",
+            "graph": {
+              "edges": [
+                {
+                  "source": "a",
+                  "target": "b",
+                  "type": "edge"
+                }
+              ],
+              "nodes": [
+                {
+                  "id": "n",
+                  "type": "item"
+                }
+              ]
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "item(n)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": 2
+          },
+          {
+            "action_id": "s2",
+            "operation": "derive",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "item(n)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "item(n)"
+              ],
+              "rule_count": 0,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "load_graph",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "item(n)"
+              ],
+              "rule_count": 0,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "item(n)"
+              ],
+              "rule_count": 0,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": 0
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "edge(a, b)",
+            "item(n)"
+          ],
+          "rule_count": 0,
+          "derived": true
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "graph-load-appends-clear-replaces",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "graph": {
+              "edges": [
+                {
+                  "source": "a",
+                  "target": "b",
+                  "type": "edge"
+                }
+              ],
+              "nodes": []
+            }
+          },
+          {
+            "action_id": "s2",
+            "operation": "load_graph",
+            "graph": {
+              "edges": [
+                {
+                  "source": "c",
+                  "target": "d",
+                  "type": "edge"
+                }
+              ],
+              "nodes": []
+            }
+          },
+          {
+            "action_id": "s3",
+            "operation": "clear"
+          },
+          {
+            "action_id": "s4",
+            "operation": "load_graph",
+            "graph": {
+              "edges": [
+                {
+                  "source": "c",
+                  "target": "d",
+                  "type": "edge"
+                }
+              ],
+              "nodes": []
+            }
+          },
+          {
+            "action_id": "s5",
+            "operation": "query",
+            "query": {
+              "pattern": "edge(?from, ?to)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": 1
+          },
+          {
+            "action_id": "s2",
+            "operation": "load_graph",
+            "state_before": {
+              "facts": [
+                "edge(a, b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "edge(c, d)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": 1
+          },
+          {
+            "action_id": "s3",
+            "operation": "clear",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "edge(c, d)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "load_graph",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(c, d)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": 1
+          },
+          {
+            "action_id": "s5",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "edge(c, d)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(c, d)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [
+              {
+                "from": "c",
+                "to": "d"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "edge(c, d)"
+          ],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "stop-keeps-failure-and-skips",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "fact": "p( )"
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_fact",
+            "fact": "p(b)"
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "query": {
+              "pattern": "p(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "stop",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "failed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "skipped",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "skipped",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)"
+          ],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": false
+      }
+    },
+    {
+      "id": "continue-after-failed-step",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "fact": "p( )"
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_fact",
+            "fact": "p(b)"
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "query": {
+              "pattern": "p(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "failed",
+            "state_after": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "p(b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a)",
+                "p(b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a)",
+                "p(b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [
+              {
+                "x": "a"
+              },
+              {
+                "x": "b"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a)",
+            "p(b)"
+          ],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": false
+      }
+    },
+    {
+      "id": "numeric-symbols-across-actions",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": {
+              "subject": "sample",
+              "predicate": "value",
+              "object": 1e-05
+            }
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "fact": {
+              "subject": "sample",
+              "predicate": "value",
+              "object": "1e-05"
+            }
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_rule",
+            "rule": "checked(X) :- value(X, 1e-05)."
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "query": {
+              "pattern": "checked(?id)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "value(sample, 1e-05)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "value(sample, 1e-05)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "value(sample, 1e-05)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": false,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "value(sample, 1e-05)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "value(sample, 1e-05)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "value(sample, 1e-05)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "checked(sample)",
+                "value(sample, 1e-05)"
+              ],
+              "rule_count": 1,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "id": "sample"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "checked(sample)",
+            "value(sample, 1e-05)"
+          ],
+          "rule_count": 1,
+          "derived": true
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "query-prebindings-and-ground",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "fact": "p(a, b)"
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "fact": "p(a, c)"
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "query": {
+              "pattern": "p(?X, ?y)",
+              "bindings": {
+                "y": "c"
+              }
+            }
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "query": {
+              "pattern": "p(a, c)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a, b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_fact",
+            "state_before": {
+              "facts": [
+                "p(a, b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a, b)",
+                "p(a, c)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": true,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a, b)",
+                "p(a, c)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a, b)",
+                "p(a, c)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [
+              {
+                "X": "a",
+                "y": "c"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "p(a, b)",
+                "p(a, c)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "p(a, b)",
+                "p(a, c)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "p(a, b)",
+            "p(a, c)"
+          ],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "clear-after-failed-graph",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "graph": {
+              "edges": [
+                {
+                  "source": "a",
+                  "target": "b",
+                  "type": "edge"
+                },
+                {
+                  "subject": "",
+                  "predicate": "p",
+                  "object": "x"
+                }
+              ],
+              "nodes": []
+            }
+          },
+          {
+            "action_id": "s2",
+            "operation": "clear"
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "query": {
+              "pattern": "edge(?x, ?y)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "failed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "clear",
+            "state_before": {
+              "facts": [
+                "edge(a, b)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "query",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": false
+      }
+    },
+    {
+      "id": "fresh-session-isolation",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "snapshot"
+          },
+          {
+            "action_id": "s2",
+            "operation": "query",
+            "query": {
+              "pattern": "p(?x)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "snapshot",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s2",
+            "operation": "query",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": [],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [],
+          "rule_count": 0,
+          "derived": false
+        },
+        "all_actions_succeeded": true
+      }
+    },
+    {
+      "id": "cyclic-closure-idempotent",
+      "request": {
+        "schema": "semantica.datalog-session-request/1",
+        "actions": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "graph": {
+              "edges": [
+                {
+                  "source": "a",
+                  "target": "b",
+                  "type": "edge"
+                },
+                {
+                  "source": "b",
+                  "target": "a",
+                  "type": "edge"
+                }
+              ],
+              "nodes": []
+            }
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "rule": "reachable(X, Y) :- edge(X, Y)."
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_rule",
+            "rule": "reachable(X, Y) :- edge(X, Z), reachable(Z, Y)."
+          },
+          {
+            "action_id": "s4",
+            "operation": "derive"
+          },
+          {
+            "action_id": "s5",
+            "operation": "derive"
+          },
+          {
+            "action_id": "s6",
+            "operation": "query",
+            "query": {
+              "pattern": "reachable(a, ?to)",
+              "bindings": {}
+            }
+          }
+        ],
+        "on_error": "continue",
+        "budget": {
+          "max_iterations": 1024,
+          "max_match_attempts": 10000000,
+          "max_facts": 100000,
+          "max_query_rows": 10000
+        }
+      },
+      "expected": {
+        "steps": [
+          {
+            "action_id": "s1",
+            "operation": "load_graph",
+            "state_before": {
+              "facts": [],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": 2
+          },
+          {
+            "action_id": "s2",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)"
+              ],
+              "rule_count": 0,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s3",
+            "operation": "add_rule",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)"
+              ],
+              "rule_count": 1,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)"
+              ],
+              "rule_count": 2,
+              "derived": false
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s4",
+            "operation": "derive",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)"
+              ],
+              "rule_count": 2,
+              "derived": false
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)",
+                "reachable(a, a)",
+                "reachable(a, b)",
+                "reachable(b, a)",
+                "reachable(b, b)"
+              ],
+              "rule_count": 2,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s5",
+            "operation": "derive",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)",
+                "reachable(a, a)",
+                "reachable(a, b)",
+                "reachable(b, a)",
+                "reachable(b, b)"
+              ],
+              "rule_count": 2,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)",
+                "reachable(a, a)",
+                "reachable(a, b)",
+                "reachable(b, a)",
+                "reachable(b, b)"
+              ],
+              "rule_count": 2,
+              "derived": true
+            },
+            "query_rows": null,
+            "inserted": null,
+            "graph_facts_added": null
+          },
+          {
+            "action_id": "s6",
+            "operation": "query",
+            "state_before": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)",
+                "reachable(a, a)",
+                "reachable(a, b)",
+                "reachable(b, a)",
+                "reachable(b, b)"
+              ],
+              "rule_count": 2,
+              "derived": true
+            },
+            "status": "completed",
+            "state_after": {
+              "facts": [
+                "edge(a, b)",
+                "edge(b, a)",
+                "reachable(a, a)",
+                "reachable(a, b)",
+                "reachable(b, a)",
+                "reachable(b, b)"
+              ],
+              "rule_count": 2,
+              "derived": true
+            },
+            "query_rows": [
+              {
+                "to": "a"
+              },
+              {
+                "to": "b"
+              }
+            ],
+            "inserted": null,
+            "graph_facts_added": null
+          }
+        ],
+        "final_state": {
+          "facts": [
+            "edge(a, b)",
+            "edge(b, a)",
+            "reachable(a, a)",
+            "reachable(a, b)",
+            "reachable(b, a)",
+            "reachable(b, b)"
+          ],
+          "rule_count": 2,
+          "derived": true
+        },
+        "all_actions_succeeded": true
+      }
+    }
+  ]
+}

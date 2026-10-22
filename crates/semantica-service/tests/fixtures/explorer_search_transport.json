@@ -1,0 +1,463 @@
+{
+  "rows": [
+    {
+      "name": "valid",
+      "auth": "anonymous",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{\"query\":\"bearing\"}",
+      "content_type": "application/json",
+      "status": 200,
+      "response": {
+        "results": [
+          {
+            "node": {
+              "id": "a",
+              "type": "Part",
+              "content": "bearing",
+              "properties": {
+                "content": "bearing"
+              },
+              "valid_from": null,
+              "valid_until": null
+            },
+            "score": 138.0,
+            "hop_distance": null,
+            "semantic_similarity": null
+          }
+        ],
+        "total": 1,
+        "query": "bearing"
+      },
+      "raw_utf8": "{\"results\":[{\"node\":{\"id\":\"a\",\"type\":\"Part\",\"content\":\"bearing\",\"properties\":{\"content\":\"bearing\"},\"valid_from\":null,\"valid_until\":null},\"score\":138.0,\"hop_distance\":null,\"semantic_similarity\":null}],\"total\":1,\"query\":\"bearing\"}"
+    },
+    {
+      "name": "invalid_model",
+      "auth": "anonymous",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{}",
+      "content_type": "application/json",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "missing",
+            "loc": [
+              "body",
+              "query"
+            ],
+            "msg": "Field required",
+            "input": {}
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\",\"query\"],\"msg\":\"Field required\",\"input\":{}}]}"
+    },
+    {
+      "name": "broken_json",
+      "auth": "anonymous",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{",
+      "content_type": "application/json",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              1
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting property name enclosed in double quotes"
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"json_invalid\",\"loc\":[\"body\",1],\"msg\":\"JSON decode error\",\"input\":{},\"ctx\":{\"error\":\"Expecting property name enclosed in double quotes\"}}]}"
+    },
+    {
+      "name": "empty",
+      "auth": "anonymous",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "",
+      "content_type": "application/json",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "missing",
+            "loc": [
+              "body"
+            ],
+            "msg": "Field required",
+            "input": null
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\"],\"msg\":\"Field required\",\"input\":null}]}"
+    },
+    {
+      "name": "null",
+      "auth": "anonymous",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "null",
+      "content_type": "application/json",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "missing",
+            "loc": [
+              "body"
+            ],
+            "msg": "Field required",
+            "input": null
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"missing\",\"loc\":[\"body\"],\"msg\":\"Field required\",\"input\":null}]}"
+    },
+    {
+      "name": "wrong_method",
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/graph/search",
+      "body_utf8": "{",
+      "content_type": "application/json",
+      "status": 405,
+      "response": {
+        "detail": "Method Not Allowed"
+      },
+      "raw_utf8": "{\"detail\":\"Method Not Allowed\"}"
+    },
+    {
+      "name": "slash",
+      "auth": "anonymous",
+      "method": "POST",
+      "path": "/api/graph/search/",
+      "body_utf8": "{",
+      "content_type": "application/json",
+      "status": 307,
+      "response": null,
+      "raw_utf8": ""
+    },
+    {
+      "name": "text",
+      "auth": "anonymous",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{}",
+      "content_type": "text/plain",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "model_attributes_type",
+            "loc": [
+              "body"
+            ],
+            "msg": "Input should be a valid dictionary or object to extract fields from",
+            "input": "{}"
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"model_attributes_type\",\"loc\":[\"body\"],\"msg\":\"Input should be a valid dictionary or object to extract fields from\",\"input\":\"{}\"}]}"
+    },
+    {
+      "name": "no_type",
+      "auth": "anonymous",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{\"query\":\"bearing\"}",
+      "content_type": null,
+      "status": 200,
+      "response": {
+        "results": [
+          {
+            "node": {
+              "id": "a",
+              "type": "Part",
+              "content": "bearing",
+              "properties": {
+                "content": "bearing"
+              },
+              "valid_from": null,
+              "valid_until": null
+            },
+            "score": 138.0,
+            "hop_distance": null,
+            "semantic_similarity": null
+          }
+        ],
+        "total": 1,
+        "query": "bearing"
+      },
+      "raw_utf8": "{\"results\":[{\"node\":{\"id\":\"a\",\"type\":\"Part\",\"content\":\"bearing\",\"properties\":{\"content\":\"bearing\"},\"valid_from\":null,\"valid_until\":null},\"score\":138.0,\"hop_distance\":null,\"semantic_similarity\":null}],\"total\":1,\"query\":\"bearing\"}"
+    },
+    {
+      "name": "valid",
+      "auth": "unauthorized",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{\"query\":\"bearing\"}",
+      "content_type": "application/json",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}"
+    },
+    {
+      "name": "invalid_model",
+      "auth": "unauthorized",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{}",
+      "content_type": "application/json",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}"
+    },
+    {
+      "name": "broken_json",
+      "auth": "unauthorized",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{",
+      "content_type": "application/json",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              1
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting property name enclosed in double quotes"
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"json_invalid\",\"loc\":[\"body\",1],\"msg\":\"JSON decode error\",\"input\":{},\"ctx\":{\"error\":\"Expecting property name enclosed in double quotes\"}}]}"
+    },
+    {
+      "name": "empty",
+      "auth": "unauthorized",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "",
+      "content_type": "application/json",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}"
+    },
+    {
+      "name": "null",
+      "auth": "unauthorized",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "null",
+      "content_type": "application/json",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}"
+    },
+    {
+      "name": "wrong_method",
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/graph/search",
+      "body_utf8": "{",
+      "content_type": "application/json",
+      "status": 405,
+      "response": {
+        "detail": "Method Not Allowed"
+      },
+      "raw_utf8": "{\"detail\":\"Method Not Allowed\"}"
+    },
+    {
+      "name": "slash",
+      "auth": "unauthorized",
+      "method": "POST",
+      "path": "/api/graph/search/",
+      "body_utf8": "{",
+      "content_type": "application/json",
+      "status": 307,
+      "response": null,
+      "raw_utf8": ""
+    },
+    {
+      "name": "text",
+      "auth": "unauthorized",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{}",
+      "content_type": "text/plain",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}"
+    },
+    {
+      "name": "no_type",
+      "auth": "unauthorized",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{\"query\":\"bearing\"}",
+      "content_type": null,
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}"
+    },
+    {
+      "name": "valid",
+      "auth": "unconfigured",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{\"query\":\"bearing\"}",
+      "content_type": "application/json",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}"
+    },
+    {
+      "name": "invalid_model",
+      "auth": "unconfigured",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{}",
+      "content_type": "application/json",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}"
+    },
+    {
+      "name": "broken_json",
+      "auth": "unconfigured",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{",
+      "content_type": "application/json",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              1
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting property name enclosed in double quotes"
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"json_invalid\",\"loc\":[\"body\",1],\"msg\":\"JSON decode error\",\"input\":{},\"ctx\":{\"error\":\"Expecting property name enclosed in double quotes\"}}]}"
+    },
+    {
+      "name": "empty",
+      "auth": "unconfigured",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "",
+      "content_type": "application/json",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}"
+    },
+    {
+      "name": "null",
+      "auth": "unconfigured",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "null",
+      "content_type": "application/json",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}"
+    },
+    {
+      "name": "wrong_method",
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/graph/search",
+      "body_utf8": "{",
+      "content_type": "application/json",
+      "status": 405,
+      "response": {
+        "detail": "Method Not Allowed"
+      },
+      "raw_utf8": "{\"detail\":\"Method Not Allowed\"}"
+    },
+    {
+      "name": "slash",
+      "auth": "unconfigured",
+      "method": "POST",
+      "path": "/api/graph/search/",
+      "body_utf8": "{",
+      "content_type": "application/json",
+      "status": 307,
+      "response": null,
+      "raw_utf8": ""
+    },
+    {
+      "name": "text",
+      "auth": "unconfigured",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{}",
+      "content_type": "text/plain",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}"
+    },
+    {
+      "name": "no_type",
+      "auth": "unconfigured",
+      "method": "POST",
+      "path": "/api/graph/search",
+      "body_utf8": "{\"query\":\"bearing\"}",
+      "content_type": null,
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}"
+    }
+  ],
+  "source_unchanged": true,
+  "production_python_delegate": false
+}

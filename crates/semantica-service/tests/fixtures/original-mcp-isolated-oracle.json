@@ -1,0 +1,176 @@
+{
+  "schema": "private.pinned-mcp-isolated-oracle/1",
+  "source_commit": "8b2ed123c380fc8abc78507e6e6648e6f5c0052c",
+  "source_sha256": "1273bca55d0ad9a10b65405fedf91394456f6cdf071569ec410d68206cb6f737",
+  "functions": [
+    "_handle",
+    "list_mcp_tools",
+    "_tool_get_graph_summary"
+  ],
+  "actual_oracle_execution": "completed_isolated_python_ast_no_production_import",
+  "cases": [
+    {
+      "id": "ping",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "q",
+        "method": "ping"
+      },
+      "expected": {
+        "jsonrpc": "2.0",
+        "id": "q",
+        "result": {}
+      },
+      "scope": "isolated exact original dispatcher functions; graph fixture only for summary"
+    },
+    {
+      "id": "notification",
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "notifications/initialized"
+      },
+      "expected": null,
+      "scope": "isolated exact original dispatcher functions; graph fixture only for summary"
+    },
+    {
+      "id": "other-notification",
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "notifications/cancelled"
+      },
+      "expected": null,
+      "scope": "isolated exact original dispatcher functions; graph fixture only for summary"
+    },
+    {
+      "id": "unknown-method",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 5,
+        "method": "absent/method"
+      },
+      "expected": {
+        "jsonrpc": "2.0",
+        "id": 5,
+        "error": {
+          "code": -32601,
+          "message": "Method not found: absent/method"
+        }
+      },
+      "scope": "isolated exact original dispatcher functions; graph fixture only for summary"
+    },
+    {
+      "id": "unknown-tool",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 6,
+        "method": "tools/call",
+        "params": {
+          "name": "absent_tool",
+          "arguments": {}
+        }
+      },
+      "expected": {
+        "jsonrpc": "2.0",
+        "id": 6,
+        "error": {
+          "code": -32601,
+          "message": "Unknown tool: absent_tool"
+        }
+      },
+      "scope": "isolated exact original dispatcher functions; graph fixture only for summary"
+    },
+    {
+      "id": "nonobject-args",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 7,
+        "method": "tools/call",
+        "params": {
+          "name": "get_graph_summary",
+          "arguments": []
+        }
+      },
+      "expected": {
+        "jsonrpc": "2.0",
+        "id": 7,
+        "error": {
+          "code": -32602,
+          "message": "Tool arguments must be an object"
+        }
+      },
+      "scope": "isolated exact original dispatcher functions; graph fixture only for summary"
+    },
+    {
+      "id": "prompts",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "method": "prompts/list"
+      },
+      "expected": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "result": {
+          "prompts": []
+        }
+      },
+      "scope": "isolated exact original dispatcher functions; graph fixture only for summary"
+    },
+    {
+      "id": "empty-summary",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 8,
+        "method": "tools/call",
+        "params": {
+          "name": "get_graph_summary",
+          "arguments": {}
+        }
+      },
+      "expected": {
+        "jsonrpc": "2.0",
+        "id": 8,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"decision_count\": 0,\n  \"graph_ready\": true,\n  \"node_count\": 0\n}"
+            }
+          ]
+        }
+      },
+      "scope": "isolated exact original dispatcher functions; graph fixture only for summary"
+    },
+    {
+      "id": "nonempty-summary",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 9,
+        "method": "tools/call",
+        "params": {
+          "name": "get_graph_summary",
+          "arguments": {}
+        }
+      },
+      "expected": {
+        "jsonrpc": "2.0",
+        "id": 9,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\n  \"decision_count\": 1,\n  \"graph_ready\": true,\n  \"node_count\": 3\n}"
+            }
+          ]
+        }
+      },
+      "scope": "exact original _tool_get_graph_summary with find_nodes fixture; not whole ContextGraph original engine"
+    }
+  ],
+  "limitations": [
+    "Provider tools not replayed",
+    "Graph fixture is independent record fixture, not actual ContextGraph engine",
+    "Server lifecycle and full protocol compliance not tested",
+    "Rust version/catalog availability metadata are explicit new profile differences"
+  ]
+}

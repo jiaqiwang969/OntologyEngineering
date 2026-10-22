@@ -1,0 +1,136 @@
+schema="oev2.design-fragment/2"
+
+[[constraints]]
+id = "design_source_composition2"
+requirement = "req_delivery"
+module = "design"
+check = "require_current"
+rust_path = "crates/oe-design/src/composition.rs"
+statement = "Explicit TOML oev2.design/2 root binds all relative fragment paths/formats/original SHA. Each file retains4MiB; root+all fragments fixed8MiB and32files. One merged original Design AST retains complete metadata/requirements/modules/platform/checks/interfaces/source scopes; no parallel Project or renderer. Nested manifest/cycle/link/outside/alias/repeat/duplicate definition/unknown fields fail. Formal2 execution requires exact current compiler capture of root/all actual fragments; old1 serde/4MiB/normalization and input meaning remain."
+severity = "error"
+
+[[constraints]]
+id = "design_composition2_generation_publication"
+requirement = "req_delivery"
+module = "design"
+check = "run_composed"
+rust_path = "crates/oe-design/src/generation.rs"
+statement = "Same AST/RDF/locked ggen produces actual2 normalized envelope retaining complete semantic AST1 plus source2 raw-file identity/field byte/line locators. Generation2 source_inputs include root+every fragment; source/current compiler capture rechecked after actual generation and before original atomic publish. Lost/unread/changed/forgedSHA/uncaptured input/downgrade preserve previous generation. Flat1 and composed2 equivalent semantics keep contract/check/interface products byte equal; generation/source envelope and original schema identity remain distinct. Existing derived model/output/template budgets stay independent and bounded."
+severity = "error"
+
+[[validations]]
+id = "verify_design_composition2_original_metadata"
+module = "design"
+constraint = "design_source_composition2"
+behavior = "composition2_preserves_complete_flat_semantics_and_original_field_locations"
+rust_path = "crates/oe-design/tests/composition.rs"
+oracle = "Freeze complete current flat1 input before composition implementation; exact canonical semantic AST and original annotations retain requirements/modules/types/constraints/interfaces/source/machine/validation/semantic models. Actual parser locators refer to unchanged original bytes, including multiline Unicode fields. Input2 public normalization retains its new envelope, never resigns old wire1."
+scope = "Finite source transport/one semantic store, no semantic review/engineering adoption/full migration qualification"
+
+[[validations]]
+id = "verify_design_composition2_source_rejections"
+module = "design"
+constraint = "design_source_composition2"
+behavior = "composition2_rejects_missing_hash_path_link_duplicate_nested_and_budgets"
+rust_path = "crates/oe-design/tests/composition.rs"
+oracle = "Original1 >4MiB refuses and1 imports never ignored;2 root/file4MiB/total8MiB/32file boundaries source-bound, no symlink/hardlink/alias/outside/nesting/cycle/repeated path/definition/unknown fields/partial read. Whole source drift/uncompiled scope rejects without modifying existing outputs."
+scope = "Exact independent input mutations and all existing metadata validation; budget change is versioned source composition only"
+
+[[validations]]
+id = "verify_design_composition2_actual_generation"
+module = "design"
+constraint = "design_composition2_generation_publication"
+behavior = "composition2_actual_ggen_products_bind_all_sources_and_atomic_refusal"
+rust_path = "crates/oe-design/tests/composition_generation.rs"
+oracle = "Actual locked ggen, current compiled2 source and same semantic flat1 generate identical contracts/checks/interfaces; fragment edit with updated root SHA requires new current compile/ggen and propagates actual products. Changes/lost/forged root-source/staged schema downgrade/uncaptured inputs cannot publish; prior generated version retained. Check/CLI use full2 inputs and expose actual root/fragment identity. Original failures remain separate."
+scope = "Explicit current producer and source closure, no mock renderer; actual integration original/1 generated-wire history preserved"
+
+[[constraints]]
+id = "design_composition_anchored_source_read"
+requirement = "req_delivery"
+module = "design"
+check = "require_current"
+rust_path = "crates/oe-design/src/composition.rs"
+statement = "runtime read与current/build capture共享source_reader：Unix逐父目录no-follow fd及leaf nonblock/no-follow，打开后regular/nlink/4MiB；读后核held/current父dev/ino与file dev/ino/size/mtime/ctime。逻辑原路径不先canonicalize到替代来源。Windows复用现有StableRoot/PinnedFile，原/1 probe及/2 source/capture/atomic budgets保留。"
+severity = "error"
+
+[[validations]]
+id = "verify_composition_anchored_parent"
+module = "design"
+constraint = "design_composition_anchored_source_read"
+behavior = "composition_source_anchored_parent_replacement_refuses"
+rust_path = "build_support/source_reader.rs"
+oracle = "pin父fd后把原父rename并替换成外部symlink；实际打开fd仍是原inode，最终当前路径验证拒绝，外部字节不读取/改写。另真实FIFO read/probe无writer在1s内拒绝，原阻塞/终止/清理原件保留。"
+scope = "macOS受控真实filesystem与shared runtime/build读取；Windows运行另验"
+
+[[validations]]
+id = "verify_composition_source_leaf_identity"
+module = "design"
+constraint = "design_composition_anchored_source_read"
+behavior = "composition_source_same_mtime_leaf_replacement_refuses"
+rust_path = "build_support/source_reader.rs"
+oracle = "等大小/等mtime不同inode的新regular源替换原路径；不能仅按mtime信任，读后拒绝。"
+scope = "实际inode与持有fd，不用mock verdict"
+
+[[validations]]
+id = "verify_composition_source_content_and_probe"
+module = "design"
+constraint = "design_composition_anchored_source_read"
+behavior = "composition_source_content_change_and_regular_probes_remain_bounded"
+rust_path = "build_support/source_reader.rs"
+oracle = "内容写变并还原mtime仍拒；原regular bytes成功，4MiB cap/legacy missing、malformed及overcap probe保持；symlink/hardlink/directory/FIFO具体拒绝，全部/2输入和原传播仍核。"
+scope = "有界source IO，不证明全19/19/22/13494/55或平台资格"
+
+[[validations]]
+id = "verify_composition_legacy_probe_io"
+module = "design"
+constraint = "design_composition_anchored_source_read"
+behavior = "composition_capture_legacy_probe_preserves_caps_and_rejects_links"
+rust_path = "crates/oe-design/tests/composition_io.rs"
+oracle = "实际current_capture对missing/malformed/over4MiB及旧schema1保持empty；普通read仍拒超限，目录/叶符号链接/悬空链接具体失败而不当作missing。"
+scope = "原compile probe含义与读取保护；不授予缺源码/新schema2输入执行权"
+
+[[constraints]]
+id = "generation_directory_history_identity"
+requirement = "req_delivery"
+module = "core"
+check = "unique_private_dir"
+rust_path = "crates/oe-core/src/lib.rs"
+statement = "CLI execution/stage/bootstrap/CLI publication共享oe-core独占目录owner：actual PID+Unix nanos+process serial+32有限AlreadyExists重试，不读/复用/删/覆写旧history；stem只存储候选名不授予时间/PID/source truth。路径/链接/非碰撞原错继续拒；stage仍在合法generation prefix，source/capture/receipt/pub守卫顺序保持。"
+severity = "error"
+
+[[validations]]
+id = "verify_shared_execution_history_collision"
+module = "core"
+constraint = "generation_directory_history_identity"
+behavior = "execution_directory_same_pid_history_and_collisions_create_new_records"
+rust_path = "crates/oe-cli/src/execution_directory.rs"
+oracle = "同PID旧dir、同nonce受控实际mkdir碰撞保留旧字节并分配新dir；CLI已委托唯一core owner。Root原stage history/fresh同producer和bootstrap publication after-ggen旧marker实证保留，新current对应caller实际复验。"
+scope = "有范围生成记录缺陷；旧CLI publication只源码同类，不能冒旧版实跑"
+
+[[validations]]
+id = "verify_shared_directory_collision_budget"
+module = "core"
+constraint = "generation_directory_history_identity"
+behavior = "execution_directory_collision_budget_never_overwrites_history"
+rust_path = "crates/oe-cli/src/execution_directory.rs"
+oracle = "相同共享reserve owner32全部预置候选后明确拒，全部marker字节/数量不变；新unique owner没有改新建含义。"
+scope = "actual filesystem私有目录，不代表全平台/原库资格"
+
+[[validations]]
+id = "verify_shared_directory_path_guard"
+module = "core"
+constraint = "generation_directory_history_identity"
+behavior = "execution_directory_path_and_link_guards_do_not_become_collision_retries"
+rust_path = "crates/oe-cli/src/execution_directory.rs"
+oracle = "同owner parent traversal/链接失败，碰撞后重查路径，不将link/race作为重试许可；不跟随外部目标。"
+scope = "macOS受控路径检查；Windows运行未知"
+
+[[constraints]]
+id = "bootstrap_composed_normalized_envelope"
+requirement = "req_delivery"
+module = "design"
+check = "main"
+rust_path = "crates/oe-design/src/bin/oev2-design-bootstrap.rs"
+statement = "bootstrap normalize与CLI normalize在实际/2输入共用loaded composition/require_current/normalized/verify，完整normalized-design/2与source2 sidecar绑定root和全部fragment及locator；同内存AST1/model不冒/1公开wire。两normalize与ggen共用source_bytes canonical完整evidence及16MiB gate，不pretty膨胀或删locator；旧/1仍原canonical/model/execution，预算及来源拒绝保持；两个实际当前入口分别取证。"
+severity = "error"

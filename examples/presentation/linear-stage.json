@@ -1,0 +1,184 @@
+{
+  "schema": "oev2.presentation-example/1",
+  "purpose": "验证Anatomy方法进入v2既有架构后的来源、状态与交付闭环",
+  "origin": "New illustrative linear stage authored for v2. Orthographic rendering method adapted from Anatomy bc943e4, MIT. Dimensions are illustrative, not native CAD or manufacturing dimensions.",
+  "scene": {
+    "schema": "oev2.presentation-scene/1",
+    "unit": "illustration_unit",
+    "parts": [
+      {
+        "id": "base",
+        "label": "底座",
+        "representation": "illustration",
+        "primitive": "box",
+        "origin": [
+          0,
+          0,
+          0
+        ],
+        "size": [
+          120,
+          60,
+          8
+        ],
+        "parameter_id": null,
+        "axis": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "rail_rear",
+        "label": "后导轨",
+        "representation": "illustration",
+        "primitive": "box",
+        "origin": [
+          8,
+          10,
+          8
+        ],
+        "size": [
+          104,
+          6,
+          6
+        ],
+        "parameter_id": null,
+        "axis": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "rail_front",
+        "label": "前导轨",
+        "representation": "illustration",
+        "primitive": "box",
+        "origin": [
+          8,
+          44,
+          8
+        ],
+        "size": [
+          104,
+          6,
+          6
+        ],
+        "parameter_id": null,
+        "axis": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "carriage",
+        "label": "移动滑台",
+        "representation": "illustration",
+        "primitive": "box",
+        "origin": [
+          12,
+          8,
+          14
+        ],
+        "size": [
+          36,
+          44,
+          9
+        ],
+        "parameter_id": "travel",
+        "axis": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "payload",
+        "label": "圆柱载荷示意",
+        "representation": "illustration",
+        "primitive": "cylinder_z",
+        "origin": [
+          23,
+          19,
+          23
+        ],
+        "size": [
+          14,
+          14,
+          26
+        ],
+        "parameter_id": "travel",
+        "axis": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "id": "stop",
+        "label": "右端限位块",
+        "representation": "illustration",
+        "primitive": "box",
+        "origin": [
+          112,
+          0,
+          8
+        ],
+        "size": [
+          8,
+          60,
+          8
+        ],
+        "parameter_id": null,
+        "axis": [
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "parameters": [
+      {
+        "id": "travel",
+        "label": "滑台位移",
+        "unit": "illustration_unit",
+        "minimum": 0,
+        "maximum": 40
+      }
+    ],
+    "states": [
+      {
+        "id": "position_0",
+        "label": "起始位置",
+        "values": [
+          {
+            "parameter_id": "travel",
+            "value": 0
+          }
+        ]
+      },
+      {
+        "id": "position_1",
+        "label": "中间位置",
+        "values": [
+          {
+            "parameter_id": "travel",
+            "value": 20
+          }
+        ]
+      },
+      {
+        "id": "position_2",
+        "label": "终点位置",
+        "values": [
+          {
+            "parameter_id": "travel",
+            "value": 40
+          }
+        ]
+      }
+    ]
+  }
+}

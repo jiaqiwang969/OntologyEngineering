@@ -1,0 +1,48 @@
+{
+  "schema": "oev2.vendor-nullable-carrier-patch/1",
+  "upstream_version": "spareval0.2.7",
+  "upstream_commit": "0e81a29d27575ab69e7f85ea9c7f1058b277fcd0",
+  "upstream_manifest_sha256": "797b776aa0e6afa25c148fa604df9957119d47c7e76c309d8bea2d90a669d3f0",
+  "previous_commit": "755ccda0ccfc3ac111472cc797b0d9077c4a5ba2",
+  "previous_sources": {
+    "vendor/spareval/src/eval.rs": {
+      "bytes": 198396,
+      "sha256": "3a35c12ae8b3385135727246a4c771305827e9d6e0ef7c2f98a2ebb8051d1cc1"
+    },
+    "vendor/spareval/src/model.rs": {
+      "bytes": 6686,
+      "sha256": "04863538ccae395e76d447b22fb988b347f69e82132918746dee0c175a73933e"
+    },
+    "vendor/spareval/src/error.rs": {
+      "bytes": 3244,
+      "sha256": "01468f9cc058e977130d5745072a96c270781f96fb43a738d47d00f1952a3b69"
+    },
+    "vendor/spareval/src/lib.rs": {
+      "bytes": 47023,
+      "sha256": "519388308f7a6484c719c672d5513e5b1bbe5d287695f5b137d1f0c6f4adff02"
+    }
+  },
+  "licenses": {
+    "LICENSE-MIT": "1f4f6736adc52ebfda18bb84947e0ef492bd86a408c0e83872efb75ed5e02838",
+    "LICENSE-APACHE": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+  },
+  "source_derived_rules": {
+    "sparql.py": {
+      "bytes": 15855,
+      "sha256": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f"
+    },
+    "parserutils.py": {
+      "bytes": 9233,
+      "sha256": "1d6b919bd9f76d30df279b5dc5dd93eb33055b8ea801ace65acf182b7887b3d9"
+    },
+    "evalutils.py": {
+      "bytes": 4908,
+      "sha256": "1d4167779189ebf38257ecc8e2089d0a71df6470b10f7ccde8cb5176bd359d09"
+    }
+  },
+  "preimplementation_expectations": {
+    "VALUE-EXPECTATIONS-01.json": "91dff3efd3f80432c902fa545d31495e030985a72ba1b0675da8b8ddbc4c4230",
+    "CONTEXT-EXPECTATIONS-01.json": "4bd42d573482c8427d552c3e8bb1c05220286f4b80d838b8308aa5c653487edb"
+  },
+  "scope": "Same InternalTuple and existing Project/join/Union/DISTINCT/MINUS/hash/pattern/SELECT decoder. Source-derived injected-cell controls, not original query parity. No public nullable profile. Legacy RDF-only input/output remains; raw expressions, aggregates, original plan/context and wrapper closure remain incomplete."
+}

@@ -1,0 +1,188 @@
+schema="oev2.design-fragment/2"
+[[constraints]]
+id="private_supplier_file_access"
+requirement="req_engineering"
+module="cad"
+check="read_identity"
+rust_path="crates/oe-cad/src/supplier/session.rs"
+statement="供应商身份输入以同一文件对象读取；Unix保留0600式限制，Windows原生核owner及DACL，只接纳当前用户、SYSTEM、Administrators有效allow，其他主体及未支持ACE拒绝。身份、权限和内容于读取及观察后复核；不读取浏览器凭据，不静默修改输入权限。"
+severity="error"
+
+[[validations]]
+id="private_input_rechecks_permissions_and_same_content_replacement"
+module="cad"
+constraint="private_supplier_file_access"
+behavior="private_input_rechecks_permissions_and_same_content_replacement"
+rust_path="crates/oe-core/src/private_file.rs"
+oracle="Unix私有文件接纳，权限放宽、同内容对象替换及超预算拒绝"
+scope="实际Unix文件；Windows各自原生验证"
+
+[[validations]]
+id="windows_private_acl_accepts_user_and_privileged_subjects"
+module="cad"
+constraint="private_supplier_file_access"
+behavior="windows_private_acl_accepts_user_and_privileged_subjects"
+rust_path="crates/oe-core/src/private_file/windows.rs"
+oracle="Windows当前用户及系统特权主体ACL接纳；实际同对象复核一致"
+scope="Windows原生文件与ACL；非浏览器会话或供应商采用"
+
+[[validations]]
+id="windows_private_acl_rejects_other_readers_writers_and_null_acl"
+module="cad"
+constraint="private_supplier_file_access"
+behavior="windows_private_acl_rejects_other_readers_writers_and_null_acl"
+rust_path="crates/oe-core/src/private_file/windows.rs"
+oracle="Everyone、Authenticated Users、无关SID的读写/权限修改及null DACL拒绝"
+scope="实际Windows权限反例；未经支持的ACE不默许"
+
+[[validations]]
+id="windows_private_acl_detects_change_replacement_and_hardlinks"
+module="cad"
+constraint="private_supplier_file_access"
+behavior="windows_private_acl_detects_change_replacement_and_hardlinks"
+rust_path="crates/oe-core/src/private_file/windows.rs"
+oracle="权限变化、相同内容替换、硬链接、目录和容量超限拒绝"
+scope="Windows本地文件身份；完整supplier acquisition另验"
+
+[[validations]]
+id="windows_native_descriptors_reject_unknown_owner_and_unsupported_aces"
+module="cad"
+constraint="private_supplier_file_access"
+behavior="windows_native_descriptors_reject_unknown_owner_and_unsupported_aces"
+rust_path="crates/oe-core/src/private_file/windows.rs"
+oracle="原生安全描述符验证：特权/用户owner接纳，无关owner、缺DACL、object/callback ACE拒绝；不冒称文件owner更改"
+scope="独立反例；真实供应商采用另验"
+
+[[validations]]
+id="windows_private_file_rejects_reparse_leaf_and_parent"
+module="cad"
+constraint="private_supplier_file_access"
+behavior="windows_private_file_rejects_reparse_leaf_and_parent"
+rust_path="crates/oe-core/src/private_file/windows.rs"
+oracle="实际Windows叶与父符号链接拒绝，不跳过创建失败"
+scope="独立反例；真实供应商采用另验"
+
+[[validations]]
+id="session_rejects_permission_change_during_matching_account_observation"
+module="cad"
+constraint="private_supplier_file_access"
+behavior="session_rejects_permission_change_during_matching_account_observation"
+rust_path="crates/oe-cad/tests/acquisition.rs"
+oracle="页面字段虽匹配，期间权限开放给其他主体后仍返回account_check_unconfirmed及account_verified=false"
+scope="独立反例；真实供应商采用另验"
+
+[[validations]]
+id="windows_inherit_only_does_not_grant_this_file_access"
+module="cad"
+constraint="private_supplier_file_access"
+behavior="windows_inherit_only_does_not_grant_this_file_access"
+rust_path="crates/oe-core/src/private_file/windows.rs"
+oracle="原生描述符中只供继承的Everyone条目不授予当前常规文件权限，同一条目去掉inherit-only则拒绝"
+scope="当前私有文件准入；历史会话与供应商工程采用另验"
+
+[[validations]]
+id="receipt_rejects_public_permissions_despite_valid_account_binding"
+module="cad"
+constraint="private_supplier_file_access"
+behavior="receipt_rejects_public_permissions_despite_valid_account_binding"
+rust_path="crates/oe-cad/tests/acquisition.rs"
+oracle="来源/会话/时间有效的私有回执接纳，放宽文件读取权限后拒绝，保持原Unix判据"
+scope="当前私有文件准入；历史会话与供应商工程采用另验"
+
+# Shared private-file owner: finite Windows HTTP host consumer.
+
+[[constraints]]
+id="semantic_http_host_windows_private_authentication"
+requirement="req_delivery"
+module="cli"
+check="authorize"
+rust_path="crates/oe-cli/src/services/http.rs"
+statement="The existing finite HTTP host authorizes each Windows request from a fresh oe-core private_file Snapshot and recheck, reusing its native file/ancestor identity, owner/DACL, reparse/hardlink refusal and bounded-content owner. No shell, permission repair, alternate reader, cached prior key or credential values in production output. Preserve the existing 1..4096 printable ASCII key and constant-work comparison, NotConfigured/Unauthorized/Granted and explicit anonymous meanings. Original Unix exact0600 plus before/after metadata checks remain unchanged. This adds Windows implementation/receiving to the same callback, not a new wire version, a complete HTTP/API migration or engineering adoption. Actual platform execution and formal selection require separate source-bound receipts."
+severity="error"
+
+[[validations]]
+id="semantic_http_windows_fresh_rotation"
+module="cli"
+constraint="semantic_http_host_windows_private_authentication"
+behavior="windows_authentication_accepts_fresh_private_key_and_rotation"
+rust_path="crates/oe-cli/src/services/http/windows_auth_receiving.rs"
+oracle="Actual Windows private-file owner accepts a synthetic fixture first; HTTP callback grants the current key, rejects missing/wrong headers, and observes same-file key rotation without retaining the old key. A platform stub returning NotConfigured must fail the valid-key assertion."
+scope="Source-derived author control frozen before production fix, with actual Windows red/green; not an original upstream API observation, full platform or engineering acceptance."
+
+[[validations]]
+id="semantic_http_windows_private_refusal"
+module="cli"
+constraint="semantic_http_host_windows_private_authentication"
+behavior="windows_authentication_refuses_unsafe_files_and_recovers"
+rust_path="crates/oe-cli/src/services/http/windows_auth_receiving.rs"
+oracle="Actual Windows synthetic DACL exposes other read/write rights and is refused; restoring privacy recovers. Empty/nonprintable/oversize bytes, directory, missing file, hardlink and leaf/parent symlink refuse; valid private key still grants. No platform skips."
+scope="Actual Windows finite host controls and original oe-core private-file owner; no new permission authority, real credentials, generic race or complete service qualification."
+
+[[validations]]
+id="semantic_http_windows_same_path_replacement"
+module="cli"
+constraint="semantic_http_host_windows_private_authentication"
+behavior="windows_authentication_observes_same_path_replacement"
+rust_path="crates/oe-cli/src/services/http/windows_auth_receiving.rs"
+oracle="Existing private Snapshot rejects replacement at the same path; a fresh callback then reads the new private object, rejecting old bytes and granting new bytes. No stale snapshot or credential cache."
+scope="Actual Windows replacement between requests; the reused owner retains its separate during-read identity policy; no unobserved timing guarantee."
+
+[[validations]]
+id="semantic_http_windows_real_rotation_source_change"
+module="cli"
+constraint="semantic_http_host_windows_private_authentication"
+behavior="real_http_host_rotates_keys_and_rejects_changed_source"
+rust_path="crates/oe-cli/tests/http_host_cli.rs"
+oracle="The original real process/TCP sequence is unchanged: old key200, rotation old401/new200, then changed graph bytes cause exit2 with source identity error, no later success and no key in diagnostics. Windows uses only synthetic private fixture setup; Unix keeps its original mode0600 setup."
+scope="Actual current Windows receiving plus retained Unix regression; old Unix receipts do not grant Windows equivalence or full routing/SDK/engineering qualification."
+
+[[validations]]
+id="semantic_http_windows_real_private_recovery"
+module="cli"
+constraint="semantic_http_host_windows_private_authentication"
+behavior="real_windows_http_host_refuses_unsafe_key_and_recovers"
+rust_path="crates/oe-cli/tests/http_host_cli.rs"
+oracle="One actual bounded Windows CLI and six TCP requests: private key200; public-read ACL503; private restoration200; missing key503; new private file rejects old401 and grants new200. Host reaches its request bound and exits; diagnostics disclose no key."
+scope="Frozen synthetic source-derived control; actual Windows process, transport, source and cleanup require their own receipt. Not an upstream observation, full public release, real account authentication or RRSI benefit."
+
+# Shared private-file owner: Windows engineering-authority policy consumer.
+[[constraints]]
+id="engineering_windows_private_authority"
+requirement="req_engineering"
+module="engineering"
+check="private_policy"
+rust_path="crates/oe-engineering/src/artifacts.rs"
+statement="Windows engineering authority policies use the existing oe-core private_file Snapshot and recheck: current user, SYSTEM or Administrators owner/effective allow subjects only, supported native DACL forms, regular single-link file, non-reparse ancestors, complete identity and bounded bytes. The existing private var boundary, strict JSON and 1MiB cap remain. No production ACL repair, shell call, policy creation, inferred approval or authority fallback. Original Unix mode/uid logic remains unchanged; other unsupported platforms still refuse. Adoption continues all original exact-source, package, scope, independent-approval and current-review checks. Other consumers of this reader do not thereby obtain Windows transaction-lock or whole-registry qualification."
+severity="error"
+
+[[validations]]
+id="private_authority_preserves_exact_bytes_and_rechecks_current_content"
+module="engineering"
+constraint="engineering_windows_private_authority"
+behavior="private_authority_preserves_exact_bytes_and_rechecks_current_content"
+rust_path="crates/oe-engineering/tests/private_authority.rs"
+oracle="Private synthetic JSON returns its exact value and original-byte SHA; a later changed file returns the changed current SHA, never a cached policy. No input rewrite."
+scope="Actual Unix/Windows caller receiving separately; synthetic authority file does not establish engineering adoption."
+
+[[validations]]
+id="private_authority_refuses_public_duplicate_oversized_and_outside_inputs"
+module="engineering"
+constraint="engineering_windows_private_authority"
+behavior="private_authority_refuses_public_duplicate_oversized_and_outside_inputs"
+rust_path="crates/oe-engineering/tests/private_authority.rs"
+oracle="A valid private control must pass first; public permissions remain rejected on a second read, duplicate JSON keys, input above1MiB, SKILL and parent traversal are rejected without permission repair."
+scope="Actual finite platform controls; existing native private-file tests retain owner/ACE/reparse/hardlink/replacement obligations."
+
+[[validations]]
+id="adoption_rejects_relaxed_windows_policy_without_repairing_or_granting"
+module="engineering"
+constraint="engineering_windows_private_authority"
+behavior="adoption_rejects_relaxed_windows_policy_without_repairing_or_granting"
+rust_path="crates/oe-engineering/tests/adoption.rs"
+oracle="Original valid synthetic adoption and current verification pass first. Opening the same authority file to Everyone then refuses new adoption and existing-record verification; no new output, no ACL repair, original Project and policy bytes unchanged."
+scope="Actual Windows native policy consumer; original four adoption cases and engineering conditions remain unchanged."
+
+# Test preparation must use the same canonical spelling as SkillRoot. Supplying
+# a normal private scratch parent and canonical Windows tempfile paths repairs
+# input construction; portable_source_path remains lexical and rejects outside
+# roots. All prior assertions in adoption/reviewed_reconciliation remain.

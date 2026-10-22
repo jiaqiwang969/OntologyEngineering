@@ -1,0 +1,748 @@
+{
+  "schema": "public.source-literal-truth-cases/1",
+  "source_record_sha256": "e98fd369084f5b53b3a9f3a6498d7fc047e85024c4b0531964733fa36cdcdcce",
+  "source_record_bytes": 28057,
+  "source_basis": "Fixed source and scalar mathematical truth; reading existing Rust interfaces only to locate the shared owner. No call to original bool/Decimal/float construction or proposed helper supplied expected results.",
+  "source_refs": {
+    "term": {
+      "name": "term.py",
+      "bytes": 91610,
+      "sha256": "564280e97c4e64b5b704bd1fff96ebc374ebd2dcc2df134cda62452a3f83c1db"
+    },
+    "operators": {
+      "name": "operators.py",
+      "bytes": 36752,
+      "sha256": "349d36859ec3dca3b56e33d43786d034a33f3c1a1ba1eef71a13bf95a0809437"
+    },
+    "algebra": {
+      "name": "algebra.py",
+      "bytes": 60938,
+      "sha256": "22441c48e62b22c40ec17a1ffaf5360b7b08cfb971cfe8ad59a599e8766d81b3"
+    },
+    "pydecimal": {
+      "name": "_pydecimal.py",
+      "bytes": 227526,
+      "sha256": "17882dbd5622aac99793a261a21ff70b3bde28e274ea1c3f0372599df164f440"
+    },
+    "decimal_c": {
+      "name": "_decimal.c",
+      "bytes": 183465,
+      "sha256": "81293c0fcebd2820c96d85690c41460adc032cc42f771a87f5b86acadbb21dbf"
+    },
+    "float_c": {
+      "name": "floatobject.c",
+      "bytes": 72301,
+      "sha256": "a41f721536339d6df470d03b6d9c7efe8995f64348bb0a6093632d463ac55753"
+    },
+    "long_c": {
+      "name": "longobject.c",
+      "bytes": 213619,
+      "sha256": "d841531666d7daf12d90500b4e491f6873daaf498527a7a37f0b694fbf41d27a"
+    },
+    "object_c": {
+      "name": "object.c",
+      "bytes": 85282,
+      "sha256": "a8f28e2d8ff6763ea8d5eb481e45c582c7018f78e2889dae2c2a46cfee91693c"
+    }
+  },
+  "payload_sha256": "3c4da358162e4aca0cda68b8ccc94a73432ed9be1f4ed796511b58b50979f480",
+  "payload": {
+    "environment": {
+      "literal_semantics": "SourceLiteralV1",
+      "numeric_capabilities": "MixedBinary64V1",
+      "decimal_context": {
+        "precision": 28,
+        "Emin": -999999,
+        "Emax": 999999,
+        "rounding": "HALF_EVEN",
+        "clamp": 0,
+        "traps": [
+          "InvalidOperation",
+          "DivisionByZero",
+          "Overflow"
+        ]
+      },
+      "numeric_limits": {
+        "max_input_characters": 4096,
+        "max_coefficient_digits": 4096,
+        "max_output_characters": 4096,
+        "max_materialized_power_of_ten": 4096
+      },
+      "normalize_literals": true
+    },
+    "truth_cases": [
+      {
+        "id": "ST01",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "expected": {
+          "python_truth": false,
+          "cached_family": "Integer",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST02",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "-3",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "Integer",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST03",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+        },
+        "expected": {
+          "python_truth": false,
+          "cached_family": "DecimalFinite",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST04",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "-0.00",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+        },
+        "expected": {
+          "python_truth": false,
+          "cached_family": "DecimalFinite",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST05",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "1E-100",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "DecimalFinite",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST06",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "NaN",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "DecimalQuietNaN",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST07",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "sNaN",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "DecimalSignalingNaN",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST08",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "Infinity",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "DecimalInfinity",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST09",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "0.0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#double"
+        },
+        "expected": {
+          "python_truth": false,
+          "cached_family": "Binary64",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST10",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "-0.0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#double"
+        },
+        "expected": {
+          "python_truth": false,
+          "cached_family": "Binary64",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST11",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "1.5",
+          "datatype": "http://www.w3.org/2001/XMLSchema#double"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "Binary64",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST12",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "NaN",
+          "datatype": "http://www.w3.org/2001/XMLSchema#double"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "Binary64NaN",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST13",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "-INF",
+          "datatype": "http://www.w3.org/2001/XMLSchema#double"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "Binary64Infinity",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST14",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryPlain",
+          "lexical": "",
+          "datatype": null
+        },
+        "expected": {
+          "python_truth": false,
+          "cached_family": "String",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST15",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryPlain",
+          "lexical": "0",
+          "datatype": null
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "String",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST16",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "",
+          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "expected": {
+          "python_truth": false,
+          "cached_family": "String",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST17",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "false",
+          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "String",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST18",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryBooleanToken",
+          "lexical": "false",
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+        },
+        "expected": {
+          "python_truth": false,
+          "cached_family": "Boolean",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST19",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryBooleanToken",
+          "lexical": "true",
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "Boolean",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST20",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "expected": {
+          "python_truth": false,
+          "cached_family": "None",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST21",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "bad",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "None",
+          "flags_after_construction": [],
+          "flags_after_each_truth_read": [],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ]
+      },
+      {
+        "id": "ST22",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "bad",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "DecimalQuietNaN",
+          "flags_after_construction": [
+            "InvalidOperation"
+          ],
+          "flags_after_each_truth_read": [
+            "InvalidOperation"
+          ],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ],
+        "environment_overrides": {
+          "decimal_traps": []
+        }
+      },
+      {
+        "id": "ST23",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "origin": "QueryTypedExistingLiteral",
+          "lexical": "bad",
+          "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+        },
+        "expected": {
+          "python_truth": true,
+          "cached_family": "None",
+          "flags_after_construction": [
+            "InvalidOperation"
+          ],
+          "flags_after_each_truth_read": [
+            "InvalidOperation"
+          ],
+          "truth_reads": 2,
+          "lexical_and_source_metadata_unchanged": true,
+          "selected_source_object_unchanged": true
+        },
+        "basis": [
+          "term.py:641-725,1016-1023",
+          "CPython numeric/string truth slots; no SPARQL EBV or numeric ordering"
+        ],
+        "environment_overrides": {
+          "decimal_traps": [
+            "InvalidOperation",
+            "DivisionByZero",
+            "Overflow"
+          ]
+        }
+      }
+    ],
+    "boolean_result_cases": [
+      {
+        "id": "BR01",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "operation": "source_boolean_result",
+          "value": false
+        },
+        "expected": {
+          "lexical": "false",
+          "source_datatype": {
+            "state": "specified",
+            "iri": "http://www.w3.org/2001/XMLSchema#boolean"
+          },
+          "language_original": null,
+          "ill_typed": null,
+          "cached_boolean": false,
+          "numeric_cache": "NotNumeric",
+          "flags_delta": [],
+          "two_actual_constructions_have_distinct_source_objects": true,
+          "clone_of_one_result_preserves_its_source_object": true
+        },
+        "basis": [
+          "operators.py:580-593 Builtin_EXISTS returns Literal(exists) or Literal(not exists)",
+          "term.py:667,695-705,721-727,2124-2128 Literal(bool) object constructor"
+        ]
+      },
+      {
+        "id": "BR02",
+        "classification": "fixed_original_source_derivation",
+        "input": {
+          "operation": "source_boolean_result",
+          "value": true
+        },
+        "expected": {
+          "lexical": "true",
+          "source_datatype": {
+            "state": "specified",
+            "iri": "http://www.w3.org/2001/XMLSchema#boolean"
+          },
+          "language_original": null,
+          "ill_typed": null,
+          "cached_boolean": true,
+          "numeric_cache": "NotNumeric",
+          "flags_delta": [],
+          "two_actual_constructions_have_distinct_source_objects": true,
+          "clone_of_one_result_preserves_its_source_object": true
+        },
+        "basis": [
+          "operators.py:580-593 Builtin_EXISTS returns Literal(exists) or Literal(not exists)",
+          "term.py:667,695-705,721-727,2124-2128 Literal(bool) object constructor"
+        ]
+      }
+    ],
+    "active_contract_cases": [
+      {
+        "id": "TA01",
+        "classification": "active_unknown_provenance",
+        "input": {
+          "origin": "UnknownNormalizedImport",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+        },
+        "expected": {
+          "semantic_error": "unknown_source_literal_truth",
+          "do_not_infer_cache_from_rdf": true,
+          "flags_delta": []
+        }
+      },
+      {
+        "id": "TA02",
+        "classification": "active_unknown_provenance",
+        "input": {
+          "origin": "UnknownNormalizedImport",
+          "lexical": "nonempty",
+          "datatype": "http://www.w3.org/2001/XMLSchema#string"
+        },
+        "expected": {
+          "semantic_error": "unknown_source_literal_truth",
+          "do_not_infer_String_cache_from_rdf": true,
+          "flags_delta": []
+        }
+      },
+      {
+        "id": "TA03",
+        "classification": "active_capability",
+        "input": {
+          "literal_semantics": "RdfIdentityV1",
+          "value": "known_query_boolean_false"
+        },
+        "expected": {
+          "semantic_error": "source_literal_capability_not_enabled",
+          "no_new_object": true,
+          "flags_delta": []
+        }
+      },
+      {
+        "id": "TA04",
+        "classification": "active_operator_domain",
+        "input": {
+          "value": {
+            "kind": "NamedNode",
+            "iri": "urn:truth:not-a-literal"
+          }
+        },
+        "expected": {
+          "semantic_error": "source_literal_truth_requires_literal",
+          "flags_delta": []
+        }
+      },
+      {
+        "id": "TA05",
+        "classification": "active_output_budget",
+        "input": {
+          "operations": [
+            {
+              "source_boolean_result": true
+            },
+            {
+              "source_boolean_result": false
+            }
+          ],
+          "numeric_limits": {
+            "max_input_characters": 4096,
+            "max_coefficient_digits": 4096,
+            "max_output_characters": 4,
+            "max_materialized_power_of_ten": 4096
+          }
+        },
+        "expected": {
+          "results": [
+            {
+              "lexical": "true"
+            },
+            {
+              "semantic_error": "output_characters_resource_limit"
+            }
+          ],
+          "flags_delta": []
+        },
+        "basis": "Reuse current result-output budget owner; not original Python resource policy. Default context has no small-input configuration conflict."
+      }
+    ]
+  },
+  "excluded_pending_parser_controls": [
+    "PB01",
+    "PB02"
+  ],
+  "receiving_scope": "Real source constructors, pure Python Literal truth helper, programmatic Boolean results and explicit active guards. No parser registry, EXISTS execution, public profile5 or original-program observation is claimed."
+}

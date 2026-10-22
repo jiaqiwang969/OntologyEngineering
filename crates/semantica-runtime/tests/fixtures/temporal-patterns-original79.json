@@ -1,0 +1,6925 @@
+[
+  {
+    "id": "ordinary-empty",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": []
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-one-edge",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-two-touch",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-03",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-03T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-support-two-refuses-one",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 2
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-gap-with-default-zero",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-gap-with-one-day",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {
+        "gap_tolerance": 1
+      },
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "ordinary-gap-option-overrides-config",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {
+        "gap_tolerance": 0
+      },
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "ordinary-string-gap-default-zero",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {
+        "gap_tolerance": "1"
+      },
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": "1"
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": "1"
+    }
+  },
+  {
+    "id": "ordinary-distinct-equal-first-edges",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 2
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 2,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-03",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-03T00:00:00Z"
+              },
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-03",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-03T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-open-end-stops",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "OPEN",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-missing-end-stops",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": null,
+                  "valid_until": null,
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-unused-time-window",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "time_window": [
+              "2099-01-01",
+              "2099-02-01"
+            ]
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-03",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-03T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-trend-empty-even-bad-fields",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "valid_from": "bad"
+                }
+              ]
+            },
+            "pattern_type": "trend",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-anomaly-empty-even-bad-fields",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "valid_from": "bad"
+                }
+              ]
+            },
+            "pattern_type": "anomaly",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-unknown-empty-even-bad-fields",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "valid_from": "bad"
+                }
+              ]
+            },
+            "pattern_type": "unknown",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-self-cycle",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "A",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "A",
+              "A"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "A"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "A",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-02T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-self-cycle-support-two",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "A",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 2
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-unknown-time-rotations-distinct",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": null,
+                  "valid_until": null,
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "A",
+                  "valid_from": null,
+                  "valid_until": null,
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "A",
+              "B",
+              "A"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "A"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": null,
+                    "valid_until": null,
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "A",
+                    "valid_from": null,
+                    "valid_until": null,
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "B",
+              "A",
+              "B"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "edges": [
+                  {
+                    "source": "B",
+                    "target": "A",
+                    "valid_from": null,
+                    "valid_until": null,
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": null,
+                    "valid_until": null,
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-rotations-do-not-pool-frequency",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": null,
+                  "valid_until": null,
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "A",
+                  "valid_from": null,
+                  "valid_until": null,
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 2
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-sequence-invalid-date",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "bad",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "semantica.utils.exceptions.TemporalValidationError",
+          "message": "Invalid temporal value | Context: value=bad"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "ordinary-cycle-invalid-date",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-10T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "bad",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "semantica.utils.exceptions.TemporalValidationError",
+          "message": "Invalid temporal value | Context: value=bad"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-cycle-edge-boundary-1",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "N0",
+                  "target": "N0",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N0",
+              "N0"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N0",
+                  "N0"
+                ],
+                "edges": [
+                  {
+                    "source": "N0",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-cycle-edge-boundary-2",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "N0",
+                  "target": "N1",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N1",
+                  "target": "N0",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N0",
+              "N1",
+              "N0"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N0",
+                  "N1",
+                  "N0"
+                ],
+                "edges": [
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N1",
+              "N0",
+              "N1"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N1",
+                  "N0",
+                  "N1"
+                ],
+                "edges": [
+                  {
+                    "source": "N1",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-cycle-edge-boundary-3",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "N0",
+                  "target": "N1",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N1",
+                  "target": "N2",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N2",
+                  "target": "N0",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N0",
+              "N1",
+              "N2",
+              "N0"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N0"
+                ],
+                "edges": [
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N1",
+              "N2",
+              "N0",
+              "N1"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N1",
+                  "N2",
+                  "N0",
+                  "N1"
+                ],
+                "edges": [
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N2",
+              "N0",
+              "N1",
+              "N2"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N2",
+                  "N0",
+                  "N1",
+                  "N2"
+                ],
+                "edges": [
+                  {
+                    "source": "N2",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            [
+              1,
+              2,
+              0
+            ]
+          ],
+          [
+            [
+              2,
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-cycle-edge-boundary-4",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "N0",
+                  "target": "N1",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N1",
+                  "target": "N2",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N2",
+                  "target": "N3",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N3",
+                  "target": "N0",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N0",
+              "N1",
+              "N2",
+              "N3",
+              "N0"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N3",
+                  "N0"
+                ],
+                "edges": [
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N1",
+              "N2",
+              "N3",
+              "N0",
+              "N1"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N1",
+                  "N2",
+                  "N3",
+                  "N0",
+                  "N1"
+                ],
+                "edges": [
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N2",
+              "N3",
+              "N0",
+              "N1",
+              "N2"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N2",
+                  "N3",
+                  "N0",
+                  "N1",
+                  "N2"
+                ],
+                "edges": [
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N3",
+              "N0",
+              "N1",
+              "N2",
+              "N3"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N3",
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N3"
+                ],
+                "edges": [
+                  {
+                    "source": "N3",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          [
+            [
+              1,
+              2,
+              3,
+              0
+            ]
+          ],
+          [
+            [
+              2,
+              3,
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              3,
+              0,
+              1,
+              2
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-cycle-edge-boundary-5",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "N0",
+                  "target": "N1",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N1",
+                  "target": "N2",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N2",
+                  "target": "N3",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N3",
+                  "target": "N4",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N4",
+                  "target": "N0",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N0",
+              "N1",
+              "N2",
+              "N3",
+              "N4",
+              "N0"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N3",
+                  "N4",
+                  "N0"
+                ],
+                "edges": [
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N4",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N1",
+              "N2",
+              "N3",
+              "N4",
+              "N0",
+              "N1"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N1",
+                  "N2",
+                  "N3",
+                  "N4",
+                  "N0",
+                  "N1"
+                ],
+                "edges": [
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N4",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N2",
+              "N3",
+              "N4",
+              "N0",
+              "N1",
+              "N2"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N2",
+                  "N3",
+                  "N4",
+                  "N0",
+                  "N1",
+                  "N2"
+                ],
+                "edges": [
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N4",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N3",
+              "N4",
+              "N0",
+              "N1",
+              "N2",
+              "N3"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N3",
+                  "N4",
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N3"
+                ],
+                "edges": [
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N4",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N4",
+              "N0",
+              "N1",
+              "N2",
+              "N3",
+              "N4"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N4",
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N3",
+                  "N4"
+                ],
+                "edges": [
+                  {
+                    "source": "N4",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          ],
+          [
+            [
+              1,
+              2,
+              3,
+              4,
+              0
+            ]
+          ],
+          [
+            [
+              2,
+              3,
+              4,
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              3,
+              4,
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            [
+              4,
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-cycle-edge-boundary-6",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "N0",
+                  "target": "N1",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N1",
+                  "target": "N2",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N2",
+                  "target": "N3",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N3",
+                  "target": "N4",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N4",
+                  "target": "N5",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N5",
+                  "target": "N0",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N0",
+              "N1",
+              "N2",
+              "N3",
+              "N4",
+              "N5",
+              "N0"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N3",
+                  "N4",
+                  "N5",
+                  "N0"
+                ],
+                "edges": [
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N4",
+                    "target": "N5",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N5",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N1",
+              "N2",
+              "N3",
+              "N4",
+              "N5",
+              "N0",
+              "N1"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N1",
+                  "N2",
+                  "N3",
+                  "N4",
+                  "N5",
+                  "N0",
+                  "N1"
+                ],
+                "edges": [
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N4",
+                    "target": "N5",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N5",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N2",
+              "N3",
+              "N4",
+              "N5",
+              "N0",
+              "N1",
+              "N2"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N2",
+                  "N3",
+                  "N4",
+                  "N5",
+                  "N0",
+                  "N1",
+                  "N2"
+                ],
+                "edges": [
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N4",
+                    "target": "N5",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N5",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N3",
+              "N4",
+              "N5",
+              "N0",
+              "N1",
+              "N2",
+              "N3"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N3",
+                  "N4",
+                  "N5",
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N3"
+                ],
+                "edges": [
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N4",
+                    "target": "N5",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N5",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N4",
+              "N5",
+              "N0",
+              "N1",
+              "N2",
+              "N3",
+              "N4"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N4",
+                  "N5",
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N3",
+                  "N4"
+                ],
+                "edges": [
+                  {
+                    "source": "N4",
+                    "target": "N5",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N5",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "N5",
+              "N0",
+              "N1",
+              "N2",
+              "N3",
+              "N4",
+              "N5"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "N5",
+                  "N0",
+                  "N1",
+                  "N2",
+                  "N3",
+                  "N4",
+                  "N5"
+                ],
+                "edges": [
+                  {
+                    "source": "N5",
+                    "target": "N0",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N0",
+                    "target": "N1",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N1",
+                    "target": "N2",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N2",
+                    "target": "N3",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N3",
+                    "target": "N4",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "N4",
+                    "target": "N5",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          ],
+          [
+            [
+              1,
+              2,
+              3,
+              4,
+              5,
+              0
+            ]
+          ],
+          [
+            [
+              2,
+              3,
+              4,
+              5,
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              3,
+              4,
+              5,
+              0,
+              1,
+              2
+            ]
+          ],
+          [
+            [
+              4,
+              5,
+              0,
+              1,
+              2,
+              3
+            ]
+          ],
+          [
+            [
+              5,
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-cycle-edge-boundary-7",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "N0",
+                  "target": "N1",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N1",
+                  "target": "N2",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N2",
+                  "target": "N3",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N3",
+                  "target": "N4",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N4",
+                  "target": "N5",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N5",
+                  "target": "N6",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N6",
+                  "target": "N0",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-cycle-edge-boundary-8",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "N0",
+                  "target": "N1",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N1",
+                  "target": "N2",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N2",
+                  "target": "N3",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N3",
+                  "target": "N4",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N4",
+                  "target": "N5",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N5",
+                  "target": "N6",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N6",
+                  "target": "N7",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "N7",
+                  "target": "N0",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-python-bool-number-support-group",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": true,
+                  "target": 1,
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": 1,
+                  "target": true,
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              true,
+              1
+            ],
+            "frequency": 2,
+            "occurrences": [
+              {
+                "nodes": [
+                  true,
+                  1
+                ],
+                "edges": [
+                  {
+                    "source": true,
+                    "target": 1,
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              },
+              {
+                "nodes": [
+                  1,
+                  true
+                ],
+                "edges": [
+                  {
+                    "source": 1,
+                    "target": true,
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0
+            ],
+            [
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-canonical-endpoints-not-consumed",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source_id": "A",
+                  "target_id": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              null,
+              null
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  null,
+                  null
+                ],
+                "edges": [
+                  {
+                    "source_id": "A",
+                    "target_id": "B",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-unhashable-source-list",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": [],
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "unhashable type: 'list'"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-unhashable-source-dict",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": {},
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "unhashable type: 'dict'"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-stable-first-dead-end-no-backtracking",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "X",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "A",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "B",
+              "A",
+              "B"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "edges": [
+                  {
+                    "source": "B",
+                    "target": "A",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              2,
+              0
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "boundary-stable-swap-recovers-two-rotations",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "A",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "X",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "A",
+              "B",
+              "A"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "A"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "A",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "B",
+              "A",
+              "B"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "edges": [
+                  {
+                    "source": "B",
+                    "target": "A",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "state-set-keep-reset",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 1
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 0
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 0
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 0
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 0
+    }
+  },
+  {
+    "id": "state-ignored-label-still-updates",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                7
+              ]
+            },
+            "pattern_type": "trend",
+            "gap_tolerance": 1
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "state-failed-action-still-updates",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                7
+              ]
+            },
+            "pattern_type": "sequence",
+            "gap_tolerance": 1
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.AttributeError",
+          "message": "'int' object has no attribute 'get'"
+        },
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "state-string-is-zero",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {
+        "gap_tolerance": 1
+      },
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": "1"
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": "1"
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": "1"
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": "1"
+    }
+  },
+  {
+    "id": "state-null-is-zero",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {
+        "gap_tolerance": 1
+      },
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": null
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": null
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": null
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": null
+    }
+  },
+  {
+    "id": "state-boolean-is-numeric-day",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": true
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": false
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": true
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": false
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": false
+    }
+  },
+  {
+    "id": "state-negative-rejects-touching",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": -1
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 0
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": -1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 0
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 0
+    }
+  },
+  {
+    "id": "state-unused-window-remains-unused",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "time_window": {
+              "bad": "window"
+            }
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": []
+            },
+            "pattern_type": "cycle",
+            "time_window": "bad"
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "state-frequency-lazy-error",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": []
+            },
+            "pattern_type": "sequence",
+            "min_frequency": null
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": null
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "'>=' not supported between instances of 'int' and 'NoneType'"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "state-frequency-default-two",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence"
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "state-unknown-label-updates-before-noop",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                null
+              ]
+            },
+            "pattern_type": "other",
+            "gap_tolerance": 1
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "state-cycle-ignores-gap-but-updates-config",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": []
+            },
+            "pattern_type": "cycle",
+            "gap_tolerance": 1
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "query-detector-distinct-defaults",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "query",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern": "sequence"
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "entry": "query",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern": "sequence"
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": {
+          "pattern": "sequence",
+          "patterns": [
+            {
+              "pattern_type": "sequence",
+              "signature": [
+                "A",
+                "B",
+                "T"
+              ],
+              "frequency": 1,
+              "occurrences": [
+                {
+                  "nodes": [
+                    "A",
+                    "B",
+                    "T"
+                  ],
+                  "edges": [
+                    {
+                      "source": "A",
+                      "target": "B",
+                      "valid_from": "2024-01-01",
+                      "valid_until": "2024-01-02",
+                      "recorded_at": "2024-01-10T00:00:00Z"
+                    },
+                    {
+                      "source": "B",
+                      "target": "T",
+                      "valid_from": "2024-01-02",
+                      "valid_until": "2024-01-03",
+                      "recorded_at": "2024-01-10T00:00:00Z"
+                    }
+                  ],
+                  "start_time": "2024-01-01T00:00:00Z",
+                  "end_time": "2024-01-03T00:00:00Z"
+                }
+              ]
+            }
+          ],
+          "num_patterns": 1
+        },
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": {
+          "pattern": "sequence",
+          "patterns": [
+            {
+              "pattern_type": "sequence",
+              "signature": [
+                "A",
+                "B",
+                "T"
+              ],
+              "frequency": 1,
+              "occurrences": [
+                {
+                  "nodes": [
+                    "A",
+                    "B",
+                    "T"
+                  ],
+                  "edges": [
+                    {
+                      "source": "A",
+                      "target": "B",
+                      "valid_from": "2024-01-01",
+                      "valid_until": "2024-01-02",
+                      "recorded_at": "2024-01-10T00:00:00Z"
+                    },
+                    {
+                      "source": "B",
+                      "target": "T",
+                      "valid_from": "2024-01-02",
+                      "valid_until": "2024-01-03",
+                      "recorded_at": "2024-01-10T00:00:00Z"
+                    }
+                  ],
+                  "start_time": "2024-01-01T00:00:00Z",
+                  "end_time": "2024-01-03T00:00:00Z"
+                }
+              ]
+            }
+          ],
+          "num_patterns": 1
+        },
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "query-and-detector-share-state",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {
+        "opaque": "kept"
+      },
+      "actions": [
+        {
+          "entry": "query",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern": "sequence",
+            "gap_tolerance": 1
+          }
+        },
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        },
+        {
+          "entry": "query",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-03",
+                  "valid_until": "2024-01-04",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern": "sequence",
+            "gap_tolerance": 0
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": {
+          "pattern": "sequence",
+          "patterns": [
+            {
+              "pattern_type": "sequence",
+              "signature": [
+                "A",
+                "B",
+                "T"
+              ],
+              "frequency": 1,
+              "occurrences": [
+                {
+                  "nodes": [
+                    "A",
+                    "B",
+                    "T"
+                  ],
+                  "edges": [
+                    {
+                      "source": "A",
+                      "target": "B",
+                      "valid_from": "2024-01-01",
+                      "valid_until": "2024-01-02",
+                      "recorded_at": "2024-01-10T00:00:00Z"
+                    },
+                    {
+                      "source": "B",
+                      "target": "T",
+                      "valid_from": "2024-01-03",
+                      "valid_until": "2024-01-04",
+                      "recorded_at": "2024-01-10T00:00:00Z"
+                    }
+                  ],
+                  "start_time": "2024-01-01T00:00:00Z",
+                  "end_time": "2024-01-04T00:00:00Z"
+                }
+              ]
+            }
+          ],
+          "num_patterns": 1
+        },
+        "source_error": null,
+        "config_after": {
+          "opaque": "kept",
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-03",
+                    "valid_until": "2024-01-04",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-04T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "opaque": "kept",
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      },
+      {
+        "result": {
+          "pattern": "sequence",
+          "patterns": [],
+          "num_patterns": 0
+        },
+        "source_error": null,
+        "config_after": {
+          "opaque": "kept",
+          "gap_tolerance": 0
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "opaque": "kept",
+      "gap_tolerance": 0
+    }
+  },
+  {
+    "id": "graph-null",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": null,
+            "gap_tolerance": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.AttributeError",
+          "message": "'NoneType' object has no attribute 'get'"
+        },
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "graph-int",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": 3,
+            "gap_tolerance": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.AttributeError",
+          "message": "'int' object has no attribute 'get'"
+        },
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "graph-bool",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": true,
+            "gap_tolerance": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.AttributeError",
+          "message": "'bool' object has no attribute 'get'"
+        },
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "graph-list",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": [],
+            "gap_tolerance": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.AttributeError",
+          "message": "'list' object has no attribute 'get'"
+        },
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "graph-str",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": "x",
+            "gap_tolerance": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.AttributeError",
+          "message": "'str' object has no attribute 'get'"
+        },
+        "config_after": {
+          "gap_tolerance": 1
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  },
+  {
+    "id": "relationships-null",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": null
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "'NoneType' object is not iterable"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "relationships-int",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": 3
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "'int' object is not iterable"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "relationships-bool",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": true
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "'bool' object is not iterable"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "relationships-str",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": "x"
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.AttributeError",
+          "message": "'str' object has no attribute 'get'"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "relationships-dict",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": {
+                "x": 1
+              }
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.AttributeError",
+          "message": "'str' object has no attribute 'get'"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "relationships-empty-str",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": ""
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "relationships-empty-dict",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": {}
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "support-null",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": null
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "'>=' not supported between instances of 'int' and 'NoneType'"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "support-str",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": "1"
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "'>=' not supported between instances of 'int' and 'str'"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "support-list",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": []
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "'>=' not supported between instances of 'int' and 'list'"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "support-dict",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": {}
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.TypeError",
+          "message": "'>=' not supported between instances of 'int' and 'dict'"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "support-float",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1.5
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "support-false",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": false
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-03",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-03T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "gap-overflow-positive",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 1000000000
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.OverflowError",
+          "message": "days=1000000000; must have magnitude <= 999999999"
+        },
+        "config_after": {
+          "gap_tolerance": 1000000000
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1000000000
+    }
+  },
+  {
+    "id": "gap-overflow-negative",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": -1000000000
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.OverflowError",
+          "message": "days=-1000000000; must have magnitude <= 999999999"
+        },
+        "config_after": {
+          "gap_tolerance": -1000000000
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": -1000000000
+    }
+  },
+  {
+    "id": "gap-i64-overflow",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 9223372036854775807
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "builtins.OverflowError",
+          "message": "Python int too large to convert to C int"
+        },
+        "config_after": {
+          "gap_tolerance": 9223372036854775807
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 9223372036854775807
+    }
+  },
+  {
+    "id": "ignored-label-does-not-convert-overflow",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "trend",
+            "min_frequency": 1,
+            "gap_tolerance": 1000000000
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1000000000
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1000000000
+    }
+  },
+  {
+    "id": "half-day",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02T12:00:00Z",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 0.5
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02T12:00:00Z",
+                    "valid_until": "2024-01-03",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-03T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 0.5
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 0.5
+    }
+  },
+  {
+    "id": "microsecond-tie-0",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02T00:00:00.000001Z",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 5.787037037037037e-12
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 5.787037037037037e-12
+        },
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 5.787037037037037e-12
+    }
+  },
+  {
+    "id": "microsecond-tie-1",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02T00:00:00.000002Z",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 1.736111111111111e-11
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02T00:00:00.000002Z",
+                    "valid_until": "2024-01-03",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-03T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 1.736111111111111e-11
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 1.736111111111111e-11
+    }
+  },
+  {
+    "id": "microsecond-tie-2",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": "2024-01-01",
+                  "valid_until": "2024-01-02",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02T00:00:00.000002Z",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1,
+            "gap_tolerance": 2.8935185185185184e-11
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": "2024-01-01",
+                    "valid_until": "2024-01-02",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02T00:00:00.000002Z",
+                    "valid_until": "2024-01-03",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": "2024-01-01T00:00:00Z",
+                "end_time": "2024-01-03T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {
+          "gap_tolerance": 2.8935185185185184e-11
+        },
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 0
+      }
+    ],
+    "final_config": {
+      "gap_tolerance": 2.8935185185185184e-11
+    }
+  },
+  {
+    "id": "unknown-cycle-clock-repeated",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B"
+                },
+                {
+                  "source": "B",
+                  "target": "A"
+                }
+              ]
+            },
+            "pattern_type": "cycle",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "A",
+              "B",
+              "A"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "A"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B"
+                  },
+                  {
+                    "source": "B",
+                    "target": "A"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          },
+          {
+            "pattern_type": "cycle",
+            "signature": [
+              "B",
+              "A",
+              "B"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "B",
+                  "A",
+                  "B"
+                ],
+                "edges": [
+                  {
+                    "source": "B",
+                    "target": "A"
+                  },
+                  {
+                    "source": "A",
+                    "target": "B"
+                  }
+                ],
+                "start_time": null,
+                "end_time": null
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ],
+          [
+            [
+              1,
+              0
+            ]
+          ]
+        ],
+        "clock_fallback_count": 8
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "sequence-start-clock-repeated",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": null,
+                  "valid_until": "2024-01-02"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": [
+          {
+            "pattern_type": "sequence",
+            "signature": [
+              "A",
+              "B",
+              "T"
+            ],
+            "frequency": 1,
+            "occurrences": [
+              {
+                "nodes": [
+                  "A",
+                  "B",
+                  "T"
+                ],
+                "edges": [
+                  {
+                    "source": "A",
+                    "target": "B",
+                    "valid_from": null,
+                    "valid_until": "2024-01-02"
+                  },
+                  {
+                    "source": "B",
+                    "target": "T",
+                    "valid_from": "2024-01-02",
+                    "valid_until": "2024-01-03",
+                    "recorded_at": "2024-01-10T00:00:00Z"
+                  }
+                ],
+                "start_time": null,
+                "end_time": "2024-01-03T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "source_error": null,
+        "config_after": {},
+        "occurrence_relationship_indices": [
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "clock_fallback_count": 2
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "source-failure-retains-clock-count",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {},
+      "actions": [
+        {
+          "entry": "detector",
+          "arguments": {
+            "graph": {
+              "relationships": [
+                {
+                  "source": "A",
+                  "target": "B",
+                  "valid_from": null,
+                  "valid_until": "2024-01-02",
+                  "superseded_at": "bad"
+                },
+                {
+                  "source": "B",
+                  "target": "T",
+                  "valid_from": "2024-01-02",
+                  "valid_until": "2024-01-03",
+                  "recorded_at": "2024-01-10T00:00:00Z"
+                }
+              ]
+            },
+            "pattern_type": "sequence",
+            "min_frequency": 1
+          }
+        }
+      ]
+    },
+    "steps": [
+      {
+        "result": null,
+        "source_error": {
+          "type": "semantica.utils.exceptions.TemporalValidationError",
+          "message": "Invalid temporal value | Context: value=bad"
+        },
+        "config_after": {},
+        "occurrence_relationship_indices": [],
+        "clock_fallback_count": 1
+      }
+    ],
+    "final_config": {}
+  },
+  {
+    "id": "empty-history-preserves-config",
+    "request": {
+      "schema": "semantica.temporal-patterns-request/1",
+      "clock_at": "2024-01-20T00:00:00Z",
+      "initial_config": {
+        "gap_tolerance": 1
+      },
+      "actions": []
+    },
+    "steps": [],
+    "final_config": {
+      "gap_tolerance": 1
+    }
+  }
+]

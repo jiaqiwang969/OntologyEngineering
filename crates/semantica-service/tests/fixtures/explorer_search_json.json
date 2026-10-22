@@ -1,0 +1,511 @@
+{
+  "rows": [
+    {
+      "body_utf8": "{",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              1
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting property name enclosed in double quotes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "{ ",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              2
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting property name enclosed in double quotes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "{x:1}",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              1
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting property name enclosed in double quotes"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "{\"a\" 1}",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              5
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting ':' delimiter"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "{\"a\": }",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              6
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting value"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "{\"a\":1,}",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              6
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Illegal trailing comma before end of object"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "[1,]",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              2
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Illegal trailing comma before end of array"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "[1 2]",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              3
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting ',' delimiter"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "{\"a\":1 \"b\":2}",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              7
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting ',' delimiter"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "{\"a\":1} trailing",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              8
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Extra data"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "\"abc",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              0
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Unterminated string starting at"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "\"a\\q\"",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              2
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Invalid \\escape"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "\"\\uZZZZ\"",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              2
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Invalid \\uXXXX escape"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "\"a\nb\"",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              2
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Invalid control character at"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "truX",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              0
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting value"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "01",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              1
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Extra data"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "1.",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              1
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Extra data"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "1e+",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              1
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Extra data"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "-",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              0
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting value"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "\n{\"键\": 1,\n}",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              8
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Illegal trailing comma before end of object"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "   ",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              3
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting value"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "[\"é\",",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              5
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Expecting value"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "true false",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              5
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Extra data"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "{\"query\":\"bearing\",\"limit\":2,}",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "json_invalid",
+            "loc": [
+              "body",
+              28
+            ],
+            "msg": "JSON decode error",
+            "input": {},
+            "ctx": {
+              "error": "Illegal trailing comma before end of object"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "body_utf8": "{\"query\":\"absent\",\"query\":\"bearing\"}",
+      "status": 200,
+      "response": {
+        "results": [
+          {
+            "node": {
+              "id": "a",
+              "type": "Part",
+              "content": "bearing",
+              "properties": {
+                "content": "bearing"
+              },
+              "valid_from": null,
+              "valid_until": null
+            },
+            "score": 138.0,
+            "hop_distance": null,
+            "semantic_similarity": null
+          }
+        ],
+        "total": 1,
+        "query": "bearing"
+      }
+    }
+  ],
+  "source_unchanged": true,
+  "production_python_delegate": false
+}

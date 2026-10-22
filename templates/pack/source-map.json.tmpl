@@ -1,0 +1,24 @@
+---
+to: out/source-map.json
+sparql:
+  migration_scope: 'SELECT ?scope_sha256 ?migration_status ?behavior_status WHERE { <urn:oev2:design:semantic-migration-scope> <urn:oev2:design:scopeSha256> ?scope_sha256 ; <urn:oev2:design:migrationStatus> ?migration_status ; <urn:oev2:design:behaviorStatus> ?behavior_status }'
+  migration_assets: 'SELECT ?path ?sha256 WHERE { ?f <urn:oev2:design:kind> "SemanticaMigrationAsset" ; <urn:oev2:design:path> ?path ; <urn:oev2:design:sha256> ?sha256 } ORDER BY ?path'
+  migration_mappings: 'SELECT ?scope_id ?module ?rust_path ?status ?behavior_status WHERE { ?m <urn:oev2:design:originalScopeId> ?scope_id ; <urn:oev2:design:module> ?module ; <urn:oev2:design:rustPath> ?rust_path ; <urn:oev2:design:mappingStatus> ?status ; <urn:oev2:design:behaviorStatus> ?behavior_status } ORDER BY ?scope_id ?module ?rust_path'
+  files: 'SELECT ?path ?sha256 ?module ?production WHERE { ?f <urn:oev2:design:kind> "RustCodeFile" ; <urn:oev2:design:path> ?path ; <urn:oev2:design:sha256> ?sha256 ; <urn:oev2:design:module> ?m ; <urn:oev2:design:production> ?production . ?m <urn:oev2:design:name> ?module } ORDER BY ?path ?module ?m'
+  checks: 'SELECT ?constraint ?name ?path WHERE { ?function <urn:oev2:design:executes> ?c ; <urn:oev2:design:name> ?name ; <urn:oev2:design:file> ?file . ?c <urn:oev2:design:name> ?constraint . ?file <urn:oev2:design:path> ?path } ORDER BY ?constraint'
+  implementations: 'SELECT ?interface ?path WHERE { ?file <urn:oev2:design:implements> ?i ; <urn:oev2:design:path> ?path . ?i <urn:oev2:design:name> ?interface } ORDER BY ?interface'
+  unmapped: 'SELECT ?interface WHERE { ?i <urn:oev2:design:kind> "Interface" ; <urn:oev2:design:name> ?interface . FILTER NOT EXISTS { ?file <urn:oev2:design:implements> ?i } } ORDER BY ?interface'
+  missing: 'SELECT ?constraint WHERE { ?c <urn:oev2:design:kind> "Constraint" ; <urn:oev2:design:name> ?constraint . FILTER NOT EXISTS { ?f <urn:oev2:design:executes> ?c } } ORDER BY ?constraint'
+---
+{
+  "schema":"oev2.source-map/1",
+  "scope":"derived static source identity, all declared module path memberships and declared constraint checker; shared paths may have several module rows; no exclusive functional ownership or behavior pass implied",
+  "migration_scope":{{ migration_scope | json_encode }},
+  "migration_assets":{{ migration_assets | json_encode }},
+  "migration_mappings":{{ migration_mappings | json_encode }},
+  "files":[{% for f in files %}{"path":"{{ f.path }}","sha256":"{{ f.sha256 }}","module":"{{ f.module }}","production":{{ f.production }}}{% if not loop.last %},{% endif %}{% endfor %}],
+  "checks":[{% for c in checks %}{"constraint":"{{ c.constraint }}","function":"{{ c.name }}","path":"{{ c.path }}"}{% if not loop.last %},{% endif %}{% endfor %}],
+  "implementations":[{% for i in implementations %}{"interface":"{{ i.interface }}","path":"{{ i.path }}"}{% if not loop.last %},{% endif %}{% endfor %}],
+  "missing_interfaces":[{% for i in unmapped %}"{{ i.interface }}"{% if not loop.last %},{% endif %}{% endfor %}],
+  "missing_checkers":[{% for c in missing %}"{{ c.constraint }}"{% if not loop.last %},{% endif %}{% endfor %}]
+}

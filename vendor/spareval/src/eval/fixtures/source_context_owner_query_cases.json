@@ -1,0 +1,532 @@
+{
+  "schema": "semantica.source-context-owner-query-receiving/1",
+  "source_record_sha256": "cd748af00421d75621c9972262397fc1439fea644c6bfec99ebaf537ca5f7670",
+  "source_record_bytes": 18874,
+  "classification": "These exact 7 queries and owner snapshots have not been executed in Python. Expected owner/value behavior is deduced from the pinned original sources, independent of Rust output. Existing whole-query observations support grammar/algorithm context but do not count as observations of these owner fields.",
+  "sources": {
+    "evaluate": {
+      "sha256": "991944f756398773c4ddf0da0bf5a3c2285f2a67140c9976a8a806ba5d8402be",
+      "bytes": 21870
+    },
+    "sparql": {
+      "sha256": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f",
+      "bytes": 15855
+    },
+    "evalutils": {
+      "sha256": "1d4167779189ebf38257ecc8e2089d0a71df6470b10f7ccde8cb5176bd359d09",
+      "bytes": 4908
+    },
+    "algebra": {
+      "sha256": "22441c48e62b22c40ec17a1ffaf5360b7b08cfb971cfe8ad59a599e8766d81b3",
+      "bytes": 60938
+    }
+  },
+  "environment": {
+    "context_semantics": "SourceContextV1",
+    "literal_semantics": "SourceLiteralV1",
+    "group_semantics": "SourceAggregateV1",
+    "numeric_capabilities": "MixedBinary64V1",
+    "hash_runtime": {
+      "kind": "Seeded",
+      "seed": 0,
+      "claim": "Explicit reference configuration, not assumption about old defaults or NativeRandom cross-process order."
+    },
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ]
+    },
+    "numeric_limits": {
+      "max_input_characters": 4096,
+      "max_coefficient_digits": 4096,
+      "max_output_characters": 4096,
+      "max_materialized_power_of_ten": 4096
+    },
+    "integer_text_limit": null,
+    "normalize_literals": true,
+    "case_overrides": "Merge the named case environment_overrides into this environment. In particular decimal_traps replaces traps, and is not an ignored documentary field."
+  },
+  "source_query_cases": [
+    {
+      "id": "COQ01",
+      "classification": "source_derived_whole_query_owner",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x {1 2} }",
+        "initial_bindings": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        }
+      },
+      "expected": {
+        "terminal": "complete",
+        "rows": [
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          },
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "output_owner_bindings": [
+          {
+            "i": {
+              "kind": "NamedNode",
+              "iri": "urn:owner:initial"
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          },
+          {
+            "i": {
+              "kind": "NamedNode",
+              "iri": "urn:owner:initial"
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "all_output_rows_have_owner": true,
+        "all_owner_initial_references_shared": true,
+        "original_initial_unchanged": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        },
+        "decimal_flags": [],
+        "output_owners_pairwise_distinct": true
+      },
+      "source_anchors": [
+        "evaluate.py:254-266",
+        "sparql.py:401-410,423-435",
+        "evaluate.py:571-573"
+      ],
+      "derivation": "Each successful VALUES row creates its own pushed context; solution and Project preserve that owner. Hidden initial i remains in owner bindings, outside projected local domain."
+    },
+    {
+      "id": "COQ02",
+      "classification": "source_derived_whole_query_owner",
+      "input": {
+        "query": "SELECT (1 AS ?x) WHERE {}",
+        "initial_bindings": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        }
+      },
+      "expected": {
+        "terminal": "complete",
+        "rows": [
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "output_owner_bindings": [
+          {
+            "i": {
+              "kind": "NamedNode",
+              "iri": "urn:owner:initial"
+            }
+          }
+        ],
+        "all_output_rows_have_owner": true,
+        "all_owner_initial_references_shared": true,
+        "original_initial_unchanged": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        },
+        "decimal_flags": [],
+        "output_owner_is_root": true
+      },
+      "source_anchors": [
+        "evaluate.py:74-83,124-140,571-573",
+        "sparql.py:195-200,401-410"
+      ],
+      "derivation": "Empty BGP returns root solution. Extend merges x into a new frozen local row without assigning root ctx.bindings. Project retains the root owner; owner bindings are initial i only."
+    },
+    {
+      "id": "COQ03",
+      "classification": "source_derived_whole_query_owner",
+      "input": {
+        "query": "SELECT (COUNT(?x) AS ?n) WHERE { VALUES ?x {1 2} }",
+        "initial_bindings": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        }
+      },
+      "expected": {
+        "terminal": "complete",
+        "rows": [
+          {
+            "n": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "output_owner_bindings": [
+          {
+            "i": {
+              "kind": "NamedNode",
+              "iri": "urn:owner:initial"
+            }
+          }
+        ],
+        "all_output_rows_have_owner": true,
+        "all_owner_initial_references_shared": true,
+        "original_initial_unchanged": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        },
+        "decimal_flags": [],
+        "output_owner_is_root": true,
+        "output_owner_is_any_child_values_owner": false
+      },
+      "source_anchors": [
+        "evaluate.py:459-491",
+        "evaluate.py:124-140,571-573",
+        "sparql.py:195-200"
+      ],
+      "derivation": "AggregateJoin consumes two child VALUES owners but builds FrozenBindings(call_ctx,aggregator.get_bindings()); alias Extend and Project retain the caller root owner, whose bindings contain only i."
+    },
+    {
+      "id": "COQ04",
+      "classification": "source_derived_whole_query_owner",
+      "input": {
+        "query": "SELECT (COUNT(?x) AS ?n) WHERE { VALUES ?x {0} FILTER(?x) } GROUP BY ?x",
+        "initial_bindings": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        }
+      },
+      "expected": {
+        "terminal": "complete",
+        "rows": [
+          {}
+        ],
+        "output_owner_bindings": [
+          {
+            "i": {
+              "kind": "NamedNode",
+              "iri": "urn:owner:initial"
+            }
+          }
+        ],
+        "all_output_rows_have_owner": true,
+        "all_owner_initial_references_shared": true,
+        "original_initial_unchanged": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        },
+        "decimal_flags": [],
+        "output_owner_is_root": true,
+        "absent_variables": [
+          "n"
+        ]
+      },
+      "source_anchors": [
+        "evaluate.py:209-219,459-491",
+        "evalutils.py:73-100",
+        "evaluate.py:124-140,571-573"
+      ],
+      "derivation": "The grammar contains a nonempty VALUES row and a real variable Filter, avoiding the source empty-VALUES defect and single literal false translation issue. Integer 0 filters out the child. Explicit Group has no buckets and yields one empty FrozenBindings(call_ctx), so n stays absent. Empty projected row retains root owner."
+    },
+    {
+      "id": "COQ05",
+      "classification": "source_derived_whole_query_owner",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?x {1} VALUES ?y {2} }",
+        "initial_bindings": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        }
+      },
+      "expected": {
+        "terminal": "complete",
+        "rows": [
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "y": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "output_owner_bindings": [
+          {
+            "i": {
+              "kind": "NamedNode",
+              "iri": "urn:owner:initial"
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "y": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "all_output_rows_have_owner": true,
+        "all_owner_initial_references_shared": true,
+        "original_initial_unchanged": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        },
+        "decimal_flags": [],
+        "required_join_lazy": true,
+        "output_owner_role": "right_values_owner"
+      },
+      "source_anchors": [
+        "algebra.py:792-809",
+        "evaluate.py:143-166,254-266",
+        "sparql.py:195-200,308-320"
+      ],
+      "derivation": "Both VALUES operands are lazy-admissible. evalLazyJoin thaws left into a new context, right VALUES pushes again, b.merge(a) retains right owner. Final projected local fields x/y match nonlazy case but owner includes x and y."
+    },
+    {
+      "id": "COQ06",
+      "classification": "source_derived_whole_query_owner",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?x {1} { SELECT ?y WHERE { VALUES ?y {2} } LIMIT 1 } }",
+        "initial_bindings": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        }
+      },
+      "expected": {
+        "terminal": "complete",
+        "rows": [
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "y": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "output_owner_bindings": [
+          {
+            "i": {
+              "kind": "NamedNode",
+              "iri": "urn:owner:initial"
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "all_output_rows_have_owner": true,
+        "all_owner_initial_references_shared": true,
+        "original_initial_unchanged": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        },
+        "decimal_flags": [],
+        "required_join_lazy": false,
+        "output_owner_role": "left_values_owner"
+      },
+      "source_anchors": [
+        "algebra.py:792-809",
+        "evaluate.py:158-166,501-517,571-573",
+        "evalutils.py:64-71",
+        "sparql.py:195-200"
+      ],
+      "derivation": "Right Slice propagates nonlazy status. evalJoin materializes its single right row, then _join uses left.merge(right), retaining left VALUES owner i/x rather than right owner i/y. Singleton set avoids any unobserved iteration-order premise."
+    },
+    {
+      "id": "COQ07",
+      "classification": "source_derived_whole_query_owner",
+      "input": {
+        "query": "SELECT ?x ?y WHERE { VALUES ?x {1} OPTIONAL { VALUES ?y {2} } }",
+        "initial_bindings": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        }
+      },
+      "expected": {
+        "terminal": "complete",
+        "rows": [
+          {
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "y": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "output_owner_bindings": [
+          {
+            "i": {
+              "kind": "NamedNode",
+              "iri": "urn:owner:initial"
+            },
+            "x": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            },
+            "y": {
+              "kind": "Literal",
+              "lexical": "2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+            }
+          }
+        ],
+        "all_output_rows_have_owner": true,
+        "all_owner_initial_references_shared": true,
+        "original_initial_unchanged": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        },
+        "decimal_flags": [],
+        "output_owner_role": "right_values_owner"
+      },
+      "source_anchors": [
+        "evaluate.py:184-205,254-266",
+        "sparql.py:195-200,308-320"
+      ],
+      "derivation": "LeftJoin thaws left and successful right VALUES carries its pushed owner. b.merge(a) retains right owner. This successful match does not claim the fallback probe or EXISTS."
+    }
+  ],
+  "active_contract_cases": [
+    {
+      "id": "COQA01",
+      "classification": "active_consumer_cancellation",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x {1 2} }",
+        "initial_bindings": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        }
+      },
+      "trigger": "At the first actual OutputRow observer from bound prepare -> execute_source_presence, verify owner exists and cancel the real token before final decoding.",
+      "expected": {
+        "first_result": "Cancelled",
+        "next_results": [
+          "None",
+          "None"
+        ],
+        "no_second_output_row": true,
+        "backend_calls_after_cancel": 0,
+        "no_retry": true
+      },
+      "boundary": "Separate from COA01 pending EXISTS-child-start cancellation; this tests the current admitted bound query output boundary."
+    },
+    {
+      "id": "COQA02",
+      "classification": "active_consumer_backend_failure",
+      "input": {
+        "query": "SELECT ?x WHERE { VALUES ?x {1 2} }",
+        "initial_bindings": {
+          "i": {
+            "kind": "NamedNode",
+            "iri": "urn:owner:initial"
+          }
+        }
+      },
+      "trigger": "At first actual OutputRow, snapshot Dataset counters; project([]), forget with actual caller context, and owned thaw using real carrier methods. Assert no backend activity for these transports; arm next real Dataset.externalize_term with one retained error Arc for final decoding.",
+      "expected": {
+        "transport_backend_delta": 0,
+        "first_result": "same_original_Dataset_error_Arc",
+        "next_results": [
+          "None",
+          "None"
+        ],
+        "no_second_output_row": true,
+        "backend_failure_invocations": 1,
+        "calls_after_first_error_delta": 0,
+        "no_retry": true
+      },
+      "boundary": "Existing COA02 owner transport/codec requirement is tested at an admitted output boundary; not evidence of an EXISTS runtime."
+    }
+  ],
+  "comparison_policy": {
+    "bindings": "Compare named domain and actual cell values, not production slot numbers. Assert source local insertion order only where separately frozen; these owner maps intentionally do not claim dict order.",
+    "owner_identity": "Compare actual Rc/reference sameness or inequality within one execution. No hardcoded pointer/address, no new owner inferred from output contents.",
+    "metadata": "Integer lexical/datatype shown are necessary output controls; comprehensive existing literal metadata fixtures remain active, not superseded.",
+    "observation": "Owner observer is read-only, must not invoke extra expression evaluation/hash/backend conversions. Pure carrier transport in COQA02 is separately requested as active test action."
+  },
+  "deferred": [
+    "Complete 50-case EXISTS runtime remains pending.",
+    "Owner-freeze COA01 EXISTS child-start cancellation remains pending; COQA01 is narrower and separately named.",
+    "Graph/dataset switching, time, prologue and bnode context identity are not qualified."
+  ],
+  "counts": {
+    "source_derived_queries": 7,
+    "active_consumer_controls": 2
+  }
+}

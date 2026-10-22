@@ -1,0 +1,311 @@
+{
+  "input": {
+    "nodes": [
+      {
+        "id": "source",
+        "type": "Part",
+        "content": "原件",
+        "properties": {
+          "text": "中文",
+          "bool_true": true,
+          "bool_false": false,
+          "none": null,
+          "integer": 42,
+          "large_integer": 1000000000000000000000000000000,
+          "float": 1.0,
+          "small_float": 1e-08,
+          "negative_zero": -0.0,
+          "array": [
+            1,
+            true,
+            null,
+            "x"
+          ],
+          "object": {
+            "z": 1,
+            "a": "two"
+          },
+          "content": "原件"
+        },
+        "valid_from": null,
+        "valid_until": null
+      },
+      {
+        "id": "target",
+        "type": "Assembly",
+        "content": "target",
+        "properties": {
+          "content": "target"
+        },
+        "valid_from": null,
+        "valid_until": null
+      }
+    ],
+    "edges": [
+      {
+        "id": "4e3a8514-dc3d-561d-92bb-b35d7fcacc4e",
+        "familyId": "4e3a8514-dc3d-561d-92bb-b35d7fcacc4e",
+        "source": "source",
+        "target": "target",
+        "type": "belongs_to",
+        "weight": 1.0,
+        "properties": {},
+        "valid_from": null,
+        "valid_until": null
+      }
+    ]
+  },
+  "triples": [
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/bool_true"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "true",
+        "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/integer"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "42",
+        "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/large_integer"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "1000000000000000000000000000000",
+        "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+      },
+      "object": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/Part"
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/float"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "1.0",
+        "datatype": "http://www.w3.org/2001/XMLSchema#double",
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/belongs_to"
+      },
+      "object": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/target"
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/text"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "中文",
+        "datatype": null,
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/small_float"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "1e-08",
+        "datatype": "http://www.w3.org/2001/XMLSchema#double",
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/target"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+      },
+      "object": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/Assembly"
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/bool_false"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "false",
+        "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/negative_zero"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "-0.0",
+        "datatype": "http://www.w3.org/2001/XMLSchema#double",
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/target"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://www.w3.org/2000/01/rdf-schema#label"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "target",
+        "datatype": null,
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/none"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "None",
+        "datatype": null,
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/object"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "{'z': 1, 'a': 'two'}",
+        "datatype": null,
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://www.w3.org/2000/01/rdf-schema#label"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "原件",
+        "datatype": null,
+        "language": null
+      }
+    },
+    {
+      "subject": {
+        "kind": "iri",
+        "value": "http://semantica.local/entity/source"
+      },
+      "predicate": {
+        "kind": "iri",
+        "value": "http://semantica.local/prop/array"
+      },
+      "object": {
+        "kind": "literal",
+        "value": "[1, True, None, 'x']",
+        "datatype": null,
+        "language": null
+      }
+    }
+  ],
+  "scope": "Original source graph projection; untyped RDFLib strings retain datatype null, native RDF1.1 string representation requires explicit comparison distinction."
+}

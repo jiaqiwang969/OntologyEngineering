@@ -1,0 +1,1509 @@
+{
+  "condition": "original graph with optional KG imports unavailable; constructor advanced_analytics true; original algorithms unmodified; observation IDs/timestamps captured as injected event oracle",
+  "cases": [
+    {
+      "tool": "_tool_add_entity",
+      "arguments": {
+        "id": "shaft",
+        "label": "轴😀",
+        "type": "Part",
+        "metadata": {
+          "b": 2,
+          "a": "中文"
+        }
+      },
+      "expected": {
+        "status": "added",
+        "id": "shaft"
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        }
+      ],
+      "edges": []
+    },
+    {
+      "tool": "_tool_add_relationship",
+      "arguments": {
+        "source": "shaft",
+        "target": "bearing",
+        "type": "SUPPORTS",
+        "metadata": {
+          "unit": "mm"
+        }
+      },
+      "expected": {
+        "status": "added",
+        "source": "shaft",
+        "target": "bearing",
+        "type": "SUPPORTS"
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "tool": "_tool_add_relationship",
+      "arguments": {
+        "source": "shaft",
+        "target": "bearing",
+        "type": "SUPPORTS",
+        "metadata": {
+          "unit": "mm"
+        }
+      },
+      "expected": {
+        "status": "added",
+        "source": "shaft",
+        "target": "bearing",
+        "type": "SUPPORTS"
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "tool": "_tool_record_decision",
+      "arguments": {
+        "category": "guide",
+        "scenario": "shaft precision",
+        "reasoning": "bearing stiffness",
+        "outcome": "selected",
+        "confidence": "0.9",
+        "entities": [
+          " shaft "
+        ],
+        "valid_from": "2026",
+        "valid_until": "2030-01-01"
+      },
+      "expected": {
+        "decision_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+        "status": "recorded"
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        },
+        {
+          "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 0.9,
+            "timestamp": 1791006737.394276,
+            "scenario": "shaft precision",
+            "decision_maker": "mcp_client",
+            "reasoning": "bearing stiffness"
+          }
+        },
+        {
+          "id": "category_guide",
+          "type": "category",
+          "content": "category_guide",
+          "metadata": {
+            "name": "guide"
+          }
+        },
+        {
+          "id": "maker_mcp_client",
+          "type": "decision_maker",
+          "content": "maker_mcp_client",
+          "metadata": {
+            "name": "mcp_client"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        },
+        {
+          "id": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "familyId": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "shaft",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 0.9
+          }
+        },
+        {
+          "id": "918e04f6-094c-50f9-b643-262489736eb7",
+          "familyId": "918e04f6-094c-50f9-b643-262489736eb7",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "familyId": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "maker_mcp_client",
+          "type": "made_by",
+          "weight": 1.0,
+          "properties": {}
+        }
+      ],
+      "event": {
+        "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+        "category": "guide",
+        "scenario": "shaft precision",
+        "reasoning": "bearing stiffness",
+        "outcome": "selected",
+        "confidence": 0.9,
+        "entities": [
+          "shaft"
+        ],
+        "decision_maker": "mcp_client",
+        "timestamp": 1791006737.394276,
+        "recorded_at": "2026-10-03T05:52:17.394335",
+        "valid_from": "2026-01-01T00:00:00",
+        "valid_until": "2030-01-01T00:00:00",
+        "metadata": {}
+      }
+    },
+    {
+      "tool": "_tool_query_decisions",
+      "arguments": {},
+      "expected": {
+        "decisions": [
+          {
+            "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+            "type": "decision",
+            "content": "shaft precision",
+            "metadata": {
+              "category": "guide",
+              "outcome": "selected",
+              "confidence": 0.9,
+              "timestamp": 1791006737.394276,
+              "scenario": "shaft precision",
+              "decision_maker": "mcp_client",
+              "reasoning": "bearing stiffness"
+            }
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        },
+        {
+          "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 0.9,
+            "timestamp": 1791006737.394276,
+            "scenario": "shaft precision",
+            "decision_maker": "mcp_client",
+            "reasoning": "bearing stiffness"
+          }
+        },
+        {
+          "id": "category_guide",
+          "type": "category",
+          "content": "category_guide",
+          "metadata": {
+            "name": "guide"
+          }
+        },
+        {
+          "id": "maker_mcp_client",
+          "type": "decision_maker",
+          "content": "maker_mcp_client",
+          "metadata": {
+            "name": "mcp_client"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        },
+        {
+          "id": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "familyId": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "shaft",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 0.9
+          }
+        },
+        {
+          "id": "918e04f6-094c-50f9-b643-262489736eb7",
+          "familyId": "918e04f6-094c-50f9-b643-262489736eb7",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "familyId": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "maker_mcp_client",
+          "type": "made_by",
+          "weight": 1.0,
+          "properties": {}
+        }
+      ]
+    },
+    {
+      "tool": "_tool_query_decisions",
+      "arguments": {
+        "category": "guide"
+      },
+      "expected": {
+        "decisions": []
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        },
+        {
+          "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 0.9,
+            "timestamp": 1791006737.394276,
+            "scenario": "shaft precision",
+            "decision_maker": "mcp_client",
+            "reasoning": "bearing stiffness"
+          }
+        },
+        {
+          "id": "category_guide",
+          "type": "category",
+          "content": "category_guide",
+          "metadata": {
+            "name": "guide"
+          }
+        },
+        {
+          "id": "maker_mcp_client",
+          "type": "decision_maker",
+          "content": "maker_mcp_client",
+          "metadata": {
+            "name": "mcp_client"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        },
+        {
+          "id": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "familyId": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "shaft",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 0.9
+          }
+        },
+        {
+          "id": "918e04f6-094c-50f9-b643-262489736eb7",
+          "familyId": "918e04f6-094c-50f9-b643-262489736eb7",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "familyId": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "maker_mcp_client",
+          "type": "made_by",
+          "weight": 1.0,
+          "properties": {}
+        }
+      ]
+    },
+    {
+      "tool": "_tool_query_decisions",
+      "arguments": {
+        "query": "shaft precision",
+        "limit": 1
+      },
+      "expected": {
+        "decisions": [
+          {
+            "decision": {
+              "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+              "category": "guide",
+              "scenario": "shaft precision",
+              "reasoning": "bearing stiffness",
+              "outcome": "selected",
+              "confidence": 0.9,
+              "entities": [
+                "shaft"
+              ],
+              "decision_maker": "mcp_client",
+              "timestamp": 1791006737.394276,
+              "recorded_at": "2026-10-03T05:52:17.394335",
+              "valid_from": "2026-01-01T00:00:00",
+              "valid_until": "2030-01-01T00:00:00",
+              "metadata": {}
+            },
+            "similarity": 0.35,
+            "content_similarity": 0.5,
+            "structural_similarity": 0.0
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        },
+        {
+          "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 0.9,
+            "timestamp": 1791006737.394276,
+            "scenario": "shaft precision",
+            "decision_maker": "mcp_client",
+            "reasoning": "bearing stiffness"
+          }
+        },
+        {
+          "id": "category_guide",
+          "type": "category",
+          "content": "category_guide",
+          "metadata": {
+            "name": "guide"
+          }
+        },
+        {
+          "id": "maker_mcp_client",
+          "type": "decision_maker",
+          "content": "maker_mcp_client",
+          "metadata": {
+            "name": "mcp_client"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        },
+        {
+          "id": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "familyId": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "shaft",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 0.9
+          }
+        },
+        {
+          "id": "918e04f6-094c-50f9-b643-262489736eb7",
+          "familyId": "918e04f6-094c-50f9-b643-262489736eb7",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "familyId": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "maker_mcp_client",
+          "type": "made_by",
+          "weight": 1.0,
+          "properties": {}
+        }
+      ]
+    },
+    {
+      "tool": "_tool_find_precedents",
+      "arguments": {
+        "scenario": "shaft precision",
+        "max_results": 1
+      },
+      "expected": {
+        "precedents": [
+          {
+            "decision": {
+              "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+              "category": "guide",
+              "scenario": "shaft precision",
+              "reasoning": "bearing stiffness",
+              "outcome": "selected",
+              "confidence": 0.9,
+              "entities": [
+                "shaft"
+              ],
+              "decision_maker": "mcp_client",
+              "timestamp": 1791006737.394276,
+              "recorded_at": "2026-10-03T05:52:17.394335",
+              "valid_from": "2026-01-01T00:00:00",
+              "valid_until": "2030-01-01T00:00:00",
+              "metadata": {}
+            },
+            "similarity": 0.35,
+            "content_similarity": 0.5,
+            "structural_similarity": 0.0
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        },
+        {
+          "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 0.9,
+            "timestamp": 1791006737.394276,
+            "scenario": "shaft precision",
+            "decision_maker": "mcp_client",
+            "reasoning": "bearing stiffness"
+          }
+        },
+        {
+          "id": "category_guide",
+          "type": "category",
+          "content": "category_guide",
+          "metadata": {
+            "name": "guide"
+          }
+        },
+        {
+          "id": "maker_mcp_client",
+          "type": "decision_maker",
+          "content": "maker_mcp_client",
+          "metadata": {
+            "name": "mcp_client"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        },
+        {
+          "id": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "familyId": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "shaft",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 0.9
+          }
+        },
+        {
+          "id": "918e04f6-094c-50f9-b643-262489736eb7",
+          "familyId": "918e04f6-094c-50f9-b643-262489736eb7",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "familyId": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "maker_mcp_client",
+          "type": "made_by",
+          "weight": 1.0,
+          "properties": {}
+        }
+      ]
+    },
+    {
+      "tool": "_tool_record_decision",
+      "arguments": {
+        "category": "guide",
+        "scenario": "shaft precision",
+        "reasoning": "bearing stiffness",
+        "outcome": "selected",
+        "confidence": true,
+        "entities": [
+          "bearing"
+        ],
+        "decision_maker": null,
+        "valid_from": 0
+      },
+      "expected": {
+        "decision_id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+        "status": "recorded"
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        },
+        {
+          "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 0.9,
+            "timestamp": 1791006737.394276,
+            "scenario": "shaft precision",
+            "decision_maker": "mcp_client",
+            "reasoning": "bearing stiffness"
+          }
+        },
+        {
+          "id": "category_guide",
+          "type": "category",
+          "content": "category_guide",
+          "metadata": {
+            "name": "guide"
+          }
+        },
+        {
+          "id": "maker_mcp_client",
+          "type": "decision_maker",
+          "content": "maker_mcp_client",
+          "metadata": {
+            "name": "mcp_client"
+          }
+        },
+        {
+          "id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 1.0,
+            "timestamp": 1791006737.394633,
+            "scenario": "shaft precision",
+            "decision_maker": null,
+            "reasoning": "bearing stiffness"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        },
+        {
+          "id": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "familyId": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "shaft",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 0.9
+          }
+        },
+        {
+          "id": "918e04f6-094c-50f9-b643-262489736eb7",
+          "familyId": "918e04f6-094c-50f9-b643-262489736eb7",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "familyId": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "maker_mcp_client",
+          "type": "made_by",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "ab9541a0-7149-5b71-8aba-f534faac4857",
+          "familyId": "ab9541a0-7149-5b71-8aba-f534faac4857",
+          "source_id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+          "target_id": "bearing",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 1.0
+          }
+        },
+        {
+          "id": "c252cfc7-8ec8-526e-a8e2-29eed54c7e00",
+          "familyId": "c252cfc7-8ec8-526e-a8e2-29eed54c7e00",
+          "source_id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        }
+      ],
+      "event": {
+        "id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+        "category": "guide",
+        "scenario": "shaft precision",
+        "reasoning": "bearing stiffness",
+        "outcome": "selected",
+        "confidence": 1.0,
+        "entities": [
+          "bearing"
+        ],
+        "decision_maker": null,
+        "timestamp": 1791006737.394633,
+        "recorded_at": "2026-10-03T05:52:17.394642",
+        "valid_from": "1970-01-01T00:00:00",
+        "valid_until": null,
+        "metadata": {}
+      }
+    },
+    {
+      "tool": "_tool_find_precedents",
+      "arguments": {
+        "scenario": "shaft precision",
+        "max_results": 2
+      },
+      "expected": {
+        "precedents": [
+          {
+            "decision": {
+              "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+              "category": "guide",
+              "scenario": "shaft precision",
+              "reasoning": "bearing stiffness",
+              "outcome": "selected",
+              "confidence": 0.9,
+              "entities": [
+                "shaft"
+              ],
+              "decision_maker": "mcp_client",
+              "timestamp": 1791006737.394276,
+              "recorded_at": "2026-10-03T05:52:17.394335",
+              "valid_from": "2026-01-01T00:00:00",
+              "valid_until": "2030-01-01T00:00:00",
+              "metadata": {}
+            },
+            "similarity": 0.55,
+            "content_similarity": 0.5,
+            "structural_similarity": 0.6666666666666667
+          },
+          {
+            "decision": {
+              "id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+              "category": "guide",
+              "scenario": "shaft precision",
+              "reasoning": "bearing stiffness",
+              "outcome": "selected",
+              "confidence": 1.0,
+              "entities": [
+                "bearing"
+              ],
+              "decision_maker": null,
+              "timestamp": 1791006737.394633,
+              "recorded_at": "2026-10-03T05:52:17.394642",
+              "valid_from": "1970-01-01T00:00:00",
+              "valid_until": null,
+              "metadata": {}
+            },
+            "similarity": 0.55,
+            "content_similarity": 0.5,
+            "structural_similarity": 0.6666666666666667
+          }
+        ]
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        },
+        {
+          "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 0.9,
+            "timestamp": 1791006737.394276,
+            "scenario": "shaft precision",
+            "decision_maker": "mcp_client",
+            "reasoning": "bearing stiffness"
+          }
+        },
+        {
+          "id": "category_guide",
+          "type": "category",
+          "content": "category_guide",
+          "metadata": {
+            "name": "guide"
+          }
+        },
+        {
+          "id": "maker_mcp_client",
+          "type": "decision_maker",
+          "content": "maker_mcp_client",
+          "metadata": {
+            "name": "mcp_client"
+          }
+        },
+        {
+          "id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 1.0,
+            "timestamp": 1791006737.394633,
+            "scenario": "shaft precision",
+            "decision_maker": null,
+            "reasoning": "bearing stiffness"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        },
+        {
+          "id": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "familyId": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "shaft",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 0.9
+          }
+        },
+        {
+          "id": "918e04f6-094c-50f9-b643-262489736eb7",
+          "familyId": "918e04f6-094c-50f9-b643-262489736eb7",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "familyId": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "maker_mcp_client",
+          "type": "made_by",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "ab9541a0-7149-5b71-8aba-f534faac4857",
+          "familyId": "ab9541a0-7149-5b71-8aba-f534faac4857",
+          "source_id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+          "target_id": "bearing",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 1.0
+          }
+        },
+        {
+          "id": "c252cfc7-8ec8-526e-a8e2-29eed54c7e00",
+          "familyId": "c252cfc7-8ec8-526e-a8e2-29eed54c7e00",
+          "source_id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        }
+      ]
+    },
+    {
+      "tool": "_tool_get_graph_summary",
+      "arguments": {},
+      "expected": {
+        "node_count": 6,
+        "decision_count": 2,
+        "graph_ready": true
+      },
+      "nodes": [
+        {
+          "id": "shaft",
+          "type": "Part",
+          "content": "shaft",
+          "metadata": {
+            "label": "轴😀",
+            "metadata": {
+              "b": 2,
+              "a": "中文"
+            }
+          }
+        },
+        {
+          "id": "bearing",
+          "type": "entity",
+          "content": "bearing",
+          "metadata": {}
+        },
+        {
+          "id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 0.9,
+            "timestamp": 1791006737.394276,
+            "scenario": "shaft precision",
+            "decision_maker": "mcp_client",
+            "reasoning": "bearing stiffness"
+          }
+        },
+        {
+          "id": "category_guide",
+          "type": "category",
+          "content": "category_guide",
+          "metadata": {
+            "name": "guide"
+          }
+        },
+        {
+          "id": "maker_mcp_client",
+          "type": "decision_maker",
+          "content": "maker_mcp_client",
+          "metadata": {
+            "name": "mcp_client"
+          }
+        },
+        {
+          "id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+          "type": "decision",
+          "content": "shaft precision",
+          "metadata": {
+            "category": "guide",
+            "outcome": "selected",
+            "confidence": 1.0,
+            "timestamp": 1791006737.394633,
+            "scenario": "shaft precision",
+            "decision_maker": null,
+            "reasoning": "bearing stiffness"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "familyId": "fdfa0f6d-e732-55d8-8d79-b3ba5f6faf2f",
+          "source_id": "shaft",
+          "target_id": "bearing",
+          "type": "SUPPORTS",
+          "weight": 1.0,
+          "properties": {
+            "metadata": {
+              "unit": "mm"
+            }
+          }
+        },
+        {
+          "id": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "familyId": "d1703b34-0357-52f0-84f7-cc1f4f5fb8b3",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "shaft",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 0.9
+          }
+        },
+        {
+          "id": "918e04f6-094c-50f9-b643-262489736eb7",
+          "familyId": "918e04f6-094c-50f9-b643-262489736eb7",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "familyId": "52ba241f-96b0-53d2-bc26-bc87f59c33b2",
+          "source_id": "bf89cbbd-88a7-4d3a-a132-8f9d5e187863",
+          "target_id": "maker_mcp_client",
+          "type": "made_by",
+          "weight": 1.0,
+          "properties": {}
+        },
+        {
+          "id": "ab9541a0-7149-5b71-8aba-f534faac4857",
+          "familyId": "ab9541a0-7149-5b71-8aba-f534faac4857",
+          "source_id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+          "target_id": "bearing",
+          "type": "involves",
+          "weight": 1.0,
+          "properties": {
+            "confidence": 1.0
+          }
+        },
+        {
+          "id": "c252cfc7-8ec8-526e-a8e2-29eed54c7e00",
+          "familyId": "c252cfc7-8ec8-526e-a8e2-29eed54c7e00",
+          "source_id": "0a176b96-6f48-4a8f-ab7a-c1543d7d5473",
+          "target_id": "category_guide",
+          "type": "belongs_to",
+          "weight": 1.0,
+          "properties": {}
+        }
+      ]
+    }
+  ],
+  "invalid": [
+    {
+      "arguments": {
+        "category": "guide",
+        "scenario": "shaft precision",
+        "reasoning": "bearing stiffness",
+        "outcome": "selected",
+        "confidence": 0.9,
+        "entities": [
+          " "
+        ]
+      },
+      "expected_error": {
+        "type": "ValueError",
+        "message": "Each entity must be a non-empty string"
+      },
+      "nodes_unchanged": true
+    },
+    {
+      "arguments": {
+        "category": "guide",
+        "scenario": "shaft precision",
+        "reasoning": "bearing stiffness",
+        "outcome": "selected",
+        "confidence": 0.9,
+        "decision_maker": " "
+      },
+      "expected_error": {
+        "type": "ValueError",
+        "message": "Decision maker must be a non-empty string"
+      },
+      "nodes_unchanged": true
+    },
+    {
+      "arguments": {
+        "category": "guide",
+        "scenario": "shaft precision",
+        "reasoning": "bearing stiffness",
+        "outcome": "selected",
+        "confidence": "NaN"
+      },
+      "expected_error": {
+        "type": "ValueError",
+        "message": "Confidence must be between 0.0 and 1.0"
+      },
+      "nodes_unchanged": true
+    },
+    {
+      "arguments": {
+        "category": "guide",
+        "scenario": "shaft precision",
+        "reasoning": "bearing stiffness",
+        "outcome": "selected",
+        "confidence": 0.9,
+        "valid_from": "invalid"
+      },
+      "expected_error": {
+        "type": "ValueError",
+        "message": "Temporal value 'invalid' is not a valid ISO datetime string"
+      },
+      "nodes_unchanged": true
+    }
+  ],
+  "selected_ast": [
+    {
+      "path": "semantica/utils/skos.py",
+      "source_sha256": "06870db663ab31924f1bfcd77b8438f9cac09d59345a980d2cef419a0e2cc661",
+      "name": "assignment",
+      "line": 7,
+      "end_line": 7,
+      "ast_sha256": "2323dbb0bcfcb6191f87a371076fb328c01e706feda75fab0f1b29497d7d65a5"
+    },
+    {
+      "path": "semantica/utils/skos.py",
+      "source_sha256": "06870db663ab31924f1bfcd77b8438f9cac09d59345a980d2cef419a0e2cc661",
+      "name": "is_skos_hierarchy_edge",
+      "line": 10,
+      "end_line": 17,
+      "ast_sha256": "678cb2d94670ebfbd32630db6bc6e48f684914f92d9d2583b796fad45a9e3735"
+    },
+    {
+      "path": "semantica/utils/skos.py",
+      "source_sha256": "06870db663ab31924f1bfcd77b8438f9cac09d59345a980d2cef419a0e2cc661",
+      "name": "_child_parent",
+      "line": 20,
+      "end_line": 44,
+      "ast_sha256": "122821fed2da4a03b6786e99f9a3da08380b81266bccf7eb82891ddb962713f9"
+    },
+    {
+      "path": "semantica/utils/skos.py",
+      "source_sha256": "06870db663ab31924f1bfcd77b8438f9cac09d59345a980d2cef419a0e2cc661",
+      "name": "validate_skos_hierarchy",
+      "line": 47,
+      "end_line": 96,
+      "ast_sha256": "4ba0ea2c56e7f6c266293f5568c0c2fa4a00eb81cbfba6bd363bd2b6c4a71fdc"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_CausalChain",
+      "line": 135,
+      "end_line": 139,
+      "ast_sha256": "94fc0aa32bf17d2bab9a1c022103d259dc898b41e603ec5a95a9ffefef1b058e"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_parse_iso_dt",
+      "line": 142,
+      "end_line": 170,
+      "ast_sha256": "e9d7729a27a900b8d9ed5ca7e9aab32fea4a3a79a74b58554bb6bd7e233c9a97"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_normalize_temporal_input",
+      "line": 173,
+      "end_line": 188,
+      "ast_sha256": "1a4627a598666846bf6378f60de4dada0fa4251e437d7cffb7538ce208187be5"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_closing_valid_until",
+      "line": 191,
+      "end_line": 208,
+      "ast_sha256": "8e2c664c046716f9b522873490980d337bc9778e3263dae96039c2ef2659bb25"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_pick_first",
+      "line": 211,
+      "end_line": 218,
+      "ast_sha256": "7d25e7de426ee00833c1f6b5ed22d6bb1b73fec9d264e70ba3d00f78f8d76a21"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_default_edge_id",
+      "line": 221,
+      "end_line": 244,
+      "ast_sha256": "05c81722ffed310b25fed11549b3ff422acc8c6fd381d6009f146521653dc5d7"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_resolve_edge_identity",
+      "line": 247,
+      "end_line": 274,
+      "ast_sha256": "2f599f96d757e3d45fc57f28858453c43203db725e874fc8990123efdd705e15"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_coerce_metadata_map",
+      "line": 277,
+      "end_line": 282,
+      "ast_sha256": "d135f4ca85d5cf1bd7d5e3bd601b55556a8532503b227090080f51cd185804b5"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_coerce_node_id",
+      "line": 285,
+      "end_line": 296,
+      "ast_sha256": "2ab10dbe8d61682775c07638c2f6574d25513c0283586545869c0978e2c23cad"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_coerce_edge_endpoint",
+      "line": 299,
+      "end_line": 309,
+      "ast_sha256": "590117e93439852a2b27b6ef191d0555d620744a04bc7caed27deb2a938b341a"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "_coerce_float",
+      "line": 312,
+      "end_line": 318,
+      "ast_sha256": "6661fe037c8612d559f5924bca13a9af72a32ec9dddb66c99498be49548200be"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "ContextNode",
+      "line": 322,
+      "end_line": 361,
+      "ast_sha256": "fb31fb121bb2abc01ef2d4543d859b017c159496e66309649af502e582783e89"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "ContextEdge",
+      "line": 365,
+      "end_line": 430,
+      "ast_sha256": "92e7beca899540d85b5531e0e1c0c7112096d1331e5e1b6a8b873f6cca127ad7"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "assignment",
+      "line": 433,
+      "end_line": 433,
+      "ast_sha256": "3b4035c05cda31303feb299b97e03809f2a98b26e8260d7ddabf252af50d38e7"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "assignment",
+      "line": 439,
+      "end_line": 439,
+      "ast_sha256": "e3474626fc1dd5cec9c56f9efb6b42583ce73741e1002b994f8a5c1785c9b900"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "ContextGraph",
+      "line": 442,
+      "end_line": 4256,
+      "ast_sha256": "f3eaf79ce09b2b8d05c016afdaa9588f0b14e82d878c14c28f93d1405651c4a4"
+    },
+    {
+      "path": "semantica/context/context_graph.py",
+      "source_sha256": "44a6fbc6fc321a4b2f25649d7c494cc4772e3277c8897ecbb5ad6c954ffe5be2",
+      "name": "assignment",
+      "line": 4260,
+      "end_line": 4260,
+      "ast_sha256": "e9be6b508ccd8cc3517875551eba098708804fdc617419eaae31e356e5d4165f"
+    },
+    {
+      "path": "semantica/mcp_server/__init__.py",
+      "source_sha256": "1273bca55d0ad9a10b65405fedf91394456f6cdf071569ec410d68206cb6f737",
+      "name": "_tool_record_decision",
+      "line": 131,
+      "end_line": 149,
+      "ast_sha256": "7cb3a897c32ce7f6bf88045e439abc6961162bfbf2ca9d4e5d87ec075a99d8d0"
+    },
+    {
+      "path": "semantica/mcp_server/__init__.py",
+      "source_sha256": "1273bca55d0ad9a10b65405fedf91394456f6cdf071569ec410d68206cb6f737",
+      "name": "_tool_query_decisions",
+      "line": 152,
+      "end_line": 168,
+      "ast_sha256": "4d7e22b7847c2e1ac0e203579dcd1e4bf020e44abf3c74b027376a7c57a85809"
+    },
+    {
+      "path": "semantica/mcp_server/__init__.py",
+      "source_sha256": "1273bca55d0ad9a10b65405fedf91394456f6cdf071569ec410d68206cb6f737",
+      "name": "_tool_find_precedents",
+      "line": 171,
+      "end_line": 182,
+      "ast_sha256": "4110c67be5334e2a95c79c332a54d33896ad687ae914370be886f89d8b4b7039"
+    },
+    {
+      "path": "semantica/mcp_server/__init__.py",
+      "source_sha256": "1273bca55d0ad9a10b65405fedf91394456f6cdf071569ec410d68206cb6f737",
+      "name": "_tool_add_entity",
+      "line": 202,
+      "end_line": 212,
+      "ast_sha256": "3319b9f7150d23b683e034594e91ab696b0044441cf8420d37cd6691df3dd470"
+    },
+    {
+      "path": "semantica/mcp_server/__init__.py",
+      "source_sha256": "1273bca55d0ad9a10b65405fedf91394456f6cdf071569ec410d68206cb6f737",
+      "name": "_tool_add_relationship",
+      "line": 215,
+      "end_line": 225,
+      "ast_sha256": "d00d4e0bd57874c93b5ad9751d429bd7267e40aaf48a04ae478986189ce69696"
+    },
+    {
+      "path": "semantica/mcp_server/__init__.py",
+      "source_sha256": "1273bca55d0ad9a10b65405fedf91394456f6cdf071569ec410d68206cb6f737",
+      "name": "_tool_get_graph_summary",
+      "line": 279,
+      "end_line": 291,
+      "ast_sha256": "c9fa010384cbe98dbb264f57a89a56dfe8072e19ed08e478143914fa4722d738"
+    }
+  ],
+  "original_asserts_run": false
+}

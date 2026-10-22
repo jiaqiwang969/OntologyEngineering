@@ -1,0 +1,611 @@
+//! Owned, tiny native fixtures. No existing book/index or external API is touched.
+use oe_core::{SkillRoot, sha256};
+use oe_knowledge::{
+    citations,
+    poppler::PopplerTools,
+    registration::{self, RegistrationOptions},
+    source_pack,
+    sources::Provider,
+};
+use serde_json::{Value, json};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
+
+struct Fixture(PathBuf);
+impl Fixture {
+    fn new(label: &str) -> Self {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .ancestors()
+            .nth(2)
+            .unwrap()
+            .join("var/maintenance/rust-rewrite-20260927/phase5-source-tests")
+            .join(format!(
+                "{label}-{}-{}",
+                std::process::id(),
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_nanos()
+            ));
+        fs::create_dir_all(root.join("sources/books")).unwrap();
+        fs::write(root.join("SKILL.md"), "fixture only").unwrap();
+        Self(root)
+    }
+}
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        fs::remove_dir_all(&self.0).unwrap();
+    }
+}
+fn tools() -> PopplerTools {
+    PopplerTools {
+        pdfinfo: "/opt/homebrew/bin/pdfinfo".into(),
+        pdftotext: "/opt/homebrew/bin/pdftotext".into(),
+        pdftoppm: "/opt/homebrew/bin/pdftoppm".into(),
+    }
+}
+fn save(path: &Path, v: &Value) {
+    fs::write(path, serde_json::to_vec_pretty(v).unwrap()).unwrap();
+}
+
+/// Actual text-layer glyph-to-Unicode mappings include Chinese, a decomposed
+/// combining sequence and an astral CJK character. Page 2 is blank; page 3 is a
+/// bitmap without a native text layer. No directory alias proves these claims.
+fn unicode_pdf() -> Vec<u8> {
+    unicode_pdf_pages(3)
+}
+fn unicode_pdf_pages(count: usize) -> Vec<u8> {
+    let cmap=b"/CIDInit /ProcSet findresource begin 12 dict begin begincmap /CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def /CMapName /Fixture def /CMapType 2 def 1 begincodespacerange <0000> <FFFF> endcodespacerange 6 beginbfchar <0001> <5DE5> <0002> <7A0B> <0003> <0020> <0004> <00650301> <0005> <D842DFB7> <0006> <67614EF6> endbfchar endcmap CMapName currentdict /CMap defineresource pop end end";
+    fn stream(bytes: &[u8]) -> Vec<u8> {
+        let mut v = format!("<< /Length {} >>\nstream\n", bytes.len()).into_bytes();
+        v.extend(bytes);
+        v.extend(b"\nendstream");
+        v
+    }
+    let mut objs=vec![b"<< /Type /Catalog /Pages 2 0 R >>".to_vec(),Vec::new(),b"<< /Type /Font /Subtype /Type0 /BaseFont /Arial /Encoding /Identity-H /DescendantFonts [4 0 R] /ToUnicode 6 0 R >>".to_vec(),b"<< /Type /Font /Subtype /CIDFontType2 /BaseFont /Arial /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> /FontDescriptor 5 0 R /DW 600 /CIDToGIDMap /Identity >>".to_vec(),b"<< /Type /FontDescriptor /FontName /Arial /Flags 32 /FontBBox [0 -200 1000 900] /ItalicAngle 0 /Ascent 900 /Descent -200 /CapHeight 700 /StemV 80 >>".to_vec(),stream(cmap),b"<< /Type /XObject /Subtype /Image /Width 1 /Height 1 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Length 3 >>\nstream\n\xff\x00\x00\nendstream".to_vec()];
+    let mut kids = Vec::new();
+    for content in [
+        b"BT /F1 16 Tf 20 750 Td <00010002000300040003000500030006> Tj ET".as_slice(),
+        b"",
+        b"q 240 0 0 240 40 40 cm /Im0 Do Q",
+    ]
+    .into_iter()
+    .take(count)
+    {
+        let id = objs.len() + 1;
+        kids.push(format!("{id} 0 R"));
+        objs.push(format!("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 600 800] /Resources << /Font << /F1 3 0 R >> /XObject << /Im0 7 0 R >> >> /Contents {} 0 R >>",id+1).into_bytes());
+        objs.push(stream(content));
+    }
+    objs[1] = format!(
+        "<< /Type /Pages /Count {count} /Kids [{}] >>",
+        kids.join(" ")
+    )
+    .into_bytes();
+    let mut out = b"%PDF-1.4\n".to_vec();
+    let mut offsets = Vec::new();
+    for (i, obj) in objs.iter().enumerate() {
+        offsets.push(out.len());
+        out.extend(format!("{} 0 obj\n", i + 1).as_bytes());
+        out.extend(obj);
+        out.extend(b"\nendobj\n");
+    }
+    let xref = out.len();
+    out.extend(format!("xref\n0 {}\n0000000000 65535 f \n", objs.len() + 1).as_bytes());
+    for offset in offsets {
+        out.extend(format!("{offset:010} 00000 n \n").as_bytes());
+    }
+    out.extend(
+        format!(
+            "trailer << /Size {} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n",
+            objs.len() + 1
+        )
+        .as_bytes(),
+    );
+    out
+}
+fn manifest(f: &Fixture) -> (PathBuf, Value, PathBuf) {
+    let pdf = f.0.join("sources/books/中文-original.pdf");
+    let bytes = unicode_pdf();
+    fs::write(&pdf, &bytes).unwrap();
+    let m = json!({"schema":"ontology-engineering.local-pdf-manifest/v1","sources":[{"id":"unicode","title":"Synthetic Unicode","edition":"fixture-1","path":"中文-original.pdf","sha256":sha256(&bytes),"chapters":[{"id":"conditions","title":"Declared navigation","start_page":1,"end_page":3,"aliases":["alias-not-in-body"]}]}]});
+    let path = pdf.with_file_name("manifest.json");
+    save(&path, &m);
+    (path, m, pdf)
+}
+fn options() -> RegistrationOptions {
+    RegistrationOptions {
+        tools: tools(),
+        ..Default::default()
+    }
+}
+
+#[test]
+fn actual_unicode_registration_all_physical_pages_and_whole_page_view() {
+    let f = Fixture::new("unicode");
+    let (path, _, pdf) = manifest(&f);
+    let before = fs::read(&pdf).unwrap();
+    let report = registration::register(&f.0, &path, &options()).unwrap();
+    assert_eq!(report["index"]["counts"]["pages"], 3);
+    assert_eq!(report["index"]["counts"]["native_text_missing"], 2);
+    let root = SkillRoot::new(&f.0).unwrap();
+    let provider = Provider::open(&root, "local_pdf", None).unwrap();
+    let page = provider.page("local_pdf:unicode:page:1").unwrap();
+    let body = page["body"].as_str().unwrap();
+    assert!(body.contains("工程"), "{body:?}");
+    assert!(body.contains("e\u{301}"), "{body:?}");
+    assert!(body.contains('𠮷'), "{body:?}");
+    assert!(!body.contains("alias-not-in-body"));
+    assert_eq!(
+        page["text_chars"].as_u64(),
+        Some(body.chars().count() as u64)
+    );
+    assert_ne!(body.len(), body.chars().count());
+    let evidence = provider.source_result(&page, "工程", &tools()).unwrap();
+    assert_eq!(evidence["source_locator"]["physical_page"], 1);
+    assert!(evidence["printed_page"].is_null());
+    let view = citations::view(&f.0, &evidence, 72, &tools()).unwrap();
+    assert_eq!(view["identity"]["whole_page"], true);
+    assert_eq!(view["width"], 600);
+    assert_eq!(view["height"], 800);
+    assert_eq!(view["numeric_verification"], "not_run");
+    assert!(
+        view["identity"]["renderer_identity"]["sha256"]
+            .as_str()
+            .unwrap()
+            .len()
+            == 64
+    );
+    for n in [2, 3] {
+        let page = provider
+            .page(&format!("local_pdf:unicode:page:{n}"))
+            .unwrap();
+        assert_eq!(page["native_text_missing"], true);
+        let evidence = provider.source_result(&page, "", &tools()).unwrap();
+        let view = citations::view(&f.0, &evidence, 72, &tools()).unwrap();
+        assert_eq!(view["identity"]["source_file_page"], n);
+        assert_eq!(view["width"], 600);
+    }
+    assert_eq!(fs::read(&pdf).unwrap(), before);
+    let registration: Value = serde_json::from_slice(
+        &fs::read(f.0.join("sources/.indexes/local-pdf/registration.json")).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        registration["sources"][0]["path"],
+        "../../books/中文-original.pdf"
+    );
+    let mut forged = page.clone();
+    forged["body"] = json!("forged");
+    assert!(provider.source_result(&forged, "", &tools()).is_err());
+    fs::write(&pdf, b"changed").unwrap();
+    assert!(provider.source_result(&page, "", &tools()).is_err());
+}
+
+#[test]
+fn replacement_is_explicit_and_extraction_failure_retains_previous_bytes() {
+    let f = Fixture::new("replace");
+    let (path, mut m, _) = manifest(&f);
+    registration::register(&f.0, &path, &options()).unwrap();
+    let index = f.0.join("sources/.indexes/local-pdf");
+    let old_db = fs::read(index.join("catalog.sqlite3")).unwrap();
+    let old_registration = fs::read(index.join("registration.json")).unwrap();
+    assert!(registration::register(&f.0, &path, &options()).is_err());
+    m["sources"][0]["sha256"] = json!("0".repeat(64));
+    save(&path, &m);
+    let mut opts = options();
+    opts.replace = true;
+    assert!(registration::register(&f.0, &path, &opts).is_err());
+    assert_eq!(fs::read(index.join("catalog.sqlite3")).unwrap(), old_db);
+    assert_eq!(
+        fs::read(index.join("registration.json")).unwrap(),
+        old_registration
+    );
+    m["sources"][0]["sha256"] = json!(sha256(unicode_pdf()));
+    m["sources"][0]["edition"] = json!("fixture-2");
+    save(&path, &m);
+    assert_eq!(
+        registration::register(&f.0, &path, &opts).unwrap()["status"],
+        "registered"
+    );
+    assert_ne!(
+        fs::read(index.join("registration.json")).unwrap(),
+        old_registration
+    );
+}
+
+#[cfg(unix)]
+fn script(f: &Fixture, name: &str, body: &str) -> PathBuf {
+    use std::os::unix::fs::PermissionsExt;
+    let p = f.0.join(name);
+    fs::write(&p,format!("#!/bin/sh\nif [ \"$1\" = '-v' ]; then echo 'fixture version 1' >&2; exit 0; fi\n{body}\n")).unwrap();
+    fs::set_permissions(&p, fs::Permissions::from_mode(0o700)).unwrap();
+    p
+}
+#[test]
+#[cfg(unix)]
+fn subprocess_missing_timeout_output_limit_and_page_count_failure_are_bounded() {
+    let f = Fixture::new("process");
+    let (path, _, _) = manifest(&f);
+    let mut opts = options();
+    opts.tools.pdfinfo = f.0.join("missing");
+    assert!(registration::register(&f.0, &path, &opts).is_err());
+    opts.tools.pdfinfo = script(&f, "sleeper", "/bin/sleep 5 &\nexit 0");
+    opts.limits.timeout = Duration::from_millis(50);
+    let start = std::time::Instant::now();
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("timeout")
+    );
+    assert!(start.elapsed() < Duration::from_secs(2));
+    opts = options();
+    opts.limits.output_bytes = 4;
+    assert!(
+        format!(
+            "{:#}",
+            registration::register(&f.0, &path, &opts).unwrap_err()
+        )
+        .contains("stdout_limit")
+    );
+    opts = options();
+    opts.tools.pdfinfo = script(&f, "count", "printf 'Pages: 4\\nEncrypted: no\\n'");
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("page_count_mismatch")
+    );
+    opts = options();
+    opts.limits.page_bytes = 3;
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("page_output_limit")
+    );
+    assert!(!f.0.join("sources/.indexes/local-pdf").exists());
+}
+
+fn shard(path: &Path, members: &[(&str, &[u8], u8)]) {
+    fs::create_dir_all(path.parent().unwrap()).unwrap();
+    let file = fs::File::create(path).unwrap();
+    let encoder = xz2::write::XzEncoder::new(file, 6);
+    let mut tar = tar::Builder::new(encoder);
+    for (name, data, kind) in members {
+        let mut header = tar::Header::new_gnu();
+        let bytes = header.as_mut_bytes();
+        bytes[..100].fill(0);
+        bytes[..name.len()].copy_from_slice(name.as_bytes());
+        header.set_mode(0o600);
+        header.set_size(data.len() as u64);
+        header.set_entry_type(tar::EntryType::new(*kind));
+        if *kind == b'2' {
+            header.set_link_name("../../outside").unwrap();
+        }
+        header.set_cksum();
+        tar.append(&header, *data).unwrap();
+    }
+    tar.into_inner().unwrap().finish().unwrap();
+}
+fn pack(f: &Fixture) -> (PathBuf, Value, Vec<u8>) {
+    let root = f.0.join("sources/.indexes/misumi");
+    let selected = unicode_pdf();
+    let segment = root.join("segments/a.tar.xz");
+    shard(
+        &segment,
+        &[
+            ("pages/selected.pdf", &selected, b'0'),
+            ("pages/other.pdf", b"other exact bytes", b'0'),
+        ],
+    );
+    let index = b"synthetic index identity";
+    fs::write(root.join("catalog.sqlite3"), index).unwrap();
+    let compressed = fs::read(&segment).unwrap();
+    let manifest = json!({"schema":"ontology-engineering.misumi-source-pack/v1","index":{"path":"catalog.sqlite3","bytes":index.len(),"sha256":sha256(index)},"segments":[{"id":"a","path":"segments/a.tar.xz","bytes":compressed.len(),"sha256":sha256(&compressed),"files":[{"path":"pages/selected.pdf","bytes":selected.len(),"sha256":sha256(&selected)},{"path":"pages/other.pdf","bytes":17,"sha256":sha256(b"other exact bytes")}]}]});
+    let path = root.join("source-pack.json");
+    save(&path, &manifest);
+    (path, manifest, selected)
+}
+#[test]
+fn selected_tar_xz_recovery_is_exact_and_conflicting_cache_is_never_overwritten() {
+    let f = Fixture::new("pack");
+    let (path, _, selected) = pack(&f);
+    let sha = sha256(&selected);
+    let restored = source_pack::restore_selected(&f.0, &path, "pages/selected.pdf", &sha).unwrap();
+    assert_eq!(fs::read(&restored.path).unwrap(), selected);
+    assert_eq!(restored.source_file_page, 1);
+    assert!(!restored.path.with_file_name("other.pdf").exists());
+    assert_eq!(
+        source_pack::restore_selected(&f.0, &path, "pages/selected.pdf", &sha)
+            .unwrap()
+            .path,
+        restored.path
+    );
+    fs::write(&restored.path, b"collision").unwrap();
+    assert!(source_pack::restore_selected(&f.0, &path, "pages/selected.pdf", &sha).is_err());
+    assert_eq!(fs::read(&restored.path).unwrap(), b"collision");
+}
+#[test]
+fn archive_damage_and_hidden_members_never_publish_selected_bytes() {
+    for damage in [
+        "hash",
+        "page_hash",
+        "traversal",
+        "symlink",
+        "sparse",
+        "duplicate",
+        "missing",
+        "undeclared",
+    ] {
+        let f = Fixture::new(damage);
+        let (path, mut m, selected) = pack(&f);
+        let segment = path.parent().unwrap().join("segments/a.tar.xz");
+        let mut members = vec![
+            ("pages/selected.pdf", selected.as_slice(), b'0'),
+            ("pages/other.pdf", b"other exact bytes".as_slice(), b'0'),
+        ];
+        match damage {
+            "hash" => {
+                fs::write(&segment, b"bad xz").unwrap();
+            }
+            "page_hash" => members[0].1 = b"same name but wrong bytes",
+            "traversal" => members.push(("../../outside", b"evil", b'0')),
+            "symlink" => members[0].2 = b'2',
+            "sparse" => members[0].2 = b'S',
+            "duplicate" => members.push(members[0]),
+            "missing" => {
+                members.pop();
+            }
+            "undeclared" => members.push(("unknown", b"data", b'0')),
+            _ => unreachable!(),
+        }
+        if damage != "hash" {
+            shard(&segment, &members);
+            let bytes = fs::read(&segment).unwrap();
+            m["segments"][0]["bytes"] = json!(bytes.len());
+            m["segments"][0]["sha256"] = json!(sha256(bytes));
+            save(&path, &m);
+        }
+        assert!(
+            source_pack::restore_selected(&f.0, &path, "pages/selected.pdf", &sha256(&selected))
+                .is_err(),
+            "{damage}"
+        );
+        assert!(!f.0.join("var/cache/knowledge/source-pages").exists());
+        assert!(!f.0.join("outside").exists());
+    }
+}
+#[test]
+#[cfg(unix)]
+fn source_symlinks_and_noncanonical_paths_are_rejected() {
+    use std::os::unix::fs::symlink;
+    let f = Fixture::new("paths");
+    let (path, mut m, selected) = pack(&f);
+    for relative in ["../escape", "/absolute", "x\\y", "x//y", ".", "", "x/./y"] {
+        m["segments"][0]["files"][0]["path"] = json!(relative);
+        save(&path, &m);
+        assert!(source_pack::load_manifest(&f.0, &path).is_err());
+    }
+    let (path, _, _) = pack(&f);
+    let cache = f.0.join("var/cache/knowledge");
+    fs::create_dir_all(cache.parent().unwrap()).unwrap();
+    let elsewhere = f.0.join("elsewhere");
+    fs::create_dir(&elsewhere).unwrap();
+    symlink(&elsewhere, &cache).unwrap();
+    assert!(
+        source_pack::restore_selected(&f.0, &path, "pages/selected.pdf", &sha256(selected))
+            .is_err()
+    );
+    assert_eq!(fs::read_dir(elsewhere).unwrap().count(), 0);
+}
+
+#[test]
+#[cfg(unix)]
+fn original_mutation_encryption_and_fifo_never_publish_registration() {
+    use std::os::unix::{ffi::OsStrExt, fs::symlink};
+    let f = Fixture::new("freshness");
+    let (path, _, pdf) = manifest(&f);
+    let mut opts = options();
+    opts.tools.pdftotext = script(
+        &f,
+        "mutate",
+        "printf 'changed' >> \"$4\"\nprintf 'first\\fsecond\\fthird\\f'",
+    );
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("source_changed_during_registration")
+    );
+    fs::write(&pdf, unicode_pdf()).unwrap();
+    opts = options();
+    opts.tools.pdfinfo = script(&f, "encrypted", "printf 'Pages: 3\\nEncrypted: yes\\n'");
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("encryption_invalid")
+    );
+    fs::remove_file(&pdf).unwrap();
+    let name = std::ffi::CString::new(pdf.as_os_str().as_bytes()).unwrap();
+    assert_eq!(unsafe { libc::mkfifo(name.as_ptr(), 0o600) }, 0);
+    let start = std::time::Instant::now();
+    assert!(registration::register(&f.0, &path, &options()).is_err());
+    assert!(start.elapsed() < Duration::from_secs(1));
+    fs::remove_file(&pdf).unwrap();
+    symlink(f.0.join("SKILL.md"), &pdf).unwrap();
+    assert!(registration::register(&f.0, &path, &options()).is_err());
+    assert!(!f.0.join("sources/.indexes/local-pdf").exists());
+}
+
+#[test]
+fn archive_expansion_and_compressed_trailing_bytes_are_rejected() {
+    use std::io::{Read, Write};
+    for expansion in [false, true] {
+        let f = Fixture::new("compressed-tail");
+        let (path, mut m, selected) = pack(&f);
+        let segment = path.parent().unwrap().join("segments/a.tar.xz");
+        let mut bytes = fs::read(&segment).unwrap();
+        if expansion {
+            let mut raw = Vec::new();
+            xz2::read::XzDecoder::new(bytes.as_slice())
+                .read_to_end(&mut raw)
+                .unwrap();
+            raw.resize(raw.len() + 2 * 1024 * 1024, 0);
+            let mut encoder = xz2::write::XzEncoder::new(Vec::new(), 6);
+            encoder.write_all(&raw).unwrap();
+            bytes = encoder.finish().unwrap();
+        } else {
+            bytes.extend(b"hidden bytes after XZ footer");
+        }
+        fs::write(&segment, &bytes).unwrap();
+        m["segments"][0]["bytes"] = json!(bytes.len());
+        m["segments"][0]["sha256"] = json!(sha256(bytes));
+        save(&path, &m);
+        assert!(
+            source_pack::restore_selected(&f.0, &path, "pages/selected.pdf", &sha256(&selected))
+                .is_err()
+        );
+        assert!(!f.0.join("var/cache/knowledge/source-pages").exists());
+    }
+}
+
+#[test]
+fn relative_source_identity_survives_complete_library_relocation() {
+    let old = Fixture::new("producer");
+    let new = Fixture::new("receiver");
+    let (path, _, _) = manifest(&old);
+    registration::register(&old.0, &path, &options()).unwrap();
+    let old_provider = Provider::open(&SkillRoot::new(&old.0).unwrap(), "local_pdf", None).unwrap();
+    let page = old_provider.page("local_pdf:unicode:page:1").unwrap();
+    let evidence = old_provider.source_result(&page, "工程", &tools()).unwrap();
+    assert_eq!(evidence["source_pdf"], "sources/books/中文-original.pdf");
+    assert_eq!(evidence["original_verified"], true);
+    drop(old_provider);
+    fs::remove_dir_all(new.0.join("sources")).unwrap();
+    fs::rename(old.0.join("sources"), new.0.join("sources")).unwrap();
+    assert!(!old.0.join("sources/books/中文-original.pdf").exists());
+    let receiver = Provider::open(&SkillRoot::new(&new.0).unwrap(), "local_pdf", None).unwrap();
+    let received = receiver
+        .source_result(
+            &receiver.page("local_pdf:unicode:page:1").unwrap(),
+            "工程",
+            &tools(),
+        )
+        .unwrap();
+    for key in [
+        "source_pdf",
+        "source_sha256",
+        "source_locator",
+        "text_sha256",
+        "index_identity",
+    ] {
+        assert_eq!(evidence[key], received[key], "{key}");
+    }
+    assert_eq!(
+        citations::verify_locator_with_tools(&new.0, &evidence, &tools()).unwrap(),
+        evidence["source_locator"]
+    );
+}
+
+#[test]
+fn misumi_selected_single_page_keeps_book_position_and_missing_full_book_status() {
+    let f = Fixture::new("misumi-citation");
+    let (path, mut m, _) = pack(&f);
+    let selected = unicode_pdf_pages(1);
+    let segment = path.parent().unwrap().join("segments/a.tar.xz");
+    shard(
+        &segment,
+        &[
+            ("pages/selected.pdf", &selected, b'0'),
+            ("pages/other.pdf", b"other exact bytes", b'0'),
+        ],
+    );
+    let bytes = fs::read(&segment).unwrap();
+    m["segments"][0]["bytes"] = json!(bytes.len());
+    m["segments"][0]["sha256"] = json!(sha256(bytes));
+    m["segments"][0]["files"][0]["bytes"] = json!(selected.len());
+    m["segments"][0]["files"][0]["sha256"] = json!(sha256(&selected));
+    m["assembled_pdfs"] = json!([{"catalog":"fixture","path":"output/book.pdf","sha256":"0".repeat(64),"bytes":42,"download_url":"https://example.invalid/book.pdf"}]);
+    save(&path, &m);
+    let row = json!({"id":"fixture:42","catalog":"fixture","catalog_title":"Fixture","source_kind":"misumi","source_pack_manifest":path,"source_relative_path":"pages/selected.pdf","source_sha256":sha256(&selected),"source_bytes":selected.len(),"pdf_page":42,"page_id":42,"printed_page":"40","catalog_registration":{"pdf_relative_path":"output/book.pdf","pdf_sha256":"0".repeat(64)},"source_locator":{"physical_page":42,"status":"index_position"},"body":"工程","text_sha256":sha256("工程"),"titles_json":"[]","series_json":"[]","native_text_sparse":true});
+    let evidence = citations::resolved_result(&f.0, &row, "工程", &tools()).unwrap();
+    assert_eq!(evidence["pdf_page"], 42);
+    assert_eq!(evidence["source_file_page"], 1);
+    assert!(
+        evidence["source_pdf"]
+            .as_str()
+            .unwrap()
+            .starts_with("var/cache/knowledge/")
+    );
+    assert_eq!(evidence["assembled_pdf_status"], "not_downloaded");
+    assert!(evidence["assembled_pdf_uri"].is_null());
+    assert_eq!(evidence["catalog_source_locator"]["physical_page"], 42);
+    assert_eq!(
+        evidence["source_pack_manifest"],
+        "sources/.indexes/misumi/source-pack.json"
+    );
+    assert_eq!(
+        evidence["source_pack_manifest_sha256"],
+        sha256(fs::read(&path).unwrap())
+    );
+    let view = citations::view(&f.0, &evidence, 72, &tools()).unwrap();
+    assert_eq!(view["identity"]["source_file_page"], 1);
+    assert_eq!(view["catalog_pdf_page"], 42);
+    assert_eq!(view["height"], 800);
+}
+
+#[test]
+#[ignore = "retains one tiny actual Poppler fixture for root CLI/receiver handoff"]
+fn retain_actual_native_source_fixture() {
+    let f = Fixture::new("retained-native");
+    let (path, _, pdf) = manifest(&f);
+    let registered = registration::register(&f.0, &path, &options()).unwrap();
+    let root = SkillRoot::new(&f.0).unwrap();
+    let provider = Provider::open(&root, "local_pdf", None).unwrap();
+    let mut observations = Vec::new();
+    for n in 1..=3 {
+        let page = provider
+            .page(&format!("local_pdf:unicode:page:{n}"))
+            .unwrap();
+        let evidence = provider.source_result(&page, "工程", &tools()).unwrap();
+        let view = citations::view(&f.0, &evidence, 72, &tools()).unwrap();
+        observations.push(json!({"page":page,"evidence":evidence,"view":view}));
+    }
+    let report = json!({"schema":"ontology-engineering.phase5-native-source-fixture/v1","status":"passed","scope":"synthetic 3-page ToUnicode/blank/bitmap PDF; actual Poppler registration+whole-page rendering; no engineering claim/no external API","root":f.0,"manifest":path,"original_pdf":pdf,"original_pdf_sha256":sha256(fs::read(&pdf).unwrap()),"registered":registered,"observations":observations,"network_requests":0});
+    drop(provider);
+    oe_core::write_new(&f.0.join("ACTUAL-NATIVE-ACCEPTANCE.json"), &report).unwrap();
+    let handoff = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .ancestors()
+        .nth(2)
+        .unwrap()
+        .join(format!(
+            "var/maintenance/rust-rewrite-20260927/phase5-native-source-fixture-{}.json",
+            &sha256(fs::read(f.0.join("ACTUAL-NATIVE-ACCEPTANCE.json")).unwrap())[..12]
+        ));
+    oe_core::write_new(&handoff,&json!({"fixture_root":f.0,"acceptance":f.0.join("ACTUAL-NATIVE-ACCEPTANCE.json"),"acceptance_sha256":sha256(fs::read(f.0.join("ACTUAL-NATIVE-ACCEPTANCE.json")).unwrap())})).unwrap();
+    println!("retained native source fixture: {}", f.0.display());
+    std::mem::forget(f);
+}
+
+#[test]
+fn replacement_rejects_self_consistent_hashes_of_non_index_bytes() {
+    let f = Fixture::new("fake-old-index");
+    let (path, _, _) = manifest(&f);
+    let target = f.0.join("sources/.indexes/local-pdf");
+    fs::create_dir_all(&target).unwrap();
+    let bytes = b"not an SQLite database even with a matching recorded hash";
+    fs::write(target.join("catalog.sqlite3"), bytes).unwrap();
+    let record = json!({"schema":"ontology-engineering.local-pdf-registration/v1","sources":[],"index_sha256":sha256(bytes)});
+    save(&target.join("registration.json"), &record);
+    let mut opts = options();
+    opts.replace = true;
+    let error = registration::register(&f.0, &path, &opts).unwrap_err();
+    assert!(format!("{error:#}").contains("index_"));
+    assert_eq!(fs::read(target.join("catalog.sqlite3")).unwrap(), bytes);
+}

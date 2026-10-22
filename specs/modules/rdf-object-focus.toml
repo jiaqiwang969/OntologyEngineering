@@ -1,0 +1,1318 @@
+schema="oev2.design-fragment/2"
+
+[[types]]
+name="RdfObjectFocus"
+meaning="普通工程对象身份与RDF审查节点的显式对应，不修改工程对象编号"
+identity="对象原ID、绝对focus IRI与数据中唯一objectId声明同时匹配"
+
+[[types.fields]]
+name="schema"
+meaning="显式对应合同版本"
+rust_type="String"
+required=true
+format="status"
+unit="无量纲，身份不作几何单位转换"
+precision="字符串及图中声明精确匹配，不猜测前缀或归一化名称"
+write="agent显式登记，Rust核对象和唯一图声明"
+applicability="显式rdf_focus字段；未指定时保留原IRI身份路径"
+acceptance="focus自身恰有一项objectId，原ID在图中恰映射一个focus；版本/条件/源检查继续执行"
+allowed_values=["oev2.rdf-object-focus/1"]
+
+[[types.fields]]
+name="object_id"
+meaning="绑定中原工程对象的精确身份"
+rust_type="String"
+required=true
+format="text"
+unit="无量纲，身份不作几何单位转换"
+precision="字符串及图中声明精确匹配，不猜测前缀或归一化名称"
+write="agent显式登记，Rust核对象和唯一图声明"
+applicability="显式rdf_focus字段；未指定时保留原IRI身份路径"
+acceptance="focus自身恰有一项objectId，原ID在图中恰映射一个focus；版本/条件/源检查继续执行"
+
+[[types.fields]]
+name="focus_iri"
+meaning="RDF中实际被审查节点的绝对IRI"
+rust_type="String"
+required=true
+format="text"
+unit="无量纲，身份不作几何单位转换"
+precision="字符串及图中声明精确匹配，不猜测前缀或归一化名称"
+write="agent显式登记，Rust核对象和唯一图声明"
+applicability="显式rdf_focus字段；未指定时保留原IRI身份路径"
+acceptance="focus自身恰有一项objectId，原ID在图中恰映射一个focus；版本/条件/源检查继续执行"
+
+[[constraints]]
+id="explicit_rdf_object_focus"
+requirement="req_engineering"
+module="kernel"
+check="resolve"
+rust_path="crates/oe-kernel/src/rdf_focus.rs"
+statement="Binding可显式携带RdfObjectFocus/1；工程对象编号不改。映射必须与原对象一致且图中objectId声明唯一，focus不能对应多个对象；端口focus/shape/version/scope/source与Project条件复用同一解析。没有映射保留原IRI路径，None不新增历史JSON字段；映射进入Binding摘要，变更必须重审。"
+severity="error"
+
+[[validations]]
+id="validate_explicit_rdf_focus_uniqueness"
+module="kernel"
+constraint="explicit_rdf_object_focus"
+behavior="explicit_mapping_requires_exact_unique_declaration"
+rust_path="crates/oe-kernel/src/rdf_focus.rs"
+oracle="合法唯一显式映射通过；缺声明、错节点/对象、一物多节点、一节点多对象拒绝；未指定时旧有效IRI和非IRI拒绝行为保持"
+scope="纯图身份控制；不代替完整Project和原生证据"
+
+[[validations]]
+id="validate_explicit_rdf_focus_full_review"
+module="kernel"
+constraint="explicit_rdf_object_focus"
+behavior="mapped_full_current_review_recomputes_project_and_rejects_false_identity"
+rust_path="crates/oe-kernel/tests/rdf_focus.rs"
+oracle="实际原件与当前Project全审查通过；对象和CAD原身份不改，错映射、缺映射、重复和改变条件均拒绝；None省略保持旧序列化，映射改变摘要"
+scope="显式原件开发回放；默认ignored不计通过，须OE_RDF_FOCUS_ROOT及include-ignored。通过仅限所声明图纸义务，不证明制造/实物或未见泛化"
+
+# Source-bound current Project review reconciliation using the same RDF focus.
+
+[[types]]
+name="DecisionReviewReplay"
+meaning="One affected decision and its saved current-review inputs"
+identity="Explicit read-only source-bound review; never approval authority"
+
+[[types.fields]]
+name="decision_id"
+rust_type="String"
+format="text"
+meaning="Exact current affected decision ID"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="binding"
+rust_type="ArtifactReference"
+format="object"
+meaning="Complete kernel Binding"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="evidence"
+rust_type="ArtifactReference"
+format="object"
+meaning="RDF evidence bytes"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="receipt"
+rust_type="ArtifactReference"
+format="object"
+meaning="Saved native receipt; only replay can establish current review"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="bundle"
+rust_type="String"
+format="text"
+meaning="Current locked semantic bundle"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="query_ids"
+rust_type="Vec<String>"
+format="list"
+meaning="Exact existing query selectors"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="shape_ids"
+rust_type="Vec<String>"
+format="list"
+meaning="Nonempty existing shape selectors"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types]]
+name="ReviewedReconciliationRequest"
+meaning="Fresh review coverage over original immutable Project impact; no Project write"
+identity="Explicit read-only source-bound review; never approval authority"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+format="status"
+meaning="Explicit request schema"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+allowed_values=["oev2.reviewed-reconciliation-request/1"]
+
+[[types.fields]]
+name="before"
+rust_type="ArtifactReference"
+format="object"
+meaning="Exact previous Project snapshot"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="current"
+rust_type="ArtifactReference"
+format="object"
+meaning="Exact current Project snapshot"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="sources"
+rust_type="Vec<ArtifactReference>"
+format="list"
+meaning="All distinct current evidence bytes, maximum256 paths/64MiB total"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="reviews"
+rust_type="Vec<DecisionReviewReplay>"
+format="list"
+meaning="At most32 unique affected decision reviews"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types]]
+name="ReviewedReconciliationResult"
+meaning="Original impact plus independently replayed current review status; adoption remains separate"
+identity="Explicit read-only source-bound review; never approval authority"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+format="status"
+meaning="Explicit result schema"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+allowed_values=["oev2.reviewed-reconciliation-result/1"]
+
+[[types.fields]]
+name="request_sha256"
+rust_type="String"
+format="sha256"
+meaning="Canonical complete typed request identity"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="current"
+rust_type="ArtifactReference"
+format="object"
+meaning="Current Project exact bytes"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="legacy_impact"
+rust_type="serde_json::Value"
+format="json"
+meaning="Unchanged original reconcile report including stale adoptions"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="reviews"
+rust_type="Vec<serde_json::Value>"
+format="list"
+meaning="Per-decision replay receipt and concrete pending reasons"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="review_satisfied"
+rust_type="Vec<String>"
+format="list"
+meaning="Affected decisions with current replay and no pending affected prerequisites"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="still_requires_review"
+rust_type="Vec<String>"
+format="list"
+meaning="Affected decisions without complete eligible current review"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="status"
+rust_type="String"
+format="status"
+meaning="Review coverage only"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+allowed_values=["review_complete", "review_partial"]
+
+[[types.fields]]
+name="engineering_adoption"
+rust_type="String"
+format="status"
+meaning="No approval or mutation"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+allowed_values=["not_granted"]
+
+[[interfaces]]
+name="ReviewedReconciliationPort"
+module="engineering"
+rust_path="crates/oe-engineering/src/reviewed_reconciliation.rs"
+implementation="ReviewedReconciliationExecutor"
+method="reconcile_reviewed"
+input="ReviewedReconciliationRequest"
+output="ReviewedReconciliationResult"
+error="FailureRecord"
+effects="Read bound snapshots and complete current evidence inventory twice; replay original RustSemanticPort/current Project checks; return separate coverage and unchanged original impact. No policy, Project, adoption or model mutation."
+
+[[constraints]]
+id="reviewed_reconciliation_current_sources"
+requirement="req_engineering"
+module="engineering"
+check="reconcile_reviewed"
+rust_path="crates/oe-engineering/src/reviewed_reconciliation.rs"
+statement="At most32 reviews,256 unique source paths,16MiB per artifact and64MiB total current evidence. Complete current evidence digest coverage, actual source bytes and all inputs checked before and after. Original reconcile unchanged. Review requires exact decision object/version/scope/source, current Project context, complete current engineering checks and explicit nonempty shape; saved pass alone never clears pending. Real replay must match saved binding/evidence/coverage/check results and executor. Pending affected prerequisites propagate to downstream; unknown conclusions remain pending. No engineering adoption, approval policy write or canonical Project write."
+severity="error"
+
+[[validations]]
+id="verify_reviewed_reconciliation_success"
+module="engineering"
+constraint="reviewed_reconciliation_current_sources"
+behavior="fresh_review_replays_and_preserves_legacy_impact"
+rust_path="crates/oe-engineering/tests/reviewed_reconciliation.rs"
+oracle="Independent synthetic two-decision prerequisite chain: original impact remains stale; current actual Rust review satisfies both; Project and private authority bytes remain unchanged."
+scope="Current Rust software scope; no empirical truth, independent approval or unseen business benefit"
+
+[[validations]]
+id="verify_reviewed_reconciliation_rejections"
+module="engineering"
+constraint="reviewed_reconciliation_current_sources"
+behavior="stale_forged_missing_and_partial_reviews_remain_pending"
+rust_path="crates/oe-engineering/tests/reviewed_reconciliation.rs"
+oracle="Missing or modified evidence, duplicate paths/reviews, unknown decisions, old context, forged saved pass, altered executor, missing checks and shape, changed metadata and failed replay never produce current review; absent upstream keeps downstream pending; restoring bytes restores valid evidence."
+scope="Current generated contract and actual kernel replay on Mac; original adoption authority requirements unchanged"
+
+# Explicit large-source inventory; legacy /1 remains unchanged.
+
+[[types]]
+name="ReviewedSourceBudget2"
+meaning="Finite per-pass limits for sequential source fingerprints; no JSON reader limit is raised"
+identity="Explicit /2 source verification; read-only Project and separate engineering adoption"
+
+[[types.fields]]
+name="max_files"
+rust_type="u64"
+format="typed"
+meaning="Positive source path count at most4096"
+required=true
+unit="exact count or byte count"
+precision="Exact complete source bytes and explicit contract version; no truncation or inferred success"
+write="Agent declares bounded inputs; the same Rust owner verifies and derives observations"
+applicability="Explicit reviewed-reconciliation /2 on the actual received filesystem platform"
+acceptance="Complete current source coverage before and after actual review; original necessary engineering checks and adoption policy retained"
+
+[[types.fields]]
+name="max_file_bytes"
+rust_type="u64"
+format="typed"
+meaning="Positive single complete source byte limit at most256MiB"
+required=true
+unit="bytes per individual source"
+precision="Exact complete source bytes and explicit contract version; no truncation or inferred success"
+write="Agent declares bounded inputs; the same Rust owner verifies and derives observations"
+applicability="Explicit reviewed-reconciliation /2 on the actual received filesystem platform"
+acceptance="Complete current source coverage before and after actual review; original necessary engineering checks and adoption policy retained"
+
+[[types.fields]]
+name="max_total_bytes_per_pass"
+rust_type="u64"
+format="typed"
+meaning="Positive sum of all provided source file bytes at most2GiB; two actual passes are required"
+required=true
+unit="bytes per complete pass, two passes"
+precision="Exact complete source bytes and explicit contract version; no truncation or inferred success"
+write="Agent declares bounded inputs; the same Rust owner verifies and derives observations"
+applicability="Explicit reviewed-reconciliation /2 on the actual received filesystem platform"
+acceptance="Complete current source coverage before and after actual review; original necessary engineering checks and adoption policy retained"
+
+[[types]]
+name="ReviewedSourceObservation2"
+meaning="Measured complete-source inventory, not semantic truth or permission"
+identity="Explicit /2 source verification; read-only Project and separate engineering adoption"
+
+[[types.fields]]
+name="files"
+rust_type="u64"
+format="typed"
+meaning="Number of unique supplied source paths"
+required=true
+unit="exact count or byte count"
+precision="Exact complete source bytes and explicit contract version; no truncation or inferred success"
+write="Agent declares bounded inputs; the same Rust owner verifies and derives observations"
+applicability="Explicit reviewed-reconciliation /2 on the actual received filesystem platform"
+acceptance="Complete current source coverage before and after actual review; original necessary engineering checks and adoption policy retained"
+
+[[types.fields]]
+name="unique_digests"
+rust_type="u64"
+format="typed"
+meaning="Distinct actual verified source digests, covering all current Project evidence"
+required=true
+unit="exact count or byte count"
+precision="Exact complete source bytes and explicit contract version; no truncation or inferred success"
+write="Agent declares bounded inputs; the same Rust owner verifies and derives observations"
+applicability="Explicit reviewed-reconciliation /2 on the actual received filesystem platform"
+acceptance="Complete current source coverage before and after actual review; original necessary engineering checks and adoption policy retained"
+
+[[types.fields]]
+name="bytes_per_pass"
+rust_type="u64"
+format="typed"
+meaning="Observed complete source bytes in each equal pass; duplicate content at another path counts again"
+required=true
+unit="bytes per pass"
+precision="Exact complete source bytes and explicit contract version; no truncation or inferred success"
+write="Agent declares bounded inputs; the same Rust owner verifies and derives observations"
+applicability="Explicit reviewed-reconciliation /2 on the actual received filesystem platform"
+acceptance="Complete current source coverage before and after actual review; original necessary engineering checks and adoption policy retained"
+
+[[types.fields]]
+name="verification_passes"
+rust_type="u64"
+format="typed"
+meaning="Exactly two successful full passes surrounding current review replay"
+required=true
+unit="exact count or byte count"
+precision="Exact complete source bytes and explicit contract version; no truncation or inferred success"
+write="Agent declares bounded inputs; the same Rust owner verifies and derives observations"
+applicability="Explicit reviewed-reconciliation /2 on the actual received filesystem platform"
+acceptance="Complete current source coverage before and after actual review; original necessary engineering checks and adoption policy retained"
+
+[[types]]
+name="ReviewedReconciliationRequest2"
+meaning="Original review replay and dependency handling with explicitly budgeted large complete-source verification"
+identity="Explicit /2 source verification; read-only Project and separate engineering adoption"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+format="status"
+meaning="Explicit request schema"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+allowed_values=["oev2.reviewed-reconciliation-request/2"]
+
+[[types.fields]]
+name="before"
+rust_type="ArtifactReference"
+format="object"
+meaning="Exact previous Project snapshot"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="current"
+rust_type="ArtifactReference"
+format="object"
+meaning="Exact current Project snapshot"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="sources"
+rust_type="Vec<ArtifactReference>"
+format="list"
+meaning="Complete current evidence source paths, verified by existing bounded streaming SHA256 owner under explicit source_budget; not parsed or executed"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="reviews"
+rust_type="Vec<DecisionReviewReplay>"
+format="list"
+meaning="At most32 unique affected decision reviews"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="source_budget"
+rust_type="ReviewedSourceBudget2"
+format="object"
+meaning="Explicit finite source path/file-byte/per-pass budget; original Project and review artifacts retain16MiB JSON/artifact bound"
+required=true
+unit="exact count or byte count"
+precision="Exact complete source bytes and explicit contract version; no truncation or inferred success"
+write="Agent declares bounded inputs; the same Rust owner verifies and derives observations"
+applicability="Explicit reviewed-reconciliation /2 on the actual received filesystem platform"
+acceptance="Complete current source coverage before and after actual review; original necessary engineering checks and adoption policy retained"
+
+[[types]]
+name="ReviewedReconciliationResult2"
+meaning="Original impact and review outcome with actual two-pass source verification observations"
+identity="Explicit /2 source verification; read-only Project and separate engineering adoption"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+format="status"
+meaning="Explicit result schema"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+allowed_values=["oev2.reviewed-reconciliation-result/2"]
+
+[[types.fields]]
+name="request_sha256"
+rust_type="String"
+format="sha256"
+meaning="Canonical complete typed request identity"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="current"
+rust_type="ArtifactReference"
+format="object"
+meaning="Current Project exact bytes"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="legacy_impact"
+rust_type="serde_json::Value"
+format="json"
+meaning="Unchanged original reconcile report including stale adoptions"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="reviews"
+rust_type="Vec<serde_json::Value>"
+format="list"
+meaning="Per-decision replay receipt and concrete pending reasons"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="review_satisfied"
+rust_type="Vec<String>"
+format="list"
+meaning="Affected decisions with current replay and no pending affected prerequisites"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="still_requires_review"
+rust_type="Vec<String>"
+format="list"
+meaning="Affected decisions without complete eligible current review"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+
+[[types.fields]]
+name="status"
+rust_type="String"
+format="status"
+meaning="Review coverage only"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+allowed_values=["review_complete", "review_partial"]
+
+[[types.fields]]
+name="engineering_adoption"
+rust_type="String"
+format="status"
+meaning="No approval or mutation"
+required=true
+unit="Identity, counts or declared status"
+precision="Exact complete bytes and explicit version"
+write="Agent declares inputs; current Rust owner computes results"
+applicability="Bounded current Project review reconciliation on installed platform"
+acceptance="Re-read sources, replay current review and preserve independent adoption policy"
+allowed_values=["not_granted"]
+
+[[types.fields]]
+name="source_inventory"
+rust_type="ReviewedSourceObservation2"
+format="object"
+meaning="Actual matching complete-source verification passes, independent of review/adoption status"
+required=true
+unit="exact count or byte count"
+precision="Exact complete source bytes and explicit contract version; no truncation or inferred success"
+write="Agent declares bounded inputs; the same Rust owner verifies and derives observations"
+applicability="Explicit reviewed-reconciliation /2 on the actual received filesystem platform"
+acceptance="Complete current source coverage before and after actual review; original necessary engineering checks and adoption policy retained"
+
+[[interfaces]]
+name="ReviewedReconciliationPort2"
+module="engineering"
+rust_path="crates/oe-engineering/src/reviewed_reconciliation.rs"
+implementation="ReviewedReconciliationExecutor"
+method="reconcile_reviewed2"
+input="ReviewedReconciliationRequest2"
+output="ReviewedReconciliationResult2"
+error="FailureRecord"
+effects="Read before/current Project and source inventory; reuse oe_core::fingerprint_file sequentially and same RustSemanticPort/current Project replay. Recheck complete bytes after replay; preserve /1, original impact and independent adoption. No Project/policy write, model call or execution of source binaries."
+
+[[constraints]]
+id="reviewed_streamed_source_inventory2"
+requirement="req_engineering"
+module="engineering"
+check="reconcile_reviewed2"
+rust_path="crates/oe-engineering/src/reviewed_reconciliation.rs"
+statement="Explicit /2 only: source_budget max_files1..4096, max_file_bytes1..268435456 and max_total_bytes_per_pass1..2147483648. Same existing regular-file and 64KiB streaming SHA256 owner; effective file bound never exceeds remaining total budget. Validate paths, unique path set, registered expected digests and complete current evidence coverage; reread all sources after replay and require matching observations. Large source bytes are not parsed/executed. Before/current Project, bindings/RDF/receipts still use original16MiB reader; reviews at most32, same exact current replay and prior/current dependency union. /1 retains256 paths,16MiB per artifact and64MiB per pass. No adoption or history rewrite; platform/source/engineering/benefit qualifications separate."
+severity="error"
+
+[[validations]]
+id="verify_reviewed_streamed_capacity2"
+module="engineering"
+constraint="reviewed_streamed_source_inventory2"
+behavior="streamed_sources_extend_explicit_capacity_without_changing_legacy_limits"
+rust_path="crates/oe-engineering/tests/reviewed_reconciliation.rs"
+oracle="Independent971-distinct-source and16MiB+1 fixtures: /2 within declared limits completes both passes with exact counts; /1 rejects same oversized inventory/file. Small shared cases preserve exact legacy impact and review state."
+scope="Bounded synthetic software/source tests plus actual platform-specific CLI receipts; Mac and Windows reception separately required; no native/physical/RRSI qualification"
+
+[[validations]]
+id="verify_reviewed_streamed_failures2"
+module="engineering"
+constraint="reviewed_streamed_source_inventory2"
+behavior="streamed_source_budget_identity_and_coverage_fail_closed"
+rust_path="crates/oe-engineering/tests/reviewed_reconciliation.rs"
+oracle="Missing source digest, undeclared source, duplicate path, changed bytes, path escape, zero/over-hard budgets and count/file/total budget exhaustion reject; restoring original bytes restores eligibility. Full per-path bytes count even when digests repeat."
+scope="Bounded synthetic software/source tests plus actual platform-specific CLI receipts; Mac and Windows reception separately required; no native/physical/RRSI qualification"
+
+[[validations]]
+id="verify_reviewed_streamed_review2"
+module="engineering"
+constraint="reviewed_streamed_source_inventory2"
+behavior="streamed_source_integrity_never_grants_review_or_adoption"
+rust_path="crates/oe-engineering/tests/reviewed_reconciliation.rs"
+oracle="Frozen current replay failures, stale context/executor/checks, no upstream review and unknown/refuted decisions preserve pending and original impact; canonical Project and authority bytes unchanged. Exact typed /2 request including budgets changes request digest."
+scope="Bounded synthetic software/source tests plus actual platform-specific CLI receipts; Mac and Windows reception separately required; no native/physical/RRSI qualification"
+
+[[validations]]
+id="verify_reviewed_streamed_recheck2"
+module="engineering"
+constraint="reviewed_streamed_source_inventory2"
+behavior="source_change_between_complete_passes_cannot_return_result"
+rust_path="crates/oe-engineering/src/reviewed_reconciliation.rs"
+oracle="A deterministic private callback changes the frozen synthetic source immediately after the first actual full fingerprint pass; the production shared reconciliation flow must fail the second pass and leave the Project bytes unchanged."
+scope="Software lifecycle test on actual source reads; no native or physical engineering qualification"
+
+[[validations]]
+id="verify_reviewed_cli_closed_failure_reasons"
+module="engineering"
+constraint="reviewed_streamed_source_inventory2"
+behavior="reviewed_generated_port_failures_keep_only_fixed_public_reasons"
+rust_path="crates/oe-cli/src/v2.rs"
+oracle="Original /1 and explicit /2 hard-reject cases retain their known fixed reason through generated FailureRecord and actual CLI. Exact known envelope and closed string allowlist only; arbitrary private text, smuggled suffixes, unknown phases/status and missing records stay generic. Failed, unknown, blocked and nonretryable remain unchanged. Other command families keep prior behavior."
+scope="Rust CLI boundary and same frozen actual CLI cases on each received platform; no acceptance relaxation, Project writes or engineering adoption"
+
+# Root-goal route anchoring for the same Project (oev2.route-anchor/1, oev2.route-audit/1).
+[[sources]]
+id="route_anchor_goal_drift_case"
+identity="v2 private maintenance record route-anchor-goal-drift-01 REPRODUCTION.md (real route drift case; not distributed)"
+role="真实偏移反例：每阶段审查通过而研究对象离开根对象；用于冻结独立预期"
+applicability="开发回放；不证明方法泛化收益"
+
+[[types]]
+name="RouteAnchor"
+meaning="根请求、根对象、根交付物与验收项，以及逐阶段对象关系的路线锚定记录"
+identity="project_id与Project一致；每个阶段对象都能沿声明关系追溯到根对象"
+fields=[
+{name="schema",meaning="锚定记录合同版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验",allowed_values=["oev2.route-anchor/1"]},
+{name="project_id",meaning="所锚定的Project身份",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="root_object",meaning="用户真正关心的根对象，必须是Project中的对象ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="deliverable",meaning="可核对的根交付物；不能只写解释机制或研究路线",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="requests",meaning="用户原始请求、纠正与转向批准的逐字记录，首项为root",rust_type="Vec<RouteUtterance>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="至少一项且首项kind=root；文本逐字保存"},
+{name="functions",meaning="根对象必须完成的功能清单（产品先列功能再列结构）",rust_type="Vec<RouteFunction>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="至少一项；每项须被某个验收项引用"},
+{name="acceptance",meaning="根交付物的可核对验收项",rust_type="Vec<RouteAcceptance>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="至少一项；引用的功能必须存在"},
+{name="stages",meaning="按发生顺序记录的研究阶段",rust_type="Vec<RouteStage>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="顺序即时间顺序；ID唯一"},
+{name="reviews",meaning="已完成的整条路线回看",rust_type="Vec<RouteReview>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="after_stage必须引用已有阶段"},
+{name="policy",meaning="偏移判据；只能比默认更严格",rust_type="RoutePolicy",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="off_root_stage_limit 1..=2，no_progress_stage_limit 1..=2，review_interval 1..=5；更宽松的值判为invalid"}
+]
+
+[[types]]
+name="RouteUtterance"
+meaning="用户原话记录"
+identity="逐字文本、种类与发生位置"
+fields=[
+{name="id",meaning="记录ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="kind",meaning="root原始请求、correction纠正或approval对转向的同意",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验",allowed_values=["root", "correction", "approval"]},
+{name="text",meaning="用户原话逐字文本",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="source",meaning="原话出处（会话与时间）",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="after_stage",meaning="说这句话时最后一个已开始的阶段；之前没有阶段则缺省",rust_type="Option<String>",required=false,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="存在时必须引用已有阶段"},
+{name="affects",meaning="纠正涉及的验收项",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="correction至少一项且都存在；其后必须有阶段推进这些验收项"}
+]
+
+[[types]]
+name="RouteFunction"
+meaning="根对象的一项必要功能"
+identity="功能及承担它的结构名称"
+fields=[
+{name="id",meaning="功能ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="statement",meaning="功能陈述",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="structures",meaning="承担该功能的结构或部件名称（可为待识别）",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="可为空列表，表示结构尚未识别"}
+]
+
+[[types]]
+name="RouteAcceptance"
+meaning="根交付物的一项验收"
+identity="可核对陈述、覆盖功能与当前状态"
+fields=[
+{name="id",meaning="验收ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="statement",meaning="可核对的验收陈述",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="functions",meaning="该验收覆盖的功能ID",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="status",meaning="open/partial/closed/blocked",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验",allowed_values=["open", "partial", "closed", "blocked"]}
+]
+
+[[types]]
+name="RouteStage"
+meaning="一个研究阶段及其对象与根对象的关系"
+identity="对象、关系、关系目标、推进的验收与结果"
+fields=[
+{name="id",meaning="阶段ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="object_id",meaning="本阶段研究对象，必须是Project中的对象ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="relation",meaning="root/component/model/reference_case/external_case",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验",allowed_values=["root", "component", "model", "reference_case", "external_case"]},
+{name="relation_target",meaning="关系指向的对象ID；root时等于根对象",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="沿component/model链必须到达根对象；同一对象在各阶段关系一致"},
+{name="advances",meaning="本阶段推进的验收ID",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="return_to",meaning="参照或外部案例的返回条件",rust_type="Option<RouteReturn>",required=false,format="typed",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="reference_case/external_case必须提供"},
+{name="approval",meaning="用户同意转向的原话记录ID",rust_type="Option<String>",required=false,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="存在时必须引用kind=approval的记录"},
+{name="outcome",meaning="pending/advanced/no_progress",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验",allowed_values=["pending", "advanced", "no_progress"]}
+]
+
+[[types]]
+name="RouteReturn"
+meaning="离开根对象的阶段回到哪项验收"
+identity="验收ID与可核对的返回条件"
+fields=[
+{name="acceptance",meaning="返回后推进的验收ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="condition",meaning="得到什么结论后返回、如何映射到根对象",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"}
+]
+
+[[types]]
+name="RouteReview"
+meaning="一次整条路线回看"
+identity="在某阶段之后完成"
+fields=[
+{name="id",meaning="回看ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="after_stage",meaning="回看覆盖到的最后阶段",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="source",meaning="回看记录位置",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"}
+]
+
+[[types]]
+name="RoutePolicy"
+meaning="偏移判据参数"
+identity="只能比默认更严格"
+fields=[
+{name="off_root_stage_limit",meaning="连续多少个未获同意的参照/外部阶段判为偏移，默认2",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="1..=2"},
+{name="no_progress_stage_limit",meaning="连续多少个未推进验收的阶段判为偏移，默认2",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="1..=2"},
+{name="review_interval",meaning="距上次路线回看最多多少个阶段，默认5",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="1..=5"}
+]
+
+[[types]]
+name="RouteAuditReport"
+meaning="路线锚定检查结果"
+identity="anchored/drift/invalid及具体发现"
+fields=[
+{name="schema",meaning="报告合同版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验",allowed_values=["oev2.route-audit/1"]},
+{name="status",meaning="anchored/drift/invalid",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验",allowed_values=["anchored", "drift", "invalid"]},
+{name="project_id",meaning="Project身份",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="project_sha256",meaning="读取的Project完整字节摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="anchor_sha256",meaning="读取的锚定记录完整字节摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="stage_count",meaning="阶段数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="open_acceptance",meaning="未闭合验收ID",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="unanchored_objects",meaning="Project中未出现在锚定记录里的对象",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="findings",meaning="全部发现",rust_type="Vec<RouteFinding>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="scope",meaning="证明范围",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"}
+]
+
+[[types]]
+name="RouteFinding"
+meaning="一项路线发现"
+identity="代码、严重度、位置与说明"
+fields=[
+{name="code",meaning="固定发现代码",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="severity",meaning="invalid或drift",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验",allowed_values=["invalid", "drift"]},
+{name="stage",meaning="相关阶段",rust_type="Option<String>",required=false,format="id",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"},
+{name="detail",meaning="说明",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="路线锚定",acceptance="核验"}
+]
+
+[[constraints]]
+id="route_anchor_root_goal"
+requirement="req_project"
+module="kernel"
+check="audit"
+rust_path="crates/oe-kernel/src/project/route.rs"
+statement="阶段对象须为 Project 对象并经 component/model 追溯到根对象；参照/外部案例须有返回条件；连续离开根对象或无进展超限、回看逾期、纠正未处理、对象未锚定为 drift；引用缺失、关系不一致、放宽策略为 invalid。只核声明与计数。"
+severity="error"
+
+[[validations]]
+id="validate_route_anchor_counterexamples"
+module="kernel"
+constraint="route_anchor_root_goal"
+behavior="declared_relations_and_streaks_classify_anchored_drift_invalid"
+rust_path="crates/oe-kernel/tests/route_anchor.rs"
+oracle="独立冻结：锚定序列 anchored；两连外部案例、两连无进展、回看逾期、纠正未处理为 drift；缺返回条件、未知对象/验收、关系环、放宽策略为 invalid"
+scope="声明关系与计数；真实案例仅作开发回放"
+
+[[validations]]
+id="validate_route_anchor_private_replay"
+module="kernel"
+constraint="route_anchor_root_goal"
+behavior="private_drift_replay_is_stopped_early_and_anchored_route_passes"
+rust_path="crates/oe-kernel/tests/route_anchor.rs"
+oracle="私有真实偏移：第3阶段报 drift，原样记录报 invalid，修正序列报 anchored；原件不分发"
+scope="声明关系与计数；真实案例仅作开发回放"
+
+# Tool-result handback with provenance into the same Project (oev2.tool-result/1).
+[[sources]]
+id="six_tools_handoff_field_set"
+identity="Six-tool integration handoff.schema.json six-tools.handoff/1 (local, not a native v2 contract)"
+role="已实际使用的工具回交字段集：工具身份、输入、证据、结果、覆盖、未知与性能块"
+applicability="作为 v2 原生合同的字段来源；本机路径与原始记录不进入分发"
+
+[[types]]
+name="CapabilityRegistry"
+meaning="本机已登记的专业工具能力清单（私有，含本机路径与程序摘要）"
+identity="名称唯一；每项程序摘要可被重新计算核对"
+fields=[
+{name="schema",meaning="登记表合同版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["oev2.capability-registry/1"]},
+{name="capabilities",meaning="登记的能力",rust_type="Vec<RegisteredCapability>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="名称唯一；至少一项"}
+]
+
+[[types]]
+name="RegisteredCapability"
+meaning="一项专业工具能力及其固定版本身份"
+identity="名称+版本+程序摘要"
+fields=[
+{name="name",meaning="工具名（小写稳定标识，如 leantoken）",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="display",meaning="展示名（如 LeanToken）",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="skill",meaning="对应 skill 名称",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="role",meaning="该能力回答什么问题",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="outputs",meaning="通常产出",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="version",meaning="固定发布版本",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="executable",meaning="本机可执行文件绝对路径",rust_type="String",required=true,format="path",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="executable_sha256",meaning="可执行文件字节摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="invocation",meaning="可用调用方式 cli/mcp/skill",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="acceptance",meaning="原始接入验收记录位置",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="acceptance_sha256",meaning="原始接入验收记录字节摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="status",meaning="qualified/registered_unqualified/retired",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["qualified", "registered_unqualified", "retired"]},
+{name="limits",meaning="已知适用边界",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolResult"
+meaning="一次工具调用带来源的结果回交"
+identity="result_id 唯一；绑定同一 Project 对象、条件与来源"
+fields=[
+{name="schema",meaning="合同版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["oev2.tool-result/1"]},
+{name="result_id",meaning="结果标识",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="project",meaning="调用前由 project context 取得的 Project 当前内容快照",rust_type="ProjectReviewContext",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="对象修订、条件内容摘要与来源摘要须与登记时的 Project 一致"},
+{name="purpose",meaning="为补哪项证据缺口而调用",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="decisions",meaning="本结果所针对的 Project 决定",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="均须存在于 Project"},
+{name="acceptance",meaning="本结果所针对的根验收项（路线锚定）",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="route_stage",meaning="路线锚定中的阶段",rust_type="Option<String>",required=false,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="tool",meaning="工具身份",rust_type="ToolIdentity",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="须与登记表一致"},
+{name="subject",meaning="被分析对象的代码或制品版本",rust_type="ToolSubject",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="inputs",meaning="输入与条件",rust_type="ToolInputs",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="execution",meaning="执行状态与时间",rust_type="ToolExecution",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="records",meaning="原始记录（技能根内，重读核摘要）",rust_type="Vec<ToolRecord>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="至少一项；ID 唯一"},
+{name="findings",meaning="结论，区分观察/推断/外部导入/未知",rust_type="Vec<ToolFinding>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="measurements",meaning="量测值（性能等）",rust_type="Vec<ToolMeasurement>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="behavior",meaning="被测行为检查 passed/failed/unknown/not_applicable",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["passed", "failed", "unknown", "not_applicable"]},
+{name="coverage",meaning="覆盖范围",rust_type="ToolCoverage",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="unknowns",meaning="未知项",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolIdentity"
+meaning="调用时的工具身份"
+identity="名称+版本+程序摘要"
+fields=[
+{name="name",meaning="登记表中的工具名",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="version",meaning="工具版本",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="executable_sha256",meaning="实际调用程序的字节摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="skill",meaning="使用的 skill",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="invocation",meaning="cli 或 mcp",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["cli", "mcp"]}
+]
+
+[[types]]
+name="ToolSubject"
+meaning="被分析对象的版本身份（代码版本）"
+identity="种类+标识，可选文件清单"
+fields=[
+{name="kind",meaning="git_commit/file_set/artifact/none",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["git_commit", "file_set", "artifact", "none"]},
+{name="identity",meaning="如 仓库@提交、制品名@摘要",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="manifest",meaning="文件清单 oev2.subject-manifest/1（技能根内）",rust_type="Option<ArtifactReference>",required=false,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="提供时重读并逐文件核当前摘要"}
+]
+
+[[types]]
+name="ToolInputs"
+meaning="工具输入与条件"
+identity="参数、条件、环境与输入文件"
+fields=[
+{name="arguments",meaning="实际参数",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="conditions",meaning="适用条件",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="environment",meaning="相关环境（不得含密钥）",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="environment_sha256",meaning="环境描述摘要（性能比较用）",rust_type="Option<String>",required=false,format="sha256",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="input_set_sha256",meaning="输入集摘要（性能比较用）",rust_type="Option<String>",required=false,format="sha256",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="files",meaning="输入文件（技能根内）",rust_type="Vec<ArtifactReference>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolExecution"
+meaning="执行状态与时间"
+identity="开始不晚于结束"
+fields=[
+{name="status",meaning="completed/partial/failed/not_applicable",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["completed", "partial", "failed", "not_applicable"]},
+{name="started_at",meaning="开始时间 UTC",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="finished_at",meaning="结束时间 UTC",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="exit_code",meaning="进程退出码（已知时）",rust_type="Option<u64>",required=false,format="integer",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="cleanup",meaning="本次进程与资源的关闭情况",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="failure",meaning="失败说明",rust_type="Option<String>",required=false,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolRecord"
+meaning="一份原始记录"
+identity="ID 唯一；技能根内字节可重读"
+fields=[
+{name="record_id",meaning="记录标识",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="kind",meaning="raw_output/log/measurement/report/input_copy/source_copy",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["raw_output", "log", "measurement", "report", "input_copy", "source_copy"]},
+{name="artifact",meaning="原件引用",rust_type="ArtifactReference",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolFinding"
+meaning="一条结论"
+identity="观察须引原始记录；推断须引记录或结论"
+fields=[
+{name="finding_id",meaning="结论标识",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="statement",meaning="结论陈述",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="kind",meaning="observed/inferred/imported/unknown",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["observed", "inferred", "imported", "unknown"]},
+{name="basis",meaning="依据的记录或结论 ID",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolMeasurement"
+meaning="一项量测"
+identity="须引原始记录；值有限"
+fields=[
+{name="measurement_id",meaning="量测标识",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="metric",meaning="指标名",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="unit",meaning="单位",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="value",meaning="量测值",rust_type="f64",required=true,format="finite",unit="见unit字段",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="samples",meaning="样本数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="回交",acceptance="至少 1"},
+{name="record_id",meaning="原始记录 ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolCoverage"
+meaning="覆盖范围"
+identity="已覆盖不能为空"
+fields=[
+{name="covered",meaning="已覆盖",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="至少一项"},
+{name="not_covered",meaning="未覆盖",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolResultCheck"
+meaning="工具结果核验报告"
+identity="accepted/rejected 及逐项状态"
+fields=[
+{name="schema",meaning="报告版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["oev2.tool-result-check/1"]},
+{name="status",meaning="accepted/rejected",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["accepted", "rejected"]},
+{name="result_id",meaning="结果标识",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="result_sha256",meaning="结果文件字节摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="project_binding",meaning="matched/object_changed/condition_changed/source_changed/project_mismatch",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["matched", "object_changed", "condition_changed", "source_changed", "project_mismatch"]},
+{name="project_revised_since_run",meaning="调用后 Project 是否另有修订",rust_type="bool",required=true,format="boolean",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="tool_status",meaning="qualified/registered_unqualified/retired/unregistered/version_mismatch/executable_changed/executable_unavailable",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["qualified", "registered_unqualified", "retired", "unregistered", "version_mismatch", "executable_changed", "executable_unavailable"]},
+{name="subject_status",meaning="manifest_matched/manifest_changed/manifest_unavailable/not_declared",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["manifest_matched", "manifest_changed", "manifest_unavailable", "not_declared"]},
+{name="records_verified",meaning="核验通过的原始记录数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="findings_observed",meaning="观察结论数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="findings_inferred",meaning="推断结论数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="findings_imported",meaning="外部导入结论数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="findings_unknown",meaning="未知结论数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="decision_support",meaning="observed_findings/none",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["observed_findings", "none"]},
+{name="failures",meaning="拒绝原因代码",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="warnings",meaning="提示",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="scope",meaning="证明范围",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolResultRegistration"
+meaning="工具结果登记进新 Project 副本的回执"
+identity="原 Project 不改；新副本另存"
+fields=[
+{name="schema",meaning="回执版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["oev2.tool-result-registration/1"]},
+{name="status",meaning="registered/refused",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["registered", "refused"]},
+{name="check",meaning="核验报告",rust_type="ToolResultCheck",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="previous_project_sha256",meaning="原 Project 文件摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="project_revision",meaning="新修订",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="project_output",meaning="新 Project 副本路径",rust_type="String",required=true,format="path",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="project_sha256",meaning="新 Project 文件摘要（未登记时为原摘要）",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="evidence_added",meaning="新增证据 ID",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="dependencies_added",meaning="新增依赖（决定→证据）",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="affected_decisions",meaning="需要重审的决定",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="scope",meaning="证明范围",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolComparisonRequest"
+meaning="先基线、后候选的量测比较请求"
+identity="两份结果均已登记进同一 Project"
+fields=[
+{name="schema",meaning="合同版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["oev2.tool-comparison/1"]},
+{name="comparison_id",meaning="比较标识",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="baseline",meaning="基线结果文件",rust_type="ArtifactReference",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="candidate",meaning="候选结果文件",rust_type="ArtifactReference",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="metric",meaning="比较指标",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="unit",meaning="单位",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="direction",meaning="lower_is_better/higher_is_better",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["lower_is_better", "higher_is_better"]},
+{name="minimum_improvement",meaning="判定改善的最小相对改善（0~1）",rust_type="f64",required=true,format="finite",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="minimum_samples",meaning="每侧最少样本数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[types]]
+name="ToolComparisonReport"
+meaning="比较结论"
+identity="improved/not_improved/inconclusive/invalid"
+fields=[
+{name="schema",meaning="报告版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["oev2.tool-comparison-report/1"]},
+{name="comparison_id",meaning="比较标识",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="verdict",meaning="improved/not_improved/inconclusive/invalid",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验",allowed_values=["improved", "not_improved", "inconclusive", "invalid"]},
+{name="baseline_value",meaning="基线值",rust_type="Option<f64>",required=false,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="candidate_value",meaning="候选值",rust_type="Option<f64>",required=false,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="relative_improvement",meaning="按方向的相对改善",rust_type="Option<f64>",required=false,format="typed",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="reasons",meaning="判定依据与问题",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"},
+{name="scope",meaning="证明范围",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="回交",acceptance="核验"}
+]
+
+[[constraints]]
+id="tool_result_provenance_handback"
+requirement="req_project"
+module="kernel"
+check="verify"
+rust_path="crates/oe-kernel/src/project/tool_result.rs"
+statement="结果须绑定同一 Project 的对象修订、条件与来源；工具身份与登记表及程序字节一致；原始记录与输入可重读核摘要；观察引记录、推断引记录或结论，覆盖非空；登记只写新副本并加证据与依赖，不改结论或采用。比较只收两份已登记、同工具/指标/单位/环境/输入集、基线在先且行为通过的结果。"
+severity="error"
+
+[[validations]]
+id="validate_tool_result_counterexamples"
+module="kernel"
+constraint="tool_result_provenance_handback"
+behavior="registry_binding_records_findings_and_comparison_classify_correctly"
+rust_path="crates/oe-kernel/tests/tool_result.rs"
+oracle="独立冻结：完整结果 accepted，登记产生新副本与依赖；工具未登记/版本不符/程序变化、对象或条件变化、记录篡改、观察无依据、覆盖空、时间倒置、ID 重复、决定不存在均拒绝；比较在基线在后、环境或输入集不同、行为失败、样本不足、未登记时为 invalid/inconclusive"
+scope="回交合同与有界比较；不证明工具结论或收益"
+
+[[validations]]
+id="validate_tool_result_real_tools"
+module="kernel"
+constraint="tool_result_provenance_handback"
+behavior="six_registered_tools_real_results_register_into_one_project"
+rust_path="crates/oe-kernel/tests/tool_result.rs"
+oracle="六个已登记工具各一次真实结果核验并登记进同一 Project；比较先基线后候选"
+scope="回交合同与有界比较；不证明工具结论或收益"
+
+# Decision update from registered evidence and route anchor /2 delivery scope.
+[[types]]
+name="DecisionUpdate"
+meaning="用已登记的工具结果更新一个决定的结论"
+identity="决定ID+引用的结果与结论"
+fields=[
+{name="schema",meaning="合同版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验",allowed_values=["oev2.decision-update/1"]},
+{name="decision_id",meaning="要更新的决定",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="conclusion",meaning="supported/refuted/unknown",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验",allowed_values=["supported", "refuted", "unknown"]},
+{name="results",meaning="依据的工具结果文件（须已登记）",rust_type="Vec<ArtifactReference>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="findings",meaning="引用的结论 result_id#finding_id",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="rationale",meaning="为何这些结论支持或否定该决定",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="claim_scope",meaning="结论成立的范围",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"}
+]
+
+[[types]]
+name="DecisionUpdateReceipt"
+meaning="决定更新回执"
+identity="原 Project 不改；新副本另存"
+fields=[
+{name="schema",meaning="回执版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验",allowed_values=["oev2.decision-update-receipt/1"]},
+{name="status",meaning="updated/refused",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验",allowed_values=["updated", "refused"]},
+{name="decision_id",meaning="决定",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="previous_conclusion",meaning="原结论",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="conclusion",meaning="新结论",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="basis",meaning="新依据证据ID",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="previous_project_sha256",meaning="原 Project 摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="project_revision",meaning="新修订",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="project_output",meaning="新 Project 路径",rust_type="String",required=true,format="path",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="project_sha256",meaning="新 Project 摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="affected_decisions",meaning="下游需重审的决定",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="failures",meaning="拒绝原因",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="scope",meaning="证明范围",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"}
+]
+
+[[types]]
+name="RouteAcceptance2"
+meaning="带证据关联的根验收项"
+identity="关闭须有已支持的决定与已登记证据"
+fields=[
+{name="id",meaning="验收ID",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="statement",meaning="验收陈述",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="functions",meaning="覆盖的功能",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="status",meaning="open/partial/closed/blocked",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验",allowed_values=["open", "partial", "closed", "blocked"]},
+{name="decisions",meaning="支撑该验收的 Project 决定",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="evidence",meaning="支撑该验收的证据ID",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"}
+]
+
+[[types]]
+name="RouteAnchor2"
+meaning="路线锚定 /2：验收项关联决定与证据"
+identity="同 /1，验收项带证据关联"
+fields=[
+{name="schema",meaning="合同版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验",allowed_values=["oev2.route-anchor/2"]},
+{name="project_id",meaning="Project",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="root_object",meaning="根对象",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="deliverable",meaning="根交付物",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="requests",meaning="用户原话",rust_type="Vec<RouteUtterance>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="functions",meaning="功能清单",rust_type="Vec<RouteFunction>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="acceptance",meaning="验收项",rust_type="Vec<RouteAcceptance2>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="stages",meaning="阶段",rust_type="Vec<RouteStage>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="reviews",meaning="路线回看",rust_type="Vec<RouteReview>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="policy",meaning="偏移判据",rust_type="RoutePolicy",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"}
+]
+
+[[types]]
+name="RouteAuditReport2"
+meaning="路线锚定 /2 检查结果与可交付范围"
+identity="anchored/drift/invalid 及交付分栏"
+fields=[
+{name="schema",meaning="报告版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验",allowed_values=["oev2.route-audit/2"]},
+{name="status",meaning="anchored/drift/invalid",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验",allowed_values=["anchored", "drift", "invalid"]},
+{name="project_id",meaning="Project",rust_type="String",required=true,format="id",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="project_sha256",meaning="Project 摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="anchor_sha256",meaning="锚定记录摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="stage_count",meaning="阶段数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="open_acceptance",meaning="未闭合验收",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="unanchored_objects",meaning="未锚定对象",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="findings",meaning="发现",rust_type="Vec<RouteFinding>",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="delivery_verified",meaning="已验证可交付的验收项",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="delivery_open",meaning="仍需继续的验收项",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="delivery_inconsistent",meaning="声称关闭但依据不足的验收项",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"},
+{name="scope",meaning="证明范围",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="决定",acceptance="核验"}
+]
+
+[[constraints]]
+id="decision_update_from_registered_evidence"
+requirement="req_project"
+module="kernel"
+check="decide"
+rust_path="crates/oe-kernel/src/project/decide.rs"
+statement="决定只由已登记且重核通过的工具结果更新：supported/refuted 须有针对该决定、对象与条件一致、带观察结论的结果并引用其观察或推断结论；决定改绑到结果的对象修订与来源；已采用的决定不在此改；只写新副本。"
+severity="error"
+
+[[constraints]]
+id="route_acceptance_evidence_closure"
+requirement="req_project"
+module="kernel"
+check="audit2"
+rust_path="crates/oe-kernel/src/project/route.rs"
+statement="/2 验收项声称关闭时，所列决定须为 supported、依据已登记、绑定当前对象修订且来源仍在，记忆证据不计；否则 invalid。输出可交付、继续、不一致三栏。"
+severity="error"
+
+[[validations]]
+id="validate_decision_update_rules"
+module="kernel"
+constraint="decision_update_from_registered_evidence"
+behavior="registered_observed_evidence_required_for_supported_or_refuted"
+rust_path="crates/oe-kernel/tests/decide.rs"
+oracle="独立冻结：有效更新只改该决定并改绑当前修订与来源；未登记、不针对该决定、对象或条件不一致、绑定冲突、无观察结论、引用不存在、已采用、修订未变均拒绝；unknown 可只写理由"
+scope="声明与登记证据；不证明采用或收益"
+
+[[validations]]
+id="validate_route_anchor2_delivery"
+module="kernel"
+constraint="route_acceptance_evidence_closure"
+behavior="closed_acceptance_requires_supported_decisions_and_evidence"
+rust_path="crates/oe-kernel/tests/route_anchor.rs"
+oracle="关闭项决定均 supported、依据已登记且绑定当前修订时可交付；过期、来源缺失、记忆证据或依据不足时 invalid 并列入不一致；open/partial 列入继续"
+scope="声明与登记证据；不证明采用或收益"
+
+# Memory recall candidates in the same Project, never decision support (oev2.memory-candidate-check/1).
+[[types]]
+name="MemoryCandidateCheck"
+meaning="记忆召回候选的核验与登记报告；不支持决定"
+identity="候选文件摘要+经验修订"
+fields=[
+{name="schema",meaning="报告版本",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验",allowed_values=["oev2.memory-candidate-check/1"]},
+{name="status",meaning="accepted/rejected/registered/refused",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验",allowed_values=["accepted", "rejected", "registered", "refused"]},
+{name="candidate",meaning="交接文件",rust_type="ArtifactReference",required=true,format="typed",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="record",meaning="经验id@r修订",rust_type="Option<String>",required=false,format="text",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="record_sha256",meaning="重算的经验摘要",rust_type="Option<String>",required=false,format="sha256",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="project_binding",meaning="Project 绑定",rust_type="String",required=true,format="status",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验",allowed_values=["matched", "unbound", "project_mismatch", "object_changed", "condition_changed", "unchecked"]},
+{name="sources_verified",meaning="重读一致的原消息数",rust_type="u64",required=true,format="integer",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="memory_scope",meaning="memory 适用审查（原样）",rust_type="Option<String>",required=false,format="text",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="missing_conditions",meaning="memory 列出的缺失条件",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="evidence_id",meaning="登记用证据ID",rust_type="Option<String>",required=false,format="id",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="project_revision",meaning="Project 修订",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="project_sha256",meaning="Project 摘要",rust_type="String",required=true,format="sha256",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="failures",meaning="拒绝原因",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="warnings",meaning="提示",rust_type="Vec<String>",required=true,format="list",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"},
+{name="scope",meaning="证明范围",rust_type="String",required=true,format="text",unit="无",precision="精确",write="agent",applicability="记忆",acceptance="核验"}
+]
+
+[[constraints]]
+id="memory_candidate_non_decisive"
+requirement="req_project"
+module="kernel"
+check="verify"
+rust_path="crates/oe-kernel/src/project/memory.rs"
+statement="记忆召回只作待核候选：交接须声明未授予采用、不写 Project；经验摘要与每条原消息字节重读一致、Project 绑定未变才可登记；登记只加 memory-candidate 证据，不得作为 supported/refuted 决定的依据、关闭验收的证据或工具原始记录。"
+severity="error"
+
+[[validations]]
+id="validate_memory_candidate_rules"
+module="kernel"
+constraint="memory_candidate_non_decisive"
+behavior="memory_candidates_verified_registered_never_decisive"
+rust_path="crates/oe-kernel/tests/memory_candidate.rs"
+oracle="独立冻结：手写排序摘要的交接通过并只加一项证据；摘要、原字节、文字、采用声明、对象或条件变化均拒绝；以记忆证据支撑决定、关闭验收或充当工具记录均拒绝；反馈按 memory 合同绑定当前 Project"
+scope="来源与绑定；不证明经验主张、适用性或收益"

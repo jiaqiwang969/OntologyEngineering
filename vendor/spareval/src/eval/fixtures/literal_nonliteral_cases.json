@@ -1,0 +1,271 @@
+{
+  "schema": "spareval.source-nonliteral-active-receiving/1",
+  "source_record_id": "LITERAL-NONLITERAL-BACKEND-SUPPLEMENT-01",
+  "source_record_sha256": "5b67833998ab6483eb4217eabcd6d58d25ae1504cf85e02540908e1fc5c253b4",
+  "classification": "active_backend_integrity_not_original_python_oracle",
+  "api": {
+    "new": "NumericDataset::new(inner) keeps RdfIdentityV1",
+    "source": "NumericDataset::new_with_literal_semantics(inner, QueryLiteralSemantics::SourceLiteralV1)",
+    "adapter": "RawExpressionValue::from_import(nonliteral) then actual internalize_raw / source_identity_key / externalize_raw",
+    "backend": "Controlled QueryableDataset stores the actual input term, counts both conversion methods, and returns the declared replacement only on the numbered real externalize_term call."
+  },
+  "cases": [
+    {
+      "id": "NLB-N1",
+      "input": {
+        "kind": "NamedNode",
+        "value": "urn:source:a"
+      },
+      "backend_replacement": {
+        "kind": "NamedNode",
+        "value": "urn:source:b"
+      },
+      "constructor": "new_with_literal_semantics",
+      "literal_semantics": "SourceLiteralV1",
+      "backend_change_on_externalize_call": 1,
+      "steps": [
+        "internalize_raw"
+      ],
+      "expected": {
+        "outcome": "error",
+        "stage": "internalize_roundtrip",
+        "fault": "LossyNumericBackend",
+        "internalize_calls": 1,
+        "externalize_calls": 1,
+        "returned_internal_value": false,
+        "returned_raw_value": false
+      }
+    },
+    {
+      "id": "NLB-N2",
+      "input": {
+        "kind": "NamedNode",
+        "value": "urn:source:a"
+      },
+      "backend_replacement": {
+        "kind": "NamedNode",
+        "value": "urn:source:b"
+      },
+      "constructor": "new_with_literal_semantics",
+      "literal_semantics": "SourceLiteralV1",
+      "backend_change_on_externalize_call": 2,
+      "steps": [
+        "internalize_raw",
+        "source_identity_key",
+        "externalize_raw"
+      ],
+      "expected": {
+        "outcome": "error",
+        "stage": "final_externalize",
+        "fault": "LossyNumericBackend",
+        "internalize_calls": 1,
+        "externalize_calls": 2,
+        "source_identity_before_failure": {
+          "kind": "NamedNode",
+          "value": "urn:source:a"
+        },
+        "externalize_calls_after_key": 1,
+        "returned_internal_value": true,
+        "returned_raw_value": false
+      }
+    },
+    {
+      "id": "NLB-N3",
+      "input": {
+        "kind": "NamedNode",
+        "value": "urn:source:a"
+      },
+      "backend_replacement": {
+        "kind": "NamedNode",
+        "value": "urn:source:b"
+      },
+      "constructor": "new_with_literal_semantics",
+      "literal_semantics": "SourceLiteralV1",
+      "backend_change_on_externalize_call": null,
+      "steps": [
+        "internalize_raw",
+        "source_identity_key",
+        "externalize_raw"
+      ],
+      "expected": {
+        "outcome": "value",
+        "rdf": {
+          "kind": "NamedNode",
+          "value": "urn:source:a"
+        },
+        "literal_source_state": "NotLiteral",
+        "numeric_cache": "NotNumeric",
+        "internalize_calls": 1,
+        "externalize_calls": 2,
+        "source_identity": {
+          "kind": "NamedNode",
+          "value": "urn:source:a"
+        },
+        "externalize_calls_after_key": 1
+      }
+    },
+    {
+      "id": "NLB-N4",
+      "input": {
+        "kind": "NamedNode",
+        "value": "urn:source:a"
+      },
+      "backend_replacement": {
+        "kind": "NamedNode",
+        "value": "urn:source:b"
+      },
+      "constructor": "new",
+      "literal_semantics": "RdfIdentityV1",
+      "backend_change_on_externalize_call": 1,
+      "steps": [
+        "internalize_raw",
+        "externalize_raw"
+      ],
+      "expected": {
+        "outcome": "value",
+        "rdf": {
+          "kind": "NamedNode",
+          "value": "urn:source:b"
+        },
+        "literal_source_state": "NotLiteral",
+        "numeric_cache": "NotNumeric",
+        "internalize_calls": 1,
+        "externalize_calls_after_internalize": 0,
+        "externalize_calls": 1,
+        "note": "Historical constructor keeps its original conversion schedule and result; no source identity validation is claimed."
+      }
+    },
+    {
+      "id": "NLB-B1",
+      "input": {
+        "kind": "BlankNode",
+        "value": "source-a"
+      },
+      "backend_replacement": {
+        "kind": "BlankNode",
+        "value": "source-b"
+      },
+      "constructor": "new_with_literal_semantics",
+      "literal_semantics": "SourceLiteralV1",
+      "backend_change_on_externalize_call": 1,
+      "steps": [
+        "internalize_raw"
+      ],
+      "expected": {
+        "outcome": "error",
+        "stage": "internalize_roundtrip",
+        "fault": "LossyNumericBackend",
+        "internalize_calls": 1,
+        "externalize_calls": 1,
+        "returned_internal_value": false,
+        "returned_raw_value": false
+      }
+    },
+    {
+      "id": "NLB-B2",
+      "input": {
+        "kind": "BlankNode",
+        "value": "source-a"
+      },
+      "backend_replacement": {
+        "kind": "BlankNode",
+        "value": "source-b"
+      },
+      "constructor": "new_with_literal_semantics",
+      "literal_semantics": "SourceLiteralV1",
+      "backend_change_on_externalize_call": 2,
+      "steps": [
+        "internalize_raw",
+        "source_identity_key",
+        "externalize_raw"
+      ],
+      "expected": {
+        "outcome": "error",
+        "stage": "final_externalize",
+        "fault": "LossyNumericBackend",
+        "internalize_calls": 1,
+        "externalize_calls": 2,
+        "source_identity_before_failure": {
+          "kind": "BlankNode",
+          "value": "source-a"
+        },
+        "externalize_calls_after_key": 1,
+        "returned_internal_value": true,
+        "returned_raw_value": false
+      }
+    },
+    {
+      "id": "NLB-B3",
+      "input": {
+        "kind": "BlankNode",
+        "value": "source-a"
+      },
+      "backend_replacement": {
+        "kind": "BlankNode",
+        "value": "source-b"
+      },
+      "constructor": "new_with_literal_semantics",
+      "literal_semantics": "SourceLiteralV1",
+      "backend_change_on_externalize_call": null,
+      "steps": [
+        "internalize_raw",
+        "source_identity_key",
+        "externalize_raw"
+      ],
+      "expected": {
+        "outcome": "value",
+        "rdf": {
+          "kind": "BlankNode",
+          "value": "source-a"
+        },
+        "literal_source_state": "NotLiteral",
+        "numeric_cache": "NotNumeric",
+        "internalize_calls": 1,
+        "externalize_calls": 2,
+        "source_identity": {
+          "kind": "BlankNode",
+          "value": "source-a"
+        },
+        "externalize_calls_after_key": 1
+      }
+    },
+    {
+      "id": "NLB-B4",
+      "input": {
+        "kind": "BlankNode",
+        "value": "source-a"
+      },
+      "backend_replacement": {
+        "kind": "BlankNode",
+        "value": "source-b"
+      },
+      "constructor": "new",
+      "literal_semantics": "RdfIdentityV1",
+      "backend_change_on_externalize_call": 1,
+      "steps": [
+        "internalize_raw",
+        "externalize_raw"
+      ],
+      "expected": {
+        "outcome": "value",
+        "rdf": {
+          "kind": "BlankNode",
+          "value": "source-b"
+        },
+        "literal_source_state": "NotLiteral",
+        "numeric_cache": "NotNumeric",
+        "internalize_calls": 1,
+        "externalize_calls_after_internalize": 0,
+        "externalize_calls": 1,
+        "note": "Historical constructor keeps its original conversion schedule and result; no source identity validation is claimed."
+      }
+    }
+  ],
+  "invariants": [
+    "No global RDF-keyed metadata map.",
+    "Unknown literal import remains Unknown and does not receive source fact validation solely because its session is SourceLiteralV1.",
+    "Legacy new constructor does not gain eager externalization.",
+    "Actual Dataset errors remain their original concrete QueryEvaluationError::Dataset objects.",
+    "Original literal identity oracle and language supplement are immutable; this is an additional active safety control."
+  ]
+}

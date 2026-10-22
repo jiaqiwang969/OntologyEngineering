@@ -1,0 +1,622 @@
+{
+  "schema": "private.source-relational-unary-original-protocols/1",
+  "source_record_sha256": "36401bf9c90b69c7d441a299f39d3d21ebf0346dd3f1ae06fa9824f904082926",
+  "candidate_results_used": false,
+  "source_protocols": [
+    {
+      "id": "RG01",
+      "title": "Actual integer > 0 operand protocol",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "operator": ">",
+        "left_syntax": "bare Variable x",
+        "left_local_cell": {
+          "kind": "Literal",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null,
+          "ill_typed": false,
+          "cache_type": "builtins.int",
+          "cache": 0,
+          "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+        },
+        "right_syntax": "query integer token",
+        "right_value": {
+          "kind": "Literal",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null,
+          "ill_typed": false,
+          "cache_type": "builtins.int",
+          "cache": 0,
+          "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+        },
+        "object_roles": "left value occurrence and right query literal are distinct even when RDF equal",
+        "context": {
+          "precision": 28,
+          "trap_float_operation": false,
+          "initial_flags": []
+        }
+      },
+      "expected": {
+        "value": {
+          "kind": "Literal",
+          "lexical": "false",
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "language": null,
+          "ill_typed": null,
+          "cache_type": "builtins.bool",
+          "cache": false,
+          "identity": "fresh source Literal(bool) per reached result construction; never parser token reuse"
+        },
+        "operand_evaluation_order": [
+          "left",
+          "right"
+        ],
+        "comparison": "direct Literal.__gt__; cached integer comparison",
+        "decimal_flags": [],
+        "same_argument_objects": true
+      },
+      "source_anchors": [
+        "operators.py:849-853,858-868,891-924",
+        "parserutils.py:57-91",
+        "term.py:1183-1196",
+        "term.py:667-705"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "RG02",
+      "title": "Actual integer > 0 operand protocol",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "operator": ">",
+        "left_syntax": "bare Variable x",
+        "left_local_cell": {
+          "kind": "Literal",
+          "lexical": "1",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null,
+          "ill_typed": false,
+          "cache_type": "builtins.int",
+          "cache": 1,
+          "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+        },
+        "right_syntax": "query integer token",
+        "right_value": {
+          "kind": "Literal",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null,
+          "ill_typed": false,
+          "cache_type": "builtins.int",
+          "cache": 0,
+          "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+        },
+        "object_roles": "left value occurrence and right query literal are distinct even when RDF equal",
+        "context": {
+          "precision": 28,
+          "trap_float_operation": false,
+          "initial_flags": []
+        }
+      },
+      "expected": {
+        "value": {
+          "kind": "Literal",
+          "lexical": "true",
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "language": null,
+          "ill_typed": null,
+          "cache_type": "builtins.bool",
+          "cache": true,
+          "identity": "fresh source Literal(bool) per reached result construction; never parser token reuse"
+        },
+        "operand_evaluation_order": [
+          "left",
+          "right"
+        ],
+        "comparison": "direct Literal.__gt__; cached integer comparison",
+        "decimal_flags": [],
+        "same_argument_objects": true
+      },
+      "source_anchors": [
+        "operators.py:849-853,858-868,891-924",
+        "parserutils.py:57-91",
+        "term.py:1183-1196",
+        "term.py:667-705"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "RG03",
+      "title": "Missing or ExplicitNone variable raises before RHS evaluation",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "operator": ">",
+        "left_syntax": "bare Variable x",
+        "runs": [
+          {
+            "local": "absent",
+            "initial": "absent"
+          },
+          {
+            "local": "ExplicitNone",
+            "initial": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+            }
+          }
+        ],
+        "right_value": {
+          "kind": "Literal",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null,
+          "ill_typed": false,
+          "cache_type": "builtins.int",
+          "cache": 0,
+          "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+        }
+      },
+      "expected": {
+        "value": {
+          "class": "NotBoundError",
+          "args": [
+            null
+          ],
+          "identity": "fresh E for each invocation, retained by Expr catch",
+          "boundary": "Expr.eval returns this SPARQLError object after catch"
+        },
+        "runtime_operand_reads": [
+          "left"
+        ],
+        "rhs_runtime_evaluations": 0,
+        "rhs_parser_construction": "already performed normally; zero runtime reads does not mean zero parser constructor calls",
+        "decimal_flags": []
+      },
+      "source_anchors": [
+        "parserutils.py:76-91",
+        "sparql.py:35-43",
+        "operators.py:850-852",
+        "parserutils.py:219-228"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "RG04",
+      "title": "Variable error is raised and returned as the same object",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "operator": ">",
+        "left_syntax": "bare Variable x",
+        "left_cell": {
+          "ReturnedError": {
+            "class": "NotBoundError",
+            "args": [
+              "Variable missing is not bound"
+            ],
+            "identity": "E0 from child expression, held by actual ErrorValue Arc"
+          }
+        },
+        "right_value": {
+          "kind": "Literal",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null,
+          "ill_typed": false,
+          "cache_type": "builtins.int",
+          "cache": 0,
+          "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+        }
+      },
+      "expected": {
+        "value": {
+          "class": "NotBoundError",
+          "args": [
+            "Variable missing is not bound"
+          ],
+          "identity": "same E0 Arc; no new exception",
+          "boundary": "Expr.eval returns this SPARQLError object after catch"
+        },
+        "runtime_operand_reads": [
+          "left"
+        ],
+        "rhs_runtime_evaluations": 0,
+        "decimal_flags": []
+      },
+      "source_anchors": [
+        "parserutils.py:76-91",
+        "parserutils.py:219-228",
+        "operators.py:850-852"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "RG05",
+      "title": "Expr-returned error is a value until the relation rejects its nonliteral type",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "operator": ">",
+        "left_syntax": "Expr child",
+        "left_returned_value": {
+          "ReturnedError": {
+            "class": "NotBoundError",
+            "args": [
+              "Variable missing is not bound"
+            ],
+            "identity": "E0 from child expression, held by actual ErrorValue Arc"
+          }
+        },
+        "right_value": {
+          "kind": "Literal",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null,
+          "ill_typed": false,
+          "cache_type": "builtins.int",
+          "cache": 0,
+          "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+        }
+      },
+      "expected": {
+        "value": {
+          "class": "SPARQLError",
+          "args": [
+            "Compare other than =, != of non-literals is an error: NotBoundError('Variable missing is not bound')"
+          ],
+          "identity": "new E1 distinct from E0; catch keeps E1",
+          "boundary": "Expr.eval returns this SPARQLError object after catch"
+        },
+        "runtime_operand_reads": [
+          "left",
+          "right"
+        ],
+        "source_comparison_calls": 0,
+        "decimal_flags": [],
+        "argument_evidence": "Exact literal prefix plus fixed ErrorValue source repr, source-derived; not observed as a new original query"
+      },
+      "source_anchors": [
+        "parserutils.py:71-74",
+        "operators.py:850-852,891-901",
+        "parserutils.py:219-228",
+        "sparql.py:35-43"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "RG06",
+      "title": "NamedNode greater-than is not ORDER rank comparison",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "operator": ">",
+        "left_value": {
+          "kind": "URIRef",
+          "value": "urn:test:value"
+        },
+        "right_value": {
+          "kind": "Literal",
+          "lexical": "0",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null,
+          "ill_typed": false,
+          "cache_type": "builtins.int",
+          "cache": 0,
+          "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+        }
+      },
+      "expected": {
+        "value": {
+          "class": "SPARQLError",
+          "args": [
+            "Compare other than =, != of non-literals is an error: rdflib.term.URIRef('urn:test:value')"
+          ],
+          "identity": "new E1",
+          "boundary": "Expr.eval returns this SPARQLError object after catch"
+        },
+        "runtime_operand_reads": [
+          "left",
+          "right"
+        ],
+        "source_literal_gt_calls": 0,
+        "decimal_flags": [],
+        "argument_evidence": "Fixed source prefix and URIRef repr; source-only protocol"
+      },
+      "source_anchors": [
+        "operators.py:891-901",
+        "parserutils.py:219-228"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "UN01",
+      "title": "UnaryNot creates a fresh bool from actual boolean cache",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "syntax": "UnaryNot(Expr_or_Literal_operand)",
+        "runs": [
+          {
+            "value": {
+              "kind": "Literal",
+              "lexical": "false",
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.bool",
+              "cache": false,
+              "identity": "fresh source Literal(bool) per reached result construction; never parser token reuse"
+            },
+            "expected_bool": true
+          },
+          {
+            "value": {
+              "kind": "Literal",
+              "lexical": "true",
+              "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+              "language": null,
+              "ill_typed": null,
+              "cache_type": "builtins.bool",
+              "cache": true,
+              "identity": "fresh source Literal(bool) per reached result construction; never parser token reuse"
+            },
+            "expected_bool": false
+          }
+        ]
+      },
+      "expected": {
+        "constructor": "fresh Literal(not EBV(value)), using output budget",
+        "operand_evaluations_per_run": 1,
+        "decimal_flags": [],
+        "failure_catch": "only source SPARQLError; no conversion of ordinary/fatal errors to false"
+      },
+      "source_anchors": [
+        "operators.py:734-735,1192-1198",
+        "parserutils.py:219-228"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "UN02",
+      "title": "UnaryNot integer cache zero/nonzero",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "syntax": "UnaryNot(operand)",
+        "runs": [
+          {
+            "value": {
+              "kind": "Literal",
+              "lexical": "0",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 0,
+              "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+            },
+            "expected_bool": true
+          },
+          {
+            "value": {
+              "kind": "Literal",
+              "lexical": "1",
+              "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+              "language": null,
+              "ill_typed": false,
+              "cache_type": "builtins.int",
+              "cache": 1,
+              "construction": "actual independent QueryNumericToken occurrence; retain its Raw object"
+            },
+            "expected_bool": false
+          }
+        ]
+      },
+      "expected": {
+        "constructor": "fresh Literal(bool) with metadata matching boolean result schema",
+        "operand_evaluations_per_run": 1,
+        "decimal_flags": []
+      },
+      "source_anchors": [
+        "operators.py:734-735,1199-1211",
+        "term.py:toPython",
+        "parserutils.py:219-228"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "UN03",
+      "title": "UnaryNot receives EXISTS-returned NotBoundError and produces a distinct EBV error",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "syntax": "UnaryNot(SourceExists(...))",
+        "operand_value": {
+          "ReturnedError": {
+            "class": "NotBoundError",
+            "args": [
+              "Variable missing is not bound"
+            ],
+            "identity": "E0 from child expression, held by actual ErrorValue Arc"
+          }
+        },
+        "source_query_id": "BX09"
+      },
+      "expected": {
+        "value": {
+          "class": "SPARQLTypeError",
+          "args": [
+            "http://www.w3.org/TR/rdf-sparql-query/#ebv - ' +             'Only literals have Boolean values! NotBoundError('Variable missing is not bound')"
+          ],
+          "identity": "E1 distinct from E0; exact source constructor facts recorded by BX09 trace42",
+          "boundary": "Expr.eval returns this SPARQLError object after catch"
+        },
+        "source_identities": {
+          "child_aggregate_exception": "E0",
+          "Builtin_EXISTS_exception": "E0",
+          "inner_Expr_exception": "E0",
+          "outer_UnaryNot_Expr_exception": "E1"
+        },
+        "resulting_extend": "alias b absent, one empty local row; do not insert ReturnedError into alias",
+        "boolean_constructions": 0,
+        "decimal_flags": [],
+        "payload_observation_limit": "Expr.eval return payload itself was not serialized; same-object returned payload is derived from fixed except SPARQLError: return e"
+      },
+      "source_anchors": [
+        "operators.py:734-735,1213-1217",
+        "parserutils.py:71-74,219-228",
+        "BX09-trace.stdout.json:/trace/36,/trace/38,/trace/40,/trace/42"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "UN04",
+      "title": "Variable error under UnaryNot does not enter EBV",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "syntax": "UnaryNot(Variable x)",
+        "cell": {
+          "ReturnedError": {
+            "class": "NotBoundError",
+            "args": [
+              "Variable missing is not bound"
+            ],
+            "identity": "E0 from child expression, held by actual ErrorValue Arc"
+          }
+        }
+      },
+      "expected": {
+        "value": {
+          "class": "NotBoundError",
+          "args": [
+            "Variable missing is not bound"
+          ],
+          "identity": "same E0 Arc",
+          "boundary": "Expr.eval returns this SPARQLError object after catch"
+        },
+        "ebv_calls": 0,
+        "boolean_constructions": 0,
+        "decimal_flags": []
+      },
+      "source_anchors": [
+        "parserutils.py:76-91",
+        "operators.py:734-735",
+        "parserutils.py:219-228"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "EB01",
+      "title": "SPARQL EBV differs from Literal Python truth for empty plain ErrorObject literal",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "value": {
+          "kind": "Literal",
+          "lexical": "",
+          "datatype": null,
+          "language": null,
+          "ill_typed": null,
+          "cache_type": "source SPARQLError object",
+          "cached_error": {
+            "class": "SPARQLError",
+            "args": [
+              ""
+            ],
+            "identity": "E0"
+          }
+        },
+        "construction": "fixed Literal(error) source construction; existing extrema constructor can carry the ErrorObject, not a ReturnedError cell"
+      },
+      "expected": {
+        "source_ebv": false,
+        "literal_python_truth": true,
+        "UnaryNot_result": {
+          "kind": "Literal",
+          "lexical": "true",
+          "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+          "language": null,
+          "ill_typed": null,
+          "cache_type": "builtins.bool",
+          "cache": true,
+          "identity": "fresh source Literal(bool) per reached result construction; never parser token reuse"
+        },
+        "numeric_casts": 0,
+        "decimal_flags": []
+      },
+      "source_anchors": [
+        "operators.py:1192-1198",
+        "term.py:Literal.__bool__",
+        "term.py:Literal.toPython"
+      ],
+      "candidate_results_used": false
+    },
+    {
+      "id": "EB02",
+      "title": "Failed numeric cast cannot use lexical Python truth as SPARQL EBV",
+      "classification": "fixed_source_derived_not_original_execution",
+      "input": {
+        "value": {
+          "kind": "Literal",
+          "lexical": "bad",
+          "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+          "language": null,
+          "ill_typed": true,
+          "cache": null
+        },
+        "syntax": "UnaryNot(Literal operand)"
+      },
+      "expected": {
+        "source_ebv_error_class": "SPARQLTypeError",
+        "source_ebv_error_args": {
+          "status": "unknown_exact_bytes_not_admitted_by_this_freeze",
+          "reason": "This branch has fixed format source, but no new original literal/diagnostic observation is performed here; freeze class/control-flow only until a separately reviewed exact-argument certificate or observation."
+        },
+        "literal_python_truth": true,
+        "boolean_constructions": 0,
+        "decimal_flags": []
+      },
+      "source_anchors": [
+        "operators.py:1199-1208",
+        "term.py:Literal.toPython,Literal.__bool__"
+      ],
+      "candidate_results_used": false
+    }
+  ],
+  "original_query_ids": [
+    "BX05",
+    "BX06",
+    "BX09"
+  ],
+  "limits": [
+    {
+      "id": "RU01",
+      "topic": "Relational FloatOperation exception arguments",
+      "known": "Source TypeError inheritance and catch class are fixed. Reached FloatOperation flag remains set; catch allocates fresh SPARQLError.",
+      "unknown": "Exact exception args contain a Python list in the retained C backend; previous original observer recorded only unserialized_type=list. No precise list content or string is frozen here.",
+      "required": "New narrowly reviewed original observation that serializes argument payload, or separately accepted exact fixed-C source derivation; extend SourceExceptionArgument beyond None/Text if a real list must be transported. Do not guess text."
+    },
+    {
+      "id": "RU02",
+      "topic": "General literal direct-method TypeError/NotImplemented fallback",
+      "known": "Relation wraps TypeError args, but no reflected comparison at this layer.",
+      "unknown": "Full exact ordinary TypeError args across heterogeneous/custom/cache families are not observed or admitted by this finite freeze.",
+      "required": "Keep rejected/unqualified until each supported family has source-derived expectation plus independent receiving."
+    },
+    {
+      "id": "RU03",
+      "topic": "Complete EBV fallback/error parameters",
+      "known": "Code branch and error class are read; EB02 exact parameter bytes remain unknown in this freeze.",
+      "unknown": "Unobserved full fallback families, arbitrary custom toPython values, unknown metadata and exact diagnostics.",
+      "required": "Source certificate/observations before capability expansion; no general lexical datatype shortcut."
+    },
+    {
+      "id": "RU04",
+      "topic": "Other operators remain required",
+      "known": "Full target includes <,<=,>=,=,!=,IN,NOT IN, rich datatype guards, Boolean comparisons/order, complete EBV and all SourceExists queries.",
+      "unknown": "This freeze is not their implementation or acceptance. <= and >= also test truth of direct-method return before .eq; retain actual NotImplemented behavior instead of inventing a total order.",
+      "required": "Separate finite source freezes and actual compiler receiving; no target deletion."
+    }
+  ]
+}

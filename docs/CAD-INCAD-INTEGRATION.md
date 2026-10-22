@@ -1,0 +1,43 @@
+# SolidWorks and inCAD in the same engineering workflow
+
+Engineering ontology defines meaning → actual locked ggen produces shared contracts → Rust executes and checks → RRSI-inspired comparisons evaluate improvements. SolidWorks and NX are parallel CAD backends; inCAD supplies source material and design exercises. They share the existing Project, sources, conditions and engineering adoption owner. Fusion stays retired.
+
+## Source preparation that runs now
+
+`oev2 project incad prepare --input var/request.json --output var/new-preparation` verifies an `oev2.incad-work-preparation/1` request. Its `work` references an existing complete `oev2.engineering-work/3`; the original current Project, context, object and conditions must pass the existing workflow checks. The command does not invent a Project or translate supplier declarations into project facts.
+
+The generated `IncadIntakeRequest` declares an absolute private archive root, six-digit CN case number, a fixed projection `manifest.json` path relative to that archive plus its SHA256, and an absolute original exported `incad.zero-design-task/1` file plus SHA256. Mutable current pointers are not accepted as a substitute for the fixed manifest. The original incad tool and its archive remain read-only; this entrance does not launch downloads, touch a browser, execute a script from an HTML page or copy the complete CAD library.
+
+The Rust knowledge owner reopens the original supplier HTML, case record, case manifest, all nine declared design projection files and the exported task. It checks hashes, lengths, case/source identity, closed specification shapes and exact equality between the draft specifications and original input. Missing sections and archive errors remain visible. Original HTML and complete original text stay in the archive, including referenced answers; only the complete specification input and the user's unchanged current request enter the design window. `reference_file_payload_in_design_window=false` means the separate reference file is not inserted; it does not certify that arbitrary natural-language specifications contain no design hints. HTML extraction/classification is not re-executed here. Original projection bytes are preserved without trimming or numerical conversion.
+
+`source_ids` maps exactly four roles—`supplier_html`, `projection_manifest`, `specifications`, `task`—to existing Project evidence IDs. Every Project SHA must equal the actual verified source. Agent authoring of those existing Project entries is explicit; preparation does not change Project, register engineering facts or create a second source registry. No new `EngineeringSourceRequest` provider is introduced: the existing supplier request remains `misumi/misumi-offline`. This separate artifact preparation supplies material for agent reasoning and subsequent existing work/Harness calls.
+
+The output keeps `request.json`, exact `work.json`, exact `specifications.json`, exact `zero-design-task.json`, a complete source audit/design window in `preparation.json`, and a terminal `completed.json` written after source rechecks. `oev2 project incad verify --input var/request.json --prepared var/new-preparation` reopens the current sources/Project and checks the prior preparation. It is preparation only: work, model and CAD executions remain `not_run`.
+
+Limits are explicit: 16 MiB per selected file, 64 MiB total selected reads and at most 8192 manifest entries. This command verifies the selected source/projection closure, not every CAD member or the entire library. Original files exceeding this domain are refused rather than truncated.
+
+Source registration and current-condition binding do not establish the case's engineering applicability or the relationship between `zero_design_task.current_request` and the work's purpose/functions. Both remain `not_reviewed` in preparation and revalidation. The agent must review those relationships against the original task, source conditions and existing engineering premises before reasoning or adoption; matching text alone is insufficient.
+
+## SolidWorks evidence that runs now
+
+`oev2 cad solidworks capabilities` reports implemented source verification separately from the finite native Rust worker implementation and unqualified live CAD/assembly/drawing/STEP scopes. `oev2 cad solidworks verify --input var/sw-request.json` consumes a generated `SolidWorksEvidenceRequest` with a pinned existing CAD evidence packet, its private project source directory, a deployment receipt source ID and a native model source ID.
+
+The existing CAD evidence verifier checks every packet source and source locator. The SW adapter additionally binds the original `czuryk/SolidworksMCP` deployment receipt to its repository/commit and exact native model SHA. Source integrity does not authenticate the receipt author or re-execute COM. The external Python MCP remains a third-party adapter, not an owned Rust worker. Its raw claims remain historical data. A fresh MCP process does not establish a fresh CAD process; exported STEP does not prove successful reimport. The returned report keeps those states unknown and does not grant engineering adoption.
+
+The same CAD-independent packet can feed existing `cad evidence` and `cad handoff`, retaining project/configuration/revision/state and source roles. The NX annotation and job protocols retain their existing meaning; SW data is not renamed as NX. Current Project review, full native worker/source/runtime identity, durable single-writer dispatch, remote observation/cancellation, independent CAD-process reopen and actual STEP roundtrip remain required work. No CLI here connects to or preempts an occupied desktop bridge.
+
+## Design practice and method evaluation
+
+The existing 612-case collection and already viewed teaching cases are `development_replay`; preparation rejects a draft relabeled unseen. A case number change is insufficient evidence of independence. Freeze the current goal, changed conditions, source versions and independent acceptance before a design attempt; record later reference-answer access. Parallel case reasoning may share sources, but each actual CAD writer needs serialized ownership and original task identity.
+
+Compare the designed function/mechanism, load/interface/precision assumptions, native geometry/change propagation, manufacturing/drawing handoff and actual inspection evidence. Preserve alternatives, failures and unverified claims. Six books, supplier data and actual NX/SW results answer distinct gaps; loading a supplier model is not from-zero design success.
+
+The current experience owner supports bounded retrieval-order methods and its existing development comparisons. This change does not implement a general CAD/design evaluator, arbitrary method promotion, model training, unseen design transfer or automatic complete-skill release. Use the existing feedback/no_delta path for supported observations; any broader candidate evaluator needs its own generated contract, frozen independent expectations and real measurements before trial or promotion.
+
+Whole inCAD migration remains separate: its Rust archive/selection/presentation/source modules, browser transport, queue and navigation updater retain their own identities and tests. The usable intake is the present integration point, not a claim that all standalone tool code has moved into v2. Real CAD, real-project manufacturing drawings/physical acceptance, complete Semantica migration and all existing architecture obligations remain open.
+
+The next source candidate provides [same-Project design attempts](DESIGN-ATTEMPT.md): freeze complete work/source/intent, run current work, recheck existing owner artifacts and optionally execute the current Rust review. InCAD preparation retains its original `not_reviewed` meaning. An attempt records obligations and evidence; it does not finish a design or turn historical CAD claims into current execution.
+
+[Controlled comparison](DESIGN-COMPARISON.md) adds an explicit next stage over two existing same-Project attempts. It evaluates actual declared-model results under frozen parent acceptance and controlled design changes. Full design-method promotion, native tool qualification and physical adoption retain their separate requirements.
+
+The [native Rust worker](SOLIDWORKS-NATIVE-WORKER.md) uses exact installed type-library signatures and the existing Windows process/file owners. `cad solidworks verify-native-record` and `verify-native-reopen` check original worker records and cross-record binding; they do not authenticate arbitrary JSON as CAD execution. Native source bytes and process receipts remain attached to the same existing CAD evidence packet, Project/work and handoff.

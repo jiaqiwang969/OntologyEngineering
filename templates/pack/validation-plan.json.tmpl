@@ -1,0 +1,9 @@
+---
+to: out/validation-plan.json
+sparql:
+  cases_0: 'SELECT ?name ?behavior ?rustPath ?oracle ?scope WHERE { ?v <urn:oev2:design:kind> "Validation" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:behavior> ?behavior ; <urn:oev2:design:rustPath> ?rustPath ; <urn:oev2:design:oracle> ?oracle ; <urn:oev2:design:scope> ?scope . FILTER(REGEX(SUBSTR(SHA256(STR(?name)), 1, 1), "^[0-3]$")) } ORDER BY ?name'
+  cases_1: 'SELECT ?name ?behavior ?rustPath ?oracle ?scope WHERE { ?v <urn:oev2:design:kind> "Validation" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:behavior> ?behavior ; <urn:oev2:design:rustPath> ?rustPath ; <urn:oev2:design:oracle> ?oracle ; <urn:oev2:design:scope> ?scope . FILTER(REGEX(SUBSTR(SHA256(STR(?name)), 1, 1), "^[4-7]$")) } ORDER BY ?name'
+  cases_2: 'SELECT ?name ?behavior ?rustPath ?oracle ?scope WHERE { ?v <urn:oev2:design:kind> "Validation" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:behavior> ?behavior ; <urn:oev2:design:rustPath> ?rustPath ; <urn:oev2:design:oracle> ?oracle ; <urn:oev2:design:scope> ?scope . FILTER(REGEX(SUBSTR(SHA256(STR(?name)), 1, 1), "^[89ab]$")) } ORDER BY ?name'
+  cases_3: 'SELECT ?name ?behavior ?rustPath ?oracle ?scope WHERE { ?v <urn:oev2:design:kind> "Validation" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:behavior> ?behavior ; <urn:oev2:design:rustPath> ?rustPath ; <urn:oev2:design:oracle> ?oracle ; <urn:oev2:design:scope> ?scope . FILTER(REGEX(SUBSTR(SHA256(STR(?name)), 1, 1), "^[cdef]$")) } ORDER BY ?name'
+---
+{{ cases_0 | concat(with=cases_1) | concat(with=cases_2) | concat(with=cases_3) | sort(attribute="name") | json_encode(pretty=true) }}

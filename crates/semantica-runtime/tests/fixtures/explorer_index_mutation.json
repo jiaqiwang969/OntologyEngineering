@@ -1,0 +1,1044 @@
+{
+  "rows": [
+    {
+      "scenario": "replacement-tags",
+      "method": "upsert",
+      "input": {
+        "id": "a",
+        "type": "Part",
+        "content": "bearing",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "replacement-tags",
+      "method": "search",
+      "input": "bearing",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "replacement-tags",
+      "method": "upsert",
+      "input": {
+        "id": "a",
+        "type": "Part",
+        "content": "invalid",
+        "properties": {
+          "tags": true
+        }
+      },
+      "result": {
+        "status": "raised",
+        "error_type": "TypeError",
+        "message": "'bool' object is not iterable"
+      },
+      "documents": {},
+      "cache_len": 1
+    },
+    {
+      "scenario": "replacement-tags",
+      "method": "search",
+      "input": "bearing",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {},
+      "cache_len": 1
+    },
+    {
+      "scenario": "replacement-tags",
+      "method": "upsert",
+      "input": {
+        "id": "a",
+        "type": "Part",
+        "content": "repaired",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "repaired"
+          ],
+          "tokens": [
+            "a",
+            "repaired"
+          ],
+          "primary_text": "a repaired",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "replacement-tags",
+      "method": "search",
+      "input": "bearing",
+      "result": {
+        "status": "returned",
+        "value": []
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "repaired"
+          ],
+          "tokens": [
+            "a",
+            "repaired"
+          ],
+          "primary_text": "a repaired",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "replacement-tags",
+      "method": "search",
+      "input": "repaired",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "repaired"
+          ],
+          "tokens": [
+            "a",
+            "repaired"
+          ],
+          "primary_text": "a repaired",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 2
+    },
+    {
+      "scenario": "replacement-overflow",
+      "method": "upsert",
+      "input": {
+        "id": "a",
+        "type": "Part",
+        "content": "bearing",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "replacement-overflow",
+      "method": "search",
+      "input": "bearing",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "replacement-overflow",
+      "method": "upsert",
+      "input": {
+        "id": "a",
+        "type": "Part",
+        "content": "invalid",
+        "properties": {
+          "confidence": 10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+        }
+      },
+      "result": {
+        "status": "raised",
+        "error_type": "OverflowError",
+        "message": "int too large to convert to float"
+      },
+      "documents": {},
+      "cache_len": 1
+    },
+    {
+      "scenario": "replacement-overflow",
+      "method": "search",
+      "input": "bearing",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {},
+      "cache_len": 1
+    },
+    {
+      "scenario": "replacement-overflow",
+      "method": "upsert",
+      "input": {
+        "id": "a",
+        "type": "Part",
+        "content": "repaired",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "repaired"
+          ],
+          "tokens": [
+            "a",
+            "repaired"
+          ],
+          "primary_text": "a repaired",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "replacement-overflow",
+      "method": "search",
+      "input": "repaired",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "repaired"
+          ],
+          "tokens": [
+            "a",
+            "repaired"
+          ],
+          "primary_text": "a repaired",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "partial-rebuild",
+      "method": "upsert",
+      "input": {
+        "id": "old",
+        "type": "Part",
+        "content": "old",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "old": {
+          "node_id": "old",
+          "normalized_id": "old",
+          "node_type": "Part",
+          "exact_terms": [
+            "old"
+          ],
+          "tokens": [
+            "old"
+          ],
+          "primary_text": "old",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "partial-rebuild",
+      "method": "search",
+      "input": "old",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "old",
+            158.0
+          ]
+        ]
+      },
+      "documents": {
+        "old": {
+          "node_id": "old",
+          "normalized_id": "old",
+          "node_type": "Part",
+          "exact_terms": [
+            "old"
+          ],
+          "tokens": [
+            "old"
+          ],
+          "primary_text": "old",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "partial-rebuild",
+      "method": "rebuild",
+      "input": [
+        {
+          "id": "a",
+          "type": "Part",
+          "content": "bearing",
+          "properties": {}
+        },
+        {
+          "id": "bad",
+          "type": "Part",
+          "content": "invalid",
+          "properties": {
+            "tags": true
+          }
+        },
+        {
+          "id": "z",
+          "type": "Part",
+          "content": "shaft",
+          "properties": {}
+        }
+      ],
+      "result": {
+        "status": "raised",
+        "error_type": "TypeError",
+        "message": "'bool' object is not iterable"
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "partial-rebuild",
+      "method": "search",
+      "input": "bearing",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "partial-rebuild",
+      "method": "search",
+      "input": "shaft",
+      "result": {
+        "status": "returned",
+        "value": []
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 2
+    },
+    {
+      "scenario": "partial-rebuild",
+      "method": "upsert",
+      "input": {
+        "id": "bad",
+        "type": "Part",
+        "content": "repaired",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        },
+        "bad": {
+          "node_id": "bad",
+          "normalized_id": "bad",
+          "node_type": "Part",
+          "exact_terms": [
+            "bad",
+            "repaired"
+          ],
+          "tokens": [
+            "bad",
+            "repaired"
+          ],
+          "primary_text": "bad repaired",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "partial-rebuild",
+      "method": "search",
+      "input": "repaired",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "bad",
+            138.0
+          ]
+        ]
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        },
+        "bad": {
+          "node_id": "bad",
+          "normalized_id": "bad",
+          "node_type": "Part",
+          "exact_terms": [
+            "bad",
+            "repaired"
+          ],
+          "tokens": [
+            "bad",
+            "repaired"
+          ],
+          "primary_text": "bad repaired",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "trimmed-collision",
+      "method": "upsert",
+      "input": {
+        "id": " a ",
+        "type": "Part",
+        "content": "first",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "first"
+          ],
+          "tokens": [
+            "a",
+            "first"
+          ],
+          "primary_text": "a first",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "trimmed-collision",
+      "method": "upsert",
+      "input": {
+        "id": "a",
+        "type": "Part",
+        "content": "second",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "second"
+          ],
+          "tokens": [
+            "a",
+            "second"
+          ],
+          "primary_text": "a second",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "trimmed-collision",
+      "method": "search",
+      "input": "first",
+      "result": {
+        "status": "returned",
+        "value": []
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "second"
+          ],
+          "tokens": [
+            "a",
+            "second"
+          ],
+          "primary_text": "a second",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "trimmed-collision",
+      "method": "search",
+      "input": "second",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "second"
+          ],
+          "tokens": [
+            "a",
+            "second"
+          ],
+          "primary_text": "a second",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 2
+    },
+    {
+      "scenario": "trimmed-collision",
+      "method": "upsert",
+      "input": {
+        "id": " a ",
+        "type": "Part",
+        "content": "last",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "last"
+          ],
+          "tokens": [
+            "a",
+            "last"
+          ],
+          "primary_text": "a last",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "trimmed-collision",
+      "method": "search",
+      "input": "last",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "last"
+          ],
+          "tokens": [
+            "a",
+            "last"
+          ],
+          "primary_text": "a last",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "successful-rebuild",
+      "method": "upsert",
+      "input": {
+        "id": "old",
+        "type": "Part",
+        "content": "old",
+        "properties": {}
+      },
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "old": {
+          "node_id": "old",
+          "normalized_id": "old",
+          "node_type": "Part",
+          "exact_terms": [
+            "old"
+          ],
+          "tokens": [
+            "old"
+          ],
+          "primary_text": "old",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "successful-rebuild",
+      "method": "rebuild",
+      "input": [
+        {
+          "id": "z",
+          "type": "Part",
+          "content": "shaft",
+          "properties": {}
+        },
+        {
+          "id": "a",
+          "type": "Part",
+          "content": "bearing",
+          "properties": {}
+        }
+      ],
+      "result": {
+        "status": "returned",
+        "value": null
+      },
+      "documents": {
+        "z": {
+          "node_id": "z",
+          "normalized_id": "z",
+          "node_type": "Part",
+          "exact_terms": [
+            "shaft",
+            "z"
+          ],
+          "tokens": [
+            "shaft",
+            "z"
+          ],
+          "primary_text": "z shaft",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        },
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 0
+    },
+    {
+      "scenario": "successful-rebuild",
+      "method": "search",
+      "input": "old",
+      "result": {
+        "status": "returned",
+        "value": []
+      },
+      "documents": {
+        "z": {
+          "node_id": "z",
+          "normalized_id": "z",
+          "node_type": "Part",
+          "exact_terms": [
+            "shaft",
+            "z"
+          ],
+          "tokens": [
+            "shaft",
+            "z"
+          ],
+          "primary_text": "z shaft",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        },
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 1
+    },
+    {
+      "scenario": "successful-rebuild",
+      "method": "search",
+      "input": "bearing",
+      "result": {
+        "status": "returned",
+        "value": [
+          [
+            "a",
+            138.0
+          ]
+        ]
+      },
+      "documents": {
+        "z": {
+          "node_id": "z",
+          "normalized_id": "z",
+          "node_type": "Part",
+          "exact_terms": [
+            "shaft",
+            "z"
+          ],
+          "tokens": [
+            "shaft",
+            "z"
+          ],
+          "primary_text": "z shaft",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        },
+        "a": {
+          "node_id": "a",
+          "normalized_id": "a",
+          "node_type": "Part",
+          "exact_terms": [
+            "a",
+            "bearing"
+          ],
+          "tokens": [
+            "a",
+            "bearing"
+          ],
+          "primary_text": "a bearing",
+          "secondary_text": "",
+          "confidence": null,
+          "tags": []
+        }
+      },
+      "cache_len": 2
+    }
+  ],
+  "source_freeze_sha256": "ff16ffce9224190ef6f5813fcb912953dc42031b4d91201a46fca6f45f4a2991",
+  "scope": "actual original index methods only; no graph/session/HTTP equivalence claim"
+}

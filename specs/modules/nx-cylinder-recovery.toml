@@ -1,0 +1,237 @@
+schema="oev2.design-fragment/2"
+
+[[sources]]
+id="nx_cylinder_role_preload_source04"
+identity="Sealed SOURCE04 fe6260c8525817eebc95f6c3ac010885d701170f7c4a90212bf29b155b1577b2; worker.rs e4d11eb5b8bee5d16303d675d0a871c1f18816d9dee58bdc3082b1f3cad9f74f; identity.rs 8a8e2121bec82dbb54a10bbdb28870d423c086c2dbc948c2a846ff149ff9fffa; exact original Windows failed PE/records remain private and independently reviewed."
+role="Original source-order evidence; current controller cannot re-sign the old failed worker"
+applicability="Only precise cylinder worker-role failure before Native::load; raw stderr, exit, empty out and fresh complete OS snapshot mandatory"
+
+[[types]]
+name="NxCylinderWorkerRoleGuardScope"
+contract_group="engineering"
+meaning="显式v5圆柱包装role拒绝的限定恢复，旧状态与旧v1至v4原语义保持"
+identity="原source/PE/job/dispatch/PID创建时间/完整目录身份与字节，独立review pin和当前fresh OS facts"
+
+[[types.fields]]
+name="schema"
+meaning="作用域合同版本"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["oev2.nx-cylinder-worker-role-guard-scope/1"]
+
+[[types.fields]]
+name="review_schema"
+meaning="只v5；原v1至v4不接受此圆柱事因"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["cad-agent.nx-dispatch-writer-release-review/v5"]
+
+[[types.fields]]
+name="failure_kind"
+meaning="独立圆柱包装误role，Native加载前拒绝"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["cylinder_worker_role_identity_guard_before_native_load"]
+
+[[types.fields]]
+name="expected_worker_id"
+meaning="原failedPE已有固定角色要求，不用newPE冒旧身份"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["oe-nx-native-acceptance"]
+
+[[types.fields]]
+name="original_declared_worker_id"
+meaning="本次精确原误写角色；不是泛化任意role错误"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["oe-nx-rotating-part"]
+
+[[types.fields]]
+name="worker_target"
+meaning="本次原Windows MSVC作用域"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["x86_64-pc-windows-msvc"]
+
+[[types.fields]]
+name="worker_executable"
+meaning="原manifest执行路径"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["worker/oe-nx-worker.exe"]
+
+[[types.fields]]
+name="job_action"
+meaning="本次原圆柱新建动作，不覆盖inspect/assembly"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["create_cylinder_solid"]
+
+[[types.fields]]
+name="parameter_schema"
+meaning="原圆柱参数版本，不重释旧acceptance或assembly"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["oev2.nx-rotating-part-params/1"]
+
+[[types.fields]]
+name="original_job_state"
+meaning="原未知状态原bytes保留"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["UNKNOWN_AFTER_DISPATCH"]
+
+[[types.fields]]
+name="native_execution"
+meaning="不把本失败当SDK/几何/save运行"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["not_started"]
+
+[[types.fields]]
+name="launch_receipt_phase"
+meaning="只退出后保存的原launch diagnostic"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["persisted_after_worker_exit"]
+
+[[types.fields]]
+name="recovery_scope"
+meaning="只相同root不同新job writer admission；原job禁重跑"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["new_job_writer_admission_only"]
+
+[[types.fields]]
+name="engineering_adoption"
+meaning="不授予本体/native/物理采用资格"
+rust_type="String"
+required=true
+format="typed"
+unit="非几何；精确文件/协议/进程/源码身份"
+precision="完整原bytes/SHA与实际OS身份，不从错误文本独自推断cause或授权"
+write="独立原件审查及Root operator pin；Rust fresh核，不能反序列化已验证状态"
+applicability="本次原cylinder误role、相同root新job准入；原UNKNOWN/全部nativeguard不改"
+acceptance="exactscope、空out、无native事件、exit1、完整snapshot及进程不活；未知仍拒绝"
+allowed_values=["not_assessed"]
+
+
+[[constraints]]
+id="nx_cylinder_worker_role_guard_recovery"
+requirement="req_engineering"
+module="nx_protocol"
+check="assess"
+rust_path="crates/oe-nx-protocol/src/writer_release.rs"
+statement="Explicit review/v5 alone accepts CylinderWorkerRoleIdentityGuardBeforeNativeLoad: original oe-nx-rotating-part vs required oe-nx-native-acceptance, MSVC worker/oe-nx-worker.exe, create_cylinder_solid and rotating-params/1. Preserve original failed PE/source, exact stderr/stdout/termination/post-exit launch, complete pinned empty-out snapshot and fresh actual OS process identities. All match branches/receipt inventories enforce the same scope. Never change original UNKNOWN state, re-run that job or grant native/engineering qualification; v1-4 retain old behavior and cannot recognize this failure, v5 cannot reinterpret their failures."
+severity="error"
+[[validations]]
+id="validate_nx_cylinder_worker_role_guard_recovery"
+module="nx_protocol"
+constraint="nx_cylinder_worker_role_guard_recovery"
+behavior="cylinder_role_v5_exact_scope_preserves_unknown_and_rejects_cross_scope"
+rust_path="crates/oe-nx-protocol/tests/cylinder_writer_release.rs"
+oracle="Independent synthetic complete records: original-role/cause positive under v5; old schema/crossassembly/wrong role/action/target/path/params, coherent tampered launch/exit/raw, live/uncertain/imprecisePID, native/event/out/snapshot changes and original targets refuse. Source04 real failure is separate private original evidence, not a new producer observation."
+scope="Finite local protocol tests; current Windows-controller fresh OS review and four new-job native executions independently required"
+[[constraints]]
+id="nx_current_declared_worker_role_preflight"
+requirement="req_engineering"
+module="cad"
+check="verify_current_worker_role"
+rust_path="crates/oe-cad/src/nx/mod.rs"
+statement="New explicit verify-current-role reuses the native identity owner's fixed role/path and supported declared Windows targets offline, without Mac COMPILED_TARGET.None or pretending PE/runtime authenticity. Old worker verify keeps package completeness meaning for historical/fixture roles. New cylinder prepare and stage check this declared identity before transport; Windows execution still independently binds its compiled target."
+severity="error"
+[[validations]]
+id="validate_nx_declared_worker_identity"
+module="nx_worker"
+constraint="nx_current_declared_worker_role_preflight"
+behavior="offline_role_path_target_and_native_target_semantics_remain_separate"
+rust_path="crates/oe-nx-worker/tests/declared_identity.rs"
+oracle="Same-role/path GNU/MSVC declarations match offline on Mac; foreign role/path/unsupported target refused; native compiled target check keeps its original behavior. No executable or SDK is run."
+scope="macOS local declaration checks; Windows compiled worker identity remains independently verified"
+[[validations]]
+id="validate_nx_current_worker_role_cli_owner"
+module="cad"
+constraint="nx_current_declared_worker_role_preflight"
+behavior="complete_wrong_role_package_is_only_complete_and_cylinder_prepare_stage_refuse_before_transport"
+rust_path="crates/oe-cad/tests/nx_worker_role.rs"
+oracle="Source-complete synthetic wrong-role package still passes old generic verify, fails explicit new role preflight and cylinder prepare/stage before transport/new output; corrected manifest role/path returns declaration-matched with native/engineering unevaluated. Full fixture file/SHA and old non-cylinder paths keep their original guards."
+scope="Local package/CLI owner tests, not build/runtime/native or engineering qualification"

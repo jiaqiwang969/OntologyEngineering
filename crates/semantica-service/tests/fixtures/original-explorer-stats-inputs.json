@@ -1,0 +1,118 @@
+{
+  "pinned_commit": "8b2ed123c380fc8abc78507e6e6648e6f5c0052c",
+  "cases": [
+    {
+      "id": "empty",
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "id": "one",
+      "nodes": [
+        {
+          "id": "a",
+          "type": "Person"
+        }
+      ],
+      "edges": []
+    },
+    {
+      "id": "two-directed",
+      "nodes": [
+        {
+          "id": "a",
+          "type": "Person"
+        },
+        {
+          "id": "b",
+          "type": "Part"
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "a",
+          "target": "b",
+          "type": "links"
+        }
+      ]
+    },
+    {
+      "id": "self-loop",
+      "nodes": [
+        {
+          "id": "a",
+          "type": "Person"
+        }
+      ],
+      "edges": [
+        {
+          "id": "loop",
+          "source": "a",
+          "target": "a",
+          "type": "loop"
+        }
+      ]
+    },
+    {
+      "id": "parallel",
+      "nodes": [
+        {
+          "id": "a",
+          "type": "Person"
+        },
+        {
+          "id": "b",
+          "type": "Part"
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "a",
+          "target": "b",
+          "type": "links"
+        },
+        {
+          "id": "e2",
+          "source": "a",
+          "target": "b",
+          "type": "links"
+        }
+      ]
+    },
+    {
+      "id": "density-above-one",
+      "nodes": [
+        {
+          "id": "a",
+          "type": "轴"
+        },
+        {
+          "id": "b",
+          "type": "轴"
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "source": "a",
+          "target": "b",
+          "type": "links"
+        },
+        {
+          "id": "e2",
+          "source": "a",
+          "target": "b",
+          "type": "links"
+        },
+        {
+          "id": "e3",
+          "source": "a",
+          "target": "a",
+          "type": "self"
+        }
+      ]
+    }
+  ]
+}

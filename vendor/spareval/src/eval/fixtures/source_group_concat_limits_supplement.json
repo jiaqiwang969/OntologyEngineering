@@ -1,0 +1,162 @@
+{
+  "schema": "source-group-concat-limits-public-cases/1",
+  "source_record_id": "SOURCE-GROUP-CONCAT-LIMITS-SUPPLEMENT-01",
+  "source_record_sha256": "f78e004f278779fcddf8661f8873998ebaf8310919ff2f3128c6075a114a5d3a",
+  "original_source_record_id": "SOURCE-GROUP-CONCAT-FROZEN-01",
+  "original_source_record_sha256": "cd764129bcd981247cd7fc31d99f7d5cb6397a960a3e507358fd69e331fa0655",
+  "environment": {
+    "numeric_capability": "MixedBinary64V1",
+    "group_semantics": "SourceAggregateV1",
+    "literal_semantics": "SourceLiteralV1",
+    "normalize_literals": true,
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "initial_flags": []
+    },
+    "remaining_numeric_limits": "NumericLimits::default(); only listed per-case max_input/max_output overrides"
+  },
+  "invalid_original_cases": [
+    {
+      "id": "GA03",
+      "original_frozen_case": {
+        "id": "GA03",
+        "classification": "active_safety_not_python_semantics",
+        "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"unused\") AS ?v) WHERE { VALUES ?x { \"a\" } }",
+        "limits": {
+          "max_input_characters": 1,
+          "max_output_characters": 1
+        },
+        "expected": {
+          "rows": [
+            {
+              "v": {
+                "kind": "literal",
+                "lexical": "a",
+                "source_datatype": null,
+                "language_original": null,
+                "ill_typed": null,
+                "cache_kind": "String"
+              }
+            }
+          ]
+        },
+        "basis": [
+          "cpython_unicodeobject:9830-9885",
+          "aggregate separator is syntax String, not a literal input constructor; unused separator contributes zero output characters"
+        ]
+      },
+      "classification": "invalid_original_query_precondition_preserved",
+      "expected_constructor_failure": {
+        "category": "RawNumericFault::Core(NumericFault::ResourceLimit)",
+        "operation": "coefficient_digits",
+        "stage": "QueryNumericSession::new_with_literal_semantics",
+        "query_prepared": false,
+        "query_executed": false
+      },
+      "not_a_pass_of_original_gc_expectation": true
+    },
+    {
+      "id": "GA04",
+      "original_frozen_case": {
+        "id": "GA04",
+        "classification": "active_safety_not_python_semantics",
+        "query": "SELECT (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES ?x { \"a\" \"b\" } }",
+        "limits": {
+          "max_input_characters": 1,
+          "max_output_characters": 3
+        },
+        "expected": {
+          "rows": [
+            {
+              "v": {
+                "kind": "literal",
+                "lexical": "a b",
+                "source_datatype": null,
+                "language_original": null,
+                "ill_typed": null,
+                "cache_kind": "String"
+              }
+            }
+          ]
+        },
+        "basis": [
+          "aggregate output is not reclassified as an input string; use output budget only"
+        ]
+      },
+      "classification": "invalid_original_query_precondition_preserved",
+      "expected_constructor_failure": {
+        "category": "RawNumericFault::Core(NumericFault::ResourceLimit)",
+        "operation": "coefficient_digits",
+        "stage": "QueryNumericSession::new_with_literal_semantics",
+        "query_prepared": false,
+        "query_executed": false
+      },
+      "not_a_pass_of_original_gc_expectation": true
+    }
+  ],
+  "query_cases": [
+    {
+      "id": "GCS01",
+      "classification": "active_safety_development_replay_after_original_precondition_failure",
+      "supersedes_purpose_only": "GA03",
+      "query": "SELECT (GROUP_CONCAT(?x; SEPARATOR=\"unused!\") AS ?v) WHERE { VALUES ?x { \"abcdef\" } }",
+      "limits": {
+        "max_input_characters": 6,
+        "max_output_characters": 6
+      },
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "abcdef",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "next_poll": "None",
+        "session_flags_exact": []
+      },
+      "independent_derivation": "The context bounds each have six decimal magnitude digits. The sole literal has six Unicode scalar values. A one-item join uses no separator, so a seven-character syntax separator contributes zero to output; the six-character result fits the output budget."
+    },
+    {
+      "id": "GCS02",
+      "classification": "active_safety_development_replay_after_original_precondition_failure",
+      "supersedes_purpose_only": "GA04",
+      "query": "SELECT (GROUP_CONCAT(?x) AS ?v) WHERE { VALUES ?x { \"abcdef\" \"ghijkl\" } }",
+      "limits": {
+        "max_input_characters": 6,
+        "max_output_characters": 13
+      },
+      "expected": {
+        "rows": [
+          {
+            "v": {
+              "kind": "literal",
+              "lexical": "abcdef ghijkl",
+              "source_datatype": null,
+              "language_original": null,
+              "ill_typed": null,
+              "cache_kind": "String"
+            }
+          }
+        ],
+        "next_poll": "None",
+        "session_flags_exact": []
+      },
+      "independent_derivation": "Each source literal has six characters, so input construction fits. Final output has 6+1+6=13 characters: within output budget and above input budget. It is an output constructor, not another input parse."
+    }
+  ]
+}

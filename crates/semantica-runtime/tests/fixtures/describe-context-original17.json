@@ -1,0 +1,339 @@
+{
+  "schema": "original-rdflib-describe-context-oracle/1",
+  "rdflib_version": "7.6.0",
+  "source_files": [
+    {
+      "name": "evaluate.py",
+      "bytes": 21870,
+      "sha256": "991944f756398773c4ddf0da0bf5a3c2285f2a67140c9976a8a806ba5d8402be"
+    },
+    {
+      "name": "sparql.py",
+      "bytes": 15855,
+      "sha256": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f"
+    },
+    {
+      "name": "processor.py",
+      "bytes": 4963,
+      "sha256": "f6f5786782c8d5c0518e1c2564ba9b444690189c539c286a21c48d437fef67e8"
+    }
+  ],
+  "original15_sha256": "4c52d96181c741c1a3cdb675517eb83cf7aaf7fd1575aeea45b18bd886d6f2e1",
+  "namespaces": {
+    "ex": "urn:"
+  },
+  "cases": [
+    {
+      "id": "original15_hidden_constant",
+      "query": "DESCRIBE ex:part WHERE { ?s ex:name ?name }",
+      "bindings": {
+        "s": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "constant_unused_context",
+      "query": "DESCRIBE ex:part WHERE { ?s ex:name ?name }",
+      "bindings": {
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "constant_filter_context",
+      "query": "DESCRIBE ex:part WHERE { ?s ex:name ?name FILTER(?gate = ex:other) }",
+      "bindings": {
+        "gate": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "constant_no_where",
+      "query": "DESCRIBE ex:part",
+      "bindings": {
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "variable_target_initial",
+      "query": "DESCRIBE ?s WHERE { ?s ex:name ?name }",
+      "bindings": {
+        "s": "<urn:part>",
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "variable_target_other_is_legitimate",
+      "query": "DESCRIBE ?s WHERE { ?s ex:name ?name }",
+      "bindings": {
+        "s": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:other> <urn:name> \"bearing\"@en .",
+        "<urn:other> <urn:note> \"catalog\" .",
+        "<urn:other> <urn:tag> \"A\" ."
+      ],
+      "triple_count": 3,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "variable_target_from_hidden_context",
+      "query": "DESCRIBE ?target WHERE { ?s ex:name ?name BIND(?chosen AS ?target) }",
+      "bindings": {
+        "s": "<urn:other>",
+        "chosen": "<urn:part>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "wildcard_excludes_unused_context",
+      "query": "DESCRIBE * WHERE { ?s ex:name ?name }",
+      "bindings": {
+        "s": "<urn:part>",
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "ORIGINAL_ERROR",
+      "error_type": "TypeError",
+      "error": "'NoneType' object is not iterable",
+      "actual_original_execution": true,
+      "scope": "Original error is retained, cannot be used as a successful DESCRIBE expected output"
+    },
+    {
+      "id": "wildcard_filter_only_context",
+      "query": "DESCRIBE * WHERE { ?s ex:name ?name FILTER(?gate = ex:part) }",
+      "bindings": {
+        "s": "<urn:part>",
+        "gate": "<urn:part>",
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "ORIGINAL_ERROR",
+      "error_type": "TypeError",
+      "error": "'NoneType' object is not iterable",
+      "actual_original_execution": true,
+      "scope": "Original error is retained, cannot be used as a successful DESCRIBE expected output"
+    },
+    {
+      "id": "wildcard_zero_where",
+      "query": "DESCRIBE * WHERE { FILTER(false) }",
+      "bindings": {
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "ORIGINAL_ERROR",
+      "error_type": "TypeError",
+      "error": "'NoneType' object is not iterable",
+      "actual_original_execution": true,
+      "scope": "Original error is retained, cannot be used as a successful DESCRIBE expected output"
+    },
+    {
+      "id": "variable_no_solution",
+      "query": "DESCRIBE ?s WHERE { ?s ex:name \"missing\" }",
+      "bindings": {
+        "s": "<urn:part>",
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [],
+      "triple_count": 0,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "nested_projection_context",
+      "query": "DESCRIBE ?s WHERE { { SELECT ?s WHERE { ?s ex:name ?name FILTER(?gate = ex:other) } } }",
+      "bindings": {
+        "s": "<urn:part>",
+        "gate": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "modifiers_keep_targets",
+      "query": "DESCRIBE ?s WHERE { ?s ex:tag ?tag } ORDER BY ?tag LIMIT 1 OFFSET 1",
+      "bindings": {
+        "s": "<urn:part>",
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [],
+      "triple_count": 0,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "minus_explicit_disjoint_domains",
+      "query": "DESCRIBE ?s WHERE { { SELECT ?s WHERE { ?s ex:name ?name } } MINUS { SELECT ?tag WHERE { ?s ex:tag ?tag } } }",
+      "bindings": {
+        "s": "<urn:part>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "multiple_targets_include_explicit_other",
+      "query": "DESCRIBE ex:part ?s WHERE { ?s ex:name ?name }",
+      "bindings": {
+        "s": "<urn:other>",
+        "unused": "<urn:part>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:other> <urn:name> \"bearing\"@en .",
+        "<urn:other> <urn:note> \"catalog\" .",
+        "<urn:other> <urn:tag> \"A\" .",
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 7,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "literal_context_is_read",
+      "query": "DESCRIBE ?s WHERE { ?s ex:name ?name FILTER(?wanted = ?name) }",
+      "bindings": {
+        "s": "<urn:part>",
+        "wanted": "\"shaft\"@en",
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "blank_subject_label_projection": false,
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ],
+      "triple_count": 4,
+      "blank_node_count": 0,
+      "actual_original_execution": true
+    },
+    {
+      "id": "single_blank_target_preserved",
+      "query": "DESCRIBE ?s WHERE { ?s ex:name \"blank body\" }",
+      "bindings": {
+        "unused": "<urn:other>"
+      },
+      "data": "<urn:other> <urn:name> \"other body\" . _:target <urn:name> \"blank body\" ; <urn:tag> \"X\" .",
+      "blank_subject_label_projection": true,
+      "kind": "DESCRIBE",
+      "triples": [
+        "_:target <urn:name> \"blank body\" .",
+        "_:target <urn:tag> \"X\" ."
+      ],
+      "triple_count": 2,
+      "blank_node_count": 1,
+      "actual_original_execution": true
+    }
+  ],
+  "network": "blocked in private interpreter only",
+  "captured_before_new_production_source": true,
+  "scope": "Exact original RDFLib7.6 finite synthetic DESCRIBE target/context behavior; blank test has explicit single-bnode label projection, all other triples exact; no productionPython/wholeSPARQL/19/19/22/13494/55 qualification or engineering adoption"
+}

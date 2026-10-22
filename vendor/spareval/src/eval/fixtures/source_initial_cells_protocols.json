@@ -1,0 +1,458 @@
+{
+  "schema": "source-initial-cells-protocols/1",
+  "source_record_sha256": "dd4555a1ed8bd6402bcd082c5c7cefc416770ac12880ece6a81411e51896902a",
+  "candidate_results_used": false,
+  "original_python_executed_this_increment": false,
+  "author_role": "root freezes fixed source and prior independently compared original BX16; production author is the same root, not a new independent receiver",
+  "reference_sources": [
+    {
+      "bytes": 36752,
+      "sha256": "349d36859ec3dca3b56e33d43786d034a33f3c1a1ba1eef71a13bf95a0809437",
+      "artifact": "operators.py"
+    },
+    {
+      "bytes": 9233,
+      "sha256": "1d6b919bd9f76d30df279b5dc5dd93eb33055b8ea801ace65acf182b7887b3d9",
+      "artifact": "parserutils.py"
+    },
+    {
+      "bytes": 15855,
+      "sha256": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f",
+      "artifact": "sparql.py"
+    },
+    {
+      "bytes": 21870,
+      "sha256": "991944f756398773c4ddf0da0bf5a3c2285f2a67140c9976a8a806ba5d8402be",
+      "artifact": "evaluate.py"
+    },
+    {
+      "bytes": 4908,
+      "sha256": "1d4167779189ebf38257ecc8e2089d0a71df6470b10f7ccde8cb5176bd359d09",
+      "artifact": "evalutils.py"
+    }
+  ],
+  "protocols": [
+    {
+      "id": "IC01",
+      "basis": "fixed source sparql.QueryContext.__init__, FrozenBindings.__getitem__",
+      "input": "ordered x=None, err=NotBoundError(None), uri=URIRef(urn:initial)",
+      "expected": "three initial keys in input order; None/error never Dataset-internalized; RDF constructed/internalized once; err exact same object"
+    },
+    {
+      "id": "IC02",
+      "basis": "sparql.py FrozenBindings.__getitem__; parserutils.value",
+      "input": "initial x=URIRef(urn:initial); local x=None",
+      "expected": "local None masks initial RDF; plain variable returns actual None; syntactic variable operand raises NotBoundError(None) before later operands"
+    },
+    {
+      "id": "IC03",
+      "basis": "sparql.py FrozenBindings.project/forget; QueryContext.clone/thaw",
+      "input": "initial x=None and err=NotBoundError(None); freeze/project/forget/thaw actual owned row",
+      "expected": "immutable initial cells stay available when absent locally; unused err stays same object; a false empty frozen row thaws to its owner bindings"
+    },
+    {
+      "id": "IC04",
+      "basis": "parserutils.py:81-90; operators.py:571-577",
+      "input": "BOUND x with RDF, ExplicitNone, absent, ReturnedError",
+      "expected": {
+        "rdf": true,
+        "none": false,
+        "absent": false,
+        "error": "same SPARQLError object raised by value before Builtin_BOUND; Expr catch returns same object; no Boolean result"
+      }
+    },
+    {
+      "id": "IC05",
+      "basis": "parserutils.value; operators.UnaryNot/RelationalExpression; existing frozen UN04/RG04",
+      "input": "actual initial err=NotBoundError(None), use !?err or ?err>0",
+      "expected": "same initial error object retained by Expr catch; no EBV replacement or later relation operand evaluation"
+    },
+    {
+      "id": "IC06",
+      "basis": "active prepared-input invariant; original scope retained",
+      "input": "duplicate variable across RDF/None/error input kinds",
+      "expected": "InvalidSourceOrigin preparation refusal; no accepted replacement or changed initial order"
+    },
+    {
+      "id": "IC07",
+      "basis": "active private admission; prior frontend/default/raw/public unchanged",
+      "input": "None/error via old preparation or raw literal constructor or wrong session",
+      "expected": "refuse before these cells acquire execution rights; no public DTO/profile5 or generic diagnostic-error source qualification"
+    },
+    {
+      "id": "IC08",
+      "basis": "active existing Dataset/cancellation/fuse owner",
+      "input": "arm actual Dataset conversion failure after preparing None/error; cancel actual query before poll",
+      "expected": "None/error need no Dataset conversion; reached RDF failure/cancel remains fatal with actual identity and terminal fuse; no false or new source error"
+    },
+    {
+      "id": "IC09",
+      "basis": "active Boolean output-budget owner",
+      "input": "actual BOUND source result with output limit4 and false result",
+      "expected": "output_characters remains fatal; actual query fuses; no fake error or RDF cache reparse"
+    }
+  ],
+  "original_case": {
+    "id": "BX16",
+    "input": {
+      "decimal": {
+        "precision": 28,
+        "trap_float_operation": false
+      },
+      "family": "initial_none_and_error_cell_keep_distinct_roles",
+      "graph": "empty_in_memory_original_Graph",
+      "id": "BX16",
+      "initial_bindings": [
+        {
+          "value": {
+            "kind": "none"
+          },
+          "variable": "x"
+        },
+        {
+          "value": {
+            "argument": null,
+            "class": "NotBoundError",
+            "kind": "error"
+          },
+          "variable": "err"
+        }
+      ],
+      "max_rows": 100,
+      "query": "SELECT ?x ?b ?present WHERE { BIND(EXISTS { FILTER(?x) } AS ?b) BIND(EXISTS {} AS ?present) }",
+      "query_change": {
+        "changed_query": true,
+        "expected_answer_not_frozen": true,
+        "initial_bindings_changed": true,
+        "new_case_id": "BX16",
+        "parent_case_ids": [
+          "EX14",
+          "EX15"
+        ],
+        "parent_queries": [
+          "SELECT ?x (EXISTS { FILTER(?x) } AS ?b) WHERE {}",
+          "SELECT (EXISTS {} AS ?b) WHERE {}"
+        ],
+        "reason": "Original API initial x=None and err=NotBoundError(); None is an actual binding, and an unused error cell is not a raised stream error. Record initial object and local-domain presence, not public DTO authorization.",
+        "source_anchors": [
+          "sparql.py:249-263",
+          "sparql.py:306-318",
+          "sparql.py:430-436",
+          "evalutils.py:73-101",
+          "operators.py:580-593"
+        ]
+      }
+    },
+    "observed_outcome": {
+      "columns": [
+        {
+          "kind": "Variable",
+          "object_token": "alias_0",
+          "value": "x"
+        },
+        {
+          "kind": "Variable",
+          "object_token": "alias_1",
+          "value": "b"
+        },
+        {
+          "kind": "Variable",
+          "object_token": "alias_2",
+          "value": "present"
+        }
+      ],
+      "decimal_flags_after_query": [],
+      "decimal_stages": [
+        {
+          "flags": [],
+          "stage": "initial_binding_construction"
+        },
+        {
+          "flags": [],
+          "stage": "parse_query"
+        },
+        {
+          "flags": [],
+          "stage": "translate_query"
+        },
+        {
+          "flags": [],
+          "stage": "evaluate_start"
+        },
+        {
+          "flags": [],
+          "stage": "iterator_creation"
+        },
+        {
+          "flags": [],
+          "stage": "first_poll"
+        },
+        {
+          "flags": [],
+          "stage": "iterator_exhausted"
+        }
+      ],
+      "decimal_traps": [
+        "DivisionByZero",
+        "InvalidOperation",
+        "Overflow"
+      ],
+      "error": null,
+      "error_stage": null,
+      "id": "BX16",
+      "initial_constructed": [
+        [
+          "x",
+          null
+        ],
+        [
+          "err",
+          {
+            "args": [
+              null
+            ],
+            "class": "NotBoundError",
+            "family": "Exception",
+            "module": "rdflib.plugins.sparql.sparql",
+            "object_token": "alias_3"
+          }
+        ]
+      ],
+      "original_boundary": null,
+      "result_type": "SELECT",
+      "row_count": 1,
+      "rows": [
+        {
+          "context_object_token": "alias_4",
+          "initial_items": [
+            [
+              {
+                "kind": "Variable",
+                "object_token": "alias_5",
+                "value": "x"
+              },
+              null
+            ],
+            [
+              {
+                "kind": "Variable",
+                "object_token": "alias_6",
+                "value": "err"
+              },
+              {
+                "args": [
+                  null
+                ],
+                "class": "NotBoundError",
+                "family": "Exception",
+                "module": "rdflib.plugins.sparql.sparql",
+                "object_token": "alias_3"
+              }
+            ]
+          ],
+          "local_items": [
+            [
+              {
+                "kind": "Variable",
+                "object_token": "alias_5",
+                "value": "x"
+              },
+              null
+            ],
+            [
+              {
+                "kind": "Variable",
+                "object_token": "alias_7",
+                "value": "b"
+              },
+              {
+                "cache": false,
+                "cache_type": "builtins.bool",
+                "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                "ill_typed": null,
+                "kind": "Literal",
+                "language": null,
+                "lexical": "false",
+                "object_token": "alias_8"
+              }
+            ],
+            [
+              {
+                "kind": "Variable",
+                "object_token": "alias_9",
+                "value": "present"
+              },
+              {
+                "cache": true,
+                "cache_type": "builtins.bool",
+                "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+                "ill_typed": null,
+                "kind": "Literal",
+                "language": null,
+                "lexical": "true",
+                "object_token": "alias_10"
+              }
+            ]
+          ],
+          "object_token": "alias_11"
+        }
+      ],
+      "stages_completed": [
+        "initial_binding_construction",
+        "parse_query",
+        "translate_query",
+        "evaluate_start",
+        "iterator_creation",
+        "iterator_exhausted"
+      ],
+      "status": "observed_complete"
+    },
+    "observation": {
+      "plain_command": {
+        "bytes": 1684,
+        "sha256": "106df9ac472fbd2acd506697d2c94f24c09b2f16d38ff9c1d7045c5f04eaba1a",
+        "artifact": "BX16-plain.command.json"
+      },
+      "trace_command": {
+        "bytes": 1684,
+        "sha256": "caf6cacdcace68a63ac5b85c5753c504662b8beeb0da0f57f879fe6f0dc886a8",
+        "artifact": "BX16-trace.command.json"
+      },
+      "plain_stdout": {
+        "bytes": 21410,
+        "sha256": "241fb269f9c9de6059786b8d18c0f7925c874199863c72d2d6a60221088af325",
+        "artifact": "BX16-plain.stdout.json"
+      },
+      "trace_stdout": {
+        "bytes": 26938,
+        "sha256": "948fda6588dbbf4b0117de03577d4b38cf357895357854db745db15769f36212",
+        "artifact": "BX16-trace.stdout.json"
+      },
+      "plain_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "artifact": "BX16-plain.stderr"
+      },
+      "trace_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "artifact": "BX16-trace.stderr"
+      },
+      "outcomes_and_aliases_independently_recompared_equal": true
+    },
+    "trace_certificate": {
+      "alias_namespace": "separate actual instrumented process; alpha-renamed independently of plain output",
+      "call_counts": {
+        "evaluate.evalPart": 8,
+        "Expr.eval": 2,
+        "operators.Builtin_EXISTS": 2,
+        "QueryContext.thaw": 2,
+        "evaluate.evalFilter": 1
+      },
+      "exception_and_exists_return_events": [
+        {
+          "event": "return",
+          "expression": "Builtin_EXISTS",
+          "function": "operators.Builtin_EXISTS",
+          "returned": {
+            "cache": false,
+            "cache_type": "builtins.bool",
+            "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+            "ill_typed": null,
+            "kind": "Literal",
+            "language": null,
+            "lexical": "false",
+            "object_token": "alias_0"
+          },
+          "source_line": 591
+        },
+        {
+          "event": "return",
+          "expression": "Builtin_EXISTS",
+          "function": "operators.Builtin_EXISTS",
+          "returned": {
+            "cache": true,
+            "cache_type": "builtins.bool",
+            "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+            "ill_typed": null,
+            "kind": "Literal",
+            "language": null,
+            "lexical": "true",
+            "object_token": "alias_1"
+          },
+          "source_line": 590
+        }
+      ],
+      "parent_mapping_join_facts": [],
+      "runtime_overlay_node_facts": [
+        {
+          "field_names": [
+            "triples"
+          ],
+          "lazy": {
+            "present": false,
+            "value": null
+          },
+          "no_isolated_scope": {
+            "attribute_present": false,
+            "attribute_value": null,
+            "mapping_present": false,
+            "mapping_value": null
+          },
+          "operator": "BGP",
+          "path": "$/fields/p/fields/p/fields/expr/semantic_instance_attributes/graph",
+          "scope": {
+            "present": false,
+            "value": null
+          }
+        },
+        {
+          "field_names": [
+            "expr",
+            "p"
+          ],
+          "lazy": {
+            "present": false,
+            "value": null
+          },
+          "no_isolated_scope": {
+            "attribute_present": true,
+            "attribute_value": true,
+            "mapping_present": false,
+            "mapping_value": null
+          },
+          "operator": "Filter",
+          "path": "$/fields/p/fields/p/fields/p/fields/expr/semantic_instance_attributes/graph",
+          "scope": {
+            "present": false,
+            "value": null
+          }
+        },
+        {
+          "field_names": [
+            "triples"
+          ],
+          "lazy": {
+            "present": false,
+            "value": null
+          },
+          "no_isolated_scope": {
+            "attribute_present": false,
+            "attribute_value": null,
+            "mapping_present": false,
+            "mapping_value": null
+          },
+          "operator": "BGP",
+          "path": "$/fields/p/fields/p/fields/p/fields/expr/semantic_instance_attributes/graph/fields/p",
+          "scope": {
+            "present": false,
+            "value": null
+          }
+        }
+      ]
+    },
+    "derivation": "Initial x=None remains present and produces false in the correlated child filter. Unused initial NotBoundError(None) remains a cell, not a raised stream error; the separate EXISTS {} returns true.",
+    "qualification_note": "Observed Python token equivalence classes are relational within one process, not portable addresses. Complete serialized outcome is retained as evidence; opaque observer markers do not establish unobserved payload contents."
+  },
+  "active_full_scope": "All50 original queries and all63 original goals retained. New initial cells only the prepared private source owner; arbitrary error classes/args, untranslated CompValue/set order, complete graph/time/bnode and public/full release remain unqualified."
+}

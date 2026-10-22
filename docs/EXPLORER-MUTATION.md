@@ -1,0 +1,18 @@
+# Explorer 图更新迁移
+
+状态：隔离候选，原会话更新已接入同一DatasetSession；正式HTTP写入和接收未完成。
+
+工程本体要求分别表达返回结果、实际变化、版本与派生索引。编辑规范定义SemanticExplorerMutationInput/Result，经真实ggen生成；Rust `explorer_mutation::execute` 使用这些共享类型执行add_node/add_edge/add_nodes/add_edges/add_nodes_and_edges。冻结原行为检验候选，工程采用与RRSI跨任务收益仍单独取证。
+
+原字段异常或SKOS拒绝以result记录；部分失败时原节点边、原会话版本、旧类型索引和部分搜索索引可能已经变化。事件回调模式的版本和被吞字段异常另存。宿主期限、资源、模式变化和状态摘要不符属于原子拒绝，不提交暂存数据。异常类别与本地code保留；原日志原文和非确定性cycle witness不冒充逐字等价。
+
+唯一DatasetSession拥有实际图及兼容metadata named graph。兼容状态包含原会话版本、旧类型索引、派生索引和图原内容摘要，不另建Project/registry/预算。搜索优先复用同一状态和现有缓存；外部改变图后，旧状态保持拒绝，不能静默重新绑定。NQuads重载可保留部分失败后的索引历史。内存缓存、文件来源和实际宿主权限仍各自受原宿主约束。
+
+属性插入顺序会影响原索引文本；兼容commit_original保存原JSON顺序，原生commit保持原规范化规则。原索引upsert先删除旧文档，字段失败可能留下旧查询缓存；rebuild先清空后逐项建立。原生原子upsert/rebuild不改。
+
+当前原GraphSession54次更新（含实际app lifespan回调模式）和378次后续搜索已有对照，另4次原属性顺序样例及30步原索引序列。旧/1的时间字段及非有限数持久化拒绝保持；显式/2的时间原值扩展见下文，不证明时间适用。完整原HTTP写入、WebSocket、日志逐字行为、其他数据域、资源耗尽、进程崩溃、新根接收和正式合并仍待验证。当前没有全库替代或工程采用资格。
+
+
+显式 `mutation-input/2` 补原导入所需的512个Unicode标量字符ID与JSON时间值原样保存。节点validity保留在properties，边validity独立保存并参与原UUID5计算；无法解析的日期文本也只是原数据。旧/1仍按原字节上限和时间字段拒绝，实际工程时间适用性由工程合同另核。孤立surrogate、非有限值及非字符串字典键继续属于完整迁移义务，不以普通JSON转换代替。
+
+原/api/import已另外实跑47次multipart请求，覆盖真实50MiB边界、后缀优先级、UTF16/BOM、CSV宽松语法与类型错误；这里的三组底层数据回归不冒称Rust导入器已实现。解析、认证/来源、共享预算、实际宿主与独立接收仍待接通。

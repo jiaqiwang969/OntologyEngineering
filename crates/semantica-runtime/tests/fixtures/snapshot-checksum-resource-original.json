@@ -1,0 +1,26 @@
+{
+  "profile": "Pinned original CPython3.13.11; development_replay; decimal construction does not invoke int(string) ingress.",
+  "source_sha256": "f2696a69c2b04424edddd94539495af4ef95cb4458077a4b86472c32cae86665",
+  "integer_digits": 70000,
+  "cases": [
+    {
+      "id": "falsey-checksum-70000-digit-value",
+      "operation": "verify_checksum",
+      "expected": {
+        "result": false,
+        "error": null
+      }
+    },
+    {
+      "id": "compute-70000-digit-value",
+      "operation": "compute_checksum",
+      "expected": {
+        "result": null,
+        "error": {
+          "type": "builtins.ValueError",
+          "message": "Exceeds the limit (4300 digits) for integer string conversion; use sys.set_int_max_str_digits() to increase the limit"
+        }
+      }
+    }
+  ]
+}

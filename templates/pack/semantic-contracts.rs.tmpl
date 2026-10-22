@@ -1,0 +1,90 @@
+---
+to: out/semantic-contracts.rs
+sparql:
+  types: 'SELECT ?type ?name ?meaning WHERE { ?type <urn:oev2:design:kind> "Type" ; <urn:oev2:design:contractGroup> "semantic" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:meaning> ?meaning } ORDER BY ?name'
+  fields: 'SELECT ?owner ?name ?rustType ?meaning ?format ?required ?jsonIdentity ?jsonOptional (EXISTS { ?field <urn:oev2:design:allowedValueRust> ?declaredValue } AS ?declaredAllowedValues) WHERE { ?owner <urn:oev2:design:kind> "Type" ; <urn:oev2:design:contractGroup> "semantic" . ?field <urn:oev2:design:owner> ?owner ; <urn:oev2:design:name> ?name ; <urn:oev2:design:rustType> ?rustType ; <urn:oev2:design:meaning> ?meaning ; <urn:oev2:design:format> ?format ; <urn:oev2:design:required> ?required ; <urn:oev2:design:jsonIdentity> ?jsonIdentity ; <urn:oev2:design:jsonOptional> ?jsonOptional } ORDER BY ?owner ?name'
+  interfaces: 'SELECT ?name ?method ?input ?output ?error WHERE { ?i <urn:oev2:design:kind> "Interface" ; <urn:oev2:design:contractGroup> "semantic" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:method> ?method ; <urn:oev2:design:input> ?input ; <urn:oev2:design:output> ?output ; <urn:oev2:design:error> ?error } ORDER BY ?name'
+  allowed: 'SELECT ?owner ?name ?value WHERE { ?owner <urn:oev2:design:kind> "Type" ; <urn:oev2:design:contractGroup> "semantic" . ?f <urn:oev2:design:owner> ?owner ; <urn:oev2:design:name> ?name ; <urn:oev2:design:allowedValueRust> ?value } ORDER BY ?owner ?name ?value'
+  semantic_models: 'SELECT ?catalogRustLiteral WHERE { ?catalog <urn:oev2:design:kind> "SemanticModelCatalog" ; <urn:oev2:design:catalogRustLiteral> ?catalogRustLiteral }'
+  snapshots: 'SELECT ?snapshot ?name ?modelId ?meaning ?sourceSha ?classSha WHERE { ?snapshot <urn:oev2:design:kind> "SemanticSnapshot" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:modelId> ?modelId ; <urn:oev2:design:meaning> ?meaning ; <urn:oev2:design:sourceSha> ?sourceSha ; <urn:oev2:design:classSha> ?classSha } ORDER BY ?name'
+  snapshot_fields: 'SELECT ?owner ?name ?originalNameRust ?meaning ?rustType ?jsonIdentity ?jsonOptional ?ordinal WHERE { ?f <urn:oev2:design:snapshotOwner> ?owner ; <urn:oev2:design:name> ?name ; <urn:oev2:design:originalNameRust> ?originalNameRust ; <urn:oev2:design:meaning> ?meaning ; <urn:oev2:design:rustType> ?rustType ; <urn:oev2:design:jsonIdentity> ?jsonIdentity ; <urn:oev2:design:jsonOptional> ?jsonOptional ; <urn:oev2:design:ordinal> ?ordinal } ORDER BY ?owner ?ordinal'
+---
+// Generated semantic group by locked official ggen; no engineering dependencies.
+{% for t in types %}
+/// {{ t.meaning }}
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct {{ t.name }} {
+{% for f in fields %}{% if f.owner == t.type %}    /// {{ f.meaning }}
+{% if f.jsonIdentity == "preserved" %}    #[serde({% if f.jsonOptional == "true" %}default, {% endif %}deserialize_with = "crate::json::deserialize_preserved")]
+{% endif %}    pub {{ f.name }}: {{ f.rustType }},
+{% endif %}{% endfor %}}
+impl {{ t.name }} {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+{% for f in fields %}{% if f.owner == t.type %}{% if f.rustType == "String" %}{% if f.format == "sha256" %}        if self.{{ f.name }}.len() != 64 || !self.{{ f.name }}.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("{{ t.name }}.{{ f.name }}:sha256".into()); }
+{% elif f.format != "raw_utf8" %}        if self.{{ f.name }}.trim().is_empty() { failures.push("{{ t.name }}.{{ f.name }}:required".into()); }
+{% endif %}{% elif f.rustType == "Option<String>" and f.format == "sha256" %}        if let Some(value) = &self.{{ f.name }} { if value.len() != 64 || !value.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("{{ t.name }}.{{ f.name }}:sha256".into()); } }
+{% elif f.rustType == "f64" %}        if !self.{{ f.name }}.is_finite() { failures.push("{{ t.name }}.{{ f.name }}:finite".into()); }
+{% elif f.format == "object" %}{% if f.rustType is starting_with("Option<") %}        if let Some(value) = &self.{{ f.name }} { if let Err(errors) = value.validate() { failures.extend(errors); } }
+{% else %}        if let Err(errors) = self.{{ f.name }}.validate() { failures.extend(errors); }
+{% endif %}
+{% elif f.format == "page" %}        if self.{{ f.name }} == Some(0) { failures.push("{{ t.name }}.{{ f.name }}:one_based_page".into()); }
+{% endif %}{% endif %}{% endfor %}
+{% for f in fields %}{% if f.owner == t.type %}{% if f.format == "status" or f.declaredAllowedValues == true %}{% if f.rustType == "Option<String>" %}        if let Some(value) = &self.{{ f.name }} { if ![{% for a in allowed %}{% if a.owner == t.type and a.name == f.name %}{{ a.value }},{% endif %}{% endfor %}].contains(&value.as_str()) { failures.push("{{ t.name }}.{{ f.name }}:{% if f.format == "status" %}status{% else %}allowed_values{% endif %}".into()); } }
+{% else %}        if ![{% for a in allowed %}{% if a.owner == t.type and a.name == f.name %}{{ a.value }},{% endif %}{% endfor %}].contains(&self.{{ f.name }}.as_str()) { failures.push("{{ t.name }}.{{ f.name }}:{% if f.format == "status" %}status{% else %}allowed_values{% endif %}".into()); }
+{% endif %}{% endif %}{% endif %}{% endfor %}        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+{% endfor %}
+{% for catalog in semantic_models %}
+/// All model/field/default/alias semantics originate in editable specifications.
+pub fn semantic_model_catalog_json() -> &'static str {
+    {{ catalog.catalogRustLiteral }}
+}
+{% endfor %}
+{% for m in snapshots %}
+/// {{ m.meaning }}; strong view only after original schema validation.
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct {{ m.name }} {
+{% for f in snapshot_fields %}{% if f.owner == m.snapshot %}    /// {{ f.meaning }}
+    #[serde(rename = {{ f.originalNameRust }}{% if f.jsonIdentity == "preserved" %}, {% if f.jsonOptional == "true" %}default, {% endif %}deserialize_with = "crate::json::deserialize_preserved"{% endif %})]
+    pub {{ f.name }}: {{ f.rustType }},
+{% endif %}{% endfor %}}
+impl crate::models::sealed::Sealed for {{ m.name }} {}
+impl crate::SemanticModelSnapshot for {{ m.name }} {
+    const MODEL_ID: &'static str = "{{ m.modelId }}";
+    const SOURCE_SHA256: &'static str = "{{ m.sourceSha }}";
+    const CLASS_SHA256: &'static str = "{{ m.classSha }}";
+}
+{% endfor %}
+/// Complete generated choice of strong original model views. Variants are data,
+/// never proof of validation or engineering adoption; runtime owns validation.
+#[derive(Debug, Clone, PartialEq, serde::Serialize)]
+#[serde(untagged)]
+pub enum SemanticRegisteredModelSnapshot {
+{% for m in snapshots %}    {{ m.name }}({{ m.name }}),
+{% endfor %}}
+impl SemanticRegisteredModelSnapshot {
+    pub fn model_id(&self) -> &'static str { match self {
+{% for m in snapshots %}        Self::{{ m.name }}(_) => <{{ m.name }} as crate::SemanticModelSnapshot>::MODEL_ID,
+{% endfor %}    } }
+    pub fn source_identity(&self) -> (&'static str, &'static str) { match self {
+{% for m in snapshots %}        Self::{{ m.name }}(_) => (<{{ m.name }} as crate::SemanticModelSnapshot>::SOURCE_SHA256, <{{ m.name }} as crate::SemanticModelSnapshot>::CLASS_SHA256),
+{% endfor %}    } }
+}
+/// Representation conversion only. Callers must validate using the same schema
+/// runtime first; serde deserialization does not run original model validators.
+pub fn semantic_model_snapshot_from_normalized_json(model_id: &str, input: serde_json::Value) -> Result<SemanticRegisteredModelSnapshot, serde_json::Error> {
+    match model_id {
+{% for m in snapshots %}        "{{ m.modelId }}" => serde_json::from_value(input).map(SemanticRegisteredModelSnapshot::{{ m.name }}),
+{% endfor %}        _ => Err(<serde_json::Error as serde::de::Error>::custom("schema_model_unknown")),
+    }
+}
+{% for i in interfaces %}
+pub trait {{ i.name }} {
+    fn {{ i.method }}(&self, input: &{{ i.input }}) -> Result<{{ i.output }}, {{ i.error }}>;
+}
+{% endfor %}

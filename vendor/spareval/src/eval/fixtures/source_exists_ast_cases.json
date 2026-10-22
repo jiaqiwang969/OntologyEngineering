@@ -1,0 +1,2765 @@
+{
+  "schema": "public.source-exists-ast-receiving/2",
+  "status": "prepared_expected_projection_not_executed",
+  "source_record_sha256": "c4b53bda7860d30107b1d7e7cc38b6b40b7a151181b918564ba5bcc36705d8ad",
+  "payload_sha256": "635a04f0d7cafad47dab8054ebf2306523c525668ccd4043c5612f4e2c3fb791",
+  "payload": {
+    "cases": [
+      {
+        "id": "EX01",
+        "invariants": [
+          "EA-AST01"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "unit_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX01",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS {} AS ?b) WHERE {}"
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "GroupGraphPatternSub",
+              "runtime": null
+            }
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "EX16",
+        "invariants": [
+          "EA-AST05"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "source_sparql_catch_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX16",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}"
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "SubSelect",
+              "runtime": null,
+              "rewritten_mapping_variables": [
+                "__agg_1__",
+                "__agg_2__",
+                "__agg_3__"
+              ]
+            }
+          ],
+          "outer_aggregates": [
+            {
+              "name": "Aggregate_Sum",
+              "vars": "missing",
+              "res": "__agg_1__",
+              "distinct": true
+            },
+            {
+              "name": "Aggregate_Sample",
+              "vars": "s",
+              "res": "__agg_2__",
+              "distinct": false
+            },
+            {
+              "name": "Aggregate_Sample",
+              "vars": "x",
+              "res": "__agg_3__",
+              "distinct": false
+            }
+          ],
+          "outer_spine": [
+            "Project",
+            "Extend",
+            "SourceGroup",
+            "EmptySingleton"
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "EX17",
+        "invariants": [
+          "EA-AST05"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "source_sparql_catch_not_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX17",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (NOT EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}"
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_NOTEXISTS",
+              "mapping_graph_root": "SubSelect",
+              "runtime": null,
+              "rewritten_mapping_variables": [
+                "__agg_1__",
+                "__agg_2__",
+                "__agg_3__"
+              ]
+            }
+          ],
+          "outer_aggregates": [
+            {
+              "name": "Aggregate_Sum",
+              "vars": "missing",
+              "res": "__agg_1__",
+              "distinct": true
+            },
+            {
+              "name": "Aggregate_Sample",
+              "vars": "s",
+              "res": "__agg_2__",
+              "distinct": false
+            },
+            {
+              "name": "Aggregate_Sample",
+              "vars": "x",
+              "res": "__agg_3__",
+              "distinct": false
+            }
+          ],
+          "outer_spine": [
+            "Project",
+            "Extend",
+            "SourceGroup",
+            "EmptySingleton"
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "EX33",
+        "invariants": [
+          "EA-AST04"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "embedded_distinct_affects_parent_analysis",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX33",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x ?b ?y WHERE { VALUES ?x {1 2} BIND(EXISTS { SELECT DISTINCT ?z WHERE { VALUES ?z {3 3} } } AS ?b) VALUES ?y {4 4} }"
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "SubSelect",
+              "runtime": {
+                "name": "ToMultiSet",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": null,
+                "var": null,
+                "empty_bgp": null,
+                "children": [
+                  [
+                    "p",
+                    {
+                      "name": "Distinct",
+                      "scope": null,
+                      "lazy": null,
+                      "no_isolated_scope": null,
+                      "translated": null,
+                      "var": null,
+                      "empty_bgp": null,
+                      "children": [
+                        [
+                          "p",
+                          {
+                            "name": "Project",
+                            "scope": null,
+                            "lazy": null,
+                            "no_isolated_scope": null,
+                            "translated": null,
+                            "var": null,
+                            "empty_bgp": null,
+                            "children": [
+                              [
+                                "p",
+                                {
+                                  "name": "Join",
+                                  "scope": null,
+                                  "lazy": null,
+                                  "no_isolated_scope": null,
+                                  "translated": true,
+                                  "var": null,
+                                  "empty_bgp": null,
+                                  "children": [
+                                    [
+                                      "p1",
+                                      {
+                                        "name": "BGP",
+                                        "scope": null,
+                                        "lazy": null,
+                                        "no_isolated_scope": null,
+                                        "translated": null,
+                                        "var": null,
+                                        "empty_bgp": true,
+                                        "children": []
+                                      }
+                                    ],
+                                    [
+                                      "p2",
+                                      {
+                                        "name": "ToMultiSet",
+                                        "scope": null,
+                                        "lazy": null,
+                                        "no_isolated_scope": null,
+                                        "translated": null,
+                                        "var": null,
+                                        "empty_bgp": null,
+                                        "children": [
+                                          [
+                                            "p",
+                                            {
+                                              "name": "values",
+                                              "scope": null,
+                                              "lazy": null,
+                                              "no_isolated_scope": null,
+                                              "translated": null,
+                                              "var": null,
+                                              "empty_bgp": null,
+                                              "children": []
+                                            }
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "outer_join_modes": [
+            true
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "EX34",
+        "invariants": [
+          "EA-AST04"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "nested_project_registry_hidden_variable",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX34",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT ?shown WHERE { BIND(1 AS ?hidden) BIND(?hidden AS ?shown) FILTER(?shown) } } AS ?b) }"
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "SubSelect",
+              "runtime": {
+                "name": "ToMultiSet",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": null,
+                "var": null,
+                "empty_bgp": null,
+                "children": [
+                  [
+                    "p",
+                    {
+                      "name": "Project",
+                      "scope": null,
+                      "lazy": null,
+                      "no_isolated_scope": null,
+                      "translated": null,
+                      "var": null,
+                      "empty_bgp": null,
+                      "children": [
+                        [
+                          "p",
+                          {
+                            "name": "Filter",
+                            "scope": null,
+                            "lazy": null,
+                            "no_isolated_scope": null,
+                            "translated": true,
+                            "var": null,
+                            "empty_bgp": null,
+                            "children": [
+                              [
+                                "p",
+                                {
+                                  "name": "Extend",
+                                  "scope": null,
+                                  "lazy": null,
+                                  "no_isolated_scope": null,
+                                  "translated": null,
+                                  "var": "shown",
+                                  "empty_bgp": null,
+                                  "children": [
+                                    [
+                                      "p",
+                                      {
+                                        "name": "Extend",
+                                        "scope": null,
+                                        "lazy": null,
+                                        "no_isolated_scope": null,
+                                        "translated": null,
+                                        "var": "hidden",
+                                        "empty_bgp": null,
+                                        "children": [
+                                          [
+                                            "p",
+                                            {
+                                              "name": "BGP",
+                                              "scope": null,
+                                              "lazy": null,
+                                              "no_isolated_scope": null,
+                                              "translated": null,
+                                              "var": null,
+                                              "empty_bgp": true,
+                                              "children": []
+                                            }
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "BX01",
+        "invariants": [
+          "EA-AST01"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "unit_row_two_polarities",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX01",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?yes ?no WHERE { BIND(EXISTS {} AS ?yes) BIND(NOT EXISTS {} AS ?no) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX01",
+            "parent_case_ids": [
+              "EX01",
+              "EX02"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS {} AS ?b) WHERE {}",
+              "SELECT (NOT EXISTS {} AS ?b) WHERE {}"
+            ],
+            "reason": "One actual empty child binding counts as a row; compare the two source polarity names in one admitted WHERE query.",
+            "source_anchors": [
+              "operators.py:580-593",
+              "algebra.py:375-379"
+            ]
+          }
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "no",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_NOTEXISTS",
+              "mapping_graph_root": "GroupGraphPatternSub",
+              "runtime": {
+                "name": "BGP",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": true,
+                "var": null,
+                "empty_bgp": true,
+                "children": []
+              }
+            },
+            {
+              "target": "yes",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "GroupGraphPatternSub",
+              "runtime": {
+                "name": "BGP",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": true,
+                "var": null,
+                "empty_bgp": true,
+                "children": []
+              }
+            }
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "BX02",
+        "invariants": [
+          "EA-AST02"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "no_child_rows_two_polarities",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX02",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?yes ?no WHERE { BIND(EXISTS { FILTER(false) } AS ?yes) BIND(NOT EXISTS { FILTER(false) } AS ?no) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX02",
+            "parent_case_ids": [
+              "EX03",
+              "EX04"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { FILTER(false) } AS ?b) WHERE {}",
+              "SELECT (NOT EXISTS { FILTER(false) } AS ?b) WHERE {}"
+            ],
+            "reason": "Same polarity pair with a translated child filter that yields no rows; not invalid VALUES.",
+            "source_anchors": [
+              "evaluate.py:208-217",
+              "operators.py:580-593"
+            ]
+          }
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "no",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_NOTEXISTS",
+              "mapping_graph_root": "GroupGraphPatternSub",
+              "runtime": {
+                "name": "BGP",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": true,
+                "var": null,
+                "empty_bgp": true,
+                "children": []
+              }
+            },
+            {
+              "target": "yes",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "GroupGraphPatternSub",
+              "runtime": {
+                "name": "BGP",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": true,
+                "var": null,
+                "empty_bgp": true,
+                "children": []
+              }
+            }
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "BX05",
+        "invariants": [
+          "EA-AST02"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "top_filter_relational_correlation",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX05",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x ?b WHERE { VALUES ?x {0 1} BIND(EXISTS { FILTER(?x > 0) } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX05",
+            "parent_case_ids": [
+              "EX08"
+            ],
+            "parent_queries": [
+              "SELECT ?x (EXISTS { FILTER(?x > 0) } AS ?b) WHERE { VALUES ?x {0 1} }"
+            ],
+            "reason": "Observe actual graph attribute, no_isolated_scope, context and result for the top filter; relational producer is an implementation prerequisite, not already qualified.",
+            "source_anchors": [
+              "algebra.py:257-275",
+              "evaluate.py:208-217",
+              "algebra.py:523-525"
+            ]
+          }
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "GroupGraphPatternSub",
+              "runtime": {
+                "name": "Filter",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": true,
+                "translated": true,
+                "var": null,
+                "empty_bgp": null,
+                "children": [
+                  [
+                    "p",
+                    {
+                      "name": "BGP",
+                      "scope": null,
+                      "lazy": null,
+                      "no_isolated_scope": null,
+                      "translated": null,
+                      "var": null,
+                      "empty_bgp": true,
+                      "children": []
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "BX06",
+        "invariants": [
+          "EA-AST02"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "deep_filter_relational_correlation_diagnostic",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX06",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x ?b WHERE { VALUES ?x {0 1} BIND(EXISTS { { FILTER(?x > 0) } BIND(1 AS ?z) } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX06",
+            "parent_case_ids": [
+              "EX09"
+            ],
+            "parent_queries": [
+              "SELECT ?x (EXISTS { { FILTER(?x > 0) } BIND(1 AS ?z) } AS ?b) WHERE { VALUES ?x {0 1} }"
+            ],
+            "reason": "Keep the complex scope answer unresolved until original observation; distinguish actual root Filter from a nested filter below Extend.",
+            "source_anchors": [
+              "algebra.py:257-275",
+              "evaluate.py:124-139",
+              "evaluate.py:208-217"
+            ]
+          }
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "GroupGraphPatternSub",
+              "runtime": {
+                "name": "Extend",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": true,
+                "var": "z",
+                "empty_bgp": null,
+                "children": [
+                  [
+                    "p",
+                    {
+                      "name": "Join",
+                      "scope": null,
+                      "lazy": null,
+                      "no_isolated_scope": null,
+                      "translated": null,
+                      "var": null,
+                      "empty_bgp": null,
+                      "children": [
+                        [
+                          "p1",
+                          {
+                            "name": "BGP",
+                            "scope": null,
+                            "lazy": null,
+                            "no_isolated_scope": null,
+                            "translated": null,
+                            "var": null,
+                            "empty_bgp": true,
+                            "children": []
+                          }
+                        ],
+                        [
+                          "p2",
+                          {
+                            "name": "Filter",
+                            "scope": null,
+                            "lazy": null,
+                            "no_isolated_scope": null,
+                            "translated": true,
+                            "var": null,
+                            "empty_bgp": null,
+                            "children": [
+                              [
+                                "p",
+                                {
+                                  "name": "BGP",
+                                  "scope": null,
+                                  "lazy": null,
+                                  "no_isolated_scope": null,
+                                  "translated": null,
+                                  "var": null,
+                                  "empty_bgp": true,
+                                  "children": []
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "BX09",
+        "invariants": [
+          "EA-AST01"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "generic_not_has_distinct_error_producer",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX09",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(!(EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } }) AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX09",
+            "parent_case_ids": [
+              "EX16",
+              "EX17"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}",
+              "SELECT (NOT EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}"
+            ],
+            "reason": "New generic NOT control, not a rewritten NOT EXISTS expectation. Observe UnaryNot/EBV fresh SPARQLTypeError versus the child caught NotBoundError; per-run identities only.",
+            "source_anchors": [
+              "parser.py:1049",
+              "operators.py:734-735",
+              "operators.py:1179-1217",
+              "parserutils.py:57-81"
+            ]
+          }
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 1,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "SubSelect",
+              "runtime": {
+                "name": "ToMultiSet",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": null,
+                "var": null,
+                "empty_bgp": null,
+                "children": [
+                  [
+                    "p",
+                    {
+                      "name": "Project",
+                      "scope": null,
+                      "lazy": null,
+                      "no_isolated_scope": null,
+                      "translated": null,
+                      "var": null,
+                      "empty_bgp": null,
+                      "children": [
+                        [
+                          "p",
+                          {
+                            "name": "Extend",
+                            "scope": null,
+                            "lazy": null,
+                            "no_isolated_scope": null,
+                            "translated": null,
+                            "var": "s",
+                            "empty_bgp": null,
+                            "children": [
+                              [
+                                "p",
+                                {
+                                  "name": "AggregateJoin",
+                                  "scope": null,
+                                  "lazy": null,
+                                  "no_isolated_scope": null,
+                                  "translated": null,
+                                  "var": null,
+                                  "empty_bgp": null,
+                                  "children": [
+                                    [
+                                      "p",
+                                      {
+                                        "name": "Group",
+                                        "scope": null,
+                                        "lazy": null,
+                                        "no_isolated_scope": null,
+                                        "translated": null,
+                                        "var": null,
+                                        "empty_bgp": null,
+                                        "children": [
+                                          [
+                                            "p",
+                                            {
+                                              "name": "Join",
+                                              "scope": null,
+                                              "lazy": null,
+                                              "no_isolated_scope": null,
+                                              "translated": true,
+                                              "var": null,
+                                              "empty_bgp": null,
+                                              "children": [
+                                                [
+                                                  "p1",
+                                                  {
+                                                    "name": "BGP",
+                                                    "scope": null,
+                                                    "lazy": null,
+                                                    "no_isolated_scope": null,
+                                                    "translated": null,
+                                                    "var": null,
+                                                    "empty_bgp": true,
+                                                    "children": []
+                                                  }
+                                                ],
+                                                [
+                                                  "p2",
+                                                  {
+                                                    "name": "ToMultiSet",
+                                                    "scope": null,
+                                                    "lazy": null,
+                                                    "no_isolated_scope": null,
+                                                    "translated": null,
+                                                    "var": null,
+                                                    "empty_bgp": null,
+                                                    "children": [
+                                                      [
+                                                        "p",
+                                                        {
+                                                          "name": "values",
+                                                          "scope": null,
+                                                          "lazy": null,
+                                                          "no_isolated_scope": null,
+                                                          "translated": null,
+                                                          "var": null,
+                                                          "empty_bgp": null,
+                                                          "children": []
+                                                        }
+                                                      ]
+                                                    ]
+                                                  }
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "BX11",
+        "invariants": [
+          "EA-AST03",
+          "EA-AST06"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": true
+          },
+          "family": "first_row_stops_before_later_float_trap",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX11",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX11",
+            "parent_case_ids": [
+              "EX19"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } AS ?b) WHERE {}"
+            ],
+            "reason": "With the original FloatOperation trap enabled, observe the first row and whether later float arithmetic is reached; no hand-added evaluation of unused rows.",
+            "source_anchors": [
+              "operators.py:580-593",
+              "evaluate.py:124-139"
+            ]
+          }
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "GroupGraphPatternSub",
+              "runtime": {
+                "name": "Extend",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": true,
+                "var": "y",
+                "empty_bgp": null,
+                "children": [
+                  [
+                    "p",
+                    {
+                      "name": "Join",
+                      "scope": null,
+                      "lazy": null,
+                      "no_isolated_scope": null,
+                      "translated": null,
+                      "var": null,
+                      "empty_bgp": null,
+                      "children": [
+                        [
+                          "p1",
+                          {
+                            "name": "BGP",
+                            "scope": null,
+                            "lazy": null,
+                            "no_isolated_scope": null,
+                            "translated": null,
+                            "var": null,
+                            "empty_bgp": true,
+                            "children": []
+                          }
+                        ],
+                        [
+                          "p2",
+                          {
+                            "name": "ToMultiSet",
+                            "scope": null,
+                            "lazy": null,
+                            "no_isolated_scope": null,
+                            "translated": null,
+                            "var": null,
+                            "empty_bgp": null,
+                            "children": [
+                              [
+                                "p",
+                                {
+                                  "name": "values",
+                                  "scope": null,
+                                  "lazy": null,
+                                  "no_isolated_scope": null,
+                                  "translated": null,
+                                  "var": null,
+                                  "empty_bgp": null,
+                                  "children": []
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              },
+              "runtime_literal_facts": [
+                {
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "language": null,
+                  "ill_typed": false,
+                  "cache_type": "builtins.int",
+                  "cache": 1
+                },
+                {
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "language": null,
+                  "ill_typed": false,
+                  "cache_type": "builtins.int",
+                  "cache": 1
+                },
+                {
+                  "lexical": "0.1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double",
+                  "language": null,
+                  "ill_typed": false,
+                  "cache_type": "builtins.float",
+                  "cache": {
+                    "bits_hex": "3fb999999999999a",
+                    "family": "float",
+                    "repr": "0.1"
+                  }
+                }
+              ],
+              "runtime_unique_literal_count": 3
+            }
+          ]
+        },
+        "expected_flags_after_parse": []
+      },
+      {
+        "id": "BX12",
+        "invariants": [
+          "EA-AST03",
+          "EA-AST06"
+        ],
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": true
+          },
+          "family": "eager_child_order_reaches_later_float_trap",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX12",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT ?x ?y WHERE { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } ORDER BY ?x } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX12",
+            "parent_case_ids": [
+              "EX20"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { SELECT ?x ?y WHERE { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } ORDER BY ?x } AS ?b) WHERE {}"
+            ],
+            "reason": "Same substantive child arithmetic as BX11, now the translated subquery ORDER must finish sorting before its first output. Record exact original failure stage/flags.",
+            "source_anchors": [
+              "evaluate.py:495-507",
+              "evaluate.py:571-574",
+              "operators.py:580-593"
+            ]
+          }
+        },
+        "expected_ast": {
+          "expressions": [
+            {
+              "target": "b",
+              "generic_not_depth": 0,
+              "polarity": "Builtin_EXISTS",
+              "mapping_graph_root": "SubSelect",
+              "runtime": {
+                "name": "ToMultiSet",
+                "scope": null,
+                "lazy": null,
+                "no_isolated_scope": null,
+                "translated": null,
+                "var": null,
+                "empty_bgp": null,
+                "children": [
+                  [
+                    "p",
+                    {
+                      "name": "Project",
+                      "scope": null,
+                      "lazy": null,
+                      "no_isolated_scope": null,
+                      "translated": null,
+                      "var": null,
+                      "empty_bgp": null,
+                      "children": [
+                        [
+                          "p",
+                          {
+                            "name": "OrderBy",
+                            "scope": null,
+                            "lazy": null,
+                            "no_isolated_scope": null,
+                            "translated": null,
+                            "var": null,
+                            "empty_bgp": null,
+                            "children": [
+                              [
+                                "p",
+                                {
+                                  "name": "Extend",
+                                  "scope": null,
+                                  "lazy": null,
+                                  "no_isolated_scope": null,
+                                  "translated": true,
+                                  "var": "y",
+                                  "empty_bgp": null,
+                                  "children": [
+                                    [
+                                      "p",
+                                      {
+                                        "name": "Join",
+                                        "scope": null,
+                                        "lazy": null,
+                                        "no_isolated_scope": null,
+                                        "translated": null,
+                                        "var": null,
+                                        "empty_bgp": null,
+                                        "children": [
+                                          [
+                                            "p1",
+                                            {
+                                              "name": "BGP",
+                                              "scope": null,
+                                              "lazy": null,
+                                              "no_isolated_scope": null,
+                                              "translated": null,
+                                              "var": null,
+                                              "empty_bgp": true,
+                                              "children": []
+                                            }
+                                          ],
+                                          [
+                                            "p2",
+                                            {
+                                              "name": "ToMultiSet",
+                                              "scope": null,
+                                              "lazy": null,
+                                              "no_isolated_scope": null,
+                                              "translated": null,
+                                              "var": null,
+                                              "empty_bgp": null,
+                                              "children": [
+                                                [
+                                                  "p",
+                                                  {
+                                                    "name": "values",
+                                                    "scope": null,
+                                                    "lazy": null,
+                                                    "no_isolated_scope": null,
+                                                    "translated": null,
+                                                    "var": null,
+                                                    "empty_bgp": null,
+                                                    "children": []
+                                                  }
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        ]
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              },
+              "runtime_literal_facts": [
+                {
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "language": null,
+                  "ill_typed": false,
+                  "cache_type": "builtins.int",
+                  "cache": 1
+                },
+                {
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                  "language": null,
+                  "ill_typed": false,
+                  "cache_type": "builtins.int",
+                  "cache": 1
+                },
+                {
+                  "lexical": "0.1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#double",
+                  "language": null,
+                  "ill_typed": false,
+                  "cache_type": "builtins.float",
+                  "cache": {
+                    "bits_hex": "3fb999999999999a",
+                    "family": "float",
+                    "repr": "0.1"
+                  }
+                }
+              ],
+              "runtime_unique_literal_count": 3
+            }
+          ]
+        },
+        "expected_flags_after_parse": []
+      }
+    ],
+    "invariant_ids": [
+      "EA-AST01",
+      "EA-AST02",
+      "EA-AST03",
+      "EA-AST04",
+      "EA-AST05",
+      "EA-AST06"
+    ],
+    "completion_cases": [
+      {
+        "id": "EX01",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "unit_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX01",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS {} AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "86a80f7a4beeccd5ee5e49e41d87380b91264acb9791957a4c5fa23b45563945"
+      },
+      {
+        "id": "EX02",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "unit_not_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX02",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (NOT EXISTS {} AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "b5832ee9b6c079d5a7dfffd410eeb11818a526e523722a7b036024009cf8fa37"
+      },
+      {
+        "id": "EX03",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "empty_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX03",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { FILTER(false) } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "f23d18ef1afe7f562985d6fabc4421dd34bd765a616d40f04213e573b21a31b2"
+      },
+      {
+        "id": "EX04",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "empty_not_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX04",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (NOT EXISTS { FILTER(false) } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "12ba5412f07d606ebb7e6ed6c71cb4d61b0094624eaaf1e85051595e46d2ccdc"
+      },
+      {
+        "id": "EX05",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "empty_values_source_error",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX05",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { VALUES ?x {} } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "24a1b99a99972b3b038716a78ad6b509f851853c8ce950e1de257d60e751a579"
+      },
+      {
+        "id": "EX06",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "empty_binding_is_a_row",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX06",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { VALUES () { () } } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "c239ac10ff9a334d62fac3dcff2bb418b70dd3d050659a8291b48f4091f0c418"
+      },
+      {
+        "id": "EX07",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "correlated_bare_filter",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX07",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { FILTER(?x) } AS ?b) WHERE { VALUES ?x {0 1} }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "4233ef465cf63d50f774ae920b3b7d4320e356a21d61d86336e187d9c821228b"
+      },
+      {
+        "id": "EX08",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "no_isolated_scope_relational",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX08",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { FILTER(?x > 0) } AS ?b) WHERE { VALUES ?x {0 1} }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "6af524858db9ffac91652f093e7168351de6307b6c546fc8242cd933dadda1eb"
+      },
+      {
+        "id": "EX09",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "nested_filter_scope_control",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX09",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { { FILTER(?x > 0) } BIND(1 AS ?z) } AS ?b) WHERE { VALUES ?x {0 1} }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "1d9a4b0eff5242660e0cfb868434f53d957c6d8f800681b960e65ffc9b347728"
+      },
+      {
+        "id": "EX10",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "immutable_initial_relational",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX10",
+          "initial_bindings": [
+            {
+              "value": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                "kind": "literal",
+                "language": null,
+                "lexical": "1",
+                "normalize": true
+              },
+              "variable": "x"
+            }
+          ],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { FILTER(?x > 0) } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "6a47fca1d874f83ed34f3fd82a9a69ea54fa4dc5e82cb2cc88e04c8597e68a09"
+      },
+      {
+        "id": "EX11",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "subselect_forget_vs_initial",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX11",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { SELECT ?z WHERE { BIND(?x AS ?z) FILTER(?z) } } AS ?b) WHERE { VALUES ?x {1} }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "56bfa731ea6dad9e959de7f9bbe8bfcd7a2a2ab31cf61b350c97b668517d6472"
+      },
+      {
+        "id": "EX12",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "subselect_initial_control",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX12",
+          "initial_bindings": [
+            {
+              "value": {
+                "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+                "kind": "literal",
+                "language": null,
+                "lexical": "1",
+                "normalize": true
+              },
+              "variable": "x"
+            }
+          ],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { SELECT ?z WHERE { BIND(?x AS ?z) FILTER(?z) } } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "e7bd8138349f9698bc3d3211fbec80a2cac3cba1a24d4037e61e58562d57996e"
+      },
+      {
+        "id": "EX13",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "explicit_none_from_real_sample",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX13",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { VALUES ?x {1} } AS ?b) WHERE { { SELECT (SAMPLE(?missing) AS ?x) WHERE { FILTER(false) } } }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "2cb9909a1e09bd2edd32016449023423d029893b3ddffe6d8fdafedebbd1da08"
+      },
+      {
+        "id": "EX14",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "initial_none",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX14",
+          "initial_bindings": [
+            {
+              "value": {
+                "kind": "none"
+              },
+              "variable": "x"
+            }
+          ],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { FILTER(?x) } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "8ff8e45d6810dab49ee95a5b7c3afd78dc721054aae8dd188afe3288ee2ee7e5"
+      },
+      {
+        "id": "EX15",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "error_cell_is_not_a_stream_error",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX15",
+          "initial_bindings": [
+            {
+              "value": {
+                "argument": null,
+                "class": "NotBoundError",
+                "kind": "error"
+              },
+              "variable": "x"
+            }
+          ],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS {} AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "ba7881f65d98fd67d4bb0f715edd50923103830c60492f057ea4c2bc0e77cb79"
+      },
+      {
+        "id": "EX16",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "source_sparql_catch_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX16",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "6bcc3e6ac6f7fec367961d681914cdbb5a5ac04b0cfb12e38e0da3671123804f"
+      },
+      {
+        "id": "EX17",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "source_sparql_catch_not_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX17",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (NOT EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "f0bfa8ad670c36c86fc26a4eb792c4502603a7a7cc3d5754cb5927d7125fc287"
+      },
+      {
+        "id": "EX18",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "ordinary_typeerror_is_fatal",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX18",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { SELECT (SUM(?x) AS ?s) WHERE { VALUES ?x {1 \"bad\"^^<http://www.w3.org/2001/XMLSchema#string>} } } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "8ad399b644ab4801226954acbb3e2324faa4021dd48d0ab6f4eddd7af2050d24"
+      },
+      {
+        "id": "EX19",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": true
+          },
+          "family": "first_row_skips_later_float_trap",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX19",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "2e9c75c436b1e4e89eb7221bc10df4d6343b76d3c68cfb778be5361081db2fa6"
+      },
+      {
+        "id": "EX20",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": true
+          },
+          "family": "sort_requires_later_float_trap",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX20",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { SELECT ?x ?y WHERE { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } ORDER BY ?x } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "1b954d7bc1b5cb7aa828900a7f37bee43c214c9def0d3d4b3796a65372d0b99e"
+      },
+      {
+        "id": "EX21",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": true
+          },
+          "family": "outer_prefix_then_exists_fault",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX21",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { FILTER(?x * 1) } AS ?b) WHERE { VALUES ?x {1 0.1e0} }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "df41050b63d3d61ce7aa97dd953a96b2a11779454c4a40045cdeb132fef86562"
+      },
+      {
+        "id": "EX22",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": true
+          },
+          "family": "outer_order_start_failure",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX22",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x WHERE { VALUES ?x {1} } ORDER BY EXISTS { SELECT ?y WHERE { VALUES ?y {0.1e0} } ORDER BY (?y * 1) }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "6fccc6cf417534bc492dd89d3066581615c0bd73fb5449c6a7ad03f8ac97c699"
+      },
+      {
+        "id": "EX23",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "limit_zero_deferred_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX23",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { VALUES ?x {} } AS ?b) WHERE {} LIMIT 0"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "bbe6fbce5dd0783e7d9c1f1d7e7cd5c7d4d88471c764211a971f1a95c6036491"
+      },
+      {
+        "id": "EX24",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "limit_zero_eager_order_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX24",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x WHERE { VALUES ?x {1} } ORDER BY EXISTS { VALUES ?z {} } LIMIT 0"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "62f51c9a05c1fbcf348a207c3d31ce778e1f114d47a2cca38eb34ef91fb729ed"
+      },
+      {
+        "id": "EX25",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "distinct_limit_zero_defers_order",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX25",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT DISTINCT ?x WHERE { VALUES ?x {1} } ORDER BY EXISTS { VALUES ?z {} } LIMIT 0"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "1bb67ca0224d9eb36f9af207c388f3c339cbc1edd3f4a08920a9bd2c1dedb394"
+      },
+      {
+        "id": "EX26",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "nested_exists_not_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX26",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x (EXISTS { FILTER(NOT EXISTS { FILTER(?x) }) } AS ?b) WHERE { VALUES ?x {0 1} }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "8a711c027bceea51595b21f98a5fff2c2a7c98da513835411b23716154bbfcf6"
+      },
+      {
+        "id": "EX27",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "count_boolean_values",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX27",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (COUNT(EXISTS { FILTER(?x) }) AS ?n) WHERE { VALUES ?x {0 1} }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "1a762be1665fed7bfd6142a1b334a5e2c5362b9c9efaad95f32ed98358c8451d"
+      },
+      {
+        "id": "EX28",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "sample_boolean_value",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX28",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (SAMPLE(EXISTS {}) AS ?b) WHERE { VALUES ?x {1 2} }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "31811a34741d6bad1bd18868db9359f15221749fe09582d493147ce0c1fb6ca5"
+      },
+      {
+        "id": "EX29",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "aggregate_having_exists_scope",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX29",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?g (SUM(?x) AS ?s) WHERE { VALUES (?g ?x) {(1 0)(1 2)(2 3)} } GROUP BY ?g HAVING(EXISTS { FILTER(?x) })"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "f805edb01a084bc9f849ad356ed35453950406271607e3880fbd8817baf2f071"
+      },
+      {
+        "id": "EX30",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "order_by_exists_key",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX30",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x WHERE { VALUES ?x {1 0} } ORDER BY EXISTS { FILTER(?x) }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "7c7ca26ae999649ef58c800c161a1699df64e147aa88a24949fd14a8a9e6138c"
+      },
+      {
+        "id": "EX31",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "implicit_empty_aggregate_is_a_row",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX31",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { SELECT (SUM(?x) AS ?s) WHERE { FILTER(false) } } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "330fe9a74fc5f664c52be3b3047027e4d5f545a1e7b27af787bf71d8cf6796b0"
+      },
+      {
+        "id": "EX32",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "explicit_empty_group_is_a_row",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX32",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (EXISTS { SELECT (SUM(?x) AS ?s) WHERE { FILTER(false) } GROUP BY ?x } AS ?b) WHERE {}"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "06c3ce10275cfd330a88b8757b85a6221564f7cb6c9f4a822dea33a639bfe522"
+      },
+      {
+        "id": "EX33",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "embedded_distinct_affects_parent_analysis",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX33",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x ?b ?y WHERE { VALUES ?x {1 2} BIND(EXISTS { SELECT DISTINCT ?z WHERE { VALUES ?z {3 3} } } AS ?b) VALUES ?y {4 4} }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "e19ecced6a329c55864501661a67d5d920bcf0121f8804eefe69289aa06c9c02"
+      },
+      {
+        "id": "EX34",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "nested_project_registry_hidden_variable",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "EX34",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT ?shown WHERE { BIND(1 AS ?hidden) BIND(?hidden AS ?shown) FILTER(?shown) } } AS ?b) }"
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "873aa6eb02feafbe9f989a4b42e10411584779a317f136caa7641b1d88b24f88"
+      },
+      {
+        "id": "BX01",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "unit_row_two_polarities",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX01",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?yes ?no WHERE { BIND(EXISTS {} AS ?yes) BIND(NOT EXISTS {} AS ?no) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX01",
+            "parent_case_ids": [
+              "EX01",
+              "EX02"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS {} AS ?b) WHERE {}",
+              "SELECT (NOT EXISTS {} AS ?b) WHERE {}"
+            ],
+            "reason": "One actual empty child binding counts as a row; compare the two source polarity names in one admitted WHERE query.",
+            "source_anchors": [
+              "operators.py:580-593",
+              "algebra.py:375-379"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "ffeb35f4606b7684f1b0e5f726a78316c043355d2f4857cf211fe767a3784eaf"
+      },
+      {
+        "id": "BX02",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "no_child_rows_two_polarities",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX02",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?yes ?no WHERE { BIND(EXISTS { FILTER(false) } AS ?yes) BIND(NOT EXISTS { FILTER(false) } AS ?no) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX02",
+            "parent_case_ids": [
+              "EX03",
+              "EX04"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { FILTER(false) } AS ?b) WHERE {}",
+              "SELECT (NOT EXISTS { FILTER(false) } AS ?b) WHERE {}"
+            ],
+            "reason": "Same polarity pair with a translated child filter that yields no rows; not invalid VALUES.",
+            "source_anchors": [
+              "evaluate.py:208-217",
+              "operators.py:580-593"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "f6fca32347ba77c2ac97b5413c1335646690d3a56fa75537f4e02b0b5513b6bb"
+      },
+      {
+        "id": "BX03",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "translated_empty_values_source_failure",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX03",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { VALUES ?x {} } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX03",
+            "parent_case_ids": [
+              "EX05"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { VALUES ?x {} } AS ?b) WHERE {}"
+            ],
+            "reason": "Reach the original empty-data VALUES-list error through a genuinely translated EXISTS child; distinguish from the earlier direct SELECT CompValue failure.",
+            "source_anchors": [
+              "algebra.py:603-621",
+              "evaluate.py:270-274"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "13284bbe84e9707704ddc392163d030b63a9c3f3c604565383d7691dc138ce20"
+      },
+      {
+        "id": "BX04",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "translated_no_variable_values_source_failure",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX04",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { VALUES () { () } } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX04",
+            "parent_case_ids": [
+              "EX06"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { VALUES () { () } } AS ?b) WHERE {}"
+            ],
+            "reason": "Do not reclassify the no-variable VALUES syntax as a unit row. Separately diagnose the original draft EX06 hypothesis.",
+            "source_anchors": [
+              "algebra.py:609-613",
+              "evaluate.py:270-274"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "af6b389cee55beacb8892192a73f78e4cf7fcaf8da848a1bdf7c493937964247"
+      },
+      {
+        "id": "BX05",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "top_filter_relational_correlation",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX05",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x ?b WHERE { VALUES ?x {0 1} BIND(EXISTS { FILTER(?x > 0) } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX05",
+            "parent_case_ids": [
+              "EX08"
+            ],
+            "parent_queries": [
+              "SELECT ?x (EXISTS { FILTER(?x > 0) } AS ?b) WHERE { VALUES ?x {0 1} }"
+            ],
+            "reason": "Observe actual graph attribute, no_isolated_scope, context and result for the top filter; relational producer is an implementation prerequisite, not already qualified.",
+            "source_anchors": [
+              "algebra.py:257-275",
+              "evaluate.py:208-217",
+              "algebra.py:523-525"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "c3e630a3ff05a76d54fd88ea1f770f6b471094587a8a535aded7bdfcb78aebea"
+      },
+      {
+        "id": "BX06",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "deep_filter_relational_correlation_diagnostic",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX06",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x ?b WHERE { VALUES ?x {0 1} BIND(EXISTS { { FILTER(?x > 0) } BIND(1 AS ?z) } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX06",
+            "parent_case_ids": [
+              "EX09"
+            ],
+            "parent_queries": [
+              "SELECT ?x (EXISTS { { FILTER(?x > 0) } BIND(1 AS ?z) } AS ?b) WHERE { VALUES ?x {0 1} }"
+            ],
+            "reason": "Keep the complex scope answer unresolved until original observation; distinguish actual root Filter from a nested filter below Extend.",
+            "source_anchors": [
+              "algebra.py:257-275",
+              "evaluate.py:124-139",
+              "evaluate.py:208-217"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "c998ae09a1f53678a7beda52c7ffe2e8d1b35100d7168037547f3b16cc534055"
+      },
+      {
+        "id": "BX07",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "exists_catches_original_sparql_error",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX07",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX07",
+            "parent_case_ids": [
+              "EX16"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}"
+            ],
+            "reason": "Record raised child NotBoundError and Expr.eval returned object identity, then alias handling; absent alias alone is insufficient.",
+            "source_anchors": [
+              "aggregates.py:58-60",
+              "aggregates.py:302-309",
+              "parserutils.py:219-228",
+              "evaluate.py:124-139"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "1a80656425e107d643e27efebaf570b79798aa74deb5375feeda7fd0c820f19e"
+      },
+      {
+        "id": "BX08",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "not_exists_catches_original_sparql_error",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX08",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(NOT EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX08",
+            "parent_case_ids": [
+              "EX17"
+            ],
+            "parent_queries": [
+              "SELECT (NOT EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}"
+            ],
+            "reason": "Observe original Builtin_NOTEXISTS polarity and the same child-to-Expr exception identity within this run.",
+            "source_anchors": [
+              "parser.py:697-706",
+              "operators.py:580-593",
+              "parserutils.py:219-228"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "9c3b17b86ea59b429a7482be3f6cff4e47cd484f95c982428bc499e5ece947b1"
+      },
+      {
+        "id": "BX09",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "generic_not_has_distinct_error_producer",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX09",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(!(EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } }) AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX09",
+            "parent_case_ids": [
+              "EX16",
+              "EX17"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}",
+              "SELECT (NOT EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) WHERE {}"
+            ],
+            "reason": "New generic NOT control, not a rewritten NOT EXISTS expectation. Observe UnaryNot/EBV fresh SPARQLTypeError versus the child caught NotBoundError; per-run identities only.",
+            "source_anchors": [
+              "parser.py:1049",
+              "operators.py:734-735",
+              "operators.py:1179-1217",
+              "parserutils.py:57-81"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "668ac0fc86b7728baa50df4306b401937ae95d7c0980fadd33bf79944f6fcb95"
+      },
+      {
+        "id": "BX10",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "ordinary_child_exception_remains_fatal",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX10",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT (SUM(?x) AS ?s) WHERE { VALUES ?x {1 \"bad\"^^<http://www.w3.org/2001/XMLSchema#string>} } } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX10",
+            "parent_case_ids": [
+              "EX18"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { SELECT (SUM(?x) AS ?s) WHERE { VALUES ?x {1 \"bad\"^^<http://www.w3.org/2001/XMLSchema#string>} } } AS ?b) WHERE {}"
+            ],
+            "reason": "Reach ordinary TypeError in the admitted child; it must not be mistaken for the SPARQLError return/catch family.",
+            "source_anchors": [
+              "aggregates.py:120-144",
+              "parserutils.py:219-228",
+              "operators.py:580-593"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "6be170ed85f1b0733faaedb7a16a109e74e65603645bfdc79f07a8cc863e8bcc"
+      },
+      {
+        "id": "BX11",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": true
+          },
+          "family": "first_row_stops_before_later_float_trap",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX11",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX11",
+            "parent_case_ids": [
+              "EX19"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } AS ?b) WHERE {}"
+            ],
+            "reason": "With the original FloatOperation trap enabled, observe the first row and whether later float arithmetic is reached; no hand-added evaluation of unused rows.",
+            "source_anchors": [
+              "operators.py:580-593",
+              "evaluate.py:124-139"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "79491bc36040583af284c1d01275b57ec566cf484868ad87e6943f7099c8364a"
+      },
+      {
+        "id": "BX12",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": true
+          },
+          "family": "eager_child_order_reaches_later_float_trap",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX12",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT ?x ?y WHERE { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } ORDER BY ?x } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX12",
+            "parent_case_ids": [
+              "EX20"
+            ],
+            "parent_queries": [
+              "SELECT (EXISTS { SELECT ?x ?y WHERE { VALUES ?x {1 0.1e0} BIND(?x * 1 AS ?y) } ORDER BY ?x } AS ?b) WHERE {}"
+            ],
+            "reason": "Same substantive child arithmetic as BX11, now the translated subquery ORDER must finish sorting before its first output. Record exact original failure stage/flags.",
+            "source_anchors": [
+              "evaluate.py:495-507",
+              "evaluate.py:571-574",
+              "operators.py:580-593"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "c7c89fd2e24e9bf497a765c161f0fd7b72049eabcf8c66ad6e207839724040d4"
+      },
+      {
+        "id": "BX13",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "nested_exists_not_exists_translated_once",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX13",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x ?b WHERE { VALUES ?x {0 1} BIND(EXISTS { FILTER(NOT EXISTS { FILTER(?x) }) } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX13",
+            "parent_case_ids": [
+              "EX26"
+            ],
+            "parent_queries": [
+              "SELECT ?x (EXISTS { FILTER(NOT EXISTS { FILTER(?x) }) } AS ?b) WHERE { VALUES ?x {0 1} }"
+            ],
+            "reason": "Observe nested actual graph attributes and idempotent translateGroupGraphPattern behavior; do not infer graph state from mapping children alone.",
+            "source_anchors": [
+              "algebra.py:257-275",
+              "algebra.py:323-332",
+              "operators.py:580-593"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "e76f7a0e9dca611a2abb72c6eac1d339bee3f9c43c1164b1f1415f8d2e0bcdba"
+      },
+      {
+        "id": "BX14",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "bound_boolean_aggregate_consumers",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX14",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT (COUNT(?b) AS ?n) (SAMPLE(?b) AS ?first) WHERE { VALUES ?x {0 1} BIND(EXISTS { FILTER(?x) } AS ?b) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX14",
+            "parent_case_ids": [
+              "EX27",
+              "EX28"
+            ],
+            "parent_queries": [
+              "SELECT (COUNT(EXISTS { FILTER(?x) }) AS ?n) WHERE { VALUES ?x {0 1} }",
+              "SELECT (SAMPLE(EXISTS {}) AS ?b) WHERE { VALUES ?x {1 2} }"
+            ],
+            "reason": "Real aggregate consumption of the successfully bound Boolean values. COUNT includes false; SAMPLE transports the first Boolean object. This intentionally differs from EXISTS directly in the aggregate argument.",
+            "source_anchors": [
+              "aggregates.py:69-88",
+              "aggregates.py:225-246",
+              "algebra.py:567-600"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "411ef6fce0eb9c80309607e3b8e1220e24c6069456caaf7ab4ce6df9fb54190f"
+      },
+      {
+        "id": "BX15",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "actual_filter_entry_correlated_exists",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX15",
+          "initial_bindings": [],
+          "max_rows": 100,
+          "query": "SELECT ?x WHERE { VALUES ?x {0 1} FILTER(EXISTS { FILTER(?x) }) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "new_case_id": "BX15",
+            "parent_case_ids": [
+              "EX07"
+            ],
+            "parent_queries": [
+              "SELECT ?x (EXISTS { FILTER(?x) } AS ?b) WHERE { VALUES ?x {0 1} }"
+            ],
+            "reason": "Exercise the other actual translateExists caller, collectAndRemoveFilters, with a correlated child rather than only WHERE BIND.",
+            "source_anchors": [
+              "algebra.py:278-297",
+              "evaluate.py:208-217"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "113457a4818e660bdba3a15e2683cd795e7b7eda54d8c35424bd6517a6d99219"
+      },
+      {
+        "id": "BX16",
+        "input": {
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          },
+          "family": "initial_none_and_error_cell_keep_distinct_roles",
+          "graph": "empty_in_memory_original_Graph",
+          "id": "BX16",
+          "initial_bindings": [
+            {
+              "value": {
+                "kind": "none"
+              },
+              "variable": "x"
+            },
+            {
+              "value": {
+                "argument": null,
+                "class": "NotBoundError",
+                "kind": "error"
+              },
+              "variable": "err"
+            }
+          ],
+          "max_rows": 100,
+          "query": "SELECT ?x ?b ?present WHERE { BIND(EXISTS { FILTER(?x) } AS ?b) BIND(EXISTS {} AS ?present) }",
+          "query_change": {
+            "changed_query": true,
+            "expected_answer_not_frozen": true,
+            "initial_bindings_changed": true,
+            "new_case_id": "BX16",
+            "parent_case_ids": [
+              "EX14",
+              "EX15"
+            ],
+            "parent_queries": [
+              "SELECT ?x (EXISTS { FILTER(?x) } AS ?b) WHERE {}",
+              "SELECT (EXISTS {} AS ?b) WHERE {}"
+            ],
+            "reason": "Original API initial x=None and err=NotBoundError(); None is an actual binding, and an unused error cell is not a raised stream error. Record initial object and local-domain presence, not public DTO authorization.",
+            "source_anchors": [
+              "sparql.py:249-263",
+              "sparql.py:306-318",
+              "sparql.py:430-436",
+              "evalutils.py:73-101",
+              "operators.py:580-593"
+            ]
+          }
+        },
+        "original_completed_stages": [
+          "parse_query",
+          "translate_query"
+        ],
+        "source_flags_by_stage": {
+          "parse_query": [],
+          "translate_query": []
+        },
+        "source_stdout_sha256": "241fb269f9c9de6059786b8d18c0f7925c874199863c72d2d6a60221088af325"
+      }
+    ]
+  },
+  "original_observation_collection_sha256": "719f52bddffacd788335d10faedbc22f3787f26a97cba585a3ae19f3cdcf237c"
+}

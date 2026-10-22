@@ -1,0 +1,486 @@
+schema="oev2.design-fragment/2"
+
+[[sources]]
+id="original_semantica_scope_association"
+identity="runtime/semantica-scope.json sha256 b1470d9980755811c815be24cdc041740de5f55e28232c327f0845d160455226; original lock d874aecfa20e3753ea85725c0a9b24e2f4795e4b54df819b52a31ac56b93e1dc; existing fixed six-case/19-protocol qualification and scope-witness owner"
+role="Preserve all original identities while joining current candidate source declarations with freshly guarded finite case observations"
+applicability="Full original 13494-item denominator, 19 modules/protocols and 22 owners remain; static declaration and finite observation do not establish API equivalence, abstract approval, release or engineering adoption"
+
+[[types]]
+name="CodeScopeImplementationAssociation"
+contract_group="engineering"
+meaning="One declared original-scope to candidate Rust-source relation; a resolved path is static identity, not behavioral proof"
+identity="Exact scope_id, declared module and candidate-root-relative rust_path; absent source is retained explicitly"
+
+[[types.fields]]
+name="scope_id"
+rust_type="String"
+required=true
+format="id"
+meaning="Exact original inventory ID without reduction or invented abstract exemptions"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Same frozen migration audit rejects unknown or duplicate declarations"
+
+[[types.fields]]
+name="module"
+rust_type="String"
+required=true
+format="id"
+meaning="Module label declared by the candidate mapping file; not a new owner or an independently verified implementation"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Preserved declaration only; no inferred ownership or acceptance"
+
+[[types.fields]]
+name="rust_path"
+rust_type="String"
+required=true
+format="path"
+meaning="Safe relative path declared in the candidate mapping file, resolved exclusively against candidate.source_root"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Driver and version-owner roots never supply a missing candidate file"
+
+[[types.fields]]
+name="source_sha256"
+rust_type="Option<String>"
+required=false
+format="sha256"
+meaning="Actual candidate manifest file digest, or absent when the declared path is missing from that manifest"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Current public manifest and source artifact identity are checked before and after the join"
+
+[[types.fields]]
+name="resolution"
+rust_type="String"
+required=true
+format="status"
+meaning="Whether the candidate manifest contains the declared source path; neither state is behavior passed"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Missing declaration targets remain visible without widening scope or importing foreign bytes"
+allowed_values=["declared_source_matched", "declared_source_missing"]
+
+[[types]]
+name="CodeScopeAssociationIndex"
+contract_group="engineering"
+meaning="Complete original inventory joined to existing finite observations and candidate source declarations; all behavioral and release conclusions remain unknown"
+identity="Original scope and lock, exact request, candidate manifest, owner POLICY/context and retained witness reference"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="status"
+meaning="Explicit index transport version; it does not authorize registration or activation"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Unknown schema rejects"
+allowed_values=["oev2.code-scope-association-index/1"]
+
+[[types.fields]]
+name="scope_sha256"
+rust_type="String"
+required=true
+format="sha256"
+meaning="Immutable original Semantica inventory bytes"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Owner requires the original fixed scope SHA"
+
+[[types.fields]]
+name="scope_lock_sha256"
+rust_type="String"
+required=true
+format="sha256"
+meaning="Immutable original scope-lock bytes"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Owner requires the original lock SHA"
+
+[[types.fields]]
+name="fixed_scope_count"
+rust_type="u64"
+required=true
+format="typed"
+meaning="Complete original denominator, exactly 13494 during owner assembly"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Actual set equality and unique count are checked, not only a claimed count"
+
+[[types.fields]]
+name="request"
+rust_type="CodeArtifactEligibilityRequest"
+required=true
+format="object"
+meaning="Exact selected binding, revision and scope, with source/assurance descriptor references relative to the version-owner root"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Reuse original authority context selection and bound-byte guards; no replacement small descriptor"
+
+[[types.fields]]
+name="candidate_manifest_sha256"
+rust_type="String"
+required=true
+format="sha256"
+meaning="Canonical digest of the complete actual candidate public manifest; not an archive or driver digest"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Must match source artifact, experiment candidate and actual witness candidate identity"
+
+[[types.fields]]
+name="policy_sha256"
+rust_type="String"
+required=true
+format="sha256"
+meaning="Actual current unique version-owner POLICY bytes at this observation"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Unchanged original owner policy guards run again before receipt publication"
+
+[[types.fields]]
+name="context"
+rust_type="ArtifactReference"
+required=true
+format="object"
+meaning="Actual current selected authority context reference relative to the version-owner root; /3 still selects the same exact revision leaf"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Current context, source/assurance, fixed tools, experiment and protocol are rechecked"
+
+[[types.fields]]
+name="candidate_mappings_sha256"
+rust_type="Option<String>"
+required=false
+format="sha256"
+meaning="Candidate-root runtime/semantica-migration-mappings.json digest, or absent if no mapping file exists"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="No fallback to owner or driver mappings and no claim that absent mapping means absent implementation"
+
+[[types.fields]]
+name="witness"
+rust_type="ArtifactReference"
+required=true
+format="object"
+meaning="Retained scope-witness report relative to the version-owner root; nested process references remain relative to the selected qualification driver source_root"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Real driver process and retained stdout/stderr are checked by the existing owner; deserializing a witness is not provenance"
+
+[[types.fields]]
+name="items"
+rust_type="Vec<CodeScopeItemEvidence>"
+required=true
+format="typed"
+meaning="All 13494 original IDs exactly once, sorted by ID, with only existing permitted matched-case observations and behavior unknown"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="No missing, duplicate, invented or approved-abstract substitutes; finite cases remain finite"
+
+[[types.fields]]
+name="implementations"
+rust_type="Vec<CodeScopeImplementationAssociation>"
+required=true
+format="typed"
+meaning="All declared candidate mapping relations sorted by scope_id/module/path; zero relations is explicitly possible"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Separate from observed_case_ids and API acceptance; no unlisted implementation is inferred absent"
+
+[[types.fields]]
+name="uncovered"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Unchanged original qualification uncovered set including full behavior, transfer and use-feedback-recovery gaps"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="No denominator reduction or deletion of old unresolved obligations"
+
+[[types.fields]]
+name="behavior_status"
+rust_type="String"
+required=true
+format="status"
+meaning="Whole-index behavioral conclusion remains unknown even when finite process observations completed"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Static identity and joined observations do not grant complete compatibility"
+allowed_values=["unknown"]
+
+[[types.fields]]
+name="eligibility"
+rust_type="String"
+required=true
+format="status"
+meaning="Whole-code release eligibility remains unknown; registry activation and restore stay closed"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="No new adoption, selection or engineering authority"
+allowed_values=["unknown"]
+
+[[types]]
+name="CodeScopeAssociationResult"
+contract_group="engineering"
+meaning="Small reference receipt from the same version owner; fresh association result is distinct from old qualification and registry actions"
+identity="Explicit result version, unchanged qualification result and optional owner-root index reference"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="status"
+meaning="Explicit association result transport version"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Unknown schema rejects"
+allowed_values=["oev2.code-scope-association-result/1"]
+
+[[types.fields]]
+name="qualification"
+rust_type="CodeArtifactEligibilityResult"
+required=true
+format="object"
+meaning="Original owner result unmodified: missing context is not_run/not_connected, finite completed or failed replay remains unknown"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Original result and uncovered reasons are retained without rebranding static mapping as qualification"
+
+[[types.fields]]
+name="index"
+rust_type="Option<ArtifactReference>"
+required=false
+format="object"
+meaning="Owner-root reference to the derived index only when fresh witness and current-source guards pass; absent on disconnected or failed replay"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Raw artifacts left by a later guard failure are diagnostics without an accepted final association receipt"
+
+[[types.fields]]
+name="execution"
+rust_type="String"
+required=true
+format="status"
+meaning="Association observation execution, independent of eligibility; no context is not_connected and unsuccessful dispatch is failed"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="Failed or incomplete replay cannot emit an accepted index"
+allowed_values=["completed", "failed", "not_connected"]
+
+[[types.fields]]
+name="reason"
+rust_type="String"
+required=true
+format="text"
+meaning="Actual narrow result boundary, including that whole-code eligibility remains unknown"
+unit="SHA256, original identifiers and item counts as explicitly named"
+precision="Exact original scope identity and candidate file bytes; unknown is not zero or a passed result"
+write="Existing version owner derives after bound actual dispatch and pre/post identity guards; callers cannot submit an index as evidence"
+applicability="Explicit same-owner association entry; original qualification, selection, use, feedback and recovery authority are unchanged"
+acceptance="No completion statement for full Semantica, platform, engineering or activation acceptance"
+
+[[interfaces]]
+name="CodeScopeAssociationPort"
+module="engineering"
+method="associate"
+input="CodeArtifactEligibilityRequest"
+output="CodeScopeAssociationResult"
+error="FailureRecord"
+rust_path="crates/oe-engineering/src/registry.rs"
+implementation="CodeArtifactEligibilityExecutor"
+effects="Use the existing selected context and one real fixed external driver run; retain private process/index receipts only. No input witness/index or new owner, registry event, selection, use, feedback, recovery or adoption authority."
+
+[[constraints]]
+id="code_scope_association_same_owner"
+requirement="req_engineering"
+module="engineering"
+check="associate"
+rust_path="crates/oe-engineering/src/code_qualification.rs"
+statement="The explicit association entry mechanically shares the original qualification executor and exact guard order. Missing context preserves not_connected; a full-scope context is required before dispatch. A fresh completed independently fixed witness is mandatory for an index. All original current source, tool, policy, selected context, protocol, retained report and raw-stream guards run before final association receipt publication; failed or later-rejected artifacts never become acceptance."
+severity="error"
+
+[[constraints]]
+id="code_scope_association_candidate_root"
+requirement="req_engineering"
+module="engineering"
+check="capture"
+rust_path="crates/oe-engineering/src/code_qualification/association.rs"
+statement="Original scope and mapping audit is applied to the actual candidate.source_root after the complete public manifest matches the source artifact. Candidate declarations resolve only in that manifest; missing files are recorded and no driver/owner/private fallback is used. Repeat actual capture after execution and before receipt. Relative request/context/witness references are owner-rooted; witness process references retain the original driver-root role. Known manifest identity domains remain exact: original seven-key manifest from pinned code_identity.rs SHA2563510950c87d452b07d44761efa5de1adb45ed16dd0398a920e4a18cf8da7ce0b and current nine-key derived-model-resource/2 only. Legacy allfiles16MiB and current canonical generated/model.ttl32MiB limits are actually enforced in shared scans and fingerprints; total256MiB/count10000 remain. Complete artifacts compare full original manifest, digest-only binary refs may try only the known original domain after current mismatch. Unknown/hybrid metadata, caller budgets and actual byte/mode/member drift reject; original digests are never rewritten. Default new captures and other current native lifecycle protocols remain unchanged."
+severity="error"
+
+[[constraints]]
+id="code_scope_association_total_unknown"
+requirement="req_engineering"
+module="engineering"
+check="assemble"
+rust_path="crates/oe-engineering/src/code_qualification/association.rs"
+statement="All original 13494 IDs are retained exactly once with unknown behavioral status. Only the existing permitted finite matched-case observations are reused; approved abstract declarations, source matches, generated shape validity and passed JSON do not establish behavior or release eligibility. Canonical ordering and a readable 16MiB retained index bound apply; unsupported whole-code use/feedback/recovery remain unchanged."
+severity="error"
+
+[[validations]]
+id="scope_association_owned_prerequisites"
+module="engineering"
+constraint="code_scope_association_same_owner"
+behavior="association_requires_full_scope_and_rejects_changed_descriptor_before_dispatch"
+rust_path="crates/oe-engineering/tests/code_qualification.rs"
+oracle="An original frozen selected /1 context cannot dispatch association without full scope, and a changed private source descriptor rejects before any process or index"
+scope="Ignored unless original frozen descriptors are explicitly supplied; production binaries and public sources remain unchanged"
+
+[[validations]]
+id="scope_association_missing_context"
+module="engineering"
+constraint="code_scope_association_same_owner"
+behavior="association_missing_context_never_imports_claimed_witness"
+rust_path="crates/oe-engineering/tests/code_qualification.rs"
+oracle="Caller passed/eligible JSON with no selected authority context yields no index, original not_run/not_connected qualification and no registry event"
+scope="Actual owner rejection only; no external execution is claimed"
+
+[[validations]]
+id="scope_association_candidate_paths"
+module="engineering"
+constraint="code_scope_association_candidate_root"
+behavior="association_paths_use_candidate_manifest_and_keep_missing_declarations"
+rust_path="crates/oe-engineering/src/code_qualification/association.rs"
+oracle="Distinct candidate/foreign digests, multiple declarations and missing paths retain exact candidate associations and deterministic ordering"
+scope="Pure structural join fixture; not source execution or driver evidence"
+
+[[validations]]
+id="scope_association_missing_mapping"
+module="engineering"
+constraint="code_scope_association_candidate_root"
+behavior="association_missing_mapping_is_explicit_and_bad_digest_is_not_trusted"
+rust_path="crates/oe-engineering/src/code_qualification/association.rs"
+oracle="Missing mappings remain None and empty; malformed digest cannot be used as source identity"
+scope="Pure mapping structure test; original audit and public-manifest guards remain separately required"
+
+[[validations]]
+id="scope_association_original_identity_set"
+module="engineering"
+constraint="code_scope_association_total_unknown"
+behavior="association_total_join_preserves_original_ids_and_rejects_omission_or_promotion"
+rust_path="crates/oe-engineering/src/code_qualification/association.rs"
+oracle="Read actual immutable inventory; 13494 unknown rows and reordering retain all IDs, while omission, duplication, foreign IDs and promoted abstract status reject"
+scope="Structural set test only; synthetic rows never substitute for a process witness"
+
+[[validations]]
+id="scope_association_actual_owner_run"
+module="engineering"
+constraint="code_scope_association_same_owner"
+behavior="actual_scope_association_keeps_original_ids_and_owner_roles"
+rust_path="crates/oe-engineering/tests/code_qualification.rs"
+oracle="Explicit frozen independent fixture invokes the actual same owner; exact13494 IDs, existing3 permitted observations, candidate-only source digests and owner-relative witness survive, while select/restore still reject"
+scope="Ignored by default: requires current original fixed driver/evaluator/runner identities and actual explicit execution. No inheritance of historical pass or full platform/library acceptance"
+
+[[contract_cases]]
+id="association_relation_shape"
+target_type="CodeScopeImplementationAssociation"
+input_json="{\"scope_id\":\"original-id\",\"module\":\"semantic_runtime\",\"rust_path\":\"crates/owner.rs\",\"source_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"resolution\":\"declared_source_matched\"}"
+expected_valid=true
+oracle="Generated wire shape only: even a shape-valid index must pass the owner original13494/current-source/fresh-process guards and cannot be imported as acceptance."
+
+[[contract_cases]]
+id="association_missing_path_shape"
+target_type="CodeScopeImplementationAssociation"
+input_json="{\"scope_id\":\"original-id\",\"module\":\"semantic_runtime\",\"rust_path\":\"crates/owner.rs\",\"source_sha256\":null,\"resolution\":\"declared_source_missing\"}"
+expected_valid=true
+oracle="Generated wire shape only: even a shape-valid index must pass the owner original13494/current-source/fresh-process guards and cannot be imported as acceptance."
+
+[[contract_cases]]
+id="association_relation_promoted_status"
+target_type="CodeScopeImplementationAssociation"
+input_json="{\"scope_id\":\"original-id\",\"module\":\"semantic_runtime\",\"rust_path\":\"crates/owner.rs\",\"source_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"resolution\":\"behavior_passed\"}"
+expected_valid=false
+oracle="Generated wire shape only: even a shape-valid index must pass the owner original13494/current-source/fresh-process guards and cannot be imported as acceptance."
+
+[[contract_cases]]
+id="association_relation_bad_sha"
+target_type="CodeScopeImplementationAssociation"
+input_json="{\"scope_id\":\"original-id\",\"module\":\"semantic_runtime\",\"rust_path\":\"crates/owner.rs\",\"source_sha256\":\"passed\",\"resolution\":\"declared_source_matched\"}"
+expected_valid=false
+oracle="Generated wire shape only: even a shape-valid index must pass the owner original13494/current-source/fresh-process guards and cannot be imported as acceptance."
+
+[[contract_cases]]
+id="association_disconnected_receipt_shape"
+target_type="CodeScopeAssociationResult"
+input_json="{\"schema\":\"oev2.code-scope-association-result/1\",\"qualification\":{\"schema\":\"oev2.code-artifact-eligibility-result/1\",\"execution\":\"not_run\",\"eligibility\":\"not_connected\",\"artifact_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"comparison_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"uncovered\":[\"whole_code_use_feedback_recover\"],\"reason\":\"No owned context\"},\"index\":null,\"execution\":\"not_connected\",\"reason\":\"No accepted index\"}"
+expected_valid=true
+oracle="Generated wire shape only: even a shape-valid index must pass the owner original13494/current-source/fresh-process guards and cannot be imported as acceptance."
+
+[[contract_cases]]
+id="association_unknown_receipt_status"
+target_type="CodeScopeAssociationResult"
+input_json="{\"schema\":\"oev2.code-scope-association-result/1\",\"qualification\":{\"schema\":\"oev2.code-artifact-eligibility-result/1\",\"execution\":\"not_run\",\"eligibility\":\"not_connected\",\"artifact_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"comparison_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"uncovered\":[\"whole_code_use_feedback_recover\"],\"reason\":\"No owned context\"},\"index\":null,\"execution\":\"eligible\",\"reason\":\"No accepted index\"}"
+expected_valid=false
+oracle="Generated wire shape only: even a shape-valid index must pass the owner original13494/current-source/fresh-process guards and cannot be imported as acceptance."
+
+[[contract_cases]]
+id="association_index_structural_only_not_total_join"
+target_type="CodeScopeAssociationIndex"
+input_json="{\"schema\":\"oev2.code-scope-association-index/1\",\"scope_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"scope_lock_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"fixed_scope_count\":1,\"request\":{\"schema\":\"oev2.code-artifact-eligibility-request/1\",\"binding_id\":\"code\",\"revision\":\"r2\",\"scope_id\":\"semantica.full-library/1\",\"source\":{\"path\":\"var/source.json\",\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"assurance\":{\"path\":\"var/comparison.json\",\"sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}},\"candidate_manifest_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"policy_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"context\":{\"path\":\"var/context.json\",\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"candidate_mappings_sha256\":null,\"witness\":{\"path\":\"var/witness.json\",\"sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"items\":[{\"scope_id\":\"original-id\",\"observed_case_ids\":[],\"behavior_status\":\"unknown\"}],\"implementations\":[{\"scope_id\":\"original-id\",\"module\":\"semantic_runtime\",\"rust_path\":\"crates/owner.rs\",\"source_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"resolution\":\"declared_source_matched\"}],\"uncovered\":[\"full_scope_unknown\"],\"behavior_status\":\"unknown\",\"eligibility\":\"unknown\"}"
+expected_valid=true
+oracle="Generated wire shape only: even a shape-valid index must pass the owner original13494/current-source/fresh-process guards and cannot be imported as acceptance."
+
+[[contract_cases]]
+id="association_index_cannot_claim_eligible"
+target_type="CodeScopeAssociationIndex"
+input_json="{\"schema\":\"oev2.code-scope-association-index/1\",\"scope_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"scope_lock_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"fixed_scope_count\":1,\"request\":{\"schema\":\"oev2.code-artifact-eligibility-request/1\",\"binding_id\":\"code\",\"revision\":\"r2\",\"scope_id\":\"semantica.full-library/1\",\"source\":{\"path\":\"var/source.json\",\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"assurance\":{\"path\":\"var/comparison.json\",\"sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}},\"candidate_manifest_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"policy_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"context\":{\"path\":\"var/context.json\",\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"candidate_mappings_sha256\":null,\"witness\":{\"path\":\"var/witness.json\",\"sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"items\":[{\"scope_id\":\"original-id\",\"observed_case_ids\":[],\"behavior_status\":\"unknown\"}],\"implementations\":[{\"scope_id\":\"original-id\",\"module\":\"semantic_runtime\",\"rust_path\":\"crates/owner.rs\",\"source_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"resolution\":\"declared_source_matched\"}],\"uncovered\":[\"full_scope_unknown\"],\"behavior_status\":\"unknown\",\"eligibility\":\"eligible\"}"
+expected_valid=false
+oracle="Generated wire shape only: even a shape-valid index must pass the owner original13494/current-source/fresh-process guards and cannot be imported as acceptance."
+
+[[contract_cases]]
+id="association_index_no_self_approved_field"
+target_type="CodeScopeAssociationIndex"
+input_json="{\"schema\":\"oev2.code-scope-association-index/1\",\"scope_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"scope_lock_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"fixed_scope_count\":1,\"request\":{\"schema\":\"oev2.code-artifact-eligibility-request/1\",\"binding_id\":\"code\",\"revision\":\"r2\",\"scope_id\":\"semantica.full-library/1\",\"source\":{\"path\":\"var/source.json\",\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"assurance\":{\"path\":\"var/comparison.json\",\"sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}},\"candidate_manifest_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"policy_sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"context\":{\"path\":\"var/context.json\",\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"candidate_mappings_sha256\":null,\"witness\":{\"path\":\"var/witness.json\",\"sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"},\"items\":[{\"scope_id\":\"original-id\",\"observed_case_ids\":[],\"behavior_status\":\"unknown\"}],\"implementations\":[{\"scope_id\":\"original-id\",\"module\":\"semantic_runtime\",\"rust_path\":\"crates/owner.rs\",\"source_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"resolution\":\"declared_source_matched\"}],\"uncovered\":[\"full_scope_unknown\"],\"behavior_status\":\"unknown\",\"eligibility\":\"unknown\",\"approved_abstract\":true}"
+expected_valid=false
+oracle="Generated wire shape only: even a shape-valid index must pass the owner original13494/current-source/fresh-process guards and cannot be imported as acceptance."

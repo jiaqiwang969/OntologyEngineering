@@ -1,0 +1,44 @@
+[package]
+name = "oe-engineering"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+oe-model-credentials.workspace = true
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+num-bigint.workspace = true
+rusqlite.workspace = true
+chrono.workspace = true
+reqwest.workspace = true
+url.workspace = true
+oe-core.workspace = true
+tokio = { version = "=1.53.1", features = ["rt", "time", "net"] }
+futures-util = { version = "=0.3.34", default-features = false, features = ["std"] }
+oe-semantic.workspace = true
+oe-knowledge.workspace = true
+oe-cad.workspace = true
+oe-nx-protocol.workspace = true
+oe-kernel = { path = "../oe-kernel" }
+oe-contracts = { path = "../oe-contracts" }
+oe-evolution = { path = "../oe-evolution" }
+semantica-contracts.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+libc.workspace = true
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+zip.workspace = true
+tempfile.workspace = true
+semantica-runtime.workspace = true
+base64.workspace = true
+
+[target.'cfg(windows)'.dev-dependencies]
+windows-sys = { version = "=0.52.0", features = ["Win32_Foundation", "Win32_Security", "Win32_Security_Authorization", "Win32_System_Threading"] }

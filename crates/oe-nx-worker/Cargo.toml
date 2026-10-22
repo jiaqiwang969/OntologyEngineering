@@ -1,0 +1,26 @@
+[package]
+name = "oe-nx-worker"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+oe-nx-protocol.workspace = true
+oe-windows-controller.workspace = true
+oe-contracts = { path = "../oe-contracts" }
+oe-core.workspace = true
+oe-wire.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[lints]
+workspace = true
+
+[target.'cfg(not(windows))'.dependencies]
+sha2 = { workspace = true, features = ["asm"] }

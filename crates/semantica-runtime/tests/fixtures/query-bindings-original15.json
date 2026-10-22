@@ -1,0 +1,293 @@
+{
+  "schema": "semantica.query-options-original-oracle/1",
+  "rdflib_version": "7.6.0",
+  "source_files": [
+    {
+      "name": "evaluate.py",
+      "sha256": "991944f756398773c4ddf0da0bf5a3c2285f2a67140c9976a8a806ba5d8402be"
+    },
+    {
+      "name": "sparql.py",
+      "sha256": "938b13a453cf85f42b559bbf303c06d9710801fbc39dfcb87ff79fb87b15a55f"
+    },
+    {
+      "name": "processor.py",
+      "sha256": "f6f5786782c8d5c0518e1c2564ba9b444690189c539c286a21c48d437fef67e8"
+    }
+  ],
+  "input_data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+  "namespaces": {
+    "ex": "urn:"
+  },
+  "cases": [
+    {
+      "id": "filter",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name FILTER(?s = ex:part) }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        }
+      },
+      "kind": "SELECT",
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        {
+          "name": "\"shaft\"@en"
+        }
+      ]
+    },
+    {
+      "id": "filter_only_parameter",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name FILTER(?gate = \"go\") }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        },
+        "gate": {
+          "kind": "Literal",
+          "n3": "\"go\""
+        }
+      },
+      "kind": "SELECT",
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        {
+          "name": "\"shaft\"@en"
+        }
+      ]
+    },
+    {
+      "id": "optional",
+      "query": "SELECT ?name ?note WHERE { ?s ex:name ?name OPTIONAL { ?s ex:note ?note } }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        }
+      },
+      "kind": "SELECT",
+      "columns": [
+        "name",
+        "note"
+      ],
+      "rows": [
+        {
+          "name": "\"shaft\"@en"
+        }
+      ]
+    },
+    {
+      "id": "union",
+      "query": "SELECT ?name WHERE { { ?s ex:name ?name } UNION { ?s ex:alias ?name } }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        }
+      },
+      "kind": "SELECT",
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        {
+          "name": "\"shaft\"@en"
+        },
+        {
+          "name": "\"shaft\"@en"
+        }
+      ]
+    },
+    {
+      "id": "distinct",
+      "query": "SELECT DISTINCT ?name WHERE { ?s ex:name ?name ; ex:tag ?tag }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        }
+      },
+      "kind": "SELECT",
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        {
+          "name": "\"shaft\"@en"
+        }
+      ]
+    },
+    {
+      "id": "group",
+      "query": "SELECT (COUNT(?tag) AS ?count) WHERE { ?s ex:name ?name ; ex:tag ?tag }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        }
+      },
+      "kind": "SELECT",
+      "columns": [
+        "count"
+      ],
+      "rows": [
+        {
+          "count": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+        }
+      ]
+    },
+    {
+      "id": "subquery",
+      "query": "SELECT ?name WHERE { { SELECT ?name WHERE { ?s ex:name ?name } } }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        }
+      },
+      "kind": "SELECT",
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        {
+          "name": "\"shaft\"@en"
+        }
+      ]
+    },
+    {
+      "id": "subquery_filter",
+      "query": "SELECT ?name WHERE { { SELECT ?name WHERE { ?s ex:name ?name FILTER(BOUND(?gate)) } } }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        },
+        "gate": {
+          "kind": "Literal",
+          "n3": "\"go\""
+        }
+      },
+      "kind": "SELECT",
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        {
+          "name": "\"shaft\"@en"
+        }
+      ]
+    },
+    {
+      "id": "ask",
+      "query": "ASK { ?s ex:name ?name }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        }
+      },
+      "kind": "ASK",
+      "value": true
+    },
+    {
+      "id": "ask_absent",
+      "query": "ASK { ?s ex:name ?name }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:missing>"
+        }
+      },
+      "kind": "ASK",
+      "value": false
+    },
+    {
+      "id": "ask_exists",
+      "query": "ASK { FILTER EXISTS { ?s ex:name ?name } }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        }
+      },
+      "kind": "ASK",
+      "value": true
+    },
+    {
+      "id": "construct",
+      "query": "CONSTRUCT { ?s ex:label ?name } WHERE { ?s ex:name ?name }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        }
+      },
+      "kind": "CONSTRUCT",
+      "triples": [
+        "<urn:part> <urn:label> \"shaft\"@en ."
+      ]
+    },
+    {
+      "id": "construct_template_only",
+      "query": "CONSTRUCT { ?target ex:label ?name } WHERE { ex:part ex:name ?name }",
+      "bindings": {
+        "target": {
+          "kind": "URIRef",
+          "n3": "<urn:document>"
+        }
+      },
+      "kind": "CONSTRUCT",
+      "triples": [
+        "<urn:document> <urn:label> \"shaft\"@en ."
+      ]
+    },
+    {
+      "id": "unused_binding",
+      "query": "SELECT ?name WHERE { ?s ex:name ?name }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:part>"
+        },
+        "unused": {
+          "kind": "Literal",
+          "n3": "\"unused\""
+        }
+      },
+      "kind": "SELECT",
+      "columns": [
+        "name"
+      ],
+      "rows": [
+        {
+          "name": "\"shaft\"@en"
+        }
+      ]
+    },
+    {
+      "id": "describe_hidden_parameter",
+      "query": "DESCRIBE ex:part WHERE { ?s ex:name ?name }",
+      "bindings": {
+        "s": {
+          "kind": "URIRef",
+          "n3": "<urn:other>"
+        }
+      },
+      "kind": "DESCRIBE",
+      "triples": [
+        "<urn:part> <urn:alias> \"shaft\"@en .",
+        "<urn:part> <urn:name> \"shaft\"@en .",
+        "<urn:part> <urn:tag> \"A\" .",
+        "<urn:part> <urn:tag> \"B\" ."
+      ]
+    }
+  ],
+  "scope": "local synthetic data only, no Semantica import or remote query; frozen before AST fix"
+}

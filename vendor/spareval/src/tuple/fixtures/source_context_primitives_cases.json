@@ -1,0 +1,1459 @@
+{
+  "schema": "public.source-context-primitives-cases/1",
+  "source_record_sha256": "4cc85999a7f5926fc9f89f74ecad3ce424255d6bd2dc614d17600a7488fa5773",
+  "evidence": "Source-derived context primitive protocols, distinct from query execution and explicit active unavailable-fact controls.",
+  "canonical_payload_sha256": "07035344592a3b763ea8f53ccfdd0c190a38590305726e2bb0156857f246ac57",
+  "value_dictionary": {
+    "T": {
+      "kind": "NamedNode",
+      "iri": "urn:context:T"
+    },
+    "U": {
+      "kind": "NamedNode",
+      "iri": "urn:context:U"
+    },
+    "LANG_EN": {
+      "kind": "Literal",
+      "lexical": "v",
+      "source_datatype": null,
+      "language_original": "EN",
+      "cache": "String(v)",
+      "object_identity": "LANG_EN"
+    },
+    "LANG_en": {
+      "kind": "Literal",
+      "lexical": "v",
+      "source_datatype": null,
+      "language_original": "en",
+      "cache": "String(v)",
+      "object_identity": "LANG_en"
+    },
+    "OTHER_LANG": {
+      "kind": "Literal",
+      "lexical": "different",
+      "source_datatype": null,
+      "language_original": "en"
+    },
+    "remaining_uppercase_tokens": "Distinct immutable NamedNodes urn:context:<token>; aliases denote original object references, not reparsed copies.",
+    "None": "Present explicit Python None; absent is omitted key.",
+    "ERROR_A_and_ERROR_B_same_source_message": "Two distinct owned SPARQLError objects with same class and arguments; only repeated ERROR_A shares identity."
+  },
+  "source_cases": [
+    {
+      "id": "CP01",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "thaw",
+      "input": {
+        "initial": {
+          "0": "T"
+        },
+        "current": {
+          "0": "T",
+          "1": "U"
+        },
+        "frozen": {},
+        "expected": {
+          "0": "T",
+          "1": "U"
+        },
+        "sequence_encoding": "initial/current/frozen input maps use listed JSON insertion order; the reused legacy expected map is unordered local equality only. null is present ExplicitNone, not absent."
+      },
+      "expected": {
+        "legacy_unordered_local_map": {
+          "0": "T",
+          "1": "U"
+        },
+        "ordered_local": [
+          [
+            "0",
+            "T"
+          ],
+          [
+            "1",
+            "U"
+          ]
+        ]
+      },
+      "source_anchors": [
+        "sparql.py:258-261",
+        "sparql.py:306-317",
+        "sparql.py:430-436"
+      ]
+    },
+    {
+      "id": "CP02",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "thaw",
+      "input": {
+        "initial": {
+          "0": "T"
+        },
+        "current": {
+          "0": "T",
+          "1": "U"
+        },
+        "frozen": {
+          "0": null
+        },
+        "expected": {
+          "0": "T"
+        },
+        "sequence_encoding": "initial/current/frozen input maps use listed JSON insertion order; the reused legacy expected map is unordered local equality only. null is present ExplicitNone, not absent."
+      },
+      "expected": {
+        "legacy_unordered_local_map": {
+          "0": "T"
+        },
+        "ordered_local": [
+          [
+            "0",
+            "T"
+          ]
+        ]
+      },
+      "source_anchors": [
+        "sparql.py:258-261",
+        "sparql.py:306-317",
+        "sparql.py:430-436"
+      ]
+    },
+    {
+      "id": "CP03",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "thaw",
+      "input": {
+        "initial": {
+          "0": "T"
+        },
+        "current": {
+          "0": "T",
+          "1": "U"
+        },
+        "frozen": {
+          "2": null
+        },
+        "expected": {
+          "0": "T",
+          "2": null
+        },
+        "sequence_encoding": "initial/current/frozen input maps use listed JSON insertion order; the reused legacy expected map is unordered local equality only. null is present ExplicitNone, not absent."
+      },
+      "expected": {
+        "legacy_unordered_local_map": {
+          "0": "T",
+          "2": null
+        },
+        "ordered_local": [
+          [
+            "2",
+            null
+          ],
+          [
+            "0",
+            "T"
+          ]
+        ]
+      },
+      "source_anchors": [
+        "sparql.py:258-261",
+        "sparql.py:306-317",
+        "sparql.py:430-436"
+      ]
+    },
+    {
+      "id": "CP04",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "thaw",
+      "input": {
+        "initial": {},
+        "current": {
+          "1": "U"
+        },
+        "frozen": {
+          "0": null
+        },
+        "expected": {
+          "0": null
+        },
+        "sequence_encoding": "initial/current/frozen input maps use listed JSON insertion order; the reused legacy expected map is unordered local equality only. null is present ExplicitNone, not absent."
+      },
+      "expected": {
+        "legacy_unordered_local_map": {
+          "0": null
+        },
+        "ordered_local": [
+          [
+            "0",
+            null
+          ]
+        ]
+      },
+      "source_anchors": [
+        "sparql.py:258-261",
+        "sparql.py:306-317",
+        "sparql.py:430-436"
+      ]
+    },
+    {
+      "id": "CP05",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "thaw",
+      "input": {
+        "initial": {},
+        "current": {
+          "1": "U"
+        },
+        "frozen": {},
+        "expected": {
+          "1": "U"
+        },
+        "sequence_encoding": "initial/current/frozen input maps use listed JSON insertion order; the reused legacy expected map is unordered local equality only. null is present ExplicitNone, not absent."
+      },
+      "expected": {
+        "legacy_unordered_local_map": {
+          "1": "U"
+        },
+        "ordered_local": [
+          [
+            "1",
+            "U"
+          ]
+        ]
+      },
+      "source_anchors": [
+        "sparql.py:258-261",
+        "sparql.py:306-317",
+        "sparql.py:430-436"
+      ]
+    },
+    {
+      "id": "CP06",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "thaw",
+      "input": {
+        "initial": {},
+        "current": {},
+        "frozen": {},
+        "expected": {},
+        "sequence_encoding": "initial/current/frozen input maps use listed JSON insertion order; the reused legacy expected map is unordered local equality only. null is present ExplicitNone, not absent."
+      },
+      "expected": {
+        "legacy_unordered_local_map": {},
+        "ordered_local": []
+      },
+      "source_anchors": [
+        "sparql.py:258-261",
+        "sparql.py:306-317",
+        "sparql.py:430-436"
+      ]
+    },
+    {
+      "id": "CP07",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "constructor_initial_update",
+      "input": {
+        "bindings": [
+          [
+            "b",
+            "B"
+          ],
+          [
+            "a",
+            "A0"
+          ]
+        ],
+        "initial": [
+          [
+            "a",
+            "A1"
+          ],
+          [
+            "c",
+            "C"
+          ]
+        ]
+      },
+      "expected": {
+        "ordered_current": [
+          [
+            "b",
+            "B"
+          ],
+          [
+            "a",
+            "A1"
+          ],
+          [
+            "c",
+            "C"
+          ]
+        ],
+        "initial_unchanged": true,
+        "value_objects": [
+          "B",
+          "A1",
+          "C"
+        ],
+        "note": "Existing a retains insertion position; new c appends."
+      },
+      "source_anchors": [
+        "sparql.py:67-69",
+        "sparql.py:258-261",
+        "_collections_abc.py:979-995"
+      ]
+    },
+    {
+      "id": "CP08",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "solution_and_project",
+      "input": {
+        "current": [
+          [
+            "b",
+            "B"
+          ],
+          [
+            "a",
+            "A"
+          ]
+        ],
+        "initial": [
+          [
+            "a",
+            "A"
+          ]
+        ],
+        "operations": [
+          "solution(None)",
+          "solution([])",
+          "solution([a])",
+          "solution(None).project([])",
+          "solution(None).project([a,b])"
+        ]
+      },
+      "expected": {
+        "ordered_locals": [
+          [
+            [
+              "b",
+              "B"
+            ],
+            [
+              "a",
+              "A"
+            ]
+          ],
+          [
+            [
+              "b",
+              "B"
+            ],
+            [
+              "a",
+              "A"
+            ]
+          ],
+          [
+            [
+              "a",
+              "A"
+            ]
+          ],
+          [],
+          [
+            [
+              "b",
+              "B"
+            ],
+            [
+              "a",
+              "A"
+            ]
+          ]
+        ],
+        "every_produced_row_has_new_object_identity": true,
+        "every_produced_row_raw_hash_cache": null,
+        "contexts_preserved": true,
+        "value_object_identity_preserved": true
+      },
+      "source_anchors": [
+        "sparql.py:122-124",
+        "sparql.py:195-196",
+        "sparql.py:401-410"
+      ]
+    },
+    {
+      "id": "CP09",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "frozen_lookup_and_local_domain",
+      "input": {
+        "initial": [
+          [
+            "x",
+            "T"
+          ],
+          [
+            "z",
+            "Z"
+          ]
+        ],
+        "local": [
+          [
+            "x",
+            null
+          ],
+          [
+            "y",
+            "Y"
+          ]
+        ],
+        "lookups": [
+          "x",
+          "y",
+          "z",
+          "missing"
+        ]
+      },
+      "expected": {
+        "results": [
+          {
+            "present": true,
+            "value": null
+          },
+          {
+            "present": true,
+            "value": "Y"
+          },
+          {
+            "present": true,
+            "value": "Z"
+          },
+          {
+            "exception": "KeyError"
+          }
+        ],
+        "local_keys": [
+          "x",
+          "y"
+        ],
+        "local_length": 2,
+        "initial_unchanged": true
+      },
+      "source_anchors": [
+        "sparql.py:126-130",
+        "sparql.py:181-193"
+      ]
+    },
+    {
+      "id": "CP10",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "context_lookup_missing",
+      "input": {
+        "current": [
+          [
+            "x",
+            null
+          ]
+        ],
+        "lookups": [
+          "x",
+          "missing"
+        ]
+      },
+      "expected": {
+        "results": [
+          null,
+          null
+        ],
+        "membership": [
+          true,
+          false
+        ]
+      },
+      "source_anchors": [
+        "sparql.py:79-84",
+        "sparql.py:386-393"
+      ]
+    },
+    {
+      "id": "CP11",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "assign",
+      "input": {
+        "current": [
+          [
+            "x",
+            "LANG_EN"
+          ]
+        ],
+        "sequence": [
+          {
+            "key": "x",
+            "value": "LANG_en"
+          },
+          {
+            "key": "y",
+            "value": "T"
+          },
+          {
+            "key": "x",
+            "value": "OTHER_LANG"
+          }
+        ]
+      },
+      "expected": {
+        "after_success": [
+          [
+            "x",
+            "LANG_en"
+          ],
+          [
+            "y",
+            "T"
+          ]
+        ],
+        "third_exception": "AlreadyBound",
+        "after_failure": [
+          [
+            "x",
+            "LANG_en"
+          ],
+          [
+            "y",
+            "T"
+          ]
+        ],
+        "equal_assignment_stores_incoming_object": true
+      },
+      "source_anchors": [
+        "sparql.py:412-416",
+        "term.py:1395-1408"
+      ]
+    },
+    {
+      "id": "CP12",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "assign_present_none_vs_absent",
+      "input": {
+        "runs": [
+          {
+            "current": [
+              [
+                "x",
+                null
+              ]
+            ],
+            "key": "x",
+            "value": "T"
+          },
+          {
+            "current": [],
+            "key": "x",
+            "value": "T"
+          },
+          {
+            "current": [
+              [
+                "x",
+                null
+              ]
+            ],
+            "key": "x",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "runs": [
+          {
+            "exception": "AlreadyBound",
+            "ordered_current": [
+              [
+                "x",
+                null
+              ]
+            ]
+          },
+          {
+            "ordered_current": [
+              [
+                "x",
+                "T"
+              ]
+            ]
+          },
+          {
+            "ordered_current": [
+              [
+                "x",
+                null
+              ]
+            ]
+          }
+        ]
+      },
+      "source_anchors": [
+        "sparql.py:412-416"
+      ]
+    },
+    {
+      "id": "CP13",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "forget_short_circuit",
+      "input": {
+        "row_local": [
+          [
+            "initial",
+            "I"
+          ],
+          [
+            "except",
+            "E"
+          ],
+          [
+            "none_before",
+            "N"
+          ],
+          [
+            "absent_before",
+            "A"
+          ],
+          [
+            "bound_before",
+            "B"
+          ]
+        ],
+        "row_initial": [
+          [
+            "initial",
+            "I"
+          ]
+        ],
+        "before_current": [
+          [
+            "initial",
+            "oldI"
+          ],
+          [
+            "except",
+            "oldE"
+          ],
+          [
+            "none_before",
+            null
+          ],
+          [
+            "bound_before",
+            "oldB"
+          ]
+        ],
+        "except": [
+          "except"
+        ]
+      },
+      "expected": {
+        "ordered_local": [
+          [
+            "initial",
+            "I"
+          ],
+          [
+            "except",
+            "E"
+          ],
+          [
+            "none_before",
+            "N"
+          ],
+          [
+            "absent_before",
+            "A"
+          ]
+        ],
+        "before_lookup_keys": [
+          "none_before",
+          "absent_before",
+          "bound_before"
+        ],
+        "context_same_as_input_row": true,
+        "new_row_identity": true,
+        "raw_hash_cache": null
+      },
+      "source_anchors": [
+        "sparql.py:214-237",
+        "sparql.py:386-393"
+      ]
+    },
+    {
+      "id": "CP14",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "remember",
+      "input": {
+        "row_local": [
+          [
+            "b",
+            "B"
+          ],
+          [
+            "a",
+            "A"
+          ],
+          [
+            "c",
+            "C"
+          ]
+        ],
+        "runs": [
+          [],
+          [
+            "a",
+            "b"
+          ]
+        ]
+      },
+      "expected": {
+        "runs": [
+          {
+            "ordered_local": []
+          },
+          {
+            "ordered_local": [
+              [
+                "b",
+                "B"
+              ],
+              [
+                "a",
+                "A"
+              ]
+            ]
+          }
+        ],
+        "new_row_identity_each_run": true,
+        "context_same_as_input": true,
+        "raw_hash_cache_each_run": null
+      },
+      "source_anchors": [
+        "sparql.py:239-243"
+      ]
+    },
+    {
+      "id": "CP15",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "directional_merge",
+      "input": {
+        "left": {
+          "context": "LEFT_CTX",
+          "local": [
+            [
+              "x",
+              "LANG_EN"
+            ],
+            [
+              "a",
+              "A"
+            ]
+          ],
+          "cached_hash": 91
+        },
+        "right": {
+          "context": "RIGHT_CTX",
+          "local": [
+            [
+              "x",
+              "LANG_en"
+            ],
+            [
+              "b",
+              "B"
+            ]
+          ],
+          "cached_hash": 92
+        }
+      },
+      "expected": {
+        "left_merge_right": {
+          "context": "LEFT_CTX",
+          "local": [
+            [
+              "x",
+              "LANG_en"
+            ],
+            [
+              "a",
+              "A"
+            ],
+            [
+              "b",
+              "B"
+            ]
+          ],
+          "new_row_identity": true,
+          "raw_hash_cache": null
+        },
+        "right_merge_left": {
+          "context": "RIGHT_CTX",
+          "local": [
+            [
+              "x",
+              "LANG_EN"
+            ],
+            [
+              "b",
+              "B"
+            ],
+            [
+              "a",
+              "A"
+            ]
+          ],
+          "new_row_identity": true,
+          "raw_hash_cache": null
+        },
+        "all_value_objects_are_original_selected_objects": true
+      },
+      "source_anchors": [
+        "sparql.py:122-124",
+        "sparql.py:198-200"
+      ]
+    },
+    {
+      "id": "CP16",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "compatible_right_initial_fallback",
+      "input": {
+        "left": {
+          "local": [
+            [
+              "x",
+              "T"
+            ]
+          ],
+          "initial": []
+        },
+        "right_runs": [
+          {
+            "local": [],
+            "initial": [
+              [
+                "x",
+                "T"
+              ]
+            ]
+          },
+          {
+            "local": [],
+            "initial": [
+              [
+                "x",
+                "U"
+              ]
+            ]
+          },
+          {
+            "local": [],
+            "initial": []
+          },
+          {
+            "local": [
+              [
+                "x",
+                null
+              ]
+            ],
+            "initial": [
+              [
+                "x",
+                "T"
+              ]
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "compatible_left_to_right": [
+          true,
+          false,
+          true,
+          false
+        ],
+        "compatible_right_to_left": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "disjoint_local_domains": [
+          true,
+          true,
+          true,
+          false
+        ],
+        "left_unchanged": true
+      },
+      "source_anchors": [
+        "sparql.py:151-162",
+        "sparql.py:181-193"
+      ]
+    },
+    {
+      "id": "CP17",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "mapping_equality_local_only",
+      "input": {
+        "runs": [
+          {
+            "left": {
+              "local": [
+                [
+                  "x",
+                  "T"
+                ],
+                [
+                  "y",
+                  "U"
+                ]
+              ],
+              "initial": [
+                [
+                  "hidden",
+                  "T"
+                ]
+              ]
+            },
+            "right": {
+              "local": [
+                [
+                  "y",
+                  "U"
+                ],
+                [
+                  "x",
+                  "T"
+                ]
+              ],
+              "initial": [
+                [
+                  "hidden",
+                  "U"
+                ]
+              ]
+            }
+          },
+          {
+            "left": {
+              "local": [],
+              "initial": [
+                [
+                  "x",
+                  "T"
+                ]
+              ]
+            },
+            "right": {
+              "local": [
+                [
+                  "x",
+                  "T"
+                ]
+              ],
+              "initial": []
+            }
+          },
+          {
+            "left": {
+              "local": [
+                [
+                  "x",
+                  "LANG_EN"
+                ]
+              ],
+              "initial": []
+            },
+            "right": {
+              "local": [
+                [
+                  "x",
+                  "LANG_en"
+                ]
+              ],
+              "initial": []
+            }
+          }
+        ]
+      },
+      "expected": {
+        "equal": [
+          true,
+          false,
+          true
+        ],
+        "hash_equal_for_equal_locals": true,
+        "contexts_and_initial_not_compared": true,
+        "ill_typed_and_numeric_cache_not_compared": true
+      },
+      "source_anchors": [
+        "_collections_abc.py:835-838",
+        "sparql.py:126-146",
+        "sparql.py:181-193",
+        "term.py:1395-1408"
+      ]
+    },
+    {
+      "id": "CP18",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "raw_hash_success_cache_and_slot",
+      "input": {
+        "local": [
+          [
+            "x",
+            "T"
+          ],
+          [
+            "y",
+            "U"
+          ]
+        ],
+        "component_hash_words": [
+          [
+            "x",
+            1
+          ],
+          [
+            "T",
+            2
+          ],
+          [
+            "y",
+            4
+          ],
+          [
+            "U",
+            8
+          ]
+        ],
+        "hash_calls": 2
+      },
+      "expected": {
+        "component_calls": [
+          [
+            "x",
+            "T",
+            "y",
+            "U"
+          ],
+          []
+        ],
+        "raw_cache_after_calls": [
+          15,
+          15
+        ],
+        "returned_normalized_words": [
+          15,
+          15
+        ]
+      },
+      "source_anchors": [
+        "sparql.py:135-146",
+        "source-context-set-cpython-3.13.11/typeobject.c:hash slot -1 normalization"
+      ]
+    },
+    {
+      "id": "CP19",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "raw_hash_minus_one_cached",
+      "input": {
+        "local": [
+          [
+            "x",
+            "T"
+          ]
+        ],
+        "component_hash_words": [
+          [
+            "x",
+            1
+          ],
+          [
+            "T",
+            -2
+          ]
+        ],
+        "hash_calls": 2
+      },
+      "expected": {
+        "component_calls": [
+          [
+            "x",
+            "T"
+          ],
+          []
+        ],
+        "raw_cache_after_calls": [
+          -1,
+          -1
+        ],
+        "returned_normalized_words": [
+          -2,
+          -2
+        ]
+      },
+      "source_anchors": [
+        "sparql.py:135-146",
+        "SOURCE-CONTEXT-SET-FROZEN-01.json:FH05"
+      ]
+    },
+    {
+      "id": "CP20",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "raw_hash_failure_keeps_partial_cache",
+      "input": {
+        "local": [
+          [
+            "x",
+            "T"
+          ],
+          [
+            "y",
+            "U"
+          ]
+        ],
+        "component_hash_words": [
+          [
+            "x",
+            1
+          ],
+          [
+            "T",
+            2
+          ],
+          [
+            "y",
+            4
+          ],
+          [
+            "U",
+            8
+          ]
+        ],
+        "runs": [
+          {
+            "raise_at": "x"
+          },
+          {
+            "raise_at": "T"
+          },
+          {
+            "raise_at": "y"
+          },
+          {
+            "raise_at": "U"
+          }
+        ],
+        "then_hash_same_row_again": true
+      },
+      "expected": {
+        "first_calls": [
+          [
+            "x"
+          ],
+          [
+            "x",
+            "T"
+          ],
+          [
+            "x",
+            "T",
+            "y"
+          ],
+          [
+            "x",
+            "T",
+            "y",
+            "U"
+          ]
+        ],
+        "first_error": "same_original_marker_identity",
+        "raw_cache_after_error": [
+          0,
+          1,
+          3,
+          7
+        ],
+        "second_component_calls": [
+          [],
+          [],
+          [],
+          []
+        ],
+        "second_returned_normalized_words": [
+          0,
+          1,
+          3,
+          7
+        ],
+        "no_atomic_rollback_of_raw_hash_cache": true
+      },
+      "source_anchors": [
+        "sparql.py:141-146"
+      ]
+    },
+    {
+      "id": "CP21",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "row_reference_clone_vs_fresh_operators",
+      "input": {
+        "row": "ROW_A",
+        "row_cached_raw_hash": 15,
+        "operations": [
+          "transport_clone_reference",
+          "project_all",
+          "merge_empty",
+          "remember_all",
+          "forget_all_retained",
+          "context.solution_all"
+        ]
+      },
+      "expected": {
+        "transport_clone_reference": {
+          "same_row_object": true,
+          "same_raw_hash_cache_storage": true
+        },
+        "fresh_operators": {
+          "same_value_objects": true,
+          "same_row_object": false,
+          "raw_hash_cache": null
+        },
+        "qualification": "transport clone means retaining the very same original FrozenBindings object; not invoking a nonexistent Python FrozenBindings.clone operation"
+      },
+      "source_anchors": [
+        "sparql.py:122-124",
+        "sparql.py:195-200",
+        "sparql.py:214-243",
+        "sparql.py:401-410"
+      ]
+    },
+    {
+      "id": "CP22",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "push_flattens_bindings_then_reapplies_initial",
+      "input": {
+        "current": [
+          [
+            "b",
+            "B"
+          ],
+          [
+            "a",
+            "A0"
+          ]
+        ],
+        "initial": [
+          [
+            "a",
+            "A1"
+          ],
+          [
+            "c",
+            "C"
+          ]
+        ],
+        "operation": "push on a context whose input was constructed with this current+initial"
+      },
+      "expected": {
+        "current_before_push": [
+          [
+            "b",
+            "B"
+          ],
+          [
+            "a",
+            "A1"
+          ],
+          [
+            "c",
+            "C"
+          ]
+        ],
+        "current_after_push": [
+          [
+            "b",
+            "B"
+          ],
+          [
+            "a",
+            "A1"
+          ],
+          [
+            "c",
+            "C"
+          ]
+        ],
+        "new_context": true,
+        "no_live_outer_binding_stack_in_constructed_child": true,
+        "initial_map_same_object": true,
+        "value_objects_preserved": true
+      },
+      "source_anchors": [
+        "sparql.py:67-104",
+        "sparql.py:258-261",
+        "sparql.py:306-317",
+        "sparql.py:423-425"
+      ]
+    },
+    {
+      "id": "CP23",
+      "layer": "actual_source_context_primitive_protocol",
+      "evidence": "fixed_source_derived_not_original_context_execution",
+      "operation": "cell_none_and_error_object_identity",
+      "input": {
+        "runs": [
+          [
+            "None",
+            "None"
+          ],
+          [
+            "None",
+            "T"
+          ],
+          [
+            "ERROR_A",
+            "ERROR_A"
+          ],
+          [
+            "ERROR_A",
+            "ERROR_B_same_source_message"
+          ]
+        ]
+      },
+      "expected": {
+        "equal": [
+          true,
+          false,
+          true,
+          false
+        ],
+        "source_exception_text_not_consumed": true,
+        "errors_remain_values_in_compatibility": true
+      },
+      "source_anchors": [
+        "sparql.py:154-162",
+        "exceptions.c:BaseException inherits object identity equality"
+      ]
+    }
+  ],
+  "active_safety_cases": [
+    {
+      "id": "CPA01",
+      "input": {
+        "left": "same Raw Rc of unknown literal",
+        "right": "same Raw Rc of unknown literal"
+      },
+      "expected": {
+        "equal": true,
+        "metadata_fact_reads": []
+      },
+      "basis": "Source Literal self-is-other shortcut; unknown refusal is project active policy."
+    },
+    {
+      "id": "CPA02",
+      "input": {
+        "left": "unknown literal",
+        "right": "known NamedNode"
+      },
+      "expected": {
+        "equal": false,
+        "metadata_fact_reads": []
+      },
+      "basis": "Different source term types cannot compare equal."
+    },
+    {
+      "id": "CPA03",
+      "input": {
+        "left": {
+          "literal_datatype": null,
+          "language_fact": "Unknown"
+        },
+        "right": {
+          "literal_datatype": "http://www.w3.org/2001/XMLSchema#string",
+          "language_fact": "Unknown"
+        }
+      },
+      "expected": {
+        "equal": false,
+        "metadata_fact_reads": [
+          "left.datatype",
+          "right.datatype"
+        ]
+      },
+      "basis": "Known unequal datatype stops before unknown language; explicit primitive facts, not generic RDF import guessed metadata."
+    },
+    {
+      "id": "CPA04",
+      "input": {
+        "left": {
+          "literal_datatype": null,
+          "language_fact": "Unknown"
+        },
+        "right": {
+          "literal_datatype": null,
+          "language_fact": "KnownNone"
+        }
+      },
+      "expected": {
+        "fault": "UnknownSourceLiteralIdentity",
+        "metadata_fact_reads_prefix": [
+          "left.datatype",
+          "right.datatype",
+          "left.language"
+        ]
+      },
+      "basis": "Unknown fact is rejected only when actual source comparison reaches it; not a Python exception class."
+    },
+    {
+      "id": "CPA05",
+      "input": {
+        "left": {
+          "literal_datatype": null,
+          "language_fact": "KnownNone",
+          "lexical": "a",
+          "cache": "Unknown"
+        },
+        "right": {
+          "literal_datatype": null,
+          "language_fact": "KnownNone",
+          "lexical": "b",
+          "cache": "Unknown"
+        }
+      },
+      "expected": {
+        "equal": false,
+        "numeric_cache_reads": 0,
+        "ill_typed_reads": 0
+      },
+      "basis": "Source identity equality never calls numeric equality or ill-typed metadata."
+    }
+  ]
+}

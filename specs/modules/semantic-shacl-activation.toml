@@ -1,0 +1,25 @@
+schema="oev2.design-fragment/2"
+
+[[sources]]
+id="w3c_shacl_sparql_deactivation_2017"
+identity="W3C SHACL Recommendation 2017-07-20 sections 2.1.6, 5.2, 5.3 https://www.w3.org/TR/2017/REC-shacl-20170720/#sparql-constraints-validation"
+role="Independent constraint activation semantics: a deactivated SPARQL constraint produces no validation results; other active constraints retain their obligations"
+applicability="Existing bounded default-graph SHACL owner on supported Rust platforms; fixed synthetic semantic regression, not complete SHACL or engineering acceptance"
+
+[[constraints]]
+id="semantic_shacl_constraint_activation"
+requirement="req_semantics"
+module="semantic_runtime"
+check="validate"
+rust_path="crates/semantica-runtime/src/shacl.rs"
+statement="After existing whole-shapes-graph parameter preflight, shape and each sh:sparql constraint independently honor xsd:boolean true/1 deactivation. False/0/absent executes the original local SELECT path. Skipping one constraint preserves all findings of active sibling and Core constraints; parent deactivation still suppresses its checks. Invalid boolean/cardinality remain errors even without targets; active malformed query remains failure/unknown. Existing select presence/cardinality/literal gates precede the skip; no new whole-graph SELECT syntax claim. Same Dataset, RustSemanticRuntime and Project review owners; no source/governance/adoption bypass."
+severity="error"
+
+[[validations]]
+id="verify_semantic_shacl_constraint_activation"
+module="semantic_runtime"
+constraint="semantic_shacl_constraint_activation"
+behavior="constraint_activation_preserves_active_checks_and_parameter_rejections"
+rust_path="crates/semantica-runtime/tests/shacl_sparql_deactivation.rs"
+oracle="16 inputs frozen before repair: true/1 suppress only their constraint; false/0/absent retain full findings; parent deactivation, active sibling and Core findings, invalid string/boolean/cardinality and empty-target errors, active query syntax failure; inactive missing/multiple/nonliteral select preserves existing structural rejections. Exact focus/path/value/component/source shape/severity/messages are compared; original RC1 wrong results retained privately."
+scope="Rust library regression and installed CLI replays on macOS arm64; portable source does not prove other platform execution, old-library full parity, complete Semantica, or engineering adoption"

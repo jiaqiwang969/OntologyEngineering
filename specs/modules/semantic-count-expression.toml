@@ -1,0 +1,43 @@
+schema="oev2.design-fragment/2"
+
+[[sources]]
+id="sparql11_count_error_exclusion"
+identity="W3C SPARQL1.1 Recommendation 2013-03-21 https://www.w3.org/TR/sparql11-query/#defn_aggCount section18.5.1.2"
+role="Independent standard Count expectation: bound non-error expression values only; exclude unbound/error values before count/distinct"
+applicability="Bounded shared Count owner correction, not original RDFLib error-count3 equivalence or whole SPARQL/13494 qualification"
+
+[[constraints]]
+id="semantic_count_expression_error_exclusion"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="accumulator_builder"
+rust_path="vendor/spareval/src/eval.rs"
+statement="COUNT general expression errors/unbound values skip only that row, preserving valid values before/after errors; DISTINCT stores only valid exact ExpressionTerms. Same parser/evaluator/Dataset and original RDF identity, initial-shadow origins, output domains and budgets. CountSolutions/CountInternal and Sum/Avg/Min/Max generic Expression failure remain; neutral1/profile2/3 wire/parser/initial-target/aggregate/remote guards unchanged. Correct Count0 is distinct from frozen original RDFLibCount3 and previous Rust unbound; all original74 and16 residuals remain separately compared."
+severity="error"
+
+[[validations]]
+id="verify_semantic_count_expression_error_exclusion"
+module="semantic_evaluator"
+constraint="semantic_count_expression_error_exclusion"
+behavior="general_count_excludes_errors_without_invalidating_valid_values"
+rust_path="crates/semantica-runtime/tests/count_expression.rs"
+oracle="Frozen independent W3C Count0, mixed valid/error2, DISTINCT1, unbound0, star3, constant3, implicit empty0, explicit groups0; ordered errors first/last valid1; COUNT+SUM count1/sumunbound preserves Sum policy. Original Python3/current Rust unbound/standard0 are distinct, no old expected rewrite."
+scope="Actual neutral/query options2/3 current library/CLI, source/budget/initial guard unchanged; full original74/187/148 complete comparison and residual16 retained; no model/native/engineering authority"
+
+[[validations]]
+id="verify_semantic_count_complete_strict2_response"
+module="semantic_evaluator"
+constraint="semantic_count_expression_error_exclusion"
+behavior="strict2_only_no_alias_count_error_response_uses_independent_integer_zero"
+rust_path="crates/semantica-runtime/tests/aggregate_shadow.rs"
+oracle="Preproduction complete-response expectation fixes only count_arithmetic_error_no_alias/profile2 count cell to exact xsd:integer0/language null; full data/request SHA, schema/profile/columns/row_count unchanged. Initial Count-target refusal and every other complete legacy response/guard stay exact."
+scope="Original74 fixture bytes and original COUNT3 remain history; explicit standard correction, not all-old-response equivalence or engineering/native authority"
+
+[[validations]]
+id="verify_semantic_count_complete_shadow3_responses"
+module="semantic_evaluator"
+constraint="semantic_count_expression_error_exclusion"
+behavior="shadow3_two_count_error_responses_use_independent_integer_zero_and_other69_stay_exact"
+rust_path="crates/semantica-runtime/tests/group_variable_alias.rs"
+oracle="Two independently frozen complete profile3 responses for count_expression_error/count_arithmetic_error_no_alias have integer0; the other69 original responses/errors remain byte-meaning exact and the three existing alias corrections retain their original independent oracles. Original74 denominator,58 legacy term matches and16 compatibility residuals remain."
+scope="No old fixture rewrite, no whitelist/ignore/skip or guard change; standard Count correctness and old RDFLib COUNT3/source parity are separate"

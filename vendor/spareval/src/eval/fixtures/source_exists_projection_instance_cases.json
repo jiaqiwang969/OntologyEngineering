@@ -1,0 +1,72 @@
+{
+  "schema": "source-exists-projection-instance-cases/1",
+  "source_record_sha256": "d6bf5043872a226d91f9f18027609fb4b8178b7de20a859ef2fb907417728fc1",
+  "source_record_bytes": 6317,
+  "payload_sha256": "f53ef92a7582912b7869f07de7c8b42bf37c341455f258ae0c636436c442d8eb",
+  "payload": {
+    "cases": [
+      {
+        "id": "PIM01",
+        "original_case_id": "BX07",
+        "classification": "original_observed_mapping_and_overlay_plus_source_derived_instance_assignment_and_shared_node_identity",
+        "input": {
+          "query": "SELECT ?b WHERE { BIND(EXISTS { SELECT (SUM(DISTINCT ?missing) AS ?s) WHERE { VALUES ?x {1} } } AS ?b) }",
+          "decimal": {
+            "precision": 28,
+            "trap_float_operation": false
+          }
+        },
+        "expected": {
+          "exists_operator": "Builtin_EXISTS",
+          "mapping_graph_operator": "SubSelect",
+          "mapping_projection_operator": "vars",
+          "mapping_aggregate_operator": "Aggregate_Sum",
+          "aggregate_distinct": "DISTINCT",
+          "aggregate_vars": "missing",
+          "aggregate_res": "__agg_1__",
+          "instance_projection_expr": {
+            "kind": "Variable",
+            "value": "__agg_1__",
+            "basis": "source_derived_instance_attribute_not_serialized_by_original_observer"
+          },
+          "translated_overlay_spine": [
+            "ToMultiSet",
+            "Project",
+            "Extend",
+            "AggregateJoin"
+          ],
+          "translated_extend_expr": "__agg_1__",
+          "translated_extend_var": "s",
+          "same_mapping_aggregate_and_overlay_A_node": true,
+          "mapping_scope_members": {
+            "exists": [
+              "s"
+            ],
+            "graph": [
+              "__agg_1__",
+              "missing",
+              "s",
+              "x"
+            ],
+            "projection": [
+              "__agg_1__",
+              "missing",
+              "s"
+            ],
+            "aggregate": [
+              "__agg_1__",
+              "missing"
+            ]
+          },
+          "overlay_spine_scope_fields_present": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "flags_after_frontend": []
+        }
+      }
+    ]
+  }
+}

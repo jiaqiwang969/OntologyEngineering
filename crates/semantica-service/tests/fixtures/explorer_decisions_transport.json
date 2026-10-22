@@ -1,0 +1,854 @@
+{
+  "rows": [
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions",
+      "status": 200,
+      "response": [
+        {
+          "decision_id": "d1",
+          "category": "Design",
+          "scenario": "",
+          "reasoning": "",
+          "outcome": "",
+          "confidence": 0.5,
+          "timestamp": null,
+          "metadata": {
+            "category": "Design",
+            "confidence": 0.5,
+            "content": "fixture"
+          }
+        }
+      ],
+      "raw_utf8": "[{\"decision_id\":\"d1\",\"category\":\"Design\",\"scenario\":\"\",\"reasoning\":\"\",\"outcome\":\"\",\"confidence\":0.5,\"timestamp\":null,\"metadata\":{\"category\":\"Design\",\"confidence\":0.5,\"content\":\"fixture\"}}]",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "188",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions?skip=-1",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "greater_than_equal",
+            "loc": [
+              "query",
+              "skip"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "input": "-1",
+            "ctx": {
+              "ge": 0
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"greater_than_equal\",\"loc\":[\"query\",\"skip\"],\"msg\":\"Input should be greater than or equal to 0\",\"input\":\"-1\",\"ctx\":{\"ge\":0}}]}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "144",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions?limit=501",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "less_than_equal",
+            "loc": [
+              "query",
+              "limit"
+            ],
+            "msg": "Input should be less than or equal to 500",
+            "input": "501",
+            "ctx": {
+              "le": 500
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"less_than_equal\",\"loc\":[\"query\",\"limit\"],\"msg\":\"Input should be less than or equal to 500\",\"input\":\"501\",\"ctx\":{\"le\":500}}]}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "144",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions?skip=1.0",
+      "status": 200,
+      "response": [],
+      "raw_utf8": "[]",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "2",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions?skip=-0",
+      "status": 200,
+      "response": [
+        {
+          "decision_id": "d1",
+          "category": "Design",
+          "scenario": "",
+          "reasoning": "",
+          "outcome": "",
+          "confidence": 0.5,
+          "timestamp": null,
+          "metadata": {
+            "category": "Design",
+            "confidence": 0.5,
+            "content": "fixture"
+          }
+        }
+      ],
+      "raw_utf8": "[{\"decision_id\":\"d1\",\"category\":\"Design\",\"scenario\":\"\",\"reasoning\":\"\",\"outcome\":\"\",\"confidence\":0.5,\"timestamp\":null,\"metadata\":{\"category\":\"Design\",\"confidence\":0.5,\"content\":\"fixture\"}}]",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "188",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions?limit=1&limit=0",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "greater_than_equal",
+            "loc": [
+              "query",
+              "limit"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "input": "0",
+            "ctx": {
+              "ge": 1
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"greater_than_equal\",\"loc\":[\"query\",\"limit\"],\"msg\":\"Input should be greater than or equal to 1\",\"input\":\"0\",\"ctx\":{\"ge\":1}}]}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "144",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions?limit=0&limit=1",
+      "status": 200,
+      "response": [
+        {
+          "decision_id": "d1",
+          "category": "Design",
+          "scenario": "",
+          "reasoning": "",
+          "outcome": "",
+          "confidence": 0.5,
+          "timestamp": null,
+          "metadata": {
+            "category": "Design",
+            "confidence": 0.5,
+            "content": "fixture"
+          }
+        }
+      ],
+      "raw_utf8": "[{\"decision_id\":\"d1\",\"category\":\"Design\",\"scenario\":\"\",\"reasoning\":\"\",\"outcome\":\"\",\"confidence\":0.5,\"timestamp\":null,\"metadata\":{\"category\":\"Design\",\"confidence\":0.5,\"content\":\"fixture\"}}]",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "188",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions/d1/precedents?limit=101",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "type": "less_than_equal",
+            "loc": [
+              "query",
+              "limit"
+            ],
+            "msg": "Input should be less than or equal to 100",
+            "input": "101",
+            "ctx": {
+              "le": 100
+            }
+          }
+        ]
+      },
+      "raw_utf8": "{\"detail\":[{\"type\":\"less_than_equal\",\"loc\":[\"query\",\"limit\"],\"msg\":\"Input should be less than or equal to 100\",\"input\":\"101\",\"ctx\":{\"le\":100}}]}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "144",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions/",
+      "status": 307,
+      "response": null,
+      "raw_utf8": "",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "0",
+        "location": "http://localhost/api/decisions"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions/d1/",
+      "status": 307,
+      "response": null,
+      "raw_utf8": "",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "0",
+        "location": "http://localhost/api/decisions/d1"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions/d1/missing",
+      "status": 404,
+      "response": {
+        "detail": "Not Found"
+      },
+      "raw_utf8": "{\"detail\":\"Not Found\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "22",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions/a%2Fb",
+      "status": 404,
+      "response": {
+        "detail": "Not Found"
+      },
+      "raw_utf8": "{\"detail\":\"Not Found\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "22",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "GET",
+      "path": "/api/decisions/causal-distance?source=d1&target=d1",
+      "status": 404,
+      "response": {
+        "detail": "Decision 'causal-distance' not found"
+      },
+      "raw_utf8": "{\"detail\":\"Decision 'causal-distance' not found\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "49",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "HEAD",
+      "path": "/api/decisions",
+      "status": 405,
+      "response": null,
+      "raw_utf8": "",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "OPTIONS",
+      "path": "/api/decisions",
+      "status": 405,
+      "response": {
+        "detail": "Method Not Allowed"
+      },
+      "raw_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "anonymous",
+      "method": "POST",
+      "path": "/api/decisions",
+      "status": 405,
+      "response": {
+        "detail": "Method Not Allowed"
+      },
+      "raw_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "73",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions?skip=-1",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "73",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions?limit=501",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "73",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions?skip=1.0",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "73",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions?skip=-0",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "73",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions?limit=1&limit=0",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "73",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions?limit=0&limit=1",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "73",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions/d1/precedents?limit=101",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "73",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions/",
+      "status": 307,
+      "response": null,
+      "raw_utf8": "",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "0",
+        "location": "http://localhost/api/decisions"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions/d1/",
+      "status": 307,
+      "response": null,
+      "raw_utf8": "",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "0",
+        "location": "http://localhost/api/decisions/d1"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions/d1/missing",
+      "status": 404,
+      "response": {
+        "detail": "Not Found"
+      },
+      "raw_utf8": "{\"detail\":\"Not Found\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "22",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions/a%2Fb",
+      "status": 404,
+      "response": {
+        "detail": "Not Found"
+      },
+      "raw_utf8": "{\"detail\":\"Not Found\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "22",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "GET",
+      "path": "/api/decisions/causal-distance?source=d1&target=d1",
+      "status": 401,
+      "response": {
+        "detail": "Invalid or missing API key. Send it as the X-API-Key header."
+      },
+      "raw_utf8": "{\"detail\":\"Invalid or missing API key. Send it as the X-API-Key header.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "73",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "HEAD",
+      "path": "/api/decisions",
+      "status": 405,
+      "response": null,
+      "raw_utf8": "",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "OPTIONS",
+      "path": "/api/decisions",
+      "status": 405,
+      "response": {
+        "detail": "Method Not Allowed"
+      },
+      "raw_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unauthorized",
+      "method": "POST",
+      "path": "/api/decisions",
+      "status": 405,
+      "response": {
+        "detail": "Method Not Allowed"
+      },
+      "raw_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "207",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions?skip=-1",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "207",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions?limit=501",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "207",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions?skip=1.0",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "207",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions?skip=-0",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "207",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions?limit=1&limit=0",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "207",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions?limit=0&limit=1",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "207",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions/d1/precedents?limit=101",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "207",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions/",
+      "status": 307,
+      "response": null,
+      "raw_utf8": "",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "0",
+        "location": "http://localhost/api/decisions"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions/d1/",
+      "status": 307,
+      "response": null,
+      "raw_utf8": "",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "0",
+        "location": "http://localhost/api/decisions/d1"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions/d1/missing",
+      "status": 404,
+      "response": {
+        "detail": "Not Found"
+      },
+      "raw_utf8": "{\"detail\":\"Not Found\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "22",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions/a%2Fb",
+      "status": 404,
+      "response": {
+        "detail": "Not Found"
+      },
+      "raw_utf8": "{\"detail\":\"Not Found\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "22",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "GET",
+      "path": "/api/decisions/causal-distance?source=d1&target=d1",
+      "status": 503,
+      "response": {
+        "detail": "Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true."
+      },
+      "raw_utf8": "{\"detail\":\"Server is not configured for authentication. Set the SEMANTICA_API_KEY environment variable, or explicitly opt into unauthenticated access (development only) with SEMANTICA_ALLOW_ANONYMOUS=true.\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "content-length": "207",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "HEAD",
+      "path": "/api/decisions",
+      "status": 405,
+      "response": null,
+      "raw_utf8": "",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "OPTIONS",
+      "path": "/api/decisions",
+      "status": 405,
+      "response": {
+        "detail": "Method Not Allowed"
+      },
+      "raw_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      }
+    },
+    {
+      "auth": "unconfigured",
+      "method": "POST",
+      "path": "/api/decisions",
+      "status": 405,
+      "response": {
+        "detail": "Method Not Allowed"
+      },
+      "raw_utf8": "{\"detail\":\"Method Not Allowed\"}",
+      "headers": {
+        "date": "Tue, 06 Oct 2026 08:23:51 GMT",
+        "server": "uvicorn",
+        "allow": "GET",
+        "content-length": "31",
+        "content-type": "application/json"
+      }
+    }
+  ],
+  "source_unchanged": true,
+  "production_python_delegate": false
+}

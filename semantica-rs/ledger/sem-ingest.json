@@ -1,0 +1,3216 @@
+{
+ "schema": "semantica.migration-ledger/1",
+ "scope_sha256": "b1470d9980755811c815be24cdc041740de5f55e28232c327f0845d160455226",
+ "module": "sem-ingest",
+ "entries": [
+  {
+   "id": "semantica/ingest/api_ingestor.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/api_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/api_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/api_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/api_ingestor.py|class|APIData|45",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/api_ingestor.rs::APIData"
+   ],
+   "tests": [
+    "ingest_char_api_config::api_data_defaults",
+    "ingest_test_submodules::test_rest_ingestor__test_ingest_endpoint"
+   ]
+  },
+  {
+   "id": "semantica/ingest/api_ingestor.py|class|RESTIngestor|55",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/api_ingestor.rs::RESTIngestor"
+   ],
+   "tests": [
+    "ingest_test_submodules::test_rest_ingestor__test_ingest_endpoint",
+    "ingest_test_ssrf_protection::test_rest_ingestor_ssrf__test_allow_private_ips_opt_in"
+   ]
+  },
+  {
+   "id": "semantica/ingest/api_ingestor.py|method|RESTIngestor.ingest_endpoint|117",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/api_ingestor.rs::RESTIngestor::ingest_endpoint"
+   ],
+   "tests": [
+    "ingest_test_submodules::test_rest_ingestor__test_ingest_endpoint",
+    "ingest_char_api_config::rest_batch_request_and_endpoint_options"
+   ]
+  },
+  {
+   "id": "semantica/ingest/api_ingestor.py|method|RESTIngestor.paginated_fetch|222",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/api_ingestor.rs::RESTIngestor::paginated_fetch"
+   ],
+   "tests": [
+    "ingest_test_submodules::test_rest_ingestor__test_paginated_fetch"
+   ]
+  },
+  {
+   "id": "semantica/ingest/api_ingestor.py|method|RESTIngestor.batch_request|330",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/api_ingestor.rs::RESTIngestor::batch_request"
+   ],
+   "tests": [
+    "ingest_char_api_config::rest_batch_request_and_endpoint_options"
+   ]
+  },
+  {
+   "id": "semantica/ingest/config.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/config.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/config.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/config.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/config.py|class|IngestConfig|46",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/config.rs::IngestConfig"
+   ],
+   "tests": [
+    "ingest_char_api_config::ingest_config_files_and_values"
+   ]
+  },
+  {
+   "id": "semantica/ingest/config.py|method|IngestConfig.set|156",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/config.rs::IngestConfig::set"
+   ],
+   "tests": [
+    "ingest_char_api_config::ingest_config_files_and_values"
+   ]
+  },
+  {
+   "id": "semantica/ingest/config.py|method|IngestConfig.get|160",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/config.rs::IngestConfig::get"
+   ],
+   "tests": [
+    "ingest_char_api_config::ingest_config_files_and_values"
+   ]
+  },
+  {
+   "id": "semantica/ingest/config.py|method|IngestConfig.set_method_config|184",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/config.rs::IngestConfig::set_method_config"
+   ],
+   "tests": [
+    "ingest_char_api_config::ingest_config_files_and_values"
+   ]
+  },
+  {
+   "id": "semantica/ingest/config.py|method|IngestConfig.get_method_config|188",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/config.rs::IngestConfig::get_method_config"
+   ],
+   "tests": [
+    "ingest_char_api_config::ingest_config_files_and_values"
+   ]
+  },
+  {
+   "id": "semantica/ingest/config.py|method|IngestConfig.get_all|192",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/config.rs::IngestConfig::get_all"
+   ],
+   "tests": [
+    "ingest_char_api_config::ingest_config_files_and_values"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|class|FeedItem|49",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedItem"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_extract_content_helper",
+    "ingest_test_feed_ingestor::test_parse_atom_complex"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|class|FeedData|81",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedData"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_validate_feed"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|class|FeedParser|106",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedParser"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_parse_atom_complex"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedParser.parse_feed|131",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedParser::parse_feed"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_parse_atom_complex",
+    "ingest_test_feed_ingestor::test_parse_rss_dates",
+    "ingest_char_feed_ingestor::detect_format_and_parse_errors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedParser.detect_format|164",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedParser::detect_format"
+   ],
+   "tests": [
+    "ingest_char_feed_ingestor::detect_format_and_parse_errors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedParser.validate_feed|372",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedParser::validate_feed"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_validate_feed"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|class|FeedMonitor|397",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedMonitor"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_monitor_loop_lifecycle",
+    "ingest_char_feed_ingestor::monitor_loop_calls_update_callback"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedMonitor.add_feed|433",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedMonitor::add_feed"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_monitor_threading",
+    "ingest_char_feed_ingestor::monitor_loop_calls_update_callback"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedMonitor.start_monitoring|452",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedMonitor::start_monitoring"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_monitor_threading"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedMonitor.stop_monitoring|467",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedMonitor::stop_monitoring"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_monitor_threading"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedMonitor.check_updates|474",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedMonitor::check_updates"
+   ],
+   "tests": [
+    "ingest_char_feed_ingestor::ingest_feed_extract_content_and_check_updates"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedMonitor.set_update_callback|548",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedMonitor::set_update_callback"
+   ],
+   "tests": [
+    "ingest_char_feed_ingestor::monitor_loop_calls_update_callback"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|class|FeedIngestor|553",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedIngestor"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_extract_content_helper"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedIngestor.ingest_feed|605",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedIngestor::ingest_feed"
+   ],
+   "tests": [
+    "ingest_char_feed_ingestor::ingest_feed_extract_content_and_check_updates",
+    "ingest_test_feed_ingestor::test_ingest_feed_errors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedIngestor.discover_feeds|695",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedIngestor::discover_feeds"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_discover_feeds_found",
+    "ingest_test_feed_ingestor::test_discover_feeds_empty"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedIngestor.monitor_feeds|788",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedIngestor::monitor_feeds"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_feed_monitor_options"
+   ]
+  },
+  {
+   "id": "semantica/ingest/feed_ingestor.py|method|FeedIngestor.extract_content|813",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/feed_ingestor.rs::FeedIngestor::extract_content"
+   ],
+   "tests": [
+    "ingest_test_feed_ingestor::test_extract_content_helper",
+    "ingest_test_feed_ingestor::test_extract_content_missing_fields"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|class|FileObject|44",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileObject"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_file_object_text_decoding"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|FileObject.text|57",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileObject::text"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_file_object_text_decoding"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|class|FileTypeDetector|81",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileTypeDetector"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_type_detector_extended",
+    "ingest_test_ingestors::test_file_ingestor__test_file_type_detector"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|FileTypeDetector.detect_type|118",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileTypeDetector::detect_type"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_type_detector_extended",
+    "ingest_test_ingestors::test_file_ingestor__test_file_type_detector"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|FileTypeDetector.is_supported|210",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileTypeDetector::is_supported"
+   ],
+   "tests": [
+    "ingest_char_file_ingestor::type_detector_support_and_magic_numbers"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|class|CloudStorageIngestor|223",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::CloudStorageIngestor"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_cloud_storage_s3",
+    "ingest_test_file_ingestor::test_cloud_storage_invalid"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|CloudStorageIngestor.list_objects|271",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::CloudStorageIngestor::list_objects"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_cloud_storage_s3",
+    "ingest_test_file_ingestor::test_cloud_storage_gcs",
+    "ingest_test_file_ingestor::test_cloud_storage_azure",
+    "ingest_test_file_ingestor::test_cloud_storage_list_error"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|CloudStorageIngestor.download_object|360",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::CloudStorageIngestor::download_object"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_cloud_storage_s3",
+    "ingest_test_file_ingestor::test_cloud_storage_download_error"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|class|FileIngestor|396",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileIngestor"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_directory_recursive",
+    "ingest_test_ingestors::test_file_ingestor__test_ingest_file"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|FileIngestor.ingest|449",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileIngestor::ingest"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_alias"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|FileIngestor.ingest_directory|468",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileIngestor::ingest_directory"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_directory_non_recursive",
+    "ingest_test_ingestors::test_file_ingestor__test_ingest_directory"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|FileIngestor.ingest_file|553",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileIngestor::ingest_file"
+   ],
+   "tests": [
+    "ingest_test_ingestors::test_file_ingestor__test_ingest_file",
+    "ingest_char_file_ingestor::ingest_file_metadata_and_errors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|FileIngestor.ingest_cloud|665",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileIngestor::ingest_cloud"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_cloud_loop_errors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|FileIngestor.scan_directory|726",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileIngestor::scan_directory"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_scan_directory_filters",
+    "ingest_char_file_ingestor::ingest_file_metadata_and_errors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/file_ingestor.py|method|FileIngestor.set_progress_callback|800",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/file_ingestor.rs::FileIngestor::set_progress_callback"
+   ],
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_file_callback"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|class|MCPResource|48",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPResource"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip",
+    "ingest_char_mcp::mcp_client_constructor_validation"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|class|MCPTool|59",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPTool"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip",
+    "ingest_char_mcp::mcp_client_constructor_validation"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|class|MCPClient|68",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPClient"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_constructor_validation",
+    "ingest_test_submodules::test_mcp_client__test_call_tool_mock_check"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|method|MCPClient.connect|178",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPClient::connect"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip",
+    "ingest_test_submodules::test_mcp_client__test_call_tool"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|method|MCPClient.disconnect|276",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPClient::disconnect"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|method|MCPClient.list_resources|387",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPClient::list_resources"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|method|MCPClient.list_tools|427",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPClient::list_tools"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|method|MCPClient.read_resource|466",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPClient::read_resource"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|method|MCPClient.call_tool|500",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPClient::call_tool"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip",
+    "ingest_test_submodules::test_mcp_client__test_call_tool_mock_check"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|method|MCPClient.is_connected|537",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPClient::is_connected"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_client.py|method|MCPClient.get_server_info|541",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_client.rs::MCPClient::get_server_info"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_client_round_trip"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|class|MCPData|47",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPData"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle",
+    "ingest_test_submodules::test_mcp_ingestor__test_connect_and_ingest"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|class|MCPIngestor|60",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle",
+    "ingest_test_submodules::test_mcp_ingestor__test_connect_and_ingest"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.connect|116",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::connect"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle",
+    "ingest_test_submodules::test_mcp_ingestor__test_connect_and_ingest"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.disconnect|180",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::disconnect"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.list_available_resources|209",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::list_available_resources"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle",
+    "ingest_test_submodules::test_mcp_ingestor__test_connect_and_ingest"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.list_available_tools|222",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::list_available_tools"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.read_resource|235",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::read_resource"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.call_tool|249",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::call_tool"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.ingest_resources|269",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::ingest_resources"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle",
+    "ingest_test_submodules::test_mcp_ingestor__test_connect_and_ingest"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.ingest_tool_output|372",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::ingest_tool_output"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.ingest_all_resources|431",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::ingest_all_resources"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.get_connected_servers|444",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::get_connected_servers"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle"
+   ]
+  },
+  {
+   "id": "semantica/ingest/mcp_ingestor.py|method|MCPIngestor.is_connected|448",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/mcp_ingestor.rs::MCPIngestor::is_connected"
+   ],
+   "tests": [
+    "ingest_char_mcp::mcp_ingestor_lifecycle"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|class|PublicAPIExample|84",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIExample"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_examples_catalog_lists_endpoints_and_samples",
+    "ingest_char_public_api_ingestor::examples_get_and_names"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|class|PublicAPIDetection|100",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIDetection"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_detection_reports_public_endpoint"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|class|PublicAPIExamples|112",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIExamples"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_examples_catalog_lists_endpoints_and_samples"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIExamples.list_examples|222",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIExamples::list_examples"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_examples_catalog_lists_endpoints_and_samples"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIExamples.names|239",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIExamples::names"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_examples_catalog_lists_endpoints_and_samples",
+    "ingest_char_public_api_ingestor::examples_get_and_names"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIExamples.endpoints|244",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIExamples::endpoints"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_examples_catalog_lists_endpoints_and_samples"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIExamples.get|249",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIExamples::get"
+   ],
+   "tests": [
+    "ingest_char_public_api_ingestor::examples_get_and_names"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIExamples.sample_response|268",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIExamples::sample_response"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_examples_catalog_lists_endpoints_and_samples"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|class|PublicAPIIngestor|285",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIIngestor"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_parses_string_boolean_config",
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_ingests_json_records"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIIngestor.detect_public_api|330",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIIngestor::detect_public_api"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_detection_reports_public_endpoint",
+    "ingest_test_public_api_ingestor::test_public_api_detection_reports_auth_required"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIIngestor.is_public_api|406",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIIngestor::is_public_api"
+   ],
+   "tests": [
+    "ingest_char_public_api_ingestor::is_public_api_and_examples_ingestion"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIIngestor.ingest_public_api|410",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIIngestor::ingest_public_api"
+   ],
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_ingests_json_records",
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_parses_csv_records"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIIngestor.ingest_example|556",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIIngestor::ingest_example"
+   ],
+   "tests": [
+    "ingest_char_public_api_ingestor::is_public_api_and_examples_ingestion"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIIngestor.ingest_examples|592",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIIngestor::ingest_examples"
+   ],
+   "tests": [
+    "ingest_char_public_api_ingestor::is_public_api_and_examples_ingestion"
+   ]
+  },
+  {
+   "id": "semantica/ingest/public_api_ingestor.py|method|PublicAPIIngestor.batch_public_apis|596",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/public_api_ingestor.rs::PublicAPIIngestor::batch_public_apis"
+   ],
+   "tests": [
+    "ingest_char_public_api_ingestor::batch_public_apis_skips_failures_unless_fail_fast"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|class|CodeFile|82",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::CodeFile"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::code_extractor_contents_docs_and_dependencies",
+    "ingest_char_repo_ingestor::temp_dir_and_cleanup"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|class|CommitInfo|109",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::CommitInfo"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::analyze_commits_and_repository_info"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|class|CodeExtractor|134",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::CodeExtractor"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::code_extractor_contents_docs_and_dependencies"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|CodeExtractor.extract_file_content|190",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::CodeExtractor::extract_file_content"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::code_extractor_contents_docs_and_dependencies"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|CodeExtractor.extract_documentation|243",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::CodeExtractor::extract_documentation"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::code_extractor_contents_docs_and_dependencies"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|CodeExtractor.analyze_dependencies|289",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::CodeExtractor::analyze_dependencies"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::code_extractor_contents_docs_and_dependencies"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|class|GitAnalyzer|359",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::GitAnalyzer"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::git_analyzer_structure_metrics_patterns"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|GitAnalyzer.analyze_structure|384",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::GitAnalyzer::analyze_structure"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::git_analyzer_structure_metrics_patterns"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|GitAnalyzer.calculate_metrics|427",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::GitAnalyzer::calculate_metrics"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::git_analyzer_structure_metrics_patterns"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|GitAnalyzer.detect_patterns|465",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::GitAnalyzer::detect_patterns"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::git_analyzer_structure_metrics_patterns"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|class|RepoIngestor|489",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::RepoIngestor"
+   ],
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_accepts_https_github_url",
+    "ingest_test_submodules::test_repo_ingestor__test_ingest_repository"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|RepoIngestor.ingest_repository|826",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::RepoIngestor::ingest_repository"
+   ],
+   "tests": [
+    "ingest_test_submodules::test_repo_ingestor__test_ingest_repository",
+    "ingest_test_repo_ingestor_security::test_ingest_repository_guards__test_safe_options_forwarded_to_clone_from"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|RepoIngestor.analyze_commits|950",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::RepoIngestor::analyze_commits"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::analyze_commits_and_repository_info"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|RepoIngestor.extract_code_files|1006",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::RepoIngestor::extract_code_files"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::extract_code_files_filters"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|RepoIngestor.get_repository_info|1064",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::RepoIngestor::get_repository_info"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::analyze_commits_and_repository_info"
+   ]
+  },
+  {
+   "id": "semantica/ingest/repo_ingestor.py|method|RepoIngestor.cleanup|1111",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/repo_ingestor.rs::RepoIngestor::cleanup"
+   ],
+   "tests": [
+    "ingest_char_repo_ingestor::temp_dir_and_cleanup"
+   ]
+  },
+  {
+   "id": "semantica/ingest/ssrf.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/ssrf.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/ssrf.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/ssrf.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/ssrf.py|function|parse_bool|80",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/ssrf.rs::parse_bool"
+   ],
+   "tests": [
+    "ingest_test_ssrf_protection::test_parse_bool__test_bool_passthrough",
+    "ingest_test_ssrf_protection::test_parse_bool__test_rejects_unknown_string"
+   ]
+  },
+  {
+   "id": "semantica/ingest/ssrf.py|function|validate_url_for_request|205",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/ssrf.rs::validate_url_for_request"
+   ],
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_accepts_https",
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_rejects_literal_private_ips"
+   ]
+  },
+  {
+   "id": "semantica/ingest/ssrf.py|function|request_with_ssrf_guard|478",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/ssrf.rs::request_with_ssrf_guard"
+   ],
+   "tests": [
+    "ingest_test_ssrf_protection::test_request_with_ssrf_guard_redirects__test_follows_safe_redirect",
+    "ingest_test_auth_header_redirect_security::test_session_headers_stripping__test_session_authorization_stripped_on_cross_origin_redirect"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|class|StreamMessage|49",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamMessage"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_message_and_generic_processor"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|class|StreamProcessor|73",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamProcessor"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_message_and_generic_processor"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamProcessor.process_message|107",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamProcessor::process_message"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_message_and_generic_processor"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamProcessor.start_consuming|159",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamProcessor::start_consuming"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_message_and_generic_processor",
+    "ingest_char_stream_ingestor::stream_ingestor_registers_and_starts_processors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamProcessor.stop_consuming|170",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamProcessor::stop_consuming"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_message_and_generic_processor"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamProcessor.set_message_handler|177",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamProcessor::set_message_handler"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::kafka_processor_consumes_batches"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamProcessor.set_error_handler|181",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamProcessor::set_error_handler"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_message_and_generic_processor"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamProcessor.get_stats|196",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamProcessor::get_stats"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_message_and_generic_processor"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|class|KafkaProcessor|205",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::KafkaProcessor"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::kafka_processor_consumes_batches"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|class|RabbitMQProcessor|250",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::RabbitMQProcessor"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::rabbitmq_processor_acks_and_requeues"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|class|KinesisProcessor|303",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::KinesisProcessor"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::kinesis_processor_retries_failed_batches"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|class|PulsarProcessor|357",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::PulsarProcessor"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::pulsar_processor_acks_nacks_and_ignores_timeouts"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|class|StreamMonitor|402",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamMonitor"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_monitor_metrics_and_health"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamMonitor.monitor_processor|429",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamMonitor::monitor_processor"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_monitor_metrics_and_health"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamMonitor.get_metrics|449",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamMonitor::get_metrics"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_monitor_metrics_and_health"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamMonitor.check_health|473",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamMonitor::check_health"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_monitor_metrics_and_health"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|class|StreamIngestor|519",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamIngestor"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_ingestor_registers_and_starts_processors",
+    "ingest_test_submodules::test_stream_ingestor__test_ingest_kafka"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamIngestor.ingest_kafka|564",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamIngestor::ingest_kafka"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_ingestor_registers_and_starts_processors",
+    "ingest_test_submodules::test_stream_ingestor__test_ingest_kafka"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamIngestor.ingest_pulsar|583",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamIngestor::ingest_pulsar"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_ingestor_registers_and_starts_processors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamIngestor.ingest_rabbitmq|600",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamIngestor::ingest_rabbitmq"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_ingestor_registers_and_starts_processors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamIngestor.ingest_kinesis|619",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamIngestor::ingest_kinesis"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_ingestor_registers_and_starts_processors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamIngestor.start_streaming|638",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamIngestor::start_streaming"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_ingestor_registers_and_starts_processors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/stream_ingestor.py|method|StreamIngestor.stop_streaming|658",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/stream_ingestor.rs::StreamIngestor::stop_streaming"
+   ],
+   "tests": [
+    "ingest_char_stream_ingestor::stream_ingestor_registers_and_starts_processors"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|class|WebContent|55",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::WebContent"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_crawl_domain_max_pages",
+    "ingest_test_web_ingestor::test_crawl_sitemap_integration"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|class|RateLimiter|68",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::RateLimiter"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_rate_limiter"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|RateLimiter.wait_if_needed|92",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::RateLimiter::wait_if_needed"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_rate_limiter",
+    "ingest_test_web_ingestor::test_rate_limiter_no_delay"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|class|RobotsChecker|106",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::RobotsChecker"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_robots_checker_cache"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|RobotsChecker.can_fetch|133",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::RobotsChecker::can_fetch"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_robots_checker_cache",
+    "ingest_test_web_ingestor::test_robots_blocking"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|class|ContentExtractor|174",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::ContentExtractor"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_extract_text_cleaning"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|ContentExtractor.extract_text|200",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::ContentExtractor::extract_text"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_extract_text_cleaning"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|ContentExtractor.extract_metadata|229",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::ContentExtractor::extract_metadata"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_metadata_priority",
+    "ingest_test_web_ingestor::test_metadata_opengraph_priority"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|ContentExtractor.extract_links|283",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::ContentExtractor::extract_links"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_extract_links_schemes"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|class|SitemapCrawler|321",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::SitemapCrawler"
+   ],
+   "tests": [
+    "ingest_char_web_ingestor::crawl_sitemap_index_follows_child_sitemaps"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|SitemapCrawler.parse_sitemap|351",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::SitemapCrawler::parse_sitemap"
+   ],
+   "tests": [
+    "ingest_char_web_ingestor::crawl_sitemap_index_follows_child_sitemaps",
+    "ingest_test_ssrf_protection::test_sitemap_crawler_ssrf__test_private_sitemap_url_rejected"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|SitemapCrawler.crawl_sitemap_index|411",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::SitemapCrawler::crawl_sitemap_index"
+   ],
+   "tests": [
+    "ingest_char_web_ingestor::crawl_sitemap_index_follows_child_sitemaps"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|class|WebIngestor|477",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::WebIngestor"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_ingest_url_retry",
+    "ingest_char_web_ingestor::ingest_url_fetches_and_extracts"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|WebIngestor.ingest_url|580",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::WebIngestor::ingest_url"
+   ],
+   "tests": [
+    "ingest_char_web_ingestor::ingest_url_fetches_and_extracts",
+    "ingest_test_web_ingestor::test_robots_blocking"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|WebIngestor.crawl_sitemap|662",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::WebIngestor::crawl_sitemap"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_crawl_sitemap_integration",
+    "ingest_test_web_ingestor::test_web_ingestor_crawl_sitemap_integration"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|WebIngestor.crawl_domain|764",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::WebIngestor::crawl_domain"
+   ],
+   "tests": [
+    "ingest_test_web_ingestor::test_crawl_domain_max_pages",
+    "ingest_test_web_ingestor::test_crawl_domain_max_depth"
+   ]
+  },
+  {
+   "id": "semantica/ingest/web_ingestor.py|method|WebIngestor.extract_content|839",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/src/web_ingestor.rs::WebIngestor::extract_content"
+   ],
+   "tests": [
+    "ingest_char_web_ingestor::extract_content_builds_web_content"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_auth_header_redirect_security.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_auth_header_redirect_security.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_auth_header_redirect_security.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_authorization_stripped_on_cross_origin_redirect|67",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_session_headers_stripping__test_session_authorization_stripped_on_cross_origin_redirect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_headers_cleared_before_second_hop_not_just_restored_after|87",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_session_headers_stripping__test_session_headers_cleared_before_second_hop_not_just_restored_after"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_authorization_preserved_on_same_origin_redirect|132",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_session_headers_stripping__test_session_authorization_preserved_on_same_origin_redirect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_credentials_restored_after_successful_request|148",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_session_headers_stripping__test_session_credentials_restored_after_successful_request"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_credentials_restored_after_ssrf_exception|160",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_session_headers_stripping__test_session_credentials_restored_after_ssrf_exception"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_credentials_restored_after_max_redirects_exceeded|175",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_session_headers_stripping__test_session_credentials_restored_after_max_redirects_exceeded"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_proxy_authorization_stripped_on_cross_origin_redirect|193",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_session_headers_stripping__test_proxy_authorization_stripped_on_cross_origin_redirect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_both_auth_headers_stripped_simultaneously|209",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_session_headers_stripping__test_both_auth_headers_stripped_simultaneously"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_kwargs_auth_stripped_on_cross_origin_redirect|246",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_kwargs_auth_stripped_on_cross_origin_redirect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_kwargs_auth_preserved_on_same_origin_redirect|282",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_kwargs_auth_preserved_on_same_origin_redirect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_auth_cleared_before_cross_origin_hop|304",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_session_auth_cleared_before_cross_origin_hop"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_auth_preserved_on_same_origin_redirect|346",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_session_auth_preserved_on_same_origin_redirect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_auth_restored_after_successful_request|369",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_session_auth_restored_after_successful_request"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_auth_restored_after_ssrf_exception|382",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_session_auth_restored_after_ssrf_exception"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_auth_none_by_default_remains_none|398",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_session_auth_none_by_default_remains_none"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_kwargs_auth_does_not_reappear_in_multihop_chain|412",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_kwargs_auth_does_not_reappear_in_multihop_chain"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_trust_env_disabled_before_cross_origin_hop|437",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_session_trust_env_disabled_before_cross_origin_hop"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_trust_env_restored_after_exception|478",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_session_trust_env_restored_after_exception"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_trust_env_false_stays_false_after_call|493",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_auth_handler_stripping__test_session_trust_env_false_stays_false_after_call"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_credentials_do_not_reappear_after_cross_origin_hop|515",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_credential_resurrection__test_credentials_do_not_reappear_after_cross_origin_hop"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_auth_does_not_reappear_in_multihop_chain|544",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_credential_resurrection__test_session_auth_does_not_reappear_in_multihop_chain"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_strips_on_307_cross_origin|572",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_redirect_types_and_origin_changes__test_strips_on_307_cross_origin"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_strips_on_308_cross_origin|594",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_redirect_types_and_origin_changes__test_strips_on_308_cross_origin"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_strips_on_port_change|616",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_redirect_types_and_origin_changes__test_strips_on_port_change"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_strips_on_subdomain_change|635",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_redirect_types_and_origin_changes__test_strips_on_subdomain_change"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_keeps_on_https_443_explicit_to_implicit|654",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_redirect_types_and_origin_changes__test_keeps_on_https_443_explicit_to_implicit"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_case_insensitive_header_stripped|673",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_redirect_types_and_origin_changes__test_case_insensitive_header_stripped"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_cross_host_redirect_to_private_ip_is_blocked_when_pinned|699",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_allow_private_ips_on_redirect__test_cross_host_redirect_to_private_ip_is_blocked_when_pinned"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_same_host_redirect_keeps_private_ip_trust_when_pinned|715",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_allow_private_ips_on_redirect__test_same_host_redirect_keeps_private_ip_trust_when_pinned"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_default_behavior_unchanged_without_the_new_kwarg|734",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_allow_private_ips_on_redirect__test_default_behavior_unchanged_without_the_new_kwarg"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_cross_origin_redirect_strips_authorization|775",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_mcp_client_auth_redirect__test_cross_origin_redirect_strips_authorization"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_same_origin_redirect_preserves_authorization|797",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_mcp_client_auth_redirect__test_same_origin_redirect_preserves_authorization"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_localhost_mcp_server_is_not_blocked|818",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_mcp_client_auth_redirect__test_localhost_mcp_server_is_not_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_loopback_ip_mcp_server_is_not_blocked|831",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_mcp_client_auth_redirect__test_loopback_ip_mcp_server_is_not_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_same_host_redirect_on_private_mcp_server_is_not_blocked|844",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_mcp_client_auth_redirect__test_same_host_redirect_on_private_mcp_server_is_not_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_redirect_to_private_ip_is_blocked|860",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_mcp_client_auth_redirect__test_redirect_to_private_ip_is_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_scheme_downgrade_strips_authorization|879",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_mcp_client_auth_redirect__test_scheme_downgrade_strips_authorization"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_max_redirect_cap_respected|900",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_mcp_client_auth_redirect__test_max_redirect_cap_respected"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_allow_redirects_false_enforced|914",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_mcp_client_auth_redirect__test_allow_redirects_false_enforced"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_redirect_to_private_ip_blocked_in_detect|956",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_public_api_ingestor_redirect_security__test_redirect_to_private_ip_blocked_in_detect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_redirect_to_private_ip_blocked_in_ingest|971",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_public_api_ingestor_redirect_security__test_redirect_to_private_ip_blocked_in_ingest"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_session_auth_not_leaked_on_cross_origin_redirect_ingest|986",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_public_api_ingestor_redirect_security__test_session_auth_not_leaked_on_cross_origin_redirect_ingest"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_allow_redirects_false_enforced_in_detect|1012",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_public_api_ingestor_redirect_security__test_allow_redirects_false_enforced_in_detect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_allow_redirects_false_enforced_in_ingest|1027",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_public_api_ingestor_redirect_security__test_allow_redirects_false_enforced_in_ingest"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_auth_header_redirect_security.py|original_test_function|test_validate_no_auth_false_does_not_bypass_redirect_stripping|1042",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_auth_header_redirect_security::test_public_api_ingestor_redirect_security__test_validate_no_auth_false_does_not_bypass_redirect_stripping"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_feed_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_feed_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_feed_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_parse_atom_complex|42",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_parse_atom_complex"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_parse_rss_dates|58",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_parse_rss_dates"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_ingest_feed_errors|79",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_ingest_feed_errors"
+   ],
+   "original_result": "failed"
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_monitor_loop_lifecycle|99",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_monitor_loop_lifecycle"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_monitor_threading|120",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_monitor_threading"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_extract_content_helper|137",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_extract_content_helper"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_extract_content_missing_fields|155",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_extract_content_missing_fields"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_parse_date_formats|168",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_parse_date_formats"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_validate_feed|183",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_validate_feed"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_discover_feeds_empty|205",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_discover_feeds_empty"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_discover_feeds_found|231",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_discover_feeds_found"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_feed_ingestor.py|original_test_function|test_feed_monitor_options|264",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_feed_ingestor::test_feed_monitor_options"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_file_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_file_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_file_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_file_object_text_decoding|70",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_file_object_text_decoding"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_type_detector_extended|104",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_type_detector_extended"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_cloud_storage_s3|127",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_cloud_storage_s3"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_cloud_storage_gcs|160",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_cloud_storage_gcs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_cloud_storage_azure|183",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_cloud_storage_azure"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_cloud_storage_invalid|208",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_cloud_storage_invalid"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_cloud_storage_list_error|215",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_cloud_storage_list_error"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_cloud_storage_download_error|229",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_cloud_storage_download_error"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_ingest_directory_recursive|240",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_directory_recursive"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_ingest_directory_non_recursive|249",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_directory_non_recursive"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_ingest_file_callback|260",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_file_callback"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_ingest_file_fail_fast|272",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_file_fail_fast"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_ingest_alias|282",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_alias"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_ingest_cloud_loop_errors|296",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_ingest_cloud_loop_errors"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_file_ingestor.py|original_test_function|test_scan_directory_filters|313",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_file_ingestor::test_scan_directory_filters"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_ingestors.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_ingestors.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_ingestors.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|original_test_function|test_file_type_detector|14",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ingestors::test_file_ingestor__test_file_type_detector"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|original_test_function|test_ingest_file|26",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ingestors::test_file_ingestor__test_ingest_file"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|original_test_function|test_ingest_directory|42",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ingestors::test_file_ingestor__test_ingest_directory"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|original_test_function|test_ingest_url|60",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ingestors::test_web_ingestor__test_ingest_url"
+   ],
+   "original_result": "failed"
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|original_test_function|test_ingest_feed|82",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ingestors::test_feed_ingestor__test_ingest_feed"
+   ],
+   "original_result": "failed"
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|original_test_function|test_ingest_file_dispatch|114",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ingestors::test_unified_ingest__test_ingest_file_dispatch"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ingestors.py|original_test_function|test_ingest_web_dispatch|134",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ingestors::test_unified_ingest__test_ingest_web_dispatch"
+   ],
+   "original_result": "failed"
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_public_api_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_public_api_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_public_api_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_examples_catalog_lists_endpoints_and_samples|42",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_examples_catalog_lists_endpoints_and_samples"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_ingestor_ingests_json_records|58",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_ingests_json_records"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_ingestor_extracts_nested_record_path|82",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_extracts_nested_record_path"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_ingestor_parses_csv_records|109",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_parses_csv_records"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_ingestor_parses_xml_records_with_record_path|128",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_parses_xml_records_with_record_path"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_ingestor_rejects_malicious_xml_entities|150",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_rejects_malicious_xml_entities"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_detection_reports_public_endpoint|174",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_detection_reports_public_endpoint"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_detection_reports_auth_required|192",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_detection_reports_auth_required"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_detect_public_api_propagates_ssrf_validation_error|214",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_detect_public_api_propagates_ssrf_validation_error"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_detect_public_api_rejects_duplicate_session_and_allow_private_ips_kwargs|236",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_detect_public_api_rejects_duplicate_session_and_allow_private_ips_kwargs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_ingest_public_api_rejects_duplicate_session_and_allow_private_ips_kwargs|259",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_ingest_public_api_rejects_duplicate_session_and_allow_private_ips_kwargs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_ingestor_rejects_authentication_inputs|277",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_rejects_authentication_inputs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_ingestor_parses_string_boolean_config|292",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_parses_string_boolean_config"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_convenience_methods_and_registry_dispatch|321",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_convenience_methods_and_registry_dispatch"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_ingestor_rejects_auth_credential_in_url|356",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_ingestor_rejects_auth_credential_in_url"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_public_api_detection_returns_not_public_for_url_with_auth_param|367",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_public_api_detection_returns_not_public_for_url_with_auth_param"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_require_public_false_allows_successful_response|383",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_require_public_false_allows_successful_response"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_require_public_false_with_401_still_raises_via_raise_for_status|404",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_require_public_false_with_401_still_raises_via_raise_for_status"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_public_api_ingestor.py|original_test_function|test_html_response_is_not_misclassified_as_xml|417",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_public_api_ingestor::test_html_response_is_not_misclassified_as_xml"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_repo_ingestor_security.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_repo_ingestor_security.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_repo_ingestor_security.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_accepts_https_github_url|36",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_accepts_https_github_url"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_accepts_ssh_scheme|43",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_accepts_ssh_scheme"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_accepts_scp_like_ssh_remote|50",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_accepts_scp_like_ssh_remote"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_normalizes_scp_like_to_ssh_url|60",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_normalizes_scp_like_to_ssh_url"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_empty|72",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_rejects_empty"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_file_scheme|76",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_rejects_file_scheme"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_env_var_tokens|80",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_rejects_env_var_tokens"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_accepts_literal_dollar_without_env_var_token|94",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_accepts_literal_dollar_without_env_var_token"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_localhost_and_loopback|102",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_rejects_localhost_and_loopback"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_private_and_metadata_ips|112",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_rejects_private_and_metadata_ips"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_hostname_resolving_to_private_ip|124",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_rejects_hostname_resolving_to_private_ip"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_hostname_if_any_resolved_ip_is_blocked|134",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_rejects_hostname_if_any_resolved_ip_is_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_unresolvable_hostname|144",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_rejects_unresolvable_hostname"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_hostname_resolution_is_cached|154",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_hostname_resolution_is_cached"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_malformed_netloc_as_validation_error|163",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_rejects_malformed_netloc_as_validation_error"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_malformed_url_surfaces_as_validation_error_from_ingest|171",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_url_validation__test_malformed_url_surfaces_as_validation_error_from_ingest"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_allows_safe_options|183",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_clone_option_allowlist__test_allows_safe_options"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_strips_processing_options_without_error|194",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_clone_option_allowlist__test_strips_processing_options_without_error"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_multi_options|207",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_clone_option_allowlist__test_rejects_multi_options"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_rejects_upload_pack_and_template|213",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_clone_option_allowlist__test_rejects_upload_pack_and_template"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_allowlist_matches_documented_safe_set|218",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_clone_option_allowlist__test_allowlist_matches_documented_safe_set"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_unsafe_url_never_reaches_clone_from|228",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_ingest_repository_guards__test_unsafe_url_never_reaches_clone_from"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_unsafe_clone_option_never_reaches_clone_from|240",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_ingest_repository_guards__test_unsafe_clone_option_never_reaches_clone_from"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_hostname_resolving_private_never_reaches_clone_from|256",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_ingest_repository_guards__test_hostname_resolving_private_never_reaches_clone_from"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_safe_options_forwarded_to_clone_from|271",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_ingest_repository_guards__test_safe_options_forwarded_to_clone_from"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_scp_like_remote_normalized_before_clone|309",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_ingest_repository_guards__test_scp_like_remote_normalized_before_clone"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_nat64_prefix_not_blocked|348",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_nat64_prefix_not_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_nat64_local_prefix_not_blocked|359",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_nat64_local_prefix_not_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_private_ipv6_still_blocked|370",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_private_ipv6_still_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_ipv6_loopback_still_blocked|377",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_ipv6_loopback_still_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_ipv6_link_local_still_blocked|382",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_ipv6_link_local_still_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_documentation_prefix_blocked|387",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_documentation_prefix_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_public_ipv4_not_blocked|396",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_public_ipv4_not_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_public_ipv6_not_blocked|401",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_public_ipv6_not_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_host_resolving_to_nat64_address_is_allowed|408",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_host_resolving_to_nat64_address_is_allowed"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_host_resolving_only_to_nat64_is_allowed|420",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_is_reserved_nat64_regression__test_host_resolving_only_to_nat64_is_allowed"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_is_local_repo_path_absolute|434",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_local_path_support__test_is_local_repo_path_absolute"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_is_local_repo_path_relative|438",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_local_path_support__test_is_local_repo_path_relative"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_is_local_repo_path_not_remote|443",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_local_path_support__test_is_local_repo_path_not_remote"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_validate_repo_url_accepts_absolute_local_path|449",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_local_path_support__test_validate_repo_url_accepts_absolute_local_path"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_validate_repo_url_accepts_relative_local_path|453",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_local_path_support__test_validate_repo_url_accepts_relative_local_path"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_validate_repo_url_env_var_still_blocked_in_local_path|457",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_local_path_support__test_validate_repo_url_env_var_still_blocked_in_local_path"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_local_path_never_reaches_dns_resolution|462",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_local_path_support__test_local_path_never_reaches_dns_resolution"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_ingest_repository_local_path_passes_validation|470",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_local_path_support__test_ingest_repository_local_path_passes_validation"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_repo_ingestor_security.py|original_test_function|test_concurrent_resolve_repo_host_ips_does_not_raise|498",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_repo_ingestor_security::test_repo_host_resolve_cache_thread_safety__test_concurrent_resolve_repo_host_ips_does_not_raise"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_ssrf_protection.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_ssrf_protection.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_ssrf_protection.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_bool_passthrough|19",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_parse_bool__test_bool_passthrough"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_none_uses_default|23",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_parse_bool__test_none_uses_default"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_string_true_values|27",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_parse_bool__test_string_true_values"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_string_false_values|31",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_parse_bool__test_string_false_values"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_int_zero_one|35",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_parse_bool__test_int_zero_one"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_rejects_unknown_string|39",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_parse_bool__test_rejects_unknown_string"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_accepts_https|45",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_accepts_https"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_rejects_file_scheme|52",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_rejects_file_scheme"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_rejects_gopher_scheme|56",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_rejects_gopher_scheme"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_rejects_literal_private_ips|60",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_rejects_literal_private_ips"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_rejects_localhost_hostname|71",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_rejects_localhost_hostname"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_rejects_hostname_resolving_to_private_ip|75",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_rejects_hostname_resolving_to_private_ip"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_allow_private_ips_opt_in|83",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_allow_private_ips_opt_in"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_dns_failure_raises|93",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_dns_failure_raises"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_dns_timeout_raises|103",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_dns_timeout_raises"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_hung_getaddrinfo_returns_within_timeout_bound|113",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_validate_url_for_request__test_hung_getaddrinfo_returns_within_timeout_bound"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_blocks_redirect_to_loopback|142",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_request_with_ssrf_guard_redirects__test_blocks_redirect_to_loopback"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_blocks_redirect_to_metadata_ip|165",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_request_with_ssrf_guard_redirects__test_blocks_redirect_to_metadata_ip"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_strips_authorization_on_cross_host_redirect|185",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_request_with_ssrf_guard_redirects__test_strips_authorization_on_cross_host_redirect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_keeps_authorization_on_same_host_redirect|217",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_request_with_ssrf_guard_redirects__test_keeps_authorization_on_same_host_redirect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_strips_authorization_on_scheme_downgrade|246",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_request_with_ssrf_guard_redirects__test_strips_authorization_on_scheme_downgrade"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_keeps_authorization_on_scheme_upgrade|278",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_request_with_ssrf_guard_redirects__test_keeps_authorization_on_scheme_upgrade"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_follows_safe_redirect|307",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_request_with_ssrf_guard_redirects__test_follows_safe_redirect"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_private_ip_never_reaches_urllib3|339",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_web_ingestor_ssrf__test_private_ip_never_reaches_urllib3"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_file_scheme_rejected_by_semantica|360",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_web_ingestor_ssrf__test_file_scheme_rejected_by_semantica"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_allow_private_ips_permits_loopback_fetch|365",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_web_ingestor_ssrf__test_allow_private_ips_permits_loopback_fetch"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_allow_private_ips_string_false_keeps_ssrf_on|385",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_web_ingestor_ssrf__test_allow_private_ips_string_false_keeps_ssrf_on"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_allow_private_ips_string_true_opts_in|393",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_web_ingestor_ssrf__test_allow_private_ips_string_true_opts_in"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_redirect_to_private_ip_blocked|411",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_web_ingestor_ssrf__test_redirect_to_private_ip_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_private_sitemap_url_rejected|427",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_sitemap_crawler_ssrf__test_private_sitemap_url_rejected"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_allow_private_ips_string_false_keeps_ssrf_on|432",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_sitemap_crawler_ssrf__test_allow_private_ips_string_false_keeps_ssrf_on"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_allow_private_ips_string_true_opts_in|438",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_sitemap_crawler_ssrf__test_allow_private_ips_string_true_opts_in"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_redirect_to_private_ip_blocked|442",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_sitemap_crawler_ssrf__test_redirect_to_private_ip_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_private_endpoint_never_reaches_session|460",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_rest_ingestor_ssrf__test_private_endpoint_never_reaches_session"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_file_scheme_rejected|468",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_rest_ingestor_ssrf__test_file_scheme_rejected"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_allow_private_ips_opt_in|473",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_rest_ingestor_ssrf__test_allow_private_ips_opt_in"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_allow_private_ips_string_false_keeps_ssrf_on|488",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_rest_ingestor_ssrf__test_allow_private_ips_string_false_keeps_ssrf_on"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_allow_private_ips_string_true_opts_in|497",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_rest_ingestor_ssrf__test_allow_private_ips_string_true_opts_in"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_ssrf_protection.py|original_test_function|test_redirect_to_private_ip_blocked|512",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_ssrf_protection::test_rest_ingestor_ssrf__test_redirect_to_private_ip_blocked"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_web_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_web_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-ingest/tests/ingest_test_web_ingestor.rs"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_sitemap_index_recursion|29",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_sitemap_index_recursion"
+   ],
+   "original_result": "failed"
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_sitemap_fallback_parsing|56",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_sitemap_fallback_parsing"
+   ],
+   "original_result": "failed"
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_sitemap_invalid_xml|74",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_sitemap_invalid_xml"
+   ],
+   "original_result": "failed"
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_extract_links_schemes|88",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_extract_links_schemes"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_extract_metadata_empty|104",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_extract_metadata_empty"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_ingest_url_happy|117",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_ingest_url_happy"
+   ],
+   "original_result": "failed"
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_robots_blocking|128",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_robots_blocking"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_crawl_domain_visited_logic|140",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_crawl_domain_visited_logic"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_rate_limiter|154",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_rate_limiter"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_rate_limiter_no_delay|168",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_rate_limiter_no_delay"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_ingest_url_retry|179",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_ingest_url_retry"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_url_filters|193",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_url_filters"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_extract_text_cleaning|208",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_extract_text_cleaning"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_robots_checker_cache|228",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_robots_checker_cache"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_web_ingestor_crawl_sitemap_integration|245",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_web_ingestor_crawl_sitemap_integration"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_metadata_priority|267",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_metadata_priority"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_crawl_domain_max_depth|287",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_crawl_domain_max_depth"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_crawl_sitemap_integration|308",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_crawl_sitemap_integration"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_crawl_domain_max_pages|349",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_crawl_domain_max_pages"
+   ]
+  },
+  {
+   "id": "tests/ingest/test_web_ingestor.py|original_test_function|test_metadata_opengraph_priority|394",
+   "disposition": "ported_test",
+   "tests": [
+    "ingest_test_web_ingestor::test_metadata_opengraph_priority"
+   ]
+  }
+ ]
+}

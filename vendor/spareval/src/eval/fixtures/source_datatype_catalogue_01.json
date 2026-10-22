@@ -1,0 +1,244 @@
+{
+  "schema": "private.original-source-datatype-catalog/1",
+  "python": "3.13.11",
+  "rdflib": "7.6.0",
+  "xsd_datatypes": [
+    "http://www.w3.org/2001/XMLSchema#boolean",
+    "http://www.w3.org/2001/XMLSchema#byte",
+    "http://www.w3.org/2001/XMLSchema#date",
+    "http://www.w3.org/2001/XMLSchema#dateTime",
+    "http://www.w3.org/2001/XMLSchema#decimal",
+    "http://www.w3.org/2001/XMLSchema#double",
+    "http://www.w3.org/2001/XMLSchema#float",
+    "http://www.w3.org/2001/XMLSchema#int",
+    "http://www.w3.org/2001/XMLSchema#integer",
+    "http://www.w3.org/2001/XMLSchema#long",
+    "http://www.w3.org/2001/XMLSchema#negativeInteger",
+    "http://www.w3.org/2001/XMLSchema#nonNegativeInteger",
+    "http://www.w3.org/2001/XMLSchema#nonPositiveInteger",
+    "http://www.w3.org/2001/XMLSchema#positiveInteger",
+    "http://www.w3.org/2001/XMLSchema#short",
+    "http://www.w3.org/2001/XMLSchema#string",
+    "http://www.w3.org/2001/XMLSchema#unsignedByte",
+    "http://www.w3.org/2001/XMLSchema#unsignedInt",
+    "http://www.w3.org/2001/XMLSchema#unsignedLong",
+    "http://www.w3.org/2001/XMLSchema#unsignedShort"
+  ],
+  "dawg_literal_collation": false,
+  "mappings": [
+    {
+      "datatype": null,
+      "converter": null
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#time",
+      "converter": {
+        "module": null,
+        "name": "time.fromisoformat"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#date",
+      "converter": {
+        "module": "rdflib.xsd_datetime",
+        "name": "parse_xsd_date"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+      "converter": {
+        "module": null,
+        "name": "datetime.fromisoformat"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#duration",
+      "converter": {
+        "module": "rdflib.xsd_datetime",
+        "name": "parse_xsd_duration"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#dayTimeDuration",
+      "converter": {
+        "module": "rdflib.xsd_datetime",
+        "name": "parse_xsd_duration"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#yearMonthDuration",
+      "converter": {
+        "module": "rdflib.xsd_datetime",
+        "name": "parse_xsd_duration"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#hexBinary",
+      "converter": {
+        "module": "rdflib.term",
+        "name": "_unhexlify"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#string",
+      "converter": null
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#normalizedString",
+      "converter": null
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#token",
+      "converter": null
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#language",
+      "converter": null
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+      "converter": {
+        "module": "rdflib.term",
+        "name": "_parseBoolean"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+      "converter": {
+        "module": "decimal",
+        "name": "Decimal"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#integer",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#nonPositiveInteger",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#long",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#nonNegativeInteger",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#negativeInteger",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#int",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#unsignedLong",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#short",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#unsignedInt",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#byte",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#unsignedShort",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#unsignedByte",
+      "converter": {
+        "module": "builtins",
+        "name": "int"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#float",
+      "converter": {
+        "module": "builtins",
+        "name": "float"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#double",
+      "converter": {
+        "module": "builtins",
+        "name": "float"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#base64Binary",
+      "converter": {
+        "module": "base64",
+        "name": "b64decode"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/2001/XMLSchema#anyURI",
+      "converter": null
+    },
+    {
+      "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral",
+      "converter": {
+        "module": "rdflib.term",
+        "name": "_parseXML"
+      }
+    },
+    {
+      "datatype": "http://www.w3.org/1999/02/22-rdf-syntax-ns#HTML",
+      "converter": {
+        "module": "rdflib.term",
+        "name": "_parse_html"
+      }
+    }
+  ],
+  "candidate_results_used": false
+}

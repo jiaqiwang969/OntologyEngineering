@@ -1,0 +1,469 @@
+{
+  "schema": "private.count-standard-controls/1",
+  "source_oracle_sha256": "a2b9e0089373e25e5f222382438a20c6faca7f2941bc107124c1e5fb923a5fd2",
+  "controls": [
+    {
+      "id": "all_expression_errors",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(1/0) AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"0\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "distinct_all_expression_errors",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(DISTINCT 1/0) AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"0\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "mixed_success_and_error",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(IF(?tag = \"A\", 1, 1/0)) AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"2\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "distinct_mixed_success_and_error",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(DISTINCT IF(?tag = \"A\", 1, 1/0)) AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "mixed_unbound_and_success",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(IF(?tag = \"A\", ?missing, 2)) AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "unbound_variable_control",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(?missing) AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"0\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "star_count_control",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(*) AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"3\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "constant_expression_control",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(\"fixed\") AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"3\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "distinct_constant_control",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(DISTINCT \"fixed\") AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "implicit_empty_group_control",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(1/0) AS ?count) WHERE { ?s ex:tag \"missing\" }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"0\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "id": "initial_target_three_way_control",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT (COUNT(1/0) AS ?count) WHERE { ?s ex:tag ?tag }",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {
+        "count": "\"9\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+      },
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"0\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run",
+      "application_policy_expected": {
+        "neutral1_and_profile2": "existing initial target reassignment refusal retained; standard value not asserted after this guard",
+        "profile3": "computed0 from same evaluator; immutable initial9 cannot leak back into output"
+      }
+    },
+    {
+      "id": "explicit_nonempty_groups_error_values",
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "query": "SELECT ?s (COUNT(1/0) AS ?count) WHERE { ?s ex:tag ?tag } GROUP BY ?s ORDER BY ?s",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "standard_expected": {
+        "columns": [
+          "s",
+          "count"
+        ],
+        "row_count": 2,
+        "rows": [
+          {
+            "s": {
+              "kind": "URIRef",
+              "n3": "<urn:other>"
+            },
+            "count": {
+              "kind": "Literal",
+              "n3": "\"0\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          },
+          {
+            "s": {
+              "kind": "URIRef",
+              "n3": "<urn:part>"
+            },
+            "count": {
+              "kind": "Literal",
+              "n3": "\"0\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run"
+    },
+    {
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "id": "count_errors_first",
+      "query": "SELECT (COUNT(IF(?idx = 1, 7, 1/0)) AS ?count) WHERE { { SELECT ?idx WHERE { VALUES ?idx { 1 2 3 } } ORDER BY DESC(?idx) } }",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run",
+      "explicit_order": "DESC",
+      "scope": "Ordered subquery preserves error-first/last evidence. COUNT valid1 survives, SUM remains unbound on any error; no genericExpression relaxation."
+    },
+    {
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "id": "count_sum_errors_first",
+      "query": "SELECT (COUNT(IF(?idx = 1, 7, 1/0)) AS ?count) (SUM(IF(?idx = 1, 7, 1/0)) AS ?sum) WHERE { { SELECT ?idx WHERE { VALUES ?idx { 1 2 3 } } ORDER BY DESC(?idx) } }",
+      "standard_expected": {
+        "columns": [
+          "count",
+          "sum"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run",
+      "explicit_order": "DESC",
+      "scope": "Ordered subquery preserves error-first/last evidence. COUNT valid1 survives, SUM remains unbound on any error; no genericExpression relaxation."
+    },
+    {
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "id": "count_errors_last",
+      "query": "SELECT (COUNT(IF(?idx = 1, 7, 1/0)) AS ?count) WHERE { { SELECT ?idx WHERE { VALUES ?idx { 1 2 3 } } ORDER BY ASC(?idx) } }",
+      "standard_expected": {
+        "columns": [
+          "count"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run",
+      "explicit_order": "ASC",
+      "scope": "Ordered subquery preserves error-first/last evidence. COUNT valid1 survives, SUM remains unbound on any error; no genericExpression relaxation."
+    },
+    {
+      "data": "<urn:part> <urn:name> \"shaft\"@en ; <urn:tag> \"A\", \"B\" ; <urn:alias> \"shaft\"@en . <urn:other> <urn:name> \"bearing\"@en ; <urn:tag> \"A\" ; <urn:note> \"catalog\" .",
+      "rdf_format": "turtle",
+      "namespaces": {
+        "ex": "urn:"
+      },
+      "bindings": {},
+      "data_sha256": "893293e6adca58b1c80aeb52193b1a2d0c26a216ec5a004bfeb7c59abc877287",
+      "id": "count_sum_errors_last",
+      "query": "SELECT (COUNT(IF(?idx = 1, 7, 1/0)) AS ?count) (SUM(IF(?idx = 1, 7, 1/0)) AS ?sum) WHERE { { SELECT ?idx WHERE { VALUES ?idx { 1 2 3 } } ORDER BY ASC(?idx) } }",
+      "standard_expected": {
+        "columns": [
+          "count",
+          "sum"
+        ],
+        "row_count": 1,
+        "rows": [
+          {
+            "count": {
+              "kind": "Literal",
+              "n3": "\"1\"^^<http://www.w3.org/2001/XMLSchema#integer>"
+            }
+          }
+        ]
+      },
+      "original_RDFLib_for_this_new_control": "not_run",
+      "current_Rust_for_this_new_control": "not_run",
+      "explicit_order": "ASC",
+      "scope": "Ordered subquery preserves error-first/last evidence. COUNT valid1 survives, SUM remains unbound on any error; no genericExpression relaxation."
+    }
+  ],
+  "scope": "Independent standard expectations frozen before source edit. OriginalPython3 is separate; no candidate-derived expected outputs."
+}

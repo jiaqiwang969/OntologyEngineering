@@ -1,0 +1,350 @@
+{
+  "schema": "public.synthetic-source-math-fixture/1",
+  "source_record_id": "QUERY-SUM-AVG-FROZEN-03",
+  "source_record_sha256": "f86864839e50f1902e18ee89a9315377ead0577ab3065fdc6407d73f25246566",
+  "status": "expected_only_not_executed",
+  "authorship": "Source/math oracle and receiving adapter have the same author; candidate execution is separately recorded.",
+  "environment": {
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "initial_flags": []
+    },
+    "numeric_limits": {
+      "max_input_characters": 10000,
+      "max_coefficient_digits": 10064,
+      "max_output_characters": 10064,
+      "max_materialized_power_of_ten": 10064
+    },
+    "integer_text_limit": 4096,
+    "normalize_literals": true,
+    "default_query_capability": "mixed-binary64-v1",
+    "conversion_resource_policy": "binary64-conversion-budget-v1",
+    "scalar_target_assumption": "IEEE754 binary64; default nearest ties-even; gradual underflow; no fast-math/reassociation/FMA contraction across source steps. Target runtime qualification remains later receiving work.",
+    "context_basis": "Explicit fixture configuration, not observation of a historical mutable Python process.",
+    "limits_basis": "Active bounded receiving configuration, not original Python acceptance limits. Core converter inputs are already constructed values; input loading is not the lexical API under test.",
+    "group_semantics": "source-group/1",
+    "builtin_sum_source_branch": "Pinned CPython 3.13.11 ordinary #ifndef SLOW_SUM branch. Historical build flags are not newly observed."
+  },
+  "cases": [
+    {
+      "id": "PS01",
+      "operation": "python_sum_binary64_pair",
+      "input": {
+        "first_bits_hex": "8000000000000000",
+        "second_bits_hex": "8000000000000000"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "0000000000000000"
+      },
+      "decimal_signals_added_exact": [],
+      "classification": "source_and_math",
+      "source_refs": [
+        "builtin_sum"
+      ],
+      "proof_refs": [
+        "M-PS01"
+      ]
+    },
+    {
+      "id": "PS02",
+      "operation": "python_sum_binary64_pair",
+      "input": {
+        "first_bits_hex": "0000000000000000",
+        "second_bits_hex": "8000000000000000"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "0000000000000000"
+      },
+      "decimal_signals_added_exact": [],
+      "classification": "source_and_math",
+      "source_refs": [
+        "builtin_sum"
+      ],
+      "proof_refs": [
+        "M-PS02"
+      ]
+    },
+    {
+      "id": "PS03",
+      "operation": "python_sum_binary64_pair",
+      "input": {
+        "first_bits_hex": "4341c37937e08000",
+        "second_bits_hex": "3ff0000000000000"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "4341c37937e08000"
+      },
+      "decimal_signals_added_exact": [],
+      "classification": "source_and_math",
+      "source_refs": [
+        "builtin_sum"
+      ],
+      "proof_refs": [
+        "M-PS03"
+      ]
+    },
+    {
+      "id": "PS04",
+      "operation": "python_sum_binary64_pair",
+      "input": {
+        "first_bits_hex": "4341c37937e08000",
+        "second_bits_hex": "c341c37937e08000"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "0000000000000000"
+      },
+      "decimal_signals_added_exact": [],
+      "classification": "source_and_math",
+      "source_refs": [
+        "builtin_sum"
+      ],
+      "proof_refs": [
+        "M-PS04"
+      ]
+    },
+    {
+      "id": "PS05",
+      "operation": "python_sum_binary64_pair",
+      "input": {
+        "first_bits_hex": "3fb999999999999a",
+        "second_bits_hex": "3fc999999999999a"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "3fd3333333333334"
+      },
+      "decimal_signals_added_exact": [],
+      "classification": "source_and_math",
+      "source_refs": [
+        "builtin_sum"
+      ],
+      "proof_refs": [
+        "M-PS05"
+      ]
+    },
+    {
+      "id": "PS06",
+      "operation": "python_sum_binary64_pair",
+      "input": {
+        "first_bits_hex": "0000000000000001",
+        "second_bits_hex": "0000000000000001"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "0000000000000002"
+      },
+      "decimal_signals_added_exact": [],
+      "classification": "source_and_math",
+      "source_refs": [
+        "builtin_sum"
+      ],
+      "proof_refs": [
+        "M-PS06"
+      ]
+    },
+    {
+      "id": "PS07",
+      "operation": "python_sum_binary64_pair",
+      "input": {
+        "first_bits_hex": "7ff0000000000000",
+        "second_bits_hex": "3ff0000000000000"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "7ff0000000000000"
+      },
+      "decimal_signals_added_exact": [],
+      "classification": "source_and_math",
+      "source_refs": [
+        "builtin_sum"
+      ]
+    },
+    {
+      "id": "PS08",
+      "operation": "python_sum_binary64_pair",
+      "input": {
+        "first_bits_hex": "7ff0000000000000",
+        "second_bits_hex": "fff0000000000000"
+      },
+      "expected": {
+        "kind": "value",
+        "classification": "NaN",
+        "sign_and_payload": "not asserted"
+      },
+      "decimal_signals_added_exact": [],
+      "classification": "source_and_math",
+      "source_refs": [
+        "builtin_sum"
+      ]
+    },
+    {
+      "id": "ID01",
+      "operation": "binary64_divide_integers",
+      "input": {
+        "numerator": "9007199254740993",
+        "denominator": "3"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "4325555555555556"
+      },
+      "decimal_signals_added_exact": [],
+      "source_refs": [
+        "long_true_divide"
+      ],
+      "classification": "source_and_math",
+      "proof_refs": [
+        "M-ID01"
+      ]
+    },
+    {
+      "id": "ID02",
+      "operation": "binary64_divide_integers",
+      "input": {
+        "numerator": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "denominator": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "3ff0000000000000"
+      },
+      "decimal_signals_added_exact": [],
+      "source_refs": [
+        "long_true_divide"
+      ],
+      "classification": "source_and_math",
+      "proof_refs": [
+        "M-ID02"
+      ]
+    },
+    {
+      "id": "ID03",
+      "operation": "binary64_divide_integers",
+      "input": {
+        "numerator": "-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "denominator": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "bff0000000000000"
+      },
+      "decimal_signals_added_exact": [],
+      "source_refs": [
+        "long_true_divide"
+      ],
+      "classification": "source_and_math",
+      "proof_refs": [
+        "M-ID03"
+      ]
+    },
+    {
+      "id": "ID04",
+      "operation": "binary64_divide_integers",
+      "input": {
+        "numerator": "0",
+        "denominator": "-1"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "8000000000000000"
+      },
+      "decimal_signals_added_exact": [],
+      "source_refs": [
+        "long_true_divide"
+      ],
+      "classification": "source_and_math",
+      "math_derivation": "0 divided by negative integer has negative sign and zero magnitude; long_true_divide emits -0.0 without losing denominator sign."
+    },
+    {
+      "id": "ID05",
+      "operation": "binary64_divide_integers",
+      "input": {
+        "numerator": "1",
+        "denominator": "-10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expected": {
+        "kind": "value",
+        "bits_hex": "8000000000000000"
+      },
+      "decimal_signals_added_exact": [],
+      "source_refs": [
+        "long_true_divide"
+      ],
+      "classification": "source_and_math",
+      "proof_refs": [
+        "M-ID05"
+      ],
+      "math_derivation": "Magnitude 10^-400 is below the half-minimum-subnormal midpoint 2^-1075; nearest rounding produces zero and the negative denominator preserves sign."
+    },
+    {
+      "id": "ID06",
+      "operation": "binary64_divide_integers",
+      "input": {
+        "numerator": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "denominator": "1"
+      },
+      "expected": {
+        "kind": "fault",
+        "reason": "IntegerOverflow"
+      },
+      "decimal_signals_added_exact": [],
+      "source_refs": [
+        "long_true_divide"
+      ],
+      "classification": "source_and_math",
+      "math_derivation": "10^400 / 1 exceeds 2^1024; fixed long_true_divide raises OverflowError, mapped to IntegerOverflow, rather than converting each input first."
+    },
+    {
+      "id": "ID07",
+      "operation": "binary64_divide_integers",
+      "input": {
+        "numerator": "0",
+        "denominator": "0"
+      },
+      "expected": {
+        "kind": "fault",
+        "reason": "ZeroDivision"
+      },
+      "decimal_signals_added_exact": [],
+      "source_refs": [
+        "long_true_divide"
+      ],
+      "classification": "source_and_math"
+    },
+    {
+      "id": "ID08",
+      "operation": "binary64_divide_integers",
+      "input": {
+        "numerator": "1234",
+        "denominator": "0"
+      },
+      "expected": {
+        "kind": "fault",
+        "reason": "Core.ResourceLimit",
+        "operation": "coefficient_digits"
+      },
+      "decimal_signals_added_exact": [],
+      "source_refs": [
+        "long_true_divide"
+      ],
+      "classification": "active_safety_not_original_parity",
+      "numeric_limits_override": {
+        "max_coefficient_digits": 3
+      },
+      "policy": "input_budget_precedes_zero_division"
+    }
+  ]
+}

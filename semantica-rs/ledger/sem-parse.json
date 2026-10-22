@@ -1,0 +1,2319 @@
+{
+ "schema": "semantica.migration-ledger/1",
+ "scope_sha256": "b1470d9980755811c815be24cdc041740de5f55e28232c327f0845d160455226",
+ "module": "sem-parse",
+ "entries": [
+  {
+   "id": "semantica/parse/__init__.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|DocumentParser|239",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/document_parser.rs::DocumentParser"
+   ],
+   "tests": [
+    "parse_document_parser::test_parse_document_text_routes"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|WebParser|240",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::WebParser"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original",
+    "parse_web_parser::test_web_parser_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|HTMLContentParser|241",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::HTMLContentParser"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original",
+    "parse_web_parser::test_html_content_parser_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|JavaScriptRenderer|242",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::JavaScriptRenderer"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original",
+    "parse_web_parser::test_static_webdriver_rendering"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|StructuredDataParser|243",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/structured_data_parser.rs::StructuredDataParser"
+   ],
+   "tests": [
+    "parse_structured_data_parser::test_parse_data_formats"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|EmailParser|244",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailParser"
+   ],
+   "tests": [
+    "parse_email_parser::test_email_parser_config",
+    "parse_email_parser::test_parse_email_file_corpus_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|EmailHeaders|245",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailHeaders"
+   ],
+   "tests": [
+    "parse_email_parser::test_email_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|EmailBody|246",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailBody"
+   ],
+   "tests": [
+    "parse_email_parser::test_email_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|EmailData|247",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailData"
+   ],
+   "tests": [
+    "parse_email_parser::test_email_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|MIMEParser|248",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::MIMEParser"
+   ],
+   "tests": [
+    "parse_email_parser::test_mime_parser_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|EmailThreadAnalyzer|249",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailThreadAnalyzer"
+   ],
+   "tests": [
+    "parse_email_parser::test_analyze_thread_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|CodeParser|250",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeParser"
+   ],
+   "tests": [
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|CodeStructure|251",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeStructure"
+   ],
+   "tests": [
+    "parse_code_parser::test_dataclasses_and_sub_parsers",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|CodeComment|252",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeComment"
+   ],
+   "tests": [
+    "parse_code_parser::test_dataclasses_and_sub_parsers",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|SyntaxTreeParser|253",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::SyntaxTreeParser"
+   ],
+   "tests": [
+    "parse_code_parser::test_misc_cases_match_oracle",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|CommentExtractor|254",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CommentExtractor"
+   ],
+   "tests": [
+    "parse_code_parser::test_dataclasses_and_sub_parsers",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|DependencyAnalyzer|255",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::DependencyAnalyzer"
+   ],
+   "tests": [
+    "parse_code_parser::test_misc_cases_match_oracle",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|DOCXParser|261",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs::DOCXParser"
+   ],
+   "tests": [
+    "parse_docx_parser::test_docx_cases_match_oracle",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|DocxSection|262",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs::DocxSection"
+   ],
+   "tests": [
+    "parse_docx_parser::test_document_loader_and_dataclasses",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|DocxMetadata|263",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs::DocxMetadata"
+   ],
+   "tests": [
+    "parse_docx_parser::test_document_loader_and_dataclasses",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|PPTXParser|264",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs::PPTXParser"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original",
+    "parse_pptx_parser::test_pptx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|SlideContent|265",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs::SlideContent"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original",
+    "parse_pptx_parser::test_pptx_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|PPTXData|266",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs::PPTXData"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original",
+    "parse_pptx_parser::test_pptx_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|ExcelParser|267",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs::ExcelParser"
+   ],
+   "tests": [
+    "parse_excel_parser::test_excel_cases_match_oracle",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|ExcelSheet|268",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs::ExcelSheet"
+   ],
+   "tests": [
+    "parse_excel_parser::test_excel_result_and_dataclasses",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|ExcelData|269",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs::ExcelData"
+   ],
+   "tests": [
+    "parse_excel_parser::test_excel_result_and_dataclasses",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|HTMLParser|270",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLParser"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_files_match_oracle",
+    "parse_html_parser::test_html_strings_match_oracle",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|HTMLMetadata|271",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLMetadata"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_dataclasses",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|HTMLElement|272",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLElement"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_dataclasses",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|JSONParser|273",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/json_parser.rs::JSONParser"
+   ],
+   "tests": [
+    "parse_json_parser::test_parse_errors",
+    "parse_json_parser::test_parse_files_and_options",
+    "parse_json_parser::test_parse_strings"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|JSONData|274",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/json_parser.rs::JSONData"
+   ],
+   "tests": [
+    "parse_json_parser::test_parse_errors",
+    "parse_json_parser::test_parse_files_and_options",
+    "parse_json_parser::test_parse_strings"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|CSVParser|275",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/csv_parser.rs::CSVParser"
+   ],
+   "tests": [
+    "parse_csv_parser::test_errors",
+    "parse_csv_parser::test_parse_variants",
+    "parse_csv_parser::test_sniffing"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|CSVData|276",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/csv_parser.rs::CSVData"
+   ],
+   "tests": [
+    "parse_csv_parser::test_errors",
+    "parse_csv_parser::test_parse_variants",
+    "parse_csv_parser::test_sniffing"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|XMLParser|277",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLParser"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original",
+    "parse_xml_parser::test_xml_documents_match_oracle",
+    "parse_xml_parser::test_xml_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|XMLElement|278",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLElement"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original",
+    "parse_xml_parser::test_xml_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|XMLData|279",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLData"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original",
+    "parse_xml_parser::test_xml_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|MCPParser|284",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/mcp_parser.rs::MCPParser"
+   ],
+   "tests": [
+    "parse_mcp_parser::test_resource_responses"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|MethodRegistry|286",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/registry.rs::MethodRegistry"
+   ],
+   "tests": [
+    "parse_registry::test_registry_sequence_matches_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|method_registry|287",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/registry.rs::method_registry"
+   ],
+   "tests": [
+    "parse_registry::test_registry_sequence_matches_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|ParseConfig|288",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/config.rs::ParseConfig"
+   ],
+   "tests": [
+    "parse_config::test_config_files",
+    "parse_config::test_environment",
+    "parse_config::test_programmatic_config"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_config|289",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/config.rs::parse_config"
+   ],
+   "tests": [
+    "parse_config::test_programmatic_config",
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_document|291",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_document"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_web_content|292",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_web_content"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_structured_data|293",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_structured_data"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_email|294",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_email"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_code|295",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_code"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_media|296",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_media"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_pdf|297",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_pdf"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_docx|298",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_docx"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_json|299",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_json"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_csv|300",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_csv"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_xml|301",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_xml"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|parse_image|302",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_image"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|get_parse_method|303",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::get_parse_method"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/__init__.py|python_export|list_available_methods|304",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/lib.rs",
+    "semantica-rs/crates/sem-parse/src/methods.rs::list_available_methods"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs",
+    "semantica-rs/crates/sem-parse/src/pyast.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs",
+    "semantica-rs/crates/sem-parse/src/pyast.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|class|CodeStructure|48",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeStructure"
+   ],
+   "tests": [
+    "parse_code_parser::test_dataclasses_and_sub_parsers",
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|class|CodeComment|59",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeComment"
+   ],
+   "tests": [
+    "parse_code_parser::test_dataclasses_and_sub_parsers",
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|class|CodeParser|68",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeParser"
+   ],
+   "tests": [
+    "parse_code_parser::test_dataclasses_and_sub_parsers",
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|CodeParser.parse_code|118",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeParser::parse_code"
+   ],
+   "tests": [
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle",
+    "parse_code_parser::test_misc_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|CodeParser.extract_structure|198",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeParser::extract_structure"
+   ],
+   "tests": [
+    "parse_code_parser::test_languages_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|CodeParser.extract_comments|211",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeParser::extract_comments"
+   ],
+   "tests": [
+    "parse_code_parser::test_languages_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|CodeParser.analyze_dependencies|224",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CodeParser::analyze_dependencies"
+   ],
+   "tests": [
+    "parse_code_parser::test_languages_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|class|SyntaxTreeParser|243",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::SyntaxTreeParser"
+   ],
+   "tests": [
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle",
+    "parse_code_parser::test_misc_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|SyntaxTreeParser.parse_syntax_tree|259",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::SyntaxTreeParser::parse_syntax_tree"
+   ],
+   "tests": [
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle",
+    "parse_code_parser::test_misc_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|SyntaxTreeParser.extract_elements|280",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::SyntaxTreeParser::extract_elements"
+   ],
+   "tests": [
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle",
+    "parse_code_parser::test_languages_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|SyntaxTreeParser.analyze_structure|387",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::SyntaxTreeParser::analyze_structure"
+   ],
+   "tests": [
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle",
+    "parse_code_parser::test_misc_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|class|CommentExtractor|428",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CommentExtractor"
+   ],
+   "tests": [
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle",
+    "parse_code_parser::test_dataclasses_and_sub_parsers"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|CommentExtractor.extract_comments|444",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CommentExtractor::extract_comments"
+   ],
+   "tests": [
+    "parse_code_parser::test_languages_match_oracle",
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|CommentExtractor.extract_docstrings|490",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::CommentExtractor::extract_docstrings"
+   ],
+   "tests": [
+    "parse_code_parser::test_corpus_of_original_sources_matches_oracle",
+    "parse_code_parser::test_snippets_match_oracle",
+    "parse_code_parser::test_dataclasses_and_sub_parsers"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|class|DependencyAnalyzer|505",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::DependencyAnalyzer"
+   ],
+   "tests": [
+    "parse_code_parser::test_misc_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/code_parser.py|method|DependencyAnalyzer.analyze_dependencies|521",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/code_parser.rs::DependencyAnalyzer::analyze_dependencies"
+   ],
+   "tests": [
+    "parse_code_parser::test_misc_cases_match_oracle",
+    "parse_code_parser::test_languages_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/config.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/config.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/config.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/config.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/config.py|class|ParseConfig|46",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/config.rs::ParseConfig"
+   ],
+   "tests": [
+    "parse_config::test_config_files",
+    "parse_config::test_environment",
+    "parse_config::test_programmatic_config"
+   ]
+  },
+  {
+   "id": "semantica/parse/config.py|method|ParseConfig.set|126",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/config.rs::ParseConfig::set"
+   ],
+   "tests": [
+    "parse_config::test_programmatic_config"
+   ]
+  },
+  {
+   "id": "semantica/parse/config.py|method|ParseConfig.get|130",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/config.rs::ParseConfig::get"
+   ],
+   "tests": [
+    "parse_config::test_programmatic_config",
+    "parse_config::test_environment"
+   ]
+  },
+  {
+   "id": "semantica/parse/config.py|method|ParseConfig.set_method_config|151",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/config.rs::ParseConfig::set_method_config"
+   ],
+   "tests": [
+    "parse_config::test_programmatic_config"
+   ]
+  },
+  {
+   "id": "semantica/parse/config.py|method|ParseConfig.get_method_config|155",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/config.rs::ParseConfig::get_method_config"
+   ],
+   "tests": [
+    "parse_config::test_programmatic_config",
+    "parse_config::test_config_files"
+   ]
+  },
+  {
+   "id": "semantica/parse/config.py|method|ParseConfig.get_all|159",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/config.rs::ParseConfig::get_all"
+   ],
+   "tests": [
+    "parse_config::test_config_files",
+    "parse_config::test_environment",
+    "parse_config::test_programmatic_config"
+   ]
+  },
+  {
+   "id": "semantica/parse/csv_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/csv_parser.rs",
+    "semantica-rs/crates/sem-parse/src/pycsv.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/csv_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/csv_parser.rs",
+    "semantica-rs/crates/sem-parse/src/pycsv.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/csv_parser.py|class|CSVData|41",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/csv_parser.rs::CSVData"
+   ],
+   "tests": [
+    "parse_csv_parser::test_parse_variants",
+    "parse_csv_parser::test_sniffing",
+    "parse_csv_parser::test_errors"
+   ]
+  },
+  {
+   "id": "semantica/parse/csv_parser.py|class|CSVParser|50",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/csv_parser.rs::CSVParser"
+   ],
+   "tests": [
+    "parse_csv_parser::test_parse_variants",
+    "parse_csv_parser::test_sniffing",
+    "parse_csv_parser::test_errors"
+   ]
+  },
+  {
+   "id": "semantica/parse/csv_parser.py|method|CSVParser.parse|67",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/csv_parser.rs::CSVParser::parse"
+   ],
+   "tests": [
+    "parse_csv_parser::test_parse_variants",
+    "parse_csv_parser::test_sniffing",
+    "parse_csv_parser::test_errors"
+   ]
+  },
+  {
+   "id": "semantica/parse/csv_parser.py|method|CSVParser.parse_to_dict|175",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/csv_parser.rs::CSVParser::parse_to_dict"
+   ],
+   "tests": [
+    "parse_csv_parser::test_parse_to_dict_and_list"
+   ]
+  },
+  {
+   "id": "semantica/parse/csv_parser.py|method|CSVParser.parse_to_list|191",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/csv_parser.rs::CSVParser::parse_to_list"
+   ],
+   "tests": [
+    "parse_csv_parser::test_parse_to_dict_and_list"
+   ]
+  },
+  {
+   "id": "semantica/parse/document_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/document_parser.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/document_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/document_parser.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/document_parser.py|class|DocumentParser|45",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/document_parser.rs::DocumentParser"
+   ],
+   "tests": [
+    "parse_document_parser::test_parse_document_text_routes"
+   ]
+  },
+  {
+   "id": "semantica/parse/document_parser.py|method|DocumentParser.parse|106",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/document_parser.rs::DocumentParser::parse"
+   ],
+   "tests": [
+    "parse_document_parser::test_parse_document_text_routes",
+    "parse_document_parser::test_parse_batch_and_lists"
+   ]
+  },
+  {
+   "id": "semantica/parse/document_parser.py|method|DocumentParser.parse_document|140",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/document_parser.rs::DocumentParser::parse_document"
+   ],
+   "tests": [
+    "parse_document_parser::test_parse_document_text_routes"
+   ]
+  },
+  {
+   "id": "semantica/parse/document_parser.py|method|DocumentParser.extract_text|216",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/document_parser.rs::DocumentParser::extract_text"
+   ],
+   "tests": [
+    "parse_document_parser::test_extract_text_and_metadata"
+   ]
+  },
+  {
+   "id": "semantica/parse/document_parser.py|method|DocumentParser.extract_metadata|250",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/document_parser.rs::DocumentParser::extract_metadata"
+   ],
+   "tests": [
+    "parse_document_parser::test_extract_text_and_metadata"
+   ]
+  },
+  {
+   "id": "semantica/parse/document_parser.py|method|DocumentParser.parse_batch|274",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/document_parser.rs::DocumentParser::parse_batch"
+   ],
+   "tests": [
+    "parse_document_parser::test_parse_batch_and_lists"
+   ]
+  },
+  {
+   "id": "semantica/parse/docx_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/docx.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/opc.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/dom.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/docx_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/docx.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/opc.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/dom.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/docx_parser.py|class|DocxSection|48",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs::DocxSection"
+   ],
+   "tests": [
+    "parse_docx_parser::test_document_loader_and_dataclasses",
+    "parse_docx_parser::test_docx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/docx_parser.py|class|DocxMetadata|59",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs::DocxMetadata"
+   ],
+   "tests": [
+    "parse_docx_parser::test_document_loader_and_dataclasses",
+    "parse_docx_parser::test_docx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/docx_parser.py|class|DOCXParser|73",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs::DOCXParser"
+   ],
+   "tests": [
+    "parse_docx_parser::test_docx_cases_match_oracle",
+    "parse_docx_parser::test_document_loader_and_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/docx_parser.py|method|DOCXParser.parse|87",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs::DOCXParser::parse"
+   ],
+   "tests": [
+    "parse_docx_parser::test_docx_cases_match_oracle",
+    "parse_docx_parser::test_document_loader_and_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/docx_parser.py|method|DOCXParser.extract_text|182",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs::DOCXParser::extract_text"
+   ],
+   "tests": [
+    "parse_docx_parser::test_docx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/docx_parser.py|method|DOCXParser.extract_tables|200",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/docx_parser.rs::DOCXParser::extract_tables"
+   ],
+   "tests": [
+    "parse_docx_parser::test_docx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs",
+    "semantica-rs/crates/sem-parse/src/mime.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs",
+    "semantica-rs/crates/sem-parse/src/mime.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|class|EmailHeaders|49",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailHeaders"
+   ],
+   "tests": [
+    "parse_email_parser::test_email_dataclasses",
+    "parse_email_parser::test_extract_headers_and_body_match_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|class|EmailBody|65",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailBody",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailAttachment"
+   ],
+   "tests": [
+    "parse_email_parser::test_email_dataclasses",
+    "parse_email_parser::test_extract_headers_and_body_match_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|class|EmailData|74",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailData"
+   ],
+   "tests": [
+    "parse_email_parser::test_email_dataclasses",
+    "parse_email_parser::test_parse_email_file_corpus_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|class|EmailParser|82",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailParser",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailParser::new"
+   ],
+   "tests": [
+    "parse_email_parser::test_email_parser_config",
+    "parse_email_parser::test_parse_email_file_corpus_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|method|EmailParser.parse_email|104",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailParser::parse_email",
+    "semantica-rs/crates/sem-parse/src/mime.rs::message_from_bytes",
+    "semantica-rs/crates/sem-parse/src/mime.rs::message_from_string"
+   ],
+   "tests": [
+    "parse_email_parser::test_parse_email_file_corpus_matches_python",
+    "parse_email_parser::test_parse_email_strings_match_python",
+    "parse_email_parser::test_parse_email_bytes_match_python",
+    "parse_email_parser::test_parse_email_missing_and_directory_paths",
+    "parse_email_parser::test_message_structure_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|method|EmailParser.extract_headers|180",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailParser::extract_headers",
+    "semantica-rs/crates/sem-parse/src/mime.rs::decode_header",
+    "semantica-rs/crates/sem-parse/src/mime.rs::parsedate_to_datetime"
+   ],
+   "tests": [
+    "parse_email_parser::test_extract_headers_and_body_match_python",
+    "parse_email_parser::test_decode_header_matches_python",
+    "parse_email_parser::test_parsedate_to_datetime_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|method|EmailParser.extract_body|261",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailParser::extract_body",
+    "semantica-rs/crates/sem-parse/src/mime.rs::Message::get_payload_decoded"
+   ],
+   "tests": [
+    "parse_email_parser::test_extract_headers_and_body_match_python",
+    "parse_email_parser::test_parse_email_file_corpus_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|method|EmailParser.analyze_thread|347",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailParser::analyze_thread"
+   ],
+   "tests": [
+    "parse_email_parser::test_analyze_thread_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|class|MIMEParser|360",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::MIMEParser",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::MIMEParser::new"
+   ],
+   "tests": [
+    "parse_email_parser::test_mime_parser_matches_python",
+    "parse_email_parser::test_email_parser_config"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|method|MIMEParser.parse_mime_message|368",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::MIMEParser::parse_mime_message"
+   ],
+   "tests": [
+    "parse_email_parser::test_mime_parser_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|class|EmailThreadAnalyzer|386",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailThreadAnalyzer",
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailThreadAnalyzer::new"
+   ],
+   "tests": [
+    "parse_email_parser::test_analyze_thread_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/email_parser.py|method|EmailThreadAnalyzer.analyze_thread|394",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/email_parser.rs::EmailThreadAnalyzer::analyze_thread"
+   ],
+   "tests": [
+    "parse_email_parser::test_analyze_thread_matches_python"
+   ]
+  },
+  {
+   "id": "semantica/parse/excel_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/xlsx.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/pandas.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/excel_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/xlsx.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/pandas.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/excel_parser.py|class|ExcelSheet|44",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs::ExcelSheet"
+   ],
+   "tests": [
+    "parse_excel_parser::test_excel_result_and_dataclasses",
+    "parse_excel_parser::test_excel_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/excel_parser.py|class|ExcelData|55",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs::ExcelData"
+   ],
+   "tests": [
+    "parse_excel_parser::test_excel_result_and_dataclasses",
+    "parse_excel_parser::test_excel_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/excel_parser.py|class|ExcelParser|63",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs::ExcelParser"
+   ],
+   "tests": [
+    "parse_excel_parser::test_excel_cases_match_oracle",
+    "parse_excel_parser::test_excel_result_and_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/excel_parser.py|method|ExcelParser.parse|77",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs::ExcelParser::parse"
+   ],
+   "tests": [
+    "parse_excel_parser::test_excel_cases_match_oracle",
+    "parse_excel_parser::test_excel_result_and_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/excel_parser.py|method|ExcelParser.extract_sheet|276",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/excel_parser.rs::ExcelParser::extract_sheet"
+   ],
+   "tests": [
+    "parse_excel_parser::test_excel_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs",
+    "semantica-rs/crates/sem-parse/src/html_parser/urlparse.rs",
+    "semantica-rs/crates/sem-parse/src/soup.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs",
+    "semantica-rs/crates/sem-parse/src/html_parser/urlparse.rs",
+    "semantica-rs/crates/sem-parse/src/soup.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|class|HTMLMetadata|44",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLMetadata"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_dataclasses",
+    "parse_html_parser::test_html_files_match_oracle",
+    "parse_html_parser::test_html_strings_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|class|HTMLElement|60",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLElement"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|class|HTMLData|70",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLData"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_dataclasses",
+    "parse_html_parser::test_html_files_match_oracle",
+    "parse_html_parser::test_html_strings_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|class|HTMLParser|83",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLParser"
+   ],
+   "tests": [
+    "parse_html_parser::test_parser_attributes",
+    "parse_html_parser::test_html_files_match_oracle",
+    "parse_html_parser::test_html_strings_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|method|HTMLParser.parse|97",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLParser::parse"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_files_match_oracle",
+    "parse_html_parser::test_html_strings_match_oracle",
+    "parse_html_parser::test_missing_path_raises_file_not_found"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|method|HTMLParser.extract_metadata|202",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLParser::extract_metadata"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|method|HTMLParser.extract_text|222",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLParser::extract_text"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/html_parser.py|method|HTMLParser.extract_links|243",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/html_parser.rs::HTMLParser::extract_links"
+   ],
+   "tests": [
+    "parse_html_parser::test_html_files_match_oracle",
+    "parse_html_parser::test_urljoin_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/json_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/json_parser.rs",
+    "semantica-rs/crates/sem-parse/src/pyjson.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/json_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/json_parser.rs",
+    "semantica-rs/crates/sem-parse/src/pyjson.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/json_parser.py|class|JSONData|41",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/json_parser.rs::JSONData"
+   ],
+   "tests": [
+    "parse_json_parser::test_parse_files_and_options",
+    "parse_json_parser::test_parse_strings",
+    "parse_json_parser::test_parse_errors"
+   ]
+  },
+  {
+   "id": "semantica/parse/json_parser.py|class|JSONParser|49",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/json_parser.rs::JSONParser"
+   ],
+   "tests": [
+    "parse_json_parser::test_parse_files_and_options",
+    "parse_json_parser::test_parse_strings",
+    "parse_json_parser::test_parse_errors"
+   ]
+  },
+  {
+   "id": "semantica/parse/json_parser.py|method|JSONParser.parse|66",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/json_parser.rs::JSONParser::parse"
+   ],
+   "tests": [
+    "parse_json_parser::test_parse_files_and_options",
+    "parse_json_parser::test_parse_strings",
+    "parse_json_parser::test_parse_errors"
+   ]
+  },
+  {
+   "id": "semantica/parse/json_parser.py|method|JSONParser.parse_to_dict|141",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/json_parser.rs::JSONParser::parse_to_dict"
+   ],
+   "tests": [
+    "parse_json_parser::test_parse_to_dict_and_list"
+   ]
+  },
+  {
+   "id": "semantica/parse/json_parser.py|method|JSONParser.parse_to_list|170",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/json_parser.rs::JSONParser::parse_to_list"
+   ],
+   "tests": [
+    "parse_json_parser::test_parse_to_dict_and_list"
+   ]
+  },
+  {
+   "id": "semantica/parse/json_parser.py|method|JSONParser.extract_values|190",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/json_parser.rs::JSONParser::extract_values"
+   ],
+   "tests": [
+    "parse_json_parser::test_extract_values"
+   ]
+  },
+  {
+   "id": "semantica/parse/mcp_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/mcp_parser.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/mcp_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/mcp_parser.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/mcp_parser.py|class|MCPParser|35",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/mcp_parser.rs::MCPParser"
+   ],
+   "tests": [
+    "parse_mcp_parser::test_resource_responses",
+    "parse_mcp_parser::test_tool_outputs_and_dispatch"
+   ]
+  },
+  {
+   "id": "semantica/parse/mcp_parser.py|method|MCPParser.parse_resource_response|72",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/mcp_parser.rs::MCPParser::parse_resource_response"
+   ],
+   "tests": [
+    "parse_mcp_parser::test_resource_responses"
+   ]
+  },
+  {
+   "id": "semantica/parse/mcp_parser.py|method|MCPParser.parse_tool_output|120",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/mcp_parser.rs::MCPParser::parse_tool_output"
+   ],
+   "tests": [
+    "parse_mcp_parser::test_tool_outputs_and_dispatch"
+   ]
+  },
+  {
+   "id": "semantica/parse/mcp_parser.py|method|MCPParser.parse_mcp_data|256",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/mcp_parser.rs::MCPParser::parse_mcp_data"
+   ],
+   "tests": [
+    "parse_mcp_parser::test_tool_outputs_and_dispatch"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_document|146",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_document"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_document_docling|200",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_document_docling"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_web_content|257",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_web_content"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_structured_data|313",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_structured_data"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_email|367",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_email"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_code|414",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_code"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_media|464",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_media"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_pdf|517",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_pdf"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_docx|563",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_docx"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_json|607",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_json"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_csv|650",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_csv"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_xml|697",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_xml"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|parse_image|736",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::parse_image"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|get_parse_method|784",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::get_parse_method"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/methods.py|function|list_available_methods|789",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/methods.rs::list_available_methods"
+   ],
+   "tests": [
+    "parse_methods::test_convenience_functions_match_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/parse_provenance.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/parse_provenance.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/parse_provenance.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/parse_provenance.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/parse_provenance.py|class|ParserWithProvenance|21",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/parse_provenance.rs::ParserWithProvenance"
+   ],
+   "tests": [
+    "parse_parse_provenance::test_constructor_fails_like_original",
+    "parse_parse_provenance::test_parse_tracks_parsed_data_entity",
+    "parse_parse_provenance::test_parse_without_provenance_only_delegates"
+   ]
+  },
+  {
+   "id": "semantica/parse/parse_provenance.py|method|ParserWithProvenance.parse|46",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/parse_provenance.rs::ParserWithProvenance::parse"
+   ],
+   "tests": [
+    "parse_parse_provenance::test_parse_tracks_parsed_data_entity",
+    "parse_parse_provenance::test_parse_without_provenance_only_delegates"
+   ]
+  },
+  {
+   "id": "semantica/parse/parse_provenance.py|python_export|ParserWithProvenance|74",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/parse_provenance.rs",
+    "semantica-rs/crates/sem-parse/src/parse_provenance.rs::ParserWithProvenance"
+   ],
+   "tests": [
+    "parse_parse_provenance::test_constructor_fails_like_original",
+    "parse_parse_provenance::test_parse_tracks_parsed_data_entity",
+    "parse_parse_provenance::test_parse_without_provenance_only_delegates"
+   ]
+  },
+  {
+   "id": "semantica/parse/pptx_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/pptx.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/pptx_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs",
+    "semantica-rs/crates/sem-parse/src/ooxml/pptx.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/pptx_parser.py|class|SlideContent|41",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs::SlideContent"
+   ],
+   "tests": [
+    "parse_pptx_parser::test_pptx_dataclasses",
+    "parse_pptx_parser::test_pptx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/pptx_parser.py|class|PPTXData|53",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs::PPTXData"
+   ],
+   "tests": [
+    "parse_pptx_parser::test_pptx_dataclasses",
+    "parse_pptx_parser::test_pptx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/pptx_parser.py|class|PPTXParser|61",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs::PPTXParser"
+   ],
+   "tests": [
+    "parse_pptx_parser::test_pptx_cases_match_oracle",
+    "parse_pptx_parser::test_pptx_dataclasses"
+   ]
+  },
+  {
+   "id": "semantica/parse/pptx_parser.py|method|PPTXParser.parse|75",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs::PPTXParser::parse"
+   ],
+   "tests": [
+    "parse_pptx_parser::test_pptx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/pptx_parser.py|method|PPTXParser.extract_text|135",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs::PPTXParser::extract_text"
+   ],
+   "tests": [
+    "parse_pptx_parser::test_pptx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/pptx_parser.py|method|PPTXParser.extract_slides|150",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/pptx_parser.rs::PPTXParser::extract_slides"
+   ],
+   "tests": [
+    "parse_pptx_parser::test_pptx_cases_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/registry.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/registry.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/registry.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/registry.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/registry.py|class|MethodRegistry|45",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/registry.rs::MethodRegistry"
+   ],
+   "tests": [
+    "parse_registry::test_registry_sequence_matches_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/registry.py|method|MethodRegistry.register|59",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/registry.rs::MethodRegistry::register"
+   ],
+   "tests": [
+    "parse_registry::test_registry_sequence_matches_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/registry.py|method|MethodRegistry.get|73",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/registry.rs::MethodRegistry::get"
+   ],
+   "tests": [
+    "parse_registry::test_registry_sequence_matches_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/registry.py|method|MethodRegistry.list_all|87",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/registry.rs::MethodRegistry::list_all"
+   ],
+   "tests": [
+    "parse_registry::test_registry_sequence_matches_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/registry.py|method|MethodRegistry.unregister|102",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/registry.rs::MethodRegistry::unregister"
+   ],
+   "tests": [
+    "parse_registry::test_registry_sequence_matches_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/registry.py|method|MethodRegistry.clear|114",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/registry.rs::MethodRegistry::clear"
+   ],
+   "tests": [
+    "parse_registry::test_registry_sequence_matches_original"
+   ]
+  },
+  {
+   "id": "semantica/parse/structured_data_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/structured_data_parser.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/structured_data_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/structured_data_parser.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/structured_data_parser.py|class|StructuredDataParser|43",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/structured_data_parser.rs::StructuredDataParser"
+   ],
+   "tests": [
+    "parse_structured_data_parser::test_parse_data_formats"
+   ]
+  },
+  {
+   "id": "semantica/parse/structured_data_parser.py|method|StructuredDataParser.parse_data|69",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/structured_data_parser.rs::StructuredDataParser::parse_data"
+   ],
+   "tests": [
+    "parse_structured_data_parser::test_parse_data_formats"
+   ]
+  },
+  {
+   "id": "semantica/parse/structured_data_parser.py|method|StructuredDataParser.validate_data|129",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/structured_data_parser.rs::StructuredDataParser::validate_data"
+   ],
+   "tests": [
+    "parse_structured_data_parser::test_validate_data"
+   ]
+  },
+  {
+   "id": "semantica/parse/structured_data_parser.py|method|StructuredDataParser.convert_data|189",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/structured_data_parser.rs::StructuredDataParser::convert_data"
+   ],
+   "tests": [
+    "parse_structured_data_parser::test_convert_data"
+   ]
+  },
+  {
+   "id": "semantica/parse/structured_data_parser.py|method|StructuredDataParser.extract_schema|223",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/structured_data_parser.rs::StructuredDataParser::extract_schema"
+   ],
+   "tests": [
+    "parse_structured_data_parser::test_extract_schema_and_detection"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs",
+    "semantica-rs/crates/sem-parse/src/web_parser/html5dom.rs",
+    "semantica-rs/crates/sem-parse/src/web_parser/css.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs",
+    "semantica-rs/crates/sem-parse/src/web_parser/html5dom.rs",
+    "semantica-rs/crates/sem-parse/src/web_parser/css.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|class|WebParser|45",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::WebParser"
+   ],
+   "tests": [
+    "parse_web_parser::test_web_parser_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|method|WebParser.parse_web_content|76",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::WebParser::parse_web_content"
+   ],
+   "tests": [
+    "parse_web_parser::test_web_parser_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|method|WebParser.extract_text|102",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::WebParser::extract_text"
+   ],
+   "tests": [
+    "parse_web_parser::test_web_parser_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|method|WebParser.extract_links|126",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::WebParser::extract_links"
+   ],
+   "tests": [
+    "parse_web_parser::test_web_parser_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|method|WebParser.render_javascript|141",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::WebParser::render_javascript"
+   ],
+   "tests": [
+    "parse_web_parser::test_web_parser_matches_oracle",
+    "parse_web_parser::test_static_webdriver_rendering"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|class|HTMLContentParser|155",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::HTMLContentParser"
+   ],
+   "tests": [
+    "parse_web_parser::test_html_content_parser_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|method|HTMLContentParser.extract_structured_content|166",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::HTMLContentParser::extract_structured_content"
+   ],
+   "tests": [
+    "parse_web_parser::test_html_content_parser_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|method|HTMLContentParser.clean_html|227",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::HTMLContentParser::clean_html"
+   ],
+   "tests": [
+    "parse_web_parser::test_html_content_parser_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|class|JavaScriptRenderer|270",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::JavaScriptRenderer"
+   ],
+   "tests": [
+    "parse_web_parser::test_javascript_renderer_without_webdriver_matches_oracle",
+    "parse_web_parser::test_static_webdriver_rendering"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|method|JavaScriptRenderer.render_page|313",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::JavaScriptRenderer::render_page"
+   ],
+   "tests": [
+    "parse_web_parser::test_javascript_renderer_without_webdriver_matches_oracle",
+    "parse_web_parser::test_static_webdriver_rendering"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|method|JavaScriptRenderer.execute_script|390",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::JavaScriptRenderer::execute_script"
+   ],
+   "tests": [
+    "parse_web_parser::test_javascript_renderer_without_webdriver_matches_oracle",
+    "parse_web_parser::test_static_webdriver_rendering"
+   ]
+  },
+  {
+   "id": "semantica/parse/web_parser.py|method|JavaScriptRenderer.wait_for_content|410",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/web_parser.rs::JavaScriptRenderer::wait_for_content"
+   ],
+   "tests": [
+    "parse_web_parser::test_javascript_renderer_without_webdriver_matches_oracle",
+    "parse_web_parser::test_static_webdriver_rendering"
+   ]
+  },
+  {
+   "id": "semantica/parse/xml_parser.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs",
+    "semantica-rs/crates/sem-parse/src/xml_parser/reader.rs",
+    "semantica-rs/crates/sem-parse/src/xpath.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/xml_parser.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs",
+    "semantica-rs/crates/sem-parse/src/xml_parser/reader.rs",
+    "semantica-rs/crates/sem-parse/src/xpath.rs"
+   ]
+  },
+  {
+   "id": "semantica/parse/xml_parser.py|class|XMLElement|45",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLElement"
+   ],
+   "tests": [
+    "parse_xml_parser::test_xml_dataclasses",
+    "parse_xml_parser::test_xml_documents_match_oracle",
+    "parse_xml_parser::test_xml_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/xml_parser.py|class|XMLData|56",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLData"
+   ],
+   "tests": [
+    "parse_xml_parser::test_xml_dataclasses",
+    "parse_xml_parser::test_xml_documents_match_oracle",
+    "parse_xml_parser::test_xml_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/xml_parser.py|class|XMLParser|64",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLParser"
+   ],
+   "tests": [
+    "parse_xml_parser::test_xml_documents_match_oracle",
+    "parse_xml_parser::test_xml_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/xml_parser.py|method|XMLParser.parse|78",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLParser::parse"
+   ],
+   "tests": [
+    "parse_xml_parser::test_xml_documents_match_oracle",
+    "parse_xml_parser::test_xml_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/xml_parser.py|method|XMLParser.find_elements|235",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLParser::find_elements"
+   ],
+   "tests": [
+    "parse_xml_parser::test_xpath_queries_match_oracle",
+    "parse_xml_parser::test_xml_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/xml_parser.py|method|XMLParser.extract_by_tag|265",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLParser::extract_by_tag"
+   ],
+   "tests": [
+    "parse_xml_parser::test_xml_documents_match_oracle",
+    "parse_xml_parser::test_xml_files_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/parse/xml_parser.py|method|XMLParser.to_dict|291",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-parse/src/xml_parser.rs::XMLParser::to_dict"
+   ],
+   "tests": [
+    "parse_xml_parser::test_xml_documents_match_oracle",
+    "parse_xml_parser::test_xml_files_match_oracle"
+   ]
+  }
+ ]
+}

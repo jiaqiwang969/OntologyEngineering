@@ -1,0 +1,6 @@
+---
+to: out/capabilities.json
+sparql:
+  modules: 'SELECT ?name ?kind ?rustPath ?purpose ?platform ?status ?effects ?failures WHERE { ?m <urn:oev2:design:kind> "Module" ; <urn:oev2:design:name> ?name ; <urn:oev2:design:moduleKind> ?kind ; <urn:oev2:design:rustPath> ?rustPath ; <urn:oev2:design:purpose> ?purpose ; <urn:oev2:design:platform> ?platform ; <urn:oev2:design:status> ?status ; <urn:oev2:design:effects> ?effects ; <urn:oev2:design:failures> ?failures } ORDER BY ?name'
+---
+{{ modules | json_encode(pretty=true) }}

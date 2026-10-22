@@ -1,0 +1,21 @@
+[package]
+name = "oe-code-evaluator"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+[dependencies]
+anyhow.workspace = true
+oe-core.workspace = true
+oe-wire.workspace = true
+oe-contracts = { path = "../oe-contracts" }
+serde_json.workspace = true
+[build-dependencies]
+serde_json.workspace = true
+sha2.workspace = true
+oe-wire.workspace = true
+[lints]
+workspace = true
+
+[target.'cfg(not(windows))'.build-dependencies]
+sha2 = { workspace = true, features = ["asm"] }

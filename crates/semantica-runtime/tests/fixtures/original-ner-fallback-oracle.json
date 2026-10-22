@@ -1,0 +1,198 @@
+{
+  "condition": "original NERExtractor ML backend unavailable, built-in pattern fallback only; does not cover spaCy model inference",
+  "cases": [
+    {
+      "text": "John Smith joined Acme Inc in 2024.",
+      "expected": [
+        {
+          "label": "PERSON",
+          "type": null,
+          "start": null,
+          "end": null
+        },
+        {
+          "label": "PERSON",
+          "type": null,
+          "start": null,
+          "end": null
+        },
+        {
+          "label": "DATE",
+          "type": null,
+          "start": null,
+          "end": null
+        }
+      ],
+      "entities": [
+        {
+          "text": "John Smith",
+          "label": "PERSON",
+          "start_char": 0,
+          "end_char": 10,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        },
+        {
+          "text": "Acme Inc",
+          "label": "PERSON",
+          "start_char": 18,
+          "end_char": 26,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        },
+        {
+          "text": "2024",
+          "label": "DATE",
+          "start_char": 30,
+          "end_char": 34,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        }
+      ]
+    },
+    {
+      "text": "Alice met Bob in Beijing City on 10/2/2026.",
+      "expected": [
+        {
+          "label": "PERSON",
+          "type": null,
+          "start": null,
+          "end": null
+        },
+        {
+          "label": "DATE",
+          "type": null,
+          "start": null,
+          "end": null
+        }
+      ],
+      "entities": [
+        {
+          "text": "Beijing City",
+          "label": "PERSON",
+          "start_char": 17,
+          "end_char": 29,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        },
+        {
+          "text": "10/2/2026",
+          "label": "DATE",
+          "start_char": 33,
+          "end_char": 42,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        }
+      ]
+    },
+    {
+      "text": "no capital words here",
+      "expected": [],
+      "entities": []
+    },
+    {
+      "text": "轴 Alice Wang 2026",
+      "expected": [
+        {
+          "label": "PERSON",
+          "type": null,
+          "start": null,
+          "end": null
+        },
+        {
+          "label": "DATE",
+          "type": null,
+          "start": null,
+          "end": null
+        }
+      ],
+      "entities": [
+        {
+          "text": "Alice Wang",
+          "label": "PERSON",
+          "start_char": 2,
+          "end_char": 12,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        },
+        {
+          "text": "2026",
+          "label": "DATE",
+          "start_char": 13,
+          "end_char": 17,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        }
+      ]
+    },
+    {
+      "text": "New York City, Paris Country, Acme LLC",
+      "expected": [
+        {
+          "label": "PERSON",
+          "type": null,
+          "start": null,
+          "end": null
+        },
+        {
+          "label": "PERSON",
+          "type": null,
+          "start": null,
+          "end": null
+        },
+        {
+          "label": "ORG",
+          "type": null,
+          "start": null,
+          "end": null
+        }
+      ],
+      "entities": [
+        {
+          "text": "New York City",
+          "label": "PERSON",
+          "start_char": 0,
+          "end_char": 13,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        },
+        {
+          "text": "Paris Country",
+          "label": "PERSON",
+          "start_char": 15,
+          "end_char": 28,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        },
+        {
+          "text": "Acme LLC",
+          "label": "ORG",
+          "start_char": 30,
+          "end_char": 38,
+          "confidence": 0.7,
+          "metadata": {
+            "extraction_method": "pattern"
+          }
+        }
+      ]
+    }
+  ]
+}

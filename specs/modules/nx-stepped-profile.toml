@@ -1,0 +1,254 @@
+schema="oev2.design-fragment/2"
+
+[[sources]]
+id="stepped_profile_analytic_definition"
+identity="Contiguous coaxial right circular cylinders: V=pi*sum(r_i^2*L_i); external A=pi*(sum(2*r_i*L_i)+r_first^2+r_last^2+sum(abs(r_i^2-r_previous^2)))."
+role="Analytic software definition, separate from vendor topology observations and manufacturing tolerances"
+applicability="mm/absolute +Z, 2..32 contiguous positive-length regions; no holes, fillets, tapers or native adoption"
+
+[[constraints]]
+id="nx_stepped_profile_axial_region_identity"
+requirement="req_engineering"
+module="nx_worker"
+check="verify_axial_regions"
+rust_path="crates/oe-nx-worker/src/geometry/stepped_profile.rs"
+statement="Algorithm-local immutable numeric profile: finite mm/+Z origin bounded to 1e6mm, diameter and length 1e-4..1e5mm, total length <=1e5mm, all derived extents <=1e6mm; 2..32 ordered regions with adjacent radii differing by more than 2e-6mm. Unordered observations must match every distinct radius and axial span exactly once within 1e-6mm. Neither equal volume/area/bounds nor this local check establish complete native geometry, source binding, face ownership, saved bytes, independent reopen or engineering adoption. The analytic layer has no wire authority; source-bound intent/actions below are generated separately."
+severity="error"
+
+[[validations]]
+id="nx_stepped_profile_frozen_numeric"
+module="nx_worker"
+constraint="nx_stepped_profile_axial_region_identity"
+behavior="frozen_axial_profiles_match_independent_numeric_expectations"
+rust_path="crates/oe-nx-worker/tests/stepped_profile.rs"
+oracle="Preimplementation hand-derived A origin[11,-17,3], D/L16/12,30/20,20/15: V/pi6768,A/pi1542. B origin[-23,31,-9], D/L28/8,12/19,24/11: V/pi3836,A/pi1324. Fixed independent bounds and per-region endpoints; no native execution."
+scope="Local Rust algorithm only; original frozen private fixture provenance retained separately"
+
+[[validations]]
+id="nx_stepped_profile_equal_volume_counterexample"
+module="nx_worker"
+constraint="nx_stepped_profile_axial_region_identity"
+behavior="identical_volume_and_bounds_do_not_hide_wrong_axial_order"
+rust_path="crates/oe-nx-worker/tests/stepped_profile.rs"
+oracle="Reversing A segment order preserves volume, area and global bounds but must refuse axial-region agreement. Missing/extra/duplicate/nonfinite/invalid dimensions and out-of-tolerance observations also refuse in companion tests; repeated nonadjacent radius remains legal."
+scope="Software negative controls; native API, complete topology and engineering design remain unverified"
+
+[[types]]
+name="NxSteppedShaftSegment"
+contract_group="engineering"
+identity="Explicit source-bound design intent, not native result"
+meaning="受控mm/+Z阶梯轴；同一v2 NX owner，源/几何/保存/独立重开/采用分别核验"
+[[types.fields]]
+name="diameter_mm"
+rust_type="f64"
+required=true
+format="typed"
+meaning="段直径"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+[[types.fields]]
+name="length_mm"
+rust_type="f64"
+required=true
+format="typed"
+meaning="沿+Z段长"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+
+[[types]]
+name="NxSteppedShaftIntent"
+contract_group="engineering"
+identity="Explicit source-bound design intent, not native result"
+meaning="受控mm/+Z阶梯轴；同一v2 NX owner，源/几何/保存/独立重开/采用分别核验"
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="独立源意图版本"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+allowed_values=["oev2.nx-stepped-shaft-intent/1"]
+[[types.fields]]
+name="object"
+rust_type="ObjectIdentity"
+required=true
+format="typed"
+meaning="当前对象/版本/条件/来源"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+[[types.fields]]
+name="feature_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="源特征标识；非native tag"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+[[types.fields]]
+name="unit"
+rust_type="String"
+required=true
+format="typed"
+meaning="长度单位"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+allowed_values=["mm"]
+[[types.fields]]
+name="coordinate_system"
+rust_type="String"
+required=true
+format="typed"
+meaning="坐标系"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+allowed_values=["absolute_part_cartesian"]
+[[types.fields]]
+name="origin_mm"
+rust_type="Vec<f64>"
+required=true
+format="typed"
+meaning="首段底面中心"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+[[types.fields]]
+name="axis_direction"
+rust_type="Vec<f64>"
+required=true
+format="typed"
+meaning="严格+Z"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+[[types.fields]]
+name="segments"
+rust_type="Vec<NxSteppedShaftSegment>"
+required=true
+format="typed"
+meaning="按轴向顺序声明连续各段"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+[[types.fields]]
+name="source_role"
+rust_type="String"
+required=true
+format="typed"
+meaning="软件夹具或独立设计声明"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+allowed_values=["independent_software_fixture", "independent_design_declaration"]
+
+[[types]]
+name="NxSteppedShaftCreateParameters"
+contract_group="engineering"
+identity="Explicit source-bound design intent, not native result"
+meaning="受控mm/+Z阶梯轴；同一v2 NX owner，源/几何/保存/独立重开/采用分别核验"
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="新动作参数版本"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+allowed_values=["oev2.nx-stepped-shaft-params/1"]
+[[types.fields]]
+name="action"
+rust_type="String"
+required=true
+format="typed"
+meaning="新建完整阶梯轴"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+allowed_values=["create_stepped_shaft"]
+[[types.fields]]
+name="intent"
+rust_type="ArtifactReference"
+required=true
+format="typed"
+meaning="worker输入中原件路径及SHA"
+unit="mm/+Z；无材料、载荷和制造公差推断"
+precision="有限输入与源SHA；1e-6mm几何匹配不授制造通过"
+write="agent维护源声明；Rust验证后调用明确NX SDK"
+applicability="2..32段连续同轴实体，无孔/圆角/锥面/旧cad-agent"
+acceptance="完整单实体、面边关联、段位、独立保存重开分别验证"
+
+[[sources]]
+id="nx2412_stepped_explicit_bodies"
+identity="Installed NX2412 uf_modl.h dfc277d0e465de943e548c5ec4c435a1f36f716a91b5f5ca75c7a25d8869d8d4: UF_MODL_ask_feat_body, UF_MODL_unite_bodies, UF_MODL_ask_face_body, UF_MODL_ask_face_edges."
+role="Vendor declarations for explicit feature/body/face/edge operations; native qualification separate"
+applicability="NX2412 owned mm/+Z solids only; headers remain private"
+
+[[constraints]]
+id="nx_stepped_source_native_geometry"
+requirement="req_engineering"
+module="nx_worker"
+check="check"
+rust_path="crates/oe-nx-worker/src/geometry/stepped_shaft.rs"
+statement="Explicit create/inspect stepped action schema; strict bounded actual intent bytes SHA before any native call. New body per segment, resolve feature body and explicitly unite only distinct owned solids. Complete single-body and face inventory, exact bounds, all 2*n full circles via existing complete edge owner/queries, face-to-edge links, n cylindrical regions, n+1 caps/shoulders, no extra/unassigned edges, actual volume and surface area. Save and reread, source stability and distinct-process reopen each retain original identities; no physical adoption."
+severity="error"
+
+[[validations]]
+id="nx_stepped_shape_positive"
+module="nx_worker"
+constraint="nx_stepped_source_native_geometry"
+behavior="stepped_complete_synthetic_shape_matches_frozen_intent"
+rust_path="crates/oe-nx-worker/tests/stepped_shaft.rs"
+oracle="Synthetic A fixture from preimplementation dimensions, hand-derived rim and face adjacency, area/pi1542 and volume21262.29907949572. Geometry match remains not_assessed for manufacturing."
+scope="Local synthetic geometry only; not actual native output"
+
+[[validations]]
+id="nx_stepped_shape_negative"
+module="nx_worker"
+constraint="nx_stepped_source_native_geometry"
+behavior="stepped_face_edge_corruption_cannot_hide_behind_correct_mass_and_bounds"
+rust_path="crates/oe-nx-worker/tests/stepped_shaft.rs"
+oracle="Wrong cylindrical or shoulder adjacency, false/partial face queries, foreign/duplicate tags, wrong axes/types, missing faces, mass identity and source errors refuse. Invalid source must fail before any native call."
+scope="Software negative controls; Windows build and current native create/save/fresh-process reopen separate"
+
+[[validations]]
+id="nx_stepped_local_plan_source"
+module="cad"
+constraint="nx_stepped_source_native_geometry"
+behavior="stepped_plan_binds_actual_source_and_rejects_prefixed_member"
+rust_path="crates/oe-cad/tests/stepped_shaft.rs"
+oracle="Local plan binds exact file bytes and unprefixed intent member into generated parameters; execution not_run, no network or CAD."
+scope="Local source planning and CLI path; native qualification not inferred"

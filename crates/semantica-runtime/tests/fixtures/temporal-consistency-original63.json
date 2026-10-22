@@ -1,0 +1,3161 @@
+{
+  "cases": [
+    {
+      "id": "prior-empty",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": []
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-one-valid",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-missing-source",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "missing",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "missing_source_entity",
+              "fact_id": "r",
+              "message": "Relationship references missing source entity."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-missing-both",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "missing_source_entity",
+              "fact_id": "r",
+              "message": "Relationship references missing source entity."
+            },
+            {
+              "issue_type": "missing_target_entity",
+              "fact_id": "r",
+              "message": "Relationship references missing target entity."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-numeric-endpoints",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": 1,
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": 2,
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": 1,
+              "target": 2,
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "missing_source_entity",
+              "fact_id": "r",
+              "message": "Relationship references missing source entity."
+            },
+            {
+              "issue_type": "missing_target_entity",
+              "fact_id": "r",
+              "message": "Relationship references missing target entity."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-null-endpoints",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": null,
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": null,
+              "target": null,
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "missing_source_entity",
+              "fact_id": "r",
+              "message": "Relationship references missing source entity."
+            },
+            {
+              "issue_type": "missing_target_entity",
+              "fact_id": "r",
+              "message": "Relationship references missing target entity."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-inverted-valid",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-08",
+              "valid_until": "2024-01-02"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "inverted_interval",
+              "fact_id": "r",
+              "message": "Relationship has an inverted validity interval."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-inverted-within-day-hidden-by-granularity",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02T18:00:00Z",
+              "valid_until": "2024-01-02T09:00:00Z"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-before-source-lifetime",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-03",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "source_lifetime_mismatch",
+              "fact_id": "r",
+              "message": "Relationship validity falls outside source entity lifetime."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-after-target-lifetime",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": "2024-01-04"
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "target_lifetime_mismatch",
+              "fact_id": "r",
+              "message": "Relationship validity falls outside target entity lifetime."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-open-relationship-closed-entity",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": "2024-01-09"
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": null
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "source_lifetime_mismatch",
+              "fact_id": "r",
+              "message": "Relationship validity falls outside source entity lifetime."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-same-day-entity-end-not-strict",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": "2024-01-03"
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-03T18:00:00Z",
+              "valid_until": "2024-01-03T19:00:00Z"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-unknown-rel-start-end-before-entity-start",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-05",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-05",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": null,
+              "valid_until": "2024-01-02"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-duplicate-entity-last-wins",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "A",
+              "valid_from": "2024-01-03",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "source_lifetime_mismatch",
+              "fact_id": "r",
+              "message": "Relationship validity falls outside source entity lifetime."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-touch-counts-overlap",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r1",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-01",
+              "valid_until": "2024-01-03"
+            },
+            {
+              "id": "r2",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-03",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "overlapping_same_edge",
+              "fact_id": "r2",
+              "message": "Relationship overlaps another relationship with the same edge and type."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-gap",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r1",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-01",
+              "valid_until": "2024-01-03"
+            },
+            {
+              "id": "r2",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-04",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "gap_after_restart",
+              "fact_id": "r2",
+              "message": "Relationship restarts after a temporal gap."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-same-start-stable",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "first",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-04"
+            },
+            {
+              "id": "second",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "overlapping_same_edge",
+              "fact_id": "second",
+              "message": "Relationship overlaps another relationship with the same edge and type."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-sort-before-report",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "late",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-04",
+              "valid_until": "2024-01-05"
+            },
+            {
+              "id": "early",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-01",
+              "valid_until": "2024-01-02"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "gap_after_restart",
+              "fact_id": "late",
+              "message": "Relationship restarts after a temporal gap."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          0
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-different-type-no-overlap-warning",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r1",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-01",
+              "valid_until": "2024-01-05"
+            },
+            {
+              "id": "r2",
+              "source": "A",
+              "target": "B",
+              "type": "other",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-04"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-duplicate-relationship-not-deduplicated",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            },
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "overlapping_same_edge",
+              "fact_id": "r",
+              "message": "Relationship overlaps another relationship with the same edge and type."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "prior-falsy-id-zero",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": 0,
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'TemporalGraphQuery' object has no attribute '_relationship_key'"
+      }
+    },
+    {
+      "id": "prior-falsy-id-false",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": false,
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'TemporalGraphQuery' object has no attribute '_relationship_key'"
+      }
+    },
+    {
+      "id": "prior-falsy-id-empty",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'TemporalGraphQuery' object has no attribute '_relationship_key'"
+      }
+    },
+    {
+      "id": "prior-falsy-id-null",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": null,
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'TemporalGraphQuery' object has no attribute '_relationship_key'"
+      }
+    },
+    {
+      "id": "prior-missing-id",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'TemporalGraphQuery' object has no attribute '_relationship_key'"
+      }
+    },
+    {
+      "id": "invalid-relationship-valid_from",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "bad",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "invalid-relationship-valid_until",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "bad"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "invalid-relationship-recorded_at",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05",
+              "recorded_at": "bad"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "invalid-relationship-superseded_at",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05",
+              "superseded_at": "bad"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "invalid-first-field-wins",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "first-bad",
+              "valid_until": "later-bad"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=first-bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=first-bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "clock-before-bad-superseded",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": null,
+              "valid_until": "2024-01-05",
+              "superseded_at": "bad"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "invalid-source-lifetime",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "bad",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_source_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse source entity lifetime: Invalid temporal value | Context: value=bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "invalid-target-lifetime",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": "bad"
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_target_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse target entity lifetime: Invalid temporal value | Context: value=bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "invalid-both-lifetimes",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "bad",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": "bad"
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_source_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse source entity lifetime: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_target_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse target entity lifetime: Invalid temporal value | Context: value=bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unused-bad-entity",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "bad",
+              "valid_until": "bad"
+            }
+          ],
+          "relationships": []
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "entity-recorded-fields-ignored",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null,
+              "recorded_at": "bad",
+              "superseded_at": "bad"
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "entity-open-start-is-unknown",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "OPEN",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "recorded-open-is-invalid",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05",
+              "recorded_at": "OPEN"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=OPEN"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=OPEN"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unknown-times-clock-twice",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": null,
+              "valid_until": null
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unknown-valid-explicit-recorded",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": null,
+              "valid_until": null,
+              "recorded_at": "2024-01-07"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "numeric-entity-string-endpoints",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": 1,
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": 2,
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "1",
+              "target": "2",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "bool-entity-string-endpoints",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": true,
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": false,
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "True",
+              "target": "False",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "null-entity-string-endpoints",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": null,
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "None",
+              "target": "None",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "name-fallback",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "name": "A"
+            },
+            {
+              "name": "B"
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "numeric-string-id-collision-last-wins",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": 1,
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "1",
+              "valid_from": "2024-01-04",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "1",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "source_lifetime_mismatch",
+              "fact_id": "r",
+              "message": "Relationship validity falls outside source entity lifetime."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "relationship-alias-group",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "first",
+              "source": "A",
+              "target": "B",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05",
+              "relationship": "T"
+            },
+            {
+              "id": "second",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "overlapping_same_edge",
+              "fact_id": "second",
+              "message": "Relationship overlaps another relationship with the same edge and type."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "explicit-null-type-distinct",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "first",
+              "source": "A",
+              "target": "B",
+              "type": null,
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            },
+            {
+              "id": "second",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "numeric-bool-type-same-group",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "first",
+              "source": "A",
+              "target": "B",
+              "type": 1,
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            },
+            {
+              "id": "second",
+              "source": "A",
+              "target": "B",
+              "type": true,
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "overlapping_same_edge",
+              "fact_id": "second",
+              "message": "Relationship overlaps another relationship with the same edge and type."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "numeric-bool-source-same-group",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "first",
+              "source": 1,
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            },
+            {
+              "id": "second",
+              "source": true,
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "missing_source_entity",
+              "fact_id": "first",
+              "message": "Relationship references missing source entity."
+            },
+            {
+              "issue_type": "missing_source_entity",
+              "fact_id": "second",
+              "message": "Relationship references missing source entity."
+            }
+          ],
+          "warnings": [
+            {
+              "issue_type": "overlapping_same_edge",
+              "fact_id": "second",
+              "message": "Relationship overlaps another relationship with the same edge and type."
+            }
+          ]
+        },
+        "error_relationship_indices": [
+          0,
+          1
+        ],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "adjacent-only-does-not-compare-all-prior",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "long",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-01",
+              "valid_until": "2024-01-10"
+            },
+            {
+              "id": "short",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-03"
+            },
+            {
+              "id": "after-short",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-04",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "overlapping_same_edge",
+              "fact_id": "short",
+              "message": "Relationship overlaps another relationship with the same edge and type."
+            },
+            {
+              "issue_type": "gap_after_restart",
+              "fact_id": "after-short",
+              "message": "Relationship restarts after a temporal gap."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          1,
+          2
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "raw-gap-hidden-by-day",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "first",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-03T09:00:00Z"
+            },
+            {
+              "id": "second",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-03T18:00:00Z",
+              "valid_until": "2024-01-04"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "raw-gap-visible-at-second",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "first",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-03T09:00:00Z"
+            },
+            {
+              "id": "second",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-03T18:00:00Z",
+              "valid_until": "2024-01-04"
+            }
+          ]
+        },
+        "granularity": "second"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "gap_after_restart",
+              "fact_id": "second",
+              "message": "Relationship restarts after a temporal gap."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "equal-truncated-start-fallback-warning",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "first",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02T18:00:00Z",
+              "valid_until": "2024-01-02T09:00:00Z"
+            },
+            {
+              "id": "second",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02T20:00:00Z",
+              "valid_until": "2024-01-02T08:00:00Z"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": [
+            {
+              "issue_type": "overlapping_same_edge",
+              "fact_id": "second",
+              "message": "Relationship interval overlaps another interval on the same edge."
+            }
+          ]
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "inverted-visible-at-second",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "first",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02T18:00:00Z",
+              "valid_until": "2024-01-02T09:00:00Z"
+            },
+            {
+              "id": "second",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02T20:00:00Z",
+              "valid_until": "2024-01-02T08:00:00Z"
+            }
+          ]
+        },
+        "granularity": "second"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "inverted_interval",
+              "fact_id": "first",
+              "message": "Relationship has an inverted validity interval."
+            },
+            {
+              "issue_type": "inverted_interval",
+              "fact_id": "second",
+              "message": "Relationship has an inverted validity interval."
+            }
+          ],
+          "warnings": [
+            {
+              "issue_type": "gap_after_restart",
+              "fact_id": "second",
+              "message": "Relationship restarts after a temporal gap."
+            }
+          ]
+        },
+        "error_relationship_indices": [
+          0,
+          1
+        ],
+        "warning_relationship_indices": [
+          1
+        ],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unknown-granularity-empty",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {},
+        "granularity": "unknown"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unknown-granularity-no-comparison",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A"
+            },
+            {
+              "id": "B"
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": null,
+              "valid_until": null
+            }
+          ]
+        },
+        "granularity": "unknown"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 2
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unknown-granularity-compared",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "unknown"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.ValueError",
+        "message": "Unsupported temporal granularity: unknown"
+      }
+    },
+    {
+      "id": "raw-numeric-fact-id",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": 7,
+              "source": "missing",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "missing_source_entity",
+              "fact_id": 7,
+              "message": "Relationship references missing source entity."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "raw-container-fact-id",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": [
+                "original"
+              ],
+              "source": "missing",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "missing_source_entity",
+              "fact_id": [
+                "original"
+              ],
+              "message": "Relationship references missing source entity."
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "empty-container-id-fails",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": [],
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "2024-01-02",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": null,
+      "expected_error": true,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'TemporalGraphQuery' object has no attribute '_relationship_key'"
+      }
+    },
+    {
+      "id": "invalid-whitespace-preserved-in-message",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "r",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": " bad ",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value= bad "
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "r",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value= bad "
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          0
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "invalid-report-two-pass-group-order",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            },
+            {
+              "id": "B",
+              "valid_from": "2024-01-01",
+              "valid_until": null
+            }
+          ],
+          "relationships": [
+            {
+              "id": "a",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "bad",
+              "valid_until": "2024-01-05"
+            },
+            {
+              "id": "b",
+              "source": "A",
+              "target": "B",
+              "type": "U",
+              "valid_from": "bad",
+              "valid_until": "2024-01-05"
+            },
+            {
+              "id": "c",
+              "source": "A",
+              "target": "B",
+              "type": "T",
+              "valid_from": "bad",
+              "valid_until": "2024-01-05"
+            }
+          ]
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "a",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "b",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "c",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "a",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "c",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            },
+            {
+              "issue_type": "invalid_temporal_fields",
+              "fact_id": "b",
+              "message": "Unable to parse temporal fields: Invalid temporal value | Context: value=bad"
+            }
+          ],
+          "warnings": []
+        },
+        "error_relationship_indices": [
+          0,
+          1,
+          2,
+          0,
+          2,
+          1
+        ],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    },
+    {
+      "id": "unused-graph-metadata",
+      "request": {
+        "schema": "semantica.temporal-consistency-request/1",
+        "clock_at": "2024-01-10T00:00:00Z",
+        "graph": {
+          "metadata": {
+            "unverified": true
+          }
+        },
+        "granularity": "day"
+      },
+      "expected": {
+        "report": {
+          "errors": [],
+          "warnings": []
+        },
+        "error_relationship_indices": [],
+        "warning_relationship_indices": [],
+        "clock_fallback_count": 0
+      },
+      "expected_error": false,
+      "source_error": null
+    }
+  ]
+}

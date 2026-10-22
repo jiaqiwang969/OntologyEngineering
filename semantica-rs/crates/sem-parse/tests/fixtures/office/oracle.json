@@ -1,0 +1,7408 @@
+{
+ "docx": [
+  {
+   "name": "parse:basic.docx",
+   "file": "basic.docx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "metadata": {
+     "title": "Quarterly Report",
+     "author": "Alice Analyst",
+     "subject": "Finance",
+     "keywords": "q3, revenue",
+     "comments": "Draft for review",
+     "category": "Reports",
+     "created": "2024-01-02 03:04:05+00:00",
+     "modified": "2024-02-03 04:05:06+00:00",
+     "last_modified_by": "Bob"
+    },
+    "full_text": "Preamble before any heading.\n\nExecutive Summary\n\nRevenue grew strongly this quarter\n\nSized text double none\n\nLeft aligned\n\nDetails\n\nFirst bullet\n\nSecond bullet\n\nNumbered\n\nName\tValueline one\nline twoafter page break\n\nSee the website for more.\n\nHeading Three\n\nUnder three.\n\nTitle Style\n\nLast paragraph.",
+    "paragraphs": [
+     "Preamble before any heading.",
+     "Executive Summary",
+     "Revenue grew strongly this quarter",
+     "Sized text double none",
+     "Left aligned",
+     "Details",
+     "First bullet",
+     "Second bullet",
+     "Numbered",
+     "Name\tValueline one\nline twoafter page break",
+     "See the website for more.",
+     "Heading Three",
+     "Under three.",
+     "Title Style",
+     "Last paragraph."
+    ],
+    "tables": [
+     {
+      "rows": [
+       [
+        "Region",
+        "Q1",
+        "Q2"
+       ],
+       [
+        "North\nSouth",
+        "10 \n12",
+        "10 \n12"
+       ],
+       [
+        "North\nSouth",
+        "",
+        "line a\nline b"
+       ]
+      ],
+      "row_count": 3,
+      "col_count": 3
+     },
+     {
+      "rows": [
+       [
+        "x",
+        ""
+       ]
+      ],
+      "row_count": 1,
+      "col_count": 2
+     }
+    ],
+    "sections": [
+     {
+      "heading": "Executive Summary",
+      "level": 1,
+      "content": "Revenue grew strongly this quarter\n\nSized text double none\n\nLeft aligned\n\n",
+      "paragraphs": [
+       "Revenue grew strongly this quarter",
+       "Sized text double none",
+       "Left aligned"
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Details",
+      "level": 2,
+      "content": "First bullet\n\nSecond bullet\n\nNumbered\n\nName\tValueline one\nline twoafter page break\n\nSee the website for more.\n\n",
+      "paragraphs": [
+       "First bullet",
+       "Second bullet",
+       "Numbered",
+       "Name\tValueline one\nline twoafter page break",
+       "See the website for more."
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Heading Three",
+      "level": 3,
+      "content": "Under three.\n\nTitle Style\n\nLast paragraph.\n\n",
+      "paragraphs": [
+       "Under three.",
+       "Title Style",
+       "Last paragraph."
+      ],
+      "tables": []
+     }
+    ],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 15,
+    "total_tables": 2
+   }
+  },
+  {
+   "name": "parse:edge.docx",
+   "file": "edge.docx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "metadata": {
+     "title": "Edge Doc",
+     "author": "",
+     "subject": "",
+     "keywords": "k",
+     "comments": "",
+     "category": "",
+     "created": "2020-05-06 05:08:09+00:00",
+     "modified": null,
+     "last_modified_by": "Zed"
+    },
+    "full_text": "Edge Heading\n\na \tb\ncd\n-\tlinktail\n\nchar style id falls back to defaultpt sizezero size\n\nPlain Heading\n\nunknown style id\n\nHeading Extra Text\n\nCaption text\n\nFinal & done",
+    "paragraphs": [
+     "Edge Heading",
+     "a \tb\ncd\n-\tlinktail",
+     "char style id falls back to defaultpt sizezero size",
+     "Plain Heading",
+     "unknown style id",
+     "Heading Extra Text",
+     "Caption text",
+     "Final & done"
+    ],
+    "tables": [
+     {
+      "rows": [
+       [
+        "top",
+        "top",
+        "r"
+       ],
+       [
+        "top",
+        "top",
+        "s\nt"
+       ],
+       [
+        "u"
+       ]
+      ],
+      "row_count": 3,
+      "col_count": 4
+     },
+     {
+      "rows": [],
+      "row_count": 0,
+      "col_count": 0
+     }
+    ],
+    "sections": [
+     {
+      "heading": "Edge Heading",
+      "level": 3,
+      "content": "a \tb\ncd\n-\tlinktail\n\nchar style id falls back to defaultpt sizezero size\n\n",
+      "paragraphs": [
+       "a \tb\ncd\n-\tlinktail",
+       "char style id falls back to defaultpt sizezero size"
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Plain Heading",
+      "level": 1,
+      "content": "unknown style id\n\n",
+      "paragraphs": [
+       "unknown style id"
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Heading Extra Text",
+      "level": 1,
+      "content": "Caption text\n\nFinal & done\n\n",
+      "paragraphs": [
+       "Caption text",
+       "Final & done"
+      ],
+      "tables": []
+     }
+    ],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 8,
+    "total_tables": 2
+   }
+  },
+  {
+   "name": "parse:nostyles.docx",
+   "file": "nostyles.docx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "metadata": {
+     "title": "Word Document",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "",
+     "category": "",
+     "created": null,
+     "modified": "{NOW}",
+     "last_modified_by": "python-docx"
+    },
+    "full_text": "Looks like a heading\n\nBody",
+    "paragraphs": [
+     "Looks like a heading",
+     "Body"
+    ],
+    "tables": [],
+    "sections": [],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 2,
+    "total_tables": 0
+   }
+  },
+  {
+   "name": "parse:dates.docx",
+   "file": "dates.docx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "metadata": {
+     "title": "",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "",
+     "category": "",
+     "created": "2003-01-01 00:00:00+00:00",
+     "modified": "2003-12-01 00:00:00+00:00",
+     "last_modified_by": ""
+    },
+    "full_text": "x",
+    "paragraphs": [
+     "x"
+    ],
+    "tables": [],
+    "sections": [],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 1,
+    "total_tables": 0
+   }
+  },
+  {
+   "name": "parse:emptydate.docx",
+   "file": "emptydate.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: 'NoneType' object is not subscriptable"
+  },
+  {
+   "name": "parse:nodefault.docx",
+   "file": "nodefault.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: 'NoneType' object has no attribute 'name'"
+  },
+  {
+   "name": "parse:noname.docx",
+   "file": "noname.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: 'NoneType' object has no attribute 'startswith'"
+  },
+  {
+   "name": "parse:notblgrid.docx",
+   "file": "notblgrid.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: required ``<w:tblGrid>`` child element not present"
+  },
+  {
+   "name": "parse:vmergetop.docx",
+   "file": "vmergetop.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: no tr above topmost tr in w:tbl"
+  },
+  {
+   "name": "parse:badalign.docx",
+   "file": "badalign.docx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "metadata": {
+     "title": "Word Document",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "",
+     "category": "",
+     "created": null,
+     "modified": "{NOW}",
+     "last_modified_by": "python-docx"
+    },
+    "full_text": "s",
+    "paragraphs": [
+     "s"
+    ],
+    "tables": [],
+    "sections": [],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 1,
+    "total_tables": 0
+   }
+  },
+  {
+   "name": "parse:badbold.docx",
+   "file": "badbold.docx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "metadata": {
+     "title": "Word Document",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "",
+     "category": "",
+     "created": null,
+     "modified": "{NOW}",
+     "last_modified_by": "python-docx"
+    },
+    "full_text": "s",
+    "paragraphs": [
+     "s"
+    ],
+    "tables": [],
+    "sections": [],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 1,
+    "total_tables": 0
+   }
+  },
+  {
+   "name": "parse:plain.docx",
+   "file": "plain.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: Package not found at '{DIR}/plain.docx'"
+  },
+  {
+   "name": "parse:emptyzip.docx",
+   "file": "emptyzip.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: \"There is no item named '[Content_Types].xml' in the archive\""
+  },
+  {
+   "name": "parse:badxml.docx",
+   "file": "badxml.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: Opening and ending tag mismatch: p line 1 and body, line 1, column 106 (<string>, line 1)"
+  },
+  {
+   "name": "parse:missingpart.docx",
+   "file": "missingpart.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: \"There is no item named 'word/document.xml' in the archive\""
+  },
+  {
+   "name": "parse:basic_copy.doc",
+   "file": "basic_copy.doc",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "metadata": {
+     "title": "Quarterly Report",
+     "author": "Alice Analyst",
+     "subject": "Finance",
+     "keywords": "q3, revenue",
+     "comments": "Draft for review",
+     "category": "Reports",
+     "created": "2024-01-02 03:04:05+00:00",
+     "modified": "2024-02-03 04:05:06+00:00",
+     "last_modified_by": "Bob"
+    },
+    "full_text": "Preamble before any heading.\n\nExecutive Summary\n\nRevenue grew strongly this quarter\n\nSized text double none\n\nLeft aligned\n\nDetails\n\nFirst bullet\n\nSecond bullet\n\nNumbered\n\nName\tValueline one\nline twoafter page break\n\nSee the website for more.\n\nHeading Three\n\nUnder three.\n\nTitle Style\n\nLast paragraph.",
+    "paragraphs": [
+     "Preamble before any heading.",
+     "Executive Summary",
+     "Revenue grew strongly this quarter",
+     "Sized text double none",
+     "Left aligned",
+     "Details",
+     "First bullet",
+     "Second bullet",
+     "Numbered",
+     "Name\tValueline one\nline twoafter page break",
+     "See the website for more.",
+     "Heading Three",
+     "Under three.",
+     "Title Style",
+     "Last paragraph."
+    ],
+    "tables": [
+     {
+      "rows": [
+       [
+        "Region",
+        "Q1",
+        "Q2"
+       ],
+       [
+        "North\nSouth",
+        "10 \n12",
+        "10 \n12"
+       ],
+       [
+        "North\nSouth",
+        "",
+        "line a\nline b"
+       ]
+      ],
+      "row_count": 3,
+      "col_count": 3
+     },
+     {
+      "rows": [
+       [
+        "x",
+        ""
+       ]
+      ],
+      "row_count": 1,
+      "col_count": 2
+     }
+    ],
+    "sections": [
+     {
+      "heading": "Executive Summary",
+      "level": 1,
+      "content": "Revenue grew strongly this quarter\n\nSized text double none\n\nLeft aligned\n\n",
+      "paragraphs": [
+       "Revenue grew strongly this quarter",
+       "Sized text double none",
+       "Left aligned"
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Details",
+      "level": 2,
+      "content": "First bullet\n\nSecond bullet\n\nNumbered\n\nName\tValueline one\nline twoafter page break\n\nSee the website for more.\n\n",
+      "paragraphs": [
+       "First bullet",
+       "Second bullet",
+       "Numbered",
+       "Name\tValueline one\nline twoafter page break",
+       "See the website for more."
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Heading Three",
+      "level": 3,
+      "content": "Under three.\n\nTitle Style\n\nLast paragraph.\n\n",
+      "paragraphs": [
+       "Under three.",
+       "Title Style",
+       "Last paragraph."
+      ],
+      "tables": []
+     }
+    ],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 15,
+    "total_tables": 2
+   }
+  },
+  {
+   "name": "parse:notes.txt",
+   "file": "notes.txt",
+   "call": "parse",
+   "options": {},
+   "error": "ValidationError",
+   "message": "File is not a DOCX: {DIR}/notes.txt"
+  },
+  {
+   "name": "parse:does_not_exist.docx",
+   "file": "does_not_exist.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ValidationError",
+   "message": "DOCX file not found: {DIR}/does_not_exist.docx"
+  },
+  {
+   "name": "parse:basic.pptx",
+   "file": "basic.pptx",
+   "call": "parse",
+   "options": {},
+   "error": "ValidationError",
+   "message": "File is not a DOCX: {DIR}/basic.pptx"
+  },
+  {
+   "name": "parse:data.xlsx",
+   "file": "data.xlsx",
+   "call": "parse",
+   "options": {},
+   "error": "ValidationError",
+   "message": "File is not a DOCX: {DIR}/data.xlsx"
+  },
+  {
+   "name": "parse_formatting:basic.docx",
+   "file": "basic.docx",
+   "call": "parse",
+   "options": {
+    "extract_formatting": true
+   },
+   "ok": {
+    "metadata": {
+     "title": "Quarterly Report",
+     "author": "Alice Analyst",
+     "subject": "Finance",
+     "keywords": "q3, revenue",
+     "comments": "Draft for review",
+     "category": "Reports",
+     "created": "2024-01-02 03:04:05+00:00",
+     "modified": "2024-02-03 04:05:06+00:00",
+     "last_modified_by": "Bob"
+    },
+    "full_text": "Preamble before any heading.\n\nExecutive Summary\n\nRevenue grew strongly this quarter\n\nSized text double none\n\nLeft aligned\n\nDetails\n\nFirst bullet\n\nSecond bullet\n\nNumbered\n\nName\tValueline one\nline twoafter page break\n\nSee the website for more.\n\nHeading Three\n\nUnder three.\n\nTitle Style\n\nLast paragraph.",
+    "paragraphs": [
+     "Preamble before any heading.",
+     "Executive Summary",
+     "Revenue grew strongly this quarter",
+     "Sized text double none",
+     "Left aligned",
+     "Details",
+     "First bullet",
+     "Second bullet",
+     "Numbered",
+     "Name\tValueline one\nline twoafter page break",
+     "See the website for more.",
+     "Heading Three",
+     "Under three.",
+     "Title Style",
+     "Last paragraph."
+    ],
+    "tables": [
+     {
+      "rows": [
+       [
+        "Region",
+        "Q1",
+        "Q2"
+       ],
+       [
+        "North\nSouth",
+        "10 \n12",
+        "10 \n12"
+       ],
+       [
+        "North\nSouth",
+        "",
+        "line a\nline b"
+       ]
+      ],
+      "row_count": 3,
+      "col_count": 3
+     },
+     {
+      "rows": [
+       [
+        "x",
+        ""
+       ]
+      ],
+      "row_count": 1,
+      "col_count": 2
+     }
+    ],
+    "sections": [
+     {
+      "heading": "Executive Summary",
+      "level": 1,
+      "content": "Revenue grew strongly this quarter\n\nSized text double none\n\nLeft aligned\n\n",
+      "paragraphs": [
+       "Revenue grew strongly this quarter",
+       "Sized text double none",
+       "Left aligned"
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Details",
+      "level": 2,
+      "content": "First bullet\n\nSecond bullet\n\nNumbered\n\nName\tValueline one\nline twoafter page break\n\nSee the website for more.\n\n",
+      "paragraphs": [
+       "First bullet",
+       "Second bullet",
+       "Numbered",
+       "Name\tValueline one\nline twoafter page break",
+       "See the website for more."
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Heading Three",
+      "level": 3,
+      "content": "Under three.\n\nTitle Style\n\nLast paragraph.\n\n",
+      "paragraphs": [
+       "Under three.",
+       "Title Style",
+       "Last paragraph."
+      ],
+      "tables": []
+     }
+    ],
+    "comments": [],
+    "formatting": {
+     "paragraphs": [
+      {
+       "text": "Preamble before any heading.",
+       "style": "Normal",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Preamble before any heading.",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Executive Summary",
+       "style": "Heading 1",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Executive Summary",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Revenue grew strongly this quarter",
+       "style": "Normal",
+       "alignment": "CENTER (1)",
+       "runs": [
+        {
+         "text": "Revenue grew ",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        },
+        {
+         "text": "strongly",
+         "bold": true,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        },
+        {
+         "text": " this quarter",
+         "bold": null,
+         "italic": true,
+         "underline": true,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Sized text double none",
+       "style": "Normal",
+       "alignment": "JUSTIFY (3)",
+       "runs": [
+        {
+         "text": "Sized text",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": "Arial",
+         "font_size": 10.5
+        },
+        {
+         "text": " double",
+         "bold": null,
+         "italic": null,
+         "underline": 3,
+         "font_name": null,
+         "font_size": null
+        },
+        {
+         "text": " none",
+         "bold": false,
+         "italic": null,
+         "underline": false,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Left aligned",
+       "style": "Normal",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Left aligned",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Details",
+       "style": "Heading 2",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Details",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "First bullet",
+       "style": "List Bullet",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "First bullet",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Second bullet",
+       "style": "List Bullet",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Second bullet",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Numbered",
+       "style": "List Number",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Numbered",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Name\tValueline one\nline twoafter page break",
+       "style": "Normal",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Name",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        },
+        {
+         "text": "\t",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        },
+        {
+         "text": "Value",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        },
+        {
+         "text": "line one\nline twoafter page break",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "See the website for more.",
+       "style": "Normal",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "See ",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        },
+        {
+         "text": " for more.",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "   ",
+       "style": "Normal",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "   ",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "",
+       "style": "Normal",
+       "alignment": null,
+       "runs": []
+      },
+      {
+       "text": "Heading Three",
+       "style": "Heading 3",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Heading Three",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Under three.",
+       "style": "Normal",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Under three.",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Title Style",
+       "style": "Title",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Title Style",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Last paragraph.",
+       "style": "Normal",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Last paragraph.",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      }
+     ]
+    },
+    "total_paragraphs": 15,
+    "total_tables": 2
+   }
+  },
+  {
+   "name": "parse_formatting:edge.docx",
+   "file": "edge.docx",
+   "call": "parse",
+   "options": {
+    "extract_formatting": true
+   },
+   "ok": {
+    "metadata": {
+     "title": "Edge Doc",
+     "author": "",
+     "subject": "",
+     "keywords": "k",
+     "comments": "",
+     "category": "",
+     "created": "2020-05-06 05:08:09+00:00",
+     "modified": null,
+     "last_modified_by": "Zed"
+    },
+    "full_text": "Edge Heading\n\na \tb\ncd\n-\tlinktail\n\nchar style id falls back to defaultpt sizezero size\n\nPlain Heading\n\nunknown style id\n\nHeading Extra Text\n\nCaption text\n\nFinal & done",
+    "paragraphs": [
+     "Edge Heading",
+     "a \tb\ncd\n-\tlinktail",
+     "char style id falls back to defaultpt sizezero size",
+     "Plain Heading",
+     "unknown style id",
+     "Heading Extra Text",
+     "Caption text",
+     "Final & done"
+    ],
+    "tables": [
+     {
+      "rows": [
+       [
+        "top",
+        "top",
+        "r"
+       ],
+       [
+        "top",
+        "top",
+        "s\nt"
+       ],
+       [
+        "u"
+       ]
+      ],
+      "row_count": 3,
+      "col_count": 4
+     },
+     {
+      "rows": [],
+      "row_count": 0,
+      "col_count": 0
+     }
+    ],
+    "sections": [
+     {
+      "heading": "Edge Heading",
+      "level": 3,
+      "content": "a \tb\ncd\n-\tlinktail\n\nchar style id falls back to defaultpt sizezero size\n\n",
+      "paragraphs": [
+       "a \tb\ncd\n-\tlinktail",
+       "char style id falls back to defaultpt sizezero size"
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Plain Heading",
+      "level": 1,
+      "content": "unknown style id\n\n",
+      "paragraphs": [
+       "unknown style id"
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Heading Extra Text",
+      "level": 1,
+      "content": "Caption text\n\nFinal & done\n\n",
+      "paragraphs": [
+       "Caption text",
+       "Final & done"
+      ],
+      "tables": []
+     }
+    ],
+    "comments": [],
+    "formatting": {
+     "paragraphs": [
+      {
+       "text": "Edge Heading",
+       "style": "Heading 3",
+       "alignment": "RIGHT (2)",
+       "runs": [
+        {
+         "text": "Edge Heading",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "a \tb\ncd\n-\tlinktail",
+       "style": "Body Text",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "a \tb\ncd\n-\t",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        },
+        {
+         "text": "tail",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "char style id falls back to defaultpt sizezero size",
+       "style": "Body Text",
+       "alignment": "JUSTIFY (3)",
+       "runs": [
+        {
+         "text": "char style id falls back to default",
+         "bold": false,
+         "italic": true,
+         "underline": 2,
+         "font_name": null,
+         "font_size": 10.5
+        },
+        {
+         "text": "pt size",
+         "bold": true,
+         "italic": null,
+         "underline": null,
+         "font_name": "Courier New",
+         "font_size": 12.0
+        },
+        {
+         "text": "zero size",
+         "bold": null,
+         "italic": null,
+         "underline": false,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Plain Heading",
+       "style": "Heading",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Plain Heading",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "unknown style id",
+       "style": "Body Text",
+       "alignment": "CENTER (1)",
+       "runs": [
+        {
+         "text": "unknown style id",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Heading Extra Text",
+       "style": "Heading Extra",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Heading Extra Text",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "  Caption text  ",
+       "style": "Caption",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "  Caption text  ",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Final & done",
+       "style": "Body Text",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Final & done",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      }
+     ]
+    },
+    "total_paragraphs": 8,
+    "total_tables": 2
+   }
+  },
+  {
+   "name": "parse_formatting:nostyles.docx",
+   "file": "nostyles.docx",
+   "call": "parse",
+   "options": {
+    "extract_formatting": true
+   },
+   "ok": {
+    "metadata": {
+     "title": "Word Document",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "",
+     "category": "",
+     "created": null,
+     "modified": "{NOW}",
+     "last_modified_by": "python-docx"
+    },
+    "full_text": "Looks like a heading\n\nBody",
+    "paragraphs": [
+     "Looks like a heading",
+     "Body"
+    ],
+    "tables": [],
+    "sections": [],
+    "comments": [],
+    "formatting": {
+     "paragraphs": [
+      {
+       "text": "Looks like a heading",
+       "style": "Normal",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Looks like a heading",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      },
+      {
+       "text": "Body",
+       "style": "Normal",
+       "alignment": null,
+       "runs": [
+        {
+         "text": "Body",
+         "bold": null,
+         "italic": null,
+         "underline": null,
+         "font_name": null,
+         "font_size": null
+        }
+       ]
+      }
+     ]
+    },
+    "total_paragraphs": 2,
+    "total_tables": 0
+   }
+  },
+  {
+   "name": "parse_formatting:badalign.docx",
+   "file": "badalign.docx",
+   "call": "parse",
+   "options": {
+    "extract_formatting": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: WD_PARAGRAPH_ALIGNMENT has no XML mapping for 'start'"
+  },
+  {
+   "name": "parse_formatting:badbold.docx",
+   "file": "badbold.docx",
+   "call": "parse",
+   "options": {
+    "extract_formatting": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: value must be one of '1', '0', 'true', 'false', 'on', or 'off', got 'yes'"
+  },
+  {
+   "name": "parse_formatting:noname.docx",
+   "file": "noname.docx",
+   "call": "parse",
+   "options": {
+    "extract_formatting": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: 'NoneType' object has no attribute 'startswith'"
+  },
+  {
+   "name": "parse_no_tables:basic.docx",
+   "file": "basic.docx",
+   "call": "parse",
+   "options": {
+    "extract_tables": false
+   },
+   "ok": {
+    "metadata": {
+     "title": "Quarterly Report",
+     "author": "Alice Analyst",
+     "subject": "Finance",
+     "keywords": "q3, revenue",
+     "comments": "Draft for review",
+     "category": "Reports",
+     "created": "2024-01-02 03:04:05+00:00",
+     "modified": "2024-02-03 04:05:06+00:00",
+     "last_modified_by": "Bob"
+    },
+    "full_text": "Preamble before any heading.\n\nExecutive Summary\n\nRevenue grew strongly this quarter\n\nSized text double none\n\nLeft aligned\n\nDetails\n\nFirst bullet\n\nSecond bullet\n\nNumbered\n\nName\tValueline one\nline twoafter page break\n\nSee the website for more.\n\nHeading Three\n\nUnder three.\n\nTitle Style\n\nLast paragraph.",
+    "paragraphs": [
+     "Preamble before any heading.",
+     "Executive Summary",
+     "Revenue grew strongly this quarter",
+     "Sized text double none",
+     "Left aligned",
+     "Details",
+     "First bullet",
+     "Second bullet",
+     "Numbered",
+     "Name\tValueline one\nline twoafter page break",
+     "See the website for more.",
+     "Heading Three",
+     "Under three.",
+     "Title Style",
+     "Last paragraph."
+    ],
+    "tables": [],
+    "sections": [
+     {
+      "heading": "Executive Summary",
+      "level": 1,
+      "content": "Revenue grew strongly this quarter\n\nSized text double none\n\nLeft aligned\n\n",
+      "paragraphs": [
+       "Revenue grew strongly this quarter",
+       "Sized text double none",
+       "Left aligned"
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Details",
+      "level": 2,
+      "content": "First bullet\n\nSecond bullet\n\nNumbered\n\nName\tValueline one\nline twoafter page break\n\nSee the website for more.\n\n",
+      "paragraphs": [
+       "First bullet",
+       "Second bullet",
+       "Numbered",
+       "Name\tValueline one\nline twoafter page break",
+       "See the website for more."
+      ],
+      "tables": []
+     },
+     {
+      "heading": "Heading Three",
+      "level": 3,
+      "content": "Under three.\n\nTitle Style\n\nLast paragraph.\n\n",
+      "paragraphs": [
+       "Under three.",
+       "Title Style",
+       "Last paragraph."
+      ],
+      "tables": []
+     }
+    ],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 15,
+    "total_tables": 0
+   }
+  },
+  {
+   "name": "parse_no_tables:notblgrid.docx",
+   "file": "notblgrid.docx",
+   "call": "parse",
+   "options": {
+    "extract_tables": false
+   },
+   "ok": {
+    "metadata": {
+     "title": "Word Document",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "",
+     "category": "",
+     "created": null,
+     "modified": "{NOW}",
+     "last_modified_by": "python-docx"
+    },
+    "full_text": "",
+    "paragraphs": [],
+    "tables": [],
+    "sections": [],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 0,
+    "total_tables": 0
+   }
+  },
+  {
+   "name": "parse_no_tables:vmergetop.docx",
+   "file": "vmergetop.docx",
+   "call": "parse",
+   "options": {
+    "extract_tables": false
+   },
+   "ok": {
+    "metadata": {
+     "title": "Word Document",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "",
+     "category": "",
+     "created": null,
+     "modified": "{NOW}",
+     "last_modified_by": "python-docx"
+    },
+    "full_text": "",
+    "paragraphs": [],
+    "tables": [],
+    "sections": [],
+    "comments": [],
+    "formatting": null,
+    "total_paragraphs": 0,
+    "total_tables": 0
+   }
+  },
+  {
+   "name": "extract_text:basic.docx",
+   "file": "basic.docx",
+   "call": "extract_text",
+   "options": {},
+   "ok": "Preamble before any heading.\n\nExecutive Summary\n\nRevenue grew strongly this quarter\n\nSized text double none\n\nLeft aligned\n\nDetails\n\nFirst bullet\n\nSecond bullet\n\nNumbered\n\nName\tValueline one\nline twoafter page break\n\nSee the website for more.\n\nHeading Three\n\nUnder three.\n\nTitle Style\n\nLast paragraph."
+  },
+  {
+   "name": "extract_tables:basic.docx",
+   "file": "basic.docx",
+   "call": "extract_tables",
+   "options": {},
+   "ok": [
+    {
+     "rows": [
+      [
+       "Region",
+       "Q1",
+       "Q2"
+      ],
+      [
+       "North\nSouth",
+       "10 \n12",
+       "10 \n12"
+      ],
+      [
+       "North\nSouth",
+       "",
+       "line a\nline b"
+      ]
+     ],
+     "row_count": 3,
+     "col_count": 3
+    },
+    {
+     "rows": [
+      [
+       "x",
+       ""
+      ]
+     ],
+     "row_count": 1,
+     "col_count": 2
+    }
+   ]
+  },
+  {
+   "name": "extract_tables:edge.docx",
+   "file": "edge.docx",
+   "call": "extract_tables",
+   "options": {},
+   "ok": [
+    {
+     "rows": [
+      [
+       "top",
+       "top",
+       "r"
+      ],
+      [
+       "top",
+       "top",
+       "s\nt"
+      ],
+      [
+       "u"
+      ]
+     ],
+     "row_count": 3,
+     "col_count": 4
+    },
+    {
+     "rows": [],
+     "row_count": 0,
+     "col_count": 0
+    }
+   ]
+  },
+  {
+   "name": "extract_text:plain.docx",
+   "file": "plain.docx",
+   "call": "extract_text",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse DOCX: Package not found at '{DIR}/plain.docx'"
+  }
+ ],
+ "pptx": [
+  {
+   "name": "parse:basic.pptx",
+   "file": "basic.pptx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "title": "Welcome Deck",
+    "slides": [
+     {
+      "slide_number": 1,
+      "title": "Welcome Deck",
+      "text": "Welcome Deck\nSubtitle line\nSecond line",
+      "notes": "Speaker notes one\nmore notes",
+      "shapes": [],
+      "images": []
+     },
+     {
+      "slide_number": 2,
+      "title": "Agenda",
+      "text": "Agenda\nPoint A\nSub point\nRun one \u000bafter break\nText box words\nShape text",
+      "notes": "",
+      "shapes": [],
+      "images": []
+     },
+     {
+      "slide_number": 3,
+      "title": "First box acts as title",
+      "text": "",
+      "notes": "",
+      "shapes": [],
+      "images": []
+     },
+     {
+      "slide_number": 4,
+      "title": "Picture slide",
+      "text": "Picture slide\ncaption",
+      "notes": "",
+      "shapes": [],
+      "images": []
+     },
+     {
+      "slide_number": 5,
+      "title": "only text",
+      "text": "",
+      "notes": "",
+      "shapes": [],
+      "images": []
+     }
+    ],
+    "metadata": {
+     "title": "Deck Title",
+     "author": "Carol",
+     "subject": "Planning",
+     "keywords": "roadmap",
+     "comments": "internal",
+     "created": "2023-04-05 06:07:08",
+     "modified": "2023-05-06 07:08:09",
+     "last_modified_by": "Dave",
+     "total_slides": 5,
+     "file_path": "{DIR}/basic.pptx"
+    }
+   }
+  },
+  {
+   "name": "parse_all:basic.pptx",
+   "file": "basic.pptx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "ok": {
+    "title": "Welcome Deck",
+    "slides": [
+     {
+      "slide_number": 1,
+      "title": "Welcome Deck",
+      "text": "Welcome Deck\nSubtitle line\nSecond line",
+      "notes": "Speaker notes one\nmore notes",
+      "shapes": [
+       {
+        "type": 14,
+        "has_text": true
+       },
+       {
+        "type": 14,
+        "has_text": true
+       }
+      ],
+      "images": []
+     },
+     {
+      "slide_number": 2,
+      "title": "Agenda",
+      "text": "Agenda\nPoint A\nSub point\nRun one \u000bafter break\nText box words\nShape text",
+      "notes": "",
+      "shapes": [
+       {
+        "type": 14,
+        "has_text": true
+       },
+       {
+        "type": 14,
+        "has_text": true
+       },
+       {
+        "type": 17,
+        "has_text": true
+       },
+       {
+        "type": 1,
+        "has_text": true
+       },
+       {
+        "type": 1,
+        "has_text": true
+       },
+       {
+        "type": 9,
+        "has_text": false
+       }
+      ],
+      "images": []
+     },
+     {
+      "slide_number": 3,
+      "title": "First box acts as title",
+      "text": "",
+      "notes": "",
+      "shapes": [
+       {
+        "type": 17,
+        "has_text": true
+       },
+       {
+        "type": 19,
+        "has_text": false
+       },
+       {
+        "type": 13,
+        "has_text": false
+       },
+       {
+        "type": 3,
+        "has_text": false
+       },
+       {
+        "type": 6,
+        "has_text": false
+       }
+      ],
+      "images": [
+       {
+        "width": 914400,
+        "height": 914400,
+        "format": "png"
+       }
+      ]
+     },
+     {
+      "slide_number": 4,
+      "title": "Picture slide",
+      "text": "Picture slide\ncaption",
+      "notes": "",
+      "shapes": [
+       {
+        "type": 14,
+        "has_text": true
+       },
+       {
+        "type": 14,
+        "has_text": false
+       },
+       {
+        "type": 14,
+        "has_text": true
+       }
+      ],
+      "images": [
+       {
+        "width": 5486400,
+        "height": 4114800,
+        "format": "png"
+       }
+      ]
+     },
+     {
+      "slide_number": 5,
+      "title": "only text",
+      "text": "",
+      "notes": "",
+      "shapes": [
+       {
+        "type": 14,
+        "has_text": true
+       },
+       {
+        "type": 17,
+        "has_text": true
+       }
+      ],
+      "images": []
+     }
+    ],
+    "metadata": {
+     "title": "Deck Title",
+     "author": "Carol",
+     "subject": "Planning",
+     "keywords": "roadmap",
+     "comments": "internal",
+     "created": "2023-04-05 06:07:08",
+     "modified": "2023-05-06 07:08:09",
+     "last_modified_by": "Dave",
+     "total_slides": 5,
+     "file_path": "{DIR}/basic.pptx"
+    }
+   }
+  },
+  {
+   "name": "parse:edge_base.pptx",
+   "file": "edge_base.pptx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "title": "edge text",
+    "slides": [
+     {
+      "slide_number": 1,
+      "title": "edge text",
+      "text": "",
+      "notes": "edge notes",
+      "shapes": [],
+      "images": []
+     }
+    ],
+    "metadata": {
+     "title": "",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "generated using python-pptx",
+     "created": "2013-01-27 09:14:16",
+     "modified": "2013-01-27 09:15:58",
+     "last_modified_by": "Steve Canny",
+     "total_slides": 1,
+     "file_path": "{DIR}/edge_base.pptx"
+    }
+   }
+  },
+  {
+   "name": "parse_all:edge_base.pptx",
+   "file": "edge_base.pptx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "ok": {
+    "title": "edge text",
+    "slides": [
+     {
+      "slide_number": 1,
+      "title": "edge text",
+      "text": "",
+      "notes": "edge notes",
+      "shapes": [
+       {
+        "type": 17,
+        "has_text": true
+       },
+       {
+        "type": 13,
+        "has_text": false
+       }
+      ],
+      "images": [
+       {
+        "width": 914400,
+        "height": 914400,
+        "format": "png"
+       }
+      ]
+     }
+    ],
+    "metadata": {
+     "title": "",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "generated using python-pptx",
+     "created": "2013-01-27 09:14:16",
+     "modified": "2013-01-27 09:15:58",
+     "last_modified_by": "Steve Canny",
+     "total_slides": 1,
+     "file_path": "{DIR}/edge_base.pptx"
+    }
+   }
+  },
+  {
+   "name": "parse:edge_shape.pptx",
+   "file": "edge_shape.pptx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "title": "edge text",
+    "slides": [
+     {
+      "slide_number": 1,
+      "title": "edge text",
+      "text": "no geometry7",
+      "notes": "edge notes",
+      "shapes": [],
+      "images": []
+     }
+    ],
+    "metadata": {
+     "title": "",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "generated using python-pptx",
+     "created": "2013-01-27 09:14:16",
+     "modified": "2013-01-27 09:15:58",
+     "last_modified_by": "Steve Canny",
+     "total_slides": 1,
+     "file_path": "{DIR}/edge_shape.pptx"
+    }
+   }
+  },
+  {
+   "name": "parse_all:edge_shape.pptx",
+   "file": "edge_shape.pptx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse PPTX: Shape instance of unrecognized shape type"
+  },
+  {
+   "name": "parse:edge_notes.pptx",
+   "file": "edge_notes.pptx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse PPTX: 'NoneType' object has no attribute 'text'"
+  },
+  {
+   "name": "parse_all:edge_notes.pptx",
+   "file": "edge_notes.pptx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse PPTX: 'NoneType' object has no attribute 'text'"
+  },
+  {
+   "name": "parse:edge_noblip.pptx",
+   "file": "edge_noblip.pptx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "title": "edge text",
+    "slides": [
+     {
+      "slide_number": 1,
+      "title": "edge text",
+      "text": "",
+      "notes": "edge notes",
+      "shapes": [],
+      "images": []
+     }
+    ],
+    "metadata": {
+     "title": "",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "generated using python-pptx",
+     "created": "2013-01-27 09:14:16",
+     "modified": "2013-01-27 09:15:58",
+     "last_modified_by": "Steve Canny",
+     "total_slides": 1,
+     "file_path": "{DIR}/edge_noblip.pptx"
+    }
+   }
+  },
+  {
+   "name": "parse_all:edge_noblip.pptx",
+   "file": "edge_noblip.pptx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse PPTX: no embedded image"
+  },
+  {
+   "name": "parse:edge_webp.pptx",
+   "file": "edge_webp.pptx",
+   "call": "parse",
+   "options": {},
+   "ok": {
+    "title": "edge text",
+    "slides": [
+     {
+      "slide_number": 1,
+      "title": "edge text",
+      "text": "",
+      "notes": "edge notes",
+      "shapes": [],
+      "images": []
+     }
+    ],
+    "metadata": {
+     "title": "",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "generated using python-pptx",
+     "created": "2013-01-27 09:14:16",
+     "modified": "2013-01-27 09:15:58",
+     "last_modified_by": "Steve Canny",
+     "total_slides": 1,
+     "file_path": "{DIR}/edge_webp.pptx"
+    }
+   }
+  },
+  {
+   "name": "parse_all:edge_webp.pptx",
+   "file": "edge_webp.pptx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "ok": {
+    "title": "edge text",
+    "slides": [
+     {
+      "slide_number": 1,
+      "title": "edge text",
+      "text": "",
+      "notes": "edge notes",
+      "shapes": [
+       {
+        "type": 17,
+        "has_text": true
+       },
+       {
+        "type": 13,
+        "has_text": false
+       }
+      ],
+      "images": []
+     }
+    ],
+    "metadata": {
+     "title": "",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "generated using python-pptx",
+     "created": "2013-01-27 09:14:16",
+     "modified": "2013-01-27 09:15:58",
+     "last_modified_by": "Steve Canny",
+     "total_slides": 1,
+     "file_path": "{DIR}/edge_webp.pptx"
+    }
+   }
+  },
+  {
+   "name": "parse:edge_badidx.pptx",
+   "file": "edge_badidx.pptx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse PPTX: invalid literal for int() with base 10: 'x1'"
+  },
+  {
+   "name": "parse_all:edge_badidx.pptx",
+   "file": "edge_badidx.pptx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse PPTX: invalid literal for int() with base 10: 'x1'"
+  },
+  {
+   "name": "parse:plain.pptx",
+   "file": "plain.pptx",
+   "call": "parse",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse PPTX: Package not found at '{DIR}/plain.pptx'"
+  },
+  {
+   "name": "parse_all:plain.pptx",
+   "file": "plain.pptx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse PPTX: Package not found at '{DIR}/plain.pptx'"
+  },
+  {
+   "name": "parse:basic.docx",
+   "file": "basic.docx",
+   "call": "parse",
+   "options": {},
+   "error": "ValidationError",
+   "message": "File is not a PPTX: {DIR}/basic.docx"
+  },
+  {
+   "name": "parse_all:basic.docx",
+   "file": "basic.docx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "error": "ValidationError",
+   "message": "File is not a PPTX: {DIR}/basic.docx"
+  },
+  {
+   "name": "parse:missing.pptx",
+   "file": "missing.pptx",
+   "call": "parse",
+   "options": {},
+   "error": "ValidationError",
+   "message": "PPTX file not found: {DIR}/missing.pptx"
+  },
+  {
+   "name": "parse_all:missing.pptx",
+   "file": "missing.pptx",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "error": "ValidationError",
+   "message": "PPTX file not found: {DIR}/missing.pptx"
+  },
+  {
+   "name": "parse:notes.txt",
+   "file": "notes.txt",
+   "call": "parse",
+   "options": {},
+   "error": "ValidationError",
+   "message": "File is not a PPTX: {DIR}/notes.txt"
+  },
+  {
+   "name": "parse_all:notes.txt",
+   "file": "notes.txt",
+   "call": "parse",
+   "options": {
+    "extract_images": true,
+    "extract_shapes": true,
+    "extract_notes": true
+   },
+   "error": "ValidationError",
+   "message": "File is not a PPTX: {DIR}/notes.txt"
+  },
+  {
+   "name": "parse_no_notes:edge_notes.pptx",
+   "file": "edge_notes.pptx",
+   "call": "parse",
+   "options": {
+    "extract_notes": false
+   },
+   "ok": {
+    "title": "edge text",
+    "slides": [
+     {
+      "slide_number": 1,
+      "title": "edge text",
+      "text": "",
+      "notes": "",
+      "shapes": [],
+      "images": []
+     }
+    ],
+    "metadata": {
+     "title": "",
+     "author": "",
+     "subject": "",
+     "keywords": "",
+     "comments": "generated using python-pptx",
+     "created": "2013-01-27 09:14:16",
+     "modified": "2013-01-27 09:15:58",
+     "last_modified_by": "Steve Canny",
+     "total_slides": 1,
+     "file_path": "{DIR}/edge_notes.pptx"
+    }
+   }
+  },
+  {
+   "name": "extract_text:basic.pptx",
+   "file": "basic.pptx",
+   "call": "extract_text",
+   "options": {},
+   "ok": "Slide 1: Welcome Deck\nWelcome Deck\nSubtitle line\nSecond line\n\nSlide 2: Agenda\nAgenda\nPoint A\nSub point\nRun one \u000bafter break\nText box words\nShape text\n\nSlide 3: First box acts as title\n\n\nSlide 4: Picture slide\nPicture slide\ncaption\n\nSlide 5: only text\n"
+  },
+  {
+   "name": "extract_slides:basic.pptx",
+   "file": "basic.pptx",
+   "call": "extract_slides",
+   "options": {
+    "extract_shapes": true
+   },
+   "ok": [
+    {
+     "slide_number": 1,
+     "title": "Welcome Deck",
+     "text": "Welcome Deck\nSubtitle line\nSecond line",
+     "notes": "Speaker notes one\nmore notes",
+     "shapes": [
+      {
+       "type": 14,
+       "has_text": true
+      },
+      {
+       "type": 14,
+       "has_text": true
+      }
+     ],
+     "images": []
+    },
+    {
+     "slide_number": 2,
+     "title": "Agenda",
+     "text": "Agenda\nPoint A\nSub point\nRun one \u000bafter break\nText box words\nShape text",
+     "notes": "",
+     "shapes": [
+      {
+       "type": 14,
+       "has_text": true
+      },
+      {
+       "type": 14,
+       "has_text": true
+      },
+      {
+       "type": 17,
+       "has_text": true
+      },
+      {
+       "type": 1,
+       "has_text": true
+      },
+      {
+       "type": 1,
+       "has_text": true
+      },
+      {
+       "type": 9,
+       "has_text": false
+      }
+     ],
+     "images": []
+    },
+    {
+     "slide_number": 3,
+     "title": "First box acts as title",
+     "text": "",
+     "notes": "",
+     "shapes": [
+      {
+       "type": 17,
+       "has_text": true
+      },
+      {
+       "type": 19,
+       "has_text": false
+      },
+      {
+       "type": 13,
+       "has_text": false
+      },
+      {
+       "type": 3,
+       "has_text": false
+      },
+      {
+       "type": 6,
+       "has_text": false
+      }
+     ],
+     "images": []
+    },
+    {
+     "slide_number": 4,
+     "title": "Picture slide",
+     "text": "Picture slide\ncaption",
+     "notes": "",
+     "shapes": [
+      {
+       "type": 14,
+       "has_text": true
+      },
+      {
+       "type": 14,
+       "has_text": false
+      },
+      {
+       "type": 14,
+       "has_text": true
+      }
+     ],
+     "images": []
+    },
+    {
+     "slide_number": 5,
+     "title": "only text",
+     "text": "",
+     "notes": "",
+     "shapes": [
+      {
+       "type": 14,
+       "has_text": true
+      },
+      {
+       "type": 17,
+       "has_text": true
+      }
+     ],
+     "images": []
+    }
+   ]
+  }
+ ],
+ "excel": [
+  {
+   "name": "pandas:data.xlsx",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "ok": {
+    "sheet_names": [
+     "People",
+     "Numbers",
+     "Empty",
+     "Merged",
+     "Ragged",
+     "OneCol",
+     "Mixed"
+    ],
+    "sheets": {
+     "People": {
+      "name": "People",
+      "data": [
+       {
+        "name": "Alice",
+        "age": 30.0,
+        "score": 88.5,
+        "active": true,
+        "joined": "2024-01-15 00:00:00",
+        "notes": "",
+        "code": 7.0
+       },
+       {
+        "name": "Bob",
+        "age": "",
+        "score": 92.0,
+        "active": false,
+        "joined": "2024-02-01 13:30:00",
+        "notes": "  spaced  ",
+        "code": 12.0
+       },
+       {
+        "name": "Carol",
+        "age": 41.0,
+        "score": "",
+        "active": "",
+        "joined": "NaT",
+        "notes": "x",
+        "code": 13.0
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "NaT",
+        "notes": "",
+        "code": ""
+       },
+       {
+        "name": "Dave",
+        "age": 29.0,
+        "score": 70.25,
+        "active": "TRUE",
+        "joined": "2023-12-31 00:00:00",
+        "notes": "",
+        "code": 14.0
+       }
+      ],
+      "row_count": 5,
+      "column_count": 7,
+      "headers": [
+       "name",
+       "age",
+       "score",
+       "active",
+       "joined",
+       "notes",
+       "code"
+      ]
+     },
+     "Numbers": {
+      "name": "Numbers",
+      "data": [
+       {
+        "2020": 1,
+        "2021.5": 2,
+        "dup": 3,
+        "dup.1": 4,
+        "Unnamed: 4": 5,
+        "dup.2": 6,
+        "True": 7
+       },
+       {
+        "2020": 1.5,
+        "2021.5": "",
+        "dup": "a",
+        "dup.1": "b",
+        "Unnamed: 4": "c",
+        "dup.2": "d",
+        "True": "e"
+       },
+       {
+        "2020": "10:30:00",
+        "2021.5": "11:00:05",
+        "dup": 1,
+        "dup.1": 2,
+        "Unnamed: 4": 3,
+        "dup.2": 4,
+        "True": 5
+       },
+       {
+        "2020": "",
+        "2021.5": "",
+        "dup": "",
+        "dup.1": "",
+        "Unnamed: 4": "",
+        "dup.2": "",
+        "True": ""
+       },
+       {
+        "2020": "after gap",
+        "2021.5": "",
+        "dup": "",
+        "dup.1": "",
+        "Unnamed: 4": "",
+        "dup.2": "",
+        "True": ""
+       }
+      ],
+      "row_count": 5,
+      "column_count": 7,
+      "headers": [
+       2020,
+       2021.5,
+       "dup",
+       "dup.1",
+       "Unnamed: 4",
+       "dup.2",
+       true
+      ]
+     },
+     "Empty": {
+      "name": "Empty",
+      "data": [],
+      "row_count": 0,
+      "column_count": 0,
+      "headers": []
+     },
+     "Merged": {
+      "name": "Merged",
+      "data": [
+       {
+        "h1": "a",
+        "h2": "",
+        "h3": "c"
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "f"
+       }
+      ],
+      "row_count": 2,
+      "column_count": 3,
+      "headers": [
+       "h1",
+       "h2",
+       "h3"
+      ]
+     },
+     "Ragged": {
+      "name": "Ragged",
+      "data": [
+       {
+        "a": 1,
+        "b": "",
+        "c": "",
+        "Unnamed: 3": ""
+       },
+       {
+        "a": 1,
+        "b": 2.0,
+        "c": 3.0,
+        "Unnamed: 3": 4.0
+       },
+       {
+        "a": "only first",
+        "b": "",
+        "c": "",
+        "Unnamed: 3": ""
+       }
+      ],
+      "row_count": 3,
+      "column_count": 4,
+      "headers": [
+       "a",
+       "b",
+       "c",
+       "Unnamed: 3"
+      ]
+     },
+     "OneCol": {
+      "name": "OneCol",
+      "data": [
+       {
+        "v": 1
+       },
+       {
+        "v": ""
+       },
+       {
+        "v": "  "
+       },
+       {
+        "v": 2
+       }
+      ],
+      "row_count": 4,
+      "column_count": 1,
+      "headers": [
+       "v"
+      ]
+     },
+     "Mixed": {
+      "name": "Mixed",
+      "data": [
+       {
+        "objs": 1,
+        "bools": 1.0,
+        "boolstr": true,
+        "dates": "2024-01-01 00:00:00",
+        "na": "",
+        "big": 1000000000000000,
+        "floatint": 1.0
+       },
+       {
+        "objs": "x",
+        "bools": 0.0,
+        "boolstr": false,
+        "dates": "text",
+        "na": "",
+        "big": -5,
+        "floatint": 2.5
+       },
+       {
+        "objs": 2.5,
+        "bools": 1.0,
+        "boolstr": "",
+        "dates": "2024-01-03 00:00:00",
+        "na": "",
+        "big": 7,
+        "floatint": ""
+       },
+       {
+        "objs": 1,
+        "bools": "",
+        "boolstr": true,
+        "dates": "",
+        "na": "",
+        "big": 0,
+        "floatint": 3.0
+       }
+      ],
+      "row_count": 4,
+      "column_count": 7,
+      "headers": [
+       "objs",
+       "bools",
+       "boolstr",
+       "dates",
+       "na",
+       "big",
+       "floatint"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/data.xlsx",
+     "total_sheets": 7
+    }
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "sheet_names": [
+     "People",
+     "Numbers",
+     "Empty",
+     "Merged",
+     "Ragged",
+     "OneCol",
+     "Mixed"
+    ],
+    "sheets": {
+     "People": {
+      "name": "People",
+      "data": [
+       {
+        "name": "Alice",
+        "age": "30",
+        "score": "88.5",
+        "active": "True",
+        "joined": "2024-01-15 00:00:00",
+        "notes": "NA",
+        "code": "007",
+        "Column_8": ""
+       },
+       {
+        "name": "Bob",
+        "age": "",
+        "score": "92",
+        "active": "False",
+        "joined": "2024-02-01 13:30:00",
+        "notes": "  spaced  ",
+        "code": "12",
+        "Column_8": ""
+       },
+       {
+        "name": "Carol",
+        "age": "41",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "x",
+        "code": "13",
+        "Column_8": ""
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "",
+        "code": "",
+        "Column_8": ""
+       },
+       {
+        "name": "Dave",
+        "age": "29",
+        "score": "70.25",
+        "active": "TRUE",
+        "joined": "2023-12-31 00:00:00",
+        "notes": "",
+        "code": "14",
+        "Column_8": ""
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "",
+        "code": "",
+        "Column_8": ""
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "",
+        "code": "",
+        "Column_8": ""
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "",
+        "code": "",
+        "Column_8": ""
+       }
+      ],
+      "row_count": 8,
+      "column_count": 8,
+      "headers": [
+       "name",
+       "age",
+       "score",
+       "active",
+       "joined",
+       "notes",
+       "code",
+       "Column_8"
+      ]
+     },
+     "Numbers": {
+      "name": "Numbers",
+      "data": [
+       {
+        "2020": "1",
+        "2021.5": "2",
+        "dup": "6",
+        "Column_5": "5",
+        "True": "7"
+       },
+       {
+        "2020": "1.5",
+        "2021.5": "",
+        "dup": "d",
+        "Column_5": "c",
+        "True": "e"
+       },
+       {
+        "2020": "10:30:00",
+        "2021.5": "11:00:05",
+        "dup": "4",
+        "Column_5": "3",
+        "True": "5"
+       },
+       {
+        "2020": "",
+        "2021.5": "",
+        "dup": "",
+        "Column_5": "",
+        "True": ""
+       },
+       {
+        "2020": "after gap",
+        "2021.5": "",
+        "dup": "",
+        "Column_5": "",
+        "True": ""
+       }
+      ],
+      "row_count": 5,
+      "column_count": 7,
+      "headers": [
+       "2020",
+       "2021.5",
+       "dup",
+       "dup",
+       "Column_5",
+       "dup",
+       "True"
+      ]
+     },
+     "Empty": {
+      "name": "Empty",
+      "data": [],
+      "row_count": 0,
+      "column_count": 1,
+      "headers": [
+       "Column_1"
+      ]
+     },
+     "Merged": {
+      "name": "Merged",
+      "data": [
+       {
+        "h1": "a",
+        "h2": "",
+        "h3": "c",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "f",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "",
+        "Column_4": "",
+        "Column_5": ""
+       }
+      ],
+      "row_count": 6,
+      "column_count": 5,
+      "headers": [
+       "h1",
+       "h2",
+       "h3",
+       "Column_4",
+       "Column_5"
+      ]
+     },
+     "Ragged": {
+      "name": "Ragged",
+      "data": [
+       {
+        "a": "1",
+        "b": "",
+        "c": "",
+        "Column_4": ""
+       },
+       {
+        "a": "1",
+        "b": "2",
+        "c": "3",
+        "Column_4": "4"
+       },
+       {
+        "a": "only first",
+        "b": "",
+        "c": "",
+        "Column_4": ""
+       }
+      ],
+      "row_count": 3,
+      "column_count": 4,
+      "headers": [
+       "a",
+       "b",
+       "c",
+       "Column_4"
+      ]
+     },
+     "OneCol": {
+      "name": "OneCol",
+      "data": [
+       {
+        "v": "1"
+       },
+       {
+        "v": ""
+       },
+       {
+        "v": "  "
+       },
+       {
+        "v": "2"
+       }
+      ],
+      "row_count": 4,
+      "column_count": 1,
+      "headers": [
+       "v"
+      ]
+     },
+     "Mixed": {
+      "name": "Mixed",
+      "data": [
+       {
+        "objs": "1",
+        "bools": "True",
+        "boolstr": "True",
+        "dates": "2024-01-01 00:00:00",
+        "na": "N/A",
+        "big": "1000000000000000",
+        "floatint": "1"
+       },
+       {
+        "objs": "x",
+        "bools": "False",
+        "boolstr": "false",
+        "dates": "text",
+        "na": "null",
+        "big": "-5",
+        "floatint": "2.5"
+       },
+       {
+        "objs": "2.5",
+        "bools": "True",
+        "boolstr": "NA",
+        "dates": "2024-01-03 00:00:00",
+        "na": "#N/A",
+        "big": "7",
+        "floatint": ""
+       },
+       {
+        "objs": "True",
+        "bools": "",
+        "boolstr": "TRUE",
+        "dates": "",
+        "na": "",
+        "big": "0",
+        "floatint": "3"
+       }
+      ],
+      "row_count": 4,
+      "column_count": 7,
+      "headers": [
+       "objs",
+       "bools",
+       "boolstr",
+       "dates",
+       "na",
+       "big",
+       "floatint"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/data.xlsx",
+     "total_sheets": 7
+    }
+   }
+  },
+  {
+   "name": "pandas:crafted.xlsx",
+   "file": "crafted.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "ok": {
+    "sheet_names": [
+     "Raw"
+    ],
+    "sheets": {
+     "Raw": {
+      "name": "Raw",
+      "data": [
+       {
+        "label": "2024-01-15 00:00:00",
+        "rich text": "12:00:00",
+        "esc_x000D_ape": "1 day, 6:00:00",
+        "  padded ": 3.5,
+        "inline": 45306.0,
+        "Unnamed: 5": 45306,
+        "xy": "2024-01-15 18:00:00"
+       },
+       {
+        "label": "",
+        "rich text": true,
+        "esc_x000D_ape": false,
+        "  padded ": 2,
+        "inline": "",
+        "Unnamed: 5": "2024-03-04 05:06:07",
+        "xy": "2024-03-05"
+       },
+       {
+        "label": 1,
+        "rich text": 200,
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "Unnamed: 5": -7,
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "",
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "Unnamed: 5": "",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "",
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "Unnamed: 5": "",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "1900-02-28 00:00:00",
+        "esc_x000D_ape": "1900-03-01 00:00:00",
+        "  padded ": "00:00:00",
+        "inline": "",
+        "Unnamed: 5": "",
+        "xy": ""
+       },
+       {
+        "label": "2 days, 0:00:00.086000",
+        "rich text": "10:20:30",
+        "esc_x000D_ape": "1:30:00",
+        "  padded ": "",
+        "inline": "",
+        "Unnamed: 5": "",
+        "xy": ""
+       }
+      ],
+      "row_count": 7,
+      "column_count": 7,
+      "headers": [
+       "label",
+       "rich text",
+       "esc_x000D_ape",
+       "  padded ",
+       "inline",
+       "Unnamed: 5",
+       "xy"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/crafted.xlsx",
+     "total_sheets": 1
+    }
+   }
+  },
+  {
+   "name": "openpyxl:crafted.xlsx",
+   "file": "crafted.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "sheet_names": [
+     "Raw"
+    ],
+    "sheets": {
+     "Raw": {
+      "name": "Raw",
+      "data": [
+       {
+        "label": "2024-01-15 00:00:00",
+        "rich text": "12:00:00",
+        "esc_x000D_ape": "1 day, 6:00:00",
+        "  padded ": "3.5",
+        "inline": "45306",
+        "": "45306",
+        "xy": "2024-01-15 18:00:00"
+       },
+       {
+        "label": "#DIV/0!",
+        "rich text": "True",
+        "esc_x000D_ape": "False",
+        "  padded ": "2",
+        "inline": "",
+        "": "2024-03-04 05:06:07",
+        "xy": "2024-03-05"
+       },
+       {
+        "label": "1.0",
+        "rich text": "200.0",
+        "esc_x000D_ape": "#N/A",
+        "  padded ": "",
+        "inline": "",
+        "": "-7",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "",
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "": "",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "",
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "": "",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "1900-02-28 00:00:00",
+        "esc_x000D_ape": "1900-03-01 00:00:00",
+        "  padded ": "00:00:00",
+        "inline": "",
+        "": "",
+        "xy": ""
+       },
+       {
+        "label": "2 days, 0:00:00.086000",
+        "rich text": "10:20:30",
+        "esc_x000D_ape": "1:30:00",
+        "  padded ": "",
+        "inline": "",
+        "": "",
+        "xy": ""
+       }
+      ],
+      "row_count": 7,
+      "column_count": 7,
+      "headers": [
+       "label",
+       "rich text",
+       "esc_x000D_ape",
+       "  padded ",
+       "inline",
+       "",
+       "xy"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/crafted.xlsx",
+     "total_sheets": 1
+    }
+   }
+  },
+  {
+   "name": "pandas:crafted1904.xlsx",
+   "file": "crafted1904.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "ok": {
+    "sheet_names": [
+     "Raw"
+    ],
+    "sheets": {
+     "Raw": {
+      "name": "Raw",
+      "data": [
+       {
+        "label": "2028-01-16 00:00:00",
+        "rich text": "12:00:00",
+        "esc_x000D_ape": "1 day, 6:00:00",
+        "  padded ": 3.5,
+        "inline": 45306.0,
+        "Unnamed: 5": 45306,
+        "xy": "2028-01-16 18:00:00"
+       },
+       {
+        "label": "",
+        "rich text": true,
+        "esc_x000D_ape": false,
+        "  padded ": 2,
+        "inline": "",
+        "Unnamed: 5": "2024-03-04 05:06:07",
+        "xy": "2024-03-05"
+       },
+       {
+        "label": 1,
+        "rich text": 200,
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "Unnamed: 5": -7,
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "",
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "Unnamed: 5": "",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "",
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "Unnamed: 5": "",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "1904-02-29 00:00:00",
+        "esc_x000D_ape": "1904-03-02 00:00:00",
+        "  padded ": "00:00:00",
+        "inline": "",
+        "Unnamed: 5": "",
+        "xy": ""
+       },
+       {
+        "label": "2 days, 0:00:00.086000",
+        "rich text": "10:20:30",
+        "esc_x000D_ape": "1:30:00",
+        "  padded ": "",
+        "inline": "",
+        "Unnamed: 5": "",
+        "xy": ""
+       }
+      ],
+      "row_count": 7,
+      "column_count": 7,
+      "headers": [
+       "label",
+       "rich text",
+       "esc_x000D_ape",
+       "  padded ",
+       "inline",
+       "Unnamed: 5",
+       "xy"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/crafted1904.xlsx",
+     "total_sheets": 1
+    }
+   }
+  },
+  {
+   "name": "openpyxl:crafted1904.xlsx",
+   "file": "crafted1904.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "sheet_names": [
+     "Raw"
+    ],
+    "sheets": {
+     "Raw": {
+      "name": "Raw",
+      "data": [
+       {
+        "label": "2028-01-16 00:00:00",
+        "rich text": "12:00:00",
+        "esc_x000D_ape": "1 day, 6:00:00",
+        "  padded ": "3.5",
+        "inline": "45306",
+        "": "45306",
+        "xy": "2028-01-16 18:00:00"
+       },
+       {
+        "label": "#DIV/0!",
+        "rich text": "True",
+        "esc_x000D_ape": "False",
+        "  padded ": "2",
+        "inline": "",
+        "": "2024-03-04 05:06:07",
+        "xy": "2024-03-05"
+       },
+       {
+        "label": "1.0",
+        "rich text": "200.0",
+        "esc_x000D_ape": "#N/A",
+        "  padded ": "",
+        "inline": "",
+        "": "-7",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "",
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "": "",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "",
+        "esc_x000D_ape": "",
+        "  padded ": "",
+        "inline": "",
+        "": "",
+        "xy": ""
+       },
+       {
+        "label": "",
+        "rich text": "1904-02-29 00:00:00",
+        "esc_x000D_ape": "1904-03-02 00:00:00",
+        "  padded ": "00:00:00",
+        "inline": "",
+        "": "",
+        "xy": ""
+       },
+       {
+        "label": "2 days, 0:00:00.086000",
+        "rich text": "10:20:30",
+        "esc_x000D_ape": "1:30:00",
+        "  padded ": "",
+        "inline": "",
+        "": "",
+        "xy": ""
+       }
+      ],
+      "row_count": 7,
+      "column_count": 7,
+      "headers": [
+       "label",
+       "rich text",
+       "esc_x000D_ape",
+       "  padded ",
+       "inline",
+       "",
+       "xy"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/crafted1904.xlsx",
+     "total_sheets": 1
+    }
+   }
+  },
+  {
+   "name": "pandas:chart.xlsx",
+   "file": "chart.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "ok": {
+    "sheet_names": [
+     "Data"
+    ],
+    "sheets": {
+     "Data": {
+      "name": "Data",
+      "data": [
+       {
+        "k": "a",
+        "v": 1
+       }
+      ],
+      "row_count": 1,
+      "column_count": 2,
+      "headers": [
+       "k",
+       "v"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/chart.xlsx",
+     "total_sheets": 1
+    }
+   }
+  },
+  {
+   "name": "openpyxl:chart.xlsx",
+   "file": "chart.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: 'Chartsheet' object has no attribute 'max_row'"
+  },
+  {
+   "name": "pandas:data_copy.xlsm",
+   "file": "data_copy.xlsm",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "ok": {
+    "sheet_names": [
+     "People",
+     "Numbers",
+     "Empty",
+     "Merged",
+     "Ragged",
+     "OneCol",
+     "Mixed"
+    ],
+    "sheets": {
+     "People": {
+      "name": "People",
+      "data": [
+       {
+        "name": "Alice",
+        "age": 30.0,
+        "score": 88.5,
+        "active": true,
+        "joined": "2024-01-15 00:00:00",
+        "notes": "",
+        "code": 7.0
+       },
+       {
+        "name": "Bob",
+        "age": "",
+        "score": 92.0,
+        "active": false,
+        "joined": "2024-02-01 13:30:00",
+        "notes": "  spaced  ",
+        "code": 12.0
+       },
+       {
+        "name": "Carol",
+        "age": 41.0,
+        "score": "",
+        "active": "",
+        "joined": "NaT",
+        "notes": "x",
+        "code": 13.0
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "NaT",
+        "notes": "",
+        "code": ""
+       },
+       {
+        "name": "Dave",
+        "age": 29.0,
+        "score": 70.25,
+        "active": "TRUE",
+        "joined": "2023-12-31 00:00:00",
+        "notes": "",
+        "code": 14.0
+       }
+      ],
+      "row_count": 5,
+      "column_count": 7,
+      "headers": [
+       "name",
+       "age",
+       "score",
+       "active",
+       "joined",
+       "notes",
+       "code"
+      ]
+     },
+     "Numbers": {
+      "name": "Numbers",
+      "data": [
+       {
+        "2020": 1,
+        "2021.5": 2,
+        "dup": 3,
+        "dup.1": 4,
+        "Unnamed: 4": 5,
+        "dup.2": 6,
+        "True": 7
+       },
+       {
+        "2020": 1.5,
+        "2021.5": "",
+        "dup": "a",
+        "dup.1": "b",
+        "Unnamed: 4": "c",
+        "dup.2": "d",
+        "True": "e"
+       },
+       {
+        "2020": "10:30:00",
+        "2021.5": "11:00:05",
+        "dup": 1,
+        "dup.1": 2,
+        "Unnamed: 4": 3,
+        "dup.2": 4,
+        "True": 5
+       },
+       {
+        "2020": "",
+        "2021.5": "",
+        "dup": "",
+        "dup.1": "",
+        "Unnamed: 4": "",
+        "dup.2": "",
+        "True": ""
+       },
+       {
+        "2020": "after gap",
+        "2021.5": "",
+        "dup": "",
+        "dup.1": "",
+        "Unnamed: 4": "",
+        "dup.2": "",
+        "True": ""
+       }
+      ],
+      "row_count": 5,
+      "column_count": 7,
+      "headers": [
+       2020,
+       2021.5,
+       "dup",
+       "dup.1",
+       "Unnamed: 4",
+       "dup.2",
+       true
+      ]
+     },
+     "Empty": {
+      "name": "Empty",
+      "data": [],
+      "row_count": 0,
+      "column_count": 0,
+      "headers": []
+     },
+     "Merged": {
+      "name": "Merged",
+      "data": [
+       {
+        "h1": "a",
+        "h2": "",
+        "h3": "c"
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "f"
+       }
+      ],
+      "row_count": 2,
+      "column_count": 3,
+      "headers": [
+       "h1",
+       "h2",
+       "h3"
+      ]
+     },
+     "Ragged": {
+      "name": "Ragged",
+      "data": [
+       {
+        "a": 1,
+        "b": "",
+        "c": "",
+        "Unnamed: 3": ""
+       },
+       {
+        "a": 1,
+        "b": 2.0,
+        "c": 3.0,
+        "Unnamed: 3": 4.0
+       },
+       {
+        "a": "only first",
+        "b": "",
+        "c": "",
+        "Unnamed: 3": ""
+       }
+      ],
+      "row_count": 3,
+      "column_count": 4,
+      "headers": [
+       "a",
+       "b",
+       "c",
+       "Unnamed: 3"
+      ]
+     },
+     "OneCol": {
+      "name": "OneCol",
+      "data": [
+       {
+        "v": 1
+       },
+       {
+        "v": ""
+       },
+       {
+        "v": "  "
+       },
+       {
+        "v": 2
+       }
+      ],
+      "row_count": 4,
+      "column_count": 1,
+      "headers": [
+       "v"
+      ]
+     },
+     "Mixed": {
+      "name": "Mixed",
+      "data": [
+       {
+        "objs": 1,
+        "bools": 1.0,
+        "boolstr": true,
+        "dates": "2024-01-01 00:00:00",
+        "na": "",
+        "big": 1000000000000000,
+        "floatint": 1.0
+       },
+       {
+        "objs": "x",
+        "bools": 0.0,
+        "boolstr": false,
+        "dates": "text",
+        "na": "",
+        "big": -5,
+        "floatint": 2.5
+       },
+       {
+        "objs": 2.5,
+        "bools": 1.0,
+        "boolstr": "",
+        "dates": "2024-01-03 00:00:00",
+        "na": "",
+        "big": 7,
+        "floatint": ""
+       },
+       {
+        "objs": 1,
+        "bools": "",
+        "boolstr": true,
+        "dates": "",
+        "na": "",
+        "big": 0,
+        "floatint": 3.0
+       }
+      ],
+      "row_count": 4,
+      "column_count": 7,
+      "headers": [
+       "objs",
+       "bools",
+       "boolstr",
+       "dates",
+       "na",
+       "big",
+       "floatint"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/data_copy.xlsm",
+     "total_sheets": 7
+    }
+   }
+  },
+  {
+   "name": "openpyxl:data_copy.xlsm",
+   "file": "data_copy.xlsm",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "sheet_names": [
+     "People",
+     "Numbers",
+     "Empty",
+     "Merged",
+     "Ragged",
+     "OneCol",
+     "Mixed"
+    ],
+    "sheets": {
+     "People": {
+      "name": "People",
+      "data": [
+       {
+        "name": "Alice",
+        "age": "30",
+        "score": "88.5",
+        "active": "True",
+        "joined": "2024-01-15 00:00:00",
+        "notes": "NA",
+        "code": "007",
+        "Column_8": ""
+       },
+       {
+        "name": "Bob",
+        "age": "",
+        "score": "92",
+        "active": "False",
+        "joined": "2024-02-01 13:30:00",
+        "notes": "  spaced  ",
+        "code": "12",
+        "Column_8": ""
+       },
+       {
+        "name": "Carol",
+        "age": "41",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "x",
+        "code": "13",
+        "Column_8": ""
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "",
+        "code": "",
+        "Column_8": ""
+       },
+       {
+        "name": "Dave",
+        "age": "29",
+        "score": "70.25",
+        "active": "TRUE",
+        "joined": "2023-12-31 00:00:00",
+        "notes": "",
+        "code": "14",
+        "Column_8": ""
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "",
+        "code": "",
+        "Column_8": ""
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "",
+        "code": "",
+        "Column_8": ""
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "",
+        "notes": "",
+        "code": "",
+        "Column_8": ""
+       }
+      ],
+      "row_count": 8,
+      "column_count": 8,
+      "headers": [
+       "name",
+       "age",
+       "score",
+       "active",
+       "joined",
+       "notes",
+       "code",
+       "Column_8"
+      ]
+     },
+     "Numbers": {
+      "name": "Numbers",
+      "data": [
+       {
+        "2020": "1",
+        "2021.5": "2",
+        "dup": "6",
+        "Column_5": "5",
+        "True": "7"
+       },
+       {
+        "2020": "1.5",
+        "2021.5": "",
+        "dup": "d",
+        "Column_5": "c",
+        "True": "e"
+       },
+       {
+        "2020": "10:30:00",
+        "2021.5": "11:00:05",
+        "dup": "4",
+        "Column_5": "3",
+        "True": "5"
+       },
+       {
+        "2020": "",
+        "2021.5": "",
+        "dup": "",
+        "Column_5": "",
+        "True": ""
+       },
+       {
+        "2020": "after gap",
+        "2021.5": "",
+        "dup": "",
+        "Column_5": "",
+        "True": ""
+       }
+      ],
+      "row_count": 5,
+      "column_count": 7,
+      "headers": [
+       "2020",
+       "2021.5",
+       "dup",
+       "dup",
+       "Column_5",
+       "dup",
+       "True"
+      ]
+     },
+     "Empty": {
+      "name": "Empty",
+      "data": [],
+      "row_count": 0,
+      "column_count": 1,
+      "headers": [
+       "Column_1"
+      ]
+     },
+     "Merged": {
+      "name": "Merged",
+      "data": [
+       {
+        "h1": "a",
+        "h2": "",
+        "h3": "c",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "f",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "",
+        "Column_4": "",
+        "Column_5": ""
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "",
+        "Column_4": "",
+        "Column_5": ""
+       }
+      ],
+      "row_count": 6,
+      "column_count": 5,
+      "headers": [
+       "h1",
+       "h2",
+       "h3",
+       "Column_4",
+       "Column_5"
+      ]
+     },
+     "Ragged": {
+      "name": "Ragged",
+      "data": [
+       {
+        "a": "1",
+        "b": "",
+        "c": "",
+        "Column_4": ""
+       },
+       {
+        "a": "1",
+        "b": "2",
+        "c": "3",
+        "Column_4": "4"
+       },
+       {
+        "a": "only first",
+        "b": "",
+        "c": "",
+        "Column_4": ""
+       }
+      ],
+      "row_count": 3,
+      "column_count": 4,
+      "headers": [
+       "a",
+       "b",
+       "c",
+       "Column_4"
+      ]
+     },
+     "OneCol": {
+      "name": "OneCol",
+      "data": [
+       {
+        "v": "1"
+       },
+       {
+        "v": ""
+       },
+       {
+        "v": "  "
+       },
+       {
+        "v": "2"
+       }
+      ],
+      "row_count": 4,
+      "column_count": 1,
+      "headers": [
+       "v"
+      ]
+     },
+     "Mixed": {
+      "name": "Mixed",
+      "data": [
+       {
+        "objs": "1",
+        "bools": "True",
+        "boolstr": "True",
+        "dates": "2024-01-01 00:00:00",
+        "na": "N/A",
+        "big": "1000000000000000",
+        "floatint": "1"
+       },
+       {
+        "objs": "x",
+        "bools": "False",
+        "boolstr": "false",
+        "dates": "text",
+        "na": "null",
+        "big": "-5",
+        "floatint": "2.5"
+       },
+       {
+        "objs": "2.5",
+        "bools": "True",
+        "boolstr": "NA",
+        "dates": "2024-01-03 00:00:00",
+        "na": "#N/A",
+        "big": "7",
+        "floatint": ""
+       },
+       {
+        "objs": "True",
+        "bools": "",
+        "boolstr": "TRUE",
+        "dates": "",
+        "na": "",
+        "big": "0",
+        "floatint": "3"
+       }
+      ],
+      "row_count": 4,
+      "column_count": 7,
+      "headers": [
+       "objs",
+       "bools",
+       "boolstr",
+       "dates",
+       "na",
+       "big",
+       "floatint"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/data_copy.xlsm",
+     "total_sheets": 7
+    }
+   }
+  },
+  {
+   "name": "pandas:data_copy.xls",
+   "file": "data_copy.xls",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "ok": {
+    "sheet_names": [
+     "People",
+     "Numbers",
+     "Empty",
+     "Merged",
+     "Ragged",
+     "OneCol",
+     "Mixed"
+    ],
+    "sheets": {
+     "People": {
+      "name": "People",
+      "data": [
+       {
+        "name": "Alice",
+        "age": 30.0,
+        "score": 88.5,
+        "active": true,
+        "joined": "2024-01-15 00:00:00",
+        "notes": "",
+        "code": 7.0
+       },
+       {
+        "name": "Bob",
+        "age": "",
+        "score": 92.0,
+        "active": false,
+        "joined": "2024-02-01 13:30:00",
+        "notes": "  spaced  ",
+        "code": 12.0
+       },
+       {
+        "name": "Carol",
+        "age": 41.0,
+        "score": "",
+        "active": "",
+        "joined": "NaT",
+        "notes": "x",
+        "code": 13.0
+       },
+       {
+        "name": "",
+        "age": "",
+        "score": "",
+        "active": "",
+        "joined": "NaT",
+        "notes": "",
+        "code": ""
+       },
+       {
+        "name": "Dave",
+        "age": 29.0,
+        "score": 70.25,
+        "active": "TRUE",
+        "joined": "2023-12-31 00:00:00",
+        "notes": "",
+        "code": 14.0
+       }
+      ],
+      "row_count": 5,
+      "column_count": 7,
+      "headers": [
+       "name",
+       "age",
+       "score",
+       "active",
+       "joined",
+       "notes",
+       "code"
+      ]
+     },
+     "Numbers": {
+      "name": "Numbers",
+      "data": [
+       {
+        "2020": 1,
+        "2021.5": 2,
+        "dup": 3,
+        "dup.1": 4,
+        "Unnamed: 4": 5,
+        "dup.2": 6,
+        "True": 7
+       },
+       {
+        "2020": 1.5,
+        "2021.5": "",
+        "dup": "a",
+        "dup.1": "b",
+        "Unnamed: 4": "c",
+        "dup.2": "d",
+        "True": "e"
+       },
+       {
+        "2020": "10:30:00",
+        "2021.5": "11:00:05",
+        "dup": 1,
+        "dup.1": 2,
+        "Unnamed: 4": 3,
+        "dup.2": 4,
+        "True": 5
+       },
+       {
+        "2020": "",
+        "2021.5": "",
+        "dup": "",
+        "dup.1": "",
+        "Unnamed: 4": "",
+        "dup.2": "",
+        "True": ""
+       },
+       {
+        "2020": "after gap",
+        "2021.5": "",
+        "dup": "",
+        "dup.1": "",
+        "Unnamed: 4": "",
+        "dup.2": "",
+        "True": ""
+       }
+      ],
+      "row_count": 5,
+      "column_count": 7,
+      "headers": [
+       2020,
+       2021.5,
+       "dup",
+       "dup.1",
+       "Unnamed: 4",
+       "dup.2",
+       true
+      ]
+     },
+     "Empty": {
+      "name": "Empty",
+      "data": [],
+      "row_count": 0,
+      "column_count": 0,
+      "headers": []
+     },
+     "Merged": {
+      "name": "Merged",
+      "data": [
+       {
+        "h1": "a",
+        "h2": "",
+        "h3": "c"
+       },
+       {
+        "h1": "",
+        "h2": "",
+        "h3": "f"
+       }
+      ],
+      "row_count": 2,
+      "column_count": 3,
+      "headers": [
+       "h1",
+       "h2",
+       "h3"
+      ]
+     },
+     "Ragged": {
+      "name": "Ragged",
+      "data": [
+       {
+        "a": 1,
+        "b": "",
+        "c": "",
+        "Unnamed: 3": ""
+       },
+       {
+        "a": 1,
+        "b": 2.0,
+        "c": 3.0,
+        "Unnamed: 3": 4.0
+       },
+       {
+        "a": "only first",
+        "b": "",
+        "c": "",
+        "Unnamed: 3": ""
+       }
+      ],
+      "row_count": 3,
+      "column_count": 4,
+      "headers": [
+       "a",
+       "b",
+       "c",
+       "Unnamed: 3"
+      ]
+     },
+     "OneCol": {
+      "name": "OneCol",
+      "data": [
+       {
+        "v": 1
+       },
+       {
+        "v": ""
+       },
+       {
+        "v": "  "
+       },
+       {
+        "v": 2
+       }
+      ],
+      "row_count": 4,
+      "column_count": 1,
+      "headers": [
+       "v"
+      ]
+     },
+     "Mixed": {
+      "name": "Mixed",
+      "data": [
+       {
+        "objs": 1,
+        "bools": 1.0,
+        "boolstr": true,
+        "dates": "2024-01-01 00:00:00",
+        "na": "",
+        "big": 1000000000000000,
+        "floatint": 1.0
+       },
+       {
+        "objs": "x",
+        "bools": 0.0,
+        "boolstr": false,
+        "dates": "text",
+        "na": "",
+        "big": -5,
+        "floatint": 2.5
+       },
+       {
+        "objs": 2.5,
+        "bools": 1.0,
+        "boolstr": "",
+        "dates": "2024-01-03 00:00:00",
+        "na": "",
+        "big": 7,
+        "floatint": ""
+       },
+       {
+        "objs": 1,
+        "bools": "",
+        "boolstr": true,
+        "dates": "",
+        "na": "",
+        "big": 0,
+        "floatint": 3.0
+       }
+      ],
+      "row_count": 4,
+      "column_count": 7,
+      "headers": [
+       "objs",
+       "bools",
+       "boolstr",
+       "dates",
+       "na",
+       "big",
+       "floatint"
+      ]
+     }
+    },
+    "metadata": {
+     "file_path": "{DIR}/data_copy.xls",
+     "total_sheets": 7
+    }
+   }
+  },
+  {
+   "name": "openpyxl:data_copy.xls",
+   "file": "data_copy.xls",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: openpyxl does not support the old .xls file format, please use xlrd to read this file, or convert it to the more recent .xlsx file format."
+  },
+  {
+   "name": "pandas:ole.xls",
+   "file": "ole.xls",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: `Import xlrd` failed. Install xlrd >= 2.0.1 for xls Excel support Use pip or conda to install the xlrd package."
+  },
+  {
+   "name": "openpyxl:ole.xls",
+   "file": "ole.xls",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: openpyxl does not support the old .xls file format, please use xlrd to read this file, or convert it to the more recent .xlsx file format."
+  },
+  {
+   "name": "pandas:text.xlsx",
+   "file": "text.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Excel file format cannot be determined, you must specify an engine manually."
+  },
+  {
+   "name": "openpyxl:text.xlsx",
+   "file": "text.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: File is not a zip file"
+  },
+  {
+   "name": "pandas:empty.xlsx",
+   "file": "empty.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Excel file format cannot be determined, you must specify an engine manually."
+  },
+  {
+   "name": "openpyxl:empty.xlsx",
+   "file": "empty.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: File is not a zip file"
+  },
+  {
+   "name": "pandas:plainzip.xlsx",
+   "file": "plainzip.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: No such keys(s): 'io.excel.zip.reader'"
+  },
+  {
+   "name": "openpyxl:plainzip.xlsx",
+   "file": "plainzip.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: \"There is no item named '[Content_Types].xml' in the archive\""
+  },
+  {
+   "name": "pandas:nocontenttypes.xlsx",
+   "file": "nocontenttypes.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: \"There is no item named '[Content_Types].xml' in the archive\""
+  },
+  {
+   "name": "openpyxl:nocontenttypes.xlsx",
+   "file": "nocontenttypes.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: \"There is no item named '[Content_Types].xml' in the archive\""
+  },
+  {
+   "name": "pandas:missing.xlsx",
+   "file": "missing.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "error": "ValidationError",
+   "message": "Excel file not found: {DIR}/missing.xlsx"
+  },
+  {
+   "name": "openpyxl:missing.xlsx",
+   "file": "missing.xlsx",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ValidationError",
+   "message": "Excel file not found: {DIR}/missing.xlsx"
+  },
+  {
+   "name": "pandas:notes.txt",
+   "file": "notes.txt",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {},
+   "error": "ValidationError",
+   "message": "File is not an Excel file: {DIR}/notes.txt"
+  },
+  {
+   "name": "openpyxl:notes.txt",
+   "file": "notes.txt",
+   "call": "parse",
+   "sheet_name": null,
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ValidationError",
+   "message": "File is not an Excel file: {DIR}/notes.txt"
+  },
+  {
+   "name": "pandas:data.xlsx:People",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {},
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Alice",
+      "age": 30.0,
+      "score": 88.5,
+      "active": true,
+      "joined": "2024-01-15 00:00:00",
+      "notes": "",
+      "code": 7.0
+     },
+     {
+      "name": "Bob",
+      "age": "",
+      "score": 92.0,
+      "active": false,
+      "joined": "2024-02-01 13:30:00",
+      "notes": "  spaced  ",
+      "code": 12.0
+     },
+     {
+      "name": "Carol",
+      "age": 41.0,
+      "score": "",
+      "active": "",
+      "joined": "NaT",
+      "notes": "x",
+      "code": 13.0
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "NaT",
+      "notes": "",
+      "code": ""
+     },
+     {
+      "name": "Dave",
+      "age": 29.0,
+      "score": 70.25,
+      "active": "TRUE",
+      "joined": "2023-12-31 00:00:00",
+      "notes": "",
+      "code": 14.0
+     }
+    ],
+    "row_count": 5,
+    "column_count": 7,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code"
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Alice",
+      "age": "30",
+      "score": "88.5",
+      "active": "True",
+      "joined": "2024-01-15 00:00:00",
+      "notes": "NA",
+      "code": "007",
+      "Column_8": ""
+     },
+     {
+      "name": "Bob",
+      "age": "",
+      "score": "92",
+      "active": "False",
+      "joined": "2024-02-01 13:30:00",
+      "notes": "  spaced  ",
+      "code": "12",
+      "Column_8": ""
+     },
+     {
+      "name": "Carol",
+      "age": "41",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "x",
+      "code": "13",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "Dave",
+      "age": "29",
+      "score": "70.25",
+      "active": "TRUE",
+      "joined": "2023-12-31 00:00:00",
+      "notes": "",
+      "code": "14",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 8,
+    "column_count": 8,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {},
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "2020": 1,
+      "2021.5": 2,
+      "dup": 3,
+      "dup.1": 4,
+      "Unnamed: 4": 5,
+      "dup.2": 6,
+      "True": 7
+     },
+     {
+      "2020": 1.5,
+      "2021.5": "",
+      "dup": "a",
+      "dup.1": "b",
+      "Unnamed: 4": "c",
+      "dup.2": "d",
+      "True": "e"
+     },
+     {
+      "2020": "10:30:00",
+      "2021.5": "11:00:05",
+      "dup": 1,
+      "dup.1": 2,
+      "Unnamed: 4": 3,
+      "dup.2": 4,
+      "True": 5
+     },
+     {
+      "2020": "",
+      "2021.5": "",
+      "dup": "",
+      "dup.1": "",
+      "Unnamed: 4": "",
+      "dup.2": "",
+      "True": ""
+     },
+     {
+      "2020": "after gap",
+      "2021.5": "",
+      "dup": "",
+      "dup.1": "",
+      "Unnamed: 4": "",
+      "dup.2": "",
+      "True": ""
+     }
+    ],
+    "row_count": 5,
+    "column_count": 7,
+    "headers": [
+     2020,
+     2021.5,
+     "dup",
+     "dup.1",
+     "Unnamed: 4",
+     "dup.2",
+     true
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:Numbers",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "2020": "1",
+      "2021.5": "2",
+      "dup": "6",
+      "Column_5": "5",
+      "True": "7"
+     },
+     {
+      "2020": "1.5",
+      "2021.5": "",
+      "dup": "d",
+      "Column_5": "c",
+      "True": "e"
+     },
+     {
+      "2020": "10:30:00",
+      "2021.5": "11:00:05",
+      "dup": "4",
+      "Column_5": "3",
+      "True": "5"
+     },
+     {
+      "2020": "",
+      "2021.5": "",
+      "dup": "",
+      "Column_5": "",
+      "True": ""
+     },
+     {
+      "2020": "after gap",
+      "2021.5": "",
+      "dup": "",
+      "Column_5": "",
+      "True": ""
+     }
+    ],
+    "row_count": 5,
+    "column_count": 7,
+    "headers": [
+     "2020",
+     "2021.5",
+     "dup",
+     "dup",
+     "Column_5",
+     "dup",
+     "True"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Empty",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Empty",
+   "options": {},
+   "ok": {
+    "name": "Empty",
+    "data": [],
+    "row_count": 0,
+    "column_count": 0,
+    "headers": []
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:Empty",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Empty",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "name": "Empty",
+    "data": [],
+    "row_count": 0,
+    "column_count": 1,
+    "headers": [
+     "Column_1"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Merged",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Merged",
+   "options": {},
+   "ok": {
+    "name": "Merged",
+    "data": [
+     {
+      "h1": "a",
+      "h2": "",
+      "h3": "c"
+     },
+     {
+      "h1": "",
+      "h2": "",
+      "h3": "f"
+     }
+    ],
+    "row_count": 2,
+    "column_count": 3,
+    "headers": [
+     "h1",
+     "h2",
+     "h3"
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:Merged",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Merged",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "name": "Merged",
+    "data": [
+     {
+      "h1": "a",
+      "h2": "",
+      "h3": "c",
+      "Column_4": "",
+      "Column_5": ""
+     },
+     {
+      "h1": "",
+      "h2": "",
+      "h3": "f",
+      "Column_4": "",
+      "Column_5": ""
+     },
+     {
+      "h1": "",
+      "h2": "",
+      "h3": "",
+      "Column_4": "",
+      "Column_5": ""
+     },
+     {
+      "h1": "",
+      "h2": "",
+      "h3": "",
+      "Column_4": "",
+      "Column_5": ""
+     },
+     {
+      "h1": "",
+      "h2": "",
+      "h3": "",
+      "Column_4": "",
+      "Column_5": ""
+     },
+     {
+      "h1": "",
+      "h2": "",
+      "h3": "",
+      "Column_4": "",
+      "Column_5": ""
+     }
+    ],
+    "row_count": 6,
+    "column_count": 5,
+    "headers": [
+     "h1",
+     "h2",
+     "h3",
+     "Column_4",
+     "Column_5"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Ragged",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Ragged",
+   "options": {},
+   "ok": {
+    "name": "Ragged",
+    "data": [
+     {
+      "a": 1,
+      "b": "",
+      "c": "",
+      "Unnamed: 3": ""
+     },
+     {
+      "a": 1,
+      "b": 2.0,
+      "c": 3.0,
+      "Unnamed: 3": 4.0
+     },
+     {
+      "a": "only first",
+      "b": "",
+      "c": "",
+      "Unnamed: 3": ""
+     }
+    ],
+    "row_count": 3,
+    "column_count": 4,
+    "headers": [
+     "a",
+     "b",
+     "c",
+     "Unnamed: 3"
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:Ragged",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Ragged",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "name": "Ragged",
+    "data": [
+     {
+      "a": "1",
+      "b": "",
+      "c": "",
+      "Column_4": ""
+     },
+     {
+      "a": "1",
+      "b": "2",
+      "c": "3",
+      "Column_4": "4"
+     },
+     {
+      "a": "only first",
+      "b": "",
+      "c": "",
+      "Column_4": ""
+     }
+    ],
+    "row_count": 3,
+    "column_count": 4,
+    "headers": [
+     "a",
+     "b",
+     "c",
+     "Column_4"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:OneCol",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "OneCol",
+   "options": {},
+   "ok": {
+    "name": "OneCol",
+    "data": [
+     {
+      "v": 1
+     },
+     {
+      "v": ""
+     },
+     {
+      "v": "  "
+     },
+     {
+      "v": 2
+     }
+    ],
+    "row_count": 4,
+    "column_count": 1,
+    "headers": [
+     "v"
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:OneCol",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "OneCol",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "name": "OneCol",
+    "data": [
+     {
+      "v": "1"
+     },
+     {
+      "v": ""
+     },
+     {
+      "v": "  "
+     },
+     {
+      "v": "2"
+     }
+    ],
+    "row_count": 4,
+    "column_count": 1,
+    "headers": [
+     "v"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Mixed",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Mixed",
+   "options": {},
+   "ok": {
+    "name": "Mixed",
+    "data": [
+     {
+      "objs": 1,
+      "bools": 1.0,
+      "boolstr": true,
+      "dates": "2024-01-01 00:00:00",
+      "na": "",
+      "big": 1000000000000000,
+      "floatint": 1.0
+     },
+     {
+      "objs": "x",
+      "bools": 0.0,
+      "boolstr": false,
+      "dates": "text",
+      "na": "",
+      "big": -5,
+      "floatint": 2.5
+     },
+     {
+      "objs": 2.5,
+      "bools": 1.0,
+      "boolstr": "",
+      "dates": "2024-01-03 00:00:00",
+      "na": "",
+      "big": 7,
+      "floatint": ""
+     },
+     {
+      "objs": 1,
+      "bools": "",
+      "boolstr": true,
+      "dates": "",
+      "na": "",
+      "big": 0,
+      "floatint": 3.0
+     }
+    ],
+    "row_count": 4,
+    "column_count": 7,
+    "headers": [
+     "objs",
+     "bools",
+     "boolstr",
+     "dates",
+     "na",
+     "big",
+     "floatint"
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:Mixed",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Mixed",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "name": "Mixed",
+    "data": [
+     {
+      "objs": "1",
+      "bools": "True",
+      "boolstr": "True",
+      "dates": "2024-01-01 00:00:00",
+      "na": "N/A",
+      "big": "1000000000000000",
+      "floatint": "1"
+     },
+     {
+      "objs": "x",
+      "bools": "False",
+      "boolstr": "false",
+      "dates": "text",
+      "na": "null",
+      "big": "-5",
+      "floatint": "2.5"
+     },
+     {
+      "objs": "2.5",
+      "bools": "True",
+      "boolstr": "NA",
+      "dates": "2024-01-03 00:00:00",
+      "na": "#N/A",
+      "big": "7",
+      "floatint": ""
+     },
+     {
+      "objs": "True",
+      "bools": "",
+      "boolstr": "TRUE",
+      "dates": "",
+      "na": "",
+      "big": "0",
+      "floatint": "3"
+     }
+    ],
+    "row_count": 4,
+    "column_count": 7,
+    "headers": [
+     "objs",
+     "bools",
+     "boolstr",
+     "dates",
+     "na",
+     "big",
+     "floatint"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Nope",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Nope",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Worksheet named 'Nope' not found"
+  },
+  {
+   "name": "openpyxl:data.xlsx:Nope",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Nope",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: 'Worksheet Nope does not exist.'"
+  },
+  {
+   "name": "pandas:chart.xlsx:Chart",
+   "file": "chart.xlsx",
+   "call": "parse",
+   "sheet_name": "Chart",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Worksheet named 'Chart' not found"
+  },
+  {
+   "name": "openpyxl:chart.xlsx:Chart",
+   "file": "chart.xlsx",
+   "call": "parse",
+   "sheet_name": "Chart",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: 'Chartsheet' object has no attribute 'max_row'"
+  },
+  {
+   "name": "openpyxl:chart.xlsx:Data",
+   "file": "chart.xlsx",
+   "call": "parse",
+   "sheet_name": "Data",
+   "options": {
+    "engine": "openpyxl"
+   },
+   "ok": {
+    "name": "Data",
+    "data": [
+     {
+      "k": "a",
+      "v": "1"
+     }
+    ],
+    "row_count": 1,
+    "column_count": 2,
+    "headers": [
+     "k",
+     "v"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:header_row=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "header_row": 1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "Alice": "Bob",
+      "30": "",
+      "88.5": 92.0,
+      "True": false,
+      "2024-01-15 00:00:00": "2024-02-01 13:30:00",
+      "NA": "  spaced  ",
+      "007": 12.0
+     },
+     {
+      "Alice": "Carol",
+      "30": 41.0,
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "NaT",
+      "NA": "x",
+      "007": 13.0
+     },
+     {
+      "Alice": "",
+      "30": "",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "NaT",
+      "NA": "",
+      "007": ""
+     },
+     {
+      "Alice": "Dave",
+      "30": 29.0,
+      "88.5": 70.25,
+      "True": "TRUE",
+      "2024-01-15 00:00:00": "2023-12-31 00:00:00",
+      "NA": "",
+      "007": 14.0
+     }
+    ],
+    "row_count": 4,
+    "column_count": 7,
+    "headers": [
+     "Alice",
+     30,
+     88.5,
+     true,
+     "2024-01-15 00:00:00",
+     "NA",
+     "007"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:header_row=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "header_row": 1
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "1": 1.5,
+      "2": "",
+      "3": "a",
+      "4": "b",
+      "5": "c",
+      "6": "d",
+      "7": "e"
+     },
+     {
+      "1": "10:30:00",
+      "2": "11:00:05",
+      "3": 1,
+      "4": 2,
+      "5": 3,
+      "6": 4,
+      "7": 5
+     },
+     {
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": "",
+      "7": ""
+     },
+     {
+      "1": "after gap",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": "",
+      "7": ""
+     }
+    ],
+    "row_count": 4,
+    "column_count": 7,
+    "headers": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:header_row=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "header_row": 1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "Alice": "Bob",
+      "30": "",
+      "88.5": "92",
+      "True": "False",
+      "2024-01-15 00:00:00": "2024-02-01 13:30:00",
+      "NA": "  spaced  ",
+      "007": "12",
+      "Column_8": ""
+     },
+     {
+      "Alice": "Carol",
+      "30": "41",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "x",
+      "007": "13",
+      "Column_8": ""
+     },
+     {
+      "Alice": "",
+      "30": "",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "",
+      "007": "",
+      "Column_8": ""
+     },
+     {
+      "Alice": "Dave",
+      "30": "29",
+      "88.5": "70.25",
+      "True": "TRUE",
+      "2024-01-15 00:00:00": "2023-12-31 00:00:00",
+      "NA": "",
+      "007": "14",
+      "Column_8": ""
+     },
+     {
+      "Alice": "",
+      "30": "",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "",
+      "007": "",
+      "Column_8": ""
+     },
+     {
+      "Alice": "",
+      "30": "",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "",
+      "007": "",
+      "Column_8": ""
+     },
+     {
+      "Alice": "",
+      "30": "",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "",
+      "007": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 7,
+    "column_count": 8,
+    "headers": [
+     "Alice",
+     "30",
+     "88.5",
+     "True",
+     "2024-01-15 00:00:00",
+     "NA",
+     "007",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:header_row=2,skip_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "header_row": 2,
+    "skip_rows": 1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "Carol": "",
+      "41": "",
+      "Unnamed: 2": "",
+      "Unnamed: 3": "",
+      "Unnamed: 4": "NaT",
+      "x": "",
+      "13": ""
+     },
+     {
+      "Carol": "Dave",
+      "41": 29.0,
+      "Unnamed: 2": 70.25,
+      "Unnamed: 3": true,
+      "Unnamed: 4": "2023-12-31 00:00:00",
+      "x": "",
+      "13": 14.0
+     }
+    ],
+    "row_count": 2,
+    "column_count": 7,
+    "headers": [
+     "Carol",
+     41,
+     "Unnamed: 2",
+     "Unnamed: 3",
+     "Unnamed: 4",
+     "x",
+     "13"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:header_row=2,skip_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "header_row": 2,
+    "skip_rows": 1
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "10:30:00": "",
+      "11:00:05": "",
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": ""
+     },
+     {
+      "10:30:00": "after gap",
+      "11:00:05": "",
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": ""
+     }
+    ],
+    "row_count": 2,
+    "column_count": 7,
+    "headers": [
+     "10:30:00",
+     "11:00:05",
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:header_row=2,skip_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "header_row": 2,
+    "skip_rows": 1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "Bob": "",
+      "Column_2": "",
+      "92": "",
+      "False": "",
+      "2024-02-01 13:30:00": "",
+      "  spaced  ": "",
+      "12": "",
+      "Column_8": ""
+     },
+     {
+      "Bob": "Dave",
+      "Column_2": "29",
+      "92": "70.25",
+      "False": "TRUE",
+      "2024-02-01 13:30:00": "2023-12-31 00:00:00",
+      "  spaced  ": "",
+      "12": "14",
+      "Column_8": ""
+     },
+     {
+      "Bob": "",
+      "Column_2": "",
+      "92": "",
+      "False": "",
+      "2024-02-01 13:30:00": "",
+      "  spaced  ": "",
+      "12": "",
+      "Column_8": ""
+     },
+     {
+      "Bob": "",
+      "Column_2": "",
+      "92": "",
+      "False": "",
+      "2024-02-01 13:30:00": "",
+      "  spaced  ": "",
+      "12": "",
+      "Column_8": ""
+     },
+     {
+      "Bob": "",
+      "Column_2": "",
+      "92": "",
+      "False": "",
+      "2024-02-01 13:30:00": "",
+      "  spaced  ": "",
+      "12": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 5,
+    "column_count": 8,
+    "headers": [
+     "Bob",
+     "Column_2",
+     "92",
+     "False",
+     "2024-02-01 13:30:00",
+     "  spaced  ",
+     "12",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:skip_rows=2",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "skip_rows": 2
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "Bob": "Carol",
+      "Unnamed: 1": 41.0,
+      "92": "",
+      "False": "",
+      "2024-02-01 13:30:00": "NaT",
+      "  spaced  ": "x",
+      "12": 13.0
+     },
+     {
+      "Bob": "",
+      "Unnamed: 1": "",
+      "92": "",
+      "False": "",
+      "2024-02-01 13:30:00": "NaT",
+      "  spaced  ": "",
+      "12": ""
+     },
+     {
+      "Bob": "Dave",
+      "Unnamed: 1": 29.0,
+      "92": 70.25,
+      "False": true,
+      "2024-02-01 13:30:00": "2023-12-31 00:00:00",
+      "  spaced  ": "",
+      "12": 14.0
+     }
+    ],
+    "row_count": 3,
+    "column_count": 7,
+    "headers": [
+     "Bob",
+     "Unnamed: 1",
+     92,
+     false,
+     "2024-02-01 13:30:00",
+     "  spaced  ",
+     "12"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:skip_rows=2",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "skip_rows": 2
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "1.5": "10:30:00",
+      "Unnamed: 1": "11:00:05",
+      "a": 1.0,
+      "b": 2.0,
+      "c": 3.0,
+      "d": 4.0,
+      "e": 5.0
+     },
+     {
+      "1.5": "",
+      "Unnamed: 1": "",
+      "a": "",
+      "b": "",
+      "c": "",
+      "d": "",
+      "e": ""
+     },
+     {
+      "1.5": "after gap",
+      "Unnamed: 1": "",
+      "a": "",
+      "b": "",
+      "c": "",
+      "d": "",
+      "e": ""
+     }
+    ],
+    "row_count": 3,
+    "column_count": 7,
+    "headers": [
+     1.5,
+     "Unnamed: 1",
+     "a",
+     "b",
+     "c",
+     "d",
+     "e"
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:skip_rows=2",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "skip_rows": 2
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Carol",
+      "age": "41",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "x",
+      "code": "13",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "Dave",
+      "age": "29",
+      "score": "70.25",
+      "active": "TRUE",
+      "joined": "2023-12-31 00:00:00",
+      "notes": "",
+      "code": "14",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 6,
+    "column_count": 8,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:skip_rows=50",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "skip_rows": 50
+   },
+   "ok": {
+    "name": "People",
+    "data": [],
+    "row_count": 0,
+    "column_count": 0,
+    "headers": []
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:skip_rows=50",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "skip_rows": 50
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [],
+    "row_count": 0,
+    "column_count": 0,
+    "headers": []
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:skip_rows=50",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "skip_rows": 50
+   },
+   "ok": {
+    "name": "People",
+    "data": [],
+    "row_count": 0,
+    "column_count": 8,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:header_row=50",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "header_row": 50
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Passed header=[50], len of 1, but only 6 lines in file (sheet: People)"
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:header_row=50",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "header_row": 50
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Passed header=[50], len of 1, but only 6 lines in file (sheet: Numbers)"
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:header_row=50",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "header_row": 50
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "Column_1": "name",
+      "Column_2": "age",
+      "Column_3": "score",
+      "Column_4": "active",
+      "Column_5": "joined",
+      "Column_6": "notes",
+      "Column_7": "code",
+      "Column_8": ""
+     },
+     {
+      "Column_1": "Alice",
+      "Column_2": "30",
+      "Column_3": "88.5",
+      "Column_4": "True",
+      "Column_5": "2024-01-15 00:00:00",
+      "Column_6": "NA",
+      "Column_7": "007",
+      "Column_8": ""
+     },
+     {
+      "Column_1": "Bob",
+      "Column_2": "",
+      "Column_3": "92",
+      "Column_4": "False",
+      "Column_5": "2024-02-01 13:30:00",
+      "Column_6": "  spaced  ",
+      "Column_7": "12",
+      "Column_8": ""
+     },
+     {
+      "Column_1": "Carol",
+      "Column_2": "41",
+      "Column_3": "",
+      "Column_4": "",
+      "Column_5": "",
+      "Column_6": "x",
+      "Column_7": "13",
+      "Column_8": ""
+     },
+     {
+      "Column_1": "",
+      "Column_2": "",
+      "Column_3": "",
+      "Column_4": "",
+      "Column_5": "",
+      "Column_6": "",
+      "Column_7": "",
+      "Column_8": ""
+     },
+     {
+      "Column_1": "Dave",
+      "Column_2": "29",
+      "Column_3": "70.25",
+      "Column_4": "TRUE",
+      "Column_5": "2023-12-31 00:00:00",
+      "Column_6": "",
+      "Column_7": "14",
+      "Column_8": ""
+     },
+     {
+      "Column_1": "",
+      "Column_2": "",
+      "Column_3": "",
+      "Column_4": "",
+      "Column_5": "",
+      "Column_6": "",
+      "Column_7": "",
+      "Column_8": ""
+     },
+     {
+      "Column_1": "",
+      "Column_2": "",
+      "Column_3": "",
+      "Column_4": "",
+      "Column_5": "",
+      "Column_6": "",
+      "Column_7": "",
+      "Column_8": ""
+     },
+     {
+      "Column_1": "",
+      "Column_2": "",
+      "Column_3": "",
+      "Column_4": "",
+      "Column_5": "",
+      "Column_6": "",
+      "Column_7": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 9,
+    "column_count": 0,
+    "headers": []
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:max_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "max_rows": 1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Alice",
+      "age": 30,
+      "score": 88.5,
+      "active": true,
+      "joined": "2024-01-15 00:00:00",
+      "notes": "",
+      "code": 7
+     }
+    ],
+    "row_count": 1,
+    "column_count": 7,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:max_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "max_rows": 1
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "2020": 1,
+      "2021.5": 2,
+      "dup": 3,
+      "dup.1": 4,
+      "Unnamed: 4": 5,
+      "dup.2": 6,
+      "True": 7
+     }
+    ],
+    "row_count": 1,
+    "column_count": 7,
+    "headers": [
+     2020,
+     2021.5,
+     "dup",
+     "dup.1",
+     "Unnamed: 4",
+     "dup.2",
+     true
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:max_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "max_rows": 1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Alice",
+      "age": "30",
+      "score": "88.5",
+      "active": "True",
+      "joined": "2024-01-15 00:00:00",
+      "notes": "NA",
+      "code": "007",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 1,
+    "column_count": 8,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:max_rows=2,skip_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "max_rows": 2,
+    "skip_rows": 1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "Alice": "Bob",
+      "30": "",
+      "88.5": 92.0,
+      "True": 0.0,
+      "2024-01-15 00:00:00": "2024-02-01 13:30:00",
+      "NA": "  spaced  ",
+      "007": 12
+     },
+     {
+      "Alice": "Carol",
+      "30": 41.0,
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "NaT",
+      "NA": "x",
+      "007": 13
+     }
+    ],
+    "row_count": 2,
+    "column_count": 7,
+    "headers": [
+     "Alice",
+     30,
+     88.5,
+     true,
+     "2024-01-15 00:00:00",
+     "NA",
+     "007"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:max_rows=2,skip_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "max_rows": 2,
+    "skip_rows": 1
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "1": 1.5,
+      "2": "",
+      "3": "a",
+      "4": "b",
+      "5": "c",
+      "6": "d",
+      "7": "e"
+     },
+     {
+      "1": "10:30:00",
+      "2": "11:00:05",
+      "3": 1,
+      "4": 2,
+      "5": 3,
+      "6": 4,
+      "7": 5
+     }
+    ],
+    "row_count": 2,
+    "column_count": 7,
+    "headers": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:max_rows=2,skip_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "max_rows": 2,
+    "skip_rows": 1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Bob",
+      "age": "",
+      "score": "92",
+      "active": "False",
+      "joined": "2024-02-01 13:30:00",
+      "notes": "  spaced  ",
+      "code": "12",
+      "Column_8": ""
+     },
+     {
+      "name": "Carol",
+      "age": "41",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "x",
+      "code": "13",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 2,
+    "column_count": 8,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:max_rows=0",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "max_rows": 0
+   },
+   "ok": {
+    "name": "People",
+    "data": [],
+    "row_count": 0,
+    "column_count": 7,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:max_rows=0",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "max_rows": 0
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [],
+    "row_count": 0,
+    "column_count": 7,
+    "headers": [
+     2020,
+     2021.5,
+     "dup",
+     "dup.1",
+     "Unnamed: 4",
+     "dup.2",
+     true
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:max_rows=0",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "max_rows": 0
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Alice",
+      "age": "30",
+      "score": "88.5",
+      "active": "True",
+      "joined": "2024-01-15 00:00:00",
+      "notes": "NA",
+      "code": "007",
+      "Column_8": ""
+     },
+     {
+      "name": "Bob",
+      "age": "",
+      "score": "92",
+      "active": "False",
+      "joined": "2024-02-01 13:30:00",
+      "notes": "  spaced  ",
+      "code": "12",
+      "Column_8": ""
+     },
+     {
+      "name": "Carol",
+      "age": "41",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "x",
+      "code": "13",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "Dave",
+      "age": "29",
+      "score": "70.25",
+      "active": "TRUE",
+      "joined": "2023-12-31 00:00:00",
+      "notes": "",
+      "code": "14",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 8,
+    "column_count": 8,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:max_rows=-1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "max_rows": -1
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: 'nrows' must be an integer >=0"
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:max_rows=-1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "max_rows": -1
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: 'nrows' must be an integer >=0"
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:max_rows=-1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "max_rows": -1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Alice",
+      "age": "30",
+      "score": "88.5",
+      "active": "True",
+      "joined": "2024-01-15 00:00:00",
+      "notes": "NA",
+      "code": "007",
+      "Column_8": ""
+     },
+     {
+      "name": "Bob",
+      "age": "",
+      "score": "92",
+      "active": "False",
+      "joined": "2024-02-01 13:30:00",
+      "notes": "  spaced  ",
+      "code": "12",
+      "Column_8": ""
+     },
+     {
+      "name": "Carol",
+      "age": "41",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "x",
+      "code": "13",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "Dave",
+      "age": "29",
+      "score": "70.25",
+      "active": "TRUE",
+      "joined": "2023-12-31 00:00:00",
+      "notes": "",
+      "code": "14",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 8,
+    "column_count": 8,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:header_row=None",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "header_row": null
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "0": "name",
+      "1": "age",
+      "2": "score",
+      "3": "active",
+      "4": "joined",
+      "5": "notes",
+      "6": "code"
+     },
+     {
+      "0": "Alice",
+      "1": 30,
+      "2": 88.5,
+      "3": true,
+      "4": "2024-01-15 00:00:00",
+      "5": "",
+      "6": "007"
+     },
+     {
+      "0": "Bob",
+      "1": "",
+      "2": 92,
+      "3": false,
+      "4": "2024-02-01 13:30:00",
+      "5": "  spaced  ",
+      "6": "12"
+     },
+     {
+      "0": "Carol",
+      "1": 41,
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "x",
+      "6": "13"
+     },
+     {
+      "0": "",
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": ""
+     },
+     {
+      "0": "Dave",
+      "1": "29",
+      "2": 70.25,
+      "3": "TRUE",
+      "4": "2023-12-31 00:00:00",
+      "5": "",
+      "6": "14"
+     }
+    ],
+    "row_count": 6,
+    "column_count": 7,
+    "headers": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:header_row=None",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "header_row": null
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "0": 2020,
+      "1": 2021.5,
+      "2": "dup",
+      "3": "dup",
+      "4": "",
+      "5": "dup",
+      "6": true
+     },
+     {
+      "0": 1,
+      "1": 2,
+      "2": 3,
+      "3": 4,
+      "4": 5,
+      "5": 6,
+      "6": 7
+     },
+     {
+      "0": 1.5,
+      "1": "",
+      "2": "a",
+      "3": "b",
+      "4": "c",
+      "5": "d",
+      "6": "e"
+     },
+     {
+      "0": "10:30:00",
+      "1": "11:00:05",
+      "2": 1,
+      "3": 2,
+      "4": 3,
+      "5": 4,
+      "6": 5
+     },
+     {
+      "0": "",
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": ""
+     },
+     {
+      "0": "after gap",
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": ""
+     }
+    ],
+    "row_count": 6,
+    "column_count": 7,
+    "headers": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:header_row=None",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "header_row": null
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: '>' not supported between instances of 'int' and 'NoneType'"
+  },
+  {
+   "name": "pandas:data.xlsx:People:header_row=None,max_rows=2",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "header_row": null,
+    "max_rows": 2
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "0": "name",
+      "1": "age",
+      "2": "score",
+      "3": "active",
+      "4": "joined",
+      "5": "notes",
+      "6": "code"
+     },
+     {
+      "0": "Alice",
+      "1": 30,
+      "2": 88.5,
+      "3": true,
+      "4": "2024-01-15 00:00:00",
+      "5": "",
+      "6": "007"
+     }
+    ],
+    "row_count": 2,
+    "column_count": 7,
+    "headers": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:header_row=None,max_rows=2",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "header_row": null,
+    "max_rows": 2
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "0": 2020,
+      "1": 2021.5,
+      "2": "dup",
+      "3": "dup",
+      "4": "",
+      "5": "dup",
+      "6": 1
+     },
+     {
+      "0": 1,
+      "1": 2.0,
+      "2": 3,
+      "3": 4,
+      "4": 5.0,
+      "5": 6,
+      "6": 7
+     }
+    ],
+    "row_count": 2,
+    "column_count": 7,
+    "headers": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:header_row=None,max_rows=2",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "header_row": null,
+    "max_rows": 2
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: '>' not supported between instances of 'int' and 'NoneType'"
+  },
+  {
+   "name": "pandas:data.xlsx:People:header_row=-1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "header_row": -1
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Passing negative integer to header is invalid. For no header, use header=None instead"
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:header_row=-1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "header_row": -1
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Passing negative integer to header is invalid. For no header, use header=None instead"
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:header_row=-1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "header_row": -1
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "name",
+      "age": "age",
+      "score": "score",
+      "active": "active",
+      "joined": "joined",
+      "notes": "notes",
+      "code": "code",
+      "Column_8": ""
+     },
+     {
+      "name": "Alice",
+      "age": "30",
+      "score": "88.5",
+      "active": "True",
+      "joined": "2024-01-15 00:00:00",
+      "notes": "NA",
+      "code": "007",
+      "Column_8": ""
+     },
+     {
+      "name": "Bob",
+      "age": "",
+      "score": "92",
+      "active": "False",
+      "joined": "2024-02-01 13:30:00",
+      "notes": "  spaced  ",
+      "code": "12",
+      "Column_8": ""
+     },
+     {
+      "name": "Carol",
+      "age": "41",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "x",
+      "code": "13",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "Dave",
+      "age": "29",
+      "score": "70.25",
+      "active": "TRUE",
+      "joined": "2023-12-31 00:00:00",
+      "notes": "",
+      "code": "14",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 9,
+    "column_count": 8,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:header_row=True",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "header_row": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Passing a bool to header is invalid. Use header=None for no header or header=int or list-like of ints to specify the row(s) making up the column names"
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:header_row=True",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "header_row": true
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Passing a bool to header is invalid. Use header=None for no header or header=int or list-like of ints to specify the row(s) making up the column names"
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:header_row=True",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "header_row": true
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "Alice": "Bob",
+      "30": "",
+      "88.5": "92",
+      "True": "False",
+      "2024-01-15 00:00:00": "2024-02-01 13:30:00",
+      "NA": "  spaced  ",
+      "007": "12",
+      "Column_8": ""
+     },
+     {
+      "Alice": "Carol",
+      "30": "41",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "x",
+      "007": "13",
+      "Column_8": ""
+     },
+     {
+      "Alice": "",
+      "30": "",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "",
+      "007": "",
+      "Column_8": ""
+     },
+     {
+      "Alice": "Dave",
+      "30": "29",
+      "88.5": "70.25",
+      "True": "TRUE",
+      "2024-01-15 00:00:00": "2023-12-31 00:00:00",
+      "NA": "",
+      "007": "14",
+      "Column_8": ""
+     },
+     {
+      "Alice": "",
+      "30": "",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "",
+      "007": "",
+      "Column_8": ""
+     },
+     {
+      "Alice": "",
+      "30": "",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "",
+      "007": "",
+      "Column_8": ""
+     },
+     {
+      "Alice": "",
+      "30": "",
+      "88.5": "",
+      "True": "",
+      "2024-01-15 00:00:00": "",
+      "NA": "",
+      "007": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 7,
+    "column_count": 8,
+    "headers": [
+     "Alice",
+     "30",
+     "88.5",
+     "True",
+     "2024-01-15 00:00:00",
+     "NA",
+     "007",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:People:header_row=x",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "header_row": "x"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: header must be integer or list of integers"
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:header_row=x",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "header_row": "x"
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: header must be integer or list of integers"
+  },
+  {
+   "name": "pandas:data.xlsx:People:skip_rows=None",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "skip_rows": null
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Alice",
+      "age": 30.0,
+      "score": 88.5,
+      "active": true,
+      "joined": "2024-01-15 00:00:00",
+      "notes": "",
+      "code": 7.0
+     },
+     {
+      "name": "Bob",
+      "age": "",
+      "score": 92.0,
+      "active": false,
+      "joined": "2024-02-01 13:30:00",
+      "notes": "  spaced  ",
+      "code": 12.0
+     },
+     {
+      "name": "Carol",
+      "age": 41.0,
+      "score": "",
+      "active": "",
+      "joined": "NaT",
+      "notes": "x",
+      "code": 13.0
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "NaT",
+      "notes": "",
+      "code": ""
+     },
+     {
+      "name": "Dave",
+      "age": 29.0,
+      "score": 70.25,
+      "active": "TRUE",
+      "joined": "2023-12-31 00:00:00",
+      "notes": "",
+      "code": 14.0
+     }
+    ],
+    "row_count": 5,
+    "column_count": 7,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code"
+    ]
+   }
+  },
+  {
+   "name": "pandas:data.xlsx:Numbers:skip_rows=None",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Numbers",
+   "options": {
+    "skip_rows": null
+   },
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "2020": 1,
+      "2021.5": 2,
+      "dup": 3,
+      "dup.1": 4,
+      "Unnamed: 4": 5,
+      "dup.2": 6,
+      "True": 7
+     },
+     {
+      "2020": 1.5,
+      "2021.5": "",
+      "dup": "a",
+      "dup.1": "b",
+      "Unnamed: 4": "c",
+      "dup.2": "d",
+      "True": "e"
+     },
+     {
+      "2020": "10:30:00",
+      "2021.5": "11:00:05",
+      "dup": 1,
+      "dup.1": 2,
+      "Unnamed: 4": 3,
+      "dup.2": 4,
+      "True": 5
+     },
+     {
+      "2020": "",
+      "2021.5": "",
+      "dup": "",
+      "dup.1": "",
+      "Unnamed: 4": "",
+      "dup.2": "",
+      "True": ""
+     },
+     {
+      "2020": "after gap",
+      "2021.5": "",
+      "dup": "",
+      "dup.1": "",
+      "Unnamed: 4": "",
+      "dup.2": "",
+      "True": ""
+     }
+    ],
+    "row_count": 5,
+    "column_count": 7,
+    "headers": [
+     2020,
+     2021.5,
+     "dup",
+     "dup.1",
+     "Unnamed: 4",
+     "dup.2",
+     true
+    ]
+   }
+  },
+  {
+   "name": "openpyxl:data.xlsx:People:skip_rows=None",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "openpyxl",
+    "skip_rows": null
+   },
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: unsupported operand type(s) for +: 'int' and 'NoneType'"
+  },
+  {
+   "name": "openpyxl:data.xlsx:Merged:max_rows=1",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "Merged",
+   "options": {
+    "engine": "openpyxl",
+    "max_rows": 1
+   },
+   "ok": {
+    "name": "Merged",
+    "data": [
+     {
+      "h1": "a",
+      "h2": "",
+      "h3": "c",
+      "Column_4": "",
+      "Column_5": ""
+     }
+    ],
+    "row_count": 1,
+    "column_count": 5,
+    "headers": [
+     "h1",
+     "h2",
+     "h3",
+     "Column_4",
+     "Column_5"
+    ]
+   }
+  },
+  {
+   "name": "pandas:crafted.xlsx:Raw:max_rows=3",
+   "file": "crafted.xlsx",
+   "call": "parse",
+   "sheet_name": "Raw",
+   "options": {
+    "max_rows": 3
+   },
+   "ok": {
+    "name": "Raw",
+    "data": [
+     {
+      "label": "2024-01-15 00:00:00",
+      "rich text": "12:00:00",
+      "esc_x000D_ape": "1 day, 6:00:00",
+      "  padded ": 3.5,
+      "inline": 45306.0,
+      "Unnamed: 5": 45306,
+      "xy": "2024-01-15 18:00:00"
+     },
+     {
+      "label": "",
+      "rich text": true,
+      "esc_x000D_ape": false,
+      "  padded ": 2.0,
+      "inline": "",
+      "Unnamed: 5": "2024-03-04 05:06:07",
+      "xy": "2024-03-05"
+     },
+     {
+      "label": 1,
+      "rich text": 200,
+      "esc_x000D_ape": "",
+      "  padded ": "",
+      "inline": "",
+      "Unnamed: 5": -7,
+      "xy": ""
+     }
+    ],
+    "row_count": 3,
+    "column_count": 7,
+    "headers": [
+     "label",
+     "rich text",
+     "esc_x000D_ape",
+     "  padded ",
+     "inline",
+     "Unnamed: 5",
+     "xy"
+    ]
+   }
+  },
+  {
+   "name": "engine_other:data.xlsx",
+   "file": "data.xlsx",
+   "call": "parse",
+   "sheet_name": "People",
+   "options": {
+    "engine": "calamine"
+   },
+   "ok": {
+    "name": "People",
+    "data": [
+     {
+      "name": "Alice",
+      "age": "30",
+      "score": "88.5",
+      "active": "True",
+      "joined": "2024-01-15 00:00:00",
+      "notes": "NA",
+      "code": "007",
+      "Column_8": ""
+     },
+     {
+      "name": "Bob",
+      "age": "",
+      "score": "92",
+      "active": "False",
+      "joined": "2024-02-01 13:30:00",
+      "notes": "  spaced  ",
+      "code": "12",
+      "Column_8": ""
+     },
+     {
+      "name": "Carol",
+      "age": "41",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "x",
+      "code": "13",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "Dave",
+      "age": "29",
+      "score": "70.25",
+      "active": "TRUE",
+      "joined": "2023-12-31 00:00:00",
+      "notes": "",
+      "code": "14",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     },
+     {
+      "name": "",
+      "age": "",
+      "score": "",
+      "active": "",
+      "joined": "",
+      "notes": "",
+      "code": "",
+      "Column_8": ""
+     }
+    ],
+    "row_count": 8,
+    "column_count": 8,
+    "headers": [
+     "name",
+     "age",
+     "score",
+     "active",
+     "joined",
+     "notes",
+     "code",
+     "Column_8"
+    ]
+   }
+  },
+  {
+   "name": "extract_sheet:data.xlsx:Numbers",
+   "file": "data.xlsx",
+   "call": "extract_sheet",
+   "sheet_name": "Numbers",
+   "options": {},
+   "ok": {
+    "name": "Numbers",
+    "data": [
+     {
+      "2020": 1,
+      "2021.5": 2,
+      "dup": 3,
+      "dup.1": 4,
+      "Unnamed: 4": 5,
+      "dup.2": 6,
+      "True": 7
+     },
+     {
+      "2020": 1.5,
+      "2021.5": "",
+      "dup": "a",
+      "dup.1": "b",
+      "Unnamed: 4": "c",
+      "dup.2": "d",
+      "True": "e"
+     },
+     {
+      "2020": "10:30:00",
+      "2021.5": "11:00:05",
+      "dup": 1,
+      "dup.1": 2,
+      "Unnamed: 4": 3,
+      "dup.2": 4,
+      "True": 5
+     },
+     {
+      "2020": "",
+      "2021.5": "",
+      "dup": "",
+      "dup.1": "",
+      "Unnamed: 4": "",
+      "dup.2": "",
+      "True": ""
+     },
+     {
+      "2020": "after gap",
+      "2021.5": "",
+      "dup": "",
+      "dup.1": "",
+      "Unnamed: 4": "",
+      "dup.2": "",
+      "True": ""
+     }
+    ],
+    "row_count": 5,
+    "column_count": 7,
+    "headers": [
+     2020,
+     2021.5,
+     "dup",
+     "dup.1",
+     "Unnamed: 4",
+     "dup.2",
+     true
+    ]
+   }
+  },
+  {
+   "name": "extract_sheet:data.xlsx:empty",
+   "file": "data.xlsx",
+   "call": "extract_sheet",
+   "sheet_name": "",
+   "options": {},
+   "error": "ValidationError",
+   "message": "Sheet '' not found in Excel file"
+  },
+  {
+   "name": "extract_sheet:data.xlsx:missing",
+   "file": "data.xlsx",
+   "call": "extract_sheet",
+   "sheet_name": "Nope",
+   "options": {},
+   "error": "ProcessingError",
+   "message": "Failed to parse Excel: Worksheet named 'Nope' not found"
+  }
+ ]
+}

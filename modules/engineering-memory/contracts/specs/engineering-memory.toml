@@ -1,0 +1,1336 @@
+schema = "oev2.design/1"
+version = "2.0.0-rc.6"
+problem = "共享会话检索没有保留工程经验的来源、变化、适用条件与真实使用结果"
+purpose = "将 engineering-memory 建成工程本体 v2 的正式记忆模块；由本规范定义含义，复用 CASS 和 CM 的实现能力"
+
+[[requirements]]
+id = "focused_recall"
+function = "让目的与方法直接相关的经验优先于只在长历史偶然提到关键词的材料"
+condition = "仅对实际文字作词法排序；原件、项目及条件审查独立；不针对某记录 ID 或个人词汇加权"
+acceptance = "固定字段权重及不同词数归一化；重复同一文字不加分；正文独有的相关词仍可被找到；旧五问全部原判据保留，不能更改问法掩盖漏召回"
+
+[[constraints]]
+id = "recall_field_relevance"
+requirement = "focused_recall"
+module = "memory_retrieval"
+check = "lexical_candidates"
+rust_path = "modules/engineering-memory/runtime/src/retrieval.rs"
+statement = "目的权重6，方法目的4/机制3/验证2，条件2，过程与原因各1，未知0.5；每字段按不同词数平方根归一化，重复词不累加；完整查询小额加分必须先有词重叠。排序不是证据强度或采用资格。"
+severity = "error"
+
+[[validations]]
+id = "focused_vs_incidental"
+constraint = "recall_field_relevance"
+module = "memory_retrieval"
+behavior = "recall_prioritizes_subject_over_incidental_history"
+rust_path = "modules/engineering-memory/runtime/tests/runtime.rs"
+oracle = "直接说明目标的短记录优先于同词偶现的长过程；重复三十次不改变分数；正文独有词仍召回。旧实际五问原预期另作新旧同源比较。"
+scope = "词法排序与重复边界，不是独立泛化精度或使用收益"
+
+[[requirements]]
+id = "bounded_session_selection"
+function = "在完整背景预算内继续选择后续合适经验，并让简短接续词沿用已激活任务"
+condition = "每次最多核前50候选；完整候选保留；只有明确短接续语可沿用此前已激活的任务及查询"
+acceptance = "超预算候选整项留排除理由，继续填入能放下的条目；仍限请求个数；扫描截断明示；新实质请求或否定不被旧任务替代；不从 cwd 猜项目"
+
+[[constraints]]
+id = "whole_candidate_admission"
+requirement = "bounded_session_selection"
+module = "memory_session"
+check = "session_prepare"
+rust_path = "modules/engineering-memory/runtime/src/session.rs"
+statement = "先在固定50候选上限内核源，再按整个候选占用决定纳入；前面放不下不成为停止检索原因，不裁掉纠正或未知来凑预算。"
+severity = "error"
+
+[[validations]]
+id = "session_backfill_after_exclusion"
+constraint = "whole_candidate_admission"
+module = "memory_session"
+behavior = "session_skips_whole_oversized_candidates_and_fills_from_later_records"
+rust_path = "modules/engineering-memory/runtime/tests/session.rs"
+oracle = "前两条过大、后两条完整可放入时，max_candidates=2 返回后两条，保留前两条排除理由、原件和字节上限。"
+scope = "完整背景选择，不证明最相关的全库语义检索"
+
+[[constraints]]
+id = "continuation_task_identity"
+requirement = "bounded_session_selection"
+module = "memory_hooks"
+check = "client_hook"
+rust_path = "modules/engineering-memory/runtime/src/hooks.rs"
+statement = "已有激活任务时，严格匹配的好/继续等短确认，以及继续优化、好的继续优化、好继续优化、可以继续优化、继续优化吧、好的可以继续优化六种短句沿用 task/query；包含其他实质内容、否定、对象或预算变化的请求保留新原句。未激活任务时保留原句且不从 cwd 推断项目；沿用背景不是新增执行授权。"
+severity = "error"
+
+[[validations]]
+id = "hook_continuation_and_new_task"
+constraint = "continuation_task_identity"
+module = "memory_hooks"
+behavior = "continuation_hook_keeps_active_task_but_new_requests_take_precedence"
+rust_path = "modules/engineering-memory/runtime/tests/session.rs"
+oracle = "中英文明确接续及六种继续优化短句保留已绑定的 task/query；含继续的新具体任务、否定及预算变化保留新原句；Project 来源、条件和已有 hook 政策预算不变；未激活会话保留原句且 Project 为 null。"
+scope = "有界宿主背景接续，不替用户解析开放式新目标"
+
+[[requirements]]
+id = "shared_source_scan_owner"
+function = "同一原件的多个兼容入口沿用同一扫描进度，同时保留来源身份和历史记录"
+condition = "同一规范路径、provider、项目、条件与起始范围；profile 是入口身份；固定副本及不同路径不自动合并"
+acceptance = "新重复登记自动关联；已有未扫描重复入口可显式关联；重复入口已有扫描或不同含义时拒绝；原件前缀核验；旧文件、包及经验不删除；扫描和整理进度不相加"
+
+[[constraints]]
+id = "source_alias_preserves_progress"
+requirement = "shared_source_scan_owner"
+module = "memory_runtime"
+check = "alias_source"
+rust_path = "modules/engineering-memory/runtime/src/workflow.rs"
+statement = "来源关联只改变调度归属。保留原登记和原 profile；不得将已有包或游标当作相加后已完成的覆盖。关联目标必须是直接扫描来源，禁止链和环；关联文件和退休登记内容变化拒绝。"
+severity = "error"
+
+[[validations]]
+id = "shared_source_registration"
+constraint = "source_alias_preserves_progress"
+module = "memory_runtime"
+behavior = "source_alias_keeps_one_cursor_and_preserves_history"
+rust_path = "modules/engineering-memory/runtime/tests/runtime.rs"
+oracle = "两个 profile 登记同一合成原件后只扫描一次；追加消息接续同一游标；迁移实际未扫描重复入口保留原字节；已有扫描、不同条件、前缀改写、关联篡改和链均拒绝"
+scope = "通过真实 Store/CLI 核同一原件调度；不同路径副本、已有各自扫描成果和不同条件的合并另验"
+
+[[types]]
+name = "SourceAliasRequest"
+meaning = "将已登记且未开始扫描的重复入口明确关联到同一原件的既有扫描来源"
+identity = "alias_id 和 source_id；重复请求重核来源但不改旧关联"
+fields = [
+ {name="schema",meaning="来源关联协议",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.source-alias-request/1"],unit="不适用",precision="精确版本",write="agent 选择",applicability="已有重复登记",acceptance="未知拒绝"},
+ {name="alias_id",meaning="保留但不再独立扫描的登记 ID",rust_type="String",required=true,format="text",unit="不适用",precision="安全 ID",write="来自当前来源清单",applicability="未扫描的重复入口",acceptance="不删除原登记或既有成果"},
+ {name="source_id",meaning="沿用扫描进度的登记 ID",rust_type="String",required=true,format="text",unit="不适用",precision="直接来源 ID",write="来自同一原件的既有来源",applicability="含义相容且未被关联",acceptance="链、环和不同原件拒绝"},
+ {name="max_verify_bytes",meaning="本次前缀核验累计预算",rust_type="u64",required=true,format="integer",unit="byte",precision="实际累计哈希字节",write="agent 按原件规模设置",applicability="目标及退休原件前缀，变化时复核",acceptance="预算不足保留原状态"}
+]
+
+[[requirements]]
+id = "optional_native_receiver"
+function = "自动准备 v2 原生来源及项目候选，并在接收方维护当前 Project 后统一核验两侧来源"
+condition = "显式 v2 根与程序 SHA；原生入口可用；助手维护 Project 的工程含义，记忆程序不代写或采用"
+acceptance = "实际运行 knowledge intake、task-view /2、verify-task-view；完整经验绑定一致；原件/Project/程序/原生资料漂移拒绝；不调模型或自动写有益反馈；无 v2 时其他记忆命令继续独立运行"
+
+[[modules]]
+id = "memory_receiver"
+kind = "pipeline"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "在显式预算内调用实际 v2，保留准备、候选、当前核验及失败回执"
+realizes = ["optional_native_receiver"]
+platform = "本机 Rust CLI；仅显式调用时需要已登记的 v2"
+effects = "在私有记忆库与 v2 var 下新增来源材料、候选和核验产物；不写 Project 正本、skill、代码或采用"
+failures = "准备意图重跑幂等；中断保存原尝试并另开有界尝试；核验每次重做；时间/输出超限终止子进程并保留失败；未知和旧成功不改签"
+status = "source_only"
+depends_on = ["memory_exchange", "memory_session"]
+
+[[constraints]]
+id = "native_receiver_current_binding"
+requirement = "optional_native_receiver"
+module = "memory_receiver"
+check = "v2_verify"
+rust_path = "modules/engineering-memory/runtime/src/receiver.rs"
+statement = "同一次经验的全部来源、修订与捕获映射进入真实原生入口；接收后当前 Project 中的方法事实须保留完整经验、原文与未知，不能将名称相同的另一事实冒充本次经验。来源、程序、完整当前 Project 在调用前后核验；success 只支持选定消息来源，不授予方法适用或收益。"
+severity = "error"
+
+[[validations]]
+id = "native_receiver_roundtrip"
+constraint = "native_receiver_current_binding"
+module = "memory_receiver"
+behavior = "native_receiver_keeps_both_provenance_sides_current"
+rust_path = "modules/engineering-memory/runtime/tests/session.rs"
+oracle = "实际登记 v2 对 Codex/Claude 原消息生成 intake 与 task-view；Project 增加候选前拒绝，加入完整候选后通过；原文、intake、事实内容、Project、接收程序改动均拒绝；重复与失败保留历史；程序只写规定私有材料。原生测试需显式本机根，不以 mock 代替。"
+scope = "当前会话的原生来源接收和重核；自动实际工程采用、长期模型提炼与 RRSI 收益另验"
+
+[[types]]
+name = "V2Receiver"
+meaning = "显式可选的 v2 正式根与已选程序身份"
+identity = "root 与 cli_sha256 共同绑定，不沿历史文本发现命令"
+fields = [
+ {name="root",meaning="v2 正式根",rust_type="String",required=true,format="text",unit="不适用",precision="规范绝对路径",write="agent 据实际安装选定",applicability="可选接收",acceptance="读取登记的 current_cli.default，不猜构建目录"},
+ {name="cli_sha256",meaning="预期实际接收程序摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="SHA256",write="据安装回执核对",applicability="调用前后",acceptance="登记值与程序内容均须匹配"}
+]
+
+[[types]]
+name = "V2Artifact"
+meaning = "由当前任务明确选择的 v2 原生输入文件"
+identity = "root 相对路径与完整原字节摘要"
+fields = [
+ {name="path",meaning="v2 根内相对位置",rust_type="String",required=true,format="text",unit="不适用",precision="安全相对路径",write="按真实输入提供",applicability="前版 Project、当前 work 或额外来源",acceptance="父目录穿越和符号链接拒绝"},
+ {name="sha256",meaning="完整输入摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="SHA256",write="从原件计算",applicability="原生任务合同",acceptance="漂移由原生入口再次核验"}
+]
+
+[[types]]
+name = "V2PrepareRequest"
+meaning = "自动整理完整经验的原生来源与项目候选，不提交 Project"
+identity = "id 对应不可改变的准备意图"
+fields = [
+ {name="schema",meaning="准备协议",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.v2-prepare-request/1"],unit="不适用",precision="精确版本",write="agent 选择",applicability="CLI/RPC",acceptance="未知拒绝"},
+ {name="id",meaning="准备身份",rust_type="String",required=true,format="text",unit="不适用",precision="安全 ID",write="agent 分配",applicability="恢复同一意图",acceptance="冲突拒绝"},
+ {name="export",meaning="已有会话中完整经验的导出请求",rust_type="SessionExportRequest",required=true,format="object",unit="字段各自声明",precision="准确背景及修订",write="据实际 prepare 结果填写",applicability="当前 Project",acceptance="未提供或过期拒绝"},
+ {name="receiver",meaning="明确的可选接收方",rust_type="V2Receiver",required=true,format="object",unit="不适用",precision="根与程序摘要",write="据实际安装",applicability="原生调用",acceptance="不可用不调用替代程序"},
+ {name="fact_property",meaning="接收 Project 中的方法事实名",rust_type="String",required=true,format="text",unit="不适用",precision="稳定唯一名",write="agent 按工程含义命名",applicability="operation_method_instance 候选",acceptance="同名不同经验不能混用"},
+ {name="object_source_sha256",meaning="当前工程对象的来源摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="SHA256",write="引用真实 Project 已登记证据",applicability="v2 ObjectReference",acceptance="不得凭空补造"},
+ {name="max_seconds",meaning="本轮所有原生调用共同的时间预算",rust_type="u64",required=true,format="integer",unit="s",precision="1 至 120",write="agent 明确设置",applicability="包含子进程与准备阶段",acceptance="超时保留失败，不返回旧成功"}
+]
+
+[[types]]
+name = "V2VerifyRequest"
+meaning = "接收方维护 Project 后，按新的当前会话统一重核记忆原件和 v2 方法来源"
+identity = "id 绑定核验意图，每次调用追加一次当前运行"
+fields = [
+ {name="schema",meaning="核验协议",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.v2-verify-request/1"],unit="不适用",precision="精确版本",write="agent 选择",applicability="CLI/RPC",acceptance="未知拒绝"},
+ {name="id",meaning="核验意图身份",rust_type="String",required=true,format="text",unit="不适用",precision="安全 ID",write="agent 分配",applicability="每次重核而非缓存成功",acceptance="同 ID 不同请求拒绝"},
+ {name="preparation_id",meaning="已经完成的原生来源准备",rust_type="String",required=true,format="text",unit="不适用",precision="准确 ID",write="引用真实准备回执",applicability="完整同一经验",acceptance="缺失或内容漂移拒绝"},
+ {name="export",meaning="接收后当前 Project 下的新导出请求",rust_type="SessionExportRequest",required=true,format="object",unit="字段各自声明",precision="当前精确背景",write="Project 更新后重新准备会话",applicability="同一经验及工程对象",acceptance="旧背景拒绝"},
+ {name="previous",meaning="明确选择的前版 Project 或未知",rust_type="Option<V2Artifact>",required=false,format="object",unit="不适用",precision="显式版本",write="有前版时引用",applicability="原生完整 task-view /1",acceptance="不静默改写前版"},
+ {name="work",meaning="当前 work 原生输入或尚未建立",rust_type="Option<V2Artifact>",required=false,format="object",unit="不适用",precision="准确字节",write="有当前 work 时绑定",applicability="原生完整任务核验",acceptance="不省略已提供 work 的检查"},
+ {name="sources",meaning="当前任务额外来源",rust_type="Vec<V2Artifact>",required=true,format="list",unit="条",precision="明确原生资料",write="agent 按当前任务选择",applicability="与准备的全部 intake 合并",acceptance="原生核验不删减"},
+ {name="max_seconds",meaning="本轮共享时间预算",rust_type="u64",required=true,format="integer",unit="s",precision="1 至 120",write="agent 明确设置",applicability="导出、原生派发和结尾重核",acceptance="超时不得签 matched"}
+]
+
+[[requirements]]
+id = "source_bound_exchange"
+function = "将本次会话已经提供的完整经验及其选定原消息，交给有界 v2 来源接收器"
+condition = "准确会话、Project、经验修订及最新纠正已核；大原件只读取明确来源范围；接收方继续独立验证"
+acceptance = "每条原消息逐字节导出，Codex 身份头取自原件；原位置与导出位置分别记录；保留全部来源、时间线与未知；预算不足整项拒绝；重试幂等，漂移拒绝；不写 Project 或 skill"
+
+[[modules]]
+id = "memory_exchange"
+kind = "adapter"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "把本次经验交接整理为可由 v2 原生 intake 读取的有源私有文件"
+realizes = ["source_bound_exchange"]
+platform = "Rust 本地普通文件；无需安装 v2 即可导出"
+effects = "仅在私有记忆库保存交接意图、逐消息原字节档案和位置映射；不写来源、Project、skill 或代码"
+failures = "来源、Project、经验纠正或导出物漂移拒绝；中断恢复同一意图；缺失、超限或未结束消息不截断或伪造"
+status = "source_only"
+depends_on = ["memory_session", "memory_runtime", "memory_snapshot"]
+
+[[constraints]]
+id = "exact_exchange_provenance"
+requirement = "source_bound_exchange"
+module = "memory_exchange"
+check = "session_export_verify"
+rust_path = "modules/engineering-memory/runtime/src/exchange.rs"
+statement = "原来源与导出档案逐字节核对；Codex 会话头保留原位置与摘要；一个经验全部来源同时导出，不丢纠正或未知。复用须重新核当前会话/Project/最新经验及固定副本身份；v2 对导出档案 matched 不能代替原件映射重核或工程采用。"
+severity = "error"
+
+[[validations]]
+id = "exact_exchange_counterexamples"
+constraint = "exact_exchange_provenance"
+module = "memory_exchange"
+behavior = "export_preserves_original_bytes_and_rejects_drift"
+rust_path = "modules/engineering-memory/runtime/tests/session.rs"
+oracle = "独立核对原字节与两套位置；超大稀疏源只导出选定原消息；Codex 原身份头不重造；Claude 多文本块保持；超限/未结束记录/源或副本改写/Project 漂移/新纠正均拒绝；中断重跑不覆盖已有不同内容；实际 v2 intake 与 task-view 按本机回执另验"
+scope = "选定消息来源交换；不证明完整会话、原因解释、方法适用、自动工程采用或 RRSI 收益"
+
+[[types]]
+name = "SessionExportRequest"
+meaning = "本次会话已提供经验的完整有源导出请求，接收方再核当前工程"
+identity = "id 绑定一次不可覆盖的导出意图；项目或经验变化须重新准备会话及新导出"
+fields = [
+ {name="schema",meaning="有源会话导出合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.session-export-request/1"],unit="不适用",precision="精确版本",write="agent 明确选择",applicability="CLI/RPC",acceptance="未知拒绝"},
+ {name="id",meaning="本次导出身份",rust_type="String",required=true,format="text",unit="不适用",precision="唯一标识",write="agent 指定",applicability="共享私有库",acceptance="同 ID 不同请求拒绝"},
+ {name="context_id",meaning="已经准备的会话背景身份",rust_type="String",required=true,format="text",unit="不适用",precision="准确 ID",write="采用 prepare 回执",applicability="当前任务及真实 Project",acceptance="缺失拒绝"},
+ {name="context_sha256",meaning="完整会话背景摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="SHA256",write="采用 prepare 回执",applicability="本次明确提供的候选",acceptance="不允许更换背景"},
+ {name="record_id",meaning="本次提供的经验身份",rust_type="String",required=true,format="text",unit="不适用",precision="准确 ID",write="引用候选",applicability="全部来源与完整经验",acceptance="未提供者拒绝"},
+ {name="revision",meaning="经验准确修订",rust_type="u64",required=true,format="integer",unit="修订",precision="正整数",write="引用候选",applicability="当前最新纠正",acceptance="过期拒绝"},
+ {name="max_bytes",meaning="所有导出档案的累计字节上限，含重复身份头",rust_type="u64",required=true,format="integer",unit="byte",precision="正整数，上限 16 MiB",write="按接收预算填写",applicability="单条原消息上限 2 MiB 与 v2 intake 相同；交接元数据另受 16 MiB 约束",acceptance="不足整项拒绝，不做隐式删减"}
+]
+
+[[requirements]]
+id = "source_history"
+function = "读取有界原文窗口，定位原消息，保留未知和缺口"
+condition = "用户明确选择的 Codex 或 Claude JSONL 原件；不读取隐含思考或把 profile 当项目"
+acceptance = "原字节 SHA256 可重读核对；选定窗口及会话头复读一致时允许窗口外尾部追加；超大行、截断、替换和原字节变化不得报告完整"
+[[requirements]]
+id = "conditioned_experience"
+function = "保留经验的时间线、纠正、因果证据层级与适用范围"
+condition = "只有原文可追溯且结构检查通过的候选可以入库；工程采用仍由当前 Project 决定"
+acceptance = "纠正追加新修订，旧修订可读；跨项目和条件不全只作待核线索"
+[[requirements]]
+id = "use_feedback"
+function = "把实际使用结果与经验的精确修订连接，支持方法比较和后续 RRSI"
+condition = "反馈记录使用、拒绝、无变化及未知成本；历史检索排名不证明收益"
+acceptance = "不存在的修订被拒绝；未使用不能计有益；方法比较保留不可迁移部分"
+[[requirements]]
+id = "continuous_history"
+function = "分别补旧历史和接新增内容，持久保存读取进度、待整理任务和实际完成状态"
+condition = "显式来源与有限预算；同一条消息跨 profile 保留来源别名，分叉不混为同一内容"
+acceptance = "重复运行幂等；尾部半条消息等待；旧字节变化拒绝续接；读取不等于整理"
+[[requirements]]
+id = "large_message_continuity"
+function = "带图片的完整原消息可越过普通 2 MiB 读窗，后续纠正与讨论继续接续"
+condition = "只解释可见文字，完整 JSON 行含图像字节参与来源身份；当前原读取器支持单行和窗口最大 16 MiB"
+acceptance = "预算内扩展到完整行；不足或超过读取器上限保留原游标与明确等待原因；经验核原件支持同一行限额；每包不超过 128 条可见原消息"
+[[requirements]]
+id = "single_rust_owner"
+function = "所有入口共用 Rust 经验规则、Semantica 审查和任务生命周期"
+condition = "TS 和 skill 只组织调用，程序独立于完整 v2 安装；模型提炼必须有显式提供方"
+acceptance = "两个入口得到相同修订与拒绝；无提供方保留待整理任务；不把原文拼接当工程理解"
+
+[[requirements]]
+id = "fixed_large_history"
+function = "大于整前缀核验预算的历史文件，先保存固定版本，再按有限窗口接续"
+condition = "显式原件、独立私有归档目录和逻辑大小上限；当前支持 macOS 同文件系统原生克隆；日后原件变化属于另一捕获"
+acceptance = "不读取或复制整个大文件才允许首窗前进；原路径、捕获时刻和文件身份保留；固定副本变化拒绝；扫描不授予提炼完成或整文件摘要通过"
+
+[[modules]]
+id = "memory_snapshot"
+kind = "adapter"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "保存与核验固定历史版本，保持原件来历与私有归档独立"
+realizes = ["fixed_large_history"]
+platform = "macOS fclonefileat 经 rustix 安全封装；其他平台明确不支持"
+effects = "创建新的私有只读副本和不可覆盖的捕获回执；回执提交后登记 source/2；不写原件"
+failures = "不支持克隆、跨卷、原件变化、归档变化和冲突拒绝；不退回整文件复制；未完成副本保留，回执已提交的重试可接续"
+status = "source_only"
+depends_on = ["memory_runtime"]
+
+[[constraints]]
+id = "fixed_capture_identity"
+requirement = "fixed_large_history"
+module = "memory_snapshot"
+check = "verify"
+rust_path = "modules/engineering-memory/runtime/src/snapshot.rs"
+statement = "source/2 绑定原生克隆回执、设备/inode、长度、mtime、ctime 与只读权限；扫描前后均核固定身份，选定原消息仍做 SHA256 重读。原 source/1 不放宽前缀校验。归档在元数据库外；不声明完整原件 SHA256 或原件仍为最新。"
+severity = "error"
+
+[[validations]]
+id = "fixed_capture_continuity"
+constraint = "fixed_capture_identity"
+module = "memory_snapshot"
+behavior = "fixed_capture_scans_large_history_and_preserves_origin"
+rust_path = "modules/engineering-memory/runtime/tests/runtime.rs"
+oracle = "大于 512 MiB 的源在小于整文件的预算内读首窗；原件后续修改不影响已捕获副本，新捕获保留分叉；同 ID 重试不重置游标；副本被改写/替换/截断拒绝，即使恢复 mtime；预算和目录冲突不发表登记；回执后中断可恢复；交接保留原路径和捕获时间"
+scope = "固定历史版本的本机原生克隆、接续和来历；不证明全量提炼、跨平台克隆或活跃超大原件的自动版本调度"
+
+[[types]]
+name = "CaptureRequest"
+meaning = "明确选择一份原件保存为固定历史版本，供预算内回补；不代表原件永久不变"
+identity = "registration.id 是一次捕获身份；同 ID 同请求恢复原捕获，新版本需新 ID"
+fields = [
+ {name="schema",meaning="固定历史捕获请求",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.capture-request/1"],unit="不适用",precision="精确版本",write="明确捕获动作",applicability="CLI/RPC",acceptance="未知拒绝"},
+ {name="registration",meaning="原件位置、来源身份与显式回补范围",rust_type="SourceRegistration",required=true,format="object",unit="字段分别声明",precision="保留原路径与未知项目",write="据明确原件填写",applicability="捕获成功后扫描独立副本",acceptance="不从 profile 推断项目"},
+ {name="archive_root",meaning="元数据库外的专用私有归档目录",rust_type="String",required=true,format="text",unit="不适用",precision="绝对路径",write="agent 选择明确的外部私有目录",applicability="同卷原生克隆；不随软件分发",acceptance="不得与库重叠、成为原件祖先或为符号链接"},
+ {name="max_logical_bytes",meaning="允许捕获的最大逻辑文件长度",rust_type="u64",required=true,format="integer",unit="byte",precision="正整数",write="显式范围",applicability="克隆后修改可增加实际磁盘占用；不等于物理空间配额",acceptance="捕获前后均不得超出"}
+]
+
+[[requirements]]
+id = "multilingual_recall"
+function = "中文完整提问与中英混合任务均可召回有文字重叠的经验；无需用户先手工拆关键词"
+condition = "同一项目过滤、来源重核与适用检查不变；只有检索副本做 Unicode 归一化，原件不改写"
+acceptance = "中文相邻词片可命中、英文完整词边界保持；标点与 JSON 字段名不产生伪命中；排序不授予工程采用"
+
+[[requirements]]
+id = "bounded_background"
+function = "周期性登记客户端新原件，有限接续旧历史与新增消息，处理明确配置的提炼任务"
+condition = "显式定时配置、普通原件范围、每轮字节与时间预算；待整理队列满时停止新增，仍可审阅已有任务"
+acceptance = "并发同轮不重复运行；重启从原游标接续；未配置提炼器不调用模型；预算、积压、错误和实际结果有回执"
+
+[[modules]]
+id = "memory_retrieval"
+kind = "calculation"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "独立 Rust 核心中的多语言候选排序；不改变经验或原文"
+realizes = ["multilingual_recall", "focused_recall"]
+platform = "Rust；Unicode word boundaries 与 NFKC 搜索副本"
+effects = "只读候选文字；原件与工程适用性仍由 store 核验"
+failures = "无重叠返回空；不以词片重叠声称理解因果或方法可迁移"
+status = "source_only"
+depends_on = ["memory_runtime"]
+
+[[modules]]
+id = "memory_scheduler"
+kind = "pipeline"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "一个有预算与积压控制的周期任务，供操作系统定时器调用"
+realizes = ["bounded_background"]
+platform = "Rust 单次 tick；宿主定时器另行安装和核验"
+effects = "登记明确原件、写待整理包、调用显式提炼器并保留每轮回执；不自动审阅或更改 Project"
+failures = "并发占用、积压已满、原件漂移、缺提供方与失败独立报告；旧历史不丢弃"
+status = "source_only"
+depends_on = ["memory_runtime", "memory_hooks"]
+
+[[constraints]]
+id = "recall_text_boundaries"
+requirement = "multilingual_recall"
+module = "memory_retrieval"
+check = "lexical_candidates"
+rust_path = "modules/engineering-memory/runtime/src/retrieval.rs"
+statement = "仅索引目的、方法、条件、过程、原因和未知的实际文字；Unicode 搜索归一化与连续字片不能改写来源或跨标点拼接，词内子串不当完整英文词"
+severity = "error"
+
+[[validations]]
+id = "recall_natural_questions"
+constraint = "recall_text_boundaries"
+module = "memory_retrieval"
+behavior = "natural_language_recall_preserves_scope_and_sources"
+rust_path = "modules/engineering-memory/runtime/tests/runtime.rs"
+oracle = "完整中文问句找到对应经验；Rust 不命中 trust；description 不命中 JSON 字段名；全角与组合字符只统一检索，源变化仍可检出"
+scope = "词法召回与边界反例；不证明语义相似、采用或实际收益"
+
+[[constraints]]
+id = "background_backpressure"
+requirement = "bounded_background"
+module = "memory_scheduler"
+check = "tick"
+rust_path = "modules/engineering-memory/runtime/src/worker.rs"
+statement = "积压计数和新增窗口上限在同一库锁内检查；每轮限制来源登记、读取、重核与提炼；没有提供方仍保留 pending，不生成经验或有益反馈"
+severity = "error"
+
+[[validations]]
+id = "background_budget_recovery"
+constraint = "background_backpressure"
+module = "memory_scheduler"
+behavior = "background_tick_caps_pending_and_resumes_after_review"
+rust_path = "modules/engineering-memory/runtime/tests/runtime.rs"
+oracle = "达到待整理上限后游标不前进，已审阅任务释放空间后接续；未配置模型零调用；并发 tick 有限等待或拒绝，不重复发表；旧回执不覆盖"
+scope = "Rust 周期任务；实际操作系统触发另取原生回执"
+
+[[types]]
+name = "TickPolicy"
+meaning = "后台一轮工作的显式资源和积压上限，不是全量完成或工程采用授权"
+identity = "运行回执绑定完整配置；修改配置形成新的策略摘要"
+fields = [
+ {name="schema",meaning="后台任务配置合同",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.tick-policy/1"],unit="不适用",precision="精确版本",write="安装时配置",applicability="CLI/RPC 单次任务",acceptance="未知拒绝"},
+ {name="sync",meaning="扫描字节、核验字节、窗口和总时间预算",rust_type="SyncBudget",required=true,format="object",unit="各字段分别声明",precision="完整预算",write="明确本轮上限",applicability="整轮时间扣除登记已用部分",acceptance="不足保留游标"},
+ {name="max_hook_sources",meaning="最多尝试登记的客户端原件",rust_type="u64",required=true,format="integer",unit="个",precision="1到128",write="本轮上限",applicability="仅已排队原件",acceptance="失败计入尝试"},
+ {name="max_registration_bytes",meaning="整轮来源登记的前缀核验上限",rust_type="u64",required=true,format="integer",unit="byte",precision="正整数",write="与扫描重核预算分别声明",applicability="多原件合计",acceptance="不足保留待登记"},
+ {name="max_pending_packets",meaning="允许新增前的待整理队列上限",rust_type="u64",required=true,format="integer",unit="包",precision="1到100",write="防止无人审阅时无限扫描",applicability="tick 新增包；显式前台 sync 仍按自己的预算执行",acceptance="在持锁时限制新增窗口"},
+ {name="max_curation_packets",meaning="最多处理已有待整理包",rust_type="u64",required=true,format="integer",unit="包",precision="1到32",write="本轮上限",applicability="明确配置提供方或恢复原提交",acceptance="无提供方不调用模型"}
+]
+
+[[modules]]
+id = "cass_evidence"
+kind = "adapter"
+rust_path = "modules/engineering-memory/runtime/src/evidence"
+purpose = "CASS 原生的有界原文与来源窗口接口"
+realizes = ["source_history"]
+platform = "Rust / 本地普通文件"
+effects = "只读选定原件；不启动索引维护或模型"
+failures = "非法边界拒绝；超限和无法解析逐段返回缺口；原件变化拒绝"
+status = "behavior_verified"
+[[modules]]
+id = "cm_experience"
+kind = "governance"
+rust_path = "modules/engineering-memory/runtime/src"
+purpose = "CM 作为共享 Rust 核心的原生调用入口；TypeScript 投影用于交接"
+realizes = ["conditioned_experience", "use_feedback"]
+platform = "Bun / TypeScript 到独立 Rust 进程"
+effects = "显式调用同一核心；工程规则由 Rust 执行；不写 v2 Project"
+failures = "来源不一致、悬空纠正、失序修订、错误反馈拒绝；未知不默认成立"
+status = "behavior_verified"
+depends_on = ["memory_runtime"]
+[[modules]]
+id = "memory_runtime"
+kind = "pipeline"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "统一经验存储、语义审查、历史接续、整理任务与实际使用交接"
+realizes = ["continuous_history", "single_rust_owner", "conditioned_experience", "use_feedback", "large_message_continuity", "shared_source_scan_owner"]
+platform = "Rust；实际嵌入 Semantica 2.0.0-rc.4 通用规则执行；macOS 本机验证"
+effects = "仅在显式私有 home 写入；文件锁与原子持久化；只读已登记原件"
+failures = "预算不足、源漂移、冲突、部分读取和未配置提炼器分别保留；重试不重复发布"
+status = "behavior_verified"
+depends_on = ["cass_evidence"]
+
+[[machines]]
+name = "PacketState"
+module = "memory_runtime"
+states = ["pending", "committed", "no_delta", "rejected"]
+initial = "pending"
+transitions = [
+ {from="pending",event="commit",to="committed",guard="verified_packet_and_records"},
+ {from="pending",event="no_delta",to="no_delta",guard="verified_packet_and_reason"},
+ {from="pending",event="reject",to="rejected",guard="explicit_reason"}
+]
+
+[[constraints]]
+id = "scope_rule"
+requirement = "single_rust_owner"
+module = "memory_runtime"
+check = "review_scope"
+rust_path = "modules/engineering-memory/runtime/src/store.rs"
+statement = "IF project_match(?x) AND conditions_match(?x) AND reviewed(?x) AND source_matched(?x) THEN scope_matched(?x)"
+severity = "error"
+[[constraints]]
+id = "cursor_integrity"
+requirement = "continuous_history"
+module = "memory_runtime"
+check = "verify_prefix"
+rust_path = "modules/engineering-memory/runtime/src/workflow.rs"
+statement = "旧前缀摘要不一致时拒绝续接；读取时发生追加须在预算内重核所封存前缀，失败尝试也扣除核验/扫描预算；扫描游标不得作为经验整理完成量"
+severity = "error"
+
+[[constraints]]
+id = "large_message_boundary"
+requirement = "large_message_continuity"
+module = "memory_runtime"
+check = "scan_end"
+rust_path = "modules/engineering-memory/runtime/src/workflow.rs"
+statement = "普通窗口先取 2 MiB 内的完整行；首行过长时在剩余扫描与读窗探查预算内扩展，最多 16 MiB。探查累计单独报告且不超过本轮 max_bytes；无完整行不改变游标。原件核验上限和每包来源数量必须容纳同一读窗。图像字节校验不表示理解图像。"
+severity = "error"
+
+[[validations]]
+id = "large_message_recovery"
+constraint = "large_message_boundary"
+module = "memory_runtime"
+behavior = "large_image_message_keeps_source_identity_and_resumes_after_budget_wait"
+rust_path = "modules/engineering-memory/runtime/tests/runtime.rs"
+oracle = "3 MiB 图片原行先因 2 MiB 预算等待、后在 8 MiB 预算下完整摄取；后续消息接续；保留整行摘要且图像字节被改时拒绝经验；超 16 MiB 与半条尾部不跳过；128 条后拆包仍可逐包审阅"
+scope = "有界 JSONL 文字与原字节接续，不证明图像解释、大于 16 MiB 的单行处理或全量历史提炼"
+
+[[validations]]
+id = "scope_counterexamples"
+constraint = "scope_rule"
+module = "memory_runtime"
+behavior = "scope_requires_verified_source_and_conditions"
+rust_path = "modules/engineering-memory/runtime/tests/runtime.rs"
+oracle = "缺项目、条件、审阅或原件一致性均不可 scope_matched；全部成立仍不授予工程采用"
+scope = "经验适用范围审查与实际 Semantica 规则执行，不证明工程收益"
+[[validations]]
+id = "history_continuity"
+constraint = "cursor_integrity"
+module = "memory_runtime"
+behavior = "append_partial_alias_fork_and_drift"
+rust_path = "modules/engineering-memory/runtime/tests/runtime.rs"
+oracle = "旧历史和新尾部分别续接；追加期间选定字节和会话头重读一致才接受；半行等待；同消息别名合并而冲突分支保留；前缀改变拒绝"
+scope = "有界本地 JSONL 重放，不代表已整理全部历史"
+
+[[types]]
+name = "SourceRegistration"
+meaning = "当前任务明确选择的原件入口；多个 profile 共享一个处理目录"
+identity = "id 是来源登记身份；会话与消息身份仍从原件获得"
+fields = [
+ {name="id",meaning="来源登记身份",rust_type="String",required=true,format="text",unit="不适用",precision="安全 ID",write="登记时分配",applicability="共享处理队列",acceptance="同 ID 不同设置拒绝"},
+ {name="path",meaning="实际原件绝对路径",rust_type="String",required=true,format="text",unit="不适用",precision="原件定位",write="明确选择普通 JSONL 文件",applicability="不扫描未知目录",acceptance="原件可读"},
+ {name="provider",meaning="原件格式",rust_type="String",required=true,format="status",allowed_values=["codex","claude"],unit="不适用",precision="枚举",write="明确提供",applicability="CASS 解析器",acceptance="未知格式拒绝"},
+ {name="profile",meaning="来源 profile 标签",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="原标签",write="明确提供或 null",applicability="不代替项目",acceptance="别名保留"},
+ {name="project_id",meaning="明确的项目路由或未知",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="精确引用",write="不从 cwd 推断",applicability="候选背景",acceptance="未知不作已绑定"},
+ {name="conditions",meaning="整理时明确的适用条件",rust_type="Vec<String>",required=true,format="list",unit="条件各自声明",precision="精确标签",write="据实际任务填写",applicability="供整理者核实",acceptance="不补造"},
+ {name="start_byte",meaning="首次回补的原字节边界",rust_type="u64",required=true,format="integer",unit="byte",precision="整数",write="一般为零，限定历史可显式选择",applicability="跳过部分保留未覆盖",acceptance="必须为原记录边界"}
+]
+
+[[types]]
+name = "SyncBudget"
+meaning = "一次整理运行的明确读取与时间上限；不能把超预算变为完成"
+identity = "每次实际运行绑定的预算"
+fields = [
+ {name="max_bytes",meaning="最多新增扫描字节",rust_type="u64",required=true,format="integer",unit="byte",precision="正整数",write="本次预算",applicability="全部来源合计",acceptance="耗尽暂停"},
+ {name="max_verify_bytes",meaning="最多重核旧前缀字节",rust_type="u64",required=true,format="integer",unit="byte",precision="正整数",write="与新读预算分别记录",applicability="防止旧源被修改",acceptance="不足不跳过核验"},
+ {name="max_windows",meaning="最多原文窗口",rust_type="u64",required=true,format="integer",unit="window",precision="正整数",write="本次预算",applicability="限制任务新增",acceptance="耗尽暂停"},
+ {name="max_seconds",meaning="本次运行时间预算",rust_type="u64",required=true,format="integer",unit="second",precision="正整数",write="实际单调时钟计量",applicability="循环边界检查",acceptance="耗尽留下可恢复进度"}
+]
+
+[[types]]
+name = "SourceAnchor"
+meaning = "一条可见原消息及其精确原字节引用；证明来源相同，不证明陈述真实"
+identity = "source_path 与半开字节区间及 SHA256；session/provider 来自原件，profile 是调用者标记"
+fields = [
+ {name="provider",meaning="原件格式",rust_type="String",required=true,format="status",allowed_values=["codex","claude"],unit="不适用",precision="精确枚举",write="解析器确认",applicability="已支持的 JSONL",acceptance="不支持的格式拒绝"},
+ {name="profile",meaning="来源账号标签，不是项目身份",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="原标签",write="调用者明确提供，未知为 null",applicability="共享 profile 来源追溯",acceptance="不用于项目路由"},
+ {name="session_id",meaning="原记录或文件头声明的会话身份",rust_type="String",required=true,format="text",unit="不适用",precision="原字符串",write="只从原件取得",applicability="Codex/Claude",acceptance="缺身份留下缺口"},
+ {name="source_path",meaning="本机原件绝对路径",rust_type="String",required=true,format="text",unit="不适用",precision="原件定位",write="规范化普通文件路径",applicability="私有数据，不随 skill 分发",acceptance="读回原字节一致"},
+ {name="byte_start",meaning="原消息起始字节，包含完整 JSON 行",rust_type="u64",required=true,format="integer",unit="byte",precision="整数",write="读取器计数",applicability="半开区间",acceptance="从换行边界起始"},
+ {name="byte_end",meaning="原消息末字节之后，含存在的换行符",rust_type="u64",required=true,format="integer",unit="byte",precision="整数",write="读取器计数",applicability="半开区间",acceptance="大于起点且不越过文件"},
+ {name="sha256",meaning="完整原记录字节摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="256 bit",write="原字节 SHA256",applicability="包含换行，非规范化 JSON",acceptance="重读摘要相同"},
+ {name="role",meaning="原记录的可见发言角色",rust_type="String",required=true,format="status",allowed_values=["user","assistant"],unit="不适用",precision="精确枚举",write="解析原角色",applicability="本版只摄取用户与助手可见文字",acceptance="隐藏思考及工具控制记录不进入文本"},
+ {name="text",meaning="可见文字块按原顺序连接的内容",rust_type="String",required=true,format="raw_utf8",unit="不适用",precision="UTF-8",write="只提取显式文字块",applicability="非图像/工具/思考内容",acceptance="保留文字，不把输出当工程证明"},
+ {name="event_at",meaning="原件记录的时间，不推断时间因果",rust_type="Option<String>",required=false,format="text",unit="原时间编码",precision="原件精度",write="原件无时间为 null",applicability="不保证事件发生时间等于记录时间",acceptance="未知保留"},
+ {name="message_id",meaning="原消息身份",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="原字符串",write="只复制原件明确 ID",applicability="不是数组序号",acceptance="缺失为 null"},
+ {name="parent_id",meaning="原消息的父节点，可跨文件或窗口",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="原字符串",write="只复制 parentUuid 等明确父引用",applicability="分支保留，不按时间合并",acceptance="窗口外父节点不伪造"}
+]
+
+[[types]]
+name = "TimelineEvent"
+meaning = "经验中的一个带来源的过程节点，保留当时表述与后续纠正关系"
+identity = "经验内稳定 id；corrects 指向之前的节点"
+fields = [
+ {name="id",meaning="过程节点身份",rust_type="String",required=true,format="text",unit="不适用",precision="精确字符串",write="提炼者建立唯一 ID",applicability="经验内",acceptance="重复 ID 拒绝"},
+ {name="kind",meaning="过程节点的认识地位",rust_type="String",required=true,format="status",allowed_values=["user_report","assistant_claim","observation","action","decision","correction"],unit="不适用",precision="精确枚举",write="按证据身份标记",applicability="不自动提升 assistant_claim",acceptance="来源与说明可复核"},
+ {name="occurred_at",meaning="节点时间或未知",rust_type="Option<String>",required=false,format="text",unit="原时间编码",precision="来源精度",write="来自原记录或明确报告",applicability="时间先后不代表因果",acceptance="未知为 null"},
+ {name="description",meaning="当时的行动、表述或纠正",rust_type="String",required=true,format="text",unit="不适用",precision="有源摘要",write="提炼者据原文填写",applicability="候选理解",acceptance="不改写旧节点"},
+ {name="source_sha256",meaning="支撑该节点的原记录摘要",rust_type="Vec<String>",required=true,format="list",unit="不适用",precision="精确引用",write="引用本经验 sources",applicability="非空",acceptance="悬空来源拒绝"},
+ {name="corrects",meaning="本节点纠正的先前节点",rust_type="Vec<String>",required=true,format="list",unit="不适用",precision="精确引用",write="明确关联旧判断",applicability="纠正至少一个先前节点",acceptance="前向引用与悬空引用拒绝"}
+]
+
+[[types]]
+name = "CausalClaim"
+meaning = "有证据层级、混杂和未知的原因主张；记录层级不是因果有效性判决"
+identity = "随经验修订保存的原因主张"
+fields = [
+ {name="statement",meaning="原因与结果的具体主张",rust_type="String",required=true,format="text",unit="不适用",precision="有源陈述",write="提炼者填写",applicability="不能由时间排序生成因果",acceptance="可追溯原文"},
+ {name="level",meaning="声明依据层级",rust_type="String",required=true,format="status",allowed_values=["sequence","attribution","mechanism","controlled_comparison"],unit="不适用",precision="精确枚举",write="按已有依据声明",applicability="controlled_comparison 仍需独立审阅",acceptance="存储不授予工程采用"},
+ {name="source_sha256",meaning="主张引用的原记录",rust_type="Vec<String>",required=true,format="list",unit="不适用",precision="精确引用",write="引用 sources",applicability="非空",acceptance="悬空引用拒绝"},
+ {name="confounders",meaning="无法分离的共同变化",rust_type="Vec<String>",required=true,format="list",unit="不适用",precision="原条件",write="明确多因素共同改变",applicability="不删除不利信息",acceptance="跨修订保留原主张"},
+ {name="unknowns",meaning="尚缺机制或验证依据",rust_type="Vec<String>",required=true,format="list",unit="不适用",precision="具体缺项",write="提炼者列出",applicability="当前证据范围",acceptance="不以空白假装验证"}
+]
+
+[[types]]
+name = "Method"
+meaning = "可用于跨项目比较的方法结构"
+identity = "随经验修订保存，不以关键词相似性认定可迁移"
+fields = [
+ {name="purpose",meaning="方法要解决的问题",rust_type="String",required=true,format="text",unit="不适用",precision="具体目的",write="据来源提炼",applicability="方法比较",acceptance="不只填写工具名"},
+ {name="mechanism",meaning="方法为何可能产生效果",rust_type="String",required=true,format="text",unit="不适用",precision="机制说明",write="据来源提炼，未知明确说明",applicability="候选机制",acceptance="不当作因果证明"},
+ {name="validation",meaning="方法成立所需验证",rust_type="String",required=true,format="text",unit="不适用",precision="检验步骤",write="冻结验证要求",applicability="迁移前",acceptance="不能用召回分数代替"}
+]
+
+[[types]]
+name = "ExperienceRecord"
+meaning = "带条件和来源的工程经验修订；独立 memory 应用的数据，不是当前工程 Project"
+identity = "id 与严格递增 revision；旧修订永久保留，supersedes 明确连接"
+fields = [
+ {name="schema",meaning="经验交接合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.experience/2"],unit="不适用",precision="精确版本",write="按当前合同",applicability="旧模板 /1 不自动升级",acceptance="不同版本拒绝"},
+ {name="id",meaning="经验稳定身份",rust_type="String",required=true,format="text",unit="不适用",precision="ASCII 安全 ID",write="明确分配",applicability="共享 CM 存储",acceptance="禁止路径穿越"},
+ {name="revision",meaning="经验修订序号",rust_type="u64",required=true,format="integer",unit="revision",precision="正整数",write="首次为 1，此后加 1",applicability="同一 ID",acceptance="并发旧基线拒绝"},
+ {name="supersedes",meaning="被本次替代的修订",rust_type="Option<u64>",required=false,format="integer",unit="revision",precision="整数",write="首版 null，后续指向当前头",applicability="替代不删除原件",acceptance="跳级拒绝"},
+ {name="project_id",meaning="显式工程项目引用或未知",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="明确身份",write="不得从 cwd 或 profile 猜测",applicability="用于经验路由，不创建 Project",acceptance="null 只作为未绑定线索"},
+ {name="conditions",meaning="该经验成立所需条件",rust_type="Vec<String>",required=true,format="list",unit="条件各自声明",precision="精确标签",write="保留对象、版本和边界",applicability="召回要求全部条件显式满足",acceptance="缺条件只返回待核"},
+ {name="purpose",meaning="本经验对应目的",rust_type="String",required=true,format="text",unit="不适用",precision="具体目的",write="提炼者据来源填写",applicability="候选理解",acceptance="非空"},
+ {name="status",meaning="记忆整理状态，非工程采用状态",rust_type="String",required=true,format="status",allowed_values=["draft","reviewed","rejected"],unit="不适用",precision="精确枚举",write="按实际审阅状态",applicability="reviewed 不等于 proved",acceptance="rejected 不能作为适用经验"},
+ {name="recorded_at",meaning="本次经验整理时间",rust_type="String",required=true,format="text",unit="RFC3339",precision="实际记录时间",write="本次整理者记录",applicability="与原事件时间分开",acceptance="必须可解析"},
+ {name="sources",meaning="选定原消息及锚点",rust_type="Vec<SourceAnchor>",required=true,format="list",unit="条",precision="原字节引用",write="由 CASS engineering-evidence 获得并重读",applicability="不是全会话阅读证明",acceptance="入库重读摘要与可见内容"},
+ {name="timeline",meaning="过程与纠正顺序",rust_type="Vec<TimelineEvent>",required=true,format="list",unit="节点",precision="明确顺序",write="按来源整理",applicability="不覆盖旧过程",acceptance="至少一个节点"},
+ {name="causal_claims",meaning="有分级依据的原因主张",rust_type="Vec<CausalClaim>",required=true,format="list",unit="主张",precision="明确证据层级",write="没有依据不补造",applicability="可为空",acceptance="源引用必须存在"},
+ {name="method",meaning="可比较的方法结构",rust_type="Option<Method>",required=false,format="object",unit="不适用",precision="有条件的方法",write="非方法经验填 null",applicability="用于比较，非自动迁移",acceptance="迁移独立验证"},
+ {name="unknowns",meaning="未覆盖与待确认项",rust_type="Vec<String>",required=true,format="list",unit="不适用",precision="具体缺项",write="包括窗口之外与未验证结果",applicability="全生命周期保留",acceptance="有缺口不可宣称完整"}
+]
+
+[[types]]
+name = "ExperienceRef"
+meaning = "方法比较引用的经验精确修订；不随经验最新头移动"
+identity = "id 与 revision"
+fields = [
+ {name="id",meaning="被比较的经验身份",rust_type="String",required=true,format="text",unit="不适用",precision="安全 ID",write="来自既有经验",applicability="方法比较两端",acceptance="引用必须存在"},
+ {name="revision",meaning="被比较的精确修订",rust_type="u64",required=true,format="integer",unit="revision",precision="正整数",write="来自实际审阅版本",applicability="固定比较来源",acceptance="不存在或零修订拒绝"}
+]
+
+[[types]]
+name = "MethodComparison"
+meaning = "比较两个已存方法的共同机制与迁移边界；不自动证明新项目可用"
+identity = "不可覆盖的比较 id；两端固定经验 id 与 revision"
+fields = [
+ {name="schema",meaning="原生比较合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.method-comparison/2"],unit="不适用",precision="精确版本",write="与旧 /1 审阅模板分开",applicability="原生 CM",acceptance="旧结构不冒充新合同"},
+ {name="id",meaning="比较稳定身份",rust_type="String",required=true,format="text",unit="不适用",precision="安全 ID",write="明确分配",applicability="共享存储",acceptance="相同幂等，不同内容拒绝"},
+ {name="left",meaning="第一个方法的来源修订",rust_type="ExperienceRef",required=true,format="object",unit="不适用",precision="精确引用",write="来自已存经验",applicability="必须包含方法",acceptance="不存在拒绝"},
+ {name="right",meaning="第二个方法的来源修订",rust_type="ExperienceRef",required=true,format="object",unit="不适用",precision="精确引用",write="来自另一条经验",applicability="必须包含方法",acceptance="同一经验两次不算跨经验比较"},
+ {name="shared_mechanism",meaning="共同作用机制的候选解释",rust_type="String",required=true,format="text",unit="不适用",precision="具体机制",write="审阅者填写",applicability="不是词面相似度",acceptance="非空"},
+ {name="transferable",meaning="可能迁移的方法部分",rust_type="Vec<String>",required=true,format="list",unit="条",precision="具体步骤或关系",write="据两边方法判断",applicability="候选",acceptance="非空"},
+ {name="non_transferable",meaning="不可直接迁移的条件或参数",rust_type="Vec<String>",required=true,format="list",unit="条",precision="明确边界",write="保留差异",applicability="不得因相似而省略",acceptance="非空"},
+ {name="required_validation",meaning="新任务独立验证要求",rust_type="Vec<String>",required=true,format="list",unit="条",precision="可执行判据",write="迁移前冻结",applicability="本记录不代表已执行",acceptance="非空"},
+ {name="status",meaning="比较整理状态",rust_type="String",required=true,format="status",allowed_values=["proposed","rejected"],unit="不适用",precision="精确枚举",write="据实际判断",applicability="当前不接收已验证迁移状态",acceptance="不能填写 validated"},
+ {name="unknowns",meaning="仍未知的条件与结果",rust_type="Vec<String>",required=true,format="list",unit="条",precision="具体缺项",write="保留未知",applicability="方法迁移",acceptance="不把记录成功当收益"}
+]
+
+[[types]]
+name = "UsageFeedback"
+meaning = "一次具体使用对某条经验修订的反馈；不自动修改规则或提升 v2"
+identity = "独立反馈 id；引用 record_id 与 revision"
+fields = [
+ {name="schema",meaning="反馈合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.feedback/1"],unit="不适用",precision="精确版本",write="当前合同",applicability="CM 独立应用",acceptance="不同版本拒绝"},
+ {name="id",meaning="反馈稳定身份",rust_type="String",required=true,format="text",unit="不适用",precision="安全 ID",write="明确分配",applicability="共享存储",acceptance="重复相同幂等，不同拒绝"},
+ {name="record_id",meaning="使用的经验身份",rust_type="String",required=true,format="text",unit="不适用",precision="精确引用",write="来自实际召回",applicability="已存在经验",acceptance="不存在拒绝"},
+ {name="revision",meaning="实际使用的经验修订",rust_type="u64",required=true,format="integer",unit="revision",precision="正整数",write="冻结当时所用版本",applicability="不会默认当前头",acceptance="不存在拒绝"},
+ {name="project_id",meaning="发生本次使用的项目或未知",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="显式引用",write="不从 cwd 猜测",applicability="可与来源项目不同",acceptance="跨项目反馈保留身份"},
+ {name="used",meaning="经验是否真正影响了本次动作",rust_type="bool",required=true,format="boolean",unit="不适用",precision="布尔",write="据真实过程填写",applicability="曝光不等于使用",acceptance="未使用不能计有益或有害"},
+ {name="outcome",meaning="本次观察到的使用结果",rust_type="String",required=true,format="status",allowed_values=["helped","harmed","no_delta","rejected","not_used"],unit="不适用",precision="精确枚举",write="按结果填写",applicability="结果不代表受控因果",acceptance="helped/harmed 必须有来源"},
+ {name="result",meaning="实际结果及原因说明",rust_type="String",required=true,format="text",unit="不适用",precision="具体结果",write="保留拒绝与无帮助",applicability="真实反馈",acceptance="非空"},
+ {name="sources",meaning="支持使用结果的原件",rust_type="Vec<SourceAnchor>",required=true,format="list",unit="条",precision="原字节引用",write="据本次实际证据填写",applicability="明确已读范围",acceptance="摘要与内容重读一致"},
+ {name="elapsed_ms",meaning="实际测得耗时或未知",rust_type="Option<u64>",required=false,format="integer",unit="ms",precision="整数毫秒",write="未计量为 null",applicability="本次测量范围",acceptance="未知不写零"},
+ {name="unknowns",meaning="结果及费用的未计量范围",rust_type="Vec<String>",required=true,format="list",unit="各量自行注明",precision="具体缺项",write="保留成本与归因限制",applicability="不能由单次反馈宣称收益",acceptance="随反馈保留"}
+]
+
+[[requirements]]
+id = "session_project_exchange"
+function = "在独立会话/任务中召回经验，并向当前实际 Project 交接和收取使用反馈"
+condition = "Project 身份、内容、对象和条件显式绑定；未安装 v2 仍可独立召回；普通调用不修改 skill 或代码"
+acceptance = "跨项目误用、同修订内容变化、经验纠正后的旧交接与未曝光经验反馈均拒绝；预算缺口明确保留；重跑幂等"
+
+[[modules]]
+id = "memory_session"
+kind = "pipeline"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "同一 Rust 核心中的任务上下文、当前项目绑定、限定召回及准确修订反馈"
+realizes = ["session_project_exchange", "bounded_session_selection"]
+platform = "独立 Rust CLI / JSON RPC；无需完整 v2 安装"
+effects = "只读显式 Project 与原件；写私有会话上下文、反馈意图和回执；不写 Project 或软件"
+failures = "来源漂移、当前对象/条件变化、预算缺口、未提供的经验与摘要冲突分别报告"
+status = "source_only"
+depends_on = ["memory_runtime"]
+
+[[constraints]]
+id = "session_binding"
+requirement = "session_project_exchange"
+module = "memory_session"
+check = "verify_project_binding"
+rust_path = "modules/engineering-memory/runtime/src/session.rs"
+statement = "每次当前交接重读 Project 完整字节和已提供经验；历史反馈保留当时准确修订，不能授予工程采用"
+severity = "error"
+
+[[validations]]
+id = "session_binding_counterexamples"
+constraint = "session_binding"
+module = "memory_session"
+behavior = "project_drift_and_experience_correction_invalidate_handoff"
+rust_path = "modules/engineering-memory/runtime/tests/session.rs"
+oracle = "同 revision 改 Project 字节、对象版本或条件以及经验后来纠正均阻止旧交接；原 Project 和代码字节不变"
+scope = "会话与 Project 精确绑定；不替代 v2 正式审查、模型质量或实际收益验证"
+
+[[types]]
+name = "SessionObject"
+meaning = "本次任务使用的当前 Project 对象版本及条件内容"
+identity = "对象 id、revision 与 condition_scope、condition_sha256 共同定位"
+fields = [
+ {name="object_id",meaning="当前工程对象",rust_type="String",required=true,format="text",unit="不适用",precision="精确身份",write="从实际 Project 读取",applicability="有对象的工程任务",acceptance="必须存在"},
+ {name="object_revision",meaning="当前对象版本",rust_type="String",required=true,format="text",unit="不适用",precision="精确版本",write="从实际 Project 读取",applicability="本次任务",acceptance="原值相同"},
+ {name="condition_scope",meaning="实际条件范围",rust_type="String",required=true,format="text",unit="不适用",precision="精确键",write="从 Project 读取",applicability="本次对象",acceptance="必须存在"},
+ {name="condition_sha256",meaning="完整条件文本 UTF-8 摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="256 bit",write="从当前条件原值计算",applicability="不能只比较标签",acceptance="重读相同"}
+]
+
+[[types]]
+name = "SessionProject"
+meaning = "仅用于 memory 交接的当前 v2 Project 绑定，不复制工程采用权"
+identity = "绝对路径、完整原字节 SHA、project_id 与 revision；可绑定特定对象"
+fields = [
+ {name="path",meaning="实际 Project 普通 JSON 文件",rust_type="String",required=true,format="text",unit="不适用",precision="绝对路径",write="agent 明确选择",applicability="只读",acceptance="不从 cwd/profile 推断"},
+ {name="project_id",meaning="Project 原身份",rust_type="String",required=true,format="text",unit="不适用",precision="精确字符串",write="从原件读取",applicability="oev2.project/1",acceptance="原件相同"},
+ {name="revision",meaning="当前 Project 修订",rust_type="String",required=true,format="text",unit="不适用",precision="原字符串",write="从原件读取",applicability="不替代摘要",acceptance="原件相同"},
+ {name="sha256",meaning="完整 Project 文件摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="256 bit",write="计算全部字节",applicability="同 revision 内容变化也失效",acceptance="每次重读"},
+ {name="object",meaning="本次明确对象或项目层任务",rust_type="Option<SessionObject>",required=false,format="object",unit="不适用",precision="完整对象绑定",write="有对象填实际值，未知为 null",applicability="不补造对象",acceptance="对象与条件同步核对"}
+]
+
+[[types]]
+name = "SessionRequest"
+meaning = "一次会话中的明确任务和调用时机；不同任务/阶段保留独立不可覆盖快照"
+identity = "id 定位上下文；provider/session_id 记录会话，Project 单独绑定"
+fields = [
+ {name="schema",meaning="会话输入合同",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.session-request/1"],unit="不适用",precision="精确版本",write="当前合同",applicability="CLI/RPC",acceptance="其他版本拒绝"},
+ {name="id",meaning="本次任务阶段身份",rust_type="String",required=true,format="text",unit="不适用",precision="安全 ID",write="明确分配，重跑保持",applicability="共享库",acceptance="相同幂等、冲突拒绝"},
+ {name="provider",meaning="当前会话平台",rust_type="String",required=true,format="status",allowed_values=["codex","claude"],unit="不适用",precision="枚举",write="来自当前客户端",applicability="独立于 profile",acceptance="不能用它代替项目"},
+ {name="session_id",meaning="实际会话身份",rust_type="String",required=true,format="text",unit="不适用",precision="原字符串",write="来自当前客户端",applicability="不作为工程真实性证明",acceptance="非空"},
+ {name="task",meaning="本次任务目的",rust_type="String",required=true,format="text",unit="不适用",precision="原目的",write="agent 根据当前要求整理",applicability="单一任务阶段",acceptance="非空且保留"},
+ {name="phase",meaning="调用触发时机",rust_type="String",required=true,format="status",allowed_values=["start","resume","decision","correction","milestone","handoff"],unit="不适用",precision="枚举",write="按实际阶段选择",applicability="skill/客户端触发",acceptance="不意味着自动调度已安装"},
+ {name="project",meaning="当前 Project 或独立非工程会话",rust_type="Option<SessionProject>",required=false,format="object",unit="不适用",precision="完整绑定",write="有实际项目才填",applicability="null 时 memory 独立工作",acceptance="不创建假 Project"},
+ {name="conditions",meaning="本次显式适用条件",rust_type="Vec<String>",required=true,format="list",unit="条件各自声明",precision="原条件标签",write="当前任务确认",applicability="给既有适用规则",acceptance="不从相似度推断"},
+ {name="query",meaning="本次召回关键词",rust_type="String",required=true,format="raw_utf8",unit="不适用",precision="UTF-8",write="agent 根据任务选择",applicability="可空，仍限量",acceptance="原值保留"},
+ {name="include_other_projects",meaning="是否允许提供跨项目方法候选",rust_type="bool",required=true,format="boolean",unit="不适用",precision="布尔",write="按任务需要",applicability="不授予迁移采用",acceptance="明确标记不同项目"},
+ {name="max_candidates",meaning="最多召回候选",rust_type="u64",required=true,format="integer",unit="条",precision="1到20",write="本次预算",applicability="限定工作背景",acceptance="超限拒绝"},
+ {name="max_context_bytes",meaning="提供给助手的经验背景预算",rust_type="u64",required=true,format="integer",unit="byte",precision="2048到131072",write="本次明确预算",applicability="按实际 JSON 字节计量",acceptance="整条无法容纳时留下未提供记录"}
+]
+
+[[types]]
+name = "SessionFeedback"
+meaning = "把真实反馈接回曾提供该条经验的会话任务；不将曝光当成有益"
+identity = "feedback.id 定位一次反馈，context_id 与摘要固定原会话背景"
+fields = [
+ {name="schema",meaning="会话反馈合同",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.session-feedback/1"],unit="不适用",precision="精确版本",write="当前合同",applicability="CLI/RPC",acceptance="未知拒绝"},
+ {name="context_id",meaning="原任务阶段",rust_type="String",required=true,format="text",unit="不适用",precision="安全 ID",write="来自 session prepare",applicability="已保存快照",acceptance="必须存在"},
+ {name="context_sha256",meaning="原完整会话快照摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="256 bit",write="复制实际回执",applicability="防止混用上下文",acceptance="重算相同"},
+ {name="feedback",meaning="准确经验修订的实际使用反馈",rust_type="UsageFeedback",required=true,format="object",unit="不适用",precision="完整原 /1 合同",write="据真实使用与原文填写",applicability="必须曾提供给该任务",acceptance="复用原反馈校验"},
+ {name="result_project",meaning="使用后当前 Project 或未知",rust_type="Option<SessionProject>",required=false,format="object",unit="不适用",precision="当前完整绑定",write="项目可前进，身份和对象关系保持",applicability="有项目且实际使用时必填",acceptance="跨项目反馈拒绝"}
+]
+
+[[requirements]]
+id = "client_lifecycle"
+function = "在真实 Codex/Claude 会话开始和提交任务时提供有限经验，在阶段结束时登记原件待接续"
+condition = "已安装并由客户端实际触发；项目只来自 agent 显式激活的会话绑定，原件只能来自已配置目录"
+acceptance = "遵守真实 hook 输入输出；不阻断用户、不启动模型、不从曝光推断实际使用；缺源/过期绑定可见"
+
+[[modules]]
+id = "memory_hooks"
+kind = "adapter"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "两类客户端事件的薄适配，复用 session 与 workflow 的同一 Rust owner"
+realizes = ["client_lifecycle", "bounded_session_selection"]
+platform = "Codex/Claude command hook stdin/stdout；本地 Rust"
+effects = "写本次上下文与明确原件的接续请求；不写客户端配置、Project、skill 或代码"
+failures = "未支持事件、无效输入、来源越界、项目变化与队列失败显式返回；用户会话可继续"
+status = "source_only"
+depends_on = ["memory_session", "memory_runtime"]
+
+[[constraints]]
+id = "hook_source_scope"
+requirement = "client_lifecycle"
+module = "memory_hooks"
+check = "queue_hook_source"
+rust_path = "modules/engineering-memory/runtime/src/hooks.rs"
+statement = "只登记显式来源目录内当前客户端提供的普通 JSONL；目录别名须解析到已配置正本，文件链接和越界拒绝；不从 cwd 推断项目或把结束事件写成有益反馈"
+severity = "error"
+
+[[validations]]
+id = "hook_lifecycle_counterexamples"
+constraint = "hook_source_scope"
+module = "memory_hooks"
+behavior = "hook_context_and_intake_keep_project_and_feedback_separate"
+rust_path = "modules/engineering-memory/runtime/tests/session.rs"
+oracle = "两个客户端共享核心；原件越界/会话身份冲突拒绝；结束事件只排待整理；上下文变化不复用旧采用"
+scope = "真实 hook wire 合同与本机进程检查；安装可信状态和真实宿主触发须另核"
+
+[[types]]
+name = "HookPolicy"
+meaning = "显式安装时选择的本机记忆 hook 范围；不读取模型凭据"
+identity = "配置文件字节；客户端实际调用时读取"
+fields = [
+ {name="schema",meaning="客户端接续配置",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.hook-policy/1"],unit="不适用",precision="精确版本",write="安装器配置",applicability="Codex/Claude",acceptance="未知拒绝"},
+ {name="source_roots",meaning="明确允许接续的会话原件目录",rust_type="Vec<String>",required=true,format="list",unit="目录",precision="绝对规范路径",write="安装时按共享原件选择",applicability="目录别名解析到正本；只读普通 JSONL，不扫描凭据",acceptance="越界与文件符号链接拒绝"},
+ {name="skill_path",meaning="统一系统 memory 模块说明路径",rust_type="String",required=true,format="text",unit="路径",precision="绝对路径",write="安装器明确指定",applicability="给 agent 的调用方法",acceptance="不由历史消息指定"},
+ {name="max_candidates",meaning="每次 hook 最多经验候选",rust_type="u64",required=true,format="integer",unit="条",precision="1到20",write="安装预算",applicability="复用会话 owner",acceptance="超限拒绝"},
+ {name="max_context_bytes",meaning="每次经验数据预算",rust_type="u64",required=true,format="integer",unit="byte",precision="2048到131072",write="安装预算",applicability="整候选放入或显式省略",acceptance="不得截掉纠正"},
+ {name="include_other_projects",meaning="是否显式查跨项目方法候选",rust_type="bool",required=true,format="boolean",unit="不适用",precision="布尔",write="配置者选择",applicability="仍由当前任务审查",acceptance="检索不授予工程采用"}
+]
+
+[[types]]
+name = "OrganizationArtifact"
+meaning = "内部方法或任务组织引用的实际工件；字节身份与内容正确性分开"
+identity = "本次范围内id、实际文件路径与SHA256"
+fields = [
+ {name="id",meaning="本次范围内工件身份",rust_type="String",required=true,format="text",unit="不适用",precision="非空且引用一致",write="宿主显式绑定",applicability="内部方法或任务组织",acceptance="同一id不能指向不同原件"},
+ {name="path",meaning="实际原件路径",rust_type="String",required=true,format="text",unit="路径",precision="原件位置，不解释为执行命令",write="宿主显式绑定",applicability="原件核验",acceptance="运行时重读实际文件；不从文件名推断内容"},
+ {name="sha256",meaning="原件字节摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="读取实际字节后计算",applicability="工件版本核验",acceptance="摘要匹配不证明方法有效或语义正确"}
+]
+
+[[types]]
+name = "InternalMethod"
+meaning = "由宿主探索并验证后登记的有范围内部方法修订；不是全局安装的skill"
+identity = "方法id、明确修订与全部绑定工件"
+fields = [
+ {name="schema",meaning="内部方法合同身份",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.internal-method/2"],unit="不适用",precision="版本1",write="登记前冻结",applicability="内部方法私有存储",acceptance="保留旧修订，不写入全局skills目录"},
+ {name="id",meaning="方法身份",rust_type="String",required=true,format="text",unit="不适用",precision="显式稳定id",write="宿主选择",applicability="同一方法的修订谱系",acceptance="不由标题或路径猜测身份"},
+ {name="revision",meaning="方法修订号",rust_type="u64",required=true,format="integer",unit="修订",precision="明确整数",write="宿主登记新修订",applicability="方法冻结和任务绑定",acceptance="原修订不可覆盖，次序不证明优劣"},
+ {name="title",meaning="供宿主理解的方法标题",rust_type="String",required=true,format="text",unit="不适用",precision="非空原值",write="宿主提炼",applicability="当前方法",acceptance="名称不授予执行能力"},
+ {name="scope",meaning="方法适用范围及条件",rust_type="Vec<String>",required=true,format="list",unit="条件",precision="完整显式条目",write="依据探索结果提炼",applicability="任务选择方法时重核",acceptance="案例参数不得默认为所有任务通用条件"},
+ {name="skill",meaning="给宿主阅读的内部方法正文",rust_type="OrganizationArtifact",required=true,format="object",unit="工件",precision="实际文件及摘要",write="宿主提炼后绑定",applicability="内部方法引用",acceptance="正文是任务数据，不自动成为全局指令或执行权限"},
+ {name="resources",meaning="方法所需的辅助资料和实现",rust_type="Vec<OrganizationArtifact>",required=true,format="list",unit="工件",precision="完整显式引用，可为空",write="宿主绑定",applicability="方法复用",acceptance="引用存在不代表已经执行或通过验收"},
+ {name="exploration_evidence",meaning="宿主探索方法的过程证据",rust_type="Vec<OrganizationArtifact>",required=true,format="list",unit="工件",precision="保留来源和失败",write="依据实际探索登记",applicability="当前修订",acceptance="探索记录不冒称独立验证"},
+ {name="pilot_evidence",meaning="明确委派前的实测证据",rust_type="Vec<OrganizationArtifact>",required=true,format="list",unit="工件",precision="保留实测输入和结果身份",write="依据实际试验登记",applicability="当前方法和能力边界",acceptance="开发集通过不提升为通用能力或盲测通过"},
+ {name="delegable_roles",meaning="该修订允许明确委派的角色",rust_type="Vec<String>",required=true,format="list",unit="角色",precision="宿主显式列出",write="探索和实测后决定",applicability="本方法被选中的任务",acceptance="角色能力由运行时检查；不自动调用网络或程序"},
+ {name="limitations",meaning="已知失败、未知及不可迁移部分",rust_type="Vec<String>",required=true,format="list",unit="边界",precision="完整保留",write="探索与验收反馈",applicability="方法选择和后续修订",acceptance="新成功不删除旧失败或已知限制"}
+]
+
+[[types]]
+name = "OrganizationClaim"
+meaning = "任务内可单独取证和修订的小命题，明确执行者与接受条件"
+identity = "任务范围内id及其问题、输入、依赖和角色"
+fields = [
+ {name="id",meaning="任务内命题身份",rust_type="String",required=true,format="text",unit="不适用",precision="非空且任务内唯一",write="宿主拆分问题",applicability="本次任务组织",acceptance="局部命题不替代完整目标"},
+ {name="question",meaning="需要回答的有限问题",rust_type="String",required=true,format="text",unit="不适用",precision="完整问题",write="宿主探索后明确",applicability="所选输入与条件",acceptance="不预填已知标准答案"},
+ {name="role",meaning="负责该命题的执行角色",rust_type="String",required=true,format="status",allowed_values=["host","agent","program"],unit="角色",precision="明确枚举",write="宿主组织",applicability="当前命题",acceptance="外部Agent仅承担明确有界判断，主模型保留组织和验收"},
+ {name="required",meaning="是否为本任务完成必需命题",rust_type="bool",required=true,format="boolean",unit="不适用",precision="显式布尔值",write="宿主根据完整目标设置",applicability="关闭任务前核验",acceptance="不能根据结果好坏事后改变必要性"},
+ {name="depends_on",meaning="当前命题依赖的其他命题身份",rust_type="Vec<String>",required=true,format="list",unit="命题",precision="任务内明确引用，可为空",write="组织冻结前",applicability="依赖快照及失效检查",acceptance="依赖必须存在且无环；前件修订后下游重新核验"},
+ {name="input_ids",meaning="该命题可读取的输入工件身份",rust_type="Vec<String>",required=true,format="list",unit="工件",precision="明确引用，可为空",write="组织冻结前",applicability="本次输入范围",acceptance="不能隐式读取其他任务材料"},
+ {name="acceptance",meaning="该命题的接受条件",rust_type="String",required=true,format="text",unit="不适用",precision="明确有限性质",write="委派前冻结",applicability="当前命题及条件",acceptance="执行完成、语义支持与整体完成分别判断"}
+]
+
+[[types]]
+name = "OrganizationPlan"
+meaning = "宿主为一次任务选择内部方法修订并冻结输入、命题和分工"
+identity = "组织id、方法精确修订、输入与任务范围"
+fields = [
+ {name="schema",meaning="任务组织合同身份",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.organization-plan/2"],unit="不适用",precision="版本1",write="组织准备前冻结",applicability="单次任务",acceptance="不扩展为全局自动应用"},
+ {name="id",meaning="本次组织身份",rust_type="String",required=true,format="text",unit="不适用",precision="显式唯一id",write="宿主选择",applicability="一次任务组织",acceptance="冻结后不原位改写计划"},
+ {name="goal",meaning="完整任务目标",rust_type="String",required=true,format="text",unit="不适用",precision="完整原值",write="按用户任务整理",applicability="全部命题与关闭判断",acceptance="局部成功不缩减目标"},
+ {name="conditions",meaning="本次任务条件",rust_type="Vec<String>",required=true,format="list",unit="条件",precision="显式条目",write="准备时固定",applicability="方法适用性及取证",acceptance="不从历史成功推定当前条件成立"},
+ {name="method_id",meaning="所选内部方法身份",rust_type="String",required=true,format="text",unit="不适用",precision="已有方法id",write="宿主选择",applicability="本次任务",acceptance="运行时验证实际方法记录"},
+ {name="method_revision",meaning="所选方法精确修订",rust_type="u64",required=true,format="integer",unit="修订",precision="已有修订号",write="宿主选择",applicability="本次组织",acceptance="后续方法更新不静默改变当前绑定"},
+ {name="method_sha256",meaning="所选方法记录摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="读取方法记录后固定",applicability="方法身份核验",acceptance="摘要通过不代表当前任务适用性通过"},
+ {name="project_id",meaning="显式关联的工程Project或null",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="明确字符串或null，字段不得缺省",write="有真实关联时绑定",applicability="本次任务范围",acceptance="不得从目录推定或伪造Project；null允许独立使用"},
+ {name="inputs",meaning="本次任务可用输入工件",rust_type="Vec<OrganizationArtifact>",required=true,format="list",unit="工件",precision="完整有界集合",write="准备时冻结",applicability="本次任务及所有命题",acceptance="内容更新必须形成明确新输入身份"},
+ {name="claims",meaning="本次任务全部明确命题",rust_type="Vec<OrganizationClaim>",required=true,format="list",unit="命题",precision="完整显式集合",write="宿主组织后冻结",applicability="分工和验收",acceptance="程序核引用和依赖，不宣称自动完成目标拆解"},
+ {name="host",meaning="负责组织和验收的宿主身份",rust_type="String",required=true,format="text",unit="不适用",precision="显式身份",write="宿主声明",applicability="本次任务",acceptance="身份不是能力或独立审查证明"},
+ {name="execution_mode",meaning="真实执行或开发重放",rust_type="String",required=true,format="status",allowed_values=["live","development_replay"],unit="模式",precision="明确枚举",write="准备前固定",applicability="结果解释",acceptance="开发重放不得冒称新模型调用、盲测或实测收益"}
+]
+
+[[types]]
+name = "OrganizationFinding"
+meaning = "针对一个冻结命题包的证据结果；替代只影响该命题，旧证据保留"
+identity = "组织、命题、包摘要、结果id及明确前修订"
+fields = [
+ {name="schema",meaning="命题结果合同身份",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.organization-finding/2"],unit="不适用",precision="版本1",write="实际结果回读后",applicability="单个命题",acceptance="不覆盖原始提供方回执或旧失败"},
+ {name="organization_id",meaning="所属任务组织",rust_type="String",required=true,format="text",unit="不适用",precision="已有组织id",write="结果绑定",applicability="本次任务",acceptance="不得跨组织接受结果"},
+ {name="id",meaning="结果修订身份",rust_type="String",required=true,format="text",unit="不适用",precision="显式唯一id",write="结果登记",applicability="不可变结果",acceptance="同一id不同内容必须拒绝"},
+ {name="claim_id",meaning="所回答的命题",rust_type="String",required=true,format="text",unit="不适用",precision="组织内命题id",write="绑定实际问题",applicability="逐命题状态",acceptance="不得用另一命题的支持替代本命题验收"},
+ {name="packet_sha256",meaning="实际冻结命题包摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="消费冻结包后回填",applicability="输入及依赖版本核验",acceptance="依赖漂移时不沿用旧支持"},
+ {name="status",meaning="结果支持状态",rust_type="String",required=true,format="status",allowed_values=["supported","unknown","failed","contradicted"],unit="状态",precision="显式原判断",write="实际结果与宿主审查",applicability="该命题及实际输入",acceptance="unknown、失败和反证保持不同；不改为成功"},
+ {name="summary",meaning="有限结果说明",rust_type="String",required=true,format="text",unit="不适用",precision="不超出实际证据",write="结果整理",applicability="当前命题",acceptance="摘要不替代证据原件"},
+ {name="producer",meaning="实际产生结果的角色",rust_type="String",required=true,format="status",allowed_values=["host","agent","program"],unit="角色",precision="明确枚举",write="按实际执行记录",applicability="该结果",acceptance="宿主复核不能改写成外部Agent成功"},
+ {name="evidence",meaning="支持本次结果的实际证据",rust_type="Vec<OrganizationArtifact>",required=true,format="list",unit="工件",precision="完整引用",write="结果回读后绑定",applicability="该命题及条件",acceptance="原件完整性与证据支持性分开"},
+ {name="review",meaning="宿主对当前结果的审查记录",rust_type="OrganizationArtifact",required=true,format="object",unit="工件",precision="实际文件和摘要",write="明确审查后绑定",applicability="结果登记与复用",acceptance="审查存在不自动证明独立验证"},
+ {name="supersedes",meaning="明确被替代的本命题结果id或null",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="显式字符串或null，字段不得缺省",write="新证据修订时指定",applicability="同一组织和命题",acceptance="只替代当前有效头，保留旧结果及下游失效关系"}
+]
+
+[[types]]
+name = "OrganizationClose"
+meaning = "宿主对当前全部命题头的完成或停止结论；不回写证据结果"
+identity = "组织id、关闭id、当前头集合摘要和审查原件"
+fields = [
+ {name="schema",meaning="组织关闭合同身份",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.organization-close/1"],unit="不适用",precision="版本1",write="宿主完成审查后",applicability="本次任务组织",acceptance="停止与完成不得混同"},
+ {name="organization_id",meaning="所属任务组织",rust_type="String",required=true,format="text",unit="不适用",precision="已有组织id",write="明确选择",applicability="当前组织",acceptance="关闭不扩展其他任务范围"},
+ {name="id",meaning="本次关闭身份",rust_type="String",required=true,format="text",unit="不适用",precision="非空唯一id",write="宿主登记",applicability="不可变关闭记录",acceptance="同一id不能改写结果"},
+ {name="outcome",meaning="任务完成或停止",rust_type="String",required=true,format="status",allowed_values=["completed","stopped"],unit="状态",precision="显式枚举",write="宿主审查决定",applicability="当前命题状态与完整目标",acceptance="completed须满足当前全部必要命题；stopped保留未决项"},
+ {name="expected_heads_sha256",meaning="宿主审查时的命题头集合摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="读取当前状态后绑定",applicability="关闭前漂移检查",acceptance="头集合改变必须重新审查，不能沿用旧成功"},
+ {name="summary",meaning="关闭理由及剩余边界",rust_type="String",required=true,format="text",unit="不适用",precision="完整有限说明",write="宿主审查",applicability="本次组织",acceptance="局部结果不冒称工程采用或普遍收益"},
+ {name="review",meaning="宿主关闭验收记录",rust_type="OrganizationArtifact",required=true,format="object",unit="工件",precision="实际原件和摘要",write="完成审查后绑定",applicability="当前头集合",acceptance="真实工程采用另由有权Project流程决定"}
+]
+
+[[requirements]]
+id = "internal_method_task_organization"
+function = "将宿主探索实测后的方法作为有范围内部记录，在每次任务中显式选择并组织外部Agent、程序和宿主的有限命题工作"
+condition = "明确方法修订、实际输入工件、任务条件和无环命题依赖；宿主持有组织及验收职责"
+acceptance = "方法不安装到全局skills；实际字节和逐命题包可复核，修订只替代同一命题当前头并使受影响下游失效；关闭重核必要命题和当前头。开发重放不冒称新模型执行，没有自动网络派发器；仅显式work-run可使用既有provider执行已准备的单项工作，执行与语义验收分开。"
+
+[[modules]]
+id = "memory_task_organization"
+kind = "pipeline"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "保留内部方法与每次任务的范围，在既有私有存储和事件机制上组织明确命题"
+realizes = ["internal_method_task_organization"]
+platform = "生成合同与Rust规则；主模型组织及审查，外部Agent和程序结果按实际证据登记"
+effects = "登记不可变方法修订、组织计划、命题包、结果修订、关闭记录和事件"
+failures = "原件或方法漂移、依赖环、越界角色或输入、旧包、错误替代及过期关闭拒绝；失败和unknown保留"
+status = "source_only"
+depends_on = []
+
+[[constraints]]
+id = "organization_scope_revision_and_acceptance"
+requirement = "internal_method_task_organization"
+module = "memory_task_organization"
+check = "execution"
+rust_path = "modules/engineering-memory/runtime/src/organization.rs"
+statement = "内部方法仅为有范围数据；宿主委派和审查不变。工件摘要、任务内引用、冻结依赖、不可变修订与关闭头集合由Rust核验；实际模型能力、证据语义和工程采用不由文件状态推定。"
+severity = "error"
+
+[[validations]]
+id = "organization_scope_revision_counterexamples"
+constraint = "organization_scope_revision_and_acceptance"
+module = "memory_task_organization"
+behavior = "organization_rejects_scope_and_revision_drift"
+rust_path = "modules/engineering-memory/runtime/src/organization.rs"
+oracle = "冻结方法和输入后改变原件应拒绝；任务内重复id、未知依赖及环应拒绝；修订只替代本命题当前头，下游旧包失效；unknown、failed、contradicted不能完成必要命题；旧头摘要不能关闭；开发重放保持原模式。"
+scope = "任务组织及不可变证据合同的软件行为检查；不是外部Agent准确率、独立盲测或自主规划验收"
+
+[[types]]
+name = "OrganizationClaimHandoff"
+meaning = "已停止组织中单个命题的显式职责与验收接续；不携带结果或完成状态"
+identity = "父组织内原claim_id及本次交接指定的角色、验收和理由"
+fields = [
+ {name="claim_id",meaning="父计划中保留身份的命题",rust_type="String",required=true,format="text",unit="命题",precision="已有命题id",write="宿主逐项指定",applicability="stopped父组织的同范围交接",acceptance="不得新增、删除或重命名命题"},
+ {name="role",meaning="子组织中负责此命题的角色",rust_type="String",required=true,format="status",allowed_values=["host","agent","program"],unit="角色",precision="明确枚举",write="宿主审查后指定",applicability="仅修改所列命题的职责",acceptance="角色改变不继承成功，不表示新角色已执行"},
+ {name="acceptance",meaning="子组织对该命题的明确接受条件",rust_type="String",required=true,format="text",unit="不适用",precision="完整非空原值",write="宿主根据交接理由明确",applicability="同一问题、输入、依赖与必要性",acceptance="接受条件的语义适当性仍由宿主负责；不得据旧结果自动放宽"},
+ {name="reason",meaning="本命题为何改变职责或验收的审查理由",rust_type="String",required=true,format="text",unit="不适用",precision="非空原值",write="宿主明确记录",applicability="当前交接",acceptance="理由不代替来源、执行能力或验收证据"}
+]
+
+[[types]]
+name = "OrganizationHandoff"
+meaning = "从已停止且快照未漂移的父组织建立同范围子组织的显式请求"
+identity = "交接id、父子组织id、父计划与全部命题头摘要及审查原件"
+fields = [
+ {name="schema",meaning="组织接续请求合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.organization-handoff/2"],unit="不适用",precision="版本1",write="宿主提交前冻结",applicability="显式原生handoff入口",acceptance="旧组织合同留存历史，不自动迁移执行身份"},
+ {name="id",meaning="本次交接稳定身份",rust_type="String",required=true,format="text",unit="不适用",precision="非空唯一id",write="宿主指定",applicability="不可变交接及幂等恢复",acceptance="同一id不同请求必须拒绝"},
+ {name="parent_id",meaning="已按stopped关闭的父组织",rust_type="String",required=true,format="text",unit="不适用",precision="已有组织id",write="宿主明确选择",applicability="父计划、关闭与全部头集合同时核验",acceptance="未关闭或completed父组织不能通过本入口接续"},
+ {name="child_id",meaning="准备建立的新组织身份",rust_type="String",required=true,format="text",unit="不适用",precision="与父不同的新id",write="宿主明确指定",applicability="同范围子组织",acceptance="不覆盖既有组织；同一合法交接恢复需核完整原身份"},
+ {name="expected_parent_plan_sha256",meaning="审查时父计划完整规范化记录摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="读取父组织后绑定",applicability="交接前快照核验",acceptance="父目标、方法、Project、条件、输入或命题改变即拒绝"},
+ {name="expected_heads_sha256",meaning="审查时父组织全部当前命题头摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="读取父状态后绑定",applicability="与stopped关闭绑定的同一快照",acceptance="过期头、遗漏命题或父关闭失配必须拒绝"},
+ {name="changes",meaning="逐命题明确的职责与验收变更",rust_type="Vec<OrganizationClaimHandoff>",required=true,format="list",unit="变更",precision="非空明确集合且命题不重复",write="宿主审查后列出",applicability="仅允许既有命题的role和acceptance变化",acceptance="未列命题原样保留；所有子命题均从pending开始"},
+ {name="host",meaning="子组织负责安排与验收的宿主身份",rust_type="String",required=true,format="text",unit="不适用",precision="显式非空身份",write="宿主指定",applicability="新组织的责任绑定",acceptance="身份声明不自动授予外部执行权限或独立验收资格"},
+ {name="execution_mode",meaning="子组织的执行或开发重放模式",rust_type="String",required=true,format="status",allowed_values=["live","development_replay"],unit="模式",precision="明确枚举",write="交接前指定",applicability="保留开发证据的真实身份",acceptance="父development_replay禁止转为live；交接本身不调用模型"},
+ {name="summary",meaning="本次交接的完整理由与剩余边界",rust_type="String",required=true,format="text",unit="不适用",precision="非空有限说明",write="宿主审查后记录",applicability="完整父目标下的同范围接续",acceptance="接续不等于目标已完成，不清理旧失败或未知付款"},
+ {name="review",meaning="宿主对父快照和接续安排的实际审查原件",rust_type="OrganizationArtifact",required=true,format="object",unit="工件",precision="实际文件及SHA256",write="读取原件后绑定",applicability="当前交接请求",acceptance="必须核实际字节；审查存在不等于工程采用"}
+]
+
+[[types]]
+name = "OrganizationHandoffLineage"
+meaning = "实际交接请求、停止父记录与完整子计划的不可变谱系；不转移任何命题完成状态"
+identity = "请求身份、父关闭摘要与实际子计划摘要"
+fields = [
+ {name="schema",meaning="组织接续谱系合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.organization-handoff-lineage/1"],unit="不适用",precision="版本1",write="Rust交接成功时记录",applicability="明确父子组织关系",acceptance="谱系不是可自动执行的方法或结果"},
+ {name="request",meaning="经过核验的完整交接请求",rust_type="OrganizationHandoff",required=true,format="object",unit="请求",precision="原typed请求完整值",write="Rust保留实际请求",applicability="幂等恢复和来源回查",acceptance="不得只保存摘要而遗漏逐命题理由"},
+ {name="parent_close_sha256",meaning="所绑定父stopped关闭记录的完整摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="Rust读取并核父关闭记录",applicability="父关闭、计划及命题头一致",acceptance="旧失败、unknown、反证及关闭记录均原位保留"},
+ {name="child_plan",meaning="实际建立的完整同范围子计划",rust_type="OrganizationPlan",required=true,format="object",unit="计划",precision="原organization-plan/1完整值",write="从父计划复制并仅施加显式允许变更",applicability="保留goal、方法精确修订、Project、conditions、inputs与全部claims",acceptance="子计划不含父findings、packets或关闭；全部命题pending，重新取证或明确登记复用"},
+ {name="child_plan_sha256",meaning="实际子计划完整规范化记录摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="Rust从实际child_plan计算",applicability="谱系与子组织一致性",acceptance="摘要与实际子计划必须相同，不能靠同名id继承结果"}
+]
+
+[[requirements]]
+id = "organization_stopped_scope_handoff"
+function = "将已停止组织的当前完整范围接续到新组织，明确新的职责、验收与宿主并保留父子谱系"
+condition = "父组织为stopped且计划、全部命题头、关闭、方法及输入原件均可核；宿主提供明确交接及审查记录"
+acceptance = "仅可改变子id、host、合法execution_mode与列明命题的role和acceptance；goal、方法、Project、conditions、inputs、全部claim身份、问题、必要性和依赖保持；child全部pending。禁止development_replay升级live；不调用模型，不继承完成状态，不改父历史。"
+
+[[modules]]
+id = "memory_organization_handoff"
+kind = "pipeline"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "在原任务组织存储中接续stopped快照，保存完整范围和明确责任变化"
+realizes = ["organization_stopped_scope_handoff"]
+platform = "生成合同与Rust原生组织规则；宿主负责适用性审查、例外处理与验收"
+effects = "建立不可变交接谱系和同范围子计划；父记录不变，新组织没有命题结果或关闭"
+failures = "父快照或来源漂移、非stopped父、重复或不存在claim、非法角色或模式、额外字段及冲突子身份拒绝"
+status = "source_only"
+depends_on = ["memory_task_organization"]
+
+[[constraints]]
+id = "organization_handoff_preserves_scope_and_pending"
+requirement = "organization_stopped_scope_handoff"
+module = "memory_organization_handoff"
+check = "execution"
+rust_path = "modules/engineering-memory/runtime/src/organization.rs"
+statement = "生成类型拒绝未知字段和非法枚举；Rust核stopped父的计划、关闭、全部头集合及实际原件，子计划只能由父完整计划施加显式白名单变更得到。子命题初始pending，不复制findings/packets/close，不放宽旧付款恢复或开发重放身份。"
+severity = "error"
+
+[[validations]]
+id = "organization_handoff_scope_counterexamples"
+constraint = "organization_handoff_preserves_scope_and_pending"
+module = "memory_organization_handoff"
+behavior = "organization_handoff_rejects_scope_drift_and_inherited_completion"
+rust_path = "modules/engineering-memory/runtime/src/organization.rs"
+oracle = "合法stopped父交接后全部子命题pending且父字节不变；旧schema保持。未关闭/completed父、过期计划/头/关闭、原件漂移、重复或缺失claim、额外字段、子覆盖和replay转live拒绝；相同交接幂等，冲突请求不改变任一组织。"
+scope = "原生组织接续的软件规则；不证明新角色已执行、证据语义正确、独立盲测收益或完整工程采用"
+
+[[types]]
+name = "OrganizationClaimInspectionRequest"
+meaning = "宿主显式只读审阅一个当前组织命题的有界请求；不创建工作包或执行模型"
+identity = "明确organization_id、claim_id及本次完整输出字节预算"
+fields = [
+ {name="schema",meaning="单命题只读审阅请求的合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.organization-claim-inspection-request/1"],unit="不适用",precision="版本1",write="宿主显式查询时",applicability="原生organization inspect-claim",acceptance="只读审阅合同；拒绝未知字段"},
+ {name="organization_id",meaning="显式选择的现有任务组织",rust_type="String",required=true,format="text",unit="组织",precision="非空既有组织id",write="宿主选择",applicability="同一组织锁内读取计划、当前状态及来源",acceptance="不存在、越界或核验失败整体拒绝；不创建组织"},
+ {name="claim_id",meaning="本组织内需要审阅的单个命题",rust_type="String",required=true,format="text",unit="命题",precision="非空既有命题id",write="宿主明确指定",applicability="任意已声明责任角色的当前命题",acceptance="不得混入另一命题或组织的发现"},
+ {name="max_output_bytes",meaning="完整返回data的UTF-8 JSON序列化字节上限，不含CLI或RPC外壳",rust_type="u64",required=true,format="integer",unit="byte",precision="Rust验证256至1048576，含两端",write="宿主查询前明确指定",applicability="本次完整只读结果；不是源核验I/O或进程峰值内存上限",acceptance="输出超过预算整体拒绝，不能截断摘要、原问题、验收、依赖、来源、关闭或执行回执；不授予模型调用预算"}
+]
+
+[[requirements]]
+id = "organization_host_claim_inspection"
+function = "让宿主从同一已核原生组织快照审阅单个命题的原问题、验收、当前发现及其证据"
+condition = "显式组织与命题、合法完整输出预算；持有既有组织读锁并复用load_plan、load_state、status和frontier的核验及状态含义"
+acceptance = "返回原问题和验收、计划与当前头身份、当前finding及摘要/evidence/review、依赖旧新头、关闭状态。宿主用途的读取不调用外部Agent，不创建包、不写状态或事件；超预算整体拒绝不截断。保持语义unknown、依赖stale、关闭状态原义，不自动判因、验收、重试或派发。"
+
+[[modules]]
+id = "memory_organization_claim_inspection"
+kind = "pipeline"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "在现有组织核验和状态投影之上提供单命题证据导航，不另建队列或状态规则"
+realizes = ["organization_host_claim_inspection"]
+platform = "真实生成请求合同与Rust原生只读Value投影；语义诊断和采用继续由宿主负责"
+effects = "仅返回当前组织命题与来源、依赖及关闭的完整有界快照；不修改持久数据"
+failures = "非法请求、未知组织或命题、来源或回执漂移、锁占用及完整输出超过预算均拒绝，不回退为语义unknown"
+status = "source_only"
+depends_on = ["memory_task_organization"]
+
+[[constraints]]
+id = "organization_claim_inspection_current_source_scope"
+requirement = "organization_host_claim_inspection"
+module = "memory_organization_claim_inspection"
+check = "execution"
+rust_path = "modules/engineering-memory/runtime/src/organization.rs"
+statement = "在同一既有组织读锁内复用原计划、方法、输入、发现、依赖、关闭核验；单命题投影保留原问题、验收、当前finding完整值及其摘要身份和原件引用。来源核验不等于语义正确；closed和依赖状态沿用原义，宿主审阅不自动推断因果或接受结论。"
+severity = "error"
+
+[[constraints]]
+id = "organization_claim_inspection_readonly_whole_output"
+requirement = "organization_host_claim_inspection"
+module = "memory_organization_claim_inspection"
+check = "execution"
+rust_path = "modules/engineering-memory/runtime/src/organization.rs"
+statement = "请求max_output_bytes由Rust限制在256..=1048576；以完整data的UTF-8 JSON序列化字节判断预算，超过即整体拒绝，不静默裁剪任何字段。读取不调用提供方、不准备工作或包、不改claim/head、回执、关闭、事件或方法，不自动恢复、重试、派发或提升语义状态；缺失和核验失败显式返回错误而非缓存成功。"
+severity = "error"
+
+[[validations]]
+id = "organization_claim_inspection_scope_counterexamples"
+constraint = "organization_claim_inspection_current_source_scope"
+module = "memory_organization_claim_inspection"
+behavior = "claim_inspection_retains_current_evidence_and_distinct_execution_states"
+rust_path = "modules/engineering-memory/runtime/src/organization.rs"
+oracle = "当前head对应完整finding及证据/review与原问题、验收、依赖头精确匹配；pending无发现，stale保留旧finding_status和变化前后依赖头；semantic unknown与stale依赖分别显示。stopped保留未知且不变ready；host交接的成功不冒称新外部Agent调用。未知claim、跨组织身份或源字节漂移拒绝。"
+scope = "当前单命题证据与既有状态投影的软件一致性；不是模型准确率、独立语义判断或记录发布中断修复"
+
+[[validations]]
+id = "organization_claim_inspection_budget_and_no_side_effects"
+constraint = "organization_claim_inspection_readonly_whole_output"
+module = "memory_organization_claim_inspection"
+behavior = "claim_inspection_rejects_output_overflow_without_writes_or_calls"
+rust_path = "modules/engineering-memory/runtime/src/organization.rs"
+oracle = "缺字段、额外字段、错误schema和256..1048576之外预算拒绝；完整JSON恰好在预算内成功、超过一字节整体拒绝，UTF-8多字节按实际字节计。重复读取以及失败路径的组织/方法持久文件与事件保持一致，零新模型调用；不创建工作包，不修改其他合同或自动发布结果。"
+scope = "请求形状、完整输出预算与本地只读边界；不是源核验I/O或峰值内存预算，也不授予执行或工程采用"
+
+# --- track P: organization publication ---
+[[types]]
+name = "ExperiencePublicationSource"
+meaning = "经验发布所依据的来源层快照：已关闭组织及宿主审阅时的计划、命题头与所引当前结论"
+identity = "来源类别、组织身份、计划与状态摘要及引用结论id集合"
+fields = [
+ {name="kind",meaning="来源层类别",rust_type="String",required=true,format="status",allowed_values=["organization"],unit="不适用",precision="明确枚举",write="宿主显式选择",applicability="仅接收已关闭的组织任务",acceptance="不从目录推断类别；未支持的类别整体拒绝且不写盘"},
+ {name="id",meaning="被发布的组织身份",rust_type="String",required=true,format="text",unit="组织",precision="既有安全id",write="宿主选择",applicability="organizations/<id>/organization",acceptance="不存在、未关闭或核验失败整体拒绝；不创建组织"},
+ {name="expected_plan_sha256",meaning="宿主审阅时计划完整规范化摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="读取frontier.snapshot.plan_sha256后绑定",applicability="发布前快照核验",acceptance="计划摘要不同即拒绝"},
+ {name="expected_state_sha256",meaning="宿主审阅时全部命题头摘要",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="读取frontier.snapshot.heads_sha256后绑定",applicability="与关闭记录绑定的同一快照",acceptance="头集合或关闭失配拒绝，不沿用旧审阅"},
+ {name="cited_ids",meaning="经验所依据的当前结论身份",rust_type="Vec<String>",required=true,format="list",unit="结论",precision="非空且唯一的finding id",write="宿主从当前supported头选择",applicability="经验正文所概括的结论",acceptance="未知、已替代、非supported或stale拒绝；引用不等于独立语义验证"}
+]
+
+[[types]]
+name = "ExperiencePublicationRequest"
+meaning = "宿主显式把已关闭组织的有源结论发布为一条经验修订；关闭本身从不写经验"
+identity = "组织内发布id、来源快照、完整经验修订与宿主审阅原件"
+fields = [
+ {name="schema",meaning="经验发布请求合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.experience-publication-request/2"],unit="不适用",precision="版本1",write="宿主发布前冻结",applicability="原生organization publish",acceptance="experience/2保留原格式；拒绝未知字段"},
+ {name="id",meaning="本次发布稳定身份",rust_type="String",required=true,format="text",unit="发布",precision="组织内唯一安全id",write="宿主指定",applicability="不可变发布意图与精确重放",acceptance="同id不同请求拒绝；中断后仅同一完整请求可补齐"},
+ {name="source",meaning="来源层快照与引用结论",rust_type="ExperiencePublicationSource",required=true,format="object",unit="来源",precision="完整显式绑定",write="读取frontier后绑定",applicability="当前已关闭组织",acceptance="快照漂移、未关闭或结论非当前拒绝"},
+ {name="record",meaning="宿主撰写的完整经验修订",rust_type="ExperienceRecord",required=true,format="object",unit="修订",precision="experience/2原合同完整值，不增字段",write="宿主据真实Codex/Claude会话原锚整理",applicability="共享records历史与日常召回",acceptance="原经验校验、来源重读、修订链全部适用；Project等于计划Project；0.20.2可读"},
+ {name="summary",meaning="发布理由与剩余边界",rust_type="String",required=true,format="text",unit="不适用",precision="非空有限说明",write="宿主审阅后记录",applicability="本次发布意图",acceptance="不冒称工程采用、普遍收益或盲测"},
+ {name="review",meaning="宿主对经验正文与所引结论一致性的审阅原件",rust_type="OrganizationArtifact",required=true,format="object",unit="工件",precision="实际路径及SHA256",write="审阅后绑定",applicability="当前发布请求",acceptance="核实际字节；审阅不授予工程采用"}
+]
+
+[[requirements]]
+id = "organization_explicit_experience_publication"
+function = "由宿主显式把已关闭组织的当前结论发布为一条带真实会话原锚的经验修订，使日常召回可见"
+condition = "组织已关闭且计划与命题头未漂移；所引finding为当前supported头；宿主提供完整experience/2修订、审阅原件和理由"
+acceptance = "仅显式publish写经验，close及其他组织操作从不写records。completed可reviewed；stopped只能draft且unknowns逐项点名未支持的必要命题及任何contradicted命题；开发重放写明development_replay。Project等于计划Project；须含user目标与assistant汇报原锚并点名组织id；不增字段，日常召回摘要不超过6144字节。意图、全局修订预留、经验、回执、事件按序发布并可精确重放；publication-status只读；不调用模型，不授予工程采用。"
+
+[[modules]]
+id = "memory_organization_experience_publication"
+kind = "pipeline"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "在原组织核验与原经验写入之上连接已关闭组织结论与日常召回，不另建经验格式"
+realizes = ["organization_explicit_experience_publication"]
+platform = "真实生成请求合同与Rust原生组织、Store写入；结论选择、撰写和审阅由宿主负责"
+effects = "不可变发布意图、全局record修订预留、一条experience/2修订、回执与事件；计划、发现、关闭和方法使用记录不变"
+failures = "未关闭、快照漂移、结论非当前supported、未决命题未写明、重放未披露、Project不符、原锚无效或角色不全、注入或凭据、超预算、身份或修订冲突均拒绝"
+status = "source_only"
+depends_on = ["memory_task_organization"]
+
+[[constraints]]
+id = "organization_publication_closed_snapshot_coverage"
+requirement = "organization_explicit_experience_publication"
+module = "memory_organization_experience_publication"
+check = "execution"
+rust_path = "modules/engineering-memory/runtime/src/organization_publication.rs"
+statement = "持组织写锁复用load_plan、load_state、status核计划、方法、输入、发现、受管工作及关闭审阅；须已关闭且计划与头摘要等于请求。cited_ids非空唯一且均为当前supported头；未supported的必要命题及任何contradicted命题须以完整id词元出现在unknowns；development_replay须写入conditions或unknowns；reviewed仅限completed；project_id等于计划；时间线点名组织id。程序检查不判断正文语义。"
+severity = "error"
+
+[[constraints]]
+id = "organization_publication_source_screen_and_daily_budget"
+requirement = "organization_explicit_experience_publication"
+module = "memory_organization_experience_publication"
+check = "execution"
+rust_path = "modules/engineering-memory/runtime/src/organization_publication.rs"
+statement = "沿用validate_experience与verify_record_sources重读每个原锚，须至少一条user与一条assistant可见消息；对经验全部文本、原锚正文和summary执行凭据与宿主注入筛查。以会话brief原函数在Project未绑定、无会话条件时计算单候选字节，超过6144整体拒绝并报告所需字节；记录保持experience/2原字段。"
+severity = "error"
+
+[[constraints]]
+id = "organization_publication_intent_and_replay"
+requirement = "organization_explicit_experience_publication"
+module = "memory_organization_experience_publication"
+check = "execution"
+rust_path = "modules/engineering-memory/runtime/src/organization_publication.rs"
+statement = "锁序：组织写锁（立即失败）后Store写锁。写锁内先权威预检，再依次发布组织内不可变intent、全局experience-publications/<record>/r<revision>预留与经验修订；释放后写回执和内容寻址事件。无既有intent而修订已存在即拒绝；同一请求重放核对已存在部分并补齐缺失部分；不同请求、他人预留或修订冲突拒绝且不改既有文件。records目录只写经验历史；close不写经验。"
+severity = "error"
+
+[[validations]]
+id = "organization_publication_snapshot_counterexamples"
+constraint = "organization_publication_closed_snapshot_coverage"
+module = "memory_organization_experience_publication"
+behavior = "publication_rejects_open_drifted_unsupported_and_undisclosed_states"
+rust_path = "modules/engineering-memory/runtime/src/organization_publication.rs"
+oracle = "未关闭、错计划或旧头、已替代/unknown/stale/未知finding、重复或空引用、stopped写reviewed、unknowns漏写或仅近似词元、重放未披露、Project不符、未点名组织均拒绝且不写盘；合规completed reviewed与stopped draft通过，组织status、frontier、plan与close字节不变。"
+scope = "已关闭组织快照、引用和披露规则的软件行为；不证明正文语义正确或工程收益"
+
+[[validations]]
+id = "organization_publication_source_and_budget_counterexamples"
+constraint = "organization_publication_source_screen_and_daily_budget"
+module = "memory_organization_experience_publication"
+behavior = "publication_reverifies_anchors_screens_text_and_fits_hook_budget"
+rust_path = "modules/engineering-memory/runtime/src/organization_publication.rs"
+oracle = "原件改动、单一角色原锚、注入行、凭据标记均拒绝；摘要恰6144字节通过、多1字节拒绝并报所需字节。历史仅含schema与revisions，修订字段集合等于experience/2，可被recall及按hook预算准备的会话召回且无来源错误。"
+scope = "原锚重读、文本筛查、日常候选预算与旧格式兼容；不证明排序质量或使用收益"
+
+[[validations]]
+id = "organization_publication_recovery_counterexamples"
+constraint = "organization_publication_intent_and_replay"
+module = "memory_organization_experience_publication"
+behavior = "publication_replays_prefixes_and_never_publishes_on_close"
+rust_path = "modules/engineering-memory/runtime/src/organization_publication.rs"
+oracle = "completed与stopped关闭后records与预留均不存在；成功发布恰新增一条修订、一份intent、预留、回执与一个事件。移去回执、事件、经验或预留模拟中断后同一请求恢复相同字节；重放不增修订或事件。同id改请求、他发布占用同修订、无intent的既有修订、组织锁占用及未知类别拒绝且不写盘；publication-status只读。"
+scope = "本地不可变发布与崩溃恢复；不提供签名存储或防同权限篡改，不授予工程采用"
+
+# --- track D: history anchor catalog ---
+[[types]]
+name = "HistoryIndexRoot"
+meaning = "全历史对话锚点目录显式扫描的一个会话根目录及其原件格式与来源标签"
+identity = "规范化绝对目录、provider与profile"
+fields = [
+ {name="path",meaning="宿主显式选择的会话根目录",rust_type="String",required=true,format="text",unit="不适用",precision="绝对路径，Rust规范化为实际目录",write="宿主构建请求时",applicability="只扫描该目录下按provider匹配的普通文件，不跟随符号链接",acceptance="非目录、相对路径、凭据路径或与其他根重复均拒绝"},
+ {name="provider",meaning="根目录内会话原件格式",rust_type="String",required=true,format="status",allowed_values=["claude","codex"],unit="不适用",precision="明确枚举",write="宿主声明",applicability="codex只匹配rollout-*.jsonl，claude匹配*.jsonl",acceptance="不从路径或内容推断格式"},
+ {name="profile",meaning="写入每个锚点的来源标签",rust_type="String",required=true,format="text",unit="不适用",precision="非空，最多120字节，无控制字符",write="宿主声明",applicability="与hook来源标签一致，例如.codex或Claude profile目录名",acceptance="标签不是Project身份，也不授予执行权限"}
+]
+
+[[types]]
+name = "HistoryIndexBuildRequest"
+meaning = "宿主显式发起一次有界、可续跑、互斥的全历史对话锚点目录构建；不调用模型"
+identity = "根目录集合、文件数与时长上限、最小剩余空间及前缀核验范围"
+fields = [
+ {name="schema",meaning="全历史对话目录构建请求的合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.history-index-build-request/1"],unit="不适用",precision="版本1",write="宿主构建前冻结",applicability="原生history-index-build",acceptance="拒绝未知字段；原144个合同类型保持不变"},
+ {name="roots",meaning="本次扫描的会话根目录",rust_type="Vec<HistoryIndexRoot>",required=true,format="list",unit="根目录",precision="1至64个规范化后互不重复的目录",write="宿主显式列出",applicability="只在这些目录内发现文件，重叠目录按规范路径去重",acceptance="空集合、重复根、非目录或凭据路径拒绝"},
+ {name="max_files",meaning="本次最多处理的新增或变化文件数",rust_type="u64",required=true,format="integer",unit="文件",precision="Rust验证1至100000",write="宿主按批次选择",applicability="未变化且已完成的文件只做元数据比较，不计入",acceptance="达到上限即停在文件边界，剩余文件报告为待处理"},
+ {name="max_seconds",meaning="本次构建的墙钟上限",rust_type="u64",required=true,format="integer",unit="s",precision="Rust验证1至86400",write="宿主按时段选择",applicability="在窗口与文件边界检查，到时提交已完成部分后停止",acceptance="不是单次读窗的硬中断；中断后下次从已提交游标续跑"},
+ {name="min_free_bytes",meaning="目录所在文件系统必须保留的最小可用空间",rust_type="u64",required=true,format="integer",unit="byte",precision="非负整数，日常政策为300 GiB",write="宿主声明",applicability="开始前及每次提交前检查",acceptance="低于该值即提交已完成部分并停止，不写半个分片"},
+ {name="verify",meaning="已完成文件的前缀核验范围",rust_type="String",required=true,format="status",allowed_values=["all","changed"],unit="不适用",precision="明确枚举",write="宿主选择",applicability="changed只对大小、修改时间或inode变化及未完成文件重算前缀；all还重核未变化文件",acceptance="前缀摘要不符或截断时旧分片移入superseded后从0重建"}
+]
+
+[[types]]
+name = "HistorySearchRequest"
+meaning = "宿主只读检索全历史对话锚点目录的有界请求；结果须用read_window复核后才能引用"
+identity = "查询文字、结果上限与可选来源和时间过滤"
+fields = [
+ {name="schema",meaning="全历史对话检索请求的合同版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.history-search-request/1"],unit="不适用",precision="版本1",write="宿主检索时",applicability="原生history-search",acceptance="拒绝未知字段"},
+ {name="query",meaning="检索文字",rust_type="String",required=true,format="text",unit="不适用",precision="去除首尾空白后非空，最多4096字节",write="宿主提供",applicability="与recall相同的Unicode归一化、词与中文二三字词项",acceptance="空查询拒绝；不解析为指令"},
+ {name="limit",meaning="返回锚点上限",rust_type="u64",required=true,format="integer",unit="锚点",precision="Rust验证1至50",write="宿主提供",applicability="按分数及路径、字节位置确定排序",acceptance="越界拒绝"},
+ {name="provider",meaning="可选原件格式过滤",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="显式null表示不过滤；Rust只接受claude或codex",write="宿主提供",applicability="只保留该provider锚点",acceptance="非枚举值拒绝"},
+ {name="profile",meaning="可选来源标签过滤",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="显式null表示不过滤",write="宿主提供",applicability="精确匹配锚点profile",acceptance="空字符串拒绝"},
+ {name="session_id",meaning="可选会话身份过滤",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="显式null表示不过滤",write="宿主提供",applicability="精确匹配锚点session_id",acceptance="空字符串拒绝"},
+ {name="since",meaning="可选起始时间，含",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="RFC3339",write="宿主提供",applicability="只保留有event_at且不早于该时刻的锚点",acceptance="无法解析或晚于until拒绝"},
+ {name="until",meaning="可选结束时间，含",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="RFC3339",write="宿主提供",applicability="只保留有event_at且不晚于该时刻的锚点",acceptance="无法解析拒绝"}
+]
+
+[[types]]
+name = "HistoryIndexFile"
+meaning = "全历史对话目录中一个原件文件的游标、身份与已索引前缀摘要清单"
+identity = "规范化原件路径、设备与inode、已提交游标和前缀SHA256"
+fields = [
+ {name="schema",meaning="单文件目录清单版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.history-index-file/1"],unit="不适用",precision="版本1",write="每次提交",applicability="history-index/files",acceptance="未知字段或版本拒绝"},
+ {name="source_path",meaning="规范化原件路径",rust_type="String",required=true,format="text",unit="不适用",precision="绝对路径",write="首次发现",applicability="分片文件名为其SHA256",acceptance="路径变化视为新文件"},
+ {name="root",meaning="发现该文件的规范化根目录",rust_type="String",required=true,format="text",unit="不适用",precision="绝对路径",write="首次发现",applicability="来源范围说明",acceptance="不跨根推断"},
+ {name="provider",meaning="原件格式",rust_type="String",required=true,format="status",allowed_values=["claude","codex"],unit="不适用",precision="明确枚举",write="首次发现",applicability="读窗格式",acceptance="与根声明一致"},
+ {name="profile",meaning="锚点来源标签",rust_type="String",required=true,format="text",unit="不适用",precision="非空",write="首次发现",applicability="写入每个锚点",acceptance="不是Project身份"},
+ {name="device",meaning="原件所在设备号",rust_type="u64",required=true,format="integer",unit="不适用",precision="Unix st_dev",write="每次提交",applicability="检测替换",acceptance="变化视为替换并重建"},
+ {name="inode",meaning="原件inode",rust_type="u64",required=true,format="integer",unit="不适用",precision="Unix st_ino",write="每次提交",applicability="检测替换",acceptance="变化视为替换并重建"},
+ {name="source_size",meaning="本次处理开始时的原件字节数",rust_type="u64",required=true,format="integer",unit="byte",precision="整数",write="每次提交",applicability="判断是否追加",acceptance="小于游标视为截断并重建"},
+ {name="modified_seconds",meaning="本次处理开始时的原件修改时间整秒",rust_type="u64",required=true,format="integer",unit="s",precision="Unix纪元秒",write="每次提交",applicability="与纳秒部分及大小一起判断未变化",acceptance="未变化且complete才跳过读取"},
+ {name="modified_nanos",meaning="本次处理开始时的原件修改时间秒内纳秒",rust_type="u64",required=true,format="integer",unit="ns",precision="0至999999999",write="每次提交",applicability="与整秒部分及大小一起判断未变化",acceptance="拆分保存以保持整数互操作上限"},
+ {name="cursor",meaning="已完整处理到的记录边界",rust_type="u64",required=true,format="integer",unit="byte",precision="0或某个换行之后",write="每次提交",applicability="下次从此续扫",acceptance="只覆盖完整行"},
+ {name="prefix_sha256",meaning="原件[0,cursor)字节的流式SHA256",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="每次提交",applicability="续扫前以64 KiB块重算核对",acceptance="不符即旧分片移入superseded并从0重建"},
+ {name="shard_bytes",meaning="分片中已提交的字节数",rust_type="u64",required=true,format="integer",unit="byte",precision="整数",write="每次提交",applicability="检索只读已提交部分；中断后截去未提交尾部",acceptance="分片短于该值视为损坏并重建"},
+ {name="complete",meaning="是否已处理到开始时原件的最后完整行",rust_type="bool",required=true,format="boolean",unit="不适用",precision="布尔",write="每次提交",applicability="未变化且complete时跳过",acceptance="中途停止为false"},
+ {name="anchors",meaning="分片中的锚点数",rust_type="u64",required=true,format="integer",unit="条",precision="整数",write="每次提交",applicability="状态统计",acceptance="与分片行数一致"},
+ {name="excluded_records",meaning="读窗排除的非可见消息记录数",rust_type="u64",required=true,format="integer",unit="条",precision="整数",write="每次提交",applicability="覆盖说明",acceptance="不是丢失"},
+ {name="credential_screened",meaning="因凭据标记未写入目录的可见消息数",rust_type="u64",required=true,format="integer",unit="条",precision="整数",write="每次提交",applicability="凭据边界",acceptance="原件不变，只是不进入目录"},
+ {name="oversized_skipped",meaning="经证明非可见消息而跳过的超长行数",rust_type="u64",required=true,format="integer",unit="行",precision="整数",write="每次提交",applicability="每行另有不可变回执",acceptance="消息候选从不跳过"},
+ {name="invalid_json",meaning="读窗报告为非法JSON的行数",rust_type="u64",required=true,format="integer",unit="行",precision="整数",write="每次提交",applicability="原件质量说明",acceptance="不产生锚点"},
+ {name="identity_missing",meaning="缺会话身份而无法成锚的消息数",rust_type="u64",required=true,format="integer",unit="条",precision="整数",write="每次提交",applicability="Codex文件头缺session_meta等",acceptance="不猜测会话身份"},
+ {name="blocked_at",meaning="停住该文件的超长行起点",rust_type="Option<u64>",required=false,format="integer",unit="byte",precision="显式null表示未阻塞",write="遇到可能为消息的超长行时",applicability="该文件之后内容不进入目录",acceptance="从不猜测跳过可能的消息"},
+ {name="blocked_reason",meaning="阻塞原因",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="显式null表示未阻塞；Rust只写oversized_line_unclassifiable或oversized_visible_message",write="与blocked_at一起",applicability="状态报告",acceptance="与blocked_at同时存在或同时为null"},
+ {name="indexed_at",meaning="本次提交时间",rust_type="String",required=true,format="text",unit="不适用",precision="RFC3339",write="每次提交",applicability="状态报告",acceptance="不是原件时间"}
+]
+
+[[types]]
+name = "HistoryIndexOversizedLine"
+meaning = "超过16 MiB且经流式解析证明不是可见用户或助手消息而跳过的一行原件回执"
+identity = "原件路径、字节范围与整行SHA256"
+fields = [
+ {name="schema",meaning="超长行回执版本",rust_type="String",required=true,format="status",allowed_values=["engineering-memory.history-index-oversized-line/1"],unit="不适用",precision="版本1",write="跳过前一次写入",applicability="history-index/oversized",acceptance="同一位置内容不同即拒绝覆盖"},
+ {name="source_path",meaning="原件路径",rust_type="String",required=true,format="text",unit="不适用",precision="规范化绝对路径",write="跳过时",applicability="回查",acceptance="与清单一致"},
+ {name="byte_start",meaning="该行起点",rust_type="u64",required=true,format="integer",unit="byte",precision="记录边界",write="跳过时",applicability="回查",acceptance="等于跳过前游标"},
+ {name="byte_end",meaning="该行末尾含换行",rust_type="u64",required=true,format="integer",unit="byte",precision="换行之后",write="跳过时",applicability="回查",acceptance="大于起点16 MiB以上"},
+ {name="sha256",meaning="整行字节SHA256",rust_type="String",required=true,format="sha256",unit="不适用",precision="64位小写十六进制",write="流式计算",applicability="身份核对",acceptance="原件变化时随前缀重建"},
+ {name="reason",meaning="跳过依据",rust_type="String",required=true,format="status",allowed_values=["invalid_json","not_visible_message"],unit="不适用",precision="明确枚举",write="跳过时",applicability="与读窗规则一致",acceptance="可能为消息的行不得写入本回执"},
+ {name="record_type",meaning="顶层type字符串",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="非字符串或缺失为null",write="跳过时",applicability="分类依据",acceptance="只作说明"},
+ {name="body_type",meaning="Codex payload.type字符串",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="非字符串或缺失为null",write="跳过时",applicability="分类依据",acceptance="只作说明"},
+ {name="body_role",meaning="消息体role字符串",rust_type="Option<String>",required=false,format="text",unit="不适用",precision="非字符串或缺失为null",write="跳过时",applicability="分类依据",acceptance="只作说明"}
+]
+
+[[types]]
+name = "HistorySearchHit"
+meaning = "全历史对话检索返回的一条锚点及其词项分数"
+identity = "原件锚点身份与本次查询分数"
+fields = [
+ {name="score",meaning="与recall同式的词项相关分数",rust_type="u64",required=true,format="integer",unit="不适用",precision="正整数，乘10000后取整",write="检索时计算",applicability="排序提示",acceptance="分数不是证据"},
+ {name="anchor",meaning="目录中保存的原件锚点",rust_type="SourceAnchor",required=true,format="object",unit="锚点",precision="与read_window同范围输出逐字段一致",write="构建时保存",applicability="引用前须重新read_window复核",acceptance="原件变化后不得直接引用"}
+]
+
+[[requirements]]
+id = "history_conversation_anchor_catalog"
+function = "为全部历史会话建立只含用户与助手可见消息的对话锚点目录，并按文字检索返回可直接核对引用的原件锚点"
+condition = "宿主显式根目录与有界构建请求；会话原件为追加写入的Codex或Claude JSONL；锚点只由evidence::read_window产生"
+acceptance = "目录条目逐字段等于read_window对同一字节范围的SourceAnchor；每个文件保存游标、大小、修改时间、inode与已索引前缀的流式SHA256，追加只索引新尾部，前缀不符、截断或替换时旧分片与清单移入superseded后从0重建，不混合新旧内容。超过16 MiB的行只在流式解析证明不是可见消息或为非法JSON时留下不可变回执并跳过，可能是消息则记录blocked_at并停止该文件。构建互斥、可续跑、幂等，遵守文件数、时长与最小剩余空间并只提交完整行；不跟随符号链接，跳过凭据路径与含凭据标记的消息。状态与检索只读、内存有界，只读已提交分片，结果引用前须用read_window复核；不调用模型，不写正式经验，不授予工程采用。"
+
+[[modules]]
+id = "memory_history_anchor_catalog"
+kind = "pipeline"
+rust_path = "modules/engineering-memory/runtime"
+purpose = "以原件读窗器建立低占用的全历史可见对话目录，替代复制全部原件的内容接入"
+realizes = ["history_conversation_anchor_catalog"]
+platform = "Rust原生流式读取、分片JSONL与单文件清单；检索复用recall的归一化、词项与打分"
+effects = "只写history-index下的清单、分片、超长行回执、构建回执与被替换的旧分片；不写records、sources、packets或会话原件"
+failures = "非法请求、根目录无效、构建锁占用、来源读取中变化及磁盘余量不足均显式报告；单文件失败不改变其他文件已提交状态"
+status = "source_only"
+depends_on = ["cass_evidence", "memory_runtime"]
+
+[[constraints]]
+id = "history_index_prefix_integrity"
+requirement = "history_conversation_anchor_catalog"
+module = "memory_history_anchor_catalog"
+check = "verify_prefix_then_extend"
+rust_path = "modules/engineering-memory/runtime/src/history_index.rs"
+statement = "续扫前以64 KiB块重算[0,cursor)的SHA256并与清单比较，同时核对设备、inode与大小不小于游标；任何不符都把旧分片、清单与该文件超长行回执移入superseded后从0重建。每个读窗终点对齐到完整行，锚点直接取自read_window，游标只前进到已处理的完整记录；分片先追加并同步，清单后原子提交，未提交尾部在续扫前截去。"
+severity = "error"
+
+[[constraints]]
+id = "history_index_oversized_line_boundary"
+requirement = "history_conversation_anchor_catalog"
+module = "memory_history_anchor_catalog"
+check = "classify_oversized_line"
+rust_path = "modules/engineering-memory/runtime/src/history_index.rs"
+statement = "超过16 MiB的完整行用流式解析只读取顶层type、payload或message的type、role、channel、phase及内容块类型，规则与读窗的可见消息判定一致；重复关键键或无法判定视为可能的消息。只有非法JSON或可证明非可见消息才写不可变回执并前进；可能的消息记录blocked_at与原因并停止该文件；没有换行的末尾行视为仍在写入而等待。"
+severity = "error"
+
+[[constraints]]
+id = "history_search_readonly_bounded"
+requirement = "history_conversation_anchor_catalog"
+module = "memory_history_anchor_catalog"
+check = "search_committed_shards"
+rust_path = "modules/engineering-memory/runtime/src/history_index.rs"
+statement = "状态与检索不创建目录、不取构建锁、不写任何文件；检索按清单只读取已提交分片字节，逐行解析锚点，按provider、profile、会话与时间过滤，用recall同一归一化与词项公式打分，每个线程只保留前k个结果；空查询、越界上限、非法时间拒绝。"
+severity = "error"
+
+[[validations]]
+id = "history_index_anchor_equality"
+constraint = "history_index_prefix_integrity"
+module = "memory_history_anchor_catalog"
+behavior = "history_index_builds_codex_and_claude_anchors_equal_to_read_window"
+rust_path = "modules/engineering-memory/runtime/tests/history_index.rs"
+oracle = "合成Codex与Claude原件构建后分片锚点逐字段等于read_window全范围输出，开发者、推理、工具与事件记录不进入目录，含凭据标记的消息被计数排除。"
+scope = "读窗一致性与可见消息边界；不评价检索质量"
+
+[[validations]]
+id = "history_index_incremental_and_rewrite"
+constraint = "history_index_prefix_integrity"
+module = "memory_history_anchor_catalog"
+behavior = "history_index_appends_scan_only_tail_and_rewrites_supersede"
+rust_path = "modules/engineering-memory/runtime/tests/history_index.rs"
+oracle = "追加后只索引新增字节且锚点无重复；中段改写或截断后旧分片与清单出现在superseded，新分片等于新原件读窗；未换行的末尾行等换行出现后才索引；模拟提交前中断后不重复锚点。"
+scope = "本地追加写入原件的增量与重建；不提供签名或防同权限篡改"
+
+[[validations]]
+id = "history_index_oversized_lines"
+constraint = "history_index_oversized_line_boundary"
+module = "memory_history_anchor_catalog"
+behavior = "history_index_skips_oversized_non_messages_and_blocks_messages"
+rust_path = "modules/engineering-memory/runtime/tests/history_index.rs"
+oracle = "超长Codex事件行与Claude工具结果行留下回执并继续索引后续消息；超长可见用户消息使文件停在该行并报告原因，之前的消息保留、之后不进入。"
+scope = "超长行分类边界；不改变读窗16 MiB上限"
+
+[[validations]]
+id = "history_index_bounded_resumable_build"
+constraint = "history_index_prefix_integrity"
+module = "memory_history_anchor_catalog"
+behavior = "history_index_build_is_bounded_resumable_and_exclusive"
+rust_path = "modules/engineering-memory/runtime/tests/history_index.rs"
+oracle = "max_files停在文件边界并报告待处理，重复构建最终完成且结果相同；持有构建锁时第二次构建拒绝；min_free_bytes不足时不写分片；符号链接与凭据路径不被索引。"
+scope = "构建控制与资源边界"
+
+[[validations]]
+id = "history_search_readonly_ranking"
+constraint = "history_search_readonly_bounded"
+module = "memory_history_anchor_catalog"
+behavior = "history_search_ranks_filters_and_is_read_only"
+rust_path = "modules/engineering-memory/runtime/tests/history_index.rs"
+oracle = "中文与英文查询按recall同式排序，provider、profile、会话与时间过滤生效，空查询与越界上限拒绝；状态与检索前后目录逐字节不变，缺失目录时不创建。"
+scope = "只读检索行为；不证明语义相关性"
+
+# --- track B: authorized curation ---
+

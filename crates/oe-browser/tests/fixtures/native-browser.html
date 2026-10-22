@@ -1,0 +1,5 @@
+<!doctype html><html><head><title>Native browser test</title></head>
+<body><h1>Native browser test</h1><label for="format">Format</label>
+<select id="format"><option selected disabled value="">Choose</option><option value="dxf">DXF</option><option value="step">STEP</option></select>
+<label for="model">Model</label><input id="model" type="text"><button id="apply" onclick="document.getElementById('result').textContent='Completed: '+document.getElementById('model').value+' / '+document.getElementById('format').selectedOptions[0].text">Apply</button>
+<p id="result">Pending</p><a href="AB-123.dxf" download>Download DXF</a></body></html>

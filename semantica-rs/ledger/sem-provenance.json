@@ -1,0 +1,2075 @@
+{
+ "schema": "semantica.migration-ledger/1",
+ "scope_sha256": "b1470d9980755811c815be24cdc041740de5f55e28232c327f0845d160455226",
+ "module": "sem-provenance",
+ "entries": [
+  {
+   "id": "semantica/provenance/__init__.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|ProvenanceEntry|57",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::ProvenanceEntry"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|SourceReference|58",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::SourceReference"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|AgentRecord|59",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::AgentRecord"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|ActivityRecord|60",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::ActivityRecord"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|Invalidation|61",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::Invalidation"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|ProvenanceStorage|64",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|InMemoryStorage|65",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|SQLiteStorage|66",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|ProvenanceManager|69",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|default_storage_path|70",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/manager.rs::default_storage_path"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|compute_checksum|73",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/integrity.rs::compute_checksum"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/__init__.py|python_export|verify_checksum|74",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/lib.rs",
+    "semantica-rs/crates/sem-provenance/src/integrity.rs::verify_checksum"
+   ],
+   "tests": [
+    "provenance_init::exported_names_work_from_the_crate_root",
+    "provenance_init::all_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|class|BridgeAxiom|69",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs::BridgeAxiom"
+   ],
+   "tests": [
+    "provenance_test_bridge_axiom::test_bridge_axiom_basics__test_create_bridge_axiom",
+    "provenance_bridge::apply_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|method|BridgeAxiom.apply|136",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs::BridgeAxiom::apply"
+   ],
+   "tests": [
+    "provenance_test_bridge_axiom::test_bridge_axiom_basics__test_bridge_axiom_apply_without_provenance",
+    "provenance_test_bridge_axiom::test_bridge_axiom_basics__test_bridge_axiom_apply_with_provenance",
+    "provenance_bridge::apply_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|method|BridgeAxiom.to_dict|213",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs::BridgeAxiom::to_dict"
+   ],
+   "tests": [
+    "provenance_test_bridge_axiom::test_edge_cases__test_axiom_to_dict",
+    "provenance_bridge::apply_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|class|TranslationChain|231",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs::TranslationChain"
+   ],
+   "tests": [
+    "provenance_test_bridge_axiom::test_translation_chains__test_create_translation_chain",
+    "provenance_bridge::manual_chain_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|method|TranslationChain.add_layer|260",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs::TranslationChain::add_layer"
+   ],
+   "tests": [
+    "provenance_test_bridge_axiom::test_translation_chains__test_add_layers_to_chain",
+    "provenance_bridge::manual_chain_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|method|TranslationChain.get_layer|288",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs::TranslationChain::get_layer"
+   ],
+   "tests": [
+    "provenance_test_bridge_axiom::test_translation_chains__test_add_layers_to_chain",
+    "provenance_bridge::manual_chain_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|method|TranslationChain.to_dict|303",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs::TranslationChain::to_dict"
+   ],
+   "tests": [
+    "provenance_test_bridge_axiom::test_edge_cases__test_chain_to_dict",
+    "provenance_bridge::manual_chain_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|function|create_translation_chain|313",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs::create_translation_chain"
+   ],
+   "tests": [
+    "provenance_test_bridge_axiom::test_translation_chains__test_multi_axiom_chain",
+    "provenance_bridge::translation_chain_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/bridge_axiom.py|function|trace_translation_chain|391",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/bridge_axiom.rs::trace_translation_chain"
+   ],
+   "tests": [
+    "provenance_bridge::translation_chain_matches_oracle",
+    "provenance_bridge::manual_chain_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/integrity.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/integrity.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/integrity.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/integrity.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/integrity.py|function|compute_checksum|27",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/integrity.rs::compute_checksum"
+   ],
+   "tests": [
+    "provenance_integrity::entry_checksums_match_oracle",
+    "provenance_integrity::dict_path_checksums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/integrity.py|function|verify_checksum|119",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/integrity.rs::verify_checksum"
+   ],
+   "tests": [
+    "provenance_integrity::entry_checksums_match_oracle",
+    "provenance_integrity::dict_path_checksums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/integrity.py|function|compute_data_checksum|153",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/integrity.rs::compute_data_checksum"
+   ],
+   "tests": [
+    "provenance_integrity::data_and_dict_checksums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/integrity.py|function|verify_data_checksum|171",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/integrity.rs::verify_data_checksum"
+   ],
+   "tests": [
+    "provenance_integrity::data_and_dict_checksums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/integrity.py|function|compute_dict_checksum|193",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/integrity.rs::compute_dict_checksum"
+   ],
+   "tests": [
+    "provenance_integrity::data_and_dict_checksums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/integrity.py|function|verify_dict_checksum|217",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/integrity.rs::verify_dict_checksum"
+   ],
+   "tests": [
+    "provenance_integrity::data_and_dict_checksums_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs",
+    "semantica-rs/crates/sem-provenance/src/rdf.rs",
+    "semantica-rs/crates/sem-provenance/src/clock.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs",
+    "semantica-rs/crates/sem-provenance/src/rdf.rs",
+    "semantica-rs/crates/sem-provenance/src/clock.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|function|default_storage_path|50",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::default_storage_path",
+    "semantica-rs/crates/sem-provenance/src/manager.rs::DefaultStoragePathGuard"
+   ],
+   "tests": [
+    "provenance_manager::default_storage_path_matches_oracle",
+    "provenance_manager::default_storage_path_contexts_serialize_across_threads"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|class|ProvenanceManager|59",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager",
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::with_options"
+   ],
+   "tests": [
+    "provenance_manager::scenario_basic_matches_oracle",
+    "provenance_manager::constructor_config_resolution_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.set_default_storage_path|85",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::set_default_storage_path"
+   ],
+   "tests": [
+    "provenance_manager::default_storage_path_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.default_storage_path|92",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::default_storage_path"
+   ],
+   "tests": [
+    "provenance_manager::default_storage_path_matches_oracle",
+    "provenance_manager::default_storage_path_contexts_serialize_across_threads"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.track_entity|263",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::track_entity",
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::track_entity_with_conn"
+   ],
+   "tests": [
+    "provenance_manager::scenario_basic_matches_oracle",
+    "provenance_manager::scenario_retrack_matches_oracle",
+    "provenance_test_sqlite_storage_performance_807::test_track_entity_concurrent_read_modify_write"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.track_relationship|417",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::track_relationship"
+   ],
+   "tests": [
+    "provenance_manager::scenario_kwargs_matches_oracle",
+    "provenance_failures::storage_store_errors_are_swallowed"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.track_chunk|475",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::track_chunk",
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::track_chunk_with_conn"
+   ],
+   "tests": [
+    "provenance_manager::scenario_lineage_matches_oracle",
+    "provenance_manager::scenario_kwargs_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.track_property_source|546",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::track_property_source"
+   ],
+   "tests": [
+    "provenance_manager::scenario_kwargs_matches_oracle",
+    "provenance_failures::storage_store_errors_are_swallowed"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.track_entities_batch|616",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::track_entities_batch"
+   ],
+   "tests": [
+    "provenance_manager::scenario_batch_matches_oracle",
+    "provenance_manager::scenario_batch_sqlite_matches_oracle",
+    "provenance_test_sqlite_storage_performance_807::test_track_entities_batch_transaction_sharing"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.track_chunks_batch|687",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::track_chunks_batch"
+   ],
+   "tests": [
+    "provenance_manager::scenario_batch_matches_oracle",
+    "provenance_test_sqlite_storage_performance_807::test_chunks_batch_does_not_count_individually_failed_items"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.get_lineage|748",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::get_lineage"
+   ],
+   "tests": [
+    "provenance_manager::scenario_lineage_matches_oracle",
+    "provenance_manager::scenario_retrack_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.trace_lineage|814",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::trace_lineage"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle",
+    "provenance_test_sqlite_storage_performance_807::test_trace_lineage_batched_bfs_and_max_depth",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.trace_descendants|838",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::trace_descendants"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle",
+    "provenance_manager::scenario_retrack_sqlite_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.get_descendants|860",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::get_descendants"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle",
+    "provenance_manager::scenario_retrack_sqlite_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.revision_history|886",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::revision_history"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.query_recorded_between|947",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::query_recorded_between"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.get_all_sources|969",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::get_all_sources"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.get_provenance|994",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::get_provenance"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle",
+    "provenance_test_bridge_axiom::test_provenance_integration__test_axiom_tracks_provenance"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.invalidate|1011",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::invalidate"
+   ],
+   "tests": [
+    "provenance_manager::scenario_invalidate_matches_oracle",
+    "provenance_manager::scenario_invalidate_sqlite_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.clear|1087",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::clear"
+   ],
+   "tests": [
+    "provenance_manager::scenario_basic_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.get_statistics|1100",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::get_statistics"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle",
+    "provenance_manager::scenario_kwargs_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.lineage|1124",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::lineage"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.audit_log|1151",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::audit_log",
+    "semantica-rs/crates/sem-provenance/src/manager.rs::AuditLog"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle",
+    "provenance_manager::scenario_retrack_sqlite_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.export_prov|1203",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::export_prov",
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::prov_graph",
+    "semantica-rs/crates/sem-provenance/src/rdf.rs::serialize"
+   ],
+   "tests": [
+    "provenance_export::rich_graph_exports_match_oracle",
+    "provenance_export::sibling_blank_nodes_export_isomorphic_to_oracle",
+    "provenance_export::identifier_and_literal_forms_match_oracle",
+    "provenance_export::serializer_names_follow_rdflib"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.check|1367",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::check"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle",
+    "provenance_manager::scenario_invalidate_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/manager.py|method|ProvenanceManager.verify_chain|1415",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/manager.rs::ProvenanceManager::verify_chain"
+   ],
+   "tests": [
+    "provenance_manager::scenario_retrack_matches_oracle",
+    "provenance_manager::scenario_sqlite_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/provenance_usage.md|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/provenance_usage.md",
+    "semantica-rs/crates/sem-provenance/src/lib.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs",
+    "semantica-rs/crates/sem-provenance/src/isoformat.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs",
+    "semantica-rs/crates/sem-provenance/src/isoformat.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|class|ProvenanceEntry|35",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::ProvenanceEntry"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry__test_create_basic_entry",
+    "provenance_schemas::provenance_entry_defaults_and_repr_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|ProvenanceEntry.to_dict|165",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::ProvenanceEntry::to_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry__test_entry_to_dict",
+    "provenance_schemas::provenance_entry_full_to_dict_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|ProvenanceEntry.from_dict|215",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::ProvenanceEntry::from_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry__test_entry_from_dict",
+    "provenance_schemas::provenance_entry_from_dict_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|class|SourceReference|229",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::SourceReference"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_source_reference__test_create_basic_source",
+    "provenance_schemas::source_reference_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|SourceReference.to_dict|261",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::SourceReference::to_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_source_reference__test_source_to_dict",
+    "provenance_schemas::source_reference_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|SourceReference.from_dict|279",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::SourceReference::from_dict",
+    "semantica-rs/crates/sem-provenance/src/isoformat.rs::datetime_fromisoformat"
+   ],
+   "tests": [
+    "provenance_schemas::source_reference_matches_oracle",
+    "provenance_schemas::datetime_fromisoformat_matches_cpython"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|class|PropertySource|295",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::PropertySource"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_property_source__test_create_property_source",
+    "provenance_schemas::property_source_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|PropertySource.to_dict|323",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::PropertySource::to_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_property_source__test_property_source_to_dict",
+    "provenance_schemas::property_source_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|PropertySource.from_dict|339",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::PropertySource::from_dict"
+   ],
+   "tests": [
+    "provenance_schemas::property_source_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|class|AgentRecord|358",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::AgentRecord"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_agent_record__test_defaults",
+    "provenance_schemas::agent_activity_invalidation_records_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|AgentRecord.to_dict|386",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::AgentRecord::to_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_agent_record__test_round_trip",
+    "provenance_schemas::agent_activity_invalidation_records_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|AgentRecord.from_dict|397",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::AgentRecord::from_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_agent_record__test_round_trip",
+    "provenance_schemas::agent_activity_invalidation_records_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|class|ActivityRecord|403",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::ActivityRecord"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_activity_record__test_defaults",
+    "provenance_schemas::agent_activity_invalidation_records_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|ActivityRecord.to_dict|435",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::ActivityRecord::to_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_activity_record__test_round_trip",
+    "provenance_schemas::agent_activity_invalidation_records_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|ActivityRecord.from_dict|446",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::ActivityRecord::from_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_activity_record__test_round_trip",
+    "provenance_schemas::agent_activity_invalidation_records_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|class|Invalidation|452",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::Invalidation"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_invalidation__test_round_trip",
+    "provenance_schemas::agent_activity_invalidation_records_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|Invalidation.to_dict|482",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::Invalidation::to_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_invalidation__test_round_trip",
+    "provenance_schemas::agent_activity_invalidation_records_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/schemas.py|method|Invalidation.from_dict|493",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/schemas.rs::Invalidation::from_dict"
+   ],
+   "tests": [
+    "provenance_test_schemas::test_invalidation__test_round_trip",
+    "provenance_schemas::agent_activity_invalidation_records_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|package_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|class|ProvenanceStorage|35",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|ProvenanceStorage.store|44",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::store"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|placeholder|store|44",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::store"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|ProvenanceStorage.retrieve|54",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::retrieve"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|placeholder|retrieve|54",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::retrieve"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|ProvenanceStorage.retrieve_all|67",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::retrieve_all"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|placeholder|retrieve_all|67",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::retrieve_all"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|ProvenanceStorage.trace_lineage|80",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::trace_lineage"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|placeholder|trace_lineage|80",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::trace_lineage"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|ProvenanceStorage.clear|99",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::clear"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|placeholder|clear|99",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::clear"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|ProvenanceStorage.transaction|109",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::transaction",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorageExt::with_transaction"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|ProvenanceStorage.savepoint|114",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::savepoint",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorageExt::with_savepoint"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|ProvenanceStorage.get_chain_head|126",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::get_chain_head"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|ProvenanceStorage.trace_descendants|138",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::ProvenanceStorage::trace_descendants",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::default_trace_descendants"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|class|InMemoryStorage|191",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage"
+   ],
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_store_and_retrieve",
+    "provenance_storage::in_memory_chain_head_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|InMemoryStorage.store|228",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::store"
+   ],
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_store_and_retrieve"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|InMemoryStorage.retrieve|241",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::retrieve"
+   ],
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_store_and_retrieve",
+    "provenance_test_storage::test_in_memory_storage__test_retrieve_nonexistent"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|InMemoryStorage.retrieve_all|253",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::retrieve_all"
+   ],
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_retrieve_all",
+    "provenance_test_storage::test_in_memory_storage__test_retrieve_by_type",
+    "provenance_storage::in_memory_lineage_and_descendant_orders_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|InMemoryStorage.trace_lineage|270",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::trace_lineage"
+   ],
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_trace_lineage",
+    "provenance_storage::in_memory_lineage_and_descendant_orders_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|InMemoryStorage.clear|311",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::clear"
+   ],
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_clear",
+    "provenance_test_storage::test_in_memory_storage__test_clear_resets_chain_state"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|InMemoryStorage.transaction|326",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::transaction",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::transaction_via"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_failures::batch_savepoints_roll_back_failed_items"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|InMemoryStorage.savepoint|344",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::savepoint",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::savepoint_via"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_failures::batch_savepoints_roll_back_failed_items"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|InMemoryStorage.get_chain_head|365",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::InMemoryStorage::get_chain_head"
+   ],
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_get_chain_head",
+    "provenance_storage::in_memory_chain_head_matches_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|class|SQLiteStorage|391",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::new"
+   ],
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_store_and_retrieve",
+    "provenance_storage::sqlite_rows_orders_and_chain_head_match_oracle",
+    "provenance_test_storage::test_sqlite_storage__test_migrates_pre_existing_old_schema_database"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|SQLiteStorage.transaction|468",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::transaction",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::configure_connection"
+   ],
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_sqlite_pragmas_configured",
+    "provenance_test_sqlite_storage_performance_807::test_sqlite_storage_cleanup_guard_on_configure_error"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|SQLiteStorage.savepoint|493",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::savepoint"
+   ],
+   "tests": [
+    "provenance_storage::transactions_stage_and_roll_back_like_the_original",
+    "provenance_test_sqlite_storage_performance_807::test_batch_does_not_count_individually_failed_items"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|SQLiteStorage.store|680",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::store",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::store_with_conn"
+   ],
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_store_and_retrieve",
+    "provenance_test_storage::test_sqlite_storage__test_all_fields_round_trip_through_sqlite"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|SQLiteStorage.retrieve|741",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::retrieve",
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::retrieve_with_conn"
+   ],
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_persistence",
+    "provenance_test_sqlite_storage_performance_807::test_retrieve_and_trace_lineage_do_not_block_on_writer_lock"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|SQLiteStorage.retrieve_all|767",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::retrieve_all"
+   ],
+   "tests": [
+    "provenance_storage::sqlite_rows_orders_and_chain_head_match_oracle",
+    "provenance_test_sqlite_storage_performance_807::test_track_entities_batch_transaction_sharing"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|SQLiteStorage.trace_lineage|793",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::trace_lineage"
+   ],
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_trace_lineage",
+    "provenance_test_sqlite_storage_performance_807::test_retrieve_and_trace_lineage_do_not_block_on_writer_lock"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|SQLiteStorage.get_chain_head|854",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::get_chain_head"
+   ],
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_get_chain_head",
+    "provenance_storage::sqlite_rows_orders_and_chain_head_match_oracle"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|SQLiteStorage.trace_descendants|880",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::trace_descendants"
+   ],
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_trace_descendants",
+    "provenance_test_storage::test_sqlite_storage__test_trace_descendants_empty_for_leaf"
+   ]
+  },
+  {
+   "id": "semantica/provenance/storage.py|method|SQLiteStorage.clear|968",
+   "disposition": "migrated",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/src/storage.rs::SQLiteStorage::clear"
+   ],
+   "tests": [
+    "provenance_storage::sqlite_rows_orders_and_chain_head_match_oracle"
+   ]
+  },
+  {
+   "id": "tests/provenance/__init__.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/common/mod.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/__init__.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/common/mod.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/__init__.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/common/mod.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_create_bridge_axiom|20",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_bridge_axiom_basics__test_create_bridge_axiom"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_bridge_axiom_basics__test_create_bridge_axiom"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_bridge_axiom_with_domains|36",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_bridge_axiom_basics__test_bridge_axiom_with_domains"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_bridge_axiom_basics__test_bridge_axiom_with_domains"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_bridge_axiom_apply_without_provenance|52",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_bridge_axiom_basics__test_bridge_axiom_apply_without_provenance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_bridge_axiom_basics__test_bridge_axiom_apply_without_provenance"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_bridge_axiom_apply_with_provenance|72",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_bridge_axiom_basics__test_bridge_axiom_apply_with_provenance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_bridge_axiom_basics__test_bridge_axiom_apply_with_provenance"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_blue_finance_axiom|102",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_domain_specific_axioms__test_blue_finance_axiom"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_domain_specific_axioms__test_blue_finance_axiom"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_healthcare_axiom|125",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_domain_specific_axioms__test_healthcare_axiom"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_domain_specific_axioms__test_healthcare_axiom"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_legal_axiom|147",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_domain_specific_axioms__test_legal_axiom"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_domain_specific_axioms__test_legal_axiom"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_pharmaceutical_axiom|169",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_domain_specific_axioms__test_pharmaceutical_axiom"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_domain_specific_axioms__test_pharmaceutical_axiom"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_finance_risk_axiom|192",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_domain_specific_axioms__test_finance_risk_axiom"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_domain_specific_axioms__test_finance_risk_axiom"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_cybersecurity_axiom|213",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_domain_specific_axioms__test_cybersecurity_axiom"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_domain_specific_axioms__test_cybersecurity_axiom"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_create_translation_chain|238",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_translation_chains__test_create_translation_chain"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_translation_chains__test_create_translation_chain"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_add_layers_to_chain|246",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_translation_chains__test_add_layers_to_chain"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_translation_chains__test_add_layers_to_chain"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_multi_axiom_chain|259",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_translation_chains__test_multi_axiom_chain"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_translation_chains__test_multi_axiom_chain"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_confidence_propagation|297",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_translation_chains__test_confidence_propagation"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_translation_chains__test_confidence_propagation"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_axiom_tracks_provenance|337",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_provenance_integration__test_axiom_tracks_provenance"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_provenance_integration__test_axiom_tracks_provenance"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_chain_tracks_complete_lineage|363",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_provenance_integration__test_chain_tracks_complete_lineage"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_provenance_integration__test_chain_tracks_complete_lineage"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_zero_coefficient|407",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_edge_cases__test_zero_coefficient"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_edge_cases__test_zero_coefficient"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_negative_coefficient|425",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_edge_cases__test_negative_coefficient"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_edge_cases__test_negative_coefficient"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_large_coefficient|443",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_edge_cases__test_large_coefficient"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_edge_cases__test_large_coefficient"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_axiom_to_dict|461",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_edge_cases__test_axiom_to_dict"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_edge_cases__test_axiom_to_dict"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_bridge_axiom.py|original_test_function|test_chain_to_dict|482",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_bridge_axiom::test_edge_cases__test_chain_to_dict"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_bridge_axiom.rs::test_edge_cases__test_chain_to_dict"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_create_basic_entry|23",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry__test_create_basic_entry"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_provenance_entry__test_create_basic_entry"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_entry_with_source_tracking|37",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry__test_entry_with_source_tracking"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_provenance_entry__test_entry_with_source_tracking"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_entry_with_lineage|54",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry__test_entry_with_lineage"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_provenance_entry__test_entry_with_lineage"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_entry_to_dict|68",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry__test_entry_to_dict"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_provenance_entry__test_entry_to_dict"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_entry_from_dict|83",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry__test_entry_from_dict"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_provenance_entry__test_entry_from_dict"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_create_basic_source|103",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_source_reference__test_create_basic_source"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_source_reference__test_create_basic_source"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_source_with_location|112",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_source_reference__test_source_with_location"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_source_reference__test_source_with_location"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_source_to_dict|125",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_source_reference__test_source_to_dict"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_source_reference__test_source_to_dict"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_create_property_source|142",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_property_source__test_create_property_source"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_property_source__test_create_property_source"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_property_source_to_dict|158",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_property_source__test_property_source_to_dict"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_property_source__test_property_source_to_dict"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_defaults|177",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry_part825_fields__test_defaults"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_provenance_entry_part825_fields__test_defaults"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_round_trip_to_dict_from_dict|201",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_provenance_entry_part825_fields__test_round_trip_to_dict_from_dict"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_provenance_entry_part825_fields__test_round_trip_to_dict_from_dict"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_defaults|238",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_activity_record__test_defaults"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_activity_record__test_defaults"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_round_trip|244",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_activity_record__test_round_trip"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_activity_record__test_round_trip"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_defaults|259",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_agent_record__test_defaults"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_agent_record__test_defaults"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_round_trip|265",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_agent_record__test_round_trip"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_agent_record__test_round_trip"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_schemas.py|original_test_function|test_round_trip|275",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_schemas::test_invalidation__test_round_trip"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_schemas.rs::test_invalidation__test_round_trip"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_sqlite_pragmas_configured|21",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_sqlite_pragmas_configured"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_sqlite_pragmas_configured"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_track_entity_atomicity_and_windows_unlink|42",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_track_entity_atomicity_and_windows_unlink"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_track_entity_atomicity_and_windows_unlink"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_track_entities_batch_transaction_sharing|56",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_track_entities_batch_transaction_sharing"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_track_entities_batch_transaction_sharing"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_trace_lineage_batched_bfs_and_max_depth|73",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_trace_lineage_batched_bfs_and_max_depth"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_trace_lineage_batched_bfs_and_max_depth"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_batch_rollback_does_not_count_unpersisted_entries|95",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_batch_rollback_does_not_count_unpersisted_entries"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_batch_rollback_does_not_count_unpersisted_entries"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_custom_storage_trace_lineage_one_argument_backward_compatibility|123",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_custom_storage_trace_lineage_one_argument_backward_compatibility"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_track_entity_concurrent_read_modify_write|163",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_track_entity_concurrent_read_modify_write"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_track_entity_concurrent_read_modify_write"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_sqlite_storage_cleanup_guard_on_configure_error|195",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_sqlite_storage_cleanup_guard_on_configure_error"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_sqlite_storage_cleanup_guard_on_configure_error"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_batch_does_not_count_individually_failed_items|212",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_batch_does_not_count_individually_failed_items"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_batch_does_not_count_individually_failed_items"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_chunks_batch_does_not_count_individually_failed_items|232",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_chunks_batch_does_not_count_individually_failed_items"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_chunks_batch_does_not_count_individually_failed_items"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_track_entity_standalone_call_still_degrades_gracefully|250",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_track_entity_standalone_call_still_degrades_gracefully"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_track_entity_standalone_call_still_degrades_gracefully"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_sqlite_storage_performance_807.py|original_test_function|test_retrieve_and_trace_lineage_do_not_block_on_writer_lock|265",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_sqlite_storage_performance_807::test_retrieve_and_trace_lineage_do_not_block_on_writer_lock"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_sqlite_storage_performance_807.rs::test_retrieve_and_trace_lineage_do_not_block_on_writer_lock"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_python_test_source||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|tracked_file||0",
+   "disposition": "migrated_file",
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_store_and_retrieve|18",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_store_and_retrieve"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_store_and_retrieve"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_retrieve_nonexistent|34",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_retrieve_nonexistent"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_retrieve_nonexistent"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_retrieve_all|42",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_retrieve_all"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_retrieve_all"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_retrieve_by_type|64",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_retrieve_by_type"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_retrieve_by_type"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_trace_lineage|87",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_trace_lineage"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_trace_lineage"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_clear|122",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_clear"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_clear"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_clear_resets_chain_state|138",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_clear_resets_chain_state"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_clear_resets_chain_state"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_get_chain_head|163",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_get_chain_head"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_get_chain_head"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_trace_descendants|182",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_trace_descendants"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_trace_descendants"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_trace_descendants_respects_max_depth|200",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_trace_descendants_respects_max_depth"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_trace_descendants_respects_max_depth"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_trace_descendants_empty_for_leaf|214",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_in_memory_storage__test_trace_descendants_empty_for_leaf"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_in_memory_storage__test_trace_descendants_empty_for_leaf"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_migrates_pre_existing_old_schema_database|223",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_migrates_pre_existing_old_schema_database"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_sqlite_storage__test_migrates_pre_existing_old_schema_database"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_all_fields_round_trip_through_sqlite|296",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_all_fields_round_trip_through_sqlite"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_sqlite_storage__test_all_fields_round_trip_through_sqlite"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_store_and_retrieve|346",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_store_and_retrieve"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_sqlite_storage__test_store_and_retrieve"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_persistence|369",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_persistence"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_sqlite_storage__test_persistence"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_trace_lineage|394",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_trace_lineage"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_sqlite_storage__test_trace_lineage"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_get_chain_head|425",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_get_chain_head"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_sqlite_storage__test_get_chain_head"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_trace_descendants|451",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_trace_descendants"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_sqlite_storage__test_trace_descendants"
+   ]
+  },
+  {
+   "id": "tests/provenance/test_storage.py|original_test_function|test_trace_descendants_empty_for_leaf|476",
+   "disposition": "ported_test",
+   "tests": [
+    "provenance_test_storage::test_sqlite_storage__test_trace_descendants_empty_for_leaf"
+   ],
+   "rust": [
+    "semantica-rs/crates/sem-provenance/tests/provenance_test_storage.rs::test_sqlite_storage__test_trace_descendants_empty_for_leaf"
+   ]
+  }
+ ]
+}

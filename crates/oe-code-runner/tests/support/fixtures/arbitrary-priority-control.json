@@ -1,0 +1,121 @@
+{
+  "schema": "private.q40-arbitrary-priority-independent-control/1",
+  "status": "source_derived_not_executed",
+  "case_id": "control-arbitrary-integer-priority-order",
+  "historical_q40_member": false,
+  "expectation_origin": "source_derived",
+  "original_execution": false,
+  "request": {
+    "schema": "semantica.reason-request/1",
+    "facts": "A(a)",
+    "rules": [
+      {
+        "rule_id": "low",
+        "text": "IF A(a) THEN L(a)",
+        "priority": 90071992547409920000000000000000001
+      },
+      {
+        "rule_id": "high",
+        "text": "IF A(a) THEN H(a)",
+        "priority": 90071992547409920000000000000000002
+      },
+      {
+        "rule_id": "negative",
+        "text": "IF A(a) THEN N(a)",
+        "priority": -90071992547409920000000000000000003
+      }
+    ],
+    "max_iterations": 1
+  },
+  "request_sha256": "1cf837cc77206e4da7b69744e3e64ed7aed2c704d7fa66dd09d2447b3449c3ef",
+  "expected_semantic_result": {
+    "schema": "semantica.reason-result/1",
+    "request_sha256": "1cf837cc77206e4da7b69744e3e64ed7aed2c704d7fa66dd09d2447b3449c3ef",
+    "data": {
+      "input_facts": [
+        "A(a)"
+      ],
+      "rules": [
+        {
+          "rule_id": "high",
+          "text": "IF A(a) THEN H(a)",
+          "priority": 90071992547409920000000000000000002,
+          "confidence": 1.0
+        },
+        {
+          "rule_id": "low",
+          "text": "IF A(a) THEN L(a)",
+          "priority": 90071992547409920000000000000000001,
+          "confidence": 1.0
+        },
+        {
+          "rule_id": "negative",
+          "text": "IF A(a) THEN N(a)",
+          "priority": -90071992547409920000000000000000003,
+          "confidence": 1.0
+        }
+      ],
+      "inferences": [
+        {
+          "conclusion": "H(a)",
+          "rule_id": "high",
+          "rule_text": "IF A(a) THEN H(a)",
+          "premises": [
+            "A(a)"
+          ],
+          "confidence": 1.0,
+          "explanation": "Given the premises: A(a), we conclude: H(a) using rule 'high'."
+        },
+        {
+          "conclusion": "L(a)",
+          "rule_id": "low",
+          "rule_text": "IF A(a) THEN L(a)",
+          "premises": [
+            "A(a)"
+          ],
+          "confidence": 1.0,
+          "explanation": "Given the premises: A(a), we conclude: L(a) using rule 'low'."
+        },
+        {
+          "conclusion": "N(a)",
+          "rule_id": "negative",
+          "rule_text": "IF A(a) THEN N(a)",
+          "premises": [
+            "A(a)"
+          ],
+          "confidence": 1.0,
+          "explanation": "Given the premises: A(a), we conclude: N(a) using rule 'negative'."
+        }
+      ],
+      "all_facts": [
+        "A(a)",
+        "H(a)",
+        "L(a)",
+        "N(a)"
+      ],
+      "max_iterations": 1,
+      "semantics": "semantica.textual-forward-chain.v1",
+      "complete": true
+    }
+  },
+  "fixed_semantics": {
+    "basis": {
+      "path": "sources/history/runtime/vendor/semantica-0.6.5+oe.7-py3-none-any.whl",
+      "bytes": 2913891,
+      "sha256": "142ddd6fe788b3a716646babc410628aa7606e44ed63b98f5227863f9ea7ba15"
+    },
+    "member_sha256": "607a3e51968cddd6d80fa48dc0dc9101438ac616ca242f86bf954da89ccc8c55",
+    "lines": [
+      "ForwardRuleDTO priority integer requirement:386-387",
+      "Stable descending priority:2063-2065",
+      "Success projection and bounded convergence probe:1623-1745"
+    ],
+    "derivation": "Manually order the three exact integers: high > low > negative. Each rule matches A(a); no inferred atom is a condition. All three conclusions appear in first pass and second probe adds none. Confidence defaults to original float 1.0. No runtime output used."
+  },
+  "budget": "A separate named control only; do not add silently to the fixed original40. Root chooses and freezes whether to run this control outside or in a new explicitly41-case catalog.",
+  "limits": {
+    "whole_api_behavior": "unknown",
+    "eligibility": "unknown",
+    "exposure": "development_replay"
+  }
+}

@@ -1,0 +1,2469 @@
+[
+  {
+    "id": "create-empty",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {}
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_2024-06-01T09:30:00.123456",
+        "timestamp": "2024-06-01T09:30:00.123456",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-explicit",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "entities": [
+            {
+              "id": "A",
+              "nested": {
+                "n": 1
+              }
+            }
+          ],
+          "relationships": [
+            {
+              "source": "A",
+              "target": "B"
+            }
+          ]
+        },
+        "version_label": "v1",
+        "timestamp": "not-a-date",
+        "metadata": {
+          "m": 1
+        },
+        "unused": "ignored"
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "v1",
+        "timestamp": "not-a-date",
+        "entities": [
+          {
+            "id": "A",
+            "nested": {
+              "n": 1
+            }
+          }
+        ],
+        "relationships": [
+          {
+            "source": "A",
+            "target": "B"
+          }
+        ],
+        "metadata": {
+          "m": 1
+        }
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-false-values-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "version_label": null,
+        "timestamp": null,
+        "metadata": null
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_2024-06-01T09:30:00.123456",
+        "timestamp": "2024-06-01T09:30:00.123456",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-false-values-false",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "version_label": false,
+        "timestamp": false,
+        "metadata": false
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_2024-06-01T09:30:00.123456",
+        "timestamp": "2024-06-01T09:30:00.123456",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-false-values-zero",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "version_label": 0,
+        "timestamp": 0,
+        "metadata": 0
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_2024-06-01T09:30:00.123456",
+        "timestamp": "2024-06-01T09:30:00.123456",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-false-values-floatzero",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "version_label": 0.0,
+        "timestamp": 0.0,
+        "metadata": 0.0
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_2024-06-01T09:30:00.123456",
+        "timestamp": "2024-06-01T09:30:00.123456",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-false-values-emptystr",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "version_label": "",
+        "timestamp": "",
+        "metadata": ""
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_2024-06-01T09:30:00.123456",
+        "timestamp": "2024-06-01T09:30:00.123456",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-false-values-emptylist",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "version_label": [],
+        "timestamp": [],
+        "metadata": []
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_2024-06-01T09:30:00.123456",
+        "timestamp": "2024-06-01T09:30:00.123456",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-false-values-emptydict",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "version_label": {},
+        "timestamp": {},
+        "metadata": {}
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_2024-06-01T09:30:00.123456",
+        "timestamp": "2024-06-01T09:30:00.123456",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-truthy-timestamp-true",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": true
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_True",
+        "timestamp": true,
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-label-metadata-true",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": "T",
+        "version_label": true,
+        "metadata": true
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": true,
+        "timestamp": "T",
+        "entities": [],
+        "relationships": [],
+        "metadata": true
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-timestamp-integer",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": 7
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_7",
+        "timestamp": 7,
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-label-metadata-integer",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": "T",
+        "version_label": 7,
+        "metadata": 7
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": 7,
+        "timestamp": "T",
+        "entities": [],
+        "relationships": [],
+        "metadata": 7
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-timestamp-float",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": 1.5
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_1.5",
+        "timestamp": 1.5,
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-label-metadata-float",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": "T",
+        "version_label": 1.5,
+        "metadata": 1.5
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": 1.5,
+        "timestamp": "T",
+        "entities": [],
+        "relationships": [],
+        "metadata": 1.5
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-timestamp-string",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": "old"
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_old",
+        "timestamp": "old",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-label-metadata-string",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": "T",
+        "version_label": "old",
+        "metadata": "old"
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "old",
+        "timestamp": "T",
+        "entities": [],
+        "relationships": [],
+        "metadata": "old"
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-timestamp-list",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": [
+          true,
+          null,
+          "x"
+        ]
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_[True, None, 'x']",
+        "timestamp": [
+          true,
+          null,
+          "x"
+        ],
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-label-metadata-list",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": "T",
+        "version_label": [
+          true,
+          null,
+          "x"
+        ],
+        "metadata": [
+          true,
+          null,
+          "x"
+        ]
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": [
+          true,
+          null,
+          "x"
+        ],
+        "timestamp": "T",
+        "entities": [],
+        "relationships": [],
+        "metadata": [
+          true,
+          null,
+          "x"
+        ]
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-timestamp-object",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": {
+          "z": 1,
+          "a": false
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_{'z': 1, 'a': False}",
+        "timestamp": {
+          "z": 1,
+          "a": false
+        },
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-truthy-label-metadata-object",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {},
+        "timestamp": "T",
+        "version_label": {
+          "z": 1,
+          "a": false
+        },
+        "metadata": {
+          "z": 1,
+          "a": false
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": {
+          "z": 1,
+          "a": false
+        },
+        "timestamp": "T",
+        "entities": [],
+        "relationships": [],
+        "metadata": {
+          "z": 1,
+          "a": false
+        }
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-dictionary-collections",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "entities": {
+            "wrong": "kept"
+          },
+          "relationships": {
+            "also": "kept"
+          }
+        },
+        "timestamp": "T"
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_T",
+        "timestamp": "T",
+        "entities": {
+          "wrong": "kept"
+        },
+        "relationships": {
+          "also": "kept"
+        },
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-no-fallback-node-edge-aliases",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "nodes": [
+            1
+          ],
+          "edges": [
+            2
+          ]
+        },
+        "timestamp": "T"
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "label": "version_T",
+        "timestamp": "T",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "create-graph-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": null
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'NoneType' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-entities-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "entities": null
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'NoneType' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-relationships-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "relationships": null
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'NoneType' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-graph-false",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": false
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'bool' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-entities-false",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "entities": false
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'bool' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-relationships-false",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "relationships": false
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'bool' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-graph-integer",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": 7
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'int' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-entities-integer",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "entities": 7
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'int' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-relationships-integer",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "relationships": 7
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'int' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-graph-float",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": 1.5
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'float' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-entities-float",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "entities": 1.5
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'float' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-relationships-float",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "relationships": 1.5
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'float' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-graph-string",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": "x"
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'str' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-entities-string",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "entities": "x"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'str' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-relationships-string",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "relationships": "x"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'str' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-graph-list",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": []
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'list' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-first-failure-entities",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {
+          "entities": null,
+          "relationships": 7
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'NoneType' object has no attribute 'copy'"
+      },
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "create-whole-second-clock",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "create_version",
+      "arguments": {
+        "graph": {}
+      },
+      "clock_local": "2024-06-01T09:30:00"
+    },
+    "expected": {
+      "result": {
+        "label": "version_2024-06-01T09:30:00",
+        "timestamp": "2024-06-01T09:30:00",
+        "entities": [],
+        "relationships": [],
+        "metadata": {}
+      },
+      "source_error": null,
+      "clock_fallback_count": 1
+    }
+  },
+  {
+    "id": "validate-normal",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": true,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-types-only",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "999",
+          "label": "",
+          "timestamp": "invalid",
+          "author": "not-email",
+          "description": "",
+          "entities": [
+            null,
+            7
+          ],
+          "relationships": [
+            "bad"
+          ],
+          "checksum": "",
+          "metadata": 7
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": true,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-missing-format_version",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-format_version-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": null,
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-format_version-number",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": 1,
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-format_version-other-container",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": [],
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-missing-label",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-label-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": null,
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-label-number",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": 1,
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-label-other-container",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": [],
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-missing-timestamp",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-timestamp-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": null,
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-timestamp-number",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": 1,
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-timestamp-other-container",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": [],
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-missing-author",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-author-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": null,
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-author-number",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": 1,
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-author-other-container",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": [],
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-missing-description",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-description-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": null,
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-description-number",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": 1,
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-description-other-container",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": [],
+          "entities": [],
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-missing-entities",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-entities-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": null,
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-entities-number",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": 1,
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-entities-other-container",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": {},
+          "relationships": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-missing-relationships",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-relationships-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": null,
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-relationships-number",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": 1,
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-relationships-other-container",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": {},
+          "checksum": "not-verified"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-missing-checksum",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": []
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-checksum-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": null
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-checksum-number",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": 1
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-wrong-checksum-other-container",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": "v1",
+          "timestamp": "2024-06-01T09:30:00",
+          "author": "user@example.test",
+          "description": "source record",
+          "entities": [],
+          "relationships": [],
+          "checksum": []
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": null
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "argument of type 'NoneType' is not iterable"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-boolean",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": true
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "argument of type 'bool' is not iterable"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-integer",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": 3
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "argument of type 'int' is not iterable"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-float",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": 1.5
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "argument of type 'float' is not iterable"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-empty-list",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": []
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-other-list",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": [
+          "foo"
+        ]
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-empty-string",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": ""
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-other-string",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": "foo"
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-field-in-list",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": [
+          "format_version"
+        ]
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "list indices must be integers or slices, not str"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-field-in-string",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": "format_version"
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.TypeError",
+        "message": "string indices must be integers, not 'str'"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-empty",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": {}
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "format_version": "1.0",
+        "label": null,
+        "timestamp": null,
+        "author": null,
+        "description": null,
+        "entities": null,
+        "relationships": null,
+        "checksum": null
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-already-1-incomplete",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0"
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "format_version": "1.0"
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-legacy-preserves-values",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "0.9",
+          "label": 7,
+          "entities": [
+            {
+              "id": "A",
+              "nested": [
+                1
+              ]
+            }
+          ],
+          "private-field": {
+            "x": true
+          }
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "format_version": "1.0",
+        "label": 7,
+        "timestamp": null,
+        "author": null,
+        "description": null,
+        "entities": [
+          {
+            "id": "A",
+            "nested": [
+              1
+            ]
+          }
+        ],
+        "relationships": null,
+        "checksum": null,
+        "private-field": {
+          "x": true
+        }
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-format-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": null
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "format_version": "1.0",
+        "label": null,
+        "timestamp": null,
+        "author": null,
+        "description": null,
+        "entities": null,
+        "relationships": null,
+        "checksum": null
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-format-false",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": false
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "format_version": "1.0",
+        "label": null,
+        "timestamp": null,
+        "author": null,
+        "description": null,
+        "entities": null,
+        "relationships": null,
+        "checksum": null
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-format-integer",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": 1
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "format_version": "1.0",
+        "label": null,
+        "timestamp": null,
+        "author": null,
+        "description": null,
+        "entities": null,
+        "relationships": null,
+        "checksum": null
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-format-float",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": 1.0
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "format_version": "1.0",
+        "label": null,
+        "timestamp": null,
+        "author": null,
+        "description": null,
+        "entities": null,
+        "relationships": null,
+        "checksum": null
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-format-list",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": [
+            "1.0"
+          ]
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "format_version": "1.0",
+        "label": null,
+        "timestamp": null,
+        "author": null,
+        "description": null,
+        "entities": null,
+        "relationships": null,
+        "checksum": null
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-format-dict",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": {
+            "v": "1.0"
+          }
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": {
+        "format_version": "1.0",
+        "label": null,
+        "timestamp": null,
+        "author": null,
+        "description": null,
+        "entities": null,
+        "relationships": null,
+        "checksum": null
+      },
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-null",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": null
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'NoneType' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-boolean",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": true
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'bool' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-integer",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": 1
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'int' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-float",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": 1.5
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'float' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-string",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": "x"
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'str' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "migrate-list",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "migrate_snapshot",
+      "arguments": {
+        "snapshot": []
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": null,
+      "source_error": {
+        "type": "builtins.AttributeError",
+        "message": "'list' object has no attribute 'get'"
+      },
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-migrated-empty",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "format_version": "1.0",
+          "label": null,
+          "timestamp": null,
+          "author": null,
+          "description": null,
+          "entities": null,
+          "relationships": null,
+          "checksum": null
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  },
+  {
+    "id": "validate-created-record",
+    "request": {
+      "schema": "semantica.temporal-version-records-request/1",
+      "operation": "validate_snapshot",
+      "arguments": {
+        "snapshot": {
+          "label": "version_2024-06-01T09:30:00.123456",
+          "timestamp": "2024-06-01T09:30:00.123456",
+          "entities": [],
+          "relationships": [],
+          "metadata": {}
+        }
+      },
+      "clock_local": "2024-06-01T09:30:00.123456"
+    },
+    "expected": {
+      "result": false,
+      "source_error": null,
+      "clock_fallback_count": 0
+    }
+  }
+]

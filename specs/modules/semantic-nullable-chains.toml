@@ -1,0 +1,937 @@
+schema="oev2.design-fragment/2"
+
+[[sources]]
+id="rdflib760_nullable_expression_consumer_source"
+identity="RDFLib7.6.0 evalutils.py SHA2561d4167779189ebf38257ecc8e2089d0a71df6470b10f7ccde8cb5176bd359d09; parserutils.py SHA2561d6b919bd9f76d30df279b5dc5dd93eb33055b8ea801ace65acf182b7887b3d9; aggregates.py SHA256ae64a464f9e290eedd04c923916b388364bf7858c605d6e191da48a45584ab29; evaluate.py SHA256991944f756398773c4ddf0da0bf5a3c2285f2a67140c9976a8a806ba5d8402be; finite source-derived expectations SHA25611f9c216bb637a8bea3349e648c9ece3cbc19650fd269f73ce674fed7a6448d6"
+role="Raw variable lookup, syntactic variable operand conversion, Expr error capture and finite COUNT/SAMPLE/Group/Extend/FILTER consumer control flow read from preserved original source; not a new original Python execution"
+applicability="Private typed branch of the existing spareval evaluator, disabled by default. Source-derived expectations and intentional Rust safety contracts are separate. No public /5, complete numeric parity, original parser/context/wrapper parity, full Semantica completion or current installation is established by this fragment."
+
+[[sources]]
+id="rdflib760_nullable_arithmetic_source"
+identity="RDFLib7.6.0 operators.py SHA256349d36859ec3dca3b56e33d43786d034a33f3c1a1ba1eef71a13bf95a0809437; UnaryMinus/UnaryPlus and MultiplicativeExpression at lines738-774"
+role="Original unary numeric conversion and multiplicative expression begin with Decimal(numeric(expr)); numeric source inspection is distinct from executed oracle evidence"
+applicability="This retained bounded diagnostic path covers integer operands, decimal representation of integer products, exact integral quotients and zero-division error capture. The prepared query numeric consumer is separately specified in semantic-numeric.toml. Python arbitrary precision, Decimal context/rounding, floating/date arithmetic and the original n-ary parser shape remain unqualified."
+
+[[constraints]]
+id="semantic_nullable_expression_single_compiler"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="build_compiled_expression"
+rust_path="vendor/spareval/src/expression.rs"
+statement="One existing AST dispatch owns legacy and optional typed raw evaluators. Named nodes, literals, variables and six arithmetic operators have typed handling; the later nonempty source-chain extension is separately specified. Unqualified expression branches explicitly reject typed compilation. Existing RDF-only evaluation retains its boundary. SimpleEvaluator nullable_expressions defaults to false and has no public enablement or /5 profile."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_query_operator_refusal"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="build_graph_pattern_evaluator"
+rust_path="vendor/spareval/src/eval.rs"
+statement="The private typed lane refuses unqualified LeftJoin, legacy OrderBy, Lateral and Service operators explicitly. Only the separately declared sealed SourceOrderBy node receives source ORDER capability; default/non-source compilers still refuse that node. Existing full-cell hash-left-join carrier controls do not establish typed operator, condition, fatal-error or context qualification. No refusal silently falls back to the legacy expression lane."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_expression_raw_operand"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="variable_operand"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+statement="Raw variable absence raises a fresh NotBound error while raw present None and returned errors remain values. Only syntactic variable operands turn None into raised NotBound or re-raise the stored error unchanged; Expr child error values instead reach the operator's value validation. Local present None/error masks initial RDF."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_expression_error_capture"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="capture_sparql"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+statement="Typed arithmetic Expr boundaries catch only raised SPARQL errors into returned error cells, retaining error kind and object identity. Each newly raised runtime error receives a fresh identity. Dataset/cancellation and unqualified numeric cases remain fatal failures, not returned SPARQL objects or legacy None."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_expression_arithmetic_subset"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="typed_binary"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+statement="Retained bounded diagnostic path without the new numeric-session codec: Legacy and typed arithmetic share add/subtract/multiply/divide/plus/minus kernels. The private typed subset accepts bounded integer operands, represents integer multiplication as Decimal, and accepts division only for exact integral quotients; zero division is a SPARQL error. The separately specified chain extension admits integral Decimal results only from certified arithmetic children. External Decimal/floating/date operands, fractional quotient rounding, unsupported datatypes, signed Decimal zero and range overflow explicitly fail as unqualified fatal cases. This is not complete Python numeric promotion or precision parity."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_expression_dataset_failures"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="build_externalize_expression_term_result"
+rust_path="vendor/spareval/src/eval.rs"
+statement="Typed expression context conversion uses Result at the real Dataset boundary. RDF externalization/internalization failures propagate; None/error cells are carried without RDF conversion. Consumer raw leaves for Variable, Literal and NamedNode retain the Dataset's internal representation and check cancellation, avoiding an extra ExpressionTerm round trip or lexical normalization. This does not qualify original parser normalization or redefine the Dataset's own term identity."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_count_double_evaluation"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="accumulate"
+rust_path="vendor/spareval/src/eval/nullable.rs"
+statement="Private COUNT skips only raised NotBound, counts returned None/error cells, and propagates other raised SPARQL or fatal failures. DISTINCT first evaluates membership and, only if unseen, evaluates again for the update, storing the second returned value's identity. COUNT(*) and COUNT(DISTINCT *) retain complete tuple-domain identity."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_sample_selected_none"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="finish"
+rust_path="vendor/spareval/src/eval/nullable.rs"
+statement="Private SAMPLE distinguishes Pending from Selected(None). A successfully returned None/error/RDF value is selected exactly and prevents later evaluations; only raised NotBound skips, while other raised SPARQL or fatal failures propagate. Finishing without a selected value emits a present None cell. DISTINCT does not change SAMPLE behavior."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_group_accumulation_failure"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="build_graph_pattern_evaluator"
+rust_path="vendor/spareval/src/eval.rs"
+statement="In the private typed lane, Group consumes input and accumulator updates before output; input or accumulation failure aborts with no aggregate rows, without further input consumption or per-group recovery. Finalization failures may occur after earlier groups were emitted and are not covered by the zero-output claim. The retained legacy Group path uses lowered variable keys and intentionally merges absent/None. Explicit SourceAggregateV1 raw/AS keys and empty-group behavior have separate contracts in semantic-numeric.toml; neither path qualifies complete original initial-context lifecycle or all grouping plans."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_group_legacy_hash_identity"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="hash"
+rust_path="vendor/spareval/src/eval/nullable.rs"
+statement="GroupKeyCell preserves the exact old Option<T> hashing stream for RDF and absent grouping keys; added solution-cell tags must not perturb the existing RDF-only group's iteration/limit behavior. The legacy lane still constructs RDF-only keys, while private typed keys may carry returned-error identity. This does not define a stable SPARQL group order."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_stream_halts_after_failure"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="halt_after_error"
+rust_path="vendor/spareval/src/eval/nullable.rs"
+statement="Each private typed graph-pattern iterator stops after yielding its first failure; subsequent next calls neither read additional input nor yield later successful rows. Extend/FILTER cannot resume after a fatal. The adapter affects the private typed lane only and does not retroactively change legacy error-stream contracts."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_extend_full_cells"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="nullable_aggregate_evaluator"
+rust_path="vendor/spareval/src/eval/nullable.rs"
+statement="The existing Extend consumes the typed raw evaluator, writes returned RDF/None cells, preserves its input row for returned or raised SPARQL errors, and propagates fatal evaluation/conversion failures. Only RDF expression values require Dataset internalization. Original forget/remember/thaw lifecycle is a separate qualification obligation."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_filter_failure_contract"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="nullable_boolean_evaluator"
+rust_path="vendor/spareval/src/eval/nullable.rs"
+statement="Private FILTER keeps true EBV and rejects false/None/returned or raised SPARQL-error outcomes while propagating Dataset and cancellation failures. Fatal propagation for bare variables is an intentional Rust safety contract: original Python bare-variable _ebv catches all raised exceptions, so this difference is not described as blanket RDFLib parity."
+severity="error"
+
+[[validations]]
+id="verify_semantic_nullable_single_compiler_and_legacy_boundary"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_single_compiler"
+behavior="nullable_lane_rejects_unsupported_without_changing_legacy"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="The same actual evaluator defaults to the legacy lane; enabling the private lane rejects unqualified expression handling while the legacy path retains its declared behavior."
+scope="Selected compiler/gating regression controls; no public enablement or complete AST parity."
+
+[[validations]]
+id="verify_semantic_nullable_operator_refusal"
+module="semantic_evaluator"
+constraint="semantic_nullable_query_operator_refusal"
+behavior="nullable_lane_rejects_unsupported_without_changing_legacy"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="The selected OrderBy graph-pattern control explicitly fails private typed preparation while legacy preparation remains available."
+scope="Selected private typed refusal; other refusal arms also require source inspection or separate controls. Carrier-level HashLeftJoin identity tests do not waive typed operator refusal."
+
+[[validations]]
+id="verify_semantic_nullable_raw_operand_none"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_raw_operand"
+behavior="raw_none_and_operand_none_have_distinct_outcomes"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="Preserved _eval(variable) returns a present None, parserutils.value(variable) raises NotBound for it, and Expr.eval returns that same error object."
+scope="Finite typed boundary functions; not original full-query execution or planner qualification."
+
+[[validations]]
+id="verify_semantic_nullable_variable_versus_child_error"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_raw_operand"
+behavior="variable_error_is_raised_unchanged_but_expr_error_is_a_numeric_operand"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="Syntactic variable lookup re-raises the stored error object. An Expr child returns its error object to numeric validation, which may construct a different Type error."
+scope="Identity and error-kind distinction at the finite operand boundary."
+
+[[validations]]
+id="verify_semantic_nullable_unbound_error_allocation"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_error_capture"
+behavior="repeated_unbound_evaluation_allocates_distinct_errors"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="Two missing raw-variable evaluations allocate distinct NotBound objects; same diagnostic text is not error identity."
+scope="New runtime allocation in the typed raw boundary, not every original Python exception class or message."
+
+[[validations]]
+id="verify_semantic_nullable_division_error_capture"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_error_capture"
+behavior="division_by_zero_returns_fresh_sparql_errors"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="Each integer zero-division evaluation creates a fresh raised SPARQL error which the Expr capture boundary returns as a value."
+scope="Finite arithmetic/capture path; preservation through original constant folding remains open."
+
+[[validations]]
+id="verify_semantic_nullable_multiplication_representation"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_arithmetic_subset"
+behavior="typed_multiplication_preserves_python_decimal_result_and_legacy_integer"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="For the fixed integer 2*3 case the shared kernel retains the legacy Integer result while the private typed boundary returns exact Decimal 6, matching the original multiplicative integer representation."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. A bounded integer example; no decimal-input or arbitrary-precision numeric equivalence."
+
+[[validations]]
+id="verify_semantic_nullable_arithmetic_unqualified_refusal"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_arithmetic_subset"
+behavior="unsupported_range_and_rounding_remain_fatal"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="i64 maximum plus one and 1/2 fail as unqualified fatal cases; an injected fatal remains fatal through capture; exact integer quotient 4/2 returns Decimal 2."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. Explicit finite-subset refusal, not a claim that the original Python would fail these computations."
+
+[[validations]]
+id="verify_semantic_nullable_dataset_conversion_failures"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_dataset_failures"
+behavior="actual_typed_expression_context_retains_dataset_conversion_failures"
+rust_path="vendor/spareval/src/eval/nullable_receiving.rs"
+oracle="A fault-injecting Dataset enters the actual expression context. The distinctive externalization and internalization errors survive; present None/error cells do not increment the RDF externalization counter."
+scope="Actual compiler/context conversion seam with controlled failure input; not deployed nullable query support."
+
+[[validations]]
+id="verify_semantic_nullable_actual_variable_initial_scope"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_raw_operand"
+behavior="raw_variable_and_operand_keep_none_error_and_initial_scope"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="Actual raw variable and arithmetic operand builders distinguish absent/local None/stored error, mask initial RDF for present cells and retain raised-versus-returned error identity."
+scope="Finite existing compiler/context input boundary; no original thaw/forget/remember lifecycle qualification."
+
+[[validations]]
+id="verify_semantic_nullable_actual_count_returned_cells"
+module="semantic_evaluator"
+constraint="semantic_nullable_count_double_evaluation"
+behavior="real_count_and_sample_preserve_returned_cells"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="Actual COUNT/SAMPLE consumers retain returned None/error values while missing direct-variable evaluation is the raised NotBound skip case."
+scope="Selected actual aggregate inputs and output cells; no complete query/optimizer parity."
+
+[[validations]]
+id="verify_semantic_nullable_distinct_count_two_calls"
+module="semantic_evaluator"
+constraint="semantic_nullable_count_double_evaluation"
+behavior="distinct_count_uses_two_evaluations_and_second_identity"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="A source-derived stateful outcome stream returns A then B, later B, then C followed by raised NotBound: three input rows require five evaluations, count only one result, and retain B rather than A/C."
+scope="Controlled real accumulator seam and second-returned value identity; other error propagation paths use separate controls. Not a replacement interpreter or single-evaluation DISTINCT model."
+
+[[validations]]
+id="verify_semantic_nullable_sample_none_is_selected"
+module="semantic_evaluator"
+constraint="semantic_nullable_sample_selected_none"
+behavior="sample_none_stops_later_evaluation"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="After selecting explicit None the actual SAMPLE stops evaluating later rows, including a later would-fail expression, and finishing retains a present None rather than an absent binding."
+scope="Accumulator evaluation and full-cell result; an upstream iterator failure still aborts Group."
+
+[[validations]]
+id="verify_semantic_nullable_group_fatal_aborts_consumption"
+module="semantic_evaluator"
+constraint="semantic_nullable_group_accumulation_failure"
+behavior="real_group_aborts_on_consumption_fatal"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="The actual Group accumulates an exact 1/1 row then encounters unqualified fractional 1/2 in another group; full output collection contains only the failure and zero aggregate rows."
+scope="Consumption/accumulation failure only; this finite test does not separately count subsequent input reads. No rollback claim and no zero-output guarantee for arbitrary later finalization errors."
+
+[[validations]]
+id="verify_semantic_nullable_group_old_hash_stream"
+module="semantic_evaluator"
+constraint="semantic_nullable_group_legacy_hash_identity"
+behavior="group_keys_retain_legacy_hash_bytes"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="Fixed absent/RDF/multi-key/empty key vectors compare both the recording Hasher byte stream and actual FxHasher result between GroupKeyCell and the pre-existing Option<T> representation."
+scope="Exact byte comparison for these finite old RDF grouping vectors; no general SPARQL ordering guarantee. Source inspection separately checks the explicit legacy Option hashing branches."
+
+[[validations]]
+id="verify_semantic_nullable_extend_full_cells"
+module="semantic_evaluator"
+constraint="semantic_nullable_extend_full_cells"
+behavior="real_extend_and_filter_keep_none_errors_and_stop_after_fatal"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="The actual Extend writes present None, preserves rows for missing direct variables and returned zero-division errors, and propagates unqualified fractional evaluation instead of yielding a normal replacement row."
+scope="Finite typed row-consumer controls; a separate actual Extend integration control injects Dataset internalization failure. Original context forget lifecycle is not covered."
+
+[[validations]]
+id="verify_semantic_nullable_filter_fatal_contract"
+module="semantic_evaluator"
+constraint="semantic_nullable_filter_failure_contract"
+behavior="real_extend_and_filter_keep_none_errors_and_stop_after_fatal"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="The actual FILTER rejects None/SPARQL outcomes and propagates controlled fatal failures instead of turning them into false."
+scope="Explicit Rust safety behavior, including the documented difference from Python's broad bare-variable exception catch."
+
+[[validations]]
+id="verify_semantic_nullable_stream_stops_after_fatal"
+module="semantic_evaluator"
+constraint="semantic_nullable_stream_halts_after_failure"
+behavior="real_extend_and_filter_keep_none_errors_and_stop_after_fatal"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="Full collection after an actual typed Extend/FILTER failure contains exactly one error and no later rows."
+scope="Selected private typed graph-pattern streams; direct halt adapter input-read counters are covered by group_keys_retain_legacy_hash_bytes. No legacy error-stream contract change."
+
+[[validations]]
+id="verify_semantic_nullable_halt_does_not_read_after_failure"
+module="semantic_evaluator"
+constraint="semantic_nullable_stream_halts_after_failure"
+behavior="group_keys_retain_legacy_hash_bytes"
+rust_path="vendor/spareval/src/eval/nullable_consumers.rs"
+oracle="The actual halt_after_error adapter receives a counted failing iterator; repeated next calls after the first failure leave the source-read count at one."
+scope="Direct shared stream adapter control, complementing actual Extend/FILTER output controls."
+
+[[validations]]
+id="verify_semantic_nullable_filter_dataset_failure_stops"
+module="semantic_evaluator"
+constraint="semantic_nullable_filter_failure_contract"
+behavior="real_typed_filter_variable_propagates_dataset_failure_and_stops"
+rust_path="vendor/spareval/src/eval/nullable_receiving.rs"
+oracle="The actual private typed FILTER receives a bound boolean RDF variable from a fault-injecting Dataset. Its first result retains the distinctive Dataset error and downcast identity; subsequent next calls return None and do not increment conversion counters."
+scope="Actual bare-variable FILTER integration and stop behavior; this is the active Rust safety contract, explicitly different from original Python's broad exception catch."
+
+[[validations]]
+id="verify_semantic_nullable_count_dataset_failure_stops"
+module="semantic_evaluator"
+constraint="semantic_nullable_count_double_evaluation"
+behavior="real_typed_count_arithmetic_propagates_dataset_failure_and_stops"
+rust_path="vendor/spareval/src/eval/nullable_receiving.rs"
+oracle="Actual COUNT and COUNT DISTINCT evaluate ?x+1 through Group with a Dataset that fails externalization. The first result is that typed Dataset failure; no aggregate row or additional conversion occurs on later next calls."
+scope="Both actual COUNT consumer forms abort on their first expression conversion failure. This does not add original parser or all-aggregate parity."
+
+[[validations]]
+id="verify_semantic_nullable_sample_dataset_failure_stops"
+module="semantic_evaluator"
+constraint="semantic_nullable_sample_selected_none"
+behavior="real_typed_sample_arithmetic_propagates_dataset_failure_and_stops"
+rust_path="vendor/spareval/src/eval/nullable_receiving.rs"
+oracle="Actual SAMPLE(?x+1) through Group propagates the Dataset externalization failure with its diagnostic/downcast identity; later next calls emit no row and perform no further conversion."
+scope="Actual SAMPLE expression-failure integration; fatal is not an unbound skip or a selected None value."
+
+[[validations]]
+id="verify_semantic_nullable_extend_dataset_failure_stops"
+module="semantic_evaluator"
+constraint="semantic_nullable_extend_full_cells"
+behavior="real_typed_extend_arithmetic_propagates_internalization_failure_and_stops"
+rust_path="vendor/spareval/src/eval/nullable_receiving.rs"
+oracle="The actual Extend evaluates arithmetic 1+1 then reaches a fault-injecting Dataset's expression internalization. It preserves that Dataset failure, emits no successful replacement row and stops without further conversions."
+scope="Actual typed Extend output conversion and stop behavior; not original context forget/remember qualification."
+
+[[validations]]
+id="verify_semantic_nullable_sample_internal_cells_to_decoder"
+module="semantic_evaluator"
+constraint="semantic_nullable_expression_dataset_failures"
+behavior="real_typed_sample_variable_preserves_internal_cells_until_result_decoding"
+rust_path="vendor/spareval/src/eval/nullable_receiving.rs"
+oracle="Actual SAMPLE(?x) keeps the exact internal RDF, None or returned-error cell through Group with zero conversions. The real presence decoder externalizes only RDF, propagating its controlled failure; None/error retain their full cells without a Dataset coercion call."
+scope="Bare-variable consumer and real decoder boundary. Literal/NamedNode raw-leaf routing is also declared but is not implied to be separately exercised by this variable-only control."
+
+# Source arithmetic-chain contracts, composed after expression contracts.
+[[modules]]
+id="semantic_query_planner"
+contract_group="semantic"
+kind="calculation"
+rust_path="vendor/sparopt"
+purpose="Pinned sparopt0.3.7 planner subcomponent of the existing semantic_evaluator owner; preserve explicitly requested arithmetic sequence shape, operator order and nested expression boundaries through the same algebra transport"
+realizes=["req_semantic_platform", "req_semantics"]
+depends_on=["semantic_query_parser"]
+platform="Rust1.95 offline, pinned Oxigraph commit0e81a29d27575ab69e7f85ea9c7f1058b277fcd0, original MIT OR Apache-2.0 licenses retained"
+effects="Local algebra transport only, no second Dataset or interpreter; default AST construction remains, private chain consumers must bypass the complete optimizer"
+failures="Conservative chain type/optimizer handling is not whole-optimizer qualification; unsupported private expressions/operators, full numeric/context/wrapper gaps and source-binding failures remain explicit"
+status="source_only"
+source_refs=["sparopt_037_pinned", "rdflib760_arithmetic_chain_source", "rdflib760_bounded_numeric_source"]
+
+[[sources]]
+id="sparopt_037_pinned"
+identity="sparopt0.3.7 crate SHA256973ee503ab3d6c3de66b4b459233cd5b22b44dad0fb7b8d0931daf73d2ede935; Oxigraph commit0e81a29d27575ab69e7f85ea9c7f1058b277fcd0; original source/license identities in vendor/sparopt/UPSTREAM-PROVENANCE.json; local patch identity in vendor/spareval/NULLABLE-CHAIN-PROVENANCE.json"
+role="Same existing planner now retained locally so its two arithmetic chain variants can be owned, source-bound and checked with parser/evaluator changes"
+applicability="No dependency version upgrade, alternate semantic engine or new public query mode; original registry hashes identify unpatched baseline bytes, not current patched source or execution qualification"
+
+[[sources]]
+id="rdflib760_arithmetic_chain_source"
+identity="RDFLib7.6.0 parser.py SHA2569bff0501465fc90fb2da7461b35e6f88ad724272a88fdb89b43945eb958c9fdf; parserutils.py SHA2561d6b919bd9f76d30df279b5dc5dd93eb33055b8ea801ace65acf182b7887b3d9; operators.py SHA256349d36859ec3dca3b56e33d43786d034a33f3c1a1ba1eef71a13bf95a0809437; source-derived NEXT-CHAIN-01 SHA25617f091078613ee5e3ae4e7c4ed8103b68c255171cbe291b1ffc2c3a177b6be8f"
+role="Nonempty arithmetic sequence shape, one Expr error capture per sequence, transparent bare parentheses and first/whole-tail-before-math evaluation schedule"
+applicability="Read-only source-derived finite expectations; no original Python execution, complete parser equivalence or unseen-task improvement claim"
+
+[[sources]]
+id="rdflib760_bounded_numeric_source"
+identity="RDFLib7.6.0 operators.py SHA256349d36859ec3dca3b56e33d43786d034a33f3c1a1ba1eef71a13bf95a0809437; term.py SHA256564280e97c4e64b5b704bd1fff96ebc374ebd2dcc2df134cda62452a3f83c1db; NEXT-NUMERIC-01 SHA256c754d799f744ed026b527544825b88d77ce2d63a910d69efa9baeee348420d1b"
+role="Separates original arbitrary integer/Decimal-context semantics from this temporary bounded integer and integral arithmetic-child implementation"
+applicability="Fractional division/intermediates, external Decimal, floating/date/subtype/lexical details, range overflow and Decimal negative zero remain explicit unsupported failures. These refusals are implementation limits, not original Python behavior or acceptable final public parity."
+
+[[constraints]]
+id="semantic_nullable_chain_private_parser"
+requirement="req_semantic_platform"
+module="semantic_query_parser"
+check="parse_query_rdflib760_nullable"
+rust_path="vendor/spargebra/src/parser.rs"
+statement="Only the explicit hidden entry enabled by the nondefault rdflib760-nullable-internal feature constructs nonempty arithmetic chains. Existing parse_query, parse_query_rdflib760 and updates retain their previous binary arithmetic policy. The entry is a Rust item for private cross-crate receiving, not a public CLI /5 mode."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_source_shape"
+requirement="req_semantic_platform"
+module="semantic_query_parser"
+check="parse_query_with_policies"
+rust_path="vendor/spargebra/src/parser.rs"
+statement="The real grammar retains ordered additive/multiplicative first-plus-tail sequences before binary lowering loses source boundaries. Parenthesized nonempty sequences remain nested; parentheses around a bare variable or literal remain transparent. No flattening of old binary nodes or source-string reconstruction is permitted."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_parser_visitors"
+requirement="req_semantic_platform"
+module="semantic_query_parser"
+check="walk"
+rust_path="vendor/spargebra/src/algebra.rs"
+statement="Expression walking, used-variable/group checks and aggregate rewriting visit first and every tail operand in source order. Display/SSE preserve a distinct ordered chain and nested boundaries; formatting is diagnostic transport, not an execution rewrite."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_planner_transport"
+requirement="req_semantic_platform"
+module="semantic_query_planner"
+check="from_sparql_algebra"
+rust_path="vendor/sparopt/src/algebra.rs"
+statement="The same planner copies chain first/tail operands and their shared operator tags recursively in both directions, preserving order and nesting. It never uses Add/Mul overloads or order_pair to lower a chain. Graph/aggregate/order conversions use this same transport; surviving legacy OrderBy shape does not enable typed OrderBy execution. The separately declared SourceOrderBy transport retains raw keys directly."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_planner_variables"
+requirement="req_semantic_platform"
+module="semantic_query_planner"
+check="lookup_used_variables"
+rust_path="vendor/sparopt/src/algebra.rs"
+statement="Planner variable collection visits chain first then every tail recursively, preserving source visitation order and complete variable membership. Chains are not statically treated as boolean constants."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_legacy_hash"
+requirement="req_semantic_platform"
+module="semantic_query_planner"
+check="hash"
+rust_path="vendor/sparopt/src/algebra.rs"
+statement="New chain variants are appended after all prior Expression variants. Existing expression discriminants and payload hash streams remain unchanged, preserving existing operand-order choices for the default planner."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_optimizer_boundary"
+requirement="req_semantic_platform"
+module="semantic_query_planner"
+check="normalize_expression"
+rust_path="vendor/sparopt/src/optimizer.rs"
+statement="Chain normalization returns the whole node unchanged without normalizing children; loop-join fitness is false. These are conservative completeness arms only: the actual private source-sensitive route must bypass the entire optimizer, whose other passes can reorder, suppress or move evaluation."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_type_boundary"
+requirement="req_semantic_platform"
+module="semantic_query_planner"
+check="infer_expression_type"
+rust_path="vendor/sparopt/src/type_inference.rs"
+statement="The existing RDF-only type lattice reports ANY for both chain variants; it does not infer total numeric results, absence, returned-error identity or fatal behavior. No optimizer permission follows from this conservative type."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_compiled_source_owner"
+requirement="req_semantic_platform"
+module="design"
+check="binding"
+rust_path="crates/oe-design/src/provenance.rs"
+statement="All local sparopt Rust/TOML, its retained upstream provenance and the current chain patch provenance belong to the same compiled input authority as parser/evaluator. The actual source inventory and real ggen mappings assign planner files to semantic_query_planner; changed/missing/added code fails existing binding. An upstream manifest is a baseline identity, not proof that current patches are upstream or behavior-qualified."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_single_capture"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="build_chain_arithmetic"
+rust_path="vendor/spareval/src/expression.rs"
+statement="The existing single expression dispatcher compiles a source chain once, with one outer capture_sparql around that sequence. Nested source chains retain independent captures. A chain reaching the legacy expression compiler and manually empty chains are explicitly refused rather than replaced by a fake None closure or invented catch. Ordinary prepared-query optimization may eliminate a dead chain branch before compilation; this is not a blanket pre-planning chain rejection guarantee."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_operand_schedule"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="build_chain_arithmetic"
+rust_path="vendor/spareval/src/expression.rs"
+statement="Evaluate/adapt first, then every tail raw operand in order before numeric conversion or arithmetic. A raised first operand stops the tail, while a returned child error remains a value. Tail fatal failure can therefore precede an earlier divide-by-zero calculation. After fetching succeeds, numeric validation occurs per operation, not eagerly for all tail numeric values."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_bounded_arithmetic"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="typed_chain"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+statement="Retained bounded diagnostic path without the new numeric-session codec: A nonempty typed chain reuses the six existing arithmetic kernels, keeping a bounded integral accumulator and Decimal promotion state across operations. Multiplicative chains start Decimal promotion, then materialize one final RDF value; additive chains retain left-to-right order. Every division, including intermediate division, must have an exact integral quotient, and checked range failures remain fatal."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_arithmetic_child"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="bounded_operand"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+statement="Retained bounded diagnostic path without the new numeric-session codec: An integral Decimal produced by a known arithmetic child may re-enter the bounded state while retaining Decimal promotion. The compiler's numeric-result provenance is required; an external Decimal literal/variable or fractional/out-of-range child is not silently admitted. A Decimal saved by BIND then reread as a variable does not inherit arithmetic certification. This is a finite bridge, not a general Python Decimal implementation or all-i64-source-spelling guarantee."
+severity="error"
+
+[[constraints]]
+id="semantic_nullable_chain_negative_zero_refusal"
+requirement="req_semantic_platform"
+module="semantic_evaluator"
+check="apply"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+statement="Retained bounded diagnostic path without the new numeric-session codec: A multiplicative operation whose zero result requires a negative Decimal sign explicitly fails before its sign can be lost. The current fixed numeric carrier cannot faithfully preserve original Decimal negative zero; the refusal is an open capability gap, not a mathematical or original-source rejection."
+severity="error"
+
+[[validations]]
+id="verify_semantic_nullable_chain_default_parser_boundary"
+module="semantic_query_parser"
+constraint="semantic_nullable_chain_private_parser"
+behavior="nullable_chain_parser_keeps_default_and_describe_policy_controls"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="Existing default and rdflib760 parser entries retain selected binary subtraction/multiplication ASTs; private non-arithmetic DESCRIBE agrees with existing target policy and updates remain binary."
+scope="Selected entry-policy regression controls; no new public query version or full parser equivalence."
+
+[[validations]]
+id="verify_semantic_nullable_chain_flat_nested_shapes"
+module="semantic_query_parser"
+constraint="semantic_nullable_chain_source_shape"
+behavior="nullable_chain_parser_distinguishes_flat_and_nested_sequences"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="Real parsing distinguishes 1/0*1 from (1/0)*1 and ?missing+1+?fatal from (?missing+1)+?fatal, preserving one versus nested Expr boundaries."
+scope="Source-derived structural counterexamples, not a new original Python execution."
+
+[[validations]]
+id="verify_semantic_nullable_chain_transparent_parentheses"
+module="semantic_query_parser"
+constraint="semantic_nullable_chain_source_shape"
+behavior="nullable_chain_parser_keeps_bare_parentheses_transparent"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="Bare and repeatedly parenthesized ?missing remain Variable, including inside COUNT; only a nonempty ?missing+0 sequence creates a chain."
+scope="Bare-parenthesis and empty-precedence structure; no new generic catch node."
+
+[[validations]]
+id="verify_semantic_nullable_chain_precedence"
+module="semantic_query_parser"
+constraint="semantic_nullable_chain_source_shape"
+behavior="nullable_chain_parser_preserves_left_order_and_precedence"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="10-3-2, 10-(3-2), 2+3*4 and 2*3*4 retain exact operator order and nested precedence nodes."
+scope="Actual parser structure; numerical outcomes are separately checked."
+
+[[validations]]
+id="verify_semantic_nullable_chain_parser_full_visit"
+module="semantic_query_parser"
+constraint="semantic_nullable_chain_parser_visitors"
+behavior="nullable_chain_group_projection_checks_every_tail_operand"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="Grouped projections reject a missing later additive/multiplicative operand, accept all four declared nested operands, and rewrite every COUNT operand in an aggregate expression chain."
+scope="Real group-variable/aggregate parser visitors; not full Group lifecycle qualification."
+
+[[validations]]
+id="verify_semantic_nullable_chain_diagnostics_roundtrip"
+module="semantic_query_parser"
+constraint="semantic_nullable_chain_parser_visitors"
+behavior="nullable_chain_display_roundtrip_and_sse_preserve_boundaries"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="Real chain Display reparses to the same expression for the finite counterexamples; SSE explicitly shows ordered additive/multiplicative nodes and all nested operators."
+scope="Diagnostic serialization and structural roundtrip, never an execution rewrite."
+
+[[validations]]
+id="verify_semantic_nullable_chain_planner_roundtrip"
+module="semantic_query_planner"
+constraint="semantic_nullable_chain_planner_transport"
+behavior="nullable_chain_lowering_preserves_order_nesting_and_reverse_structure"
+rust_path="vendor/sparopt/src/algebra.rs"
+oracle="Forward/reverse conversion preserves distinct flat/nested division-error structures and mixed ordered chains; their boolean value is not inferred."
+scope="Actual shared planner conversion; no optimization or consumer execution claim."
+
+[[validations]]
+id="verify_semantic_nullable_chain_planner_consumers"
+module="semantic_query_planner"
+constraint="semantic_nullable_chain_planner_transport"
+behavior="nullable_chains_cross_graph_aggregate_and_order_lowering"
+rust_path="vendor/sparopt/src/algebra.rs"
+oracle="Filter, Extend, Group and aggregate conversion retain chain structure; OrderBy retains the chain in its existing synthetic Extend and reverse order conversion."
+scope="Legacy planner transport only; typed legacy OrderBy remains refused. SourceOrderBy has separate raw-key transport and receiving."
+
+[[validations]]
+id="verify_semantic_nullable_chain_planner_variable_order"
+module="semantic_query_planner"
+constraint="semantic_nullable_chain_planner_variables"
+behavior="nullable_chain_variable_visitation_retains_source_order"
+rust_path="vendor/sparopt/src/algebra.rs"
+oracle="Nested mixed-chain variable traversal yields z,b,a,c,d exactly and contains all five variables."
+scope="Actual planner visitor and used-variable set."
+
+[[validations]]
+id="verify_semantic_nullable_chain_old_expression_hashes"
+module="semantic_query_planner"
+constraint="semantic_nullable_chain_legacy_hash"
+behavior="chain_variants_leave_every_previous_expression_hash_stream_unchanged"
+rust_path="vendor/sparopt/src/algebra.rs"
+oracle="A test-only snapshot of all 23 original enum variants from the pinned archive compares recording-hasher bytes and DefaultHasher outputs for every old variant against the current enum."
+scope="All old variant discriminants with fixed payload fixtures; no stable cross-toolchain hash specification is invented."
+
+[[validations]]
+id="verify_semantic_nullable_chain_conservative_optimizer"
+module="semantic_query_planner"
+constraint="semantic_nullable_chain_optimizer_boundary"
+behavior="nullable_chains_keep_conservative_optimizer_and_type_boundaries"
+rust_path="vendor/sparopt/src/optimizer.rs"
+oracle="Normalization preserves complete chains including child Bound expressions that ordinary normalization would simplify; both chains refuse loop-join fitness."
+scope="Conservative arms only; actual source-sensitive execution must bypass whole-query optimization."
+
+[[validations]]
+id="verify_semantic_nullable_chain_conservative_types"
+module="semantic_query_planner"
+constraint="semantic_nullable_chain_type_boundary"
+behavior="nullable_chains_keep_conservative_optimizer_and_type_boundaries"
+rust_path="vendor/sparopt/src/optimizer.rs"
+oracle="Both new chain variants infer VariableType::ANY in the existing type lattice."
+scope="No proof of nullable totality, numeric completeness or optimizer applicability."
+
+[[validations]]
+id="verify_semantic_nullable_chain_compiled_planner_inventory"
+module="design"
+constraint="semantic_nullable_chain_compiled_source_owner"
+behavior="planner_source_manifest_and_provenance_are_in_the_compiled_inventory"
+rust_path="crates/oe-design/tests/evaluator_source_binding.rs"
+oracle="The current compiled inventory includes actual local planner Rust/manifest bytes and retained upstream provenance."
+scope="Compiled source identity, independent of semantic parity or formal installation."
+
+[[validations]]
+id="verify_semantic_nullable_chain_planner_design_owner"
+module="design"
+constraint="semantic_nullable_chain_compiled_source_owner"
+behavior="locally_patched_planner_has_an_explicit_design_owner_and_real_check_mapping"
+rust_path="crates/oe-design/tests/evaluator_source_binding.rs"
+oracle="The composed design declares the exact vendor/sparopt module root and maps actual planner source/check symbols and validations through the same source inventory."
+scope="Design ownership and real source/check mapping; not proof that generated output alone establishes behavior."
+
+[[validations]]
+id="verify_semantic_nullable_chain_planner_source_tamper"
+module="design"
+constraint="semantic_nullable_chain_compiled_source_owner"
+behavior="local_evaluator_source_is_bound_and_missing_changed_or_added_code_is_rejected"
+rust_path="crates/oe-design/tests/evaluator_source_binding.rs"
+oracle="The existing small receiving fixture exercises unchanged, changed, missing and added local source identities, including the planner, through actual binding."
+scope="Source-bound refusal on retained fixture copies; no new standalone dependency toolchain qualification."
+
+[[validations]]
+id="verify_semantic_nullable_chain_multiplicative_state"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_bounded_arithmetic"
+behavior="multiplicative_chain_retains_state_until_the_final_decimal"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="The bounded state computes 2*3*4/6 to Decimal 4 without rejecting its own intermediate integer-derived Decimal promotion."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. Finite exact integral arithmetic using the shared kernels."
+
+[[validations]]
+id="verify_semantic_nullable_chain_additive_order"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_bounded_arithmetic"
+behavior="additive_chain_retains_left_to_right_subtraction"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="The ordered additive state computes 10-3-2 as Integer 5."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. Finite shared-kernel order control, not arbitrary-integer range parity."
+
+[[validations]]
+id="verify_semantic_nullable_chain_unqualified_intermediate_refusal"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_bounded_arithmetic"
+behavior="chain_fractional_intermediate_and_range_remain_fatal"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="1/2*2 remains fatal at its fractional intermediate even though the mathematical final result is integral; i64 maximum times two remains an explicit range failure."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. Temporary finite-subset refusal; original Python may successfully compute these values."
+
+[[validations]]
+id="verify_semantic_nullable_chain_arithmetic_child_provenance"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_arithmetic_child"
+behavior="arithmetic_child_decimal_is_accepted_without_accepting_external_decimal"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="An integral Decimal produced by 3*4 is admitted as a proven arithmetic child so 2+(3*4) yields Decimal 14; equivalent external Decimal input and fractional child remain refused."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. Compiler-origin bounded numeric bridge, not unrestricted Decimal promotion."
+
+[[validations]]
+id="verify_semantic_nullable_chain_stepwise_numeric_validation"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_operand_schedule"
+behavior="flat_chain_stops_math_before_validating_later_numeric_operands"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="After raw operand fetching, 1/0 followed by a returned child-error value raises divide-by-zero before numeric validation reaches that later error object."
+scope="Numeric-phase order after the compiler's raw list has been fetched; actual raw-evaluation schedule is separately tested."
+
+[[validations]]
+id="verify_semantic_nullable_chain_nested_error_capture"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_single_capture"
+behavior="nested_chain_error_becomes_a_new_outer_type_error"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="An inner chain returns its divide-by-zero object; the outer chain's numeric validation returns a different Type error rather than reusing or flattening the inner capture."
+scope="Finite typed kernel/capture boundary; actual parser/compiler route uses separate receiving controls."
+
+[[validations]]
+id="verify_semantic_nullable_chain_negative_zero_refused"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_negative_zero_refusal"
+behavior="signed_decimal_zero_is_refused_at_the_multiplicative_operation"
+rust_path="vendor/spareval/src/expression/nullable.rs"
+oracle="0*(-1), 0/(-1) and (-1)*0 explicitly fail because Decimal negative zero cannot be represented; 0*1 still returns positive Decimal zero."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. Failure-preserving private boundary; the original signed-zero behavior remains a required numeric follow-up."
+
+[[validations]]
+id="verify_semantic_nullable_parsed_chain_projection"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_bounded_arithmetic"
+behavior="parsed_chains_execute_through_real_projection_in_source_order"
+rust_path="vendor/spareval/src/eval/nullable_chains.rs"
+oracle="Real private parser -> shared plan_graph_pattern with without_optimizations -> existing typed evaluator/Project/decoder yields exact finite arithmetic values and datatypes, including 2*3*4=Decimal24, 2+3*4=Decimal14 and 10-3-2=Integer5 versus 10-(3-2)=Integer9."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. Selected source-query integration through the same real owners; not a public nullable profile or complete numeric grammar."
+
+[[validations]]
+id="verify_semantic_nullable_parsed_chain_captures"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_single_capture"
+behavior="parsed_flat_and_nested_chains_keep_distinct_error_boundaries"
+rust_path="vendor/spareval/src/eval/nullable_chains.rs"
+oracle="The real parsed/lowered projection expression returns OtherSparql for 1/0*1 and Type for (1/0)*1; 1/0*?missing returns NotBound from eager tail adaptation."
+scope="Actual parser/planner/compiler boundary observed before Extend applies its own row policy."
+
+[[validations]]
+id="verify_semantic_nullable_parsed_chain_eager_tail"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_operand_schedule"
+behavior="parsed_flat_and_nested_chains_keep_distinct_error_boundaries"
+rust_path="vendor/spareval/src/eval/nullable_chains.rs"
+oracle="Real parsing/lowering of 1/0*(1/2) reaches the unqualified fractional child fatal during raw tail evaluation before the outer chain performs divide-by-zero."
+scope="Actual source-query scheduling control using the explicit finite numeric safety failure; not an original Python failure expectation for 1/2."
+
+[[validations]]
+id="verify_semantic_nullable_parsed_count_parentheses"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_source_shape"
+behavior="parsed_aggregate_parentheses_distinguish_missing_from_returned_error"
+rust_path="vendor/spareval/src/eval/nullable_chains.rs"
+oracle="Three real VALUES rows give COUNT((?missing))=0 but COUNT(?missing+1)=3; flat/nested zero-division returned errors each count as three, and SAMPLE((?missing)) emits present None."
+scope="Actual parser/shared unoptimized planner/Group/COUNT/SAMPLE path under private enablement."
+
+[[validations]]
+id="verify_semantic_nullable_parsed_numeric_failures_stop_consumers"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_negative_zero_refusal"
+behavior="parsed_unsupported_numeric_steps_abort_real_consumers"
+rust_path="vendor/spareval/src/eval/nullable_chains.rs"
+oracle="Source queries for fractional division and negative-zero-producing arithmetic fail through actual projection, COUNT and FILTER, with exactly one error and no resumed successful rows across a three-row input."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. Finite private fatal-preservation controls, including nested negative-zero attempts; original numeric completion remains open."
+
+[[validations]]
+id="verify_semantic_nullable_parsed_decimal_variable_limit"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_arithmetic_child"
+behavior="parsed_decimal_variable_does_not_inherit_arithmetic_certification"
+rust_path="vendor/spareval/src/eval/nullable_chains.rs"
+oracle="BIND(2*3 AS ?v) then ?v+1 explicitly fails because rereading a Decimal variable carries no arithmetic-child certification; bare -9223372036854775808 is also explicitly refused by the current parse/compiler route."
+scope="Retained bounded diagnostic path; the separately specified prepared query numeric path may support more values. Source syntax and provenance limits; direct (2*3)+1 is separately supported and other typed-literal/VALUES forms are not generalized from the bare-integer refusal."
+
+[[validations]]
+id="verify_semantic_nullable_chain_reaches_legacy_refusal"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_single_capture"
+behavior="parsed_chain_reaching_legacy_compiler_is_rejected"
+rust_path="vendor/spareval/src/eval/nullable_chains.rs"
+oracle="A genuine private parsed chain is passed through the shared unoptimized planner to the default evaluator; the chain reaching its legacy expression compiler is refused."
+scope="Reaching-the-compiler control only; a normally optimized prepared query can remove an unreachable branch before this refusal boundary."
+
+[[validations]]
+id="verify_semantic_nullable_parsed_first_failure_stops_raw_tail"
+module="semantic_evaluator"
+constraint="semantic_nullable_chain_operand_schedule"
+behavior="parsed_chain_raw_lookup_stops_at_first_raised_failure"
+rust_path="vendor/spareval/src/eval/nullable_chains.rs"
+oracle="With the actual fault-injecting Dataset, ?missing+1+?fatal returns NotBound without reading ?fatal, while (?missing+1)+?fatal first returns the inner NotBound object then reaches the outer fatal lookup; conversion counts distinguish these source schedules."
+scope="Frozen FIRST-RAISED-STOPS-TAIL source-derived counterexample through the actual private parsed/lowered/compiler route; Dataset fatal propagation is an explicit Rust safety contract."
+
+[[constraints]]
+id="semantic_source_order_parser"
+requirement="req_semantics"
+module="semantic_query_parser"
+check="build_order_by"
+rust_path="vendor/spargebra/src/parser.rs"
+statement="Only preserve_source_literals selects appended SourceOrderBy at the original ORDER modifier position. Default and numeric-only parsing retain legacy OrderBy; source aggregate mode alone grants no source literal/order execution. Asc/Desc and duplicate expression occurrences remain in original condition order."
+severity="error"
+
+[[validations]]
+id="verify_semantic_source_order_parser_source_order_parser_uses_explicit_literal_axis_and_preserves_modifiers"
+module="semantic_query_parser"
+constraint="semantic_source_order_parser"
+behavior="source_order_parser_uses_explicit_literal_axis_and_preserves_modifiers"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[validations]]
+id="verify_semantic_source_order_parser_source_order_parser_preserves_raw_keys_duplicates_and_nested_chains"
+module="semantic_query_parser"
+constraint="semantic_source_order_parser"
+behavior="source_order_parser_preserves_raw_keys_duplicates_and_nested_chains"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[constraints]]
+id="semantic_source_order_aggregate_rewrite"
+requirement="req_semantics"
+module="semantic_query_parser"
+check="build_source_aggregate_select"
+rust_path="vendor/spargebra/src/parser.rs"
+statement="The entire ORDER list is tested for any aggregate under the original complete=False rule; if any condition contains an aggregate, all conditions are rewritten in their source order. Projection and HAVING precede ORDER, and projected bare-variable SAMPLE follows it. No per-condition-only rewrite, aggregate deduplication or unconditional SAMPLE is introduced."
+severity="error"
+
+[[validations]]
+id="verify_semantic_source_order_aggregate_rewrite_source_order_parser_rewrites_all_conditions_only_when_any_contains_aggregate"
+module="semantic_query_parser"
+constraint="semantic_source_order_aggregate_rewrite"
+behavior="source_order_parser_rewrites_all_conditions_only_when_any_contains_aggregate"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[validations]]
+id="verify_semantic_source_order_aggregate_rewrite_source_order_parser_keeps_having_order_and_projected_sample_sequence"
+module="semantic_query_parser"
+constraint="semantic_source_order_aggregate_rewrite"
+behavior="source_order_parser_keeps_having_order_and_projected_sample_sequence"
+rust_path="vendor/spargebra/src/parser.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[constraints]]
+id="semantic_source_order_scope"
+requirement="req_semantics"
+module="semantic_query_parser"
+check="lookup_in_scope_variables"
+rust_path="vendor/spargebra/src/algebra.rs"
+statement="Appended SourceOrderBy inherits only child output bindings while its dependency visitor also visits raw key variables. It does not bind a missing key. Previous OrderBy, Group, Service, SourceGroup and SourceValues discriminants and complete Hash byte streams remain unchanged."
+severity="error"
+
+[[validations]]
+id="verify_semantic_source_order_scope_source_order_scope_separates_key_dependencies_from_outputs"
+module="semantic_query_parser"
+constraint="semantic_source_order_scope"
+behavior="source_order_scope_separates_key_dependencies_from_outputs"
+rust_path="vendor/spargebra/src/algebra.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[validations]]
+id="verify_semantic_source_order_scope_source_order_append_preserves_prior_graph_hash_bytes"
+module="semantic_query_parser"
+constraint="semantic_source_order_scope"
+behavior="source_order_append_preserves_prior_graph_hash_bytes"
+rust_path="vendor/spargebra/src/algebra.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[constraints]]
+id="semantic_source_order_display"
+requirement="req_semantics"
+module="semantic_query_parser"
+check="fmt_sse"
+rust_path="vendor/spargebra/src/algebra.rs"
+statement="SourceOrderBy formats as a distinct source-order SSE node and the existing SPARQL root modifier formatter retains actual ASC/DESC keys and source literal spelling. Formatting does not execute or qualify a query and does not claim universal aggregate alias roundtrip."
+severity="error"
+
+[[validations]]
+id="verify_semantic_source_order_display_source_order_display_and_sse_retain_raw_conditions"
+module="semantic_query_parser"
+constraint="semantic_source_order_display"
+behavior="source_order_display_and_sse_retain_raw_conditions"
+rust_path="vendor/spargebra/src/algebra.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[constraints]]
+id="semantic_source_order_lowering"
+requirement="req_semantics"
+module="semantic_query_planner"
+check="from_sparql_algebra"
+rust_path="vendor/sparopt/src/algebra.rs"
+statement="The shared planner directly lowers and reverses each raw SourceOrderBy key without hidden Extend, synthetic variable replacement, condition deduplication or empty-child simplification. Output-variable lookup sees only child bindings; source keys retain nested chain and occurrence metadata. Legacy OrderBy continues its existing hidden-Extend lowering and all old graph Hash bytes remain unchanged."
+severity="error"
+
+[[validations]]
+id="verify_semantic_source_order_lowering_source_order_lowering_roundtrip_preserves_keys_without_hidden_extend"
+module="semantic_query_planner"
+constraint="semantic_source_order_lowering"
+behavior="source_order_lowering_roundtrip_preserves_keys_without_hidden_extend"
+rust_path="vendor/sparopt/src/algebra.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[validations]]
+id="verify_semantic_source_order_lowering_source_order_lowering_retains_empty_input_and_duplicate_conditions"
+module="semantic_query_planner"
+constraint="semantic_source_order_lowering"
+behavior="source_order_lowering_retains_empty_input_and_duplicate_conditions"
+rust_path="vendor/sparopt/src/algebra.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[validations]]
+id="verify_semantic_source_order_lowering_source_order_append_preserves_prior_graph_hash_bytes"
+module="semantic_query_planner"
+constraint="semantic_source_order_lowering"
+behavior="source_order_append_preserves_prior_graph_hash_bytes"
+rust_path="vendor/sparopt/src/algebra.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[constraints]]
+id="semantic_source_order_optimizer"
+requirement="req_semantics"
+module="semantic_query_planner"
+check="contains_source_group"
+rust_path="vendor/sparopt/src/optimizer.rs"
+statement="SourceOrderBy itself is a source marker, including inside EXISTS or a larger ordinary-looking plan. The whole optimizer bypasses that plan; conservative exhaustive branches preserve outer filters, decline join-fit and cardinality promises, and inherit child types without adding key-only bindings. This does not grant source EXISTS execution."
+severity="error"
+
+[[validations]]
+id="verify_semantic_source_order_optimizer_source_order_optimizer_bypasses_entire_plan_including_exists"
+module="semantic_query_planner"
+constraint="semantic_source_order_optimizer"
+behavior="source_order_optimizer_bypasses_entire_plan_including_exists"
+rust_path="vendor/sparopt/src/optimizer.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."
+
+[[validations]]
+id="verify_semantic_source_order_optimizer_source_order_type_inference_keeps_child_outputs_only"
+module="semantic_query_planner"
+constraint="semantic_source_order_optimizer"
+behavior="source_order_type_inference_keeps_child_outputs_only"
+rust_path="vendor/sparopt/src/optimizer.rs"
+oracle="Author structural/mode control; no new original-source observation or frozen behavioral expectation."
+scope="Declared receiving only; actual current-source execution belongs in external receipts. Default feature and public profiles1-4 remain unchanged; no public/5, graph-source, arbitrary-function or complete Semantica qualification."

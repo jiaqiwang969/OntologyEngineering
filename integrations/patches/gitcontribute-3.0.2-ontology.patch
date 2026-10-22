@@ -1,0 +1,24 @@
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -11,3 +11,21 @@
+ For issue drafting, triage, and duplicate checks: start exact issue audits with corpus.get_coverage and corpus.get_threads; inspect corpus coverage and freshness in each result; when an item is missing or incomplete, replay its typed exact-thread or repository recovery action, poll jobs.get, and reread the stored result before continuing. Search stored threads offline; broaden strict multi-term searches when needed; hydrate only exact finalists; then verify current state with live GitHub before filing. Never treat zero matches as absence when coverage is incomplete or the query may be too strict.
+ 
+ Use native GitHub tools for final live-state verification and every mutation. If no GitContribute tool fits, fall back to ordinary tools.
++
++## OntologyEngineering integration (project-maintained addition)
++
++When this tool is used within OntologyEngineering, resolve `ONTOLOGY_ENGINEERING_ROOT`
++from the user's configuration and read `docs/TOOL-INTEGRATIONS.md` and
++`references/professional-capabilities.md` under that root. Keep the current Project,
++object revision, conditions and pending decision; do not infer a Project from cwd.
++Save the exact invocation, tool version, original result bytes, input identities,
++coverage, failures and unknowns in the Project's private evidence directory.
++Return results through `oev2 project tool-result`; registration does not grant
++engineering adoption. Feed actual process and usage back through `oev2 memory`.
++Do not require an additional hosted judgment service for this handoff.
++
++Preserve repository identity, source freshness and corpus coverage; an empty search is not evidence of absence. Local fixture repository labels are not live GitHub identities.
++
++This addition is maintained by OntologyEngineering, not by the upstream tool.
++Apply it only to the version and original Skill hash in `integrations/tools.lock.json`.
++An upstream setup or upgrade may replace the Skill; re-check before reapplying.

@@ -1,0 +1,2418 @@
+{
+  "schema_version": 1,
+  "id": "query-numeric-frozen-cases-02",
+  "source_record_id": "QUERY-NUMERIC-FROZEN-02",
+  "source_record_sha256": "2a63d9a7043935df5c925b5ed5285d4447a24c9f0d09a532432fd8c2442cf5fd",
+  "cases_canonical_sha256": "42f57810e535d6695de2f66fe688fd817ae1c36ef1c97c830e5c0c0180f01f10",
+  "status": "source-derived synthetic receiving revision; three source-reviewed QN03 corrections are post-exposure development replay, not independent holdout or runtime parity",
+  "public_fixture_scope": "Synthetic query strings, explicit literal inputs, expected RDF/cache values and labeled safety contracts only. Original source locations and local project paths are excluded.",
+  "explicit_environment": {
+    "decimal_context": {
+      "precision": 28,
+      "rounding": "HALF_EVEN",
+      "Emin": -999999,
+      "Emax": 999999,
+      "clamp": 0,
+      "traps": [
+        "InvalidOperation",
+        "DivisionByZero",
+        "Overflow"
+      ],
+      "initial_flags": []
+    },
+    "context_basis": "Pinned DefaultContext prototype at pydecimal6014-6022; not an observation of historical mutable application/thread context.",
+    "normalize_literals": true,
+    "normalize_basis": "Explicit test parameter matching rdflib_init127 source defaultTrue; only construction branches that actually consult normalization may apply it. It does not override the existing-Literal branch.",
+    "integer_text_limit": 4096,
+    "numeric_limits": {
+      "max_input_characters": 10000,
+      "max_coefficient_digits": 10064,
+      "max_output_characters": 10064,
+      "max_materialized_power_of_ten": 10064
+    },
+    "limits_basis": "Explicit bounded receiving configuration, not RDFLib acceptance parity. Cases may override one named budget.",
+    "query_prefixes": {
+      "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "default_lane": "private nullable numeric with explicit source provenance and whole optimizer disabled",
+    "default_dataset": "One actual existing RDF Dataset wrapped/forwarded by the proposed numeric codec; empty unless fixture given. No new store and no second interpreter.",
+    "input_origins": {
+      "QueryTypedExistingLiteral": "Query String parse action produces plain Literal, then algebra datatype override parses cache and keeps original decoded lexical; do not normalize again.",
+      "QueryNumericToken": "Unsigned numeric token directly constructs typed Literal from source string; normalize according to explicit source parameter. Signed tokens are separately gated by QN26.",
+      "DirectString": "Explicit initial input constructor starts from original string and datatype; parse first, then normalize RDF lexical while preserving cache.",
+      "KnownCached": "An explicitly controlled already-constructed Literal carries its original RDF identity and cache; pass it without datatype re-construction.",
+      "UnknownNormalized": "Only normalized RDF identity is available; do not infer numeric cache from lexical or global map."
+    }
+  },
+  "case_count": 28,
+  "cases": [
+    {
+      "id": "QN01",
+      "title": "Typed query literal and DirectString cache survive BIND and Project with different RDF lexical",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "literal_cache",
+        "decimal_divide",
+        "bind_project",
+        "typed_query_constructor"
+      ],
+      "derivation": "Typed query syntax first constructs a plain Literal and then overrides its datatype; that existing-Literal branch retains lexical1E+2 and parses cache1e2 without normalization. DirectString initial construction instead normalizes to100 while retaining the same cache. Both divided into Decimal100(exp0) yield100e-2 =1.00.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x ?v WHERE { { SELECT ?x WHERE { BIND(\"1E+2\"^^xsd:decimal AS ?x) } } BIND(100 / ?x AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "1E+2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "x",
+              "after": [
+                "BIND",
+                "Project"
+              ],
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "1",
+                  "exponent": "2"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "100",
+                  "exponent": "-2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x ?v WHERE { { SELECT ?x WHERE { BIND(?input AS ?x) } } BIND(100 / ?x AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "initial_bindings": {
+            "input": {
+              "origin": "DirectString",
+              "input_lexical": "1E+2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          },
+          "checkpoints": [
+            {
+              "binding": "x",
+              "after": [
+                "BIND",
+                "Project"
+              ],
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "1",
+                  "exponent": "2"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "100",
+                  "exponent": "-2"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "inherited_boundary_case": "RDF-CACHE-POSITIVE-EXPONENT",
+      "reject_shortcut": "For the DirectString input, reparsing normalized100 produces1 instead of1.00. For typed query syntax, pre-normalizing1E+2 to100 wrongly changes RDF lexical identity even if math happens to agree."
+    },
+    {
+      "id": "QN02",
+      "title": "DirectString cached exponents survive BIND and singleton SAMPLE; typed VALUES control retains lexical",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "literal_cache",
+        "decimal_divide",
+        "values",
+        "sample",
+        "typed_query_constructor"
+      ],
+      "derivation": "DirectString inputs normalize0E+3 to0 and1E+4 to10000, retaining cached exponents3/4. Singleton SAMPLE retains them; quotient is zero exp-1. Typed query VALUES uses existing-Literal datatype override and retains0E+3/1E+4 RDF lexical, with the same cached arithmetic result.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?a ?b ?v WHERE { { SELECT (SAMPLE(?x) AS ?a) (SAMPLE(?y) AS ?b) WHERE { BIND(?input_a AS ?x) BIND(?input_b AS ?y) } } BIND(?a / ?b AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "b": {
+                  "kind": "literal",
+                  "lexical": "10000",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "initial_bindings": {
+            "input_a": {
+              "origin": "DirectString",
+              "input_lexical": "0E+3",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            },
+            "input_b": {
+              "origin": "DirectString",
+              "input_lexical": "1E+4",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          },
+          "checkpoints": [
+            {
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "0",
+                  "exponent": "3"
+                }
+              }
+            },
+            {
+              "binding": "b",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "1",
+                  "exponent": "4"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "0",
+                  "exponent": "-1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?a ?b ?v WHERE { { SELECT (SAMPLE(?x) AS ?a) (SAMPLE(?y) AS ?b) WHERE { VALUES (?x ?y) { (\"0E+3\"^^xsd:decimal \"1E+4\"^^xsd:decimal) } } } BIND(?a / ?b AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "0E+3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "b": {
+                  "kind": "literal",
+                  "lexical": "1E+4",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "a",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "0",
+                  "exponent": "3"
+                }
+              }
+            },
+            {
+              "binding": "b",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "1",
+                  "exponent": "4"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "0",
+                  "exponent": "-1"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "inherited_boundary_case": "RDF-CACHE-ZERO-EXPONENT"
+    },
+    {
+      "id": "QN03",
+      "title": "Same RDF identity keeps different per-cell caches and DISTINCT sees one RDF",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "literal_cache",
+        "rdf_identity",
+        "decimal_divide",
+        "count",
+        "values",
+        "typed_query_constructor"
+      ],
+      "derivation": "Two DirectString initial constructors1E+2 and100 normalize to equal RDF100 but keep exp2 and0. Real UNION+BIND carries each into the same variable; divisions differ and bare DISTINCT sees one RDF. In contrast, query typed VALUES preserves1E+2 and100 lexical, so COUNT DISTINCT sees two; do not normalize that control to force equality.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tag ?x ?v WHERE { { { BIND(1 AS ?tag) BIND(?left AS ?x) } UNION { BIND(2 AS ?tag) BIND(?right AS ?x) } } BIND(100 / ?x AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "x": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              },
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "x": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "initial_bindings": {
+            "left": {
+              "origin": "DirectString",
+              "input_lexical": "1E+2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            },
+            "right": {
+              "origin": "DirectString",
+              "input_lexical": "100",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(?x) AS ?all) (COUNT(DISTINCT ?x) AS ?distinct) WHERE { { BIND(?left AS ?x) } UNION { BIND(?right AS ?x) } }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "all": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "distinct": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "initial_bindings": {
+            "left": {
+              "origin": "DirectString",
+              "input_lexical": "1E+2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            },
+            "right": {
+              "origin": "DirectString",
+              "input_lexical": "100",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(DISTINCT *) AS ?count) WHERE { { BIND(?left AS ?x) } UNION { BIND(?right AS ?x) } }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "count": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "initial_bindings": {
+            "left": {
+              "origin": "DirectString",
+              "input_lexical": "1E+2",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            },
+            "right": {
+              "origin": "DirectString",
+              "input_lexical": "100",
+              "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+              "normalize": true
+            }
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tag ?x ?v WHERE { VALUES (?tag ?x) { (1 \"1E+2\"^^xsd:decimal) (2 \"100\"^^xsd:decimal) } BIND(100 / ?x AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "x": {
+                  "kind": "literal",
+                  "lexical": "1E+2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              },
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "x": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "control": "QueryTypedExistingLiteral constructor; different RDF lexical must remain distinct."
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(?x) AS ?all) (COUNT(DISTINCT ?x) AS ?distinct) WHERE { VALUES ?x { \"1E+2\"^^xsd:decimal \"100\"^^xsd:decimal } }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "all": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "distinct": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "control": "QueryTypedExistingLiteral constructor; different RDF lexical must remain distinct."
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(DISTINCT *) AS ?count) WHERE { VALUES ?x { \"1E+2\"^^xsd:decimal \"100\"^^xsd:decimal } }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "count": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "control": "QueryTypedExistingLiteral constructor; different RDF lexical must remain distinct."
+        }
+      ],
+      "inherited_boundary_case": "RDF-IDENTITY-NOT-CACHE-IDENTITY",
+      "carrier_assertions": {
+        "same_rdf_equal": true,
+        "same_rdf_hash_byte_stream_equal": true,
+        "hash_byte_stream_equals_underlying_term": true,
+        "caches_after_clone": [
+          {
+            "state": "Known",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "1",
+              "exponent": "2"
+            }
+          },
+          {
+            "state": "Known",
+            "value": {
+              "kind": "finite",
+              "negative": false,
+              "coefficient": "100",
+              "exponent": "0"
+            }
+          }
+        ],
+        "global_term_to_cache_map_forbidden": true
+      },
+      "hash_basis": "RDF equality/hash independence is source-derived; byte-for-byte forwarding of the existing Rust underlying Hash stream is a legacy-preservation contract, not a claim about Python hash bytes."
+    },
+    {
+      "id": "QN04",
+      "title": "Initial literal provenance survives BIND SAMPLE variable and FILTER",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "literal_cache",
+        "initial_lookup",
+        "sample",
+        "ebv",
+        "decimal_divide"
+      ],
+      "derivation": "Explicit KnownCached, or declared DirectString initial construction, provides the original cached Literal value. The initial input is not a query typed string literal. BIND and SAMPLE carry the selected object; numeric100 is truthy.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?s ?v WHERE { { SELECT (SAMPLE(?y) AS ?s) WHERE { BIND(?x AS ?y) } } FILTER(?s) BIND(100 / ?s AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "initial_binding_variants": [
+            {
+              "x": {
+                "origin": "KnownCached",
+                "rdf": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "cache": {
+                  "state": "Known",
+                  "value": {
+                    "kind": "finite",
+                    "negative": false,
+                    "coefficient": "1",
+                    "exponent": "2"
+                  }
+                }
+              }
+            },
+            {
+              "x": {
+                "origin": "DirectString",
+                "input_lexical": "1E+2",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal",
+                "normalize": true
+              }
+            }
+          ],
+          "checkpoints": [
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "1",
+                  "exponent": "2"
+                }
+              }
+            }
+          ],
+          "preparation_contract": {
+            "prepare_each_input_once": true,
+            "initial_context_and_input_tuple_share_prepared_cache": true
+          }
+        }
+      ],
+      "scope": "No absent-shadow/forget/thaw equivalence or overlapping join representation choice is inferred from this simple initial-binding path."
+    },
+    {
+      "id": "QN05",
+      "title": "Unique group key retains its only cache representation",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "literal_cache",
+        "group",
+        "sample",
+        "decimal_divide",
+        "typed_query_constructor"
+      ],
+      "derivation": "The typed VALUES constructor retains RDF lexical1E+2 and cache exp2. A single input representation avoids any unresolved same-key conflict policy; group projection retains that only selected Literal and100 divided by it is1.00.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x ?c ?v WHERE { { SELECT ?x (COUNT(*) AS ?c) WHERE { VALUES ?x { \"1E+2\"^^xsd:decimal } } GROUP BY ?x } BIND(100 / ?x AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "1E+2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "x",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "1",
+                  "exponent": "2"
+                }
+              }
+            },
+            {
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "integer",
+                  "value": "1"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "scope": "Does not prescribe which cache survives a join or a group with multiple equal-RDF representatives."
+    },
+    {
+      "id": "QN06",
+      "title": "Integer arithmetic exceeds i64 and remains Integer through SAMPLE",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "integer_rules",
+        "additive",
+        "unary",
+        "sample",
+        "bind_project"
+      ],
+      "derivation": "Python int add/sub/unary are exact and not Decimal-context rounded; i64max+1 is9223372036854775808.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?s ?minus ?back WHERE { { SELECT (SAMPLE(?large) AS ?s) WHERE { BIND(9223372036854775807 + 1 AS ?large) } } BIND(-?s AS ?minus) BIND(?s - 1 AS ?back) FILTER(?s) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "9223372036854775808",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "minus": {
+                  "kind": "literal",
+                  "lexical": "-9223372036854775808",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "back": {
+                  "kind": "literal",
+                  "lexical": "9223372036854775807",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "integer",
+                  "value": "9223372036854775808"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QN07",
+      "title": "Integer addition stays exact while integer multiplication uses Decimal28",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "integer_rules",
+        "additive",
+        "multiplicative",
+        "decimal_round",
+        "promotion"
+      ],
+      "derivation": "29 nines + integer0 is exact29-digit Integer. Multiplication first converts exactly to Decimal, then p28 multiplication rounds29 nines to10^29, with coefficient10^27 exponent2.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?i ?d WHERE { BIND(99999999999999999999999999999 + 0 AS ?i) BIND(99999999999999999999999999999 * 1 AS ?d) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "i": {
+                  "kind": "literal",
+                  "lexical": "99999999999999999999999999999",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "d": {
+                  "kind": "literal",
+                  "lexical": "100000000000000000000000000000",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "i",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "integer",
+                  "value": "99999999999999999999999999999"
+                }
+              }
+            },
+            {
+              "binding": "d",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "1000000000000000000000000000",
+                  "exponent": "2"
+                }
+              }
+            }
+          ],
+          "decimal_signals_after_query_exact": [
+            "Inexact",
+            "Rounded"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QN08",
+      "title": "Fractional chain rounds at every p28 operation",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "decimal_divide",
+        "decimal_multiply",
+        "decimal_round",
+        "chain_order"
+      ],
+      "derivation": "1/3 first rounds to28 threes at exponent-28. Multiplication by3 gives28 nines exactly; reassociating to1 or rounding only at the end is incorrect.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 / 3 AS ?v) WHERE {}",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.3333333333333333333333333333",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "3333333333333333333333333333",
+                  "exponent": "-28"
+                }
+              }
+            }
+          ],
+          "decimal_signals_after_query_exact": [
+            "Inexact",
+            "Rounded"
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 / 3 * 3 AS ?v) WHERE {}",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.9999999999999999999999999999",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "9999999999999999999999999999",
+                  "exponent": "-28"
+                }
+              }
+            }
+          ],
+          "decimal_signals_after_query_exact": [
+            "Inexact",
+            "Rounded"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QN09",
+      "title": "Terminating quotient scale survives BIND SAMPLE and subsequent multiply",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "decimal_divide",
+        "decimal_multiply",
+        "sample"
+      ],
+      "derivation": "Exact1/2 has coefficient5 exponent-1. Multiplication after variable reread gives coefficient10 exponent-1, hence RDF1.0 rather than integer1 or decimal1.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?s ?v WHERE { { SELECT (SAMPLE(?x) AS ?s) WHERE { BIND(1 / 2 AS ?x) } } BIND(?s * 2 AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "0.5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "5",
+                  "exponent": "-1"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "10",
+                  "exponent": "-1"
+                }
+              }
+            }
+          ],
+          "decimal_signals_after_query_exact": []
+        }
+      ]
+    },
+    {
+      "id": "QN10",
+      "title": "Decimal scale and promotion across VALUES BIND variable",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "literal_cache",
+        "multiplicative",
+        "additive",
+        "decimal_multiply",
+        "promotion"
+      ],
+      "derivation": "1.20(c120,e-2)*2.0(c20,e-1) gives2400e-3. Adding Integer0 promotes to Decimal and preserves exponent-3.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?p ?v WHERE { VALUES (?x ?y) { (\"1.20\"^^xsd:decimal \"2.0\"^^xsd:decimal) } BIND(?x * ?y AS ?p) BIND(?p + 0 AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "p": {
+                  "kind": "literal",
+                  "lexical": "2.400",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "2.400",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "p",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "2400",
+                  "exponent": "-3"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "2400",
+                  "exponent": "-3"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QN11",
+      "title": "Negative zero is retained by multiply divide and cleared by unary at HalfEven",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "unary",
+        "multiplicative",
+        "decimal_unary",
+        "decimal_multiply",
+        "decimal_divide",
+        "ebv"
+      ],
+      "derivation": "Multiply/divide use sign XOR and retain scale. Decimal unary plus/minus clear zero sign under HalfEven while preserving exponent; EBV of either zero sign is false.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?z ?u ?d ?m WHERE { BIND(\"0.00\"^^xsd:decimal * -1 AS ?z) BIND(+?z AS ?u) BIND(0 / -1 AS ?d) BIND(-?z AS ?m) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "z": {
+                  "kind": "literal",
+                  "lexical": "-0.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "u": {
+                  "kind": "literal",
+                  "lexical": "0.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "d": {
+                  "kind": "literal",
+                  "lexical": "-0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "m": {
+                  "kind": "literal",
+                  "lexical": "0.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "z",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": true,
+                  "coefficient": "0",
+                  "exponent": "-2"
+                }
+              }
+            },
+            {
+              "binding": "u",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "0",
+                  "exponent": "-2"
+                }
+              }
+            },
+            {
+              "binding": "d",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": true,
+                  "coefficient": "0",
+                  "exponent": "0"
+                }
+              }
+            },
+            {
+              "binding": "m",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "0",
+                  "exponent": "-2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { VALUES ?x { \"-0.00\"^^xsd:decimal } FILTER(?x) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": []
+          }
+        }
+      ],
+      "scope": "Use typed string literals for zero constructor tests; bare negative Decimal VALUES has a distinct parser failure in QN26."
+    },
+    {
+      "id": "QN12",
+      "title": "Exact literal construction does not apply p28 until arithmetic",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "literal_cache",
+        "additive",
+        "decimal_round",
+        "promotion"
+      ],
+      "derivation": "The29-significant-digit constructor is exact. Adding0 rounds to28 digits; discarded9 rounds retained trailing8 upward to9.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x ?v WHERE { BIND(\"1.2345678901234567890123456789\"^^xsd:decimal AS ?x) BIND(?x + 0 AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "1.2345678901234567890123456789",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.234567890123456789012345679",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "x",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "12345678901234567890123456789",
+                  "exponent": "-28"
+                }
+              }
+            },
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "1234567890123456789012345679",
+                  "exponent": "-27"
+                }
+              }
+            }
+          ],
+          "decimal_signals_after_query_exact": [
+            "Inexact",
+            "Rounded"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QN13",
+      "title": "All four private COUNT finishes construct known Integer results",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "count",
+        "group",
+        "integer_rules",
+        "additive",
+        "ebv"
+      ],
+      "derivation": "Two equal one-variable rows give COUNT and COUNT(*)2, DISTINCT forms1. Each result is a Python-int Literal and can be reused in arithmetic and FILTER without unknown-cache rejection.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?c ?d ?n ?u ?v ?w WHERE { { SELECT (COUNT(?x) AS ?c) (COUNT(DISTINCT ?x) AS ?d) (COUNT(*) AS ?n) (COUNT(DISTINCT *) AS ?u) WHERE { VALUES ?x { 1 1 } } } BIND(?c + 1 AS ?v) BIND(?u + 1 AS ?w) FILTER(?d) FILTER(?n) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "d": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "n": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "u": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "w": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "c",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "binding": "d",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "binding": "n",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "integer",
+                  "value": "2"
+                }
+              }
+            },
+            {
+              "binding": "u",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "integer",
+                  "value": "1"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "scope": "Small counts only; this does not qualify arbitrary-precision counters or remove an existing counter resource limit."
+    },
+    {
+      "id": "QN14",
+      "title": "Aggregate literal fast path preserves source cache",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "literal_cache",
+        "sample",
+        "count",
+        "decimal_divide",
+        "typed_query_constructor"
+      ],
+      "derivation": "SAMPLE of a query typed Literal1E+2 returns its full object, retaining RDF lexical1E+2 and cache exp2. COUNT only counts rows. Neither aggregate literal optimization may normalize or narrow it through old ExpressionTerm.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?s ?c ?v WHERE { { SELECT (SAMPLE(\"1E+2\"^^xsd:decimal) AS ?s) (COUNT(\"1E+2\"^^xsd:decimal) AS ?c) WHERE { VALUES ?row { 1 2 } } } BIND(100 / ?s AS ?v) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "1E+2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "v": {
+                  "kind": "literal",
+                  "lexical": "1.00",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "1",
+                  "exponent": "2"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QN15",
+      "title": "COUNT DISTINCT preserves two evaluations and fresh returned-error identity",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "count",
+        "expr_catch",
+        "multiplicative",
+        "raw_eval"
+      ],
+      "derivation": "Each divide-by-zero Expr returns a newly caught SPARQLError object. DISTINCT use_row and update independently evaluate it; two rows produce four distinct objects and count2. Bare missing variables are raised and skipped, whereas caught expression NotBound is a returned value counted by Counter.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(DISTINCT (1 / 0)) AS ?c) WHERE { VALUES ?row { 1 2 } }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "raw_expression_evaluations": 4,
+          "returned_error_identity_assertions": {
+            "object_count": 4,
+            "all_pairwise_distinct": true,
+            "kind": "OtherSparql",
+            "diagnostic": "divide by 0"
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(?missing) AS ?bare) (COUNT(?missing + 1) AS ?expr) WHERE { VALUES ?row { 1 2 } }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "bare": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "expr": {
+                  "kind": "literal",
+                  "lexical": "2",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "scope": "Identity asserted only for newly evaluated errors. An already returned error carried in a variable retains its existing object identity. This does not close all NotBound subclass differences."
+    },
+    {
+      "id": "QN16",
+      "title": "Numeric EBV uses cached zero test including NaN and Infinity",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "ebv",
+        "decimal_bool",
+        "literal_cache"
+      ],
+      "derivation": "Actual operators.EBV calls bool(cached Python value); _pydecimal.__bool__ says NaNs and infinities are true. The neighboring SPARQL-docstring claim NaN=false is not the implemented source behavior.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?tag WHERE { VALUES (?tag ?x) { (1 \"0\"^^xsd:decimal) (2 \"-0.00\"^^xsd:decimal) (3 \"NaN\"^^xsd:decimal) (4 \"sNaN\"^^xsd:decimal) (5 \"Infinity\"^^xsd:decimal) (6 \"-Infinity\"^^xsd:decimal) (7 \"1\"^^xsd:decimal) } FILTER(?x) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              },
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "4",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              },
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "5",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              },
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "6",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              },
+              {
+                "tag": {
+                  "kind": "literal",
+                  "lexical": "7",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": []
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 AS ?ok) WHERE { FILTER(\"sNaN\"^^xsd:decimal) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "ok": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": []
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 AS ?ok) WHERE { FILTER(\"NaN\"^^xsd:decimal + 0) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "ok": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "decimal_signals_after_query_exact": []
+        }
+      ],
+      "assertions": [
+        "Exercise Internal and RawExpression EBV result branches in the actual compiler/consumer path; NaN EBV must not call arithmetic or compare numerically."
+      ]
+    },
+    {
+      "id": "QN17",
+      "title": "Trap conversion depends on the owning expression",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "multiplicative",
+        "additive",
+        "unary",
+        "expr_catch",
+        "count",
+        "group",
+        "decimal_special"
+      ],
+      "derivation": "Multiplicative catches Decimal InvalidOperation/ZeroDivisionError and raises SPARQLError, so COUNT counts the returned error. Additive and unary have no such catch; sNaN InvalidOperation escapes and aborts the group.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(0 / 0) AS ?a) (COUNT(\"sNaN\"^^xsd:decimal * 1) AS ?b) WHERE {}",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "a": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "b": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(\"sNaN\"^^xsd:decimal + 0) AS ?c) WHERE {}",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "DecimalTrap",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "primary_signal": "InvalidOperation",
+            "required_signals": [
+              "InvalidOperation"
+            ],
+            "signals_exact": null
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(+\"sNaN\"^^xsd:decimal) AS ?c) WHERE {}",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "DecimalTrap",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "primary_signal": "InvalidOperation",
+            "required_signals": [
+              "InvalidOperation"
+            ],
+            "signals_exact": null
+          }
+        }
+      ],
+      "scope": "No exact full trapped-flag parity with the C decimal backend is claimed. Fatal iterator fusion is an active Rust safety contract in addition to the source uncaught-exception boundary."
+    },
+    {
+      "id": "QN18",
+      "title": "Unknown numeric values remain transportable and countable",
+      "classification": "active_provenance_safety_contract_not_original_runtime_parity",
+      "source_refs": [
+        "raw_eval",
+        "count",
+        "sample",
+        "bind_project",
+        "rdf_identity"
+      ],
+      "derivation": "Transport and bare-variable COUNT do not call numeric(); the new Unknown metadata policy deliberately preserves that distinction while refraining from inventing a cached Python value.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?y WHERE { { SELECT ?x WHERE {} } BIND(?x AS ?y) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "y": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "100",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Unknown",
+                "reason": "MissingPreNormalizationMetadata"
+              }
+            }
+          },
+          "checkpoints": [
+            {
+              "binding": "y",
+              "cache": {
+                "state": "Unknown",
+                "reason": "MissingPreNormalizationMetadata"
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SAMPLE(?y) AS ?s) (COUNT(?y) AS ?c) (COUNT(DISTINCT ?y) AS ?d) WHERE { BIND(?x AS ?y) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "s": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                },
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "d": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "100",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Unknown",
+                "reason": "MissingPreNormalizationMetadata"
+              }
+            }
+          },
+          "checkpoints": [
+            {
+              "binding": "s",
+              "cache": {
+                "state": "Unknown",
+                "reason": "MissingPreNormalizationMetadata"
+              }
+            }
+          ]
+        }
+      ],
+      "policy": "RDFLib Literal already has a value or CastFailed; Unknown is a Rust provenance state, not a source Python value or SPARQL error."
+    },
+    {
+      "id": "QN19",
+      "title": "Unknown arithmetic rejects without guessing from normalized text",
+      "classification": "active_provenance_safety_contract_not_original_runtime_parity",
+      "source_refs": [
+        "raw_eval",
+        "additive",
+        "count",
+        "sample",
+        "group"
+      ],
+      "derivation": "The proposed provenance contract forbids rebuilding Known from RDF100 because QN01/QN03 prove that exponent metadata is not recoverable.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?v WHERE { BIND(?x + 1 AS ?v) }",
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "100",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Unknown",
+                "reason": "MissingPreNormalizationMetadata"
+              }
+            }
+          },
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnknownNumericCache",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(?x + 1) AS ?c) WHERE {}",
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "100",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Unknown",
+                "reason": "MissingPreNormalizationMetadata"
+              }
+            }
+          },
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnknownNumericCache",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (SAMPLE(?x + 1) AS ?s) WHERE {}",
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "100",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Unknown",
+                "reason": "MissingPreNormalizationMetadata"
+              }
+            }
+          },
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnknownNumericCache",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          }
+        }
+      ],
+      "assertions": [
+        "Do not convert failure to unbound BIND, skipped COUNT, ExplicitNone SAMPLE, or an empty successful group."
+      ]
+    },
+    {
+      "id": "QN20",
+      "title": "Unknown EBV rejects in both consumer paths",
+      "classification": "active_provenance_safety_contract_not_original_runtime_parity",
+      "source_refs": [
+        "ebv",
+        "filter_boundary"
+      ],
+      "derivation": "An unknown numeric cache cannot prove zero or truthiness. This is deliberate safety behavior; original _ebv catches every exception for a bare variable, so propagating a fatal here is explicitly not identical source behavior.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { FILTER(?x) }",
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "100",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Unknown",
+                "reason": "MissingPreNormalizationMetadata"
+              }
+            }
+          },
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnknownNumericCache",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { FILTER(?x + 0) }",
+          "initial_bindings": {
+            "x": {
+              "origin": "UnknownNormalized",
+              "rdf": {
+                "kind": "literal",
+                "lexical": "100",
+                "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+              },
+              "cache": {
+                "state": "Unknown",
+                "reason": "MissingPreNormalizationMetadata"
+              }
+            }
+          },
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnknownNumericCache",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          }
+        }
+      ],
+      "additional_primitive_assertion": {
+        "operation": "typed raw EBV on an Unknown RawExpressionValue without arithmetic",
+        "expected_failure": "UnknownNumericCache",
+        "purpose": "Prevents a permissive catch-all RawExpression boolean branch from silently returning false."
+      }
+    },
+    {
+      "id": "QN21",
+      "title": "Lossy underlying RDF backend is rejected at the codec boundary",
+      "classification": "active_backend_safety_contract_not_original_runtime_parity",
+      "source_refs": [
+        "literal_cache",
+        "rdf_identity"
+      ],
+      "derivation": "A cache attached to a backend-altered term would misrepresent its actual RDF identity. Identity-preserving internalize/externalize is a new explicit backend requirement, not a fact about every old store.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { BIND(\"1.00\"^^xsd:decimal AS ?x) }",
+          "dataset_fixture": {
+            "kind": "real QueryableDataset implementation",
+            "internalize": "store exact incoming RDF value under an internal id",
+            "externalize": "for that id return RDF decimal1.0 instead of1.00"
+          },
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "LossyNumericBackend",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          }
+        }
+      ],
+      "assertions": [
+        "Failure before publishing a mismatched cache/cell. No private RDF sentinel or replacement store. Do not report this as observed behavior of Oxigraph or all QueryableDataset backends."
+      ]
+    },
+    {
+      "id": "QN22",
+      "title": "Real Dataset failure outranks deferred math and fuses the group iterator",
+      "classification": "mixed_source_order_and_active_dataset_safety_contract",
+      "source_refs": [
+        "chain_order",
+        "expr_catch",
+        "group"
+      ],
+      "derivation": "Multiplicative obtains all raw operands before numeric conversion/math; a failing tail lookup therefore precedes1/0. A source group has no result-yield phase before consuming all rows. Original error identity and stop-after-Err are explicit adapter safety obligations.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(1 / 0 * ?fatal) AS ?c) WHERE { VALUES ?row { 1 2 } }",
+          "dataset_fixture": {
+            "kind": "real QueryableDataset with identity error token",
+            "initial_binding": {
+              "fatal": {
+                "kind": "named_node",
+                "iri": "urn:query-numeric-fatal"
+              }
+            },
+            "prepare_then_arm": true,
+            "arm_point": "After initial preparation and compilation, before iterator poll; reset failing-call counter here.",
+            "externalize": "Only the sentinel named node returns the original ConversionFailure token; other terms use normal RDF storage.",
+            "error_is_not_rdf_sentinel": "The named node only selects the injected Dataset fault; the error is a real Dataset Result::Err."
+          },
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "Dataset",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "original_error_downcast": "ConversionFailure",
+            "same_error_token": true,
+            "failing_externalize_calls": 1,
+            "calls_after_second_poll": 1
+          },
+          "assertions": [
+            "Group emits no partial aggregate row. Fatal is not divide-by-zero ReturnedError and not COUNT1."
+          ]
+        }
+      ],
+      "scope": "This tests real evaluator/Dataset integration without claiming original full lazy-join or cancellation-context equivalence."
+    },
+    {
+      "id": "QN23",
+      "title": "Output expansion budget fails before large allocation",
+      "classification": "active_resource_safety_contract_not_parity",
+      "source_refs": [
+        "literal_cache",
+        "decimal_format",
+        "typed_query_constructor",
+        "multiplicative"
+      ],
+      "derivation": "The typed query literal itself retains short lexical1E+200. Multiplication by1 constructs a new Decimal-result Literal requiring201 fixed characters; explicit output budget128 rejects that expansion before allocation. Source Python has no identical Rust budget.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { BIND(\"1E+200\"^^xsd:decimal * 1 AS ?x) }",
+          "numeric_limits_override": {
+            "max_output_characters": 128
+          },
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "ResourceLimit",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "operation_semantics": "format decimal fixed output"
+          },
+          "assertions": [
+            "No oversized output allocation before the check. Do not convert to Overflow, NaN, CastFailed, unbound, or empty success."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "QN24",
+      "title": "Unimplemented binary64 numeric consumption explicitly refuses",
+      "classification": "explicit_unsupported_boundary_not_parity",
+      "source_refs": [
+        "multiplicative"
+      ],
+      "derivation": "The int/Decimal-only implementation does not yet supply the asymmetric source float conversion and FloatOperation behavior. These rejections are a declared missing feature, not an oracle for RDFLib outputs.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (0.1e0 * 1 AS ?v) WHERE {}",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnsupportedNumericFamily",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "family": "binary64"
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (1 * 0.1e0 AS ?v) WHERE {}",
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnsupportedNumericFamily",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0,
+            "family": "binary64"
+          }
+        }
+      ],
+      "future_upgrade": "If binary64 is implemented in this delivery, replace these as an additional versioned acceptance record with independent source-derived float cases; never mutate this record or silently use the legacy f32/fixed-decimal path.",
+      "scope": "Raw RDF transport of an unknown floating literal need not fail; this case freezes numeric consumption only."
+    },
+    {
+      "id": "QN25",
+      "title": "Default legacy lane remains isolated from private numeric semantics",
+      "classification": "existing_rust_legacy_preservation_control_not_new_source_parity",
+      "source_refs": [
+        "legacy_multiply",
+        "legacy_parser"
+      ],
+      "derivation": "Current legacy integer multiplication returns Integer6; private RDFLib-like multiplication starts Decimal and returns Decimal6. Public/default parse retains binary arithmetic AST nodes.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (2 * 3 AS ?v) WHERE {}",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "6",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "execution_lane": "legacy_default",
+          "decimal_session_expected": false
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (2 * 3 AS ?v) WHERE {}",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "6",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "execution_lane": "private_nullable_numeric",
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "6",
+                  "exponent": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "SELECT (1 + 2 + 3 AS ?v) WHERE {}",
+          "execution_lane": "legacy_default",
+          "expect": {
+            "kind": "parser_structure",
+            "arithmetic": "left-nested binary Add",
+            "chain_nodes": 0
+          }
+        }
+      ],
+      "assertions": [
+        "Public QueryEvaluator defaults unchanged. Private feature/mode/session cannot become a public /5 profile as a side effect. This static frozen record has not rerun any legacy tests."
+      ]
+    },
+    {
+      "id": "QN26",
+      "title": "Original signed Decimal VALUES parser failure is not guessed away",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "signed_parser",
+        "literal_neg",
+        "unary",
+        "decimal_unary",
+        "typed_query_constructor"
+      ],
+      "derivation": "DECIMAL_NEGATIVE invokes neg(Literal), which invokes Literal.__neg__. The fixed term source permits int/long/float but omits Decimal, so signed Decimal in VALUES raises TypeError during parsing. Expression UnaryMinus instead operates on numeric(Decimal) and succeeds; typed string construction also succeeds.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { VALUES ?x { -0.0 } }",
+          "expect": {
+            "kind": "source_parse_failure",
+            "exception": "TypeError",
+            "phase": "RDFLib parser DECIMAL_NEGATIVE parse action",
+            "value_result": null
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (-0.0 AS ?v) WHERE {}",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "v": {
+                  "kind": "literal",
+                  "lexical": "0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "v",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": false,
+                  "coefficient": "0",
+                  "exponent": "-1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { VALUES ?x { \"-0.0\"^^xsd:decimal } }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "x": {
+                  "kind": "literal",
+                  "lexical": "-0.0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "x",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "finite",
+                  "negative": true,
+                  "coefficient": "0",
+                  "exponent": "-1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?bare ?typed WHERE { VALUES (?bare ?typed) { (01 \"01\"^^xsd:integer) } }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "bare": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "typed": {
+                  "kind": "literal",
+                  "lexical": "01",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "checkpoints": [
+            {
+              "binding": "bare",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "integer",
+                  "value": "1"
+                }
+              }
+            },
+            {
+              "binding": "typed",
+              "cache": {
+                "state": "Known",
+                "value": {
+                  "kind": "integer",
+                  "value": "1"
+                }
+              }
+            }
+          ],
+          "purpose": "Locks actual token-construction origin before both literals would otherwise look identical in an unprepared AST."
+        }
+      ],
+      "implementation_gate": "The first run is a source-derived boundary, not a claim that current spargebra reproduces it. If private parser lacks the distinction, mark unsupported or retain an explicit compatibility gap; do not claim whole signed-token parity. Source parse action rounding/context details beyond this rejection remain unqualified."
+    },
+    {
+      "id": "QN27",
+      "title": "BGP matches exact typed-query RDF lexical; scanned cache remains Unknown",
+      "classification": "mixed_source_RDF_matching_and_active_provenance_safety_contract",
+      "source_refs": [
+        "literal_cache",
+        "bgp",
+        "count",
+        "typed_query_constructor"
+      ],
+      "derivation": "Typed query Literal1E+2 retains lexical1E+2 during existing-Literal datatype override, so it does not match a stored RDF decimal100. Typed query100 matches once. A scanned numeric term remains Unknown without independent backend origin; matching a query constant cannot certify a pre-normalization cache.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?c) WHERE { <urn:s> <urn:p> \"1E+2\"^^xsd:decimal }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "0",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "dataset_fixture": {
+            "kind": "same actual underlying RDF Dataset",
+            "triples": [
+              {
+                "subject": "urn:s",
+                "predicate": "urn:p",
+                "object": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ],
+            "scan_numeric_provenance": "Unknown"
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(*) AS ?c) WHERE { <urn:s> <urn:p> \"100\"^^xsd:decimal }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "dataset_fixture": {
+            "kind": "same actual underlying RDF Dataset",
+            "triples": [
+              {
+                "subject": "urn:s",
+                "predicate": "urn:p",
+                "object": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ],
+            "scan_numeric_provenance": "Unknown"
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(?x) AS ?c) WHERE { <urn:s> <urn:p> ?x }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "1",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          },
+          "dataset_fixture": {
+            "kind": "same actual underlying RDF Dataset",
+            "triples": [
+              {
+                "subject": "urn:s",
+                "predicate": "urn:p",
+                "object": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ],
+            "scan_numeric_provenance": "Unknown"
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (?x + 1 AS ?v) WHERE { <urn:s> <urn:p> ?x }",
+          "dataset_fixture": {
+            "kind": "same actual underlying RDF Dataset",
+            "triples": [
+              {
+                "subject": "urn:s",
+                "predicate": "urn:p",
+                "object": {
+                  "kind": "literal",
+                  "lexical": "100",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#decimal"
+                }
+              }
+            ],
+            "scan_numeric_provenance": "Unknown"
+          },
+          "expect": {
+            "kind": "fatal",
+            "semantic_category": "UnknownNumericCache",
+            "first_poll": "Err",
+            "subsequent_poll": "None",
+            "rows_emitted": 0
+          }
+        }
+      ],
+      "assertions": [
+        "Record the real underlying Dataset identity and exact forwarded pattern. Do not normalize query typed1E+2 to100, perform numeric equality matching, or satisfy the case with a second graph."
+      ]
+    },
+    {
+      "id": "QN28",
+      "title": "DISTINCT is lexical RDF identity even for equal numeric zero values",
+      "classification": "source_and_math_derived_not_observed",
+      "source_refs": [
+        "rdf_identity",
+        "count",
+        "literal_cache",
+        "ebv"
+      ],
+      "derivation": "Decimal literals0.0, -0.0 and0.00 keep distinct normalized lexical forms although all cached numeric values have EBV false. DISTINCT must count3 and must not use NumericValue equality.",
+      "runs": [
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT (COUNT(DISTINCT ?x) AS ?c) WHERE { VALUES ?x { \"0.0\"^^xsd:decimal \"-0.0\"^^xsd:decimal \"0.00\"^^xsd:decimal } }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": [
+              {
+                "c": {
+                  "kind": "literal",
+                  "lexical": "3",
+                  "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "query": "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\nSELECT ?x WHERE { VALUES ?x { \"0.0\"^^xsd:decimal \"-0.0\"^^xsd:decimal \"0.00\"^^xsd:decimal } FILTER(?x) }",
+          "expect": {
+            "kind": "solutions",
+            "order": "unordered_multiset",
+            "rows": []
+          }
+        }
+      ]
+    }
+  ],
+  "receiving_protocol": [
+    "Parse each listed query using the actual explicit private parser entry; lower via the existing production GraphPattern conversion with whole optimizer disabled; compile through the actual evaluator and consume real query results. Do not rebuild a replacement AST to fit expected values.",
+    "Attach the exact constructor origin before expression Literal conversion, VALUES internalization, initial preparation, and aggregate literal fast paths can discard it. QueryTypedExistingLiteral must retain decoded lexical; QueryNumericToken and DirectString follow their own actual source branches. Existing spargebra Literal AST alone may not distinguish these origins: private parser metadata is required unless a concrete distinction can be proved without guessing.",
+    "RDF expected objects assert lexical, datatype and kind exactly. Rows compare as multisets unless source input scheduling is separately asserted. Do not collapse lexical distinctions by numeric equality.",
+    "Check specified internal cache tuples at actual boundaries using crate-private receiving hooks/test access; final SELECT RDF bytes do not prove metadata survived. SELECT does not publicly serialize cache.",
+    "Explicit initial cache fixtures must use a controlled literal constructor with declared provenance; field stuffing arbitrary metadata is not sufficient. Unknown uses real normalized-only input, never silently parsed Known.",
+    "COUNT DISTINCT error instrumentation wraps the existing compiled raw evaluation callback; it does not replace evaluation with precomputed failures or fresh fake values.",
+    "Fatal cases require first Err, then None with no additional source/Dataset reads and no partial aggregate row. Dataset error identity requires actual downcast and pointer/token identity. Original Python exception propagation and Rust iterator fusion are separately classified.",
+    "Known numeric input and results must be genuine RDF literals, without invented datatype, sentinel literal, hidden global RDF-to-cache map, or second Dataset.",
+    "Run default legacy controls independently from private mode. Test implementation plus source hashes/receipts belong to a later acceptance record; this frozen file records no candidate pass."
+  ],
+  "unsupported_reporting": "QN24 verifies an explicit unsupported refusal only. QN26 source parse rejection remains a named compatibility boundary until parser preparation implements it. Do not count these as successful float arithmetic or a general signed-token qualification.",
+  "revision": {
+    "previous_source_record_id": "QUERY-NUMERIC-FROZEN-01",
+    "previous_source_record_sha256": "d42be1722ef47d25f72c1bb563eda15cd55c8c085e5151d09516800c3a1badbf",
+    "previous_public_fixture_sha256": "82643120f49dc62aac7e55a52a3449a3d48f3d5e32e35661350e1367f7b4db9b",
+    "source_review_sha256": "0ddff969c04b9785508400cfba30274c71f2266e2c0f92df82df05000bf70016",
+    "changes": [
+      {
+        "pointer": "/cases/2/runs/0/expect/rows/0/x/lexical",
+        "before": "1E+2",
+        "after": "100"
+      },
+      {
+        "pointer": "/cases/2/runs/1/expect/rows/0/distinct/lexical",
+        "before": "2",
+        "after": "1"
+      },
+      {
+        "pointer": "/cases/2/runs/2/expect/rows/0/count/lexical",
+        "before": "2",
+        "after": "1"
+      }
+    ],
+    "corrected_subset_status": "post-exposure development replay; original expectation and failure identities preserved",
+    "query_variant_count": 56,
+    "concrete_input_executions": 57,
+    "unchanged_concrete_executions": 54
+  }
+}

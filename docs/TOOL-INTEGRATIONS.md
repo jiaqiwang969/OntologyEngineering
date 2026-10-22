@@ -55,6 +55,8 @@ npm install --global smokinggun@5.0.0
 `node_modules/.bin` 的程序；不要同时依赖另一份全局安装。快照摘要在 tools.lock.json。
 REA 的 Node、包目录及可选 Ghidra/JDK 配置见[启动环境](../integrations/bindings/WORKFLOW.md#rea-启动环境)。
 
+macOS arm64 的 REA 原生分析还需准备 Ghidra 对应平台的 decompiler；本次固定官方包、原版源码构建参数与核验方法见 [Ghidra macOS 安装补充](../integrations/runtime-locks/GHIDRA-MACOS.md)。
+
 以上是供用户选择执行的安装命令；本仓库不会因工具缺失而自动执行它们。安装后核对：
 
 ```sh

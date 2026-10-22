@@ -84,7 +84,7 @@ Agent 按以下流程工作：
 - [当前版本及延期范围](docs/RELEASE-SCOPE.md)
 - [新用户和开发 Agent 配置](AGENTS.md)
 - [运行与生成方式](docs/USAGE.md)
-- [验证记录](docs/UNIFIED-VERIFICATION.md)
+- [验证记录](docs/UNIFIED-VERIFICATION.md)与[空 Skill 重装、新会话验收](docs/FRESH-INSTALL-20261022.md)
 
 v1 保留在仓库历史中。旧通过不授予本候选或新平台资格。
 

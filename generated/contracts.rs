@@ -3642,6 +3642,79 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("VersionSelectionResult", "schema", "String"),
     ("VersionSelectionResult", "source", "ArtifactReference"),
     ("VersionSelectionResult", "status", "String"),
+    ("WorkspaceCausalClaim", "confounders", "Vec<String>"),
+    ("WorkspaceCausalClaim", "id", "String"),
+    ("WorkspaceCausalClaim", "level", "String"),
+    ("WorkspaceCausalClaim", "source_refs", "Vec<ArtifactReference>"),
+    ("WorkspaceCausalClaim", "statement", "String"),
+    ("WorkspaceCausalClaim", "unknowns", "Vec<String>"),
+    ("WorkspaceCommit", "pending_decisions", "Vec<String>"),
+    ("WorkspaceCommit", "proposal", "WorkspaceCommitRequest"),
+    ("WorkspaceCommit", "schema", "String"),
+    ("WorkspaceCommit", "sequence", "u64"),
+    ("WorkspaceCommitRequest", "anchor", "ArtifactReference"),
+    ("WorkspaceCommitRequest", "causal_claims", "Vec<WorkspaceCausalClaim>"),
+    ("WorkspaceCommitRequest", "checkpoint", "Option<ArtifactReference>"),
+    ("WorkspaceCommitRequest", "commit_id", "String"),
+    ("WorkspaceCommitRequest", "corrections", "Vec<WorkspaceCorrectionObligation>"),
+    ("WorkspaceCommitRequest", "events", "Vec<WorkspaceEvent>"),
+    ("WorkspaceCommitRequest", "expected_parent", "Option<ArtifactReference>"),
+    ("WorkspaceCommitRequest", "project", "ArtifactReference"),
+    ("WorkspaceCommitRequest", "requests", "Vec<WorkspaceRequestSource>"),
+    ("WorkspaceCommitRequest", "reviews", "Vec<WorkspaceResolution>"),
+    ("WorkspaceCommitRequest", "schema", "String"),
+    ("WorkspaceCommitRequest", "sources", "Vec<ArtifactReference>"),
+    ("WorkspaceCommitRequest", "stage", "Option<WorkspaceStage>"),
+    ("WorkspaceCommitRequest", "work", "Option<ArtifactReference>"),
+    ("WorkspaceCommitRequest", "workspace_id", "String"),
+    ("WorkspaceCorrectionObligation", "affected_decisions", "Vec<String>"),
+    ("WorkspaceCorrectionObligation", "id", "String"),
+    ("WorkspaceCorrectionObligation", "reason", "String"),
+    ("WorkspaceCorrectionObligation", "request_id", "String"),
+    ("WorkspaceCorrectionObligation", "resolutions", "Vec<WorkspaceResolution>"),
+    ("WorkspaceCorrectionObligation", "status", "String"),
+    ("WorkspaceEvent", "acceptance_ids", "Vec<String>"),
+    ("WorkspaceEvent", "actor", "String"),
+    ("WorkspaceEvent", "corrects", "Vec<String>"),
+    ("WorkspaceEvent", "description", "String"),
+    ("WorkspaceEvent", "id", "String"),
+    ("WorkspaceEvent", "kind", "String"),
+    ("WorkspaceEvent", "occurred_at", "Option<String>"),
+    ("WorkspaceEvent", "recorded_at", "String"),
+    ("WorkspaceEvent", "sources", "Vec<ArtifactReference>"),
+    ("WorkspaceGoal", "acceptance_ids", "Vec<String>"),
+    ("WorkspaceGoal", "project", "ArtifactReference"),
+    ("WorkspaceGoal", "project_id", "String"),
+    ("WorkspaceGoal", "root_anchor", "ArtifactReference"),
+    ("WorkspaceGoal", "schema", "String"),
+    ("WorkspaceHead", "commit", "ArtifactReference"),
+    ("WorkspaceHead", "schema", "String"),
+    ("WorkspaceHead", "sequence", "u64"),
+    ("WorkspaceHead", "workspace_id", "String"),
+    ("WorkspaceLearningBinding", "acceptance_ids", "Vec<String>"),
+    ("WorkspaceLearningBinding", "goal", "ArtifactReference"),
+    ("WorkspaceLearningBinding", "project", "ArtifactReference"),
+    ("WorkspaceLearningBinding", "project_id", "String"),
+    ("WorkspaceLearningBinding", "root_anchor", "ArtifactReference"),
+    ("WorkspaceLearningBinding", "schema", "String"),
+    ("WorkspaceManifest", "project_id", "String"),
+    ("WorkspaceManifest", "schema", "String"),
+    ("WorkspaceManifest", "workspace_id", "String"),
+    ("WorkspaceRequestSource", "request_id", "String"),
+    ("WorkspaceRequestSource", "source", "ArtifactReference"),
+    ("WorkspaceResolution", "request", "ArtifactReference"),
+    ("WorkspaceResolution", "result", "ArtifactReference"),
+    ("WorkspaceStage", "acceptance_ids", "Vec<String>"),
+    ("WorkspaceStage", "execution", "String"),
+    ("WorkspaceStage", "id", "String"),
+    ("WorkspaceStage", "intent", "String"),
+    ("WorkspaceStage", "receipt", "Option<ArtifactReference>"),
+    ("WorkspaceStageReceipt", "artifact", "ArtifactReference"),
+    ("WorkspaceStageReceipt", "owner", "String"),
+    ("WorkspaceStageReceipt", "project", "ArtifactReference"),
+    ("WorkspaceStageReceipt", "registry", "Option<ArtifactReference>"),
+    ("WorkspaceStageReceipt", "schema", "String"),
+    ("WorkspaceStageReceipt", "stage_id", "String"),
 ];
 /// Enumerated values queried from the design model; third values are escaped Rust literals.
 pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
@@ -4956,6 +5029,35 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("TypedPromotedProjectReviewRequest1", "schema", "oev2.typed-promoted-project-review-request/1"),
     ("VersionSelectionResult", "status", "restored"),
     ("VersionSelectionResult", "status", "selected"),
+    ("WorkspaceCausalClaim", "level", "attribution"),
+    ("WorkspaceCausalClaim", "level", "controlled_comparison"),
+    ("WorkspaceCausalClaim", "level", "mechanism"),
+    ("WorkspaceCausalClaim", "level", "sequence"),
+    ("WorkspaceCommit", "schema", "oev2.workspace-commit/1"),
+    ("WorkspaceCommitRequest", "schema", "oev2.workspace-commit-request/1"),
+    ("WorkspaceCorrectionObligation", "status", "acknowledged"),
+    ("WorkspaceCorrectionObligation", "status", "deferred"),
+    ("WorkspaceCorrectionObligation", "status", "pending_review"),
+    ("WorkspaceCorrectionObligation", "status", "resolved"),
+    ("WorkspaceEvent", "kind", "action"),
+    ("WorkspaceEvent", "kind", "assistant_claim"),
+    ("WorkspaceEvent", "kind", "correction"),
+    ("WorkspaceEvent", "kind", "decision"),
+    ("WorkspaceEvent", "kind", "observation"),
+    ("WorkspaceEvent", "kind", "user_report"),
+    ("WorkspaceGoal", "schema", "oev2.workspace-goal/1"),
+    ("WorkspaceHead", "schema", "oev2.workspace-head/1"),
+    ("WorkspaceLearningBinding", "schema", "oev2.workspace-learning-binding/1"),
+    ("WorkspaceManifest", "schema", "oev2.workspace-manifest/1"),
+    ("WorkspaceStage", "execution", "cancelled"),
+    ("WorkspaceStage", "execution", "dispatched"),
+    ("WorkspaceStage", "execution", "effect_unknown"),
+    ("WorkspaceStage", "execution", "planned"),
+    ("WorkspaceStage", "execution", "results_recorded"),
+    ("WorkspaceStageReceipt", "owner", "exploration"),
+    ("WorkspaceStageReceipt", "owner", "harness"),
+    ("WorkspaceStageReceipt", "owner", "tool_result"),
+    ("WorkspaceStageReceipt", "schema", "oev2.workspace-stage-receipt/1"),
 ];
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum ErrorCode {
@@ -23014,6 +23116,400 @@ impl VersionSelectionResult {
         if self.status.trim().is_empty() { failures.push("VersionSelectionResult.status:required".into()); }
 
         if !["restored","selected",].contains(&self.status.as_str()) { failures.push("VersionSelectionResult.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound causal attribution using existing memory levels; it never grants causal validity or adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceCausalClaim {
+    /// Co-occurring changes not separated by the evidence
+    pub confounders: Vec<String>,
+    /// Stable local claim identity
+    pub id: String,
+    /// Existing engineering-memory causal evidence level
+    pub level: String,
+    /// Original Project/tool/message artifacts; never disguised as Codex/Claude SourceAnchor
+    pub source_refs: Vec<ArtifactReference>,
+    /// Explicit cause and effect claim
+    pub statement: String,
+    /// Specific remaining mechanism, applicability or verification gaps
+    pub unknowns: Vec<String>,
+}
+impl WorkspaceCausalClaim {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("WorkspaceCausalClaim.id:required".into()); }
+        if self.level.trim().is_empty() { failures.push("WorkspaceCausalClaim.level:required".into()); }
+        if self.statement.trim().is_empty() { failures.push("WorkspaceCausalClaim.statement:required".into()); }
+
+        if !["attribution","controlled_comparison","mechanism","sequence",].contains(&self.level.as_str()) { failures.push("WorkspaceCausalClaim.level:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Immutable commit records one complete proposed state and its sequence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceCommit {
+    /// pending decisions
+    pub pending_decisions: Vec<String>,
+    /// proposal
+    pub proposal: WorkspaceCommitRequest,
+    /// schema
+    pub schema: String,
+    /// sequence
+    pub sequence: u64,
+}
+impl WorkspaceCommit {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.schema.trim().is_empty() { failures.push("WorkspaceCommit.schema:required".into()); }
+
+        if !["oev2.workspace-commit/1",].contains(&self.schema.as_str()) { failures.push("WorkspaceCommit.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Complete proposed state with explicit parent; does not overwrite Project facts
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceCommitRequest {
+    /// anchor
+    pub anchor: ArtifactReference,
+    /// causal claims
+    pub causal_claims: Vec<WorkspaceCausalClaim>,
+    /// checkpoint
+    pub checkpoint: Option<ArtifactReference>,
+    /// commit id
+    pub commit_id: String,
+    /// corrections
+    pub corrections: Vec<WorkspaceCorrectionObligation>,
+    /// events
+    pub events: Vec<WorkspaceEvent>,
+    /// expected parent
+    pub expected_parent: Option<ArtifactReference>,
+    /// project
+    pub project: ArtifactReference,
+    /// requests
+    pub requests: Vec<WorkspaceRequestSource>,
+    /// reviews
+    pub reviews: Vec<WorkspaceResolution>,
+    /// schema
+    pub schema: String,
+    /// sources
+    pub sources: Vec<ArtifactReference>,
+    /// stage
+    pub stage: Option<WorkspaceStage>,
+    /// work
+    pub work: Option<ArtifactReference>,
+    /// workspace id
+    pub workspace_id: String,
+}
+impl WorkspaceCommitRequest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.commit_id.trim().is_empty() { failures.push("WorkspaceCommitRequest.commit_id:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("WorkspaceCommitRequest.schema:required".into()); }
+        if self.workspace_id.trim().is_empty() { failures.push("WorkspaceCommitRequest.workspace_id:required".into()); }
+
+        if !["oev2.workspace-commit-request/1",].contains(&self.schema.as_str()) { failures.push("WorkspaceCommitRequest.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// A correction's continuing obligations; resolved is reviewed coverage, never engineering adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceCorrectionObligation {
+    /// Affected existing Project decisions; full bound acceptance decision coverage required at resolution
+    pub affected_decisions: Vec<String>,
+    /// Stable obligation identity
+    pub id: String,
+    /// Specific resolution or deferral basis; does not silently erase remaining obligations
+    pub reason: String,
+    /// Existing correction request; affected acceptance remains in the route anchor
+    pub request_id: String,
+    /// Replayed actual resolution artifacts; stage declarations are insufficient
+    pub resolutions: Vec<WorkspaceResolution>,
+    /// Explicit correction processing state
+    pub status: String,
+}
+impl WorkspaceCorrectionObligation {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("WorkspaceCorrectionObligation.id:required".into()); }
+        if self.reason.trim().is_empty() { failures.push("WorkspaceCorrectionObligation.reason:required".into()); }
+        if self.request_id.trim().is_empty() { failures.push("WorkspaceCorrectionObligation.request_id:required".into()); }
+        if self.status.trim().is_empty() { failures.push("WorkspaceCorrectionObligation.status:required".into()); }
+
+        if !["acknowledged","deferred","pending_review","resolved",].contains(&self.status.as_str()) { failures.push("WorkspaceCorrectionObligation.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-bound process event; occurrence and recording times remain distinct
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceEvent {
+    /// acceptance ids
+    pub acceptance_ids: Vec<String>,
+    /// actor
+    pub actor: String,
+    /// corrects
+    pub corrects: Vec<String>,
+    /// description
+    pub description: String,
+    /// id
+    pub id: String,
+    /// kind
+    pub kind: String,
+    /// occurred at
+    pub occurred_at: Option<String>,
+    /// recorded at
+    pub recorded_at: String,
+    /// sources
+    pub sources: Vec<ArtifactReference>,
+}
+impl WorkspaceEvent {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.actor.trim().is_empty() { failures.push("WorkspaceEvent.actor:required".into()); }
+        if self.description.trim().is_empty() { failures.push("WorkspaceEvent.description:required".into()); }
+        if self.id.trim().is_empty() { failures.push("WorkspaceEvent.id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("WorkspaceEvent.kind:required".into()); }
+        if self.recorded_at.trim().is_empty() { failures.push("WorkspaceEvent.recorded_at:required".into()); }
+
+        if !["action","assistant_claim","correction","decision","observation","user_report",].contains(&self.kind.as_str()) { failures.push("WorkspaceEvent.kind:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Root-bound goal wrapper for new workspace learning trials; old experience protocols remain unchanged
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceGoal {
+    /// Complete ordered acceptance identity list, no subset or reordering
+    pub acceptance_ids: Vec<String>,
+    /// Exact full current Project snapshot
+    pub project: ArtifactReference,
+    /// Existing Project identity
+    pub project_id: String,
+    /// Exact full route anchor including requests, corrections and all acceptance
+    pub root_anchor: ArtifactReference,
+    /// Explicit root-bound goal wrapper
+    pub schema: String,
+}
+impl WorkspaceGoal {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if let Err(errors) = self.project.validate() { failures.extend(errors); }
+
+        if self.project_id.trim().is_empty() { failures.push("WorkspaceGoal.project_id:required".into()); }
+        if let Err(errors) = self.root_anchor.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("WorkspaceGoal.schema:required".into()); }
+
+        if !["oev2.workspace-goal/1",].contains(&self.schema.as_str()) { failures.push("WorkspaceGoal.schema:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Atomic pointer to one committed project state
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceHead {
+    /// commit
+    pub commit: ArtifactReference,
+    /// schema
+    pub schema: String,
+    /// sequence
+    pub sequence: u64,
+    /// workspace id
+    pub workspace_id: String,
+}
+impl WorkspaceHead {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.schema.trim().is_empty() { failures.push("WorkspaceHead.schema:required".into()); }
+        if self.workspace_id.trim().is_empty() { failures.push("WorkspaceHead.workspace_id:required".into()); }
+
+        if !["oev2.workspace-head/1",].contains(&self.schema.as_str()) { failures.push("WorkspaceHead.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Exact root and goal binding for an explicit trial; never automatic promotion
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceLearningBinding {
+    /// Complete ordered acceptance identity list
+    pub acceptance_ids: Vec<String>,
+    /// Existing frozen goal wrapper bytes, checked by the caller
+    pub goal: ArtifactReference,
+    /// Exact current Project
+    pub project: ArtifactReference,
+    /// Existing Project identity
+    pub project_id: String,
+    /// Exact full current route anchor
+    pub root_anchor: ArtifactReference,
+    /// Explicit workspace learning binding
+    pub schema: String,
+}
+impl WorkspaceLearningBinding {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if let Err(errors) = self.goal.validate() { failures.extend(errors); }
+
+        if let Err(errors) = self.project.validate() { failures.extend(errors); }
+
+        if self.project_id.trim().is_empty() { failures.push("WorkspaceLearningBinding.project_id:required".into()); }
+        if let Err(errors) = self.root_anchor.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("WorkspaceLearningBinding.schema:required".into()); }
+
+        if !["oev2.workspace-learning-binding/1",].contains(&self.schema.as_str()) { failures.push("WorkspaceLearningBinding.schema:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Explicit project storage identity, independent of installed source
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceManifest {
+    /// project id
+    pub project_id: String,
+    /// schema
+    pub schema: String,
+    /// workspace id
+    pub workspace_id: String,
+}
+impl WorkspaceManifest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.project_id.trim().is_empty() { failures.push("WorkspaceManifest.project_id:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("WorkspaceManifest.schema:required".into()); }
+        if self.workspace_id.trim().is_empty() { failures.push("WorkspaceManifest.workspace_id:required".into()); }
+
+        if !["oev2.workspace-manifest/1",].contains(&self.schema.as_str()) { failures.push("WorkspaceManifest.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// A verbatim route utterance bound to an exact source; bytes do not authenticate the speaker
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceRequestSource {
+    /// Existing route request identity
+    pub request_id: String,
+    /// Complete UTF-8 source bytes exactly equal to the route request text
+    pub source: ArtifactReference,
+}
+impl WorkspaceRequestSource {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.request_id.trim().is_empty() { failures.push("WorkspaceRequestSource.request_id:required".into()); }
+        if let Err(errors) = self.source.validate() { failures.extend(errors); }
+
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Original reconciliation request and result, replayed by the existing owner before resolution
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceResolution {
+    /// Original reviewed-reconciliation request /1 or /2
+    pub request: ArtifactReference,
+    /// Saved complete result, compared to current native replay
+    pub result: ArtifactReference,
+}
+impl WorkspaceResolution {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if let Err(errors) = self.request.validate() { failures.extend(errors); }
+
+        if let Err(errors) = self.result.validate() { failures.extend(errors); }
+
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Recorded stage intent and observed execution; no automatic dispatch or adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceStage {
+    /// acceptance ids
+    pub acceptance_ids: Vec<String>,
+    /// execution
+    pub execution: String,
+    /// id
+    pub id: String,
+    /// intent
+    pub intent: String,
+    /// receipt
+    pub receipt: Option<ArtifactReference>,
+}
+impl WorkspaceStage {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.execution.trim().is_empty() { failures.push("WorkspaceStage.execution:required".into()); }
+        if self.id.trim().is_empty() { failures.push("WorkspaceStage.id:required".into()); }
+        if self.intent.trim().is_empty() { failures.push("WorkspaceStage.intent:required".into()); }
+
+        if !["cancelled","dispatched","effect_unknown","planned","results_recorded",].contains(&self.execution.as_str()) { failures.push("WorkspaceStage.execution:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Explicit stage artifact and native readback owner, preserving failures and unknowns
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkspaceStageReceipt {
+    /// Exact original tool-result or Harness checkpoint artifact
+    pub artifact: ArtifactReference,
+    /// Existing readback owner; exploration explicitly unsupported until a read-only verifier exists
+    pub owner: String,
+    /// Exact Project snapshot at execution; current applicability separately checked
+    pub project: ArtifactReference,
+    /// Exact current tool registry required for tool_result; absent for Harness
+    pub registry: Option<ArtifactReference>,
+    /// Explicit stage receipt wrapper
+    pub schema: String,
+    /// Existing current stage identity
+    pub stage_id: String,
+}
+impl WorkspaceStageReceipt {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if let Err(errors) = self.artifact.validate() { failures.extend(errors); }
+
+        if self.owner.trim().is_empty() { failures.push("WorkspaceStageReceipt.owner:required".into()); }
+        if let Err(errors) = self.project.validate() { failures.extend(errors); }
+
+        if let Some(value) = &self.registry { if let Err(errors) = value.validate() { failures.extend(errors); } }
+
+        if self.schema.trim().is_empty() { failures.push("WorkspaceStageReceipt.schema:required".into()); }
+        if self.stage_id.trim().is_empty() { failures.push("WorkspaceStageReceipt.stage_id:required".into()); }
+
+        if !["exploration","harness","tool_result",].contains(&self.owner.as_str()) { failures.push("WorkspaceStageReceipt.owner:status".into()); }
+        if !["oev2.workspace-stage-receipt/1",].contains(&self.schema.as_str()) { failures.push("WorkspaceStageReceipt.schema:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

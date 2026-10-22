@@ -110,7 +110,7 @@ fn handoff(f: &Fixture) -> Value {
 
 fn put(f: &Fixture, rel: &str, v: &Value) -> ArtifactReference {
     let bytes = serde_json::to_vec_pretty(v).unwrap();
-    let p = f.root.path().join(rel);
+    let p = f.root.data_path().join(rel);
     fs::create_dir_all(p.parent().unwrap()).unwrap();
     fs::write(&p, &bytes).unwrap();
     ArtifactReference {
@@ -175,6 +175,51 @@ fn native_handoff_is_verified_and_registered_as_one_evidence_item() {
                 .failures
                 .contains(&"project_revision_not_new".to_string())
     );
+}
+
+#[test]
+fn external_store_keeps_memory_candidate_and_exports_across_revision_directories() {
+    let mut f = fixture();
+    let store = tempfile::tempdir().unwrap();
+    let store = fs::canonicalize(store.path()).unwrap();
+    f.root = f.root.clone().with_project_data_root(&store).unwrap();
+    let art = put(&f, "memory/candidate.json", &handoff(&f));
+    let original = serde_json::to_vec(&f.project).unwrap();
+    let (registered, checked) = memory::register(&f.root, &original, &art, "r2").unwrap();
+    assert_eq!(checked.status, "registered", "{:?}", checked.failures);
+    let bytes = registered.unwrap();
+    let project_path = store.join("revisions/r2.json");
+    fs::create_dir_all(project_path.parent().unwrap()).unwrap();
+    fs::write(&project_path, &bytes).unwrap();
+    let exported = memory::export_in(&store, &project_path, &bytes).unwrap();
+    assert_eq!(exported["missing"], json!([]));
+    assert!(
+        exported["artifacts"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|item| item["id"] == "memory-candidate:exp-1@r2"
+                && item["path"] == json!(store.join("memory/candidate.json").to_str().unwrap()))
+    );
+    assert!(!f.root.path().join("memory").exists());
+    let other = tempfile::tempdir().unwrap();
+    let other = fs::canonicalize(other.path()).unwrap();
+    assert!(memory::export_in(&other, &project_path, &bytes).is_err());
+    let wrong = f.root.clone().with_project_data_root(&other).unwrap();
+    let prj: Project = serde_json::from_value(f.project.clone()).unwrap();
+    assert_eq!(
+        memory::verify(&wrong, &prj, &sha256(&original), &art)
+            .unwrap()
+            .status,
+        "rejected"
+    );
+    #[cfg(unix)]
+    {
+        // Supplemental receipt discovery must not leave the selected store.
+        fs::write(other.join("foreign.json"), b"{}").unwrap();
+        std::os::unix::fs::symlink(&other, store.join("receipts")).unwrap();
+        assert!(memory::export_in(&store, &project_path, &bytes).is_err());
+    }
 }
 
 #[test]

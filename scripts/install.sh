@@ -23,13 +23,19 @@ while [ "$#" -gt 0 ]; do
     shift
 done
 case "$jobs" in ''|*[!0-9]*|0) printf '%s\n' 'Invalid compiler job count' >&2; exit 2 ;; esac
-command -v cargo >/dev/null 2>&1 || { printf '%s\n' 'Install Rust with rustup first: https://rustup.rs/' >&2; exit 1; }
+command -v rustup >/dev/null 2>&1 || { printf '%s\n' 'Install Rust with rustup first: https://rustup.rs/' >&2; exit 1; }
+toolchain=$(sed -n 's/^channel = "\([^"]*\)"$/\1/p' "$root/rust-toolchain.toml")
+case "$toolchain" in ''|*[!0-9.]*) printf '%s\n' 'Expected one exact Rust toolchain version in rust-toolchain.toml' >&2; exit 1 ;; esac
+rustup run "$toolchain" rustc --version >/dev/null || {
+    printf '%s\n' "Install the pinned toolchain: rustup toolchain install $toolchain --profile minimal" >&2
+    exit 1
+}
 cd "$root"
 target="$root/var/builds/rust-target"
 if [ "$profile" = dev ]; then output=debug; else output=release; fi
 # Keep the target inside this checkout; never pick up a previous skill's binaries.
 export CARGO_TARGET_DIR="$target"
-cargo build --locked $offline --profile "$profile" --jobs "$jobs" \
+rustup run "$toolchain" cargo build --locked $offline --profile "$profile" --jobs "$jobs" \
     --bin oev2 --bin oev2-design-bootstrap --bin oe-code-runner \
     --bin oe-code-evaluator --bin oe-evolution-driver \
     --bin oe-runtime-linker2 --bin oe-runtime-rustc2 --bin engineering-memory
@@ -51,7 +57,7 @@ done
         shasum -a 256 bin/* > SHA256SUMS
         shasum -a 256 -c SHA256SUMS
     fi
-    { printf 'profile=%s\n' "$profile"; rustc --version; cargo --version; } > BUILD.txt
+    { printf 'profile=%s\n' "$profile"; rustup run "$toolchain" rustc --version; rustup run "$toolchain" cargo --version; } > BUILD.txt
 )
 # Keep the prior complete installation until this one has passed basic startup.
 "$stage/bin/oev2" --root "$root" --version

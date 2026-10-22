@@ -4,7 +4,7 @@
 
 用户用自然语言提出目标、条件和取舍。Codex、Claude 等 Agent 组织任务；工程本体在同一 Project 中维护对象、版本、来源、检查与决定；工程记忆保存过程、失败、纠正和可核查的经验。专业工具按需提供调查、计算或运行证据，结果回到同一项目审查。
 
-当前为 **2.0.0-rc.6 整合候选，重构中**。实际验证见[验证记录](docs/UNIFIED-VERIFICATION.md)，具体工程能力与未完成项见[发布范围](docs/RELEASE-SCOPE.md)。
+当前为 **2.0.0-rc.7 整合候选，重构中**。本版增加[项目文件体系](docs/PROJECT-WORKSPACE.md)，将根请求、纠正、因果依据、阶段状态及 RRSI 根目标绑定保存到显式项目目录，以供新会话恢复。实际验证见[验证记录](docs/UNIFIED-VERIFICATION.md)，具体工程能力与未完成项见[发布范围](docs/RELEASE-SCOPE.md)。
 
 ![工程本体 v2、engineering-memory 与六种专业能力的闭环架构](docs/assets/engineering-system-architecture.png)
 

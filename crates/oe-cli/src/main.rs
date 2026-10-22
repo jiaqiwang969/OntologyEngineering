@@ -21,6 +21,7 @@ mod supplier;
 mod tool_result;
 mod v2;
 mod versions;
+mod workspace;
 use anyhow::{Context, Result, bail, ensure};
 use clap::{Args, Parser, Subcommand};
 use oe_core::json::strict_json;
@@ -43,6 +44,9 @@ struct Cli {
     /// Installed skill root; originals/indexes stay in sources/, private work in var/.
     #[arg(long, global = true)]
     root: Option<PathBuf>,
+    /// Explicit project artifact directory; installed source identity stays under --root.
+    #[arg(long, global = true)]
+    project_home: Option<PathBuf>,
     #[command(subcommand)]
     command: Command,
 }
@@ -1332,8 +1336,72 @@ fn knowledge_execute(root: &SkillRoot, command: KnowledgeCommand) -> Result<Valu
     }
 }
 
+/// Validate the future directory before creating any of it. Canonicalizing the
+/// existing ancestor also catches filesystem aliases of the source root.
+fn create_project_home(root: &SkillRoot, home: &Path) -> Result<PathBuf> {
+    ensure!(home.is_absolute(), "project_home_must_be_absolute");
+    oe_core::no_symlinks(home)?;
+    let mut existing = home;
+    while !existing.try_exists()? {
+        existing = existing.parent().context("project_home_parent_missing")?;
+    }
+    ensure!(existing.is_dir(), "project_home_parent_not_directory");
+    let target = std::fs::canonicalize(existing)?.join(home.strip_prefix(existing)?);
+    ensure!(
+        !root.path().starts_with(&target),
+        "project_data_root_contains_software_root"
+    );
+    let private = root.path().join("var");
+    ensure!(
+        !target.starts_with(root.path()) || (target.starts_with(&private) && target != private),
+        "project_data_root_inside_software_sources"
+    );
+    oe_core::ensure_directory(&target)?;
+    Ok(target)
+}
+
+fn harness_input_path(root: &SkillRoot, path: &Path) -> Result<PathBuf> {
+    // The historical Harness CLI accepted cwd-relative command input paths.
+    // An explicit project home selects project-relative inputs without changing
+    // that legacy invocation contract for callers that did not opt in.
+    if root.data_path() == root.path() {
+        Ok(path.to_path_buf())
+    } else {
+        let path = root.data_expand(path)?;
+        ensure!(
+            path.starts_with(root.data_path()),
+            "harness_input_outside_project_home"
+        );
+        oe_core::no_symlinks(&path)?;
+        Ok(path)
+    }
+}
+
 fn execute(cli: Cli) -> Result<u8> {
-    let root = locate_root(cli.root.as_deref())?;
+    let mut root = locate_root(cli.root.as_deref())?;
+    if let Some(home) = cli.project_home.as_deref() {
+        let supported = matches!(
+            &cli.command,
+            Command::Project { .. }
+                | Command::Harness { .. }
+                | Command::Kernel { .. }
+                | Command::Memory { .. }
+        ) || matches!(&cli.command, Command::Knowledge { command } if matches!(command.as_ref(), KnowledgeCommand::Experience { .. }));
+        ensure!(supported, "project_home_not_supported_for_command");
+        if matches!(
+            &cli.command,
+            Command::Project {
+                command: v2::ProjectCommand::Workspace {
+                    command: workspace::WorkspaceCommand::Init { .. }
+                }
+            }
+        ) {
+            let target = create_project_home(&root, home)?;
+            root = root.with_project_data_root(&target)?;
+        } else {
+            root = root.with_project_data_root(home)?;
+        }
+    }
     match cli.command {
         Command::Setup => return installation::execute(&root),
         Command::Memory { args } => return memory::execute(&root, args),
@@ -1442,11 +1510,14 @@ fn execute(cli: Cli) -> Result<u8> {
                 HarnessCommand::Step { args } => (args, Some(())),
                 HarnessCommand::Consolidate(args) => (args, None),
             };
-            let mut input = read_input(&args.input)?;
+            let mut input = read_input(&harness_input_path(&root, &args.input)?)?;
             // If --premises supplied, merge selections into harness.semantic_modules
             if let Some(premises_path) = &args.premises {
-                let premises_bytes = oe_core::read_regular_bytes(premises_path, 4 * 1024 * 1024)
-                    .context("cannot read premises file")?;
+                let premises_bytes = oe_core::read_regular_bytes(
+                    &harness_input_path(&root, premises_path)?,
+                    4 * 1024 * 1024,
+                )
+                .context("cannot read premises file")?;
                 let premises_doc: Value = strict_json(&premises_bytes)?;
                 // A bare array or a full advice object must explicitly declare selections.
                 let selections = premises_doc
@@ -1793,13 +1864,13 @@ fn semantic_argument_command(arguments: &[std::ffi::OsString]) -> Option<&'stati
     let mut index = 1;
     let mut semantics = false;
     while let Some(argument) = arguments.get(index) {
-        if argument == "--root" {
+        if argument == "--root" || argument == "--project-home" {
             arguments.get(index + 1)?;
             index += 2;
             continue;
         }
         let value = argument.to_str()?;
-        if value.starts_with("--root=") {
+        if value.starts_with("--root=") || value.starts_with("--project-home=") {
             index += 1;
             continue;
         }
@@ -1844,13 +1915,13 @@ fn knowledge_argument_command(arguments: &[std::ffi::OsString]) -> Option<&'stat
     let mut index = 1;
     let mut knowledge = false;
     while let Some(argument) = arguments.get(index) {
-        if argument == "--root" {
+        if argument == "--root" || argument == "--project-home" {
             arguments.get(index + 1)?;
             index += 2;
             continue;
         }
         let value = argument.to_str()?;
-        if value.starts_with("--root=") {
+        if value.starts_with("--root=") || value.starts_with("--project-home=") {
             index += 1;
             continue;
         }
@@ -1878,12 +1949,14 @@ fn knowledge_argument_command(arguments: &[std::ffi::OsString]) -> Option<&'stat
 fn maintenance_argument_family(arguments: &[std::ffi::OsString]) -> Option<&'static str> {
     let mut index = 1;
     while let Some(argument) = arguments.get(index) {
-        if argument == "--root" {
+        if argument == "--root" || argument == "--project-home" {
             arguments.get(index + 1)?;
             index += 2;
             continue;
         }
-        if argument.to_str()?.starts_with("--root=") {
+        if argument.to_str()?.starts_with("--root=")
+            || argument.to_str()?.starts_with("--project-home=")
+        {
             index += 1;
             continue;
         }
@@ -2035,6 +2108,108 @@ fn main() -> ExitCode {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn explicit_project_home_is_a_global_argument_and_not_a_command_literal() {
+        let cli = Cli::try_parse_from([
+            "oev2",
+            "--root",
+            "/software",
+            "--project-home",
+            "/project",
+            "project",
+            "workspace",
+            "resume",
+        ])
+        .unwrap();
+        assert_eq!(cli.root.as_deref(), Some(Path::new("/software")));
+        assert_eq!(cli.project_home.as_deref(), Some(Path::new("/project")));
+        assert!(matches!(
+            cli.command,
+            Command::Project {
+                command: v2::ProjectCommand::Workspace {
+                    command: workspace::WorkspaceCommand::Resume { output: None }
+                }
+            }
+        ));
+        let args = [
+            "oev2",
+            "--project-home",
+            "semantics",
+            "knowledge",
+            "experience",
+            "list",
+        ]
+        .map(std::ffi::OsString::from);
+        assert_eq!(semantic_argument_command(&args), None);
+        assert_eq!(knowledge_argument_command(&args), Some("knowledge"));
+        let args =
+            ["oev2", "--project-home=/project", "harness", "step"].map(std::ffi::OsString::from);
+        assert_eq!(maintenance_argument_family(&args), Some("harness"));
+    }
+
+    #[test]
+    fn project_home_creation_checks_scope_before_any_directory_mutation() {
+        let directory = tempfile::tempdir().unwrap();
+        let base = std::fs::canonicalize(directory.path()).unwrap();
+        let installation = base.join("software");
+        std::fs::create_dir(&installation).unwrap();
+        std::fs::write(installation.join("SKILL.md"), "fixture").unwrap();
+        let root = SkillRoot::new(&installation).unwrap();
+        for forbidden in [
+            installation.clone(),
+            base.clone(),
+            installation.join("sources/new"),
+            installation.join("generated/new"),
+            installation.join("var"),
+            installation.join("var/../sources/new"),
+            PathBuf::from("relative-home"),
+        ] {
+            assert!(
+                create_project_home(&root, &forbidden).is_err(),
+                "{}",
+                forbidden.display()
+            );
+        }
+        for untouched in ["sources", "generated", "var"] {
+            assert!(!installation.join(untouched).exists());
+        }
+        let external = base.join("new/project");
+        assert_eq!(create_project_home(&root, &external).unwrap(), external);
+        let legacy_private = installation.join("var/projects/explicit");
+        assert_eq!(
+            create_project_home(&root, &legacy_private).unwrap(),
+            legacy_private
+        );
+        #[cfg(unix)]
+        {
+            let alias = base.join("alias");
+            std::os::unix::fs::symlink(&external, &alias).unwrap();
+            assert!(create_project_home(&root, &alias.join("uncreated")).is_err());
+            assert!(!external.join("uncreated").exists());
+        }
+    }
+
+    #[test]
+    fn harness_inputs_preserve_legacy_literals_and_bind_explicit_project_paths() {
+        let installation = tempfile::tempdir().unwrap();
+        let project = tempfile::tempdir().unwrap();
+        let source = std::fs::canonicalize(installation.path()).unwrap();
+        let home = std::fs::canonicalize(project.path()).unwrap();
+        std::fs::write(source.join("SKILL.md"), "fixture").unwrap();
+        let legacy = SkillRoot::new(&source).unwrap();
+        assert_eq!(
+            harness_input_path(&legacy, Path::new("input.json")).unwrap(),
+            PathBuf::from("input.json")
+        );
+        let bound = legacy.with_project_data_root(&home).unwrap();
+        assert_eq!(
+            harness_input_path(&bound, Path::new("input.json")).unwrap(),
+            home.join("input.json")
+        );
+        assert!(harness_input_path(&bound, &source.join("input.json")).is_err());
+        assert!(harness_input_path(&bound, Path::new("../input.json")).is_err());
+    }
 
     #[test]
     fn semantic_argument_protocol_uses_command_positions_not_input_values() {

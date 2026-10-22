@@ -52,7 +52,7 @@ fn read(root: &SkillRoot, r: &ArtifactReference) -> Result<Vec<u8>> {
 }
 fn reference(root: &SkillRoot, p: &Path) -> Result<ArtifactReference> {
     Ok(ArtifactReference {
-        path: oe_core::portable_source_path(root.path(), p)?,
+        path: root.portable_data_path(p)?,
         sha256: sha256(oe_core::read_regular_bytes(p, LIMIT)?),
     })
 }
@@ -69,7 +69,7 @@ impl Inputs {
     }
     fn get(&mut self, root: &SkillRoot, r: &ArtifactReference) -> Result<Vec<u8>> {
         let bytes = read(root, r)?;
-        let name = oe_core::portable_source_path(root.path(), &root.expand(Path::new(&r.path))?)?;
+        let name = root.portable_data_path(&root.data_expand(Path::new(&r.path))?)?;
         if let Some(old) = self.bytes.get(&name) {
             ensure!(*old == bytes, "exploration_input_changed");
         } else {
@@ -554,7 +554,7 @@ fn frozen(root: &SkillRoot, input: &ArtifactReference) -> Result<Checked> {
         "exploration_frozen_criteria_changed"
     );
     let dir = root
-        .expand(Path::new(&input.path))?
+        .data_expand(Path::new(&input.path))?
         .parent()
         .context("exploration_frozen_directory")?
         .to_owned();
@@ -581,10 +581,8 @@ fn frozen(root: &SkillRoot, input: &ArtifactReference) -> Result<Checked> {
     }
     // The canonical plan copy is an additional input; all original live sources
     // must be present in the frozen closure, not merely those the caller lists.
-    let plan_path =
-        oe_core::portable_source_path(root.path(), &root.expand(Path::new(&plan_ref.path))?)?;
-    let original_path =
-        oe_core::portable_source_path(root.path(), &root.expand(Path::new(&original.path))?)?;
+    let plan_path = root.portable_data_path(&root.data_expand(Path::new(&plan_ref.path))?)?;
+    let original_path = root.portable_data_path(&root.data_expand(Path::new(&original.path))?)?;
     let mut expected = c.inputs.bytes.clone();
     expected.remove(&plan_path);
     expected.insert(original_path, read(root, &original)?);

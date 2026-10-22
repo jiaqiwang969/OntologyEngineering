@@ -42124,5 +42124,12 @@
     "oracle": "Independent SHA256 known answers: empty, abc and million a; no expected value derived from candidate",
     "rustPath": "crates/oe-wire/tests/hash_identity.rs",
     "scope": "Current locked Rust and actual ggen; original assertions, full-byte guards, full stage/pair limits and complete scope unchanged; timing and other-platform qualification remain separate"
+  },
+  {
+    "behavior": "workspace_conflict_source_and_recovery",
+    "name": "workspace_conflict_source_and_recovery",
+    "oracle": "Reject stale parents, missing or changed sources, skipped correction and forged completion; preserve committed history and explicit effect uncertainty.",
+    "rustPath": "crates/oe-engineering/tests/project_workspace.rs",
+    "scope": "Project continuation software; semantic correctness, native execution and engineering adoption remain separately verified"
   }
 ]

@@ -800,6 +800,28 @@ pub fn execute_reviews_with(
     output: &Path,
     executor: &dyn NativeReviewExecutor,
 ) -> Result<Value> {
+    // Preserve the legacy no-I/O contract for an empty selection, including a
+    // nonexistent software root. Nonempty execution always verifies that root.
+    let report = initial_review_report(requests, project_id)?;
+    if requests.as_array().is_some_and(Vec::is_empty) {
+        return Ok(report);
+    }
+    let root = SkillRoot::new(root)?;
+    execute_reviews_in_context_with(&root, requests, project_id, output, executor)
+}
+
+/// The source root still owns rules and runtime identity; only project-owned
+/// inputs and output receipts use the explicitly bound data root.
+pub fn execute_reviews_in_context(
+    root: &SkillRoot,
+    requests: &Value,
+    project_id: &str,
+    output: &Path,
+) -> Result<Value> {
+    execute_reviews_in_context_with(root, requests, project_id, output, &SourceLockedExecutor)
+}
+
+fn initial_review_report(requests: &Value, project_id: &str) -> Result<Value> {
     text(&json!(project_id))?;
     let requests = requests.as_array().context("review_requests_invalid")?;
     ensure!(requests.len() <= MAX_REVIEWS, "review_budget_exceeded");
@@ -807,9 +829,22 @@ pub fn execute_reviews_with(
         "meaning":"Fresh scoped native record checks only; no physical acceptance, fact admission, project promotion, or future applicability follows."});
     if requests.is_empty() {
         report["feedback_sha256"] = sha256(canonical_json(&report)?).into();
+    }
+    Ok(report)
+}
+
+pub fn execute_reviews_in_context_with(
+    root: &SkillRoot,
+    requests: &Value,
+    project_id: &str,
+    output: &Path,
+    executor: &dyn NativeReviewExecutor,
+) -> Result<Value> {
+    let mut report = initial_review_report(requests, project_id)?;
+    let requests = requests.as_array().context("review_requests_invalid")?;
+    if requests.is_empty() {
         return Ok(report);
     }
-    let root = SkillRoot::new(root)?;
     let output = root.private_path(output)?;
     ensure!(!output.try_exists()?, "review_output_exists");
     let mut prepared = Vec::new();
@@ -846,10 +881,10 @@ pub fn execute_reviews_with(
             .map(text)
             .transpose()?
             .unwrap_or(DEFAULT_BUNDLE);
-        let record_path = private(&root, &request["record"], false)?;
-        let binding_path = private(&root, &request["binding"], false)?;
-        let evidence_root = private(&root, &request["evidence_root"], true)?;
-        let workspace = private(&root, &request["workspace"], true)?;
+        let record_path = private(root, &request["record"], false)?;
+        let binding_path = private(root, &request["binding"], false)?;
+        let evidence_root = private(root, &request["evidence_root"], true)?;
+        let workspace = private(root, &request["workspace"], true)?;
         for path in [&record_path, &binding_path, &evidence_root, &workspace] {
             ensure!(
                 !path.starts_with(&output) && !output.starts_with(path),
@@ -865,7 +900,7 @@ pub fn execute_reviews_with(
         }
         let bundle = &bundles[name];
         validate_binding(&binding, Some(project_id), Some(&bundle.spec))?;
-        let projection = project(&root, &raw, &evidence_root, bundle)?;
+        let projection = project(root, &raw, &evidence_root, bundle)?;
         let mut asset_sha256 = BTreeMap::new();
         for key in ["query_asset", "shape_asset"] {
             let asset_id = text(&projection.audit[key])?;
@@ -974,7 +1009,7 @@ pub fn execute_reviews_with(
                     return Ok(None);
                 }
                 Ok(Some(
-                    json!({"path":relative(root.path(), &path)?,"sha256":sha256(read(&path)?)}),
+                    json!({"path":relative(root.data_path(), &path)?,"sha256":sha256(read(&path)?)}),
                 ))
             })();
             match artifact {
@@ -985,11 +1020,11 @@ pub fn execute_reviews_with(
                 Err(_) => unavailable_artifacts.push(name),
             }
         }
-        let sources = item.projection.sources.iter().map(|source| Ok(json!({"id":source.id,"path":relative(root.path(), &source.path)?,"sha256":source.sha256}))).collect::<Result<Vec<_>>>()?;
+        let sources = item.projection.sources.iter().map(|source| Ok(json!({"id":source.id,"path":relative(root.data_path(), &source.path)?,"sha256":source.sha256}))).collect::<Result<Vec<_>>>()?;
         let mut entry = json!({"id":item.id,"bundle":item.bundle,"package":item.package,"actor":item.actor,
-            "request_sha256":item.request_sha256,"inputs":{"record":{"path":relative(root.path(),&item.record_path)?,"sha256":item.record_sha256},
-                "binding":{"path":relative(root.path(),&item.binding_path)?,"sha256":item.binding_sha256},
-                "workspace":relative(root.path(),&item.workspace)?,"evidence_root":relative(root.path(),&item.evidence_root)?,"sources":sources},
+            "request_sha256":item.request_sha256,"inputs":{"record":{"path":relative(root.data_path(),&item.record_path)?,"sha256":item.record_sha256},
+                "binding":{"path":relative(root.data_path(),&item.binding_path)?,"sha256":item.binding_sha256},
+                "workspace":relative(root.data_path(),&item.workspace)?,"evidence_root":relative(root.data_path(),&item.evidence_root)?,"sources":sources},
             "claim":item.projection.record["claim"],"method":item.projection.audit["method"],"artifacts":artifacts,"fact_admitted":false});
         // A failed artifact read cannot be promoted to a completed review either.
         let outcome = outcome.and_then(|native| {

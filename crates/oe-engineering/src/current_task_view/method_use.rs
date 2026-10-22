@@ -59,7 +59,7 @@ fn observe_intake(
             .validate()
             .map_err(|_| anyhow::anyhow!("method_intake_reference_invalid"))?;
         oe_semantic::safe_relative(&reference.path)?;
-        oe_core::read_regular_bytes(&root.path().join(&reference.path), INTAKE_LIMIT)
+        oe_core::read_regular_bytes(&root.data_path().join(&reference.path), INTAKE_LIMIT)
     })();
     match attempt {
         Ok(raw) => {
@@ -90,7 +90,7 @@ fn observe_archive(
         reference
             .validate()
             .map_err(|_| anyhow::anyhow!("method_archive_reference_invalid"))?;
-        let path = root.expand(Path::new(&reference.path))?;
+        let path = root.data_expand(Path::new(&reference.path))?;
         Ok((
             path.clone(),
             oe_core::fingerprint_file(&path, ARCHIVE_LIMIT)?,
@@ -160,7 +160,7 @@ fn snapshot_range(
         .as_str()
         .context("method_intake_source_path_invalid")?;
     ensure!(
-        root.expand(Path::new(source_path))? == path,
+        root.data_expand(Path::new(source_path))? == path,
         "method_intake_archive_path_mismatch"
     );
     ensure!(
@@ -634,5 +634,75 @@ impl CurrentTaskMethodUsePort for CurrentTaskMethodUseExecutor<'_> {
     ) -> std::result::Result<CurrentTaskMethodUseView, FailureRecord> {
         derive_with_methods(self.root, input)
             .map_err(|error| crate::artifacts::failure("current_task_method_source", error))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn project_intake_and_archive_use_data_root_without_source_fallback() {
+        let temp = tempfile::tempdir().unwrap();
+        let base = std::fs::canonicalize(temp.path()).unwrap();
+        let software = base.join("software");
+        let data = base.join("project");
+        std::fs::create_dir(&software).unwrap();
+        std::fs::create_dir(&data).unwrap();
+        std::fs::write(software.join("SKILL.md"), "source identity fixture").unwrap();
+        let root = SkillRoot::new(&software)
+            .unwrap()
+            .with_project_data_root(&data)
+            .unwrap();
+        let archive_path = data.join("archive.jsonl");
+        let archive = concat!(
+            "{\"type\":\"response_item\",\"timestamp\":\"2026-10-22T00:00:00Z\",",
+            "\"payload\":{\"type\":\"message\",\"id\":\"m1\",\"role\":\"user\",",
+            "\"content\":[{\"type\":\"input_text\",\"text\":\"Keep the original acceptance.\"}]}}\n"
+        );
+        std::fs::write(&archive_path, archive).unwrap();
+        let mut intake = conversation::read_archive(&archive_path, ARCHIVE_LIMIT).unwrap();
+        intake["source_path"] = json!("archive.jsonl");
+        let raw = serde_json::to_vec(&intake).unwrap();
+        std::fs::write(data.join("intake.json"), &raw).unwrap();
+        // Identical installation copies must never satisfy missing project data.
+        std::fs::write(software.join("intake.json"), &raw).unwrap();
+        std::fs::write(software.join("archive.jsonl"), archive).unwrap();
+        let intake_ref = ArtifactReference {
+            path: "intake.json".into(),
+            sha256: sha256(&raw),
+        };
+        let archive_ref = ArtifactReference {
+            path: "archive.jsonl".into(),
+            sha256: sha256(archive),
+        };
+        let project: Project = serde_json::from_value(json!({
+            "schema":"oev2.project/1", "project_id":"external-provenance", "revision":"1",
+            "purpose":"Keep original acceptance", "objects":{}, "conditions":{},
+            "evidence":{"intake":intake_ref.sha256}, "decisions":[], "dependencies":{}
+        }))
+        .unwrap();
+        let (observed, bytes) = observe_intake(&root, &project, &intake_ref);
+        assert_eq!(observed.status, "matched");
+        assert_eq!(observed.evidence_ids, ["intake"]);
+        assert_eq!(bytes.unwrap(), raw);
+        let (observed, opened) = observe_archive(&root, &archive_ref);
+        assert_eq!(observed.status, "matched");
+        let (path, size) = opened.unwrap();
+        assert_eq!(path, archive_path);
+        assert_eq!(
+            snapshot_range(&root, &intake, &path, size).unwrap(),
+            (0, size)
+        );
+        assert_eq!(root.path(), software);
+        std::fs::remove_file(data.join("intake.json")).unwrap();
+        let (observed, bytes) = observe_intake(&root, &project, &intake_ref);
+        assert_eq!(observed.status, "unavailable");
+        assert!(bytes.is_none());
+        std::fs::remove_file(archive_path).unwrap();
+        let (observed, opened) = observe_archive(&root, &archive_ref);
+        assert_eq!(observed.status, "unavailable");
+        assert!(opened.is_none());
     }
 }

@@ -88,6 +88,53 @@ fn local_checkpoint_document() -> Value {
     value
 }
 
+#[test]
+fn checkpoint_roundtrip_uses_explicit_external_project_data_without_new_authority() {
+    let software = Fixture::new();
+    let data = Fixture::new();
+    // Project storage is deliberately not a second Skill installation.
+    fs::remove_file(data.root.path().join("SKILL.md")).unwrap();
+    let root = software
+        .root
+        .clone()
+        .with_project_data_root(data.root.path())
+        .unwrap();
+    let observation = b"Current condition remains unknown; no execution is authorized.";
+    fs::write(data.root.path().join("observation.txt"), observation).unwrap();
+    let mut input = local_checkpoint_document();
+    input["harness"]["observations"] = json!([{
+        "kind":"reported", "statement":"Preserve the unresolved condition",
+        "evidence":[{"path":"observation.txt", "sha256":sha256(observation)}]
+    }]);
+    let result = step(&root, &input, Path::new("runs/first")).unwrap();
+    assert_eq!(root.path(), software.root.path());
+    assert_eq!(result["model_execution"], "not_run");
+    assert_eq!(result["engineering_acceptance"], "not_determined");
+    let saved = data.root.path().join("runs/first/iteration.json");
+    let mut saved_ref = reference(&saved);
+    saved_ref["path"] = json!("runs/first/iteration.json");
+    assert_eq!(load_step(&root, &saved_ref).unwrap(), result);
+    assert_eq!(
+        fs::read(
+            data.root
+                .path()
+                .join("runs/first/observations")
+                .join(sha256(observation))
+        )
+        .unwrap(),
+        observation
+    );
+    assert!(!software.root.path().join("runs").exists());
+    assert!(load_step(&software.root, &reference(&saved)).is_err());
+    let next = root
+        .clone()
+        .with_project_data_root(software.output("other-project"));
+    assert!(
+        next.is_err(),
+        "missing stores are not implicitly initialized"
+    );
+}
+
 fn checkpoint(reference: Value) -> Value {
     json!({"schema":harness::CONSOLIDATION_INPUT_SCHEMA, "checkpoint_id":"checkpoint-1",
         "problem_class":"condition-dependent-function", "reason":"阶段检查：工况未知造成不同判断",

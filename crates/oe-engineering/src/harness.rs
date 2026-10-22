@@ -127,6 +127,16 @@ pub trait ReviewExecutor {
         project_id: &str,
         output: &Path,
     ) -> Result<Value>;
+
+    fn execute_in_context(
+        &self,
+        root: &SkillRoot,
+        requests: &Value,
+        project_id: &str,
+        output: &Path,
+    ) -> Result<Value> {
+        self.execute(root.path(), requests, project_id, output)
+    }
 }
 
 pub struct NativeReviews;
@@ -139,6 +149,16 @@ impl ReviewExecutor for NativeReviews {
         output: &Path,
     ) -> Result<Value> {
         oe_semantic::review::execute_reviews(root, requests, project_id, output)
+    }
+
+    fn execute_in_context(
+        &self,
+        root: &SkillRoot,
+        requests: &Value,
+        project_id: &str,
+        output: &Path,
+    ) -> Result<Value> {
+        oe_semantic::review::execute_reviews_in_context(root, requests, project_id, output)
     }
 }
 
@@ -714,8 +734,8 @@ pub fn step_with_reviewer(
     let requests = harness.get("review_requests").unwrap_or(&empty);
     let mut review_bindings = Vec::new();
     let mut feedback = match associate_reviews(root, requests, &state, &mut review_bindings) {
-        Ok(()) => match reviewer.execute(
-            root.path(),
+        Ok(()) => match reviewer.execute_in_context(
+            root,
             requests,
             state["project_id"].as_str().unwrap(),
             &output.join("semantic-feedback"),

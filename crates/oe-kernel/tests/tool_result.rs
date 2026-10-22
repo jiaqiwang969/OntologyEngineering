@@ -70,7 +70,7 @@ fn ctx(p: &Project) -> Value {
 }
 
 fn result(f: &Fixture, id: &str, record: &[u8]) -> Value {
-    let raw = write(f.root.path(), &format!("var/tr/{id}/raw.json"), record);
+    let raw = write(f.root.data_path(), &format!("var/tr/{id}/raw.json"), record);
     let reg = registry(f);
     json!({
         "schema": "oev2.tool-result/1", "result_id": id, "project": ctx(&project(&f.project)),
@@ -141,6 +141,79 @@ fn complete_result_is_accepted_and_registers_a_new_project_copy() {
     );
     assert_eq!(reg.affected_decisions, vec!["D1"]);
     assert_eq!(reg.previous_project_sha256, sha256(&pbytes));
+}
+
+#[test]
+fn external_project_store_registers_and_decides_without_installation_fallback() {
+    let mut f = fixture();
+    let _home = tempfile::tempdir().unwrap();
+    let home = fs::canonicalize(_home.path()).unwrap();
+    f.root = f.root.clone().with_project_data_root(&home).unwrap();
+    let r = result(&f, "external", b"{\"hits\":1}");
+    let result_bytes = serde_json::to_vec(&r).unwrap();
+    let artifact = write(&home, "tool-results/external.json", &result_bytes);
+    let original = serde_json::to_vec(&f.project).unwrap();
+    let (next, registration) = tool_result::register(
+        &f.root,
+        &original,
+        &registry(&f),
+        &result_bytes,
+        "r2",
+        "revisions/r2.json",
+    )
+    .unwrap();
+    assert_eq!(registration.status, "registered");
+    let request: oe_contracts::DecisionUpdate = serde_json::from_value(json!({
+        "schema":"oev2.decision-update/1", "decision_id":"D1", "conclusion":"supported",
+        "results":[artifact], "findings":["external#F1"],
+        "rationale":"Observed symbol in the bound input", "claim_scope":"This fixed source only"
+    }))
+    .unwrap();
+    let (decided, receipt) = oe_kernel::project::decide::decide(
+        &f.root,
+        &next.unwrap(),
+        &registry(&f),
+        &request,
+        "r3",
+        "revisions/r3.json",
+    )
+    .unwrap();
+    assert!(decided.is_some(), "{:?}", receipt);
+    let updated: Value = serde_json::from_slice(&decided.unwrap()).unwrap();
+    assert_eq!(updated["decisions"][0]["conclusion"], "supported");
+    assert_eq!(updated["decisions"][0]["adopted"], false);
+    assert!(!f.root.path().join("var/tr").exists());
+
+    // A different selected store must not discover matching bytes in this one
+    // or silently consult the legacy installation when its own file is absent.
+    let other = tempfile::tempdir().unwrap();
+    let other_root = f
+        .root
+        .clone()
+        .with_project_data_root(fs::canonicalize(other.path()).unwrap())
+        .unwrap();
+    let reference: oe_contracts::ArtifactReference =
+        serde_json::from_value(artifact.clone()).unwrap();
+    assert!(tool_result::read_reference(&other_root, &reference, 4096).is_err());
+    write(f.root.path(), "tool-results/external.json", &result_bytes);
+    fs::remove_file(home.join("tool-results/external.json")).unwrap();
+    assert!(tool_result::read_reference(&f.root, &reference, 4096).is_err());
+    let legacy = SkillRoot::new(f.root.path()).unwrap();
+    assert_eq!(
+        tool_result::read_reference(&legacy, &reference, 4096).unwrap(),
+        result_bytes
+    );
+
+    for path in [
+        format!("{}/tool-results/external.json", f.root.path().display()),
+        "../tool-results/external.json".into(),
+    ] {
+        let outside = oe_contracts::ArtifactReference {
+            path,
+            sha256: sha256(&result_bytes),
+        };
+        assert!(tool_result::read_reference(&f.root, &outside, 4096).is_err());
+    }
 }
 
 #[test]

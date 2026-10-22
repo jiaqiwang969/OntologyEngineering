@@ -204,7 +204,10 @@ pub fn rename_directory_exclusive(from: &Path, to: &Path) -> Result<()> {
 }
 
 #[derive(Debug, Clone)]
-pub struct SkillRoot(PathBuf);
+pub struct SkillRoot {
+    source_root: PathBuf,
+    project_data_root: Option<PathBuf>,
+}
 
 impl SkillRoot {
     pub fn new(path: impl AsRef<Path>) -> Result<Self> {
@@ -212,14 +215,61 @@ impl SkillRoot {
         no_symlinks(path)?;
         let root = fs::canonicalize(path).context("skill_root_unavailable")?;
         ensure!(root.join("SKILL.md").is_file(), "skill_root_missing_entry");
-        Ok(Self(root))
+        Ok(Self {
+            source_root: root,
+            project_data_root: None,
+        })
     }
 
     pub fn path(&self) -> &Path {
-        &self.0
+        &self.source_root
     }
 
     pub fn expand(&self, value: &Path) -> Result<PathBuf> {
+        Self::expand_at(self.path(), value)
+    }
+
+    /// Bind an explicitly selected, existing project store. This is only a
+    /// filesystem context; the caller must verify its Project identity and
+    /// authorization. Software identity and source lookup remain unchanged.
+    pub fn with_project_data_root(mut self, path: impl AsRef<Path>) -> Result<Self> {
+        let path = path.as_ref();
+        ensure!(
+            path.is_absolute(),
+            "project_data_root_absolute_path_required"
+        );
+        no_symlinks(path)?;
+        let path = fs::canonicalize(path).context("project_data_root_unavailable")?;
+        ensure!(path.is_dir(), "project_data_root_not_directory");
+        ensure!(
+            !self.source_root.starts_with(&path),
+            "project_data_root_contains_software_root"
+        );
+        let private_base = self.source_root.join("var");
+        ensure!(
+            !path.starts_with(&self.source_root)
+                || (path.starts_with(&private_base) && path != private_base),
+            "project_data_root_inside_software_sources"
+        );
+        self.project_data_root = Some(path);
+        Ok(self)
+    }
+
+    /// Root for project-owned artifacts; unbound installations retain the
+    /// original relative-path contract. No implicit stripping of `var/` occurs.
+    pub fn data_path(&self) -> &Path {
+        self.project_data_root.as_deref().unwrap_or(self.path())
+    }
+
+    pub fn data_expand(&self, value: &Path) -> Result<PathBuf> {
+        Self::expand_at(self.data_path(), value)
+    }
+
+    pub fn portable_data_path(&self, path: &Path) -> Result<String> {
+        portable_source_path(self.data_path(), path)
+    }
+
+    fn expand_at(base: &Path, value: &Path) -> Result<PathBuf> {
         // Joining a relative path to a verbatim Windows root can remove '..'.
         // Preserve the input rejection before PathBuf performs that rewrite.
         #[cfg(windows)]
@@ -235,7 +285,7 @@ impl SkillRoot {
         } else if value.is_absolute() {
             value.to_path_buf()
         } else {
-            self.0.join(value)
+            base.join(value)
         };
         #[cfg(windows)]
         return windows_future_path(&path);
@@ -244,8 +294,11 @@ impl SkillRoot {
     }
 
     pub fn private_path(&self, value: &Path) -> Result<PathBuf> {
-        let path = self.expand(value)?;
-        let base = self.0.join("var");
+        let path = self.data_expand(value)?;
+        let base = self
+            .project_data_root
+            .clone()
+            .unwrap_or_else(|| self.source_root.join("var"));
         ensure!(
             path.starts_with(&base) && path != base,
             "path_outside_private_root"
@@ -381,6 +434,30 @@ pub fn ensure_directory(path: &Path) -> Result<()> {
     {
         let _ = path;
         bail!("anchored_directory_creation_platform_unsupported")
+    }
+}
+
+/// Persist a directory's entries before publishing a pointer to their contents.
+/// This does not flush child files; their writers must already have synced them.
+/// Only the verified Unix descriptor backend provides this durability contract.
+pub fn sync_directory(path: &Path) -> Result<()> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let directory = unix_directory(path, false)?;
+        directory.sync_all().context("directory_sync_failed")?;
+        let before = directory.metadata()?;
+        let after = unix_directory(path, false)?.metadata()?;
+        ensure!(
+            before.dev() == after.dev() && before.ino() == after.ino(),
+            "directory_changed_during_sync"
+        );
+        Ok(())
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = path;
+        bail!("directory_sync_unsupported_platform")
     }
 }
 
@@ -692,7 +769,7 @@ mod tests {
         .unwrap();
         let path = root
             .new_private_dir(Path::new(&format!(
-                "var/maintenance/rust-tests/core-{}-{}",
+                "var/maintenance/current-rust-tests/core-{}-{}",
                 std::process::id(),
                 COUNT.fetch_add(1, Ordering::Relaxed)
             )))
@@ -761,6 +838,154 @@ mod tests {
         );
         assert!(root.new_private_dir(&path).is_err());
         fs::remove_dir_all(path).unwrap();
+    }
+
+    fn separated_roots() -> (SkillRoot, PathBuf, PathBuf, PathBuf) {
+        let (_, scratch) = fixture();
+        let software = scratch.join("software");
+        let project_a = scratch.join("project-a/.engineering");
+        let project_b = scratch.join("project-b/.engineering");
+        for path in [&software, &project_a, &project_b] {
+            fs::create_dir_all(path).unwrap();
+        }
+        fs::write(software.join("SKILL.md"), "synthetic software identity").unwrap();
+        (
+            SkillRoot::new(software).unwrap(),
+            project_a,
+            project_b,
+            scratch,
+        )
+    }
+
+    #[test]
+    fn project_data_context_keeps_software_identity_and_legacy_paths() {
+        let (software, project_a, _, scratch) = separated_roots();
+        let bound = software.clone().with_project_data_root(&project_a).unwrap();
+        assert_eq!(bound.path(), software.path());
+        assert_eq!(
+            bound.expand(Path::new("runtime/rules")).unwrap(),
+            software.path().join("runtime/rules")
+        );
+        assert_eq!(bound.data_path(), project_a);
+        assert_eq!(
+            bound.data_expand(Path::new("evidence/source")).unwrap(),
+            project_a.join("evidence/source")
+        );
+        assert_eq!(
+            bound
+                .portable_data_path(&project_a.join("evidence/source"))
+                .unwrap(),
+            "evidence/source"
+        );
+        let output = bound
+            .unique_private_dir(Path::new("runs"), "checkpoint")
+            .unwrap();
+        write_new_bytes(&output.join("evidence"), b"project-owned").unwrap();
+        assert_eq!(
+            read_regular_bytes(&output.join("evidence"), 100).unwrap(),
+            b"project-owned"
+        );
+        assert!(output.starts_with(&project_a));
+        assert!(!software.path().join("runs").exists());
+        assert_eq!(
+            bound.private_path(Path::new("var/run")).unwrap(),
+            project_a.join("var/run")
+        );
+        assert_eq!(software.data_path(), software.path());
+        assert_eq!(
+            software.data_expand(Path::new("var/run")).unwrap(),
+            software.expand(Path::new("var/run")).unwrap()
+        );
+        assert_eq!(
+            software.private_path(Path::new("var/run")).unwrap(),
+            software.path().join("var/run")
+        );
+        assert!(software.private_path(Path::new("runs/run")).is_err());
+        fs::remove_dir_all(scratch).unwrap();
+    }
+
+    #[test]
+    fn project_data_context_rejects_cross_project_output_and_ambiguous_roots() {
+        let (software, project_a, project_b, scratch) = separated_roots();
+        let bound = software.clone().with_project_data_root(&project_a).unwrap();
+        for path in [
+            project_a.clone(),
+            project_b.join("output"),
+            software.path().join("var/output"),
+            project_a.join("../output"),
+        ] {
+            assert!(bound.private_path(&path).is_err(), "accepted {path:?}");
+        }
+        assert!(bound.portable_data_path(&project_b.join("input")).is_err());
+        assert!(
+            bound
+                .private_path(Path::new("../../project-b/.engineering/output"))
+                .is_err()
+        );
+        for path in [
+            software.path().to_path_buf(),
+            scratch.clone(),
+            PathBuf::from("relative-project"),
+            project_b.join("missing"),
+        ] {
+            assert!(
+                software.clone().with_project_data_root(&path).is_err(),
+                "accepted {path:?}"
+            );
+        }
+        let file = project_b.join("file");
+        fs::write(&file, "not a directory").unwrap();
+        assert!(software.with_project_data_root(file).is_err());
+        fs::remove_dir_all(scratch).unwrap();
+    }
+
+    #[test]
+    fn project_data_inside_software_is_confined_to_a_private_subdirectory() {
+        let (software, _, _, scratch) = separated_roots();
+        for name in ["generated", "runtime", "sources", "specs", "var"] {
+            let path = software.path().join(name);
+            fs::create_dir_all(&path).unwrap();
+            assert!(software.clone().with_project_data_root(path).is_err());
+        }
+        let local_project = software.path().join("var/maintenance/example/.engineering");
+        fs::create_dir_all(&local_project).unwrap();
+        let root = software.with_project_data_root(&local_project).unwrap();
+        let output = root.new_private_dir(Path::new("runs/checkpoint")).unwrap();
+        assert_eq!(output, local_project.join("runs/checkpoint"));
+        fs::remove_dir_all(scratch).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn directory_sync_requires_a_real_existing_directory() {
+        let (_, scratch) = fixture();
+        write_new_bytes(&scratch.join("content"), b"persist before publication").unwrap();
+        sync_directory(&scratch).unwrap();
+        assert!(sync_directory(&scratch.join("missing")).is_err());
+        assert!(sync_directory(&scratch.join("content")).is_err());
+        std::os::unix::fs::symlink(&scratch, scratch.join("alias")).unwrap();
+        assert!(sync_directory(&scratch.join("alias")).is_err());
+        fs::remove_dir_all(scratch).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn project_data_context_rejects_symlink_binding_and_output_escape() {
+        use std::os::unix::fs::symlink;
+        let (software, project_a, project_b, scratch) = separated_roots();
+        symlink(&project_a, scratch.join("alias")).unwrap();
+        symlink(project_a.parent().unwrap(), scratch.join("parent-alias")).unwrap();
+        for alias in [
+            scratch.join("alias"),
+            scratch.join("parent-alias/.engineering"),
+        ] {
+            assert!(software.clone().with_project_data_root(alias).is_err());
+        }
+        let bound = software.with_project_data_root(&project_a).unwrap();
+        symlink(&project_b, project_a.join("linked")).unwrap();
+        assert!(bound.new_private_dir(Path::new("linked/output")).is_err());
+        assert!(!project_b.join("output").exists());
+        fs::remove_dir_all(scratch).unwrap();
     }
 
     #[cfg(unix)]

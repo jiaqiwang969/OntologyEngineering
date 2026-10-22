@@ -2,7 +2,7 @@
 name: ontology-engineering-v2
 description: Manage engineering projects, professional-tool evidence and source-bound experience in one system. Use for engineering reasoning, project decisions, Codex/Claude history and memory, and maintaining ontology, generated contracts, Rust execution or RRSI methods.
 metadata:
-  version: "2.0.0-rc.6"
+  version: "2.0.0-rc.7"
 ---
 
 # 工程本体 v2
@@ -19,7 +19,9 @@ metadata:
 - 当前安装的程序提供 `project route-audit` 时（以安装回执为准），每个阶段开始前用 Project 和 `route-anchor.json` 运行一次；结果为 drift 或 invalid 时不进入下一阶段。
 - 交付前用 `oev2.route-anchor/2`（验收项列出所依据的决定与证据）运行 `project route-audit`。只交付 `delivery_verified`，`delivery_open` 继续调查或补验，`delivery_inconsistent` 先纠正。代码或制品改版后，原决定须补验并重新决定，才能再次交付。
 - “继续/按这个思路/深入”指沿根交付物推进未闭合的验收项，不是沿上一轮自己提出的下一步无限延伸。
-- 上下文压缩或接续后，先恢复根请求原文和验收清单，再读本文件；重读方法不能代替恢复目标。
+- 项目执行使用显式 `--project-home` 接入[项目文件体系](docs/PROJECT-WORKSPACE.md)，建议放在该工程项目的 `.engineering/`；安装根与 Project 身份分别核定，不从 cwd 或 profile 猜测。当前安装尚无 `project workspace` 时明确记录能力缺项，不借旧入口声称已启用。
+- 上下文压缩、新会话或接续后，先读实际 HEAD 并运行 `project workspace resume`，恢复根请求原文、完整验收、用户纠正、待复核决定和当前动作，再读方法和选择下一步。恢复不完整先补来源；已派发或效果未知的动作先回读，不自动重做。重读方法或旧 RESUME 不能代替这一步。
+- 每阶段按当前提交检查 `begin`，先保存执行意图与派发状态，再调用已授权工具；实际结果经原 owner 回读后提交。纠正是否解决须有关联的新复核依据，阶段进展声明本身不足。`ready`、`recorded` 与工程验收分开，待办与失败持续保存。
 - 汇报先写根验收进度，再写新增来源与修订号。审查通过只说明本阶段自洽，不说明路线正确。
 - “不得把其他型号数值当本产品规格”之类约束限制的是采用方式；应以带状态的假设推进根对象，而不是改去研究别的器件。
 
@@ -66,6 +68,6 @@ CAD 使用 v2 自有 Rust 模块及显式原生 SDK；调用前读[独立执行�
 
 修改 v2 软件时，`specs/` 为正本，共享类型、接口、错误、状态及可表达约束由锁定的真实 ggen 生成，复杂算法手写 Rust，生成区不可手改。方法文字调整应核对来源、约束迁移和实际使用；涉及规范或程序行为的改动，另执行相应生成、构建、回归与独立接收。[使用说明](docs/USAGE.md)规定当前执行身份与恢复边界，v1 和全局 `oe` 保留原身份。
 
-保存目标、条件、行动、观察、成功/失败、用户纠正与反例，区分项目事实、工作方法、领域候选和软件缺陷。已有表达足够时修正实例或记 `no_delta`。按[有证据的改进](references/regularized-evolution.md)冻结候选与判据，评价实际选择和结果；来源匹配、规则复述或文字精简本身不证明方法收益。该文分别说明方法原则和现有评估器的有限能力。
+保存目标、条件、行动、观察、成功/失败、用户纠正与反例，区分项目事实、工作方法、领域候选和软件缺陷。已有表达足够时修正实例或记 `no_delta`。项目内 RRSI 先经 workspace 的 learning-goal / learning-freeze 接续当前完整 Project、根锚定与全部验收；接续试验、评估及记录采用决定前运行 learning-check，再沿[有证据的改进](references/regularized-evolution.md)比较固定候选和判据。目标或来源变化重建基线；恢复会话不自动触发方法晋升。来源匹配、规则复述或文字精简本身不证明方法收益。
 
 项目进度和专属验收从相应项目原件接续；历史案例保留适用范围。`var/` 保存私有任务、调查、构建与维护，`sources/` 保存合法原件及索引，均不进入分发。历史命令按原身份阅读，当前执行使用已核入口。每轮报告先写根验收进度，再写实际新增、完成范围、未决问题及下一依赖。

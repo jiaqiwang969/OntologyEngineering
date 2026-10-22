@@ -2,7 +2,7 @@
 name: engineering-memory
 description: Use the integrated engineering memory module to recall, verify, curate and hand off source-bound Codex and Claude experience within the current engineering Project. Preserve chronology, corrections, conditions, causal uncertainty and actual-use feedback.
 metadata:
-  version: "2.0.0-rc.6"
+  version: "2.0.0-rc.7"
 ---
 
 # 工程记忆模块

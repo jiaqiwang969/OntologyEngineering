@@ -45,14 +45,14 @@ pub fn run(root: &SkillRoot, command: DesignAttemptCommand) -> Result<Value> {
         | DesignAttemptCommand::Record { input, .. }
         | DesignAttemptCommand::VerifyRecord { input, .. } => input,
     };
-    let path = root.expand(input)?;
+    let path = root.data_expand(input)?;
     ensure!(
-        path.starts_with(root.path()),
+        path.starts_with(root.data_path()),
         "design_attempt_input_outside_root"
     );
     let raw = read_regular_bytes(&path, 16 * 1024 * 1024)?;
     let reference = oe_contracts::ArtifactReference {
-        path: oe_core::portable_source_path(root.path(), &path)?,
+        path: root.portable_data_path(&path)?,
         sha256: sha256(&raw),
     };
     let completion = match &command {
@@ -91,7 +91,7 @@ pub fn run(root: &SkillRoot, command: DesignAttemptCommand) -> Result<Value> {
         "design_attempt_cli_request_changed"
     );
     if let Some((output, operation)) = completion {
-        let dir = root.expand(&output)?;
+        let dir = root.private_path(&output)?;
         let core = read_regular_bytes(&dir.join("completed.json"), 16 * 1024 * 1024)?;
         oe_core::write_new_bytes(&dir.join("cli-input.json"), &raw)?;
         oe_core::write_new(&dir.join("execution-binding.json"), &binding)?;

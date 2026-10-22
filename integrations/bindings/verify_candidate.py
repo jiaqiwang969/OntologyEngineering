@@ -11,15 +11,26 @@ import subprocess
 import time
 import uuid
 
-from common import file_sha, digest, read_bytes, read_input, root_path, run_process, save, selected_program
+from common import (file_sha, digest, read_bytes, read_input, root_path, run_process,
+                    save, selected_program, project_data_root, project_file, cli_prefix)
 
 
-def check(root, before, candidate, sources, *, max_seconds=90, max_output_bytes=8 * 1024 * 1024):
+def check(root, before, candidate, sources, *, project_home=None,
+          max_seconds=90, max_output_bytes=8 * 1024 * 1024):
     root = root_path(root)
-    before, candidate = Path(before).resolve(), Path(candidate).resolve()
-    run = root / 'var/investigations/tool-binding-checks' / str(uuid.uuid4())
+    data_root = project_data_root(root, project_home)
+    if project_home is not None:
+        before, candidate = project_file(data_root, before), project_file(data_root, candidate)
+    else:
+        before, candidate = Path(before).resolve(), Path(candidate).resolve()
+    run = data_root / ('runs/tool-binding-checks' if project_home is not None
+                       else 'var/investigations/tool-binding-checks') / str(uuid.uuid4())
+    if project_home is not None:
+        run = project_file(data_root, run)
     run.mkdir(parents=True, exist_ok=False, mode=0o700)
     receipt = {'schema': 'six-tools.binding-check/1', 'run_directory': str(run),
+               'installation_root': str(root),
+               'project_home': str(data_root) if project_home is not None else None,
                'binding_checks_passed': False, 'engineering_adoption': 'not_granted',
                'native_results': [], 'inputs_stable': False,
                'limits': {'seconds': max_seconds, 'output_bytes_per_process': max_output_bytes},
@@ -52,7 +63,7 @@ def check(root, before, candidate, sources, *, max_seconds=90, max_output_bytes=
             ('validate-candidate', ['project', 'validate', '--input', str(run / 'candidate.json')]),
             ('reconcile', ['project', 'reconcile', '--before', str(run / 'before.json'),
                            '--after', str(run / 'candidate.json'), '--output', str(run / 'impact.json')])]:
-            result = run_process([cli['path'], '--root', str(root), *args], run, name,
+            result = run_process([*cli_prefix(cli['path'], root, project_home), *args], run, name,
                                  deadline, max_output_bytes)
             receipt['native_results'].append({'command': name, **result})
             if result['failure'] or not result['process_group_absent']:
@@ -66,6 +77,8 @@ def check(root, before, candidate, sources, *, max_seconds=90, max_output_bytes=
                 raise ValueError('Evidence changed during check: ' + key)
         if selected_program(root, 'oev2') != cli:
             raise ValueError('Selected native executable changed during check')
+        if project_data_root(root, project_home) != data_root:
+            raise ValueError('Selected project home changed during check')
         # Source verification can take time; recheck the shared Project after it.
         if read_bytes(before) != original_before or read_bytes(candidate) != original_candidate:
             raise ValueError('Project changed during final check')
@@ -84,6 +97,7 @@ def check(root, before, candidate, sources, *, max_seconds=90, max_output_bytes=
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, help='Absolute checkout; otherwise ONTOLOGY_ENGINEERING_ROOT')
+    parser.add_argument('--project-home', type=Path, help='Explicit independent ProjectStore; no cwd inference')
     for name in ['before', 'candidate', 'sources']:
         parser.add_argument('--' + name, required=True, type=Path)
     parser.add_argument('--max-seconds', type=float, default=90)
@@ -91,6 +105,7 @@ def main():
     args = parser.parse_args()
     _, sources = read_input(args.sources)
     result = check(args.root, args.before, args.candidate, sources,
+                   project_home=args.project_home,
                    max_seconds=args.max_seconds, max_output_bytes=args.max_output_bytes)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return result['exit_code']

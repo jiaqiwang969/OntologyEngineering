@@ -11,7 +11,8 @@ import subprocess
 import time
 import uuid
 
-from common import file_sha, root_path, selected_program, save, read_bytes, read_input, digest, run_process
+from common import (file_sha, root_path, selected_program, save, read_bytes, read_input,
+                    digest, run_process, project_data_root, project_file, cli_prefix)
 
 
 def selected_cli(root):
@@ -19,11 +20,19 @@ def selected_cli(root):
 
 
 def execute(root, request, *, project=None, historical=False, memory_context=None,
-            memory_sha=None, memory_home=None, max_seconds=90, max_output_bytes=8 * 1024 * 1024):
-    root, request = root_path(root), Path(request).resolve()
-    directory = root / 'var/investigations/tool-reviewed-reconciliation' / str(uuid.uuid4())
+            memory_sha=None, memory_home=None, project_home=None,
+            max_seconds=90, max_output_bytes=8 * 1024 * 1024):
+    root = root_path(root)
+    data_root = project_data_root(root, project_home)
+    request = project_file(data_root, request) if project_home is not None else Path(request).resolve()
+    directory = data_root / ('runs/tool-reviewed-reconciliation' if project_home is not None
+                            else 'var/investigations/tool-reviewed-reconciliation') / str(uuid.uuid4())
+    if project_home is not None:
+        directory = project_file(data_root, directory)
     directory.mkdir(parents=True, exist_ok=False, mode=0o700)
     receipt = {'schema':'six-tools.review-invocation/2', 'run_directory':str(directory),
+               'installation_root':str(root),
+               'project_home':str(data_root) if project_home is not None else None,
                'mode':'historical' if historical else 'current',
                'current_applicability':'not_verified', 'engineering_adoption':'not_granted',
                'request_path':str(request), 'native_started':False, 'inputs_stable':False,
@@ -44,8 +53,7 @@ def execute(root, request, *, project=None, historical=False, memory_context=Non
         (directory / 'request.json').write_bytes(raw)
         wire = json.loads(raw)
         current_ref = wire['current']
-        current_path = (root / current_ref['path']).resolve()
-        current_path.relative_to(root)
+        current_path = project_file(data_root, current_ref['path'])
         current_raw, current = read_input(current_path)
         if digest(current_raw) != current_ref['sha256']:
             raise ValueError('Request current Project reference changed')
@@ -53,7 +61,7 @@ def execute(root, request, *, project=None, historical=False, memory_context=Non
                                       'project_id':current['project_id'], 'revision':current['revision']}
         anchor = None
         if project:
-            anchor = Path(project).resolve()
+            anchor = project_file(data_root, project) if project_home is not None else Path(project).resolve()
             anchor_raw, anchor_json = read_input(anchor)
             receipt['project_anchor'] = {'path':str(anchor), 'sha256':digest(anchor_raw),
                                          'project_id':anchor_json['project_id'], 'revision':anchor_json['revision']}
@@ -102,7 +110,7 @@ def execute(root, request, *, project=None, historical=False, memory_context=Non
             memory_call('memory-verify-before', 'verify')
             receipt['memory'] = {'context_id':memory_context, 'context_sha256':memory_sha,
                                  'project':bound, 'verified_before':True}
-        command = [cli['path'], '--root',str(root),'project','reconcile-reviewed','--input',
+        command = [*cli_prefix(cli['path'], root, project_home),'project','reconcile-reviewed','--input',
                    str(directory / 'request.json'),'--output',str(directory / 'native.json')]
         receipt['native_started'] = True
         result = child('native', command)
@@ -113,6 +121,8 @@ def execute(root, request, *, project=None, historical=False, memory_context=Non
             raise ValueError('Request changed during invocation')
         if selected_cli(root) != cli or file_sha(cli['path']) != cli['sha256']:
             raise ValueError('Selected native executable changed during invocation')
+        if project_data_root(root, project_home) != data_root:
+            raise ValueError('Selected project home changed during invocation')
         if memory_context:
             memory_call('memory-verify-after', 'verify')
             receipt['memory']['verified_after'] = True
@@ -137,6 +147,7 @@ def execute(root, request, *, project=None, historical=False, memory_context=Non
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, help='Absolute checkout; otherwise ONTOLOGY_ENGINEERING_ROOT')
+    parser.add_argument('--project-home', type=Path, help='Explicit independent ProjectStore; no cwd inference')
     parser.add_argument('--request', required=True, type=Path)
     parser.add_argument('--project', type=Path)
     parser.add_argument('--historical-snapshot', action='store_true')
@@ -148,6 +159,7 @@ def main():
     args = parser.parse_args()
     result = execute(args.root, args.request, project=args.project, historical=args.historical_snapshot,
                      memory_context=args.memory_context, memory_sha=args.memory_context_sha256, memory_home=args.memory_home,
+                     project_home=args.project_home,
                      max_seconds=args.max_seconds, max_output_bytes=args.max_output_bytes)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return result['exit_code']

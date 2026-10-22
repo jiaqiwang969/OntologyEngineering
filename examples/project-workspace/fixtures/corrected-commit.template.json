@@ -1,0 +1,101 @@
+{
+  "schema": "oev2.workspace-commit-request/1",
+  "workspace_id": "bracket-demo",
+  "commit_id": "acknowledge-correction",
+  "expected_parent": null,
+  "project": {
+    "path": "project.json",
+    "sha256": "464a3b97b1c5ed2cd640511d5300dfc137ac469ea8ebab7e21dc66bac0eaecd5"
+  },
+  "anchor": {
+    "path": "corrected-anchor.json",
+    "sha256": "1d9c65d7d9df19bf1a2e8e7cee5481667bbc4e3a9ec579322b047264bae2d4bd"
+  },
+  "requests": [
+    {
+      "request_id": "U1",
+      "source": {
+        "path": "request-1.txt",
+        "sha256": "5e4805fb50a3258e9d0c163e0a07eb1d501bc424e01214e15cd4cbb2bddc80b7"
+      }
+    },
+    {
+      "request_id": "U2",
+      "source": {
+        "path": "request-2.txt",
+        "sha256": "52ce2de0ebfbb15f292202cc7e5b71e10da4466c67af4a881d905a79b352cefc"
+      }
+    }
+  ],
+  "corrections": [
+    {
+      "id": "C-U2",
+      "request_id": "U2",
+      "status": "acknowledged",
+      "affected_decisions": [
+        "D1"
+      ],
+      "resolutions": [],
+      "reason": "Recorded; interface evidence and current review remain outstanding"
+    }
+  ],
+  "causal_claims": [],
+  "events": [
+    {
+      "id": "E1",
+      "kind": "user_report",
+      "actor": "synthetic user fixture",
+      "description": "Original complete request retained verbatim; fixture is not an authenticated conversation",
+      "occurred_at": null,
+      "recorded_at": "2026-10-22T00:00:00Z",
+      "sources": [
+        {
+          "path": "request-1.txt",
+          "sha256": "5e4805fb50a3258e9d0c163e0a07eb1d501bc424e01214e15cd4cbb2bddc80b7"
+        }
+      ],
+      "corrects": [],
+      "acceptance_ids": [
+        "A1"
+      ]
+    },
+    {
+      "id": "E2",
+      "kind": "correction",
+      "actor": "synthetic user fixture",
+      "description": "Record the mounting interface correction without marking it resolved",
+      "occurred_at": null,
+      "recorded_at": "2026-10-22T00:01:00Z",
+      "sources": [
+        {
+          "path": "request-2.txt",
+          "sha256": "52ce2de0ebfbb15f292202cc7e5b71e10da4466c67af4a881d905a79b352cefc"
+        }
+      ],
+      "corrects": [
+        "E1"
+      ],
+      "acceptance_ids": [
+        "A1"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "path": "measurement.txt",
+      "sha256": "b877a687217c9ef033ce236a3ff09ada4dc4d4b78b51e9bfddb1bd5c71cc3b05"
+    }
+  ],
+  "work": null,
+  "checkpoint": null,
+  "stage": {
+    "id": "S1",
+    "acceptance_ids": [
+      "A1"
+    ],
+    "intent": "Identify the actual load path and missing interface evidence",
+    "execution": "planned",
+    "receipt": null
+  },
+  "reviews": []
+}

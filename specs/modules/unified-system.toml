@@ -150,3 +150,630 @@ rust_path="crates/oe-cli/src/installation.rs"
 oracle="缺少程序或篡改现有安装时拒绝；完整新目录保存实际八程序摘要。"
 scope="本机源码构建安装；不证明原生CAD与工程采用"
 
+
+# Persistent project workspace and continuation contracts.
+
+[[types]]
+name="WorkspaceManifest"
+contract_group="engineering"
+identity="WorkspaceManifest"
+meaning="Explicit project storage identity, independent of installed source"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="schema"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+allowed_values=["oev2.workspace-manifest/1"]
+
+[[types.fields]]
+name="workspace_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="workspace id"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="project_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="project id"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types]]
+name="WorkspaceHead"
+contract_group="engineering"
+identity="WorkspaceHead"
+meaning="Atomic pointer to one committed project state"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="schema"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+allowed_values=["oev2.workspace-head/1"]
+
+[[types.fields]]
+name="workspace_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="workspace id"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="sequence"
+rust_type="u64"
+required=true
+format="typed"
+meaning="sequence"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="commit"
+rust_type="ArtifactReference"
+required=true
+format="typed"
+meaning="commit"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types]]
+name="WorkspaceEvent"
+contract_group="engineering"
+identity="WorkspaceEvent"
+meaning="Source-bound process event; occurrence and recording times remain distinct"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="id"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="kind"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+allowed_values=["user_report", "assistant_claim", "observation", "action", "decision", "correction"]
+
+[[types.fields]]
+name="actor"
+rust_type="String"
+required=true
+format="typed"
+meaning="actor"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="description"
+rust_type="String"
+required=true
+format="typed"
+meaning="description"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="occurred_at"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="occurred at"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="recorded_at"
+rust_type="String"
+required=true
+format="typed"
+meaning="recorded at"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="sources"
+rust_type="Vec<ArtifactReference>"
+required=true
+format="typed"
+meaning="sources"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="corrects"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="corrects"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="acceptance_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="acceptance ids"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types]]
+name="WorkspaceStage"
+contract_group="engineering"
+identity="WorkspaceStage"
+meaning="Recorded stage intent and observed execution; no automatic dispatch or adoption"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="id"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="acceptance_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="acceptance ids"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="intent"
+rust_type="String"
+required=true
+format="typed"
+meaning="intent"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="execution"
+rust_type="String"
+required=true
+format="typed"
+meaning="execution"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+allowed_values=["planned", "dispatched", "effect_unknown", "results_recorded", "cancelled"]
+
+[[types.fields]]
+name="receipt"
+rust_type="Option<ArtifactReference>"
+required=false
+format="typed"
+meaning="receipt"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types]]
+name="WorkspaceCommitRequest"
+contract_group="engineering"
+identity="WorkspaceCommitRequest"
+meaning="Complete proposed state with explicit parent; does not overwrite Project facts"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="schema"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+allowed_values=["oev2.workspace-commit-request/1"]
+
+[[types.fields]]
+name="workspace_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="workspace id"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="commit_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="commit id"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="expected_parent"
+rust_type="Option<ArtifactReference>"
+required=false
+format="typed"
+meaning="expected parent"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="project"
+rust_type="ArtifactReference"
+required=true
+format="typed"
+meaning="project"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="anchor"
+rust_type="ArtifactReference"
+required=true
+format="typed"
+meaning="anchor"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="requests"
+rust_type="Vec<WorkspaceRequestSource>"
+required=true
+format="typed"
+meaning="requests"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="corrections"
+rust_type="Vec<WorkspaceCorrectionObligation>"
+required=true
+format="typed"
+meaning="corrections"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="causal_claims"
+rust_type="Vec<WorkspaceCausalClaim>"
+required=true
+format="typed"
+meaning="causal claims"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="events"
+rust_type="Vec<WorkspaceEvent>"
+required=true
+format="typed"
+meaning="events"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="sources"
+rust_type="Vec<ArtifactReference>"
+required=true
+format="typed"
+meaning="sources"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="work"
+rust_type="Option<ArtifactReference>"
+required=false
+format="typed"
+meaning="work"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="checkpoint"
+rust_type="Option<ArtifactReference>"
+required=false
+format="typed"
+meaning="checkpoint"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="stage"
+rust_type="Option<WorkspaceStage>"
+required=false
+format="typed"
+meaning="stage"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+
+[[types.fields]]
+name="reviews"
+rust_type="Vec<WorkspaceResolution>"
+required=true
+format="typed"
+meaning="reviews"
+unit="explicit identity"
+precision="exact references and current evidence"
+write="Rust verifies current sources and computes state"
+applicability="Explicit persistent project workspace"
+acceptance="Old impacts persist until current native reviews satisfy them"
+
+[[types]]
+name="WorkspaceCommit"
+contract_group="engineering"
+identity="WorkspaceCommit"
+meaning="Immutable commit records one complete proposed state and its sequence"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="schema"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+allowed_values=["oev2.workspace-commit/1"]
+
+[[types.fields]]
+name="sequence"
+rust_type="u64"
+required=true
+format="typed"
+meaning="sequence"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+[[types.fields]]
+name="proposal"
+rust_type="WorkspaceCommitRequest"
+required=true
+format="typed"
+meaning="proposal"
+unit="explicit contract identity"
+precision="exact source bytes and references"
+write="Agent supplies source-bound inputs; Rust verifies and commits"
+applicability="Explicit project workspace; legacy root behavior preserved"
+acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
+
+
+[[types.fields]]
+name="pending_decisions"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="pending decisions"
+unit="explicit identity"
+precision="exact references and current evidence"
+write="Rust verifies current sources and computes state"
+applicability="Explicit persistent project workspace"
+acceptance="Old impacts persist until current native reviews satisfy them"
+
+[[constraints]]
+id="project_workspace_consistent_continuation"
+requirement="req_delivery"
+module="engineering"
+check="commit"
+rust_path="crates/oe-engineering/src/project_workspace/mod.rs"
+statement="Explicit project identity and expected parent, immutable records and atomic current pointer; source-bound recovery cannot turn history into execution or engineering adoption."
+severity="error"
+
+[[validations]]
+id="workspace_conflict_source_and_recovery"
+module="engineering"
+constraint="project_workspace_consistent_continuation"
+behavior="workspace_conflict_source_and_recovery"
+rust_path="crates/oe-engineering/tests/project_workspace.rs"
+oracle="Reject stale parents, missing or changed sources, skipped correction and forged completion; preserve committed history and explicit effect uncertainty."
+scope="Project continuation software; semantic correctness, native execution and engineering adoption remain separately verified"
+
+
+[[types]]
+name="WorkspaceStageReceipt"
+meaning="Explicit stage artifact and native readback owner, preserving failures and unknowns"
+identity="Stage identity plus exact execution Project and artifact; recorded is not engineering acceptance"
+fields=[
+{name="schema",meaning="Explicit stage receipt wrapper",rust_type="String",required=true,format="status",unit="Identity",precision="Exact",write="Agent supplies references; Rust rechecks native owner",applicability="Project workspace stages",acceptance="Replayed native check and exact stage binding",allowed_values=["oev2.workspace-stage-receipt/1"]},
+{name="stage_id",meaning="Existing current stage identity",rust_type="String",required=true,format="id",unit="Identity",precision="Exact",write="Agent",applicability="Project workspace stages",acceptance="Must equal stage id"},
+{name="owner",meaning="Existing readback owner; exploration explicitly unsupported until a read-only verifier exists",rust_type="String",required=true,format="status",unit="Identity",precision="Exact",write="Agent",applicability="Project workspace stages",acceptance="No substitute completed flags",allowed_values=["tool_result","harness","exploration"]},
+{name="artifact",meaning="Exact original tool-result or Harness checkpoint artifact",rust_type="ArtifactReference",required=true,format="object",unit="Original bytes",precision="SHA256",write="Agent",applicability="Project workspace stages",acceptance="Native owner rereads complete declared sources"},
+{name="registry",meaning="Exact current tool registry required for tool_result; absent for Harness",rust_type="Option<ArtifactReference>",required=false,format="object",unit="Original bytes",precision="SHA256",write="Agent",applicability="Tool results",acceptance="Actual executable and version verified"},
+{name="project",meaning="Exact Project snapshot at execution; current applicability separately checked",rust_type="ArtifactReference",required=true,format="object",unit="Original bytes",precision="SHA256",write="Agent",applicability="Project workspace stages",acceptance="Same project, objects, conditions and source; Harness requires exact current snapshot"}
+]
+
+[[types]]
+name="WorkspaceRequestSource"
+meaning="A verbatim route utterance bound to an exact source; bytes do not authenticate the speaker"
+identity="Explicit project/source/revision bindings; records never grant execution authority or adoption"
+fields=[
+{name="request_id",meaning="Existing route request identity",rust_type="String",required=true,format="id",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="source",meaning="Complete UTF-8 source bytes exactly equal to the route request text",rust_type="ArtifactReference",required=true,format="object",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"}
+]
+
+[[types]]
+name="WorkspaceResolution"
+meaning="Original reconciliation request and result, replayed by the existing owner before resolution"
+identity="Explicit project/source/revision bindings; records never grant execution authority or adoption"
+fields=[
+{name="request",meaning="Original reviewed-reconciliation request /1 or /2",rust_type="ArtifactReference",required=true,format="object",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="result",meaning="Saved complete result, compared to current native replay",rust_type="ArtifactReference",required=true,format="object",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"}
+]
+
+[[types]]
+name="WorkspaceCorrectionObligation"
+meaning="A correction's continuing obligations; resolved is reviewed coverage, never engineering adoption"
+identity="Explicit project/source/revision bindings; records never grant execution authority or adoption"
+fields=[
+{name="id",meaning="Stable obligation identity",rust_type="String",required=true,format="id",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="request_id",meaning="Existing correction request; affected acceptance remains in the route anchor",rust_type="String",required=true,format="id",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="status",meaning="Explicit correction processing state",rust_type="String",required=true,format="status",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject",allowed_values=["acknowledged","pending_review","resolved","deferred"]},
+{name="affected_decisions",meaning="Affected existing Project decisions; full bound acceptance decision coverage required at resolution",rust_type="Vec<String>",required=true,format="list",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="resolutions",meaning="Replayed actual resolution artifacts; stage declarations are insufficient",rust_type="Vec<WorkspaceResolution>",required=true,format="list",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="reason",meaning="Specific resolution or deferral basis; does not silently erase remaining obligations",rust_type="String",required=true,format="text",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"}
+]
+
+[[types]]
+name="WorkspaceCausalClaim"
+meaning="Source-bound causal attribution using existing memory levels; it never grants causal validity or adoption"
+identity="Explicit project/source/revision bindings; records never grant execution authority or adoption"
+fields=[
+{name="id",meaning="Stable local claim identity",rust_type="String",required=true,format="id",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="statement",meaning="Explicit cause and effect claim",rust_type="String",required=true,format="text",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="level",meaning="Existing engineering-memory causal evidence level",rust_type="String",required=true,format="status",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject",allowed_values=["sequence","attribution","mechanism","controlled_comparison"]},
+{name="source_refs",meaning="Original Project/tool/message artifacts; never disguised as Codex/Claude SourceAnchor",rust_type="Vec<ArtifactReference>",required=true,format="list",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="confounders",meaning="Co-occurring changes not separated by the evidence",rust_type="Vec<String>",required=true,format="list",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="unknowns",meaning="Specific remaining mechanism, applicability or verification gaps",rust_type="Vec<String>",required=true,format="list",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"}
+]
+
+[[types]]
+name="WorkspaceGoal"
+meaning="Root-bound goal wrapper for new workspace learning trials; old experience protocols remain unchanged"
+identity="Explicit project/source/revision bindings; records never grant execution authority or adoption"
+fields=[
+{name="schema",meaning="Explicit root-bound goal wrapper",rust_type="String",required=true,format="status",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject",allowed_values=["oev2.workspace-goal/1"]},
+{name="project_id",meaning="Existing Project identity",rust_type="String",required=true,format="id",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="project",meaning="Exact full current Project snapshot",rust_type="ArtifactReference",required=true,format="object",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="root_anchor",meaning="Exact full route anchor including requests, corrections and all acceptance",rust_type="ArtifactReference",required=true,format="object",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="acceptance_ids",meaning="Complete ordered acceptance identity list, no subset or reordering",rust_type="Vec<String>",required=true,format="list",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"}
+]
+
+[[types]]
+name="WorkspaceLearningBinding"
+meaning="Exact root and goal binding for an explicit trial; never automatic promotion"
+identity="Explicit project/source/revision bindings; records never grant execution authority or adoption"
+fields=[
+{name="schema",meaning="Explicit workspace learning binding",rust_type="String",required=true,format="status",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject",allowed_values=["oev2.workspace-learning-binding/1"]},
+{name="project_id",meaning="Existing Project identity",rust_type="String",required=true,format="id",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="project",meaning="Exact current Project",rust_type="ArtifactReference",required=true,format="object",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="root_anchor",meaning="Exact full current route anchor",rust_type="ArtifactReference",required=true,format="object",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="goal",meaning="Existing frozen goal wrapper bytes, checked by the caller",rust_type="ArtifactReference",required=true,format="object",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
+{name="acceptance_ids",meaning="Complete ordered acceptance identity list",rust_type="Vec<String>",required=true,format="list",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"}
+]

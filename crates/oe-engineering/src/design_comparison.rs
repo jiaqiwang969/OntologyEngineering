@@ -36,9 +36,9 @@ fn read(root: &SkillRoot, r: &ArtifactReference) -> Result<Vec<u8>> {
     )
 }
 fn path(root: &SkillRoot, p: &Path) -> Result<PathBuf> {
-    let p = root.expand(p)?;
+    let p = root.data_expand(p)?;
     ensure!(
-        p.starts_with(root.path()),
+        p.starts_with(root.data_path()),
         "design_comparison_path_outside_root"
     );
     Ok(p)
@@ -47,7 +47,7 @@ fn path_ref(root: &SkillRoot, p: &Path) -> Result<ArtifactReference> {
     let p = path(root, p)?;
     let b = read_regular_bytes(&p, LIMIT)?;
     Ok(ArtifactReference {
-        path: oe_core::portable_source_path(root.path(), &p)?,
+        path: root.portable_data_path(&p)?,
         sha256: sha256(&b),
     })
 }
@@ -65,7 +65,7 @@ impl Inputs {
     fn get(&mut self, root: &SkillRoot, r: &ArtifactReference) -> Result<Vec<u8>> {
         let raw = read(root, r)?;
         let p = path(root, Path::new(&r.path))?;
-        let name = oe_core::portable_source_path(root.path(), &p)?;
+        let name = root.portable_data_path(&p)?;
         if let Some(old) = self.raw.get(&name) {
             ensure!(*old == raw, "design_comparison_source_changed");
         } else {

@@ -1,0 +1,58 @@
+{
+  "schema": "oev2.route-anchor/2",
+  "project_id": "bracket-continuation-demo",
+  "root_object": "bracket",
+  "deliverable": "A bracket assessment recording complete acceptance, evidence and unknowns",
+  "requests": [
+    {
+      "id": "U1",
+      "kind": "root",
+      "text": "Synthetic user request: determine whether this bracket meets the declared load and report the evidence and remaining uncertainty.\n",
+      "source": "request-1.txt",
+      "affects": []
+    }
+  ],
+  "functions": [
+    {
+      "id": "F1",
+      "statement": "Carry the declared load through the mounting interface",
+      "structures": [
+        "bracket"
+      ]
+    }
+  ],
+  "acceptance": [
+    {
+      "id": "A1",
+      "statement": "The declared load path, interface and strength are evaluated with traceable evidence",
+      "functions": [
+        "F1"
+      ],
+      "status": "open",
+      "decisions": [
+        "D1"
+      ],
+      "evidence": [
+        "measurement"
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "id": "S1",
+      "object_id": "bracket",
+      "relation": "root",
+      "relation_target": "bracket",
+      "advances": [
+        "A1"
+      ],
+      "outcome": "pending"
+    }
+  ],
+  "reviews": [],
+  "policy": {
+    "off_root_stage_limit": 2,
+    "no_progress_stage_limit": 2,
+    "review_interval": 5
+  }
+}

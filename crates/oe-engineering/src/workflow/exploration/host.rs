@@ -177,9 +177,9 @@ fn previous(
     ensure!(
         json!(request.frozen) == json!(frozen)
             && json!(request.previous) == json!(state.previous)
-            && root.expand(Path::new(&reference.path))?
+            && root.data_expand(Path::new(&reference.path))?
                 == root
-                    .expand(Path::new(&request.output))?
+                    .data_expand(Path::new(&request.output))?
                     .join("completed.json"),
         "exploration_host_history_request_changed"
     );
@@ -200,9 +200,9 @@ fn previous(
         ("harness.json", &state.run.harness),
     ] {
         ensure!(
-            root.expand(Path::new(&r.path))?
+            root.data_expand(Path::new(&r.path))?
                 == root
-                    .expand(Path::new(&request.output))?
+                    .data_expand(Path::new(&request.output))?
                     .join("run")
                     .join(name),
             "exploration_host_history_artifact_location_changed"
@@ -295,7 +295,7 @@ pub fn advance(root: &SkillRoot, input: &ArtifactReference) -> Result<HostExplor
         root,
         &EngineeringExplorationRunRequest {
             frozen: request.frozen.clone(),
-            output: oe_core::portable_source_path(root.path(), &dir.join("run"))?,
+            output: root.portable_data_path(&dir.join("run"))?,
         },
         Some(&rows),
     )?;

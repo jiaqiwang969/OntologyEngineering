@@ -7,6 +7,7 @@ pub mod artifacts;
 pub mod code_build_supervision;
 pub mod code_qualification;
 pub mod current_task_view;
+pub mod project_workspace;
 pub mod harness;
 pub mod incad;
 pub mod manufacturing_report;

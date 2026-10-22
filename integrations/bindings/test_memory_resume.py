@@ -91,6 +91,23 @@ class NativeResume(unittest.TestCase):
         self.assertEqual(self.project.read_bytes(), before)
         self.assertFalse(any((Path(self.selected['runtime_home']) / 'active-sessions').glob('*.json')))
 
+    def test_explicit_project_home_preserves_independent_shared_memory(self):
+        home = self.root / 'project-store'
+        home.mkdir()
+        target = home / 'current.json'
+        self.project.rename(target)
+        self.project = target
+        self.request['id'] = 'source-external-store'
+        self.request['project']['path'] = str(target)
+        self.prepare()
+        result = self.call(project_home=home, output_root=home / 'runs')
+        self.assertEqual(result['exit_code'], 0, result)
+        self.assertTrue(result['fresh_context_verified'])
+        self.assertEqual(result['native']['runtime_home'], self.selected['runtime_home'])
+        self.assertEqual(result['project_home'], str(home))
+        self.assertIn(home, Path(result['run_directory']).parents)
+        self.assertFalse((self.install_root / 'var/memory').exists())
+
     def test_wrong_context_digest_rejected_before_prepare(self):
         result = self.call(context_sha256='0' * 64)
         self.rejected(result)

@@ -12,7 +12,8 @@ import subprocess
 import time
 import uuid
 
-from common import digest, file_sha, read_input, root_path, run_process, save, selected_program
+from common import (digest, file_sha, read_input, root_path, run_process, save,
+                    selected_program, project_data_root, project_file)
 
 
 def selected_runtime(root, home=None):
@@ -26,12 +27,17 @@ def selected_runtime(root, home=None):
 
 
 def resume(*, root=None, home=None, project, context_id, context_sha256, provider, session_id,
-           output_root, max_seconds=90, max_output_bytes=8 * 1024 * 1024):
+           output_root, project_home=None, max_seconds=90, max_output_bytes=8 * 1024 * 1024):
     """Reprepare the exact task after native source, scope and freshness checks."""
-    directory = Path(output_root).resolve() / str(uuid.uuid4())
+    root = root_path(root)
+    data_root = project_data_root(root, project_home)
+    output_root = project_file(data_root, output_root) if project_home is not None else Path(output_root).resolve()
+    directory = output_root / str(uuid.uuid4())
     directory.mkdir(parents=True, exist_ok=False, mode=0o700)
     receipt = {
         'schema': 'six-tools.memory-resume/1', 'run_directory': str(directory),
+        'installation_root': str(root),
+        'project_home': str(data_root) if project_home is not None else None,
         'source_context': {'id': context_id, 'sha256': context_sha256},
         'provider': provider, 'session_id': session_id,
         'prepare_attempted': False, 'request_prepared': False, 'fresh_context_verified': False,
@@ -44,7 +50,7 @@ def resume(*, root=None, home=None, project, context_id, context_sha256, provide
     try:
         if not (0 < max_seconds <= 90 and 0 < max_output_bytes <= 8 * 1024 * 1024):
             raise ValueError('Limits must be positive and at most 90 seconds / 8 MiB')
-        root, project = root_path(root), Path(project).resolve()
+        project = project_file(data_root, project) if project_home is not None else Path(project).resolve()
         receipt['root'] = str(root)
         raw, current = read_input(project)
         anchor = {'path': str(project), 'sha256': digest(raw),
@@ -57,6 +63,8 @@ def resume(*, root=None, home=None, project, context_id, context_sha256, provide
             raise ValueError('Runtime and home must be explicitly absolute')
 
         def stable():
+            if project_data_root(root, project_home) != data_root:
+                raise ValueError('Selected project home changed')
             if selected_runtime(root, home) != native:
                 raise ValueError('Selected memory runtime or home changed')
             if file_sha(executable) != native['runtime_sha256']:
@@ -130,6 +138,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path,
                         help='Absolute installed checkout; defaults to ONTOLOGY_ENGINEERING_ROOT')
+    parser.add_argument('--project-home', type=Path, help='Explicit independent ProjectStore; no cwd inference')
     parser.add_argument('--home', type=Path,
                         help='Absolute memory store; defaults to ROOT/var/memory')
     parser.add_argument('--project', type=Path, required=True)

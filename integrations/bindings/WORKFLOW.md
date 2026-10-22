@@ -8,6 +8,18 @@
 
 原件、Project、来源表和输出均由用户的当前任务产生。这里没有维护者的 Project、数据库、会话、凭据、旧机通过回执或运行环境。Python 3.8 及以上的标准库足够运行这些传输入口；程序本体仍是 Rust。
 
+项目使用独立存储时，三个入口显式传 `--project-home /absolute/project/.engineering`。
+该目录须已存在且不经过符号链接；不从 cwd 或环境变量猜测。`--root` 仍选软件安装，
+新参数只选择业务文件和回执位置。Project、请求及相对 ArtifactReference 按该项目根解析，
+缺件时不回退安装根或其他项目。`verify_candidate`/`reconcile_reviewed` 将回执写入项目的
+`runs/`，并把同一 `--project-home` 传给 Rust；`resume_memory` 的 `--output-root` 也须在
+该项目内。未传新参数时保留原安装根和 `var/` 路径语义，不自动改写旧引用或删除 `var/` 前缀。
+
+本机安装 registry 的默认路径仍是安装根 `var/capabilities/registry.json`；需要固定项目内
+副本时，原生 `tool-result`/`decide` 的 `--registry` 显式给该文件绝对路径。业务证据与工具
+安装身份分别核查。共享记忆库继续用 `--home` / `--memory-home` 指定，项目根不改变记忆库。
+搬迁项目或改版使旧 context 的路径/摘要失效时，重新显式准备并核验新绑定；本续接器不重写旧记录。
+
 ## 调用前与结果接收
 
 用 `oev2 --root "$ONTOLOGY_ENGINEERING_ROOT" project context` 取当前 Project。固定 project_id、revision、完整文件 SHA256、业务对象修订、条件、待决定事项、验收要求、未满足前提、原始输入与预算。工具版本不能代替业务对象版本，无当前 Project 时明确选择或建立，不从目录名猜。

@@ -21,6 +21,8 @@ PCB 网络名、FPGA/固件信号名和连接器针号通过显式映射接续�
 
 1. 核当前 Project 指针、文件 SHA、对象修订、条件与必要上游来源；并发更新时留不可变
    快照和原位置，不另立可竞争的决策账本。指针摘要不匹配时先核原会话提交状态。
+   使用独立 ProjectStore 时，原生命令及共享接续入口显式传同一 `--project-home`；
+   `--root` 仍指已核软件安装。业务相对引用按项目根解析，缺件不从安装根寻找替代品。
 2. 调用前明确问题及所需证据，用当前原生 `project validate` / `project context`
    核合同与绑定。context 通过只证明该合同检查范围，不替代实物、源原页或专业参数核对。
 3. 外部操作沿当前 skill/CLI 执行。记录输入对象/字节、程序/版本、开始结束、完整或部分
@@ -40,6 +42,9 @@ PCB 网络名、FPGA/固件信号名和连接器针号通过显式映射接续�
 
 实际 CLI 从本根 var/install/INSTALLATION.json 取得，不固定某个发行路径。参数与 schema 见其 `docs/USAGE.md`、
 `references/engineering-premises.md` 和实际 `--help`。完整旧来源、失败、父目标和后续义务保持。
+安装登记表仍属于本机安装；原生 EDA 输出、ToolResult、决定和接续回执属于当前项目。
+共享 memory 使用原来的显式 home，不随项目目录改变。旧记录不因选择新项目根而重解释；
+复制或搬迁后的项目须核原件并建立新的当前绑定，不能继承旧机工具资格。
 
 实际接收还须执行既有 `kernel review` 与 `project reconcile-reviewed`，而不止
 validate/context/task-view。独立验证和变更后的接续见

@@ -41,9 +41,9 @@ fn stated(values: &[String]) -> bool {
     !values.is_empty() && values.iter().all(|s| !s.trim().is_empty())
 }
 pub fn read_reference(root: &SkillRoot, reference: &Reference) -> Result<Vec<u8>> {
-    let path = root.expand(&reference.path)?;
+    let path = root.data_expand(&reference.path)?;
     ensure!(
-        path.starts_with(root.path()),
+        path.starts_with(root.data_path()),
         "engineering_reference_outside_root"
     );
     let bytes = read_regular_bytes(&path, 16 * 1024 * 1024)?;
@@ -238,7 +238,7 @@ pub fn run(root: &SkillRoot, work: &WorkInput, tools: &PopplerTools) -> Result<V
                 && identity["project"]["model_revision"] == work.object.revision,
             "engineering_handoff_binding_mismatch"
         );
-        let path = root.expand(&reference.path)?;
+        let path = root.data_expand(&reference.path)?;
         let packet =
             oe_cad::handoff::verify(&path, path.parent().context("engineering_handoff_parent")?)?;
         ensure!(

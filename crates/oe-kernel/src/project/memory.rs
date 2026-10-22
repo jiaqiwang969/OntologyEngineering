@@ -442,9 +442,22 @@ fn index(dir: &Path, out: &mut BTreeMap<String, String>, budget: &mut usize) -> 
 /// tool result and memory candidate found by digest under the Project directory, and the decision requests and
 /// receipts kept there (refusals included). Memory re-hashes each artifact when it uses them.
 pub fn export(project_path: &Path, project_bytes: &[u8]) -> Result<Value> {
+    let dir = project_path.parent().context("project_directory_missing")?;
+    export_in(dir, project_path, project_bytes)
+}
+
+/// Search the caller's explicitly selected project storage. This lets immutable
+/// Project revisions and tool results live in separate subdirectories without
+/// searching another project or the software installation for missing evidence.
+pub fn export_in(dir: &Path, project_path: &Path, project_bytes: &[u8]) -> Result<Value> {
+    ensure!(
+        project_path.starts_with(dir),
+        "memory_export_project_outside_store"
+    );
+    oe_core::no_symlinks(dir)?;
+    oe_core::no_symlinks(project_path)?;
     let project: Project = serde_json::from_value(oe_core::json::strict_json(project_bytes)?)?;
     validate(&project)?;
-    let dir = project_path.parent().context("project_directory_missing")?;
     let mut by_digest = BTreeMap::new();
     let mut budget = EXPORT_FILES;
     index(dir, &mut by_digest, &mut budget)?;
@@ -463,6 +476,7 @@ pub fn export(project_path: &Path, project_bytes: &[u8]) -> Result<Value> {
     }
     for sub in ["decisions", "receipts"] {
         let d = dir.join(sub);
+        oe_core::no_symlinks(&d)?;
         if !d.is_dir() {
             continue;
         }

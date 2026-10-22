@@ -1,6 +1,6 @@
 # 统一 RC 的范围与验收
 
-当前源码候选为 **2.0.0-rc.6，重构中**。工程本体与 engineering-memory 共用 workspace、Cargo.lock 和语义实现，通过同一安装的 `oev2` 与 `oev2 memory` 使用。当前实际验证见 [UNIFIED-VERIFICATION.md](UNIFIED-VERIFICATION.md)。
+当前源码候选为 **2.0.0-rc.7，重构中**。工程本体与 engineering-memory 共用 workspace、Cargo.lock 和语义实现，通过同一安装的 `oev2` 与 `oev2 memory` 使用。当前实际验证见 [UNIFIED-VERIFICATION.md](UNIFIED-VERIFICATION.md)。
 
 本轮按用户要求移除 Jev 及相关专用判断服务的客户端、配置与自动调度。当前 Agent 承担开放式任务组织和资料审阅，Rust 执行明确检查。其余工程、语义、来源与采用判据保持；不能把已取消的服务目标重新列为必须恢复的依赖。
 
@@ -9,6 +9,7 @@
 | 内容 | 入口与范围 | 验收边界 |
 |---|---|---|
 | Project 与变化审查 | 对象、版本、条件、来源、决定、依赖、任务视图、路线锚定与重审 | 当前对象/条件必须一致，unknown、失败及独立采用批准保留 |
+| 项目文件体系（源码候选） | 显式 `--project-home`、workspace 提交/恢复/阶段检查、纠正义务、根目标绑定的 learning 接续 | 原件与当前 HEAD 重核；工具/Harness 原 owner 回读；源码实现不等于已安装或新会话验收，见[项目文件体系](PROJECT-WORKSPACE.md) |
 | 工具结果接收 | `project tool-result verify/register/compare/registry`、`project decide` | 重读原件和程序身份；登记不自动支持决定或授予采用；性能比较须有可比基线 |
 | 内置工程记忆 | `memory` 的 record、recall、verify、history-index、session 与 Agent 审阅组织 | 原文、时间线、纠正、适用条件和因果未知保留；召回为待核候选，使用效果另验 |
 | Project-memory 双侧交接 | `project memory-candidate`、`project memory-feedback`、`memory session` | 当前Project与经验修订双侧核验；记忆不能直接支持决定、关闭验收或冒作工具原件 |
@@ -29,7 +30,7 @@
 
 历史D85与D86记录保持原版本、来源及输入身份。旧 `dist release` 的Mac /1、Windows /2仍是本体七程序发行格式，保留用于其历史范围；它们不代表本候选已完成统一八程序安装。全局旧 `oe` 不被替换。
 
-本候选继续显式使用 `oev2.rc5-local-source/1` 的来源feature集合合同：CLI经kernel编入 `source-session-local-v1` 和 `rdflib760-nullable-internal`，独立库无默认feature。该profile名代表既有特性合同，不把当前rc.6改签为rc.5。公共接口版本及支持格式按[来源会话](SEMANTIC-SOURCE-SESSION.md)与其后续显式合同核验。
+本候选的 CLI 经 kernel 编入 `source-session-local-v1` 和 `rdflib760-nullable-internal`，独立库无默认 feature。历史 `oev2.rc5-local-source/1` 同时固定 rc.5 版本与 feature 集合，不能用于 rc.7 接收；当前版本调用它应拒绝。统一八程序身份按 `oev2.installation/1` 核验，本轮未扩大旧正式发行 profile 的适用范围。公共接口版本及支持格式按[来源会话](SEMANTIC-SOURCE-SESSION.md)与其后续显式合同核验。
 
 ## 仍未闭合的工程范围
 
@@ -38,6 +39,7 @@
 - 全部原生CAD、装配运动、制造图、BOM、工艺、检验与实物计量，分别保留具体对象及独立验收。
 - 供应商完整下载、浏览器流程、平台SDK与工作负载的接通，按当前版本、任务与工具证据判断。
 - 未见任务的经验迁移收益、方法质量、成本及完整RRSI效果，不能由软件回归或一次开发案例证明。
+- 项目 workspace 的整体验证与安装接收按本轮实际结果报告；它不安装自动压缩 hook，不保证 Agent 必读或所有外部动作经过检查。exploration 阶段回执的只读接收尚不支持；跨宿主冷恢复、并发平台行为和 RRSI 未见任务收益分别验证。
 - 其他平台、干净离线安装、原生双构建与完整发行包接收，按实际执行范围报告。
 
 原工程目标的非服务部分保持原义；本次软件整合不重开已有历史工程结果，也不继承它们的通过。
@@ -50,3 +52,4 @@
 4. 检查公开文件、许可证、来源边界及文档命令，更新原GitHub仓库并保留历史。
 5. 保全旧安装与私人数据后，移除本次涉及的旧Skill；从固定远端提交重新安装，不借用旧入口或隐藏配置。
 6. 对新安装重新执行核心闭环与六工具案例，报告真实覆盖、未运行和局限；新安装通过不授予未验证的工程能力。
+7. 对启用 workspace 的项目独立验证冷恢复、完整纠正与验收、同修订变化、HEAD 冲突、派发后中断、原 owner 回执和旧 goal 拒绝；在实际宿主配置接续入口后，用新会话检查恢复行为，不沿用源码或合成测试的通过。

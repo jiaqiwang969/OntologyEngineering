@@ -33,6 +33,44 @@ def root_path(root=None):
     return path
 
 
+def project_data_root(root, project_home=None):
+    """Select business storage only from an explicit argument, never cwd or env."""
+    if project_home is None:
+        return root_path(root)
+    selected = Path(project_home)
+    if not selected.is_absolute() or '..' in selected.parts:
+        raise ValueError('Project home must be an explicit absolute path without parent traversal')
+    resolved = selected.resolve(strict=True)
+    if resolved != selected or not resolved.is_dir():
+        raise ValueError('Project home must be an existing real directory without symlinks')
+    software = root_path(root)
+    if software == resolved or resolved in software.parents:
+        raise ValueError('Project home must not contain the software installation')
+    private = software / 'var'
+    if software in resolved.parents and (resolved == private or private not in resolved.parents):
+        raise ValueError('Project home inside the installation must be a private var subdirectory')
+    return resolved
+
+
+def project_file(data_root, selected):
+    """Resolve a business file inside one selected store, without root fallback."""
+    selected = Path(selected)
+    if '..' in selected.parts:
+        raise ValueError('Project path contains parent traversal')
+    path = selected if selected.is_absolute() else data_root / selected
+    if path.resolve() != path:
+        raise ValueError('Project path must not contain symlinks')
+    path.relative_to(data_root)
+    return path
+
+
+def cli_prefix(program, root, project_home=None):
+    args = [str(program), '--root', str(root)]
+    if project_home is not None:
+        args += ['--project-home', str(project_data_root(root, project_home))]
+    return args
+
+
 def selected_program(root, name):
     root = root_path(root)
     record_path = root / 'var/install/INSTALLATION.json'

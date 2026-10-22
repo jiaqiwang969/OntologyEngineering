@@ -22,7 +22,7 @@ fn fixture() -> (SkillRoot, Scratch) {
     let root = SkillRoot::new(path).unwrap();
     let scratch = root
         .new_private_dir(Path::new(&format!(
-            "var/maintenance/rust-tests/directory-fd-{}-{}",
+            "var/maintenance/current-rust-tests/directory-fd-{}-{}",
             std::process::id(),
             COUNT.fetch_add(1, Ordering::Relaxed)
         )))

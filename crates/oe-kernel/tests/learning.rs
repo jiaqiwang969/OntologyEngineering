@@ -382,6 +382,73 @@ impl Fixture {
     }
 }
 
+#[test]
+fn external_project_store_freezes_equivalent_bytes_and_keeps_software_evaluator() {
+    let f = Fixture::new("external-store", "required_semantic_review");
+    let candidate = f.freeze();
+    let before = learning::assess(&f.root, &candidate, Path::new("var/assessment.json")).unwrap();
+    let original_manifest = fs::read(f.root.path().join(&candidate).join("freeze.json")).unwrap();
+    let home = tempfile::tempdir().unwrap();
+    let home_path = fs::canonicalize(home.path()).unwrap();
+    fs::create_dir_all(home_path.join("var")).unwrap();
+    fs::rename(
+        f.root.path().join("var/inputs"),
+        home_path.join("var/inputs"),
+    )
+    .unwrap();
+    // Similarly named data cannot replace the installation's fixed evaluator.
+    fs::create_dir_all(home_path.join("crates/oe-kernel/src")).unwrap();
+    fs::write(
+        home_path.join("crates/oe-kernel/src/learning.rs"),
+        b"untrusted project shadow",
+    )
+    .unwrap();
+    let bound = f.root.clone().with_project_data_root(&home_path).unwrap();
+    learning::freeze(&bound, &f.input, &candidate).unwrap();
+    assert_eq!(
+        fs::read(home_path.join(&candidate).join("freeze.json")).unwrap(),
+        original_manifest
+    );
+    let after = learning::assess(&bound, &candidate, Path::new("var/assessment.json")).unwrap();
+    assert_eq!(
+        before["assessment"]["verdict"],
+        after["assessment"]["verdict"]
+    );
+    let before_record: Value =
+        serde_json::from_slice(&fs::read(f.root.path().join("var/assessment.json")).unwrap())
+            .unwrap();
+    let after_record: Value =
+        serde_json::from_slice(&fs::read(home_path.join("var/assessment.json")).unwrap()).unwrap();
+    assert_eq!(before_record["goal_sha256"], after_record["goal_sha256"]);
+    assert_eq!(
+        before_record["evaluator_sha256"],
+        after_record["evaluator_sha256"]
+    );
+    assert_eq!(after_record["engineering_acceptance"], "not_established");
+    assert!(
+        home_path
+            .join("var/state/knowledge/experience-events/external-store/0001.json")
+            .is_file()
+    );
+    // Removing a data input does not cause a retry to read an installation copy.
+    let source = f.input["candidate"]["sources"][0]["source_uri"]
+        .as_str()
+        .unwrap();
+    fs::create_dir_all(f.root.path().join("var/inputs")).unwrap();
+    fs::copy(home_path.join(source), f.root.path().join(source)).unwrap();
+    fs::remove_file(home_path.join(source)).unwrap();
+    let mut another = f.input.clone();
+    another["candidate"]["candidate_id"] = json!("external-missing-source");
+    assert!(
+        learning::freeze(&bound, &another, Path::new("var/candidates/missing-source")).is_err()
+    );
+    assert!(
+        !home_path
+            .join("var/candidates/missing-source/freeze.json")
+            .exists()
+    );
+}
+
 fn protocol_two(f: &mut Fixture) {
     let put = |name: &str, value: &Value| {
         let path = format!("var/inputs/{name}");

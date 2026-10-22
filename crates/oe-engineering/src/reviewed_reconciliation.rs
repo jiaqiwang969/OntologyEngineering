@@ -128,7 +128,7 @@ fn streamed_source_inventory(
         // Same regular-file, platform and streaming fingerprint owner. No
         // JSON/parser limit is raised, and source binaries are never executed.
         let identity = oe_core::fingerprint_file(
-            &root.path().join(&reference.path),
+            &root.data_path().join(&reference.path),
             budget.max_file_bytes.min(remaining),
         )
         .context("reviewed_stream_source_read")?;

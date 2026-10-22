@@ -1,9 +1,9 @@
 use anyhow::{Result, bail};
 use oe_core::json::{canonical_json, strict_json};
-use oe_core::sha256;
+use oe_core::{SkillRoot, sha256};
 use oe_semantic::review::{
-    NativeReviewExecutor, NativeReviewInput, execute_reviews, execute_reviews_with, pointer_value,
-    project_record, validate_binding,
+    NativeReviewExecutor, NativeReviewInput, execute_reviews, execute_reviews_in_context_with,
+    execute_reviews_with, pointer_value, project_record, validate_binding,
 };
 use serde_json::{Value, json};
 use std::cell::Cell;
@@ -26,7 +26,7 @@ struct Case {
 }
 impl Case {
     fn new() -> Self {
-        let root = skill().join("var/maintenance/rust-tests").join(format!(
+        let root = skill().join("var/maintenance/current-rust-tests").join(format!(
             "review-{}-{}",
             std::process::id(),
             SERIAL.fetch_add(1, Ordering::Relaxed)
@@ -244,6 +244,69 @@ fn findings_violations_artifact_hashes_and_actor_remain_bound() {
     )
     .unwrap();
     assert_eq!(fixture.calls.get(), 2);
+}
+
+#[test]
+fn external_project_review_reads_rules_from_software_and_receipts_from_data() {
+    let software = Case::new();
+    let data = Case::new();
+    fs::remove_dir_all(software.root.join("var")).unwrap();
+    fs::remove_dir_all(data.root.join("runtime")).unwrap();
+    fs::remove_file(data.root.join("SKILL.md")).unwrap();
+    let root = SkillRoot::new(&software.root)
+        .unwrap()
+        .with_project_data_root(&data.root)
+        .unwrap();
+    let expected_source = root.path().to_path_buf();
+    let expected_data = root.data_path().to_path_buf();
+    let fixture = Fixture {
+        mutation: Some(Box::new(move |source, input, _| {
+            assert_eq!(source, expected_source);
+            assert!(input.binding.starts_with(&expected_data));
+            assert!(input.workspace.starts_with(&expected_data));
+            assert!(input.task.starts_with(&expected_data));
+        })),
+        ..Default::default()
+    };
+    let report = execute_reviews_in_context_with(
+        &root,
+        &json!([data.request]),
+        "synthetic-project",
+        Path::new("reviews/run"),
+        &fixture,
+    )
+    .unwrap();
+    assert_eq!(report["status"], "completed");
+    assert_eq!(fixture.calls.get(), 1);
+    assert_eq!(report["fact_admitted"], false);
+    assert!(!software.root.join("reviews").exists());
+    for artifact in report["reviews"][0]["artifacts"]
+        .as_object()
+        .unwrap()
+        .values()
+    {
+        let path = artifact["path"].as_str().unwrap();
+        assert!(path.starts_with("reviews/run/"));
+        assert_eq!(
+            artifact["sha256"],
+            sha256(fs::read(data.root.join(path)).unwrap())
+        );
+    }
+    assert!(
+        execute_reviews_in_context_with(
+            &root,
+            &json!([data.request]),
+            "synthetic-project",
+            &software.root.join("var/escape"),
+            &fixture,
+        )
+        .is_err()
+    );
+    assert_eq!(
+        fixture.calls.get(),
+        1,
+        "outside output must fail before execution"
+    );
 }
 
 #[test]

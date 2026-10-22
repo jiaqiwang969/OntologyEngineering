@@ -250,6 +250,11 @@ pub enum KernelCommand {
 }
 #[derive(Subcommand)]
 pub enum ProjectCommand {
+    /// Persistent project commits, source-bound recovery and root-goal learning binding.
+    Workspace {
+        #[command(subcommand)]
+        command: crate::workspace::WorkspaceCommand,
+    },
     /// Replay current source-bound reviews; preserve original impact and independent adoption.
     ReconcileReviewed {
         #[arg(long)]
@@ -586,6 +591,9 @@ pub fn require_execution(root: &SkillRoot, role: &str) -> Result<Value> {
     Ok(binding)
 }
 fn bytes(root: &SkillRoot, p: &std::path::Path) -> Result<Vec<u8>> {
+    read_regular_bytes(&root.data_expand(p)?, oe_kernel::MAX_BYTES)
+}
+fn software_bytes(root: &SkillRoot, p: &std::path::Path) -> Result<Vec<u8>> {
     read_regular_bytes(&root.expand(p)?, oe_kernel::MAX_BYTES)
 }
 fn json_input(root: &SkillRoot, p: &std::path::Path) -> Result<Value> {
@@ -655,6 +663,45 @@ fn reviewed_port_error(error: oe_contracts::FailureRecord) -> anyhow::Error {
 /// Only expose explicit, known reasons. Error details can contain paths or source text.
 pub fn command_failure(family: &str, error: &anyhow::Error) -> Value {
     let reasons = [
+        "project_home_must_be_absolute",
+        "project_home_parent_missing",
+        "project_home_parent_not_directory",
+        "project_home_not_supported_for_command",
+        "project_data_root_absolute_path_required",
+        "project_data_root_unavailable",
+        "project_data_root_not_directory",
+        "project_data_root_contains_software_root",
+        "project_data_root_inside_software_sources",
+        "harness_input_outside_project_home",
+        "workspace_explicit_project_home_required",
+        "workspace_contract",
+        "workspace_invalid_id",
+        "workspace_identity_mismatch",
+        "workspace_project_identity_mismatch",
+        "workspace_no_committed_state",
+        "workspace_head_identity",
+        "workspace_commit_identity",
+        "workspace_commit_location",
+        "workspace_archive_changed",
+        "workspace_invalid_route",
+        "workspace_request_history_rewritten",
+        "workspace_goal_change_needs_source_request",
+        "workspace_correction_obligation_dropped",
+        "workspace_correction_resolution_missing",
+        "workspace_unresolved_correction_closes_acceptance",
+        "workspace_stage_must_start_planned",
+        "workspace_stage_transition_invalid",
+        "workspace_unfinished_action_cannot_disappear",
+        "workspace_stale_resume",
+        "workspace_not_ready_for_stage",
+        "workspace_stage_not_planned",
+        "workspace_not_ready_for_learning",
+        "workspace_learning_goal_invalid",
+        "workspace_learning_root_changed",
+        "workspace_learning_acceptance_changed",
+        "workspace_learning_binding_changed",
+        "workspace_learning_project_mismatch",
+        "workspace_learning_object_mismatch",
         "explicit_existing_cdp_endpoint_required_without_profile_discovery",
         "existing_cdp_endpoint_invalid",
         "existing_cdp_loopback_endpoint_required",
@@ -1002,6 +1049,23 @@ impl oe_engineering::harness::ReviewExecutor for RustReviews {
             &oe_kernel::forward::RustExecutor,
         )
     }
+
+    fn execute_in_context(
+        &self,
+        root: &SkillRoot,
+        requests: &Value,
+        project_id: &str,
+        output: &std::path::Path,
+    ) -> Result<Value> {
+        require_execution(root, "formal_project_review")?;
+        oe_semantic::review::execute_reviews_in_context_with(
+            root,
+            requests,
+            project_id,
+            output,
+            &oe_kernel::forward::RustExecutor,
+        )
+    }
 }
 pub fn design(root: &SkillRoot, command: DesignCommand) -> Result<u8> {
     let execution = if matches!(
@@ -1188,7 +1252,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         KernelCommand::Capabilities => emit(root, oe_kernel::capabilities(), None, false),
         KernelCommand::SnapshotChecksum { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_SNAPSHOT_CHECKSUM_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_snapshot_checksum(oe_wire_json(&input)?)?;
@@ -1196,7 +1260,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::TemporalVersionDiff { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_TEMPORAL_VERSION_DIFF_WIRE_BYTES,
             )?;
             let result =
@@ -1205,7 +1269,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::TemporalVersionRecords { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_TEMPORAL_VERSION_RECORDS_WIRE_BYTES,
             )?;
             let result =
@@ -1214,7 +1278,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::TemporalPatterns { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_TEMPORAL_PATTERNS_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_temporal_patterns(oe_wire_json(&input)?)?;
@@ -1222,7 +1286,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::TemporalPaths { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_TEMPORAL_PATHS_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_temporal_paths(oe_wire_json(&input)?)?;
@@ -1230,7 +1294,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::TemporalConsistency { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_TEMPORAL_CONSISTENCY_WIRE_BYTES,
             )?;
             let result =
@@ -1239,7 +1303,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::TemporalRange { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_TEMPORAL_RANGE_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_temporal_range(oe_wire_json(&input)?)?;
@@ -1247,7 +1311,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::TemporalSnapshot { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_TEMPORAL_SNAPSHOT_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_temporal_snapshot(oe_wire_json(&input)?)?;
@@ -1255,7 +1319,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::TemporalFacts { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_TEMPORAL_FACTS_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_temporal_facts(oe_wire_json(&input)?)?;
@@ -1263,7 +1327,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::Temporal { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_TEMPORAL_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_temporal(oe_wire_json(&input)?)?;
@@ -1271,7 +1335,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::DatalogSession { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_DATALOG_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_datalog_session(oe_wire_json(&input)?)?;
@@ -1280,7 +1344,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::DatalogGraph { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_DATALOG_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_datalog_graph(oe_wire_json(&input)?)?;
@@ -1288,7 +1352,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
         }
         KernelCommand::Datalog { input, output } => {
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::rules::MAX_DATALOG_WIRE_BYTES,
             )?;
             let result = oe_kernel::rules::execute_local_datalog(oe_wire_json(&input)?)?;
@@ -1318,7 +1382,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
             root,
             oe_kernel::query::execute_local_query(
                 &bytes(root, &data)?,
-                std::str::from_utf8(&bytes(root, &query)?)?,
+                std::str::from_utf8(&software_bytes(root, &query)?)?,
             )?,
             output,
             false,
@@ -1328,7 +1392,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
             // carries both original files plus escaping; decoded RDF bounds
             // remain with the existing semantic owner.
             let input = read_regular_bytes(
-                &root.expand(&input)?,
+                &root.data_expand(&input)?,
                 oe_kernel::shacl::MAX_NAMED_GRAPH_VALIDATION_WIRE_BYTES,
             )?;
             let value =
@@ -1341,7 +1405,8 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
             shapes,
             output,
         } => {
-            let v = oe_kernel::shacl::validate(&bytes(root, &data)?, &bytes(root, &shapes)?)?;
+            let v =
+                oe_kernel::shacl::validate(&bytes(root, &data)?, &software_bytes(root, &shapes)?)?;
             let failed = v["conforms"] != true;
             emit(root, v, output, failed)
         }
@@ -1353,7 +1418,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
             root,
             oe_kernel::rules::forward_chain(
                 std::str::from_utf8(&bytes(root, &facts)?)?,
-                std::str::from_utf8(&bytes(root, &rules)?)?,
+                std::str::from_utf8(&software_bytes(root, &rules)?)?,
             )?,
             output,
             false,
@@ -1439,6 +1504,7 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
 }
 pub fn project(root: &SkillRoot, command: ProjectCommand) -> Result<u8> {
     match command {
+        ProjectCommand::Workspace { command } => crate::workspace::execute(root, command),
         ProjectCommand::ReconcileReviewed { input, output } => {
             require_execution(root, "reviewed_reconciliation")?;
             use oe_contracts::{ReviewedReconciliationPort, ReviewedReconciliationPort2};
@@ -1648,7 +1714,7 @@ pub fn project(root: &SkillRoot, command: ProjectCommand) -> Result<u8> {
             tools,
         } => {
             let binding = require_execution(root, "engineering_work")?;
-            let input_path = root.expand(&input)?;
+            let input_path = root.data_expand(&input)?;
             let input_bytes = oe_core::read_regular_bytes(&input_path, 16 * 1024 * 1024)?;
             let work: oe_engineering::workflow::WorkInput =
                 serde_json::from_value(oe_core::json::strict_json(&input_bytes)?)?;
@@ -1657,7 +1723,7 @@ pub fn project(root: &SkillRoot, command: ProjectCommand) -> Result<u8> {
             let resolved_tools = tools.resolve()?;
             let request = oe_contracts::EngineeringWorkRequest {
                 input: oe_contracts::ArtifactReference {
-                    path: oe_core::portable_source_path(root.path(), &input_path)?,
+                    path: root.portable_data_path(&input_path)?,
                     sha256: oe_core::sha256(&input_bytes),
                 },
             };
@@ -1680,7 +1746,7 @@ pub fn project(root: &SkillRoot, command: ProjectCommand) -> Result<u8> {
             let failed = result["status"] == "partial";
             emit(
                 root,
-                json!({"status":result["status"],"project_id":result["project_id"],"receipt":oe_core::portable_source_path(root.path(),&output.join("work.json"))?,"engineering_conclusion":"unknown","adopted":false,"scope":"actual source inquiry and explicit calculations, not physical acceptance"}),
+                json!({"status":result["status"],"project_id":result["project_id"],"receipt":root.portable_data_path(&output.join("work.json"))?,"engineering_conclusion":"unknown","adopted":false,"scope":"actual source inquiry and explicit calculations, not physical acceptance"}),
                 None,
                 failed,
             )
@@ -2053,5 +2119,20 @@ mod cad_failure_tests {
             "input_or_output_contract_unavailable"
         );
         assert!(!result.to_string().contains("private customer path"));
+    }
+
+    #[test]
+    fn workspace_failure_reports_only_fixed_public_codes() {
+        let error = anyhow::anyhow!("workspace_learning_root_changed:/private/project/goal.json");
+        let result = super::command_failure("project", &error);
+        assert_eq!(result["error"]["reason"], "workspace_learning_root_changed");
+        assert!(!result.to_string().contains("/private/"));
+        let unknown = anyhow::anyhow!("workspace_unlisted:/private/project/goal.json");
+        let result = super::command_failure("project", &unknown);
+        assert_eq!(
+            result["error"]["reason"],
+            "input_or_output_contract_unavailable"
+        );
+        assert!(!result.to_string().contains("/private/"));
     }
 }

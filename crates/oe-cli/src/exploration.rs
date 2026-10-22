@@ -3,7 +3,7 @@ use clap::Subcommand;
 use oe_contracts::{EngineeringExplorationPort, EngineeringExplorationRunRequest};
 use oe_core::{SkillRoot, read_regular_bytes, sha256};
 use serde_json::{Value, json};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[derive(Subcommand)]
 pub enum ExplorationCommand {
@@ -32,30 +32,37 @@ pub enum ExplorationCommand {
         output: PathBuf,
     },
 }
+fn input_reference(
+    root: &SkillRoot,
+    input: &Path,
+) -> Result<(PathBuf, Vec<u8>, oe_contracts::ArtifactReference)> {
+    let path = root.data_expand(input)?;
+    ensure!(
+        path.starts_with(root.data_path()),
+        "exploration_cli_input_outside_root"
+    );
+    let raw = read_regular_bytes(&path, 16 * 1024 * 1024)?;
+    let reference = oe_contracts::ArtifactReference {
+        path: root.portable_data_path(&path)?,
+        sha256: sha256(&raw),
+    };
+    Ok((path, raw, reference))
+}
 pub fn run(root: &SkillRoot, command: ExplorationCommand) -> Result<Value> {
     let binding = crate::v2::require_execution(root, "engineering_exploration")?;
     let path = match &command {
         ExplorationCommand::Freeze { input, .. } | ExplorationCommand::Advance { input } => input,
         ExplorationCommand::Verify { frozen } | ExplorationCommand::Run { frozen, .. } => frozen,
     };
-    let path = root.expand(path)?;
-    ensure!(
-        path.starts_with(root.path()),
-        "exploration_cli_input_outside_root"
-    );
-    let raw = read_regular_bytes(&path, 16 * 1024 * 1024)?;
-    let reference = oe_contracts::ArtifactReference {
-        path: oe_core::portable_source_path(root.path(), &path)?,
-        sha256: sha256(&raw),
-    };
+    let (path, raw, reference) = input_reference(root, path)?;
     let output = match &command {
         ExplorationCommand::Advance { .. } => {
             let request: oe_contracts::HostExplorationInput =
                 serde_json::from_value(oe_core::json::strict_json(&raw)?)?;
-            Some(root.expand(std::path::Path::new(&request.output))?)
+            Some(root.private_path(Path::new(&request.output))?)
         }
         ExplorationCommand::Freeze { output, .. } | ExplorationCommand::Run { output, .. } => {
-            Some(root.expand(output)?)
+            Some(root.private_path(output)?)
         }
         _ => None,
     };
@@ -72,7 +79,7 @@ pub fn run(root: &SkillRoot, command: ExplorationCommand) -> Result<Value> {
         ExplorationCommand::Run { output, .. } => {
             let request = EngineeringExplorationRunRequest {
                 frozen: reference.clone(),
-                output: oe_core::portable_source_path(root.path(), &root.expand(&output)?)?,
+                output: root.portable_data_path(&root.private_path(&output)?)?,
             };
             serde_json::to_value(
                 oe_engineering::workflow::exploration::ExplorationExecutor { root }
@@ -112,4 +119,40 @@ pub fn run(root: &SkillRoot, command: ExplorationCommand) -> Result<Value> {
     }
     result["execution_binding"] = binding;
     Ok(result)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn exploration_input_uses_only_explicit_project_data_root() {
+        let temp = tempfile::tempdir().unwrap();
+        let base = std::fs::canonicalize(temp.path()).unwrap();
+        let software = base.join("software");
+        let project = base.join("project");
+        std::fs::create_dir(&software).unwrap();
+        std::fs::create_dir(&project).unwrap();
+        std::fs::write(software.join("SKILL.md"), "test software identity").unwrap();
+        std::fs::write(software.join("request.json"), b"software copy").unwrap();
+        std::fs::write(project.join("request.json"), b"project input").unwrap();
+        let unbound = SkillRoot::new(&software).unwrap();
+        assert_eq!(
+            input_reference(&unbound, Path::new("request.json"))
+                .unwrap()
+                .1,
+            b"software copy"
+        );
+        let root = unbound.with_project_data_root(&project).unwrap();
+        let (path, raw, reference) = input_reference(&root, Path::new("request.json")).unwrap();
+        assert_eq!(path, project.join("request.json"));
+        assert_eq!(raw, b"project input");
+        assert_eq!(reference.path, "request.json");
+        assert_eq!(reference.sha256, sha256(b"project input"));
+        assert_eq!(root.path(), software);
+        assert!(input_reference(&root, &software.join("request.json")).is_err());
+        assert!(input_reference(&root, Path::new("../software/request.json")).is_err());
+        std::fs::remove_file(project.join("request.json")).unwrap();
+        assert!(input_reference(&root, Path::new("request.json")).is_err());
+    }
 }

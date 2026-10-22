@@ -43,15 +43,16 @@ fn generated(r: std::result::Result<(), Vec<String>>, out: &mut Vec<String>, wha
     }
 }
 
-/// Read a skill-root relative reference and check its bytes.
+/// Read a reference relative to the explicitly selected ProjectStore, or to the
+/// legacy skill root when no project home was selected. Never search both roots.
 pub fn read_reference(root: &SkillRoot, r: &ArtifactReference, limit: usize) -> Result<Vec<u8>> {
-    let path = root.expand(Path::new(&r.path))?;
+    let path = root.data_expand(Path::new(&r.path))?;
     ensure!(
-        path.starts_with(root.path()),
+        path.starts_with(root.data_path()),
         "tool_result_reference_outside_root"
     );
     ensure!(
-        oe_core::portable_source_path(root.path(), &path)? == r.path,
+        root.portable_data_path(&path)? == r.path,
         "tool_result_reference_not_portable"
     );
     let bytes = read_regular_bytes(&path, limit)?;

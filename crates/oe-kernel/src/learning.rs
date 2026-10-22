@@ -208,7 +208,7 @@ fn check_retry_history(
         {
             let event_path = path.join(format!("{i:04}.json"));
             required.insert(
-                oe_core::portable_source_path(root.path(), &event_path)?,
+                oe_core::portable_source_path(root.data_path(), &event_path)?,
                 (
                     sha256(read_regular_bytes(&event_path, LIMIT)?),
                     event.clone(),
@@ -218,8 +218,8 @@ fn check_retry_history(
     }
     let mut provided = BTreeSet::new();
     for reference in &retry.prior_rejections {
-        let path = root.expand(Path::new(&reference.path))?;
-        let relative = oe_core::portable_source_path(root.path(), &path)?;
+        let path = root.data_expand(Path::new(&reference.path))?;
+        let relative = oe_core::portable_source_path(root.data_path(), &path)?;
         ensure!(
             provided.insert(relative.clone()),
             "experience_duplicate_rejection_reference"
@@ -267,7 +267,7 @@ fn check_retry_history(
     Ok(Some(
         json!({"schema":"oev2.retry-history/2","identity":identity,"experiment":experiment,"registration":retry.experiment,
         "hypothesis_ids":retry.hypothesis_ids,"prior_rejections":retry.prior_rejections,"new_basis":input.new_basis,
-        "registration_path":oe_core::portable_source_path(root.path(),&registration)?,"registration_bytes_sha256":sha256(raw),
+        "registration_path":oe_core::portable_source_path(root.data_path(),&registration)?,"registration_bytes_sha256":sha256(raw),
         "related_rejection_count":required.len(),"basis_meaning":"verified new bytes only; engineering causal value requires separate evaluation"}),
     ))
 }
@@ -288,8 +288,8 @@ fn valid_id(id: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
 }
 fn read(root: &SkillRoot, r: &Reference) -> Result<Vec<u8>> {
-    let p = root.expand(Path::new(&r.path))?;
-    oe_core::portable_source_path(root.path(), &p)?;
+    let p = root.data_expand(Path::new(&r.path))?;
+    oe_core::portable_source_path(root.data_path(), &p)?;
     let bytes = read_regular_bytes(&p, LIMIT)?;
     ensure!(sha256(&bytes) == r.sha256, "experience_reference_drift");
     Ok(bytes)
@@ -535,7 +535,7 @@ impl HistoryWriter {
         let path = self.dir.join(format!("{:04}.json", self.old.len()));
         write_new(&path, &record)?;
         Ok(
-            json!({"event":record,"path":oe_core::portable_source_path(root.path(),&path)?,"sha256":oe_core::fingerprint_file(&path,LIMIT as u64)?.sha256}),
+            json!({"event":record,"path":oe_core::portable_source_path(root.data_path(),&path)?,"sha256":oe_core::fingerprint_file(&path,LIMIT as u64)?.sha256}),
         )
     }
 }
@@ -550,6 +550,10 @@ fn append(
     HistoryWriter::acquire(root, id)?.commit(root, state, event, body)
 }
 pub fn freeze(root: &SkillRoot, input: &Value, output: &Path) -> Result<Value> {
+    // Plans, examples and history belong to the selected project store. Rules
+    // and evaluator code keep their software-installation identity; a project
+    // must not replace either by providing similarly named data files.
+    let software = SkillRoot::new(root.path())?;
     let input: FreezeInput = serde_json::from_value(input.clone())?;
     ensure!(
         ["oev2.experience-freeze/1", "oev2.experience-freeze/2"].contains(&input.schema.as_str()),
@@ -756,7 +760,13 @@ pub fn freeze(root: &SkillRoot, input: &Value, output: &Path) -> Result<Value> {
                 .context("experience_bundle_sha_missing")?
                 .into(),
         };
-        snapshot(root, &dir, &r, &format!("cases/{i}/rules.zip"), &mut files)?;
+        snapshot(
+            &software,
+            &dir,
+            &r,
+            &format!("cases/{i}/rules.zip"),
+            &mut files,
+        )?;
     }
     full_check_budget(&dir, &contract)?;
     for (i, citation) in input.candidate.sources.iter().enumerate() {
@@ -791,7 +801,7 @@ pub fn freeze(root: &SkillRoot, input: &Value, output: &Path) -> Result<Value> {
     }
     let evaluator_raw = read_regular_bytes(&root.path().join(EVALUATOR), LIMIT)?;
     let evaluator = snapshot(
-        root,
+        &software,
         &dir,
         &Reference {
             path: EVALUATOR.into(),
@@ -817,16 +827,20 @@ pub fn freeze(root: &SkillRoot, input: &Value, output: &Path) -> Result<Value> {
     let producer_raw = read_regular_bytes(&std::env::current_exe()?, 512 * 1024 * 1024)?;
     let producer_sha = sha256(&producer_raw);
     write_new_bytes(&dir.join("evaluator-executable.bin"), &producer_raw)?;
-    let manifest = json!({"schema":"oev2.frozen-experience/1","candidate_id":input.candidate.candidate_id,"root":oe_core::portable_source_path(root.path(),&dir)?,
+    let manifest = json!({"schema":"oev2.frozen-experience/1","candidate_id":input.candidate.candidate_id,"root":oe_core::portable_source_path(root.data_path(),&dir)?,
         "files":files,"baseline_sha256":baseline.sha256,"candidate_sha256":candidate_plan.sha256,"goal_sha256":goal.sha256,"evaluation_sha256":evaluation.sha256,
         "evaluator_sha256":evaluator.sha256,"producer_executable_sha256":producer_sha,"producer_executable_bytes":producer_raw.len(),"prior_rejection":input.prior_rejection,
         "retry_history":retry_history,"protocol":input.schema,
         "project_state":"existing project references; no duplicate project store","transfer":"development_replay"});
     // Commit marker last. Incomplete snapshots have no usable freeze manifest.
-    for f in files.values() {
+    for (name, f) in &files {
         if let Some(r) = f.get("original") {
             let r: Reference = serde_json::from_value(r.clone())?;
-            read(root, &r)?;
+            if name == "evaluator.rs" || name.ends_with("/rules.zip") {
+                read(&software, &r)?;
+            } else {
+                read(root, &r)?;
+            }
         }
     }
     write_new(&dir.join("freeze.json"), &manifest)?;
@@ -863,7 +877,8 @@ fn checked(
     let first = h.first().context("experience_freeze_event_missing")?;
     ensure!(
         first["body"]["freeze_sha256"] == sha256(&raw)
-            && first["body"]["candidate_root"] == oe_core::portable_source_path(root.path(), &dir)?,
+            && first["body"]["candidate_root"]
+                == oe_core::portable_source_path(root.data_path(), &dir)?,
         "experience_freeze_identity_drift"
     );
     for (p, v) in m["files"].as_object().context("experience_files_missing")? {
@@ -1233,7 +1248,7 @@ pub fn assess(root: &SkillRoot, path: &Path, output: &Path) -> Result<Value> {
         root,
         ExperienceState::Assessed,
         "Evaluate",
-        json!({"candidate_root":m["root"],"assessment":Reference{path:oe_core::portable_source_path(root.path(),&dest)?,sha256:oe_core::fingerprint_file(&dest,LIMIT as u64)?.sha256},"selected_plan":"baseline-plan.json","verdict":record["assessment"]["verdict"]}),
+        json!({"candidate_root":m["root"],"assessment":Reference{path:oe_core::portable_source_path(root.data_path(),&dest)?,sha256:oe_core::fingerprint_file(&dest,LIMIT as u64)?.sha256},"selected_plan":"baseline-plan.json","verdict":record["assessment"]["verdict"]}),
     )?;
     Ok(json!({"assessment":record["assessment"],"event":event}))
 }
@@ -1325,7 +1340,7 @@ pub fn registered_plan(root: &SkillRoot, path: &Path, role: &str) -> Result<Valu
         "registered_method_cannot_disable_review"
     );
     let assurance = if role == "method_baseline" {
-        json!({"path":oe_core::portable_source_path(root.path(), &dir.join("freeze.json"))?,
+        json!({"path":oe_core::portable_source_path(root.data_path(), &dir.join("freeze.json"))?,
             "sha256":oe_core::sha256(read_regular_bytes(&dir.join("freeze.json"), LIMIT)?)})
     } else {
         let h = history(&events_dir(root, &c.candidate_id)?)?;
@@ -1515,7 +1530,7 @@ fn apply_selected(
         )?;
     }
     let mut body = json!({"candidate_root":m["root"],"selected_plan":selected,"selected_sha256":m["files"][&selected]["sha256"],
-        "trial":Reference {path:oe_core::portable_source_path(root.path(),&run_root.join("trial.json"))?,sha256:oe_core::fingerprint_file(&run_root.join("trial.json"),LIMIT as u64)?.sha256},
+        "trial":Reference {path:oe_core::portable_source_path(root.data_path(),&run_root.join("trial.json"))?,sha256:oe_core::fingerprint_file(&run_root.join("trial.json"),LIMIT as u64)?.sha256},
         "feedback_status":record["status"],"exposure":case.exposure});
     if let Some(assessment) = inherited_assessment {
         body["assessment"] = assessment;
@@ -1554,7 +1569,7 @@ pub fn recover(root: &SkillRoot, path: &Path, reason: &str, output: &Path) -> Re
         root,
         ExperienceState::Restored,
         "Restore",
-        json!({"candidate_root":m["root"],"selected_plan":"baseline-plan.json","selected_sha256":sha256(bytes),"recovered_file":oe_core::portable_source_path(root.path(),&dest.join("baseline-plan.json"))?,"reason":reason}),
+        json!({"candidate_root":m["root"],"selected_plan":"baseline-plan.json","selected_sha256":sha256(bytes),"recovered_file":oe_core::portable_source_path(root.data_path(),&dest.join("baseline-plan.json"))?,"reason":reason}),
     )
 }
 pub fn list(root: &SkillRoot, query: &str) -> Result<Value> {

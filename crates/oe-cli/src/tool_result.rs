@@ -58,16 +58,26 @@ pub enum ToolResultCommand {
 }
 
 fn inside(root: &SkillRoot, p: &Path) -> Result<PathBuf> {
-    let path = root.expand(p)?;
+    let path = root.data_expand(p)?;
     ensure!(
-        path.starts_with(root.path()),
+        path.starts_with(root.data_path()),
         "tool_result_cli_path_outside_root"
     );
+    oe_core::no_symlinks(&path)?;
     Ok(path)
 }
 
 fn registry(root: &SkillRoot, p: &Path) -> Result<CapabilityRegistry> {
-    let raw = read_regular_bytes(&inside(root, p)?, 4 * 1024 * 1024)?;
+    // Relative registry paths retain their installation-relative meaning. A caller
+    // may explicitly select a project-local snapshot by its absolute path; never
+    // silently substitute one registry for another when a project home is bound.
+    let path = root.expand(p)?;
+    ensure!(
+        path.starts_with(root.path()) || path.starts_with(root.data_path()),
+        "tool_result_registry_outside_selected_roots"
+    );
+    oe_core::no_symlinks(&path)?;
+    let raw = read_regular_bytes(&path, 4 * 1024 * 1024)?;
     Ok(serde_json::from_value(oe_core::json::strict_json(&raw)?)?)
 }
 
@@ -109,7 +119,7 @@ pub fn run(root: &SkillRoot, command: ToolResultCommand) -> Result<(Value, bool)
             let target = inside(root, &output)?;
             ensure!(!target.exists(), "tool_result_project_output_exists");
             let raw = read_regular_bytes(&inside(root, &input)?, LIMIT)?;
-            let portable = oe_core::portable_source_path(root.path(), &target)?;
+            let portable = root.portable_data_path(&target)?;
             let (bytes, registration) =
                 tool_result::register(root, &raw_project, &reg, &raw, &revision, &portable)?;
             if let Some(bytes) = &bytes {
@@ -177,7 +187,7 @@ pub fn decide(
     let raw = read_regular_bytes(&inside(root, input)?, 4 * 1024 * 1024)?;
     let request: oe_contracts::DecisionUpdate =
         serde_json::from_value(oe_core::json::strict_json(&raw)?)?;
-    let portable = oe_core::portable_source_path(root.path(), &target)?;
+    let portable = root.portable_data_path(&target)?;
     let (bytes, rec) = oe_kernel::project::decide::decide(
         root,
         &raw_project,
@@ -239,7 +249,7 @@ fn artifact(root: &SkillRoot, input: &Path) -> Result<oe_contracts::ArtifactRefe
     let path = inside(root, input)?;
     let raw = read_regular_bytes(&path, 16 * 1024 * 1024)?;
     Ok(oe_contracts::ArtifactReference {
-        path: oe_core::portable_source_path(root.path(), &path)?,
+        path: root.portable_data_path(&path)?,
         sha256: sha256(&raw),
     })
 }
@@ -273,7 +283,7 @@ pub fn memory_candidate(
             let (raw, _) = project(root, &p)?;
             let target = inside(root, &output)?;
             ensure!(!target.exists(), "memory_candidate_project_output_exists");
-            let portable = oe_core::portable_source_path(root.path(), &target)?;
+            let portable = root.portable_data_path(&target)?;
             let (bytes, check) = memory::register(root, &raw, &artifact(root, &input)?, &revision)?;
             if let Some(bytes) = &bytes {
                 ensure!(
@@ -343,7 +353,7 @@ pub fn memory_feedback(root: &SkillRoot, a: MemoryFeedbackArgs) -> Result<(Value
     let target = inside(root, &a.output)?;
     write_new(&target, &feedback)?;
     Ok((
-        json!({"status": "written", "output": oe_core::portable_source_path(root.path(), &target)?,
+        json!({"status": "written", "output": root.portable_data_path(&target)?,
                "sha256": sha256(&read_regular_bytes(&target, LIMIT)?), "feedback": feedback,
                "next": "engineering-memory: engineering session feedback --input <output> (memory re-checks exposure, revision and Project binding)",
                "execution_binding": binding}),
@@ -356,14 +366,62 @@ pub fn memory_export(root: &SkillRoot, p: &Path, output: &Path) -> Result<(Value
     let binding = crate::v2::require_execution(root, "memory_export")?;
     let path = inside(root, p)?;
     let (raw, _) = project(root, p)?;
-    let exported = memory::export(&path, &raw)?;
+    let exported = if root.data_path() == root.path() {
+        memory::export(&path, &raw)?
+    } else {
+        memory::export_in(root.data_path(), &path, &raw)?
+    };
     let target = inside(root, output)?;
     write_new(&target, &exported["artifacts"])?;
     let missing = exported["missing"].as_array().map_or(0, Vec::len);
     Ok((
         json!({"status": if missing == 0 { "exported" } else { "exported_with_missing" },
                "artifacts": exported["artifacts"].as_array().map_or(0, Vec::len), "missing": exported["missing"],
-               "output": oe_core::portable_source_path(root.path(), &target)?, "execution_binding": binding}),
+               "output": root.portable_data_path(&target)?, "execution_binding": binding}),
         missing != 0,
     ))
+}
+
+#[cfg(test)]
+mod path_tests {
+    use super::*;
+
+    #[test]
+    fn project_artifacts_and_machine_registry_have_distinct_explicit_roots() {
+        let install = tempfile::tempdir().unwrap();
+        let home = tempfile::tempdir().unwrap();
+        let outside = tempfile::tempdir().unwrap();
+        let install = std::fs::canonicalize(install.path()).unwrap();
+        let home = std::fs::canonicalize(home.path()).unwrap();
+        std::fs::write(install.join("SKILL.md"), "path fixture").unwrap();
+        std::fs::create_dir_all(install.join("var/capabilities")).unwrap();
+        let bytes = br#"{"schema":"oev2.capability-registry/1","capabilities":[]}"#;
+        std::fs::write(install.join(tool_result::DEFAULT_REGISTRY), bytes).unwrap();
+        std::fs::create_dir_all(home.join("var/capabilities")).unwrap();
+        std::fs::write(
+            home.join(tool_result::DEFAULT_REGISTRY),
+            b"not the selected registry",
+        )
+        .unwrap();
+        let legacy = SkillRoot::new(&install).unwrap();
+        let bound = legacy.clone().with_project_data_root(&home).unwrap();
+        assert_eq!(
+            inside(&legacy, Path::new("project.json")).unwrap(),
+            install.join("project.json")
+        );
+        assert_eq!(
+            inside(&bound, Path::new("project.json")).unwrap(),
+            home.join("project.json")
+        );
+        assert!(inside(&bound, &install.join("project.json")).is_err());
+        assert!(inside(&bound, Path::new("../escaped.json")).is_err());
+        assert!(registry(&bound, Path::new(tool_result::DEFAULT_REGISTRY)).is_ok());
+        std::fs::write(home.join("registry.json"), bytes).unwrap();
+        assert!(registry(&bound, &home.join("registry.json")).is_ok());
+        let foreign = std::fs::canonicalize(outside.path())
+            .unwrap()
+            .join("registry.json");
+        std::fs::write(&foreign, bytes).unwrap();
+        assert!(registry(&bound, &foreign).is_err());
+    }
 }

@@ -41,9 +41,9 @@ fn json(bytes: &[u8]) -> Result<Value> {
     Ok(oe_core::json::strict_json(bytes)?)
 }
 fn local(root: &SkillRoot, p: &Path) -> Result<PathBuf> {
-    let p = root.expand(p)?;
+    let p = root.data_expand(p)?;
     ensure!(
-        p.starts_with(root.path()),
+        p.starts_with(root.data_path()),
         "design_attempt_path_outside_root"
     );
     Ok(p)

@@ -10,7 +10,7 @@ pub fn read(root: &SkillRoot, reference: &ArtifactReference) -> Result<Vec<u8>> 
         .validate()
         .map_err(|_| anyhow::anyhow!("artifact_contract_invalid"))?;
     oe_semantic::safe_relative(&reference.path)?;
-    let bytes = read_regular_bytes(&root.path().join(&reference.path), 16 * 1024 * 1024)?;
+    let bytes = read_regular_bytes(&root.data_path().join(&reference.path), 16 * 1024 * 1024)?;
     ensure!(
         sha256(&bytes) == reference.sha256,
         "artifact_source_changed"
@@ -23,7 +23,7 @@ pub fn json(root: &SkillRoot, reference: &ArtifactReference) -> Result<Value> {
 pub fn reference(root: &SkillRoot, path: &Path) -> Result<ArtifactReference> {
     let bytes = read_regular_bytes(path, 16 * 1024 * 1024)?;
     Ok(ArtifactReference {
-        path: oe_core::portable_source_path(root.path(), path)?,
+        path: root.portable_data_path(path)?,
         sha256: sha256(bytes),
     })
 }

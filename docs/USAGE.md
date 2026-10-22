@@ -1,6 +1,6 @@
 # 构建与实际使用
 
-工程方法从[主入口](../SKILL.md)进入，工具选择见[能力索引](CAPABILITIES.md)。本页对应统一候选 `2.0.0-rc.6`；具体通过范围见[验证记录](UNIFIED-VERIFICATION.md)。
+工程方法从[主入口](../SKILL.md)进入，工具选择见[能力索引](CAPABILITIES.md)。本页对应统一候选 `2.0.0-rc.7`；具体通过范围见[验证记录](UNIFIED-VERIFICATION.md)。
 
 ## 源码安装与运行身份
 
@@ -17,7 +17,7 @@ export OEV2_BIN="$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2"
 "$OEV2_BIN" --root "$OEV2_SKILL_ROOT" memory status
 ```
 
-安装器固定本仓库的构建目录，使用锁定工具链和 Cargo.lock，编译本体七程序及 `engineering-memory`。默认 development profile；`--release` 使用优化构建，`--offline` 要求依赖已备齐，`--jobs N` 控制编译并发。记录在 `var/install/BUILD.txt`、`SHA256SUMS` 和 `INSTALLATION.json`。升级保留前一安装目录，完整准备后切换；安装身份失败时恢复前一目录。
+安装器从 `rust-toolchain.toml` 读取精确版本，经 `rustup run` 调用 Cargo/rustc，避免 PATH 中其他 Cargo 抢占；缺工具链时给出明确安装命令。安装器固定本仓库的构建目录，使用锁定工具链和 Cargo.lock，编译本体七程序及 `engineering-memory`。默认 development profile；`--release` 使用优化构建，`--offline` 要求依赖已备齐，`--jobs N` 控制编译并发。记录在 `var/install/BUILD.txt`、`SHA256SUMS` 和 `INSTALLATION.json`。升级保留前一安装目录，完整准备后切换；安装身份失败时恢复前一目录。
 
 `oev2 setup` 只能从本根 `var/install/bin/oev2` 登记完整八程序身份。已存在且完全匹配时只核验；程序变化后拒绝覆盖原回执，应重新运行安装器。它不替换全局 `oe`，不迁移私人项目，也不授予工程采用。
 
@@ -26,6 +26,17 @@ memory 子命令仅使用当前 oev2 同目录的程序；缺失时明确报错�
 ## Project、工具与记忆
 
 Agent 从真实用户要求维护 Project，保留完整目标、对象、条件与验收。字段见[Project 样例](../examples/v2-project/README.md)及[根目标锚定](../references/goal-anchoring.md)。
+
+源码候选新增 [项目文件体系与恢复](PROJECT-WORKSPACE.md)：显式 `--project-home` 把项目数据放入该项目的 `.engineering/`，安装来源根保持原身份。先按真实任务确认 Project ID，再 `project workspace init`、准备有源 commit；新会话和压缩后从 HEAD 运行 `resume`，读取完整目标、纠正、待复核决定和动作状态。文中的原 `var/projects/...` 命令仍演示未显式选数据根时的旧存储方式；不自动迁移或猜测同名项目。
+
+```sh
+export OEV2_PROJECT_HOME="/absolute/engineering-project/.engineering"
+"$OEV2_BIN" --root "$OEV2_SKILL_ROOT" --project-home "$OEV2_PROJECT_HOME" project workspace --help
+# 已明确初始化并提交的项目，恢复前重核完整来源。
+"$OEV2_BIN" --root "$OEV2_SKILL_ROOT" --project-home "$OEV2_PROJECT_HOME" project workspace resume
+```
+
+`begin` 只检查当前阶段；执行前保存派发状态，真实工具回读后再提交结果。`dispatched`/`effect_unknown` 恢复时不自动重试。RRSI 经 `learning-goal` / `learning-freeze` 绑定当前完整 Project 与根验收，接续试验和评估前以 `learning-check` 重核；memory home 继续独立显式配置。状态、回执支持范围、宿主 AGENTS 接入及预算统一见上述文档；当前安装是否已有命令以实际程序为准。
 
 ```sh
 "$OEV2_BIN" --root "$OEV2_SKILL_ROOT" project --help

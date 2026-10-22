@@ -1,5 +1,7 @@
 # 工程本体 v2：按工程问题选择能力
 
+项目长期接续见[项目文件体系与会话恢复](PROJECT-WORKSPACE.md)：源码候选新增显式 `--project-home` 与 `project workspace init/commit/resume/begin`，保留当前提交、完整根请求和验收、纠正义务、因果来源、待复核影响及未知动作。原工具/Harness owner 回读结果；RRSI goal/freeze 绑定同一完整根目标。安装根、项目数据根和 memory home 分开；没有自动压缩 hook 或全局派发拦截，实际构建、安装与恢复验证范围按本轮回执报告。
+
 工具结果回交见[专业能力](../references/professional-capabilities.md)：`project tool-result verify/register/compare/registry` 核 Project 绑定、本机登记的工具身份与程序字节、原始记录、结论依据与覆盖；登记只写新的 Project 副本，不改结论或采用；性能比较只接受先基线后候选的两份已登记结果。
 
 路线锚定接续[根目标锚定](../references/goal-anchoring.md)：`project route-audit` 读取当前 Project 与 agent 维护的 `oev2.route-anchor/1`，检查阶段对象能否沿声明关系追溯到根对象、离开根对象或未推进验收的连续段、路线回看与用户纠正。只核声明关系与计数；关系是否真实、交付物与工程采用另验。
@@ -68,7 +70,7 @@
 
 实际程序、安装版本和通过范围从 `var/maintenance/status.json` 的 `current_cli`、`latest_round` 及对应完成回执核实；源码、生成合同、程序、输入、行为、安装、正式选择与工程采用分别取证。整体仍为“重构中”。[发布范围](RELEASE-SCOPE.md)限定候选，不能用历史测试数量或接口存在替代当前资格。
 
-本源码候选 `2.0.0-rc.6` 经 kernel 显式编入 `source-session-local-v1` 及 `rdflib760-nullable-internal`，支持合同声明的 source-session `/1–4`；其中 `/4` 显式增加分阶段状态与 Turtle 见证，`/1–3` 含义保持。独立库无默认 feature。公共查询保持 `/1–4`，`/5` 拒绝。`dist release check-profile --profile oev2.rc5-local-source/1` 只核实际依赖编译范围，不授予行为或安装资格；旧 RC.4 门槛保留原身份。
+本源码候选 `2.0.0-rc.7` 经 kernel 显式编入 `source-session-local-v1` 及 `rdflib760-nullable-internal`，支持合同声明的 source-session `/1–4`；其中 `/4` 显式增加分阶段状态与 Turtle 见证，`/1–3` 含义保持。独立库无默认 feature。公共查询保持 `/1–4`，`/5` 拒绝。`dist release check-profile --profile oev2.rc5-local-source/1` 绑定历史 rc.5 的精确版本与 feature 集合，在 rc.7 上应拒绝；RC.4/RC.5 门槛保持原身份。当前统一安装使用 `oev2.installation/1` 记录八程序与源码身份，行为及工程资格另验。
 
 专用判断服务目标按本次用户要求移出当前范围；其余原工程目标、CAD16 及 Semantica 的 19 模块、19 协议、22 owner、13494 范围条目保持，有限支持不缩减这些验收。方法改进沿原 RRSI 范围，独立迁移和实际收益另验。
 

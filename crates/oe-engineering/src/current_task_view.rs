@@ -128,9 +128,9 @@ fn observations(
             .map(|(id, _)| id.clone())
             .collect();
         let attempt = (|| -> Result<Vec<u8>> {
-            let path = root.expand(Path::new(&reference.path))?;
+            let path = root.data_expand(Path::new(&reference.path))?;
             ensure!(
-                path.starts_with(root.path()),
+                path.starts_with(root.data_path()),
                 "engineering_reference_outside_root"
             );
             oe_core::read_regular_bytes(&path, oe_kernel::MAX_BYTES)
@@ -204,7 +204,8 @@ pub fn derive(root: &SkillRoot, input: &CurrentTaskViewInput) -> Result<CurrentT
         let bytes = read(root, reference)?;
         let work: crate::workflow::WorkInput = serde_json::from_value(strict_json(&bytes)?)?;
         ensure!(
-            root.expand(&work.project.path)? == root.expand(Path::new(&input.current.path))?
+            root.data_expand(&work.project.path)?
+                == root.data_expand(Path::new(&input.current.path))?
                 && work.project.sha256 == input.current.sha256,
             "current_task_work_project_reference_changed"
         );

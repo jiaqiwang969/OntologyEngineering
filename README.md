@@ -6,21 +6,9 @@
 
 当前为 **2.0.0-rc.6 整合候选，重构中**。实际验证见[验证记录](docs/UNIFIED-VERIFICATION.md)，具体工程能力与未完成项见[发布范围](docs/RELEASE-SCOPE.md)。
 
-```mermaid
-flowchart TD
-    U[人的目标、条件与验收要求] --> P[同一 Project：当前事实、来源与决定]
-    P --> A[Codex / Claude：理解、执行与组织验证]
-    M[engineering-memory：过程、纠正与经验] -->|待核候选| A
-    A --> T[按需使用专业工具]
-    T --> E[带来源、版本、覆盖与未知的结果]
-    E --> P
-    P --> G{证据是否满足要求}
-    G -->|缺项| A
-    G -->|满足| D[在已验证范围内交付]
-    A -->|真实过程与使用反馈| M
-    P --> R[RRSI：有限改进、独立验证与版本采用]
-    R --> P
-```
+![工程本体 v2、engineering-memory 与六种专业能力的闭环架构](docs/assets/engineering-system-architecture.png)
+
+原图保留 2026-10-14 的状态标注；当前安装方式与验证进展以下文及[验证记录](docs/UNIFIED-VERIFICATION.md)为准。
 
 ## 系统组成
 

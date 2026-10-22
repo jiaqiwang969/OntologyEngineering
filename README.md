@@ -22,8 +22,11 @@
 | Jacobian | 精确计算、有限搜索与数学结构分析 | 同上 |
 | SmokingGun | 静态复杂度候选与优化证据组织 | 同上 |
 | flameox | 已有性能原件分析及授权工作负载测量 | 同上 |
+| electronics-design | 电子设计、原理图/PCB、器件模型与工人接线指导 | 本仓库提供统一 Skill 与五个内部模块，运行工具按模块说明安装 |
 
-任务按缺口选择工具，不要求每次全部调用。完整版本、上游安装入口、diff、companion 和验证方法见[专业工具安装与接入](docs/TOOL-INTEGRATIONS.md)。本仓库维护接入差异，上游实现由各项目提供。
+任务按缺口选择工具，不要求每次全部调用。完整版本、上游安装入口、四份 diff、两份本地完整 Skill 和验证方法见[专业工具安装与接入](docs/TOOL-INTEGRATIONS.md)。六模块的当前源码、引用资源及共享接续代码对应关系见[覆盖表](integrations/COVERAGE.md)；新用户无需维护者的旧工作目录。上游实现由各项目提供。
+
+[electronics-design](modules/electronics-design/SKILL.md) 是第七种专业能力，电子任务只从它的 `SKILL.md` 进入，按需读取五个内部模块：`easyeda-agent`、`easyeda-api`、`easyeda-schematic-net-fanout`、`lceda-jlc-3d-model-extraction`、`make-worker-wiring-card`。安装说明见[电子设计模块](modules/electronics-design/README.md)；原图保持原样。
 
 核心工程与记忆流程不需要 Jev 或相关专用判断服务。任务解释、资料审阅和开放判断由当前 Agent 完成；Rust 检查明确的合同、来源与关系。模型答复、程序退出成功、经验召回和工程采用分别记录。
 

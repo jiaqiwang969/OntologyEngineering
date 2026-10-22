@@ -1,24 +1,28 @@
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -340,3 +340,21 @@
+@@ -340,3 +340,25 @@
  user asks to build something, use normal coding tools and separate observed
  behavior from design choices. Close an opened native session with
  `close_binary` when the investigation is complete.
 +
-+## OntologyEngineering integration (project-maintained addition)
++## 工作室接入补充（本地维护）
 +
-+When this tool is used within OntologyEngineering, resolve `ONTOLOGY_ENGINEERING_ROOT`
-+from the user's configuration and read `docs/TOOL-INTEGRATIONS.md` and
-+`references/professional-capabilities.md` under that root. Keep the current Project,
-+object revision, conditions and pending decision; do not infer a Project from cwd.
-+Save the exact invocation, tool version, original result bytes, input identities,
-+coverage, failures and unknowns in the Project's private evidence directory.
-+Return results through `oev2 project tool-result`; registration does not grant
-+engineering adoption. Feed actual process and usage back through `oev2 memory`.
-+Do not require an additional hosted judgment service for this handoff.
++使用固定入口 `rea`，当前采用 6.5.0。原始 Evidence 保存到任务证据目录，先读摘要，有具体缺口再分页；CLI 完整 JSON 重定向到文件，不以截断输出作为完整证据。复用已有摘要、缓存、分页能力。
 +
-+Retain artifact digests, native Evidence, the selected provider and static-versus-runtime scope. Close only sessions opened by this task; never turn static inference into an observed runtime result.
++浏览器观察遵守 Peekaboo 后台规则：`see --no-web-focus`；AX 操作关闭自动聚焦；不得抢焦点、调用 osascript 或 Chrome 扩展。REA 浏览器能力的存在不覆盖此规则。
 +
-+This addition is maintained by OntologyEngineering, not by the upstream tool.
-+Apply it only to the version and original Skill hash in `integrations/tools.lock.json`.
-+An upstream setup or upgrade may replace the Skill; re-check before reapplying.
++先区分安装、stdio 新连接、当前宿主连接的版本；运行 `binary_session` 时只输出身份/状态摘要，将完整回执存档。失败保留输入、错误、部分证据和未知，按实际提供方诊断修复。finally 关闭本任务打开的 native session；不终止其他会话进程。
++
++版本来源、验收和恢复见 `$ONTOLOGY_ENGINEERING_ROOT/docs/TOOL-INTEGRATIONS.md` 及 `integrations/bindings/WORKFLOW.md`。上游 Skill 正本保存在固定 npm 发布包 `skills/reverse-engineer-anything/`，此节为本地差异，升级须比较合并。
++
++## Portable OntologyEngineering entry
++
++For an OntologyEngineering task, resolve the user's absolute
++`ONTOLOGY_ENGINEERING_ROOT` and read `integrations/bindings/WORKFLOW.md` and
++`references/professional-capabilities.md` under that root. Keep the selected
++Project, object revision, conditions and pending decision. Use the portable
++`verify_candidate.py`, `reconcile_reviewed.py` and `resume_memory.py` there when
++that workflow calls for them; native Rust remains the semantic owner.
++Return native results through `oev2 project tool-result`, and actual process and
++usage feedback through `oev2 memory`. Registration does not grant adoption.
++This project-maintained addition requires no hosted judgment service.

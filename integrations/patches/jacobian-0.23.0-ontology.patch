@@ -1,24 +1,31 @@
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -26,3 +26,21 @@
+@@ -26,3 +26,28 @@
  Use returned values and certificates only for the conclusion they establish.
  Absence of a witness, a timeout, or an incomplete search is not a proof of a
  global mathematical claim.
 +
-+## OntologyEngineering integration (project-maintained addition)
++## Studio supplement (local, 2026-10-15)
 +
-+When this tool is used within OntologyEngineering, resolve `ONTOLOGY_ENGINEERING_ROOT`
-+from the user's configuration and read `docs/TOOL-INTEGRATIONS.md` and
-+`references/professional-capabilities.md` under that root. Keep the current Project,
-+object revision, conditions and pending decision; do not infer a Project from cwd.
-+Save the exact invocation, tool version, original result bytes, input identities,
-+coverage, failures and unknowns in the Project's private evidence directory.
-+Return results through `oev2 project tool-result`; registration does not grant
-+engineering adoption. Feed actual process and usage back through `oev2 memory`.
-+Do not require an additional hosted judgment service for this handoff.
++Pinned upstream: https://github.com/morluto/jacobian/tree/jacobian-v0.23.0/npm/skill/jacobian-math
++The upstream bytes are retained at the fixed upstream Skill and its SHA256 in `$ONTOLOGY_ENGINEERING_ROOT/integrations/tools.lock.json`; this section is the local difference.
++Use `jacobian` for CLI discovery/inspect/run, and `jacobian-mcp` in that same directory for stdio.
++Always discover the operation, read its exact contract, execute, then independently check the relation needed by the task. Record input conditions and exact versus approximate scalar types. Preserve the native return in the task evidence directory; mathematical validity does not establish engineering applicability. This macOS base environment has no claim for every optional backend. Processes are request-owned and terminate after use.
 +
-+Discover the exact operation contract, preserve mathematical inputs and scalar types, then independently check the required relation. Mathematical correctness alone does not establish engineering applicability.
++## 与当前 v2 Project 接续
 +
-+This addition is maintained by OntologyEngineering, not by the upstream tool.
-+Apply it only to the version and original Skill hash in `integrations/tools.lock.json`.
-+An upstream setup or upgrade may replace the Skill; re-check before reapplying.
++本工具承担：数学关系是否满足当前模型；独立检查输入映射、单位和前提。
++
++当任务使用 v2 时，调用前绑定实际业务对象、修订、条件和待决定事项；调用后按 `$ONTOLOGY_ENGINEERING_ROOT/integrations/bindings/WORKFLOW.md` 接收原生证据、独立核查、声明依赖并执行原生变更审查。工具版本不代替业务对象版本，安装验收不自动成为业务证据。此节是本地补充，上游 Skill 原文身份保留。
++
++## Portable OntologyEngineering entry
++
++For an OntologyEngineering task, resolve the user's absolute
++`ONTOLOGY_ENGINEERING_ROOT` and read `integrations/bindings/WORKFLOW.md` and
++`references/professional-capabilities.md` under that root. Keep the selected
++Project, object revision, conditions and pending decision. Use the portable
++`verify_candidate.py`, `reconcile_reviewed.py` and `resume_memory.py` there when
++that workflow calls for them; native Rust remains the semantic owner.
++Return native results through `oev2 project tool-result`, and actual process and
++usage feedback through `oev2 memory`. Registration does not grant adoption.
++This project-maintained addition requires no hosted judgment service.

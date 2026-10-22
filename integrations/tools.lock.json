@@ -1,7 +1,7 @@
 {
   "schema": "ontology-engineering.tool-integrations/1",
   "checked_at": "2026-10-22",
-  "software_policy": "Install original upstream runtimes; this project distributes only integration instructions and verified Skill diffs.",
+  "software_policy": "Six upstream runtimes remain fixed releases. Complete portable local Skill deltas and shared byte-transport helpers are maintained here; native Rust owns Project and memory semantics. Electronics design declares its separate source/runtime deltas.",
   "tools": [
     {
       "id": "gitcontribute",
@@ -13,12 +13,11 @@
       "skill_name": "gitcontribute",
       "runtime_source_patch": null,
       "upstream_skill_source_path": "internal/setup/setup.go",
-      "integration_kind": "upstream-skill-append-patch",
+      "integration_kind": "upstream-skill-local-delta",
       "patch": "patches/gitcontribute-3.0.2-ontology.patch",
       "upstream_skill_sha256": "e9d891fb602d479c3fde0c3c9c9e5a606ed544a611c704411ed1264132901f13",
-      "integrated_skill_sha256": "faf7cf496e11a7926ddd1ff4434278799646e4e7bf996885c2bb8591952b2429",
-      "patch_sha256": "58e060b0245d5c3ffb832f53295d2ab0774203231ce0162566441b4927cd664e",
-      "patch_target": "SKILL.md",
+      "integrated_skill_sha256": "602c3e6d6b64a42414267502aea2f0aff173f721965ad39fc77e34808d6c6daa",
+      "patch_sha256": "f160f763d4e8ad0111f0efdcb950b28a1d517793145776664508f3eeb1f1331a",
       "patch_application_root": "The clean installed upstream Skill directory, not the source repository root.",
       "package": {
         "registry": "npm",
@@ -27,7 +26,29 @@
         "metadata_url": "https://registry.npmjs.org/gitcontribute/3.0.2",
         "integrity": "sha512-9ktbPtB030TcfG5RGDojA7GhP7pb5ROXFf3YJHr6j37ql5jx7nXbtnAQLJoOlkgVvLw/SoWM7DlYrPdVY8CEhQ=="
       },
-      "license": "MIT"
+      "license": "MIT",
+      "patch_targets": [
+        "SKILL.md",
+        "LOCAL.md",
+        "UPSTREAM.md"
+      ],
+      "skill_files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "602c3e6d6b64a42414267502aea2f0aff173f721965ad39fc77e34808d6c6daa",
+          "source": "applied patch"
+        },
+        {
+          "path": "LOCAL.md",
+          "sha256": "8673871eb235a1e2a7d6eb27cbba25b18ddc635012b26c1c756970da68b57aec",
+          "source": "applied patch"
+        },
+        {
+          "path": "UPSTREAM.md",
+          "sha256": "e9d891fb602d479c3fde0c3c9c9e5a606ed544a611c704411ed1264132901f13",
+          "source": "applied patch"
+        }
+      ]
     },
     {
       "id": "leantoken",
@@ -39,10 +60,10 @@
       "skill_name": "leantoken",
       "runtime_source_patch": null,
       "upstream_skill_source_path": "src/setup/plan.rs",
-      "integration_kind": "project-maintained-companion",
+      "integration_kind": "project-maintained-complete-skill",
       "patch": null,
-      "companion": "companions/leantoken.md",
-      "reason": "The previous local Skill was project-maintained. Companion guidance does not pretend to be an upstream Skill diff.",
+      "companion": "companions/leantoken/SKILL.md",
+      "reason": "Complete portable form of the locally maintained Skill; no upstream algorithm patch.",
       "package": {
         "registry": "npm",
         "name": "leantoken",
@@ -50,7 +71,15 @@
         "metadata_url": "https://registry.npmjs.org/leantoken/0.1.28",
         "integrity": "sha512-t4olX6QZPPKPU6AqbIFmeQre8heHIHtfC8SmXckhWtQJ0swT6QA1nyJqamMXExoKrL00mcg87gy5mEjFmM7BDQ=="
       },
-      "license": "MIT OR Apache-2.0"
+      "license": "MIT OR Apache-2.0",
+      "integrated_skill_sha256": "f703b92201f45b51ff915518a7bdd91bfbf70d73602cbaac37e715313ff130f9",
+      "skill_files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f703b92201f45b51ff915518a7bdd91bfbf70d73602cbaac37e715313ff130f9",
+          "source": "companions/leantoken/SKILL.md"
+        }
+      ]
     },
     {
       "id": "rea",
@@ -62,12 +91,11 @@
       "skill_name": "reverse-engineer-anything",
       "runtime_source_patch": null,
       "upstream_skill_source_path": "package/skills/reverse-engineer-anything/SKILL.md",
-      "integration_kind": "upstream-skill-append-patch",
+      "integration_kind": "upstream-skill-local-delta",
       "patch": "patches/rea-6.5.0-ontology.patch",
       "upstream_skill_sha256": "3456aab99d48c3294726065c9d5bd586bc165f2849fd5a3d5080381630564715",
-      "integrated_skill_sha256": "c15ed1262f5b478dc7b59c5509d8c8804d32d03db9fcc60896c979284d9f3c26",
-      "patch_sha256": "769b70c189db79c4ebfd538710f37cc537626431bad0161a1aec710b4bf068ca",
-      "patch_target": "SKILL.md",
+      "integrated_skill_sha256": "a031a760107bb33669514b51f0fe2ec8db87137e6e64422310d50fbebd4ec83a",
+      "patch_sha256": "0e1b25869731d798f0171a8f18649d0f9789ecf6c2d219bc80eae69e23099abf",
       "patch_application_root": "The clean installed upstream Skill directory, not the source repository root.",
       "package": {
         "registry": "npm",
@@ -79,7 +107,65 @@
       "license": "MIT",
       "upstream_skill_source_kind": "npm-release-tarball",
       "upstream_skill_url": "https://registry.npmjs.org/rea-agents/-/rea-agents-6.5.0.tgz",
-      "source_note": "The npm release renders version pins and tool_count into its Skill. Apply this patch to the installed npm Skill, not the repository template."
+      "source_note": "The npm release renders version pins and tool_count into its Skill. Apply this patch to the installed npm Skill, not the repository template.",
+      "patch_targets": [
+        "SKILL.md"
+      ],
+      "skill_files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "a031a760107bb33669514b51f0fe2ec8db87137e6e64422310d50fbebd4ec83a",
+          "source": "applied patch"
+        },
+        {
+          "path": "references/android-applications.md",
+          "sha256": "412d9cb462d85b07f6fdbc2453dd741ca3da2c0dbba627867d5624df94afa74c",
+          "source": "fixed upstream npm Skill directory, unchanged"
+        },
+        {
+          "path": "references/connection-and-recovery.md",
+          "sha256": "a33760c84ae100f6ffd27d666e515956c5014ac33a6ee2414807833ae666a2b1",
+          "source": "fixed upstream npm Skill directory, unchanged"
+        },
+        {
+          "path": "references/evidence-workflows.md",
+          "sha256": "2bdee98a843d018cf850c706111bb74c459ba8640da00799e9208122e4d5ab80",
+          "source": "fixed upstream npm Skill directory, unchanged"
+        },
+        {
+          "path": "references/javascript-applications.md",
+          "sha256": "b3e5e999833baac828addbb6b7a4ed859f0c68befd465812597bf19c27aa7a0b",
+          "source": "fixed upstream npm Skill directory, unchanged"
+        },
+        {
+          "path": "references/native-and-artifacts.md",
+          "sha256": "1d2ac5f64feb5ad6ef8b98d803d570e1c48aa588281ff91a4bbf50d40f924450",
+          "source": "fixed upstream npm Skill directory, unchanged"
+        },
+        {
+          "path": "references/runtime-observation.md",
+          "sha256": "fea85e2005a8fd1c86a946eeede24c20e57592a1deb36576b45216e9854803c8",
+          "source": "fixed upstream npm Skill directory, unchanged"
+        }
+      ],
+      "local_launcher": {
+        "path": "bindings/rea-launcher.cjs",
+        "sha256": "568b3e8754fd22e1ddb21476f061adf4bf093bff8dbb3171cee00eb6d7dc4c84",
+        "scope": "Explicit Node/package/Ghidra/JDK environment; upstream algorithm unchanged"
+      },
+      "dependency_snapshot": {
+        "kind": "npm-ci",
+        "files": [
+          {
+            "path": "runtime-locks/rea/package.json",
+            "sha256": "f2bc5a813596e546daa6513cba4c6a210a596decb4db76cbddb31970c145c53a"
+          },
+          {
+            "path": "runtime-locks/rea/package-lock.json",
+            "sha256": "5f8c98c12da403905c0cd4a69b3c44304804294c98e3c222c459c91216963c29"
+          }
+        ]
+      }
     },
     {
       "id": "jacobian",
@@ -91,12 +177,11 @@
       "skill_name": "jacobian-math",
       "runtime_source_patch": null,
       "upstream_skill_source_path": "npm/skill/jacobian-math/SKILL.md",
-      "integration_kind": "upstream-skill-append-patch",
+      "integration_kind": "upstream-skill-local-delta",
       "patch": "patches/jacobian-0.23.0-ontology.patch",
       "upstream_skill_sha256": "da77cf609185b3a3869020a00002d00b30a180cff307354c0f2143ceb6c3f8aa",
-      "integrated_skill_sha256": "1a57c9f428bac006d934facb21e23382ea3f595091663d900f0be21bbeda8f7b",
-      "patch_sha256": "a6fb3ae38d1885ce6dcfa9e57944216d06c500d505673f09d2c090fa896ed801",
-      "patch_target": "SKILL.md",
+      "integrated_skill_sha256": "e228a1f0b49f97265907e75d24c548fcdbbe75dd94da4b7556f685f6cf4a0849",
+      "patch_sha256": "0ca4b04eb5daeec969244cd0e27d402d0e7a0135ac33c1eae3cfce87e77369d8",
       "patch_application_root": "The clean installed upstream Skill directory, not the source repository root.",
       "package": {
         "registry": "pypi",
@@ -104,7 +189,27 @@
         "version": "0.23.0",
         "metadata_url": "https://pypi.org/pypi/jacobian/0.23.0/json"
       },
-      "license": "MIT"
+      "license": "MIT",
+      "patch_targets": [
+        "SKILL.md"
+      ],
+      "skill_files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "e228a1f0b49f97265907e75d24c548fcdbbe75dd94da4b7556f685f6cf4a0849",
+          "source": "applied patch"
+        }
+      ],
+      "dependency_snapshot": {
+        "kind": "pip-requirements",
+        "recorded_environment": "macOS arm64, Python 3.12.13",
+        "files": [
+          {
+            "path": "runtime-locks/jacobian-requirements.txt",
+            "sha256": "1eb92836fc64afb3c460035174ee5b68fe558c463501cd0391bfb8d9391ddfdc"
+          }
+        ]
+      }
     },
     {
       "id": "smokinggun",
@@ -116,12 +221,11 @@
       "skill_name": "smokinggun",
       "runtime_source_patch": null,
       "upstream_skill_source_path": "skills/smokinggun/SKILL.md",
-      "integration_kind": "upstream-skill-append-patch",
+      "integration_kind": "upstream-skill-local-delta",
       "patch": "patches/smokinggun-5.0.0-ontology.patch",
       "upstream_skill_sha256": "362deae876a69e7f561f493024b8a0dac5222a144e87d71b7ad4f37ab8b3b3a9",
-      "integrated_skill_sha256": "99259f9a602a55b12335e0a0b73662bd6105eba9d2f99885d3405637ee22e734",
-      "patch_sha256": "c516eb4f6f7747bc2fec3ddcb8221a43394977a508cf2bb1559c7055581d4f70",
-      "patch_target": "SKILL.md",
+      "integrated_skill_sha256": "b585c9d5647b64bbc0a7da0fd1a6895177f6818e7146acc714fd15011d459cb4",
+      "patch_sha256": "dbb70896e3d11276ef1b41f36fe09ab3ee0be9a31e038c75cf8b3cb9532336cb",
       "patch_application_root": "The clean installed upstream Skill directory, not the source repository root.",
       "package": {
         "registry": "npm",
@@ -130,7 +234,42 @@
         "metadata_url": "https://registry.npmjs.org/smokinggun/5.0.0",
         "integrity": "sha512-nEvr+5g+33XXzFNN4tKsUZ979kzMACCjZ0QUDlWCig0kRNZwl/AlIMBoC3yG1PNHl9E0Gkb8VGjmGkMb1wxgpA=="
       },
-      "license": "MIT"
+      "license": "MIT",
+      "patch_targets": [
+        "SKILL.md",
+        "LOCAL.md",
+        "UPSTREAM.md"
+      ],
+      "skill_files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "b585c9d5647b64bbc0a7da0fd1a6895177f6818e7146acc714fd15011d459cb4",
+          "source": "applied patch"
+        },
+        {
+          "path": "LOCAL.md",
+          "sha256": "b03cf2ce0051d0c6ee2743cf0b1ed8796b3e21d6cc8715ff7ceb564ee9d5e17e",
+          "source": "applied patch"
+        },
+        {
+          "path": "UPSTREAM.md",
+          "sha256": "362deae876a69e7f561f493024b8a0dac5222a144e87d71b7ad4f37ab8b3b3a9",
+          "source": "applied patch"
+        }
+      ],
+      "dependency_snapshot": {
+        "kind": "npm-ci",
+        "files": [
+          {
+            "path": "runtime-locks/smokinggun/package.json",
+            "sha256": "95be02de2aa02a409199c9104c1b84eab191efc58b03fe63d0ec55a8ad2d8a42"
+          },
+          {
+            "path": "runtime-locks/smokinggun/package-lock.json",
+            "sha256": "f865c3202331d7563d684a7ed36bb4a5b072f52952a707c8edfcb1e71de3ecb4"
+          }
+        ]
+      }
     },
     {
       "id": "flameox",
@@ -142,17 +281,79 @@
       "skill_name": "flameox",
       "runtime_source_patch": null,
       "upstream_skill_source_path": null,
-      "integration_kind": "project-maintained-companion",
+      "integration_kind": "project-maintained-complete-skill",
       "patch": null,
-      "companion": "companions/flameox.md",
-      "reason": "The previous local Skill was project-maintained. Companion guidance does not pretend to be an upstream Skill diff.",
+      "companion": "companions/flameox/SKILL.md",
+      "reason": "Complete portable form of the locally maintained Skill; no upstream algorithm patch.",
       "package": {
         "registry": "pypi",
         "name": "flameox",
         "version": "0.2.9",
         "metadata_url": "https://pypi.org/pypi/flameox/0.2.9/json"
       },
-      "license": "MIT"
+      "license": "MIT",
+      "integrated_skill_sha256": "59a86517407000a00b128bee2f5cc731ec5b2f399d187ad980dafe183e051c24",
+      "skill_files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "59a86517407000a00b128bee2f5cc731ec5b2f399d187ad980dafe183e051c24",
+          "source": "companions/flameox/SKILL.md"
+        }
+      ],
+      "dependency_snapshot": {
+        "kind": "pip-requirements",
+        "recorded_environment": "macOS arm64, Python 3.12.13",
+        "files": [
+          {
+            "path": "runtime-locks/flameox-requirements.txt",
+            "sha256": "1d2cbd9c57c67acde41590eed002b472057ce2488453beb79afea4e5add836f7"
+          }
+        ]
+      }
+    },
+    {
+      "id": "electronics-design",
+      "version": "2.1.4",
+      "integration_revision": "ontology.1",
+      "skill_name": "electronics-design",
+      "integration_kind": "project-maintained-bundled-skill",
+      "module_path": "../modules/electronics-design",
+      "entry": "../modules/electronics-design/SKILL.md",
+      "documentation": "../modules/electronics-design/README.md",
+      "source_manifest": "../modules/electronics-design/SOURCES.json",
+      "internal_modules": [
+        "easyeda-agent",
+        "easyeda-api",
+        "easyeda-schematic-net-fanout",
+        "lceda-jlc-3d-model-extraction",
+        "make-worker-wiring-card"
+      ],
+      "runtime_delivery": "Install declared upstream applications, CLI/connector and optional solvers as needed; no old local environment or private Project is bundled.",
+      "license": "Per component; see module NOTICE and SOURCES.json.",
+      "source_manifest_sha256": "6eeeda4dac79f99ec05f359c80c029de074195d4837ca2cf19ed2e3b6d9ac4fa"
     }
-  ]
+  ],
+  "shared_bindings": {
+    "workflow": "bindings/WORKFLOW.md",
+    "native_identity": "The selected root var/install/INSTALLATION.json; no historical installation fallback",
+    "files": [
+      {
+        "path": "bindings/common.py",
+        "sha256": "840d006cce3ceabe56ea25675d04f71a535b94e4787dea72ce09c5558f530139"
+      },
+      {
+        "path": "bindings/verify_candidate.py",
+        "sha256": "8886853656833eb2434ee47fb09feb0dd8ca2209eae17bd53d89d3188baa24f5"
+      },
+      {
+        "path": "bindings/reconcile_reviewed.py",
+        "sha256": "f6d212772513b37c8df45296807862bd41ea93de2aa6666fddad5fbebf5b566c"
+      },
+      {
+        "path": "bindings/resume_memory.py",
+        "sha256": "6f0a2aede8b1d59b4a5cc41076d372e4cdf06151a3ff10cff64d6c446719252a"
+      }
+    ]
+  },
+  "coverage": "COVERAGE.md"
 }

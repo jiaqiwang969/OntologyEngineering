@@ -1,0 +1,81 @@
+% Layout starter only. Replace every TEMPLATE item from a verified connection
+% matrix. Never print or wire from this placeholder page.
+\documentclass[UTF8,10pt]{ctexart}
+\usepackage[a4paper,landscape,margin=9mm]{geometry}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{fontspec}
+\usepackage{amssymb}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+
+\definecolor{Navy}{HTML}{123E5C}
+\definecolor{Danger}{HTML}{C62828}
+\definecolor{PaleRed}{HTML}{FDECEC}
+\definecolor{PaleBlue}{HTML}{EAF4FA}
+\definecolor{LineGray}{HTML}{607D8B}
+
+\newcommand{\Action}[4]{%
+  \node[draw=Navy,rounded corners=1mm,minimum width=6.25cm,
+        minimum height=1.05cm,text width=5.65cm,align=center,
+        font=\bfseries\large]
+    at (#1,#2) {#3 $\longrightarrow$ #4};}
+
+\begin{document}
+\begin{center}
+  {\fontsize{24}{28}\selectfont\bfseries 模板：工人接线彩图}\par
+  {\Large 照对象、照线色、照板上丝印，一根一根接}
+\end{center}
+
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \path[use as bounding box] (0,0) rectangle (27.7,15.2);
+
+  \node[draw=Danger,fill=PaleRed,rounded corners=1.5mm,
+        minimum width=8.5cm,minimum height=1.1cm,
+        text=Danger,font=\bfseries\large] at (4.4,14.5)
+        {接线时断开全部电源};
+  \node[draw=Danger,fill=PaleRed,rounded corners=1.5mm,
+        minimum width=9.5cm,minimum height=1.1cm,
+        text=Danger,font=\bfseries\large] at (13.9,14.5)
+        {模板：写清对象和禁接电压};
+  \node[draw=Navy,fill=PaleBlue,rounded corners=1.5mm,
+        minimum width=8.5cm,minimum height=1.1cm,
+        text=Navy,font=\bfseries\large] at (23.4,14.5)
+        {标签或颜色不同：立即停工};
+
+  \node[anchor=west,font=\bfseries\Large,text=Navy] at (.2,13.3)
+        {第一步：控制器接中间板};
+  \Action{3.4}{11.9}{线色 / 套管}{对象 + 丝印}
+  \Action{3.4}{10.5}{线色 / 套管}{对象 + 丝印}
+  \Action{3.4}{9.1}{线色 / 套管}{对象 + 丝印}
+  \Action{3.4}{7.7}{线色 / 套管}{对象 + 丝印}
+
+  \draw[fill=white,draw=Navy,line width=1pt,rounded corners=1.5mm]
+        (7.2,3.1) rectangle (14.3,13.0);
+  \node[font=\bfseries\LARGE,text=Navy] at (10.75,12.35)
+        {中间板实物};
+  \node[font=\bfseries\large] at (10.75,11.65)
+        {方向锚点};
+  \node[align=left,font=\bfseries\large] at (10.75,8.0)
+        {在这里按实物顺序画出\\所有使用的板上丝印};
+  \node[draw=Danger,fill=PaleRed,rounded corners=1mm,
+        text=Danger,font=\bfseries] at (10.75,3.65)
+        {红叉只表示工人不接};
+
+  \node[anchor=west,font=\bfseries\Large,text=Navy] at (15.0,13.3)
+        {第二步：逐个接重复对象};
+  \Action{21.2}{11.9}{对象 1：全部线}{逐根端子}
+  \Action{21.2}{10.5}{对象 2：全部线}{逐根端子}
+  \Action{21.2}{9.1}{对象 3：全部线}{逐根端子}
+  \Action{21.2}{7.7}{对象 4：全部线}{逐根端子}
+
+  \node[draw=Danger,fill=PaleRed,rounded corners=1.5mm,
+        minimum width=12.3cm,minimum height=2.5cm,
+        text=Danger,align=center,font=\bfseries\Large] at (21.2,5.3)
+        {模板示例，未填真实接线\\不得用于焊接或上电};
+
+  \node[anchor=west,font=\large] at (.2,1.25)
+        {$\square$ 对象已编号\quad $\square$ 逐线复核\quad
+         $\square$ 连通/极性检查\quad $\square$ 负责人批准上电};
+\end{tikzpicture}
+\end{document}

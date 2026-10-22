@@ -1,0 +1,658 @@
+diff --git a/SKILL.md b/GUIDE.md
+similarity index 90%
+rename from SKILL.md
+rename to GUIDE.md
+index b2004b5..b682b09 100644
+--- a/SKILL.md
++++ b/GUIDE.md
+@@ -12,8 +12,8 @@ description: >-
+   **IMPORTANT**: 嘉立创EDA's English name is **EasyEDA**. They are the SAME product.
+   Never use other transliterations like "EasyEDA Pro" (unless specifically versioned), "EASYEDA", "easyeda", etc. Always use "EasyEDA" for English references and "嘉立创EDA" for Chinese references.
+ license: MIT
+-compatibility: Requires Node.js 18+, EasyEDA Pro desktop client with extension support
+ metadata:
++  compatibility: Requires Node.js 18+, EasyEDA Pro desktop client with extension support
+   author: JLCEDA
+   version: "1.1.3"
+   openclaw:
+@@ -21,11 +21,32 @@ metadata:
+       bins:
+         - node
+       env:
+-        - CLAUDE_SKILL_DIR
++        - ELECTRONICS_API_DIR
+ ---
+ 
+ # EasyEDA Pro API Skill
+ 
++本文件是 [electronics-design](../../SKILL.md) 的内部专业指南；从总入口按需读取，脚本与资源路径均相对本模块目录。
++
++## v2 工程接续
++
++用于 v2 管理的工程项目时，由 `ontology-engineering-v2` 主导，先按
++[electronics-design 接续约定](../../references/v2-handoff.md)
++核同一 Project、对象修订、条件、来源和本次证据缺口；以下专业操作保留其实际工具边界。
++结果连同原生文件、输入/工具版本、来源摘要、覆盖、失败与未知交回原 Project，
++不另建决策账本，不把操作完成或本工具检查通过当成工程采用。
++用户当前授权及后台不抢焦点要求优先；需要前台才能完成的项保持未执行并说明限制，
++不能依据下文历史操作方法自动激活应用。若单独分发缺少上述接续文件，读取已安装的
++`electronics-design` / v2 正本；仍缺失则说明缺项，不声称 v2 接入已完成。
++
++本系统执行限制：浏览器/桌面沿当前用户指定的 Peekaboo 现有后台能力，观察禁网页聚焦回退，
++交互禁自动聚焦；不按旧参考自举 Chrome 调试实例、使用 Chrome 插件或 osascript，
++不读取登录存储/浏览器凭据，不静默重启浏览器、改设置或重装连接器。
++任务临时服务仅在当前任务需要且已授权时启动，保存归属；用完核归属后清退本任务进程，
++不停止其他会话或用户已有服务，不设置自启/自动重连。
++在 v2 项目内使用裸 JS/API 桥前，先核主工具 typed action 确实未覆盖且当前授权包含该
++debug 路径；沿已有授权执行，不重复索要许可，也不通过子 skill 绕过主工具阶段检查。
++
+ Control EasyEDA Pro (嘉立创EDA专业版) programmatically through AI. This skill provides:
+ 
+ 1. **Complete API reference** — 120 classes, 62 enums, 70 interfaces, 19 type aliases
+@@ -65,8 +86,14 @@ Then proceed with the setup steps below.
+ 
+ ### 2. Install dependencies (if needed)
+ 
++Set `ELECTRONICS_API_DIR` to the private runtime copy containing
++`package.json` and `scripts/bridge-server.mjs`; read this GUIDE from the public module. It is an internal module, so a host's
++`CLAUDE_SKILL_DIR` may point to the parent skill and must not be used for this path.
++Prepare a task-owned runtime copy as described in [INSTALL](../../INSTALL.md); keep dependencies and logs outside the public module:
++
+ ```bash
+-cd ${CLAUDE_SKILL_DIR} && npm install
++export ELECTRONICS_API_DIR="$ONTOLOGY_ENGINEERING_ROOT/var/tools/easyeda-api-1.1.3"
++cd "$ELECTRONICS_API_DIR" && npm ci --ignore-scripts
+ ```
+ 
+ ### 3. Start bridge server
+@@ -86,7 +113,7 @@ done
+ 
+ # Start bridge if not running
+ if [ -z "$BRIDGE_PORT" ]; then
+-  node ${CLAUDE_SKILL_DIR}/scripts/bridge-server.mjs &
++  node "$ELECTRONICS_API_DIR/scripts/bridge-server.mjs" &
+   sleep 2
+   # Find the port bridge is running on
+   for port in $(seq 49620 49629); do
+@@ -703,7 +730,9 @@ When developing extensions, follow these rules:
+ 
+ ## Workflow for AI Agent
+ 
+-When the user asks you to perform EDA operations:
++For v2-managed projects, enter this raw API workflow only after the typed-action coverage and current debug authorization checks above. For API documentation or extension-development tasks, read only what the task needs.
++
++When the user asks you to perform authorized raw API operations:
+ 
+ 1. **Understand the task** — What domain? (PCB/SCH/LIB/Project)
+ 2. **Verify document state** — Check `eda.dmt_Project.getCurrentProjectInfo()` and `eda.dmt_SelectControl.getCurrentDocumentInfo()`
+@@ -721,26 +750,6 @@ When unsure about an API:
+ 
+ ## Session Management
+ 
+-### Detecting Topic Changes
+-
+-The Bridge server consumes system resources while running. If the user has switched to a completely different topic (not related to EasyEDA/EDA/PCB/schematic) **3 consecutive times**, proactively ask if they want to close the Bridge:
+-
+-> "I notice we've moved on from EasyEDA. The Bridge server is still running in the background. Would you like me to stop it to free up resources?"
+-
+-**Do NOT close the Bridge automatically** — the user may switch back to EDA work later. Only ask, and close if they confirm.
++Record which Bridge/daemon processes this task starts and which were already running. At task completion, save outputs and stop only task-owned temporary processes after verifying their PID, command and ownership. Preserve shared or user-owned services. Do not identify ownership from an open port alone, do not kill unrelated processes, and do not add automatic startup or reconnect behavior.
+ 
+-### Closing the Bridge
+-
+-If the user confirms they want to stop the Bridge:
+-
+-```bash
+-# Find and stop the bridge process
+-for port in $(seq 49620 49629); do
+-  pid=$(lsof -ti :$port 2>/dev/null)
+-  if [ -n "$pid" ]; then
+-    kill $pid
+-    echo "Bridge stopped (PID: $pid, Port: $port)"
+-    break
+-  fi
+-done
+-```
++If the user has expressly requested a persistent service, follow that scope and its resource limit. A past session or this skill's startup example does not authorize restoring a retired service.
+diff --git a/README.md b/README.md
+index 32a0033..8a09d62 100644
+--- a/README.md
++++ b/README.md
+@@ -1,5 +1,7 @@
+ [English](#) | [简体中文](./README.zh-Hans.md)
+ 
++> 本机整合说明：此模块现由 `../../SKILL.md` 统一调度，专业指南为 `GUIDE.md`。下文保留上游独立仓库的安装/打包说明；本包升级应保留 `modules/easyeda-api/` 布局。
++
+ # EasyEDA API Skill
+ 
+ An EasyEDA Pro API skill package for AI coding tools such as Claude Code, OpenCode, QwenCode, and any other tool that supports the [Agent Skills](https://agentskills.io/) standard.
+diff --git a/README.zh-Hans.md b/README.zh-Hans.md
+index a880383..a07c064 100644
+--- a/README.zh-Hans.md
++++ b/README.zh-Hans.md
+@@ -1,5 +1,7 @@
+ [English](./README.md) | [简体中文](#)
+ 
++> 本机整合说明：此模块现由 `../../SKILL.md` 统一调度，专业指南为 `GUIDE.md`。下文保留上游独立仓库的安装/打包说明；本包升级应保留 `modules/easyeda-api/` 布局。
++
+ # EasyEDA API Skill
+ 
+ 供 AI 编程工具（Claude Code、OpenCode、QwenCode 等所有支持 [Agent Skills](https://agentskills.io/) 标准的工具）使用的 EasyEDA Pro API 技能包（Skill）。
+diff --git a/format/index.md b/format/index.md
+index aea450a..52c3c7e 100644
+--- a/format/index.md
++++ b/format/index.md
+@@ -19,9 +19,9 @@ V3版本的文件格式（zip里面包含范例文件）：
+ 
+ ### 格式详情文档
+ 
+-- [工程格式](/cn/format/project/index.md)
+-- [原理图格式](/cn/format/schematic/index.md)
+-- [PCB格式](/cn/format/pcb/index.md)
++- [工程格式](project/index.md)
++- [原理图格式](schematic/index.md)
++- [PCB格式](pcb/index.md)
+ 
+ ### 基础文档格式
+ 
+diff --git a/format/pcb/dimension.md b/format/pcb/dimension.md
+index d9083be..b9e4d34 100644
+--- a/format/pcb/dimension.md
++++ b/format/pcb/dimension.md
+@@ -1,5 +1,7 @@
+ # DIMENSION 尺寸工具集
+ 
++> Online images: the illustrations below are hosted by the [official EasyEDA Pro documentation](https://prodocs.easyeda.com/en/format/pcb/dimension/) and require network access; image files are not bundled in this repository.
++
+ ```json
+ { "type": "DIMENSION", "id":"UUID", "ticket": 1 }||
+ {
+@@ -43,16 +45,16 @@
+ 
+ 坐标集第一个坐标为和 ARC 接触的端点，最后一个坐标为默认显示文字的端点，如下图
+ 
+-![图片](/storage/images/cn/format/pcb/dimension/dim_radius.png)
++![图片](https://prodocs.easyeda.com/storage/images/cn/format/pcb/dimension/dim_radius.png)
+ 
+ ### LENGTH 长度工具
+ 
+ 坐标集只需要具有四个点，分别如下图
+ 
+-![图片](/storage/images/cn/format/pcb/dimension/dim_length.png)
++![图片](https://prodocs.easyeda.com/storage/images/cn/format/pcb/dimension/dim_length.png)
+ 
+ ### ANGLE 角度工具
+ 
+ 坐标集需要 3 个点，分别如下图
+ 
+-![图片](/storage/images/cn/format/pcb/dimension/dim_angle.png)
++![图片](https://prodocs.easyeda.com/storage/images/cn/format/pcb/dimension/dim_angle.png)
+diff --git a/format/pcb/index.md b/format/pcb/index.md
+index fd475f8..b21fb32 100644
+--- a/format/pcb/index.md
++++ b/format/pcb/index.md
+@@ -2,16 +2,16 @@
+ 
+ 本章节详细介绍了嘉立创EDA PCB文件的格式规范。PCB文件主要包含以下几个部分：
+ 
+-- [通用格式](/cn/format/pcb/common.md)：文档头、画布、层、物理层、偏好等。
+-- [分区格式](/cn/format/pcb/partition.md)：分区定义。
+-- [基础图元](/cn/format/pcb/primitive.md)：网络、图元配置、分组、丝印配置、关联、属性等。
+-- [焊盘与过孔](/cn/format/pcb/pad_via.md)：焊盘和过孔。
+-- [形状图元](/cn/format/pcb/shape.md)：直线、圆弧、多边形体系、折线、填充、区域、覆铜、图片、泪滴等。
+-- [二进制对象](/cn/format/pcb/obj.md)：内嵌对象。
+-- [3D 外壳](/cn/format/pcb/3d.md)：外壳、折痕、实体、螺丝柱。
+-- [文字体系](/cn/format/pcb/text.md)：文字。
+-- [属性](/cn/format/pcb/attr.md)：属性。
+-- [尺寸工具](/cn/format/pcb/dimension.md)：尺寸标注。
+-- [封装体系](/cn/format/pcb/component.md)：元件实例。
+-- [设计规则](/cn/format/pcb/rule.md)：规则模板、规则定义、规则选择器。
+-- [拼版](/cn/format/pcb/panel.md)：拼版参数。
++- [通用格式](common.md)：文档头、画布、层、物理层、偏好等。
++- [分区格式](partition.md)：分区定义。
++- [基础图元](primitive.md)：网络、图元配置、分组、丝印配置、关联、属性等。
++- [焊盘与过孔](pad_via.md)：焊盘和过孔。
++- [形状图元](shape.md)：直线、圆弧、多边形体系、折线、填充、区域、覆铜、图片、泪滴等。
++- [二进制对象](obj.md)：内嵌对象。
++- [3D 外壳](3d.md)：外壳、折痕、实体、螺丝柱。
++- [文字体系](text.md)：文字。
++- [属性](attr.md)：属性。
++- [尺寸工具](dimension.md)：尺寸标注。
++- [封装体系](component.md)：元件实例。
++- [设计规则](rule.md)：规则模板、规则定义、规则选择器。
++- [拼版](panel.md)：拼版参数。
+diff --git a/format/project/index.md b/format/project/index.md
+index cdf6b20..19e17db 100644
+--- a/format/project/index.md
++++ b/format/project/index.md
+@@ -4,9 +4,9 @@
+ 
+ ## 目录
+ 
+-- [公共数据](/cn/format/project/common.md) - 包含基本信息、创建信息、修改信息等
+-- [基本信息](/cn/format/project/meta.md) - 包含工程配置、板子、原理图、PCB、面板、符号、封装、器件等元数据
+-- [BLOB 真彩图](/cn/format/project/blob.md) - 真彩图数据格式
+-- [实例值属性覆盖](/cn/format/project/instance.md) - 实例值属性覆盖格式
+-- [变体](/cn/format/project/variant.md) - 变体数据格式
+-- [元件分组](/cn/format/project/group.md) - 元件分组数据格式
++- [公共数据](common.md) - 包含基本信息、创建信息、修改信息等
++- [基本信息](meta.md) - 包含工程配置、板子、原理图、PCB、面板、符号、封装、器件等元数据
++- [BLOB 真彩图](blob.md) - 真彩图数据格式
++- [实例值属性覆盖](instance.md) - 实例值属性覆盖格式
++- [变体](variant.md) - 变体数据格式
++- [元件分组](group.md) - 元件分组数据格式
+diff --git a/format/schematic/index.md b/format/schematic/index.md
+index 1ff1ab6..7d4697f 100644
+--- a/format/schematic/index.md
++++ b/format/schematic/index.md
+@@ -2,13 +2,13 @@
+ 
+ 本章节详细介绍了嘉立创EDA原理图文件的格式规范。原理图文件主要包含以下几个部分：
+ 
+-- [通用配置](/cn/format/schematic/common.md)：文档头和画布配置信息。
+-- [结构元素](/cn/format/schematic/structure.md)：PART 子库和 GROUP 组合。
+-- [属性](/cn/format/schematic/attr.md)：图元属性定义。
+-- [导线](/cn/format/schematic/wire.md)：导线、总线和总线入口。
+-- [文本](/cn/format/schematic/text.md)：文本元素。
+-- [形状](/cn/format/schematic/shape.md)：矩形、多边形、圆形、圆弧、贝塞尔曲线、椭圆。
+-- [引脚](/cn/format/schematic/pin.md)：引脚定义。
+-- [元件](/cn/format/schematic/component.md)：原理图元件实例。
+-- [对象](/cn/format/schematic/obj.md)：二进制对象（图片等）。
+-- [表格](/cn/format/schematic/table.md)：表格和单元格。
++- [通用配置](common.md)：文档头和画布配置信息。
++- [结构元素](structure.md)：PART 子库和 GROUP 组合。
++- [属性](attr.md)：图元属性定义。
++- [导线](wire.md)：导线、总线和总线入口。
++- [文本](text.md)：文本元素。
++- [形状](shape.md)：矩形、多边形、圆形、圆弧、贝塞尔曲线、椭圆。
++- [引脚](pin.md)：引脚定义。
++- [元件](component.md)：原理图元件实例。
++- [对象](obj.md)：二进制对象（图片等）。
++- [表格](table.md)：表格和单元格。
+diff --git a/format/schematic/pin.md b/format/schematic/pin.md
+index 63f34e5..a05239d 100644
+--- a/format/schematic/pin.md
++++ b/format/schematic/pin.md
+@@ -1,6 +1,8 @@
+ # PIN 标号
+ 
+-![image](/storage/images/cn/format/schematic/pin/pin.png)
++> Online images: the illustrations below are hosted by the [official EasyEDA Pro documentation](https://prodocs.easyeda.com/en/format/schematic/pin/) and require network access; image files are not bundled in this repository.
++
++![image](https://prodocs.easyeda.com/storage/images/cn/format/schematic/pin/pin.png)
+ 
+ 如图所示
+ 
+diff --git a/format/schematic/wire.md b/format/schematic/wire.md
+index 4761335..c72cc49 100644
+--- a/format/schematic/wire.md
++++ b/format/schematic/wire.md
+@@ -1,5 +1,7 @@
+ # 连线图元
+ 
++> Online images: the illustrations below are hosted by the [official EasyEDA Pro documentation](https://prodocs.easyeda.com/en/format/schematic/wire/) and require network access; image files are not bundled in this repository.
++
+ ## WIRE 导线
+ 
+ ```json
+@@ -88,7 +90,7 @@
+ 
+ ## BUSENTRY 总线接入标识
+ 
+-![image](/storage/images/cn/format/schematic/wire/ripper.png)
++![image](https://prodocs.easyeda.com/storage/images/cn/format/schematic/wire/ripper.png)
+ 
+ -   如图所示
+     -   浅黄色为 `BUS`
+diff --git a/guide/ancillary-projects.md b/guide/ancillary-projects.md
+index 5a39d59..731b267 100644
+--- a/guide/ancillary-projects.md
++++ b/guide/ancillary-projects.md
+@@ -4,7 +4,7 @@ The current EasyEDA Professional Edition Extension API provides the following he
+ 
+ | Project                                                      | Type              | Badges                                                       | License                                                      | Description                    |
+ | ------------------------------------------------------------ | ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------ |
+-| [pro-api-sdk](./ancillary-projects/pro-api-sdk)              | Git Repo          | <a href="https://github.com/easyeda/pro-api-sdk" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/stars/easyeda/pro-api-sdk" alt="GitHub Repo Stars" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> <a href="https://github.com/easyeda/pro-api-sdk/issues" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/issues/easyeda/pro-api-sdk" alt="GitHub Issues" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | <a href="https://choosealicense.com/licenses/apache-2.0/" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/license/easyeda/pro-api-sdk" alt="GitHub License" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | Extension Development SDK      |
+-| [pro-api-types](./ancillary-projects/pro-api-types)          | npm Package       | <a href="https://www.npmjs.com/package/@jlceda/pro-api-types" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/npm/v/%40jlceda%2Fpro-api-types" alt="NPM Version" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | <a href="https://choosealicense.com/licenses/apache-2.0/" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/npm/l/%40jlceda%2Fpro-api-types" alt="NPM License" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | Extension API Type Definitions |
++| [pro-api-sdk](https://github.com/easyeda/pro-api-sdk)              | Git Repo          | <a href="https://github.com/easyeda/pro-api-sdk" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/stars/easyeda/pro-api-sdk" alt="GitHub Repo Stars" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> <a href="https://github.com/easyeda/pro-api-sdk/issues" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/issues/easyeda/pro-api-sdk" alt="GitHub Issues" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | <a href="https://choosealicense.com/licenses/apache-2.0/" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/license/easyeda/pro-api-sdk" alt="GitHub License" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | Extension Development SDK      |
++| [pro-api-types](https://www.npmjs.com/package/@jlceda/pro-api-types)          | npm Package       | <a href="https://www.npmjs.com/package/@jlceda/pro-api-types" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/npm/v/%40jlceda%2Fpro-api-types" alt="NPM Version" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | <a href="https://choosealicense.com/licenses/apache-2.0/" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/npm/l/%40jlceda%2Fpro-api-types" alt="NPM License" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | Extension API Type Definitions |
+ | [eext-run-api-gateway](https://jlcext.com/item/oshwhub-official/run-api-gateway) | EasyEDA Extension | <a href="https://github.com/easyeda/eext-run-api-gateway" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/stars/easyeda/eext-run-api-gateway" alt="GitHub Repo Stars" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> <a href="https://github.com/easyeda/eext-run-api-gateway/issues" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/issues/easyeda/eext-run-api-gateway" alt="GitHub Issues" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | <a href="https://choosealicense.com/licenses/apache-2.0/" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/license/easyeda/eext-run-api-gateway" alt="GitHub License" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | EDA \<-\> AI Gateway Extension |
+ | [easyeda-api-skill](https://clawhub.ai/yanranxiaoxi/easyeda-api) | AI Skill          | <a href="https://github.com/easyeda/easyeda-api-skill" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/stars/easyeda/easyeda-api-skill" alt="GitHub Repo Stars" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> <a href="https://github.com/easyeda/easyeda-api-skill/issues" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/issues/easyeda/easyeda-api-skill" alt="GitHub Issues" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | <a href="https://github.com/aws/mit-0" style="vertical-align: inherit;" target="_blank"><img src="https://img.shields.io/github/license/easyeda/easyeda-api-skill" alt="GitHub License" class="not-medium-zoom-image" style="display: inline; vertical-align: inherit;" /></a> | Extension API AI Skill         |
+diff --git a/guide/extensions-marketplace.md b/guide/extensions-marketplace.md
+index 099a476..e8f6257 100644
+--- a/guide/extensions-marketplace.md
++++ b/guide/extensions-marketplace.md
+@@ -1,14 +1,16 @@
+ # Extensions Marketplace
+ 
++> Online images: the illustrations below are hosted by the [official EasyEDA Pro documentation](https://prodocs.easyeda.com/en/api/guide/extensions-marketplace.html) and require network access; image files are not bundled in this repository.
++
+ EasyEDA Extensions Marketplace site [https://jlcext.com](https://jlcext.com), which is a professional platform for users to download and share extensions.
+ 
+-If you want to learn how to develop extensions, please refer to the [how-to-start](./how-to-start), which describes in detail how to install the development environment and build your own EasyEDA Pro extension from scratch.
++If you want to learn how to develop extensions, please refer to the [how-to-start](./how-to-start.md), which describes in detail how to install the development environment and build your own EasyEDA Pro extension from scratch.
+ 
+ ## Publishing Your Extension
+ 
+ When you have fully verified the functionality of the extension you have developed and wish to share it with other users, please visit the [EasyEDA Extensions Marketplace](https://jlcext.com/) and click the **Extension Management** button in the upper right corner:
+ 
+-![图 0](/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260617_210219.jpg)
++![图 0](https://prodocs.easyeda.com/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260617_210219.jpg)
+ 
+ 
+ Enter the extension management page, which supports uploading, publishing and versioning of extensions.
+@@ -24,38 +26,38 @@ Click the **Extension Upload** button to upload your first extension that meets
+ 7. if necessary, keep an change log for the extension in the `CHANGELOG.md` file;
+ 8. the extension **DOESN'T** contain private information, such as your phone numbers.
+ 
+-![图 0](/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260603_163928.png)
++![图 0](https://prodocs.easyeda.com/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260603_163928.png)
+ 
+ Select your compiled `.eext` file in the upload pop-up window and upload it. The first uploaded extension will automatically create a namespace into which all subsequent uploads of the extension (identified by `uuid`) will be grouped.
+ 
+ You can view the extension's name, description, version, install count, updated time, and other information on the namespace cover:
+ 
+-![图 4](/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172246.png)
++![图 4](https://prodocs.easyeda.com/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172246.png)
+ 
+ 
+ After the extension is uploaded, it will automatically enter the review process. After approval, it will be listed in the marketplace:
+ 
+-![图 5](/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172309.png)
++![图 5](https://prodocs.easyeda.com/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172309.png)
+ 
+ 
+ After waiting for the review to complete, the review status will change to **Passed**. If there is a case that the review is not passed, please check the reason in the message notification in time and check the non-compliant content in the extension:
+ 
+-![图 6](/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172321.png)
++![图 6](https://prodocs.easyeda.com/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172321.png)
+ 
+ After approval, other users will be able to view your extension details and download the uploaded version:
+ 
+-![图 7](/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172403.png)
++![图 7](https://prodocs.easyeda.com/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172403.png)
+ 
+ You can view the extension's detail page, where the `README.md` and `CHANGELOG.md` contents of the extension file will be displayed:
+ 
+-![图 8](/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172447.png)
++![图 8](https://prodocs.easyeda.com/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172447.png)
+ 
+ All published versions of the extension are listed in the history:
+ 
+-![图 9](/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172548.png)
++![图 9](https://prodocs.easyeda.com/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172548.png)
+ 
+ You can leave ratings and reviews of the extension in the comments section:
+ 
+-![图 10](/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172603.png)
++![图 10](https://prodocs.easyeda.com/storage/images/en/api/guide/extensions-marketplace/extensions-marketplace_20260702_172603.png)
+ 
+ You can also downgrade the namespace of an extension at any time on the extension management page. This does not affect the status of uploaded versions, and you can also individually unpublish a specific version in the versioning management.
+diff --git a/guide/how-to-start.md b/guide/how-to-start.md
+index 4dbf4dc..d52ebb5 100644
+--- a/guide/how-to-start.md
++++ b/guide/how-to-start.md
+@@ -1,5 +1,7 @@
+ # How to Get Started <Badge type="tip" text="Intro" />
+ 
++> Online images: the illustrations below are hosted by the [official EasyEDA Pro documentation](https://prodocs.easyeda.com/en/api/guide/how-to-start.html) and require network access; image files are not bundled in this repository.
++
+ In the EasyEDA Professional extension engine, all extensions are independent JavaScript scripts running under their own scope chains.
+ 
+ Each extension requires a UUID as the uniquely identifiable name of the extension, and this UUID exists in two cases:
+@@ -9,7 +11,7 @@ Each extension requires a UUID as the uniquely identifiable name of the extensio
+ 
+ ::: info
+ 
+-If you are using [pro-api-sdk](./ancillary-projects/pro-api-sdk), a new UUID will be automatically generated for you the first time you run `npm run build`.
++If you are using [pro-api-sdk](https://github.com/easyeda/pro-api-sdk), a new UUID will be automatically generated for you the first time you run `npm run build`.
+ 
+ If you wish to build the full development environment manually, you can also safely use <code id="generatedUuid"></code> as the UUID for the new extension, which is randomly generated when you visit the current page.
+ 
+@@ -35,7 +37,7 @@ Visual Studio Code is the most recommended IDE for novice developers, hereafter
+ 
+ If you don't understand the difference between the versions, please download the version indicated in the figure below (Windows System Installer x64):
+ 
+-![VS Code Windows System Installer x64](/storage/images/cn/api/guide/how-to-start/how-to-start_20240729_170651.png)
++![VS Code Windows System Installer x64](https://prodocs.easyeda.com/storage/images/cn/api/guide/how-to-start/how-to-start_20240729_170651.png)
+ 
+ ### II. Install Git
+ 
+@@ -43,7 +45,7 @@ Git is the recommended tool for pulling SDKs, and you can download it from its [
+ 
+ On the right side of the official download page, click `Download for Windows`:
+ 
+-![Git Download for Windows](/storage/images/cn/api/guide/how-to-start/how-to-start_20240729_170746.png)
++![Git Download for Windows](https://prodocs.easyeda.com/storage/images/cn/api/guide/how-to-start/how-to-start_20240729_170746.png)
+ 
+ ### III. Install Node.js
+ 
+@@ -85,7 +87,7 @@ Now you can choose either of the following two ways to get the SDK, you can choo
+ 
+ 3. Navigate within Windows PowerShell to the folder you just created, in this case the `D:\easyeda-extension` folder, and execute `cd "D:\easyeda-extension"`:
+ 
+-    ![PowerShell cd](/storage/images/en/api/guide/how-to-start/how-to-start_20240802_154933.png)
++    ![PowerShell cd](https://prodocs.easyeda.com/storage/images/en/api/guide/how-to-start/how-to-start_20240802_154933.png)
+ 
+     ::: tip
+ 
+@@ -115,7 +117,7 @@ Now you can choose either of the following two ways to get the SDK, you can choo
+ 
+ 3. Navigate within Windows PowerShell to the folder you just created, in this case the `D:\easyeda-extension` folder, and execute `cd "D:\easyeda-extension"`:
+ 
+-    ![PowerShell cd](/storage/images/en/api/guide/how-to-start/how-to-start_20240802_154933.png)
++    ![PowerShell cd](https://prodocs.easyeda.com/storage/images/en/api/guide/how-to-start/how-to-start_20240802_154933.png)
+ 
+     ::: tip
+ 
+@@ -135,7 +137,7 @@ Now you can choose either of the following two ways to get the SDK, you can choo
+ 
+ 1. First you need to start VS Code and open the folder of the project you pulled in the previous stage inside it (e.g. `D:\easyeda-extension\my-extension`).
+ 
+-    ![VS Code Open Folder](/storage/images/en/api/guide/how-to-start/how-to-start_20240802_155144.png)
++    ![VS Code Open Folder](https://prodocs.easyeda.com/storage/images/en/api/guide/how-to-start/how-to-start_20240802_155144.png)
+ 
+ 2. Then switch to the Extensions page (shortcut <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>X</kbd>) and search for and install the following apps in the search box at the top:
+ 
+@@ -143,7 +145,7 @@ Now you can choose either of the following two ways to get the SDK, you can choo
+     2. `ESLint` by Microsoft
+     3. `EditorConfig for VS Code` by EditorConfig
+ 
+-    ![VS Code Search Extensions](/storage/images/en/api/guide/how-to-start/how-to-start_20240802_155249.png)
++    ![VS Code Search Extensions](https://prodocs.easyeda.com/storage/images/en/api/guide/how-to-start/how-to-start_20240802_155249.png)
+ 
+ 3. All extensions are pre-configured within the SDK and saved in their corresponding configuration files, and you don't need to do any additional configuration on them unless you understand what you're doing.
+ 
+@@ -207,7 +209,7 @@ Now, we only need to change a few of the key values:
+ 
+ Initializing the environment and starting the build are very simple single commands, in order to execute these commands you first need to start a VS Code terminal:
+ 
+-![New VS Code Terminal](/storage/images/en/api/guide/how-to-start/how-to-start_20240802_155359.png)
++![New VS Code Terminal](https://prodocs.easyeda.com/storage/images/en/api/guide/how-to-start/how-to-start_20240802_155359.png)
+ 
+ The terminal will appear below by default, and you can execute all the next commands from within the terminal. Now, we need to initialize the environment for the SDK project, including installing all the dependent libraries, initializing the runtime hooks, and more things that can be automated, and you'll need to execute the following commands from within the terminal:
+ 
+@@ -277,7 +279,7 @@ The import operation currently has a different location:
+ 
+ **Top Menu Bar** -\> **Settings** -\> **Extensions** -\> **Extension Manager...** -\> **Import Extensions**
+ 
+-![Import Extension](/storage/images/cn/api/guide/how-to-start/how-to-start_20260209_133454.png)
++![Import Extension](https://prodocs.easyeda.com/storage/images/cn/api/guide/how-to-start/how-to-start_20260209_133454.png)
+ 
+ Import the `.eext` file you generated in the `/build/dist/` directory during the last build.
+ 
+@@ -287,7 +289,7 @@ Import the `.eext` file you generated in the `/build/dist/` directory during the
+ 
+ **Top Menu Bar** -\> **Advanced** -\> **Extension Manager...** -\> **Import**
+ 
+-![Import Extension](/storage/images/cn/api/guide/how-to-start/how-to-start_20260209_133418.png)
++![Import Extension](https://prodocs.easyeda.com/storage/images/cn/api/guide/how-to-start/how-to-start_20260209_133418.png)
+ 
+ Import the `.eext` file you generated in the `/build/dist/` directory during the last build.
+ 
+diff --git a/guide/i18n.md b/guide/i18n.md
+index 120d663..52afae5 100644
+--- a/guide/i18n.md
++++ b/guide/i18n.md
+@@ -22,7 +22,7 @@ The extension supports multi-language configuration, you can create a `<IANA Lan
+ 
+ :::
+ 
+-If you need to get all the language labels supported by the current extension, you can call the [SYS_I18n.getAllSupportedLanguages()](../reference/pro-api.sys_i18n.getallsupportedlanguages) method, which will return an array of strings.
++If you need to get all the language labels supported by the current extension, you can call the [SYS_I18n.getAllSupportedLanguages()](../references/classes/SYS_I18n.md) method, which will return an array of strings.
+ 
+ ::: warning
+ 
+@@ -32,21 +32,21 @@ Note that if your extension has two or more languages, it must include at least
+ 
+ ## Use of Multiple Languages within the Code
+ 
+-To use a multilingual system to display different text in different language environments, use the [SYS_I18n.text()](../reference/pro-api.sys_i18n.text) method.
++To use a multilingual system to display different text in different language environments, use the [SYS_I18n.text()](../references/classes/SYS_I18n.md) method.
+ 
+-[SYS_I18n.text()](../reference/pro-api.sys_i18n.text) method has a mandatory argument `tag`, which corresponds to the key name in the multilingual file, and the key value matched by that key name is the final displayed text.
++[SYS_I18n.text()](../references/classes/SYS_I18n.md) method has a mandatory argument `tag`, which corresponds to the key name in the multilingual file, and the key value matched by that key name is the final displayed text.
+ 
+ You can specify the `namespace` parameter as the `uuid` of other extensions to call the multilingual configuration of other extensions.
+ 
+ Currently, EasyEDA Professional only supports a few languages by default, while the extension API supports a lot of additional languages, you can use the `language` parameter to adapt more languages for your extension, but you need to design your own logic and method to switch languages.
+ 
+-When translating a language, it is very likely that we will encounter a situation where we need to embed parameters into the text, because the syntax of each language is different and the position of the parameters in the text of the language may vary greatly, you can use a placeholder in the `${1}` format to indicate the parameters that need to be embedded and pass the parameters into the `arg` of the [SYS_I18n.text()](../reference/pro-api.sys_i18n.text) method within `arg`, so that when the specified text is displayed, the corresponding argument will be embedded in the text at the specified location.
++When translating a language, it is very likely that we will encounter a situation where we need to embed parameters into the text, because the syntax of each language is different and the position of the parameters in the text of the language may vary greatly, you can use a placeholder in the `${1}` format to indicate the parameters that need to be embedded and pass the parameters into the `arg` of the [SYS_I18n.text()](../references/classes/SYS_I18n.md) method within `arg`, so that when the specified text is displayed, the corresponding argument will be embedded in the text at the specified location.
+ 
+ ::: tip
+ 
+ Language priority: current display language > system default language > the first language in the dataset that contains the text tag > text label (tag)
+ 
+-In addition to the above steps, you may need to know other [SYS_I18n](../reference/pro-api.sys_i18n) APIs to work more freely with multilingual content.
++In addition to the above steps, you may need to know other [SYS_I18n](../references/classes/SYS_I18n.md) APIs to work more freely with multilingual content.
+ 
+ :::
+ 
+diff --git a/guide/index.md b/guide/index.md
+index 9b0ccb5..33a00e4 100644
+--- a/guide/index.md
++++ b/guide/index.md
+@@ -1,7 +1,7 @@
+ # What is Extension API?
+ 
+-EasyEDA Professional Extension API (hereinafter referred to as "Extension API") is a set of JS API interfaces built on the front-end, which is used to develop various custom functions of EasyEDA Professional Editor. In short, the Extension API uses the basic syntax of JavaScript to write source code that highly encapsulates many EasyEDA Pro features and algorithms, together with a comprehensive [SDK](./ancillary-projects/pro-api-sdk), [type constraints](./ancillary-projects/pro-api-types), the development of custom extensions can be completed with very little effort, effectively reducing the mental burden on developers and designers.
++EasyEDA Professional Extension API (hereinafter referred to as "Extension API") is a set of JS API interfaces built on the front-end, which is used to develop various custom functions of EasyEDA Professional Editor. In short, the Extension API uses the basic syntax of JavaScript to write source code that highly encapsulates many EasyEDA Pro features and algorithms, together with a comprehensive [SDK](https://github.com/easyeda/pro-api-sdk), [type constraints](https://www.npmjs.com/package/@jlceda/pro-api-types), the development of custom extensions can be completed with very little effort, effectively reducing the mental burden on developers and designers.
+ 
+-Next, you can go to the [How to Get Started](./how-to-start) section to learn how to install the environment from scratch and build your own EasyEDA Pro Edition extension.
++Next, you can go to the [How to Get Started](./how-to-start.md) section to learn how to install the environment from scratch and build your own EasyEDA Pro Edition extension.
+ 
+-If you are an extension user, see the [Getting and Using Extensions](../user-guide/using-extension) section.
++If you are an extension user, see the [Getting and Using Extensions](../user-guide/using-extension.md) section.
+diff --git a/guide/inline-frame.md b/guide/inline-frame.md
+index 47a8572..2e5d9d1 100644
+--- a/guide/inline-frame.md
++++ b/guide/inline-frame.md
+@@ -2,7 +2,7 @@
+ 
+ In some application scenarios where extensions want to have fully customized windows that are not limited to the popups and controls provided by EasyEDA, we provide a way to build windows using inline frames.
+ 
+-To use inline frames, you need to save all files in the extension's `/iframe/` directory and use [SYS_IFrame.openIFrame()](../reference/pro-api.sys_iframe.openiframe) method to load the specified `html` file as the content of the inline frame.
++To use inline frames, you need to save all files in the extension's `/iframe/` directory and use [SYS_IFrame.openIFrame()](../references/classes/SYS_IFrame.md) method to load the specified `html` file as the content of the inline frame.
+ 
+ ```typescript
+ // This example loads the index.html file in the /iframe/ directory with a window of 500px in height and width
+diff --git a/guide/invoke-apis.md b/guide/invoke-apis.md
+index d895e52..7dd612d 100644
+--- a/guide/invoke-apis.md
++++ b/guide/invoke-apis.md
+@@ -1,8 +1,10 @@
+ # Invoking the Extension API
+ 
++> Online images: the illustrations below are hosted by the [official EasyEDA Pro documentation](https://prodocs.easyeda.com/en/api/guide/invoke-apis.html) and require network access; image files are not bundled in this repository.
++
+ ## Invoke Method
+ 
+-There are many classes under the EasyEDA Pro Extension API module, all **Classes**, **Enumerations**, **Interfaces**, **Type Aliases** are registered under the `EDA` base class by default and have been instantiated as [eda](../reference/pro-api.eda) object exists in the root scope of every extension runtime, and you can access it directly through the `eda` object.
++There are many classes under the EasyEDA Pro Extension API module, all **Classes**, **Enumerations**, **Interfaces**, **Type Aliases** are registered under the `EDA` base class by default and have been instantiated as [eda](../references/_quick-reference.md) object exists in the root scope of every extension runtime, and you can access it directly through the `eda` object.
+ 
+ All extension's runtime get a separate `eda` object, which is not shared with other extensions. You can output this object on the console in [Debug Mode](#entering-debug-mode) within an extension (or in [Standalone Script](#debugging-with-standalone-scripting)) using the following code:
+ 
+@@ -60,7 +62,7 @@ When using the extension API interface, you need to compile the changes first an
+ 
+ Entry: **Top Menu** -\> **Settings** -\> **Extensions** -\> **Standalone Script**
+ 
+-![Standalone Script Window](/storage/images/en/api/guide/invoke-apis/invoke-apis_20250322_142403.jpg)
++![Standalone Script Window](https://prodocs.easyeda.com/storage/images/en/api/guide/invoke-apis/invoke-apis_20250322_142403.jpg)
+ 
+ :::
+ 
+@@ -68,11 +70,11 @@ Entry: **Top Menu** -\> **Settings** -\> **Extensions** -\> **Standalone Script*
+ 
+ Entry: **Top Menu** -\> **Advanced** -\> **Run Script**
+ 
+-![Run Script Window](/storage/images/cn/api/guide/invoke-apis/invoke-apis_20260312_101848.png)
++![Run Script Window](https://prodocs.easyeda.com/storage/images/cn/api/guide/invoke-apis/invoke-apis_20260312_101848.png)
+ 
+ You can use Script Manager to save standalone scripts and run them quickly:
+ 
+-![Script Manager Window](/storage/images/cn/api/guide/invoke-apis/invoke-apis_20260312_102007.png)
++![Script Manager Window](https://prodocs.easyeda.com/storage/images/cn/api/guide/invoke-apis/invoke-apis_20260312_102007.png)
+ 
+ :::
+ 
+diff --git a/user-guide/using-extension.md b/user-guide/using-extension.md
+index 97358f9..8e80845 100644
+--- a/user-guide/using-extension.md
++++ b/user-guide/using-extension.md
+@@ -1,10 +1,12 @@
+ # Getting and Using Extensions
+ 
++> Online images: the illustrations below are hosted by the [official EasyEDA Pro documentation](https://prodocs.easyeda.com/en/api/user-guide/using-extension.html) and require network access; image files are not bundled in this repository.
++
+ ## Getting Extensions
+ 
+ EasyEDA Pro now provides the official [Extensions Marketplace](https://jlcext.com), where you can conveniently obtain a wide range of EasyEDA Pro extensions provided by both official and third-party developers.
+ 
+-![](/storage/images/cn/api/guide/how-to-install/how-to-install_20250427_164224.jpg)
++![](https://prodocs.easyeda.com/storage/images/cn/api/guide/how-to-install/how-to-install_20250427_164224.jpg)
+ 
+ ## Installing Extensions
+ 
+@@ -14,15 +16,15 @@ EasyEDA Pro now provides the official [Extensions Marketplace](https://jlcext.co
+ 
+ 2. In the top menu, click **Advanced** -\> **Extension Manager**:
+ 
+-![图 0](/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150319.png)
++![图 0](https://prodocs.easyeda.com/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150319.png)
+ 
+ 3. While online, you can search for extensions and install them directly. If you already have an extension file, you can also click **Import** to import it:
+ 
+-![图 1](/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150359.png)
++![图 1](https://prodocs.easyeda.com/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150359.png)
+ 
+ 4. Switch to the **Installed** list and click an installed extension to configure its enabled state and permissions. If **Show in top menu** is not checked, the extension entry will appear under the **Advanced** menu by default:
+ 
+-![图 2](/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150451.png)
++![图 2](https://prodocs.easyeda.com/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150451.png)
+ 
+ ### V2 Installation
+ 
+@@ -30,18 +32,18 @@ EasyEDA Pro now provides the official [Extensions Marketplace](https://jlcext.co
+ 
+ 2. In the top menu bar, click **Settings** -\> **Extensions** -\> **Extension Manager...** in sequence:
+ 
+-  ![图 3](/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150634.png)
++  ![图 3](https://prodocs.easyeda.com/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150634.png)
+ 
+ 3. In the pop-up window, click **Import Extension**, then select the downloaded `.eext` file to complete the import.
+ 
+-  ![图 4](/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150706.png)
++  ![图 4](https://prodocs.easyeda.com/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150706.png)
+ 
+ 4. Extension settings
+ 
+ - Installed extensions can be enabled or disabled. The registered menu of an enabled extension will be displayed in the top menu bar:
+ 
+-  ![图 5](/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150731.png)
++  ![图 5](https://prodocs.easyeda.com/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150731.png)
+ 
+ - Some extensions involve external interactions, such as network access. You need to enable the extension's **External Interactions** permission to ensure proper operation:
+ 
+-  ![图 6](/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150746.png)
++  ![图 6](https://prodocs.easyeda.com/storage/images/en/api/user-guide/using-extension/using-extension_20260603_150746.png)

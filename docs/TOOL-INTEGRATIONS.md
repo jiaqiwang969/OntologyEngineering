@@ -4,8 +4,9 @@
 证据和决定；memory 提供带来源的历史候选；Agent 依据任务调用专业工具，把实际结果
 交回 Project 审查。安装成功、工具执行成功和工程采用分别记录。
 
-本仓库维护接续规则及必要差异。六个工具的运行程序由用户从上游安装，全部按任务选用，
-不要求每个项目都安装或调用六项。核心 Project 和 memory 流程不依赖这六项全部可用。
+本仓库接入七种专业能力。原六个工具的运行程序由用户从上游安装；第七项电子设计的
+统一 Skill 与五个内部模块随仓库维护，EDA、连接器和求解器按需另装。全部按任务选用，
+不要求每个项目安装或调用全部七项。核心 Project 和 memory 流程不依赖它们全部可用。
 这些接入材料不要求额外的托管判断服务。
 
 ## 固定上游与用途
@@ -15,16 +16,18 @@
 
 | 工具 | 固定版本与上游 | 提供的依据 | 我们维护的差异 |
 |---|---|---|---|
-| GitContribute | [3.0.2](https://github.com/morluto/gitcontribute/tree/v3.0.2) | 仓库规范、相关工作、issue/PR、覆盖和新鲜度 | 上游生成的 Skill 追加接续段 |
-| LeanToken | [0.1.28](https://github.com/morluto/leantoken/tree/v0.1.28) | 已选仓库中的源码范围、符号和有界上下文 | [companion](../integrations/companions/leantoken.md)，上游程序与 Skill 不改 |
-| REA | [6.5.0](https://github.com/morluto/rea/tree/rea-agents-6.5.0) | 发布制品、静态结构及按需授权的运行观察 | npm 发行包 Skill 追加接续段 |
-| Jacobian | [0.23.0](https://github.com/morluto/jacobian/tree/jacobian-v0.23.0) | 按精确合同执行的计算和数学关系 | 上游 Skill 追加接续段 |
-| SmokingGun | [5.0.0](https://github.com/morluto/smokinggun/tree/v5.0.0) | 静态复杂度候选、导入的性能证据 | 上游 Skill 追加接续段 |
-| Flameox | [0.2.9](https://github.com/morluto/flameox/tree/v0.2.9) | 显式运行原件的分析及有界工作负载采集 | [companion](../integrations/companions/flameox.md)，上游程序不改 |
+| GitContribute | [3.0.2](https://github.com/morluto/gitcontribute/tree/v3.0.2) | 仓库规范、相关工作、issue/PR、覆盖和新鲜度 | Skill、LOCAL.md、UPSTREAM.md 的完整本地 diff |
+| LeanToken | [0.1.28](https://github.com/morluto/leantoken/tree/v0.1.28) | 已选仓库中的源码范围、符号和有界上下文 | [本项目维护的完整 Skill](../integrations/companions/leantoken/SKILL.md) |
+| REA | [6.5.0](https://github.com/morluto/rea/tree/rea-agents-6.5.0) | 发布制品、静态结构及按需授权的运行观察 | npm 发行 Skill diff、保留六份上游参考文件及可移植启动器 |
+| Jacobian | [0.23.0](https://github.com/morluto/jacobian/tree/jacobian-v0.23.0) | 按精确合同执行的计算和数学关系 | 上游 Skill 的完整本地 diff |
+| SmokingGun | [5.0.0](https://github.com/morluto/smokinggun/tree/v5.0.0) | 静态复杂度候选、导入的性能证据 | Skill、LOCAL.md、UPSTREAM.md 的完整本地 diff |
+| Flameox | [0.2.9](https://github.com/morluto/flameox/tree/v0.2.9) | 显式运行原件的分析及有界工作负载采集 | [本项目维护的完整 Skill](../integrations/companions/flameox/SKILL.md) |
+| electronics-design | [2.1.4 模块及固定来源](../modules/electronics-design/SOURCES.json) | 电子设计、原理图/PCB、模型和接线证据 | [统一 Skill 与五个内部模块](../modules/electronics-design/README.md)，保留上游来源和必要 diff |
 
-没有第三方算法或运行代码的本地补丁。四份 Skill diff 只追加本项目的接续要求；
-LeanToken 和 Flameox 原有的本地自编说明整理为 companion，明确其维护归属。
-不将上游模板、实际发布 Skill 和工作室修改后的 Skill 混作同一基线。
+原六项的第三方算法与固定官方发行一致。本仓库保留实际使用的 Skill 差异、引用资源、
+REA 启动环境选择和三个共享接续脚本；完整对应关系见[源码覆盖表](../integrations/COVERAGE.md)。
+LeanToken 和 Flameox 采用本项目维护的完整 Skill。新用户无需维护者的旧工作目录；
+上游模板、实际发布 Skill、本地修改和本次安装的验证各自保留身份。
 
 ## 安装运行程序
 
@@ -45,6 +48,12 @@ npm install --global leantoken@0.1.28
 npm install --global rea-agents@6.5.0
 npm install --global smokinggun@5.0.0
 ```
+
+以上只固定顶层版本。要复现本次现用依赖，REA 与 SmokingGun 应分别将
+[`runtime-locks/`](../integrations/runtime-locks/README.md) 中对应的 `package.json` 和
+`package-lock.json` 复制到新建私有工具目录，再执行 `npm ci`，使用该目录
+`node_modules/.bin` 的程序；不要同时依赖另一份全局安装。快照摘要在 tools.lock.json。
+REA 的 Node、包目录及可选 Ghidra/JDK 配置见[启动环境](../integrations/bindings/WORKFLOW.md#rea-启动环境)。
 
 以上是供用户选择执行的安装命令；本仓库不会因工具缺失而自动执行它们。安装后核对：
 
@@ -67,12 +76,13 @@ Jacobian 0.23.0 要求 Python 3.12 或 3.13；Flameox 0.2.9 要求 Python 3.12 �
 ```sh
 export ONTOLOGY_TOOL_ENVS="$ONTOLOGY_ENGINEERING_ROOT/var/tool-envs"
 python3.12 -m venv "$ONTOLOGY_TOOL_ENVS/jacobian-0.23.0"
-"$ONTOLOGY_TOOL_ENVS/jacobian-0.23.0/bin/python" -m pip install 'jacobian==0.23.0'
+"$ONTOLOGY_TOOL_ENVS/jacobian-0.23.0/bin/python" -m pip install -r "$ONTOLOGY_ENGINEERING_ROOT/integrations/runtime-locks/jacobian-requirements.txt"
 python3.12 -m venv "$ONTOLOGY_TOOL_ENVS/flameox-0.2.9"
-"$ONTOLOGY_TOOL_ENVS/flameox-0.2.9/bin/python" -m pip install 'flameox==0.2.9'
+"$ONTOLOGY_TOOL_ENVS/flameox-0.2.9/bin/python" -m pip install -r "$ONTOLOGY_ENGINEERING_ROOT/integrations/runtime-locks/flameox-requirements.txt"
 ```
 
-核版本并保留这次实际解析的依赖，用于重现本机安装：
+快照来自 macOS arm64 / Python 3.12.13，含现用可选数学后端。其他平台需核上游支持并
+记录重新解析的差异，不能将不同依赖写成同一环境。核版本并保留实际安装清单：
 
 ```sh
 "$ONTOLOGY_TOOL_ENVS/jacobian-0.23.0/bin/python" -c 'import importlib.metadata; print(importlib.metadata.version("jacobian"))'
@@ -85,6 +95,34 @@ python3.12 -m venv "$ONTOLOGY_TOOL_ENVS/flameox-0.2.9"
 额外后端时，再按固定上游说明安装并验证相应能力。
 
 ## Agent 接入与 Skill
+
+### 第七项：电子设计
+
+本仓库的 [electronics-design/SKILL.md](../modules/electronics-design/SKILL.md) 是电子任务的
+唯一入口，内部按需读取以下五个 `GUIDE.md`，无需把它们分别装成同级 Skill：
+
+```text
+modules/electronics-design/
+├── SKILL.md
+└── modules/
+    ├── easyeda-agent/
+    ├── easyeda-api/
+    ├── easyeda-schematic-net-fanout/
+    ├── lceda-jlc-3d-model-extraction/
+    └── make-worker-wiring-card/
+```
+
+按该模块的 [README](../modules/electronics-design/README.md) 安装所需运行程序，核固定来源、
+许可及接入差异。使用 EasyEDA CLI 辅助资源时设置：
+
+```sh
+export EASYEDA_SKILLS_DIR="$ONTOLOGY_ENGINEERING_ROOT/modules/electronics-design/modules"
+```
+
+项目与原生结果写入私有目录，仍经下述 `project tool-result` 和 memory 接续。模块文件可读、
+离线脚本通过、连接器连通、EDA 操作与实物电气检查各自记录；当前范围见模块验收说明。
+
+### 原六项工具
 
 用户可以选 CLI，也可以按上游方式配置 MCP。新用户先预览目标客户端的变更，再应用
 同一范围。下面以 Codex 为例；只配置实际使用的客户端。
@@ -118,8 +156,9 @@ GitContribute/REA 的上游 setup 会安装匹配的 Skill。SmokingGun 和 Jaco
 - [Jacobian 0.23.0 的 npm/skill/jacobian-math](https://github.com/morluto/jacobian/tree/bad9b899715992bd2a72ed79e726a7deb89e9395/npm/skill/jacobian-math)
 
 将所需目录放入实际客户端支持的 Skill 安装位置，避免同时安装同名的多个副本。
-LeanToken 保留 setup 生成的上游 Skill，同时读取本仓库 companion；Flameox 由统一
-Skill 路由到 companion，不需要伪造一个“官方 Flameox Skill”。
+LeanToken 和 Flameox 分别安装本仓库 `integrations/companions/leantoken/`、
+`integrations/companions/flameox/` 的完整 Skill 目录。若 LeanToken setup 已生成同名上游
+Skill，先保全它，再用这里的完整版本替换；不能同时发现两份。这两份明确由本项目维护。
 
 ### 应用最小 diff
 
@@ -135,7 +174,10 @@ git -C "$ONTOLOGY_SKILL_DIR" apply "$ONTOLOGY_ENGINEERING_ROOT/integrations/patc
 shasum -a 256 "$ONTOLOGY_SKILL_DIR/SKILL.md"
 ```
 
-Linux 可用 `sha256sum`。补丁目标只有 `SKILL.md`，不是第三方源码根。
+Linux 可用 `sha256sum`。应用根是已安装 Skill 目录，不是第三方源码根。
+按 tools.lock.json 的 `patch_targets` 核所有目标，再按 `skill_files` 核全部结果文件：
+GitContribute/SmokingGun 包括 `LOCAL.md`、`UPSTREAM.md`；REA 还须保留完整六份上游
+references。不能只比较 SKILL.md 就声称整个 Skill 已复现。
 原始摘要不匹配时，先辨明版本或既有修改；不要跳过摘要检查、强行应用或覆盖自己的改动。
 已匹配“应用后摘要”时不重复打补丁。应用前留存原版，回退可对该目录使用
 `git apply --reverse --check` 和 `git apply --reverse`，然后重核原始摘要。
@@ -143,6 +185,14 @@ Linux 可用 `sha256sum`。补丁目标只有 `SKILL.md`，不是第三方源码
 REA 使用 **npm 6.5.0 发行包内的 Skill** 作为基线；上游仓库模板会在打包时填入
 版本号和工具数量，直接对仓库模板应用不能冒充对已安装 Skill 的验收。
 上游 setup/upgrade 可能替换 Skill，升级后必须重新核版本、差异和功能。
+
+### 共享接续代码
+
+六项共用本仓库 [bindings/WORKFLOW.md](../integrations/bindings/WORKFLOW.md)。
+`verify_candidate.py` 检查声明性 Project 修订，`reconcile_reviewed.py` 绑定明确的当前
+Project 并监督原生复核，`resume_memory.py` 保留准确上下文的任务、查询和预算继续准备。
+它们只从 `ONTOLOGY_ENGINEERING_ROOT` 或 `--root` 选定的新安装读取程序，核安装清单及
+实际字节，原生 Rust 继续执行工程语义。按该流程运行包装器和 REA 启动器测试，再核工具案例。
 
 ## 同一 Project 的结果交接
 
@@ -154,7 +204,7 @@ REA 使用 **npm 6.5.0 发行包内的 Skill** 作为基线；上游仓库模板
    不能替代它调用的真实程序、Node 包或 Python 环境身份。
 3. 调用后保存原生结果、完整/部分/失败状态、输入、覆盖和未知项。写入已有
    `oev2.tool-result/1` 合同，经 `oev2 project tool-result verify/register` 接收；
-   不直接修改 Project JSON，也不另造一个“六工具 Project”。
+   登记证据与更新决定通过 CLI，不另造一个脱离当前任务的“工具 Project”。
 4. 决定与工程采用仍走各自原生审查。静态线索、模型推断、导入测量和独立观测分开。
    同一原件经多个工具复述，不自动增加独立证据数量。
 5. 通过 `oev2 memory` 保存过程与实际使用反馈；经验召回只形成待核候选，不能替代

@@ -17,8 +17,10 @@
    ```
 
 4. memory 默认在本根 `var/memory/`。多个客户端共享时，显式指定同一真实目录：`oev2 memory --home /absolute/shared-memory status`，后续命令保持同一 home。空库是正常状态；已有数据先核格式与来源，不自动改写旧记录。
-5. 按任务安装专业工具并应用匹配上游版本的 diff，执行对应实际小案例。MCP/CLI 配置按工具与当前宿主的说明完成，不复制开发者个人配置。把实际程序、版本、摘要和接入记录写入本根 `var/capabilities/registry.json`，通过 `project tool-result registry` 核验。LeanToken/flameox 的本项目 companion 与上游安装说明一起读取。
+5. 按任务安装专业工具并应用匹配上游版本的 diff，执行对应实际案例。四份 diff 按 `integrations/tools.lock.json` 的 `patch_targets` 应用，全部 `skill_files` 核摘要；LeanToken/flameox 安装 `integrations/companions/` 中的完整 Skill，避免同名副本。REA/SmokingGun 按 runtime-locks 执行 npm ci，两个 Python 工具分别建环境、安装各自 requirements。MCP/CLI 配置按工具与当前宿主的说明完成，REA 启动环境和三个共享接续脚本见 `integrations/bindings/WORKFLOW.md`。不复制开发者个人配置。把实际程序、版本、摘要和接入记录写入本根 `var/capabilities/registry.json`，通过 `project tool-result registry` 核验。
 6. 核 `oev2 project --help` 和 `oev2 memory --help`。缺工具、原件、模型资产或 SDK 时记录具体缺项。核心 Project 与经验读写无需专用判断服务。hook 为可选便利入口，显式命令必须能独立完成闭环。
+
+电子任务由第七个专业模块 `modules/electronics-design/SKILL.md` 统一进入；内部五个模块按该入口读取 `GUIDE.md`，不另装为五个独立 Skill。先读其 README 和 SOURCES.json，按实际需要安装 EasyEDA、CLI/连接器或求解器。调用辅助脚本时设置 `EASYEDA_SKILLS_DIR="$ONTOLOGY_ENGINEERING_ROOT/modules/electronics-design/modules"`，核实际安装和文档身份，不沿用旧机器路径或接收记录。原生 EDA、仿真、制造交付和实物检查分别验收。
 
 用户用自然语言提出要求；Project、registry 和反馈等内部合同由 Agent 根据真实输入准备，不要求用户代填。
 

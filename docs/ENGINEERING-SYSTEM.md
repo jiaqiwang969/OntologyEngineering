@@ -16,7 +16,7 @@ Project 是当前工程事实、对象、来源、决定和采用的正本。mem
 
 ## 专业工具接续
 
-GitContribute、LeanToken、REA、Jacobian、SmokingGun、flameox 按问题选择；每项工具的输入、实际程序、版本、输出、覆盖和未知都回到同一 Project。上游安装与本项目最小差异见[工具接入](TOOL-INTEGRATIONS.md)，正式结果协议见[交接合同](../references/professional-capabilities.md)。
+GitContribute、LeanToken、REA、Jacobian、SmokingGun、flameox 与第七种专业能力 [electronics-design](../modules/electronics-design/SKILL.md) 按问题选择；每项工具的输入、实际程序、版本、输出、覆盖和未知都回到同一 Project。电子能力从一个 Skill 入口调度五个内部模块。上游安装与本项目最小差异见[工具接入](TOOL-INTEGRATIONS.md)，正式结果协议见[交接合同](../references/professional-capabilities.md)。
 
 多个报告引用同一原件或测量，不自动增加独立证据。性能任务先保留原行为、输入和基线，比较时核环境、样本与测量条件；一次指标变化不证明原因或总体收益。
 

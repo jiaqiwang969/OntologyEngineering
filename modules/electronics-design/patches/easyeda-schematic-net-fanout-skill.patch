@@ -1,0 +1,43 @@
+diff --git a/SKILL.md b/GUIDE.md
+similarity index 89%
+rename from SKILL.md
+rename to GUIDE.md
+index 2ca1ca5..5550636 100644
+--- a/SKILL.md
++++ b/GUIDE.md
+@@ -6,13 +6,34 @@ description: >-
+   to net flags (power/ground) or net ports (signals) with short connecting wires.
+   Use when building schematics in EasyEDA Pro via the bridge API.
+ license: MIT
+-compatibility: Requires easyeda-api skill and running bridge server
+ metadata:
++  compatibility: Requires easyeda-api skill and running bridge server
+   version: "1.2.0"
+ ---
+ 
+ # EasyEDA Schematic Component Placement & Net Fanout
+ 
++本文件是 [electronics-design](../../SKILL.md) 的内部专业指南；从总入口按需读取，脚本与资源路径均相对本模块目录。
++
++## v2 工程接续
++
++用于 v2 管理的工程项目时，由 `ontology-engineering-v2` 主导，先按
++[electronics-design 接续约定](../../references/v2-handoff.md)
++核同一 Project、对象修订、条件、来源和本次证据缺口；以下专业操作保留其实际工具边界。
++结果连同原生文件、输入/工具版本、来源摘要、覆盖、失败与未知交回原 Project，
++不另建决策账本，不把操作完成或本工具检查通过当成工程采用。
++用户当前授权及后台不抢焦点要求优先；需要前台才能完成的项保持未执行并说明限制，
++不能依据下文历史操作方法自动激活应用。若单独分发缺少上述接续文件，读取已安装的
++`electronics-design` / v2 正本；仍缺失则说明缺项，不声称 v2 接入已完成。
++
++本系统执行限制：浏览器/桌面沿当前用户指定的 Peekaboo 现有后台能力，观察禁网页聚焦回退，
++交互禁自动聚焦；不按旧参考自举 Chrome 调试实例、使用 Chrome 插件或 osascript，
++不读取登录存储/浏览器凭据，不静默重启浏览器、改设置或重装连接器。
++任务临时服务仅在当前任务需要且已授权时启动，保存归属；用完核归属后清退本任务进程，
++不停止其他会话或用户已有服务，不设置自启/自动重连。
++在 v2 项目内使用裸 JS/API 桥前，先核主工具 typed action 确实未覆盖且当前授权包含该
++debug 路径；沿已有授权执行，不重复索要许可，也不通过子 skill 绕过主工具阶段检查。
++
+ ## Overview
+ 
+ This skill defines the proven workflow for placing components on an EasyEDA Pro

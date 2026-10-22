@@ -15,13 +15,13 @@
 
 ## 按当前问题选能力
 
-下表说明这些能力的常见作用，具体使用仍读取当前可用技能目录中的同名 Skill。六工具的上游安装、锁定版本、必要 diff、companion 和实际小案例见[专业工具安装与接入](../docs/TOOL-INTEGRATIONS.md)。软件版本、安装路径、精确命令、授权和恢复条件以所选版本及实际入口为准，不把历史图示的安装标记当成当前状态。
+下表说明七种能力的常见作用。前六项读取应用完整 diff 后的 Skill 或本项目维护的完整 Skill，电子设计读取本仓库的统一模块入口；安装、锁定来源、必要 diff 与验收见[专业工具安装与接入](../docs/TOOL-INTEGRATIONS.md)。软件版本、安装路径、精确命令、授权和恢复条件以所选版本及实际入口为准，不把历史图示的安装标记当成当前状态。
 
 电子设计作为第七种专业能力，与原六项共用 Project、证据接收、kernel review 和
 reviewed reconciliation。其配套 EDA、器件模型和接线 skills 属于专业能力内部。
 专业工具保持原生执行身份，当前 Rust owner 执行共同工程合同；不需要按工具数量
-复制内核模块。电子执行与独立核验的接续入口见 `electronics-design` 的
-`references/capability-integration.md`，某一仿真范围通过不能代表 EDA 或实物全部通过。
+复制内核模块。电子任务由 [electronics-design/SKILL.md](../modules/electronics-design/SKILL.md)
+统一调度五个内部模块，执行与独立核验见其[能力接续](../modules/electronics-design/references/capability-integration.md)，某一仿真范围通过不能代表 EDA 或实物全部通过。
 
 | 能力及 Skill 名称 | 何时有帮助、返回什么 | 接续时要辨清什么 |
 |---|---|---|
@@ -36,6 +36,10 @@ reviewed reconciliation。其配套 EDA、器件模型和接线 skills 属于专
 使用前核当前技能与相应 CLI/MCP 是否实际可用。CLI、MCP 和后端算法是不同的接入形态；没有某个 MCP 名称不能据此判定其 CLI 不存在。实际业务验收须有当次输入、调用和结果，接口曝光或固定程序摘要匹配只支持各自的安装/身份判断。缺少能力时保留缺项，按已有授权选择可用方法；不为补齐图中的方框隐式安装工具或启动服务。
 
 ## 结果回到同一 Project
+
+实际 Skill 的共享调用流程见[可移植接续入口](../integrations/bindings/WORKFLOW.md)，
+包括 Project 修订检查、绑定当前对象的复核和准确记忆上下文续接。调用这些脚本时显式
+选择本次安装根与输入；不需要维护者的旧目录或历史通过记录。
 
 ### 回交命令
 

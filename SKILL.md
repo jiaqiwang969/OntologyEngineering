@@ -54,6 +54,8 @@ metadata:
 
 当前会话负责组织任务、读原件、选择工具、回读结果和更新决定；Rust 执行明确的合同、来源与工程检查。专业工具按[安装与接入](docs/TOOL-INTEGRATIONS.md)使用上游版本及必要 diff。engineering-memory 是本系统内置模块，通过 `oev2 memory` 使用；历史经验是否使用由当前任务决定。需要历史时读[记忆方法](modules/engineering-memory/skill/SKILL.md)，还原时间线、失败、纠正、因果未知和适用条件。召回经 `project memory-candidate verify/register` 核来源与绑定，只作不支持决定的待核候选；实际使用效果经 `project memory-feedback` 与 `memory session feedback` 回写。
 
+电子电路、原理图/PCB、器件模型与接线指导进入第七种专业能力 [electronics-design](modules/electronics-design/SKILL.md)。该入口统一选择五个内部模块，各自 `GUIDE.md` 按需展开；保持同一 Project、对象修订、条件与来源，经共同结果合同回交，再保存实际使用反馈。安装、仿真、EDA 原生检查和实物验收分别取证。
+
 需要执行 v2 程序、维护软件或声明当前能力时，按[使用说明](docs/USAGE.md)核发行 manifest、实际程序、根目录及维护回执；统一源码安装从 `var/install/INSTALLATION.json` 核实际根与八程序身份，初次配置读 [AGENTS.md](AGENTS.md)。旧维护状态只接续对应的历史发行，不覆盖新安装。源码候选版本、已安装程序、历史回执和当前任务各保留身份，能力范围见[发布范围](docs/RELEASE-SCOPE.md)。
 
 CAD 使用 v2 自有 Rust 模块及显式原生 SDK；调用前读[独立执行合同](docs/CAD-INDEPENDENT-EXECUTION.md)。不调用原 cad-agent 的脚本、环境、MCP、Journal runner 或旧默认配置，缺项在 v2 内补齐并验证。Fusion 已退出执行范围。原生工具结果按对应合同回读、保存及独立重开；浏览器遵守当前用户的不抢焦点规则。

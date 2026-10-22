@@ -1,0 +1,189 @@
+diff --git a/.version b/.version
+new file mode 100644
+index 0000000..af2dabf
+--- /dev/null
++++ b/.version
+@@ -0,0 +1 @@
++0.25.1
+diff --git a/SKILL.md b/GUIDE.md
+similarity index 90%
+rename from SKILL.md
+rename to GUIDE.md
+index a45b672..99e00c1 100644
+--- a/SKILL.md
++++ b/GUIDE.md
+@@ -3,8 +3,35 @@ name: easyeda-agent
+ description: "Community EasyEDA Agent automation skill for EasyEDA Pro schematic and PCB work through the local easyeda-agent CLI/daemon/connector. Use when designing a board from scratch; inspecting, cleaning up, or safely refactoring an existing wired schematic; arranging multi-page functional modules; drawing page-scoped module frames and text labels; preserving and reconciling pin-to-net topology; placing/wiring real LCSC/JLC library parts; syncing schematic changes into PCB; laying out PCB components; running EasyEDA DRC/check/bridge-check/layout-lint; exporting BOM/netlists/artifacts; querying the embedded circuit-block library (`easyeda blocks ls/show/search`); or applying the bundled EasyEDA design workflows and conventions. 覆盖嘉立创EDA专业版原理图/PCB、混乱原理图整理、多页功能分区、框选文字标注、布线、铺铜、板框与机械门禁。适用于嘉立创EDA(JLC EDA / JLCEDA / LCEDA / EasyEDA Pro)与立创商城(LCSC)元件的电路板设计自动化。"
+ ---
+ 
++> **本系统运行版本覆盖说明：** 此指南保留实际安装 Skill 的上游 0.25.1 内容；
++> 本系统所需本地修复运行程序为固定 0.23.0 + local.4 patch，CLI 与连接器配套构建。
++> 先读 [INSTALL](../../INSTALL.md) 和 [源码差异](../../references/runtime-differences.md)，
++> 以本次程序动作目录为准。下文上游安装、自启、自动重连和版本同步建议不覆盖本地入口。
++> 缺少命令时不猜测、不自动升级或退回旧入口。
++
+ # EasyEDA Agent
+ 
++本文件是 [electronics-design](../../SKILL.md) 的内部专业指南；从总入口按需读取，脚本与资源路径均相对本模块目录。
++
++## v2 工程接续
++
++用于 v2 管理的工程项目时，由 `ontology-engineering-v2` 主导，先按
++[electronics-design 接续约定](../../references/v2-handoff.md)
++核同一 Project、对象修订、条件、来源和本次证据缺口；以下专业操作保留其实际工具边界。
++结果连同原生文件、输入/工具版本、来源摘要、覆盖、失败与未知交回原 Project，
++不另建决策账本，不把操作完成或本工具检查通过当成工程采用。
++用户当前授权及后台不抢焦点要求优先；需要前台才能完成的项保持未执行并说明限制，
++不能依据下文历史操作方法自动激活应用。若单独分发缺少上述接续文件，读取已安装的
++`electronics-design` / v2 正本；仍缺失则说明缺项，不声称 v2 接入已完成。
++
++本系统执行限制：浏览器/桌面沿当前用户指定的 Peekaboo 现有后台能力，观察禁网页聚焦回退，
++交互禁自动聚焦；不按旧参考自举 Chrome 调试实例、使用 Chrome 插件或 osascript，
++不读取登录存储/浏览器凭据，不静默重启浏览器、改设置或重装连接器。
++任务临时服务仅在当前任务需要且已授权时启动，保存归属；用完核归属后清退本任务进程，
++不停止其他会话或用户已有服务，不设置自启/自动重连。
++在 v2 项目内使用裸 JS/API 桥前，先核主工具 typed action 确实未覆盖且当前授权包含该
++debug 路径；沿已有授权执行，不重复索要许可，也不通过子 skill 绕过主工具阶段检查。
++
+ Use the local `easyeda` CLI and daemon to operate EasyEDA Pro through typed,
+ observable actions. This is the community `easyeda-agent` workflow, not an official
+ EasyEDA skill; the suffix is intentional so users can distinguish it from upstream
+@@ -17,7 +44,7 @@ EasyEDA tooling.
+ > action discovery、typed calls、blocks 和 workflow 操作。MCP 只是同一 CLI/daemon 的
+ > stdio 适配层;下方全部铁律、inspect-before-mutate、阶段门和存盘要求保持不变。
+ 
+-> **本 SKILL.md 顶部是「抗遗忘扫读区」——执行任何板级任务前先扫这几屏,别凭记忆走。**
++> **本 GUIDE.md 顶部是「抗遗忘扫读区」——执行任何板级任务前先扫这几屏,别凭记忆走。**
+ > 顺序:① **铁律**(不可违反)→ ② **流程停点 / 档位默认 / 块地图** 三张速查 → ③ **顺序硬约束**。
+ > 具体细节**不堆在这里**——按下方 **What To Read** 的加载触发表按需读 reference(渐进式披露)。
+ 
+diff --git a/agents/openai.yaml b/agents/openai.yaml
+index 17be2c6..55c90a4 100644
+--- a/agents/openai.yaml
++++ b/agents/openai.yaml
+@@ -1,4 +1,4 @@
+ interface:
+   display_name: "EasyEDA Agent"
+   short_description: "Design, clean up, and verify EasyEDA schematics and PCBs"
+-  default_prompt: "Use $easyeda-agent to design or safely refactor an EasyEDA schematic/PCB, preserving topology and applying strict layout and electrical gates."
++  default_prompt: "Use $electronics-design (easyeda-agent module) to design or safely refactor an EasyEDA schematic/PCB, preserving topology and applying strict layout and electrical gates."
+diff --git a/references/design-decisions.md b/references/design-decisions.md
+index 34092b6..9f5a770 100644
+--- a/references/design-decisions.md
++++ b/references/design-decisions.md
+@@ -1,6 +1,6 @@
+ # 设计决策目录 (Design Decisions)
+ 
+-本文是 [ADR-0002](../../../docs/adr/0002-design-proposal-and-interaction-modes.md) 落地的决策点清单，供 [`design-flow.md`](./design-flow.md) 的 **S0 设计方案书**阶段在放第一个元件之前，把这些**真实权衡**摊开给用户拍板，而不是 agent 悄悄选一个默认值再往后走。判据只有一条：**用户的回答会不会改变实际做法**——会才进本文，不会（只有唯一正确答案）就是 guardrail，继续以硬门禁形式内置在 `pcb-layout-conventions.md` / `auto-layout-sop.md` / `design-flow.md` 里（save 纪律、mutation 后 `doc reload`、layout-lint/DRC 硬门、PLANE 生成顺序、天线 keepout 必须覆盖全层等），本文**不重复**这些内容。每个决策点固定给出：决策问题、选项对比（优点/坑）、推荐默认、判据（一句话说清何时答案会变）、来源。「来源」只引**随 skill 分发**的 references 文件；个别仅存于项目开发机的实测数据以「实测沉淀」标注——其事实已完整写入表格本身，不依赖任何外部文件。
++本文是 [ADR-0002](https://github.com/zhoushoujianwork/easyeda-agent/blob/c57f58fd42a5732d91bb42a3ec522e2a199cc18a/docs/adr/0002-design-proposal-and-interaction-modes.md) 落地的决策点清单，供 [`design-flow.md`](./design-flow.md) 的 **S0 设计方案书**阶段在放第一个元件之前，把这些**真实权衡**摊开给用户拍板，而不是 agent 悄悄选一个默认值再往后走。判据只有一条：**用户的回答会不会改变实际做法**——会才进本文，不会（只有唯一正确答案）就是 guardrail，继续以硬门禁形式内置在 `pcb-layout-conventions.md` / `auto-layout-sop.md` / `design-flow.md` 里（save 纪律、mutation 后 `doc reload`、layout-lint/DRC 硬门、PLANE 生成顺序、天线 keepout 必须覆盖全层等），本文**不重复**这些内容。每个决策点固定给出：决策问题、选项对比（优点/坑）、推荐默认、判据（一句话说清何时答案会变）、来源。「来源」只引**随 skill 分发**的 references 文件；个别仅存于项目开发机的实测数据以「实测沉淀」标注——其事实已完整写入表格本身，不依赖任何外部文件。
+ 
+ ---
+ 
+diff --git a/references/environment-setup.md b/references/environment-setup.md
+index 919e244..4bef046 100644
+--- a/references/environment-setup.md
++++ b/references/environment-setup.md
+@@ -1,3 +1,16 @@
++# 当前环境接续与历史自举资料
++
++先按 GUIDE.md 的本机执行限制，用只读 health 核现有 daemon、连接器、目标工程与文档。
++当前用户要求后台操作时，使用其指定且已授权的后台工具，不启动 chrome-devtools 自举浏览器，不读取
++localStorage 登录信息/个人资料，不按以下旧命令 pkill、关标签重开、改 IndexedDB 或静默
++重启/重装。需要改变环境时先核其是否属于当前明确授权，保留可审阅方案；当前任务已有
++授权不重复询问。无法不抢焦点完成的操作保持未执行，先继续独立的资料/文件工作。
++
++以下是原版本的开发环境历史记录，保留接口与故障线索；其中自举、登录存储、重启、
++浏览器控制和热重载步骤不构成本系统当前执行流程。其余技术断言使用前核当前版本。
++
++---
++
+ # 环境自举 — agent 自己把「可用的 EasyEDA 环境」拉起来
+ 
+ `NO_CONNECTOR` / `windows: []` 不是终点。有 chrome-devtools MCP **且用户用的是网页版**
+diff --git a/references/pcb-design-rules.md b/references/pcb-design-rules.md
+index 331ee81..a8b55ca 100644
+--- a/references/pcb-design-rules.md
++++ b/references/pcb-design-rules.md
+@@ -500,5 +500,5 @@ Bottom   — 信号 + 局部铺铜
+ - [JLC SMT 设计指南](https://jlcpcb.com/help/article/smt-assembly-design-guidelines)
+ - IPC-2221B — Generic Standard on Printed Board Design
+ - IPC-7351B — Land Pattern Standard
+-- easyeda-agent [net-class 规范](../skills/easyeda-agent/references/conventions.md)
+-- easyeda-agent [设计流程](../skills/easyeda-agent/references/design-flow.md)
++- easyeda-agent [net-class 规范](./pcb-layout-conventions.md)
++- easyeda-agent [设计流程](./design-flow.md)
+diff --git a/references/pcb.md b/references/pcb.md
+index b1e8659..86b51ec 100644
+--- a/references/pcb.md
++++ b/references/pcb.md
+@@ -388,7 +388,7 @@ subset; `--dry-run` prints the per-corner plan. Save after placing; delete via
+   报告头带 `sides`(如 `[bottom 134 / top 32]`),**双面板的 overlap 数字现在可以直接信**。
+   实测 box-v2 rev-a(166 器件 / 642 焊盘,双面贴片):**overlap 116 → 0、tight 7 → 3**,与人工按层
+   重算的真值一致(同层重叠 0)。等价于 KiCad 的分层 courtyard(`F.CrtYd`/`B.CrtYd`)语义 ——
+-  见 [`docs/ecosystem-survey.md`](../../../docs/ecosystem-survey.md) §9.3。
++  见 [`docs/ecosystem-survey.md`](https://github.com/zhoushoujianwork/easyeda-agent/blob/c57f58fd42a5732d91bb42a3ec522e2a199cc18a/docs/ecosystem-survey.md) §9.3。
+   **同时补了网络感知 —— 新增 `short` ERROR**:两器件 bbox 相交时进一步比**焊盘铜皮**,
+   若两块铜在**共享层**上真的压在一起且**分属不同网络**,报 `ERROR short  C2.1[VBAT_RAW] ↔ D2.2[SW1_NODE]`
+   —— 定性从「靠太近」升级成「这两网短路」,与 KiCad 的 `shorting_items` 对齐。short 与 overlap 同级致命
+diff --git a/references/schematic-layout-conventions.md b/references/schematic-layout-conventions.md
+index b74e687..f93eaae 100644
+--- a/references/schematic-layout-conventions.md
++++ b/references/schematic-layout-conventions.md
+@@ -60,7 +60,7 @@ A3 / 类 A3 图纸划成 **3×3 九宫格**——这是**理想布局**，不是
+ 
+ > 来源：用户反馈——agent 产出的原理图常常一页塞满、无分区框、无任何文字说明，
+ > 电气上对但**交付可读性差**。行业惯例是「先看区、再看线」：审图人先靠分区和
+-> 说明建立地图，再进电路细节。以下三件套是**布局默认**，档位速查表（SKILL.md）
++> 说明建立地图，再进电路细节。以下三件套是**布局默认**，档位速查表（GUIDE.md）
+ > 与 design-flow S1–S3 的过门条件都引用这里。
+ 
+ **三件套（≥2 个功能模块的板一律做全）：**
+diff --git a/scripts/audit-baseline.py b/scripts/audit-baseline.py
+old mode 100644
+new mode 100755
+diff --git a/scripts/blocks-pin-audit.py b/scripts/blocks-pin-audit.py
+old mode 100644
+new mode 100755
+diff --git a/scripts/bulk-connect.py b/scripts/bulk-connect.py
+old mode 100644
+new mode 100755
+diff --git a/scripts/bulk-place.py b/scripts/bulk-place.py
+old mode 100644
+new mode 100755
+diff --git a/scripts/lint.sh b/scripts/lint.sh
+old mode 100644
+new mode 100755
+index aad19fa..9c45f68
+--- a/scripts/lint.sh
++++ b/scripts/lint.sh
+@@ -19,8 +19,16 @@
+ set -euo pipefail
+ 
+ DIR="$(cd "$(dirname "$0")" && pwd)"
+-ROOT="$(cd "$DIR/../../.." && pwd)"   # scripts → easyeda-agent → skills → repo root
+-BIN="$ROOT/bin/easyeda"
++ROOT="$(cd "$DIR/../../.." && pwd)"   # optional upstream source checkout
++BIN="${EASYEDA_BIN:-}"
++if [ -z "$BIN" ]; then
++  if [ -x "$ROOT/bin/easyeda" ]; then
++    BIN="$ROOT/bin/easyeda"
++  else
++    BIN="$(command -v easyeda || true)"
++  fi
++fi
++export EASYEDA_SKILLS_DIR="${EASYEDA_SKILLS_DIR:-$(cd "$DIR/../.." && pwd)}"
+ 
+ # ---- arg parse: flags anywhere, positionals in order ----
+ ALL=0; SAVE=0; INITGIT=0
+@@ -41,7 +49,7 @@ PS="${POS[2]:-60832}"; PE="${POS[3]:-60841}"
+ STORE="${EASYEDA_LINT_DIR:-$HOME/.easyeda-agent/lint}/$PROJ"
+ SNAP="$STORE/snapshot.json"
+ 
+-[ -x "$BIN" ] || { echo "build first: make build" >&2; exit 1; }
++[ -x "$BIN" ] || { echo "easyeda CLI not found; set EASYEDA_BIN to its executable path or add it to PATH" >&2; exit 1; }
+ 
+ # --init-git sets up the store and exits (no live window needed).
+ if [ "$INITGIT" = 1 ]; then
+diff --git a/scripts/parts-add.py b/scripts/parts-add.py
+old mode 100644
+new mode 100755

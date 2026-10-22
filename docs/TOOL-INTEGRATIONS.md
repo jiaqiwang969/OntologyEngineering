@@ -81,6 +81,8 @@ python3.12 -m venv "$ONTOLOGY_TOOL_ENVS/flameox-0.2.9"
 "$ONTOLOGY_TOOL_ENVS/flameox-0.2.9/bin/python" -m pip install -r "$ONTOLOGY_ENGINEERING_ROOT/integrations/runtime-locks/flameox-requirements.txt"
 ```
 
+macOS arm64 用户先按 [Z3 平台元数据修正](../integrations/runtime-locks/Z3-MACOS.md)核验并处理锁定 wheel 的问题；不得跳过失败的依赖检查。两个环境均执行 `python -m pip check`，保留实际结果。
+
 快照来自 macOS arm64 / Python 3.12.13，含现用可选数学后端。其他平台需核上游支持并
 记录重新解析的差异，不能将不同依赖写成同一环境。核版本并保留实际安装清单：
 

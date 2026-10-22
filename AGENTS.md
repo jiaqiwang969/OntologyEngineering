@@ -17,7 +17,7 @@
    ```
 
 4. memory 默认在本根 `var/memory/`。多个客户端共享时，显式指定同一真实目录：`oev2 memory --home /absolute/shared-memory status`，后续命令保持同一 home。空库是正常状态；已有数据先核格式与来源，不自动改写旧记录。
-5. 按任务安装专业工具并应用匹配上游版本的 diff，执行对应实际案例。四份 diff 按 `integrations/tools.lock.json` 的 `patch_targets` 应用，全部 `skill_files` 核摘要；LeanToken/flameox 安装 `integrations/companions/` 中的完整 Skill，避免同名副本。REA/SmokingGun 按 runtime-locks 执行 npm ci，两个 Python 工具分别建环境、安装各自 requirements。MCP/CLI 配置按工具与当前宿主的说明完成，REA 启动环境和三个共享接续脚本见 `integrations/bindings/WORKFLOW.md`。不复制开发者个人配置。把实际程序、版本、摘要和接入记录写入本根 `var/capabilities/registry.json`，通过 `project tool-result registry` 核验。
+5. 按任务安装专业工具并应用匹配上游版本的 diff，执行对应实际案例。四份 diff 按 `integrations/tools.lock.json` 的 `patch_targets` 应用，全部 `skill_files` 核摘要；LeanToken/flameox 安装 `integrations/companions/` 中的完整 Skill，避免同名副本。REA/SmokingGun 按 runtime-locks 执行 npm ci，两个 Python 工具分别建环境、安装各自 requirements，执行 pip check；macOS arm64 的 Z3 修正见 `integrations/runtime-locks/Z3-MACOS.md`。MCP/CLI 配置按工具与当前宿主的说明完成，REA 启动环境和三个共享接续脚本见 `integrations/bindings/WORKFLOW.md`。不复制开发者个人配置。把实际程序、版本、摘要和接入记录写入本根 `var/capabilities/registry.json`，通过 `project tool-result registry` 核验。
 6. 核 `oev2 project --help` 和 `oev2 memory --help`。缺工具、原件、模型资产或 SDK 时记录具体缺项。核心 Project 与经验读写无需专用判断服务。hook 为可选便利入口，显式命令必须能独立完成闭环。
 7. 接入实际工程项目时，先确认 Project ID，再按 [项目文件体系](docs/PROJECT-WORKSPACE.md)显式指定 `--project-home /absolute/project/.engineering`。安装根、项目数据根与 memory home 分开；在该工程项目的宿主 AGENTS 或配置中写入恢复命令与明确身份。源码候选、实际安装与新会话接续分别核验；不以文件存在认定自动 hook 已生效。
 

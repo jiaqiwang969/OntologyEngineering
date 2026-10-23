@@ -1,0 +1,53 @@
+---
+name: jacobian-math
+description: Use Jacobian's MCP operations for nontrivial mathematical computation, finite search, structural analysis, formal checking, probability, or optimization.
+---
+
+<!-- Managed by Jacobian setup. -->
+
+# Jacobian mathematics
+
+Use Jacobian when a mathematical task benefits from exact computation or a
+bounded check. Search with `math.find`, then execute a selected operation with
+`math.run`.
+
+Keep the mathematical reasoning in the agent. Treat operations as atomic
+instruments: compose their typed results yourself rather than asking discovery
+to prescribe a proof strategy or workflow.
+
+Before running an operation:
+
+- Inspect its exact request schema and mathematical scope with `math.find`.
+- Supply canonical mathematical values without backend-specific expressions or
+  ambient contexts.
+- Respect the operation's declared bounds and distinguish exact results from
+  incomplete, unknown, unavailable, or transport outcomes.
+
+Use returned values and certificates only for the conclusion they establish.
+Absence of a witness, a timeout, or an incomplete search is not a proof of a
+global mathematical claim.
+
+## Studio supplement (local, 2026-10-15)
+
+Pinned upstream: https://github.com/morluto/jacobian/tree/jacobian-v0.23.0/npm/skill/jacobian-math
+The upstream bytes are retained at the fixed upstream Skill and its SHA256 in `$ONTOLOGY_ENGINEERING_ROOT/integrations/tools.lock.json`; this section is the local difference.
+Use `jacobian` for CLI discovery/inspect/run, and `jacobian-mcp` in that same directory for stdio.
+Always discover the operation, read its exact contract, execute, then independently check the relation needed by the task. Record input conditions and exact versus approximate scalar types. Preserve the native return in the task evidence directory; mathematical validity does not establish engineering applicability. This macOS base environment has no claim for every optional backend. Processes are request-owned and terminate after use.
+
+## 与当前 v2 Project 接续
+
+本工具承担：数学关系是否满足当前模型；独立检查输入映射、单位和前提。
+
+当任务使用 v2 时，调用前绑定实际业务对象、修订、条件和待决定事项；调用后按 `$ONTOLOGY_ENGINEERING_ROOT/integrations/bindings/WORKFLOW.md` 接收原生证据、独立核查、声明依赖并执行原生变更审查。工具版本不代替业务对象版本，安装验收不自动成为业务证据。此节是本地补充，上游 Skill 原文身份保留。
+
+## Portable OntologyEngineering entry
+
+For an OntologyEngineering task, resolve the user's absolute
+`ONTOLOGY_ENGINEERING_ROOT` and read `integrations/bindings/WORKFLOW.md` and
+`references/professional-capabilities.md` under that root. Keep the selected
+Project, object revision, conditions and pending decision. Use the portable
+`verify_candidate.py`, `reconcile_reviewed.py` and `resume_memory.py` there when
+that workflow calls for them; native Rust remains the semantic owner.
+Return native results through `oev2 project tool-result`, and actual process and
+usage feedback through `oev2 memory`. Registration does not grant adoption.
+This project-maintained addition requires no hosted judgment service.

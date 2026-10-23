@@ -1,11 +1,12 @@
-# 专业工具接入与独立安装
+# 专业模块与运行工具接入
 
 工程本体、memory 和专业工具通过同一 Project 协作。工程本体管理当前对象、条件、
 证据和决定；memory 提供带来源的历史候选；Agent 依据任务调用专业工具，把实际结果
 交回 Project 审查。安装成功、工具执行成功和工程采用分别记录。
 
-本仓库接入七种专业能力。原六个工具的运行程序由用户从上游安装；第七项电子设计的
-统一 Skill 与五个内部模块随仓库维护，EDA、连接器和求解器按需另装。全部按任务选用，
+本仓库接入七种专业能力，七份 Skill 入口及其引用资源统一在 `modules/` 维护，
+保留各自的名称、自动发现元数据和完整规则。原六个工具的运行程序由用户从上游安装；
+电子设计的五个内部模块随仓库维护，EDA、连接器和求解器按需另装。全部按任务选用，
 不要求每个项目安装或调用全部七项。核心 Project 和 memory 流程不依赖它们全部可用。
 这些接入材料不要求额外的托管判断服务。
 
@@ -16,17 +17,18 @@
 
 | 工具 | 固定版本与上游 | 提供的依据 | 我们维护的差异 |
 |---|---|---|---|
-| GitContribute | [3.0.2](https://github.com/morluto/gitcontribute/tree/v3.0.2) | 仓库规范、相关工作、issue/PR、覆盖和新鲜度 | Skill、LOCAL.md、UPSTREAM.md 的完整本地 diff |
-| LeanToken | [0.1.28](https://github.com/morluto/leantoken/tree/v0.1.28) | 已选仓库中的源码范围、符号和有界上下文 | [本项目维护的完整 Skill](../integrations/companions/leantoken/SKILL.md) |
-| REA | [6.5.0](https://github.com/morluto/rea/tree/rea-agents-6.5.0) | 发布制品、静态结构及按需授权的运行观察 | npm 发行 Skill diff、保留六份上游参考文件及可移植启动器 |
-| Jacobian | [0.23.0](https://github.com/morluto/jacobian/tree/jacobian-v0.23.0) | 按精确合同执行的计算和数学关系 | 上游 Skill 的完整本地 diff |
-| SmokingGun | [5.0.0](https://github.com/morluto/smokinggun/tree/v5.0.0) | 静态复杂度候选、导入的性能证据 | Skill、LOCAL.md、UPSTREAM.md 的完整本地 diff |
-| Flameox | [0.2.9](https://github.com/morluto/flameox/tree/v0.2.9) | 显式运行原件的分析及有界工作负载采集 | [本项目维护的完整 Skill](../integrations/companions/flameox/SKILL.md) |
+| [GitContribute](../modules/gitcontribute/SKILL.md) | [3.0.2](https://github.com/morluto/gitcontribute/tree/v3.0.2) | 仓库规范、相关工作、issue/PR、覆盖和新鲜度 | Skill、LOCAL.md、UPSTREAM.md 的完整本地 diff |
+| LeanToken | [0.1.28](https://github.com/morluto/leantoken/tree/v0.1.28) | 已选仓库中的源码范围、符号和有界上下文 | [本项目维护的完整 Skill](../modules/leantoken/SKILL.md) |
+| [REA](../modules/reverse-engineer-anything/SKILL.md) | [6.5.0](https://github.com/morluto/rea/tree/rea-agents-6.5.0) | 发布制品、静态结构及按需授权的运行观察 | npm 发行 Skill diff、保留六份上游参考文件及可移植启动器 |
+| [Jacobian](../modules/jacobian-math/SKILL.md) | [0.23.0](https://github.com/morluto/jacobian/tree/jacobian-v0.23.0) | 按精确合同执行的计算和数学关系 | 上游 Skill 的完整本地 diff |
+| [SmokingGun](../modules/smokinggun/SKILL.md) | [5.0.0](https://github.com/morluto/smokinggun/tree/v5.0.0) | 静态复杂度候选、导入的性能证据 | Skill、LOCAL.md、UPSTREAM.md 的完整本地 diff |
+| Flameox | [0.2.9](https://github.com/morluto/flameox/tree/v0.2.9) | 显式运行原件的分析及有界工作负载采集 | [本项目维护的完整 Skill](../modules/flameox/SKILL.md) |
 | electronics-design | [2.1.4 模块及固定来源](../modules/electronics-design/SOURCES.json) | 电子设计、原理图/PCB、模型和接线证据 | [统一 Skill 与五个内部模块](../modules/electronics-design/README.md)，保留上游来源和必要 diff |
 
-原六项的第三方算法与固定官方发行一致。本仓库保留实际使用的 Skill 差异、引用资源、
+原六项的第三方算法与固定官方发行一致。本仓库直接提供实际使用的完整 Skill 文件、引用资源、
 REA 启动环境选择和三个共享接续脚本；完整对应关系见[源码覆盖表](../integrations/COVERAGE.md)。
-LeanToken 和 Flameox 采用本项目维护的完整 Skill。新用户无需维护者的旧工作目录；
+六项的 `skill_directory` 和 16 份文件摘要均在 tools.lock.json；LeanToken 和 Flameox
+采用本项目维护的完整 Skill，原四份 diff 仍保留用于重建核验。新用户无需维护者的旧工作目录；
 上游模板、实际发布 Skill、本地修改和本次安装的验证各自保留身份。
 
 ## 安装运行程序
@@ -126,69 +128,77 @@ export EASYEDA_SKILLS_DIR="$ONTOLOGY_ENGINEERING_ROOT/modules/electronics-design
 项目与原生结果写入私有目录，仍经下述 `project tool-result` 和 memory 接续。模块文件可读、
 离线脚本通过、连接器连通、EDA 操作与实物电气检查各自记录；当前范围见模块验收说明。
 
-### 原六项工具
+### 原六项工具：模块与 MCP 分开配置
 
-用户可以选 CLI，也可以按上游方式配置 MCP。新用户先预览目标客户端的变更，再应用
-同一范围。下面以 Codex 为例；只配置实际使用的客户端。
+六个 Skill 已在仓库内，运行程序安装后无需再执行会写入宿主顶层 Skill 的上游 setup。
+保留 `modules/` 下的真实目录及其发现元数据；由根入口导航并按宿主能力正常发现。
+不要向 `~/.codex/skills/`、`~/.agents/skills/` 或其他宿主目录另复制同名 Skill，
+也不要把缓存或临时上游重建目录注册为额外搜索根。
+
+在仓库根只读核对六项完整的 16 份文件；需要检查宿主重复入口时，逐个给出实际搜索根：
 
 ```sh
-gitcontribute setup --mode both --codex --token-source none --dry-run --json
-leantoken setup --codex --dry-run
-rea setup --client codex --dry-run --json
+python3 scripts/check_tool_skills.py
+python3 scripts/check_tool_skills.py --skill-root "$HOME/.codex/skills" --skill-root "$HOME/.agents/skills"
 ```
 
-确认预览后，分别把 `--dry-run` 换成 `--yes`。GitContribute 的 `none` 适合本地语料
-或匿名公开访问；需要认证时由用户选择上游支持的凭据来源。不要把凭据写进仓库。
-Claude Code 对应 GitContribute/LeanToken 的 `--claude` 和 REA 的
-`--client claude_code`。不要配置所有客户端来替代实际选择。
+检查宿主时，从 Agent 实际加载的安装根执行；开发 checkout 的路径不能代替实际安装根。`--skill-root` 可重复。检查报告不自动搬动或删除文件；重复入口需先核身份与使用者，
+保全旧内容后再从发现范围移出本次替换的目录。fleet 继续独立维护。
 
-Jacobian/Flameox 可在客户端的本地 MCP 配置中指向自己环境中的绝对路径：
+CLI 与 MCP 按任务选择。MCP 配置只指向自己机器已核的运行程序，和 Skill 位置分开：
 
 | 名称 | command | args |
 |---|---|---|
+| GitContribute | `/absolute/path/to/gitcontribute` | `["mcp", "serve", "--transport=stdio"]` |
+| REA | `/absolute/node-24/bin/node` | `["/absolute/ontology-engineering-unified/integrations/bindings/rea-launcher.cjs", "mcp"]` |
 | Jacobian | `<tool-envs>/jacobian-0.23.0/bin/jacobian-mcp` | `[]` |
 | Flameox | `<tool-envs>/flameox-0.2.9/bin/flameox` | `["mcp", "serve"]` |
 
-配置中的 `<tool-envs>` 必须替换成真实绝对路径，不能假设客户端会展开 shell 变量。
-必要时在配置的 env 中传入 `ONTOLOGY_ENGINEERING_ROOT` 和用户自己的私有数据目录。
-客户端重连后实际发现并调用一次工具，才记录宿主连接可用。SmokingGun 本接入使用 CLI。
+本接入中的 LeanToken 和 SmokingGun 使用 CLI。表中所有占位路径必须换成真实绝对路径，
+不能假设客户端会展开 shell 变量。REA 的包根、Node、Ghidra/JDK 和 env 选择见
+[启动环境](../integrations/bindings/WORKFLOW.md#rea-启动环境)；其他工具按其已核程序说明
+设置必要的环境变量与自己的私有数据目录。GitContribute 的 token-source `none` 适合本地
+语料或匿名公开访问，需要认证时由用户选择上游支持的凭据来源，不写入仓库。
 
-GitContribute/REA 的上游 setup 会安装匹配的 Skill。SmokingGun 和 Jacobian 的固定
-上游 Skill 可从下列源码位置取得；保留完整 Skill 目录和所引用资源：
+配置前检查实际客户端、已有条目和会话使用范围；只改当前授权的配置，不重启或改写
+其他会话的连接。若使用上游配置助手，先核锁定版本的 `--help` 和预览，只有明确支持
+MCP-only、不会写 Skill 的方式才适用于本布局，不能沿用会安装 Skill 的 setup/upgrade。
+在新会话实际发现并调用一次工具后才记录 MCP 连接可用；配置文件存在不代表连接成功。
 
-- [SmokingGun 5.0.0 的 skills/smokinggun](https://github.com/morluto/smokinggun/tree/b416059734f69d3ead4fe963c009e2e29674ff56/skills/smokinggun)
-- [Jacobian 0.23.0 的 npm/skill/jacobian-math](https://github.com/morluto/jacobian/tree/bad9b899715992bd2a72ed79e726a7deb89e9395/npm/skill/jacobian-math)
+### 在干净上游副本重建 diff
 
-将所需目录放入实际客户端支持的 Skill 安装位置，避免同时安装同名的多个副本。
-LeanToken 和 Flameox 分别安装本仓库 `integrations/companions/leantoken/`、
-`integrations/companions/flameox/` 的完整 Skill 目录。若 LeanToken setup 已生成同名上游
-Skill，先保全它，再用这里的完整版本替换；不能同时发现两份。这两份明确由本项目维护。
+日常安装直接使用 `modules/` 的完整文件，**不要对已整合模块重复打补丁**。
+四份 `integrations/patches/` 用于说明并验证相对固定上游的差异，完整文件摘要由
+`tools.lock.json` 的 `skill_files` 约束，模块根由 `skill_directory` 指定。
 
-### 应用最小 diff
+重建时先取得锁中固定上游发行的完整 Skill 和引用资源，放到仓库外新建的私有目录；
+该目录不加入宿主 Skill 搜索范围。GitContribute/SmokingGun/Jacobian 按锁中源位置取文件，
+REA 必须取 **npm 6.5.0 发行包内的 Skill**：仓库模板在打包时会填入版本号与工具数量，
+不能代替该发行原件。LeanToken/Flameox 没有这类上游补丁，其完整维护源直接在
+`modules/leantoken/` 和 `modules/flameox/`。
 
-在纯上游 Skill 上应用 `integrations/patches/` 的对应补丁。
-`tools.lock.json` 给出原始 Skill SHA256、补丁 SHA256 和应用后 SHA256，三者都要核对。
-示例中的 `ONTOLOGY_SKILL_DIR` 指向一个已安装 Skill 的目录，内含 `SKILL.md`：
+`tools.lock.json` 给出原始文件、补丁和应用后 SHA256。先核补丁自身与 `patch_targets`
+的每项原始摘要（新增目标应不存在），再在干净 Skill 根应用。以下以 GitContribute 为例，
+`ONTOLOGY_SKILL_REBUILD_DIR` 必须指向上述干净上游副本，不能指向 `modules/` 或实际宿主入口：
 
 ```sh
-export ONTOLOGY_SKILL_DIR='/absolute/path/to/installed/gitcontribute'
-shasum -a 256 "$ONTOLOGY_SKILL_DIR/SKILL.md"
-git -C "$ONTOLOGY_SKILL_DIR" apply --check "$ONTOLOGY_ENGINEERING_ROOT/integrations/patches/gitcontribute-3.0.2-ontology.patch"
-git -C "$ONTOLOGY_SKILL_DIR" apply "$ONTOLOGY_ENGINEERING_ROOT/integrations/patches/gitcontribute-3.0.2-ontology.patch"
-shasum -a 256 "$ONTOLOGY_SKILL_DIR/SKILL.md"
+export ONTOLOGY_SKILL_REBUILD_DIR='/absolute/private-clean-upstream/gitcontribute'
+shasum -a 256 "$ONTOLOGY_SKILL_REBUILD_DIR/SKILL.md"
+shasum -a 256 "$ONTOLOGY_ENGINEERING_ROOT/integrations/patches/gitcontribute-3.0.2-ontology.patch"
+git -C "$ONTOLOGY_SKILL_REBUILD_DIR" apply --check "$ONTOLOGY_ENGINEERING_ROOT/integrations/patches/gitcontribute-3.0.2-ontology.patch"
+git -C "$ONTOLOGY_SKILL_REBUILD_DIR" apply "$ONTOLOGY_ENGINEERING_ROOT/integrations/patches/gitcontribute-3.0.2-ontology.patch"
+shasum -a 256 "$ONTOLOGY_SKILL_REBUILD_DIR/SKILL.md"
 ```
 
-Linux 可用 `sha256sum`。应用根是已安装 Skill 目录，不是第三方源码根。
-按 tools.lock.json 的 `patch_targets` 核所有目标，再按 `skill_files` 核全部结果文件：
-GitContribute/SmokingGun 包括 `LOCAL.md`、`UPSTREAM.md`；REA 还须保留完整六份上游
-references。不能只比较 SKILL.md 就声称整个 Skill 已复现。
-原始摘要不匹配时，先辨明版本或既有修改；不要跳过摘要检查、强行应用或覆盖自己的改动。
-已匹配“应用后摘要”时不重复打补丁。应用前留存原版，回退可对该目录使用
-`git apply --reverse --check` 和 `git apply --reverse`，然后重核原始摘要。
+Linux 可用 `sha256sum`。应用根是干净 Skill 目录，不是第三方源码根。上面的命令只演示
+主文件；仍须按 `patch_targets` 核全部目标，再按 `skill_files` 核全部结果字节，并与
+`skill_directory` 内的完整模块比较。GitContribute/SmokingGun 包括 `LOCAL.md`、
+`UPSTREAM.md`，REA 包括六份上游 references；仅比 SKILL.md 不代表完整 Skill 已复现。
 
-REA 使用 **npm 6.5.0 发行包内的 Skill** 作为基线；上游仓库模板会在打包时填入
-版本号和工具数量，直接对仓库模板应用不能冒充对已安装 Skill 的验收。
-上游 setup/upgrade 可能替换 Skill，升级后必须重新核版本、差异和功能。
+原始摘要不匹配时先查确切版本和已有改动，不强行套用。已匹配应用后摘要时不重复打补丁。
+回退只针对这个重建副本，先 `git apply --reverse --check`，再 `git apply --reverse`，
+最后核回原始摘要；不要用回退命令覆盖仓库模块。上游升级时重新重建、核依赖与案例，
+再更新本仓库模块和锁；同时检查宿主是否出现 setup/upgrade 生成的同名入口。
 
 ### 共享接续代码
 
@@ -263,11 +273,14 @@ rustc --edition=2021 -O "$ONTOLOGY_ENGINEERING_ROOT/integrations/examples/runtim
   不声明 MCP 已连接；需要重连时由用户控制受影响的客户端。
 - 补丁或版本不匹配：保留原文件，比较确切上游版本后重建差异，不默认使用 latest。
 - 部分结果：回交 `partial` 与原因；原生结果和未知项都保留。
-- 重新安装：移除旧 Skill 的发现入口后，在新会话中重装上游、应用对应 diff，并重新跑
-  上述实际操作以及 Project/memory 完整案例；旧机的日志不能作为新安装通过。
+- 重新安装：保全旧 Skill 并从发现范围移出本次替换的入口后，从公开仓库取得完整模块，
+  安装固定上游运行程序；diff 在独立干净副本重建核验。新会话重新核七模块发现、实际调用
+  以及 Project/memory 完整案例；旧布局或旧机器的日志不能作为新布局通过。
 
 2026-10-22 的接入准备已经对上述六项执行真实小案例，并对四份固定 Skill 补丁执行
 `git apply --check`、实际应用和结果字节核对。该记录属于原安装上的接入准备，
 不表示已完成 GitHub 发布后的干净安装验收。SmokingGun 的 JavaScript 结构分析可用，
 TypeScript 项目语义范围仍是 partial；REA 只核了静态 JavaScript 发布样例；
 Flameox 只核了已有计时原件分析。完整验收以新安装的当次回执为准。
+
+此前的空 Skill 重装范围见[2026-10-22 验收记录](FRESH-INSTALL-20261022.md)。该记录保留原提交与布局身份；本次统一到 `modules/` 后的摘要、发现与调用须有对应的新记录，不继承此前通过。

@@ -48,7 +48,8 @@
           "sha256": "e9d891fb602d479c3fde0c3c9c9e5a606ed544a611c704411ed1264132901f13",
           "source": "applied patch"
         }
-      ]
+      ],
+      "skill_directory": "modules/gitcontribute"
     },
     {
       "id": "leantoken",
@@ -62,7 +63,7 @@
       "upstream_skill_source_path": "src/setup/plan.rs",
       "integration_kind": "project-maintained-complete-skill",
       "patch": null,
-      "companion": "companions/leantoken/SKILL.md",
+      "companion": "../modules/leantoken/SKILL.md",
       "reason": "Complete portable form of the locally maintained Skill; no upstream algorithm patch.",
       "package": {
         "registry": "npm",
@@ -77,9 +78,10 @@
         {
           "path": "SKILL.md",
           "sha256": "f703b92201f45b51ff915518a7bdd91bfbf70d73602cbaac37e715313ff130f9",
-          "source": "companions/leantoken/SKILL.md"
+          "source": "../modules/leantoken/SKILL.md"
         }
-      ]
+      ],
+      "skill_directory": "modules/leantoken"
     },
     {
       "id": "rea",
@@ -165,7 +167,8 @@
             "sha256": "5f8c98c12da403905c0cd4a69b3c44304804294c98e3c222c459c91216963c29"
           }
         ]
-      }
+      },
+      "skill_directory": "modules/reverse-engineer-anything"
     },
     {
       "id": "jacobian",
@@ -225,7 +228,8 @@
             "sha256": "57b7b1a36f3f1ead74e71fbb83f91d101c5d8041669acb010ff37f4d4f6301d4"
           }
         ]
-      }
+      },
+      "skill_directory": "modules/jacobian-math"
     },
     {
       "id": "smokinggun",
@@ -285,7 +289,8 @@
             "sha256": "f865c3202331d7563d684a7ed36bb4a5b072f52952a707c8edfcb1e71de3ecb4"
           }
         ]
-      }
+      },
+      "skill_directory": "modules/smokinggun"
     },
     {
       "id": "flameox",
@@ -299,7 +304,7 @@
       "upstream_skill_source_path": null,
       "integration_kind": "project-maintained-complete-skill",
       "patch": null,
-      "companion": "companions/flameox/SKILL.md",
+      "companion": "../modules/flameox/SKILL.md",
       "reason": "Complete portable form of the locally maintained Skill; no upstream algorithm patch.",
       "package": {
         "registry": "pypi",
@@ -313,7 +318,7 @@
         {
           "path": "SKILL.md",
           "sha256": "59a86517407000a00b128bee2f5cc731ec5b2f399d187ad980dafe183e051c24",
-          "source": "companions/flameox/SKILL.md"
+          "source": "../modules/flameox/SKILL.md"
         }
       ],
       "dependency_snapshot": {
@@ -325,7 +330,8 @@
             "sha256": "1d2cbd9c57c67acde41590eed002b472057ce2488453beb79afea4e5add836f7"
           }
         ]
-      }
+      },
+      "skill_directory": "modules/flameox"
     },
     {
       "id": "electronics-design",
@@ -346,7 +352,16 @@
       ],
       "runtime_delivery": "Install declared upstream applications, CLI/connector and optional solvers as needed; no old local environment or private Project is bundled.",
       "license": "Per component; see module NOTICE and SOURCES.json.",
-      "source_manifest_sha256": "6eeeda4dac79f99ec05f359c80c029de074195d4837ca2cf19ed2e3b6d9ac4fa"
+      "source_manifest_sha256": "6eeeda4dac79f99ec05f359c80c029de074195d4837ca2cf19ed2e3b6d9ac4fa",
+      "skill_directory": "modules/electronics-design",
+      "integrated_skill_sha256": "77d225404ad82b29c9cd995941f6e91ba085dfd7816dba5f69b31de4a83b2ea9",
+      "skill_files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "77d225404ad82b29c9cd995941f6e91ba085dfd7816dba5f69b31de4a83b2ea9",
+          "source": "bundled electronics module; component provenance in SOURCES.json"
+        }
+      ]
     }
   ],
   "shared_bindings": {
@@ -371,5 +386,10 @@
       }
     ]
   },
-  "coverage": "COVERAGE.md"
+  "coverage": "COVERAGE.md",
+  "skill_layout": {
+    "kind": "bundled-professional-modules",
+    "directory_base": "repository root",
+    "policy": "Seven complete Skill directories under modules; runtime environments installed separately. Four unchanged diffs reproduce the bundled upstream-derived files. One discoverable copy per name."
+  }
 }

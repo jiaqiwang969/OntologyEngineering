@@ -16,15 +16,35 @@
 |---|---|---|
 | 工程本体 v2 | Project、工程检查、语义执行、生成合同、版本与采用 | 本仓库统一构建 |
 | engineering-memory | 原文来源、时间线、经验修订、召回、项目交接与反馈 | 随本仓库构建，入口 `oev2 memory` |
-| GitContribute | 仓库、相关工作与贡献约束调查 | 用户安装上游版本及必要 diff |
-| LeanToken | 本地源码定位与精确上下文回读 | 同上 |
-| REA | 发布制品、二进制与限定运行行为调查 | 同上 |
-| Jacobian | 精确计算、有限搜索与数学结构分析 | 同上 |
-| SmokingGun | 静态复杂度候选与优化证据组织 | 同上 |
-| flameox | 已有性能原件分析及授权工作负载测量 | 同上 |
-| electronics-design | 电子设计、原理图/PCB、器件模型与工人接线指导 | 本仓库提供统一 Skill 与五个内部模块，运行工具按模块说明安装 |
+| [GitContribute](modules/gitcontribute/SKILL.md) | 仓库、相关工作与贡献约束调查 | Skill 随仓库维护，运行程序从固定上游安装 |
+| [LeanToken](modules/leantoken/SKILL.md) | 本地源码定位与精确上下文回读 | 同上 |
+| [REA](modules/reverse-engineer-anything/SKILL.md) | 发布制品、二进制与限定运行行为调查 | 同上 |
+| [Jacobian](modules/jacobian-math/SKILL.md) | 精确计算、有限搜索与数学结构分析 | 同上 |
+| [SmokingGun](modules/smokinggun/SKILL.md) | 静态复杂度候选与优化证据组织 | 同上 |
+| [Flameox](modules/flameox/SKILL.md) | 已有性能原件分析及授权工作负载测量 | 同上 |
+| [electronics-design](modules/electronics-design/SKILL.md) | 电子设计、原理图/PCB、器件模型与工人接线指导 | Skill 与五个内部模块随仓库维护，运行工具按模块说明安装 |
 
-任务按缺口选择工具，不要求每次全部调用。完整版本、上游安装入口、四份 diff、两份本地完整 Skill 和验证方法见[专业工具安装与接入](docs/TOOL-INTEGRATIONS.md)。六模块的当前源码、引用资源及共享接续代码对应关系见[覆盖表](integrations/COVERAGE.md)；新用户无需维护者的旧工作目录。上游实现由各项目提供。macOS arm64 安装 Jacobian 时还需核 [Z3 wheel 平台元数据修正](integrations/runtime-locks/Z3-MACOS.md)。
+七个专业 Skill 统一位于本仓库的 `modules/`，连同工程本体入口与 engineering-memory 一起维护：
+
+```text
+ontology-engineering-unified/
+├── SKILL.md
+├── modules/
+│   ├── engineering-memory/skill/SKILL.md
+│   ├── gitcontribute/SKILL.md
+│   ├── leantoken/SKILL.md
+│   ├── reverse-engineer-anything/SKILL.md
+│   ├── jacobian-math/SKILL.md
+│   ├── smokinggun/SKILL.md
+│   ├── flameox/SKILL.md
+│   └── electronics-design/SKILL.md
+├── integrations/   # 上游身份、diff、依赖锁与共享接续代码
+└── var/            # 本机运行程序、数据与验收记录
+```
+
+例如 Codex 可将整个仓库放在 `~/.codex/skills/ontology-engineering-unified/`；fleet 独立保留在其原有 Skill 目录。不要将七项再复制到宿主 Skill 顶层，也不要把旧安装留作同名入口。宿主发现和 MCP 连接在新会话中分别核验。
+
+任务按缺口选择工具，不要求每次全部调用。完整版本、上游运行程序安装、四份原始 diff 及重建核验方法见[专业工具安装与接入](docs/TOOL-INTEGRATIONS.md)。六模块的 16 份 Skill 文件及其共享接续代码对应关系见[覆盖表](integrations/COVERAGE.md)；这些文件随仓库提供，新用户无需维护者的旧工作目录。上游实现由各项目提供，运行程序继续放在 `var/` 等用户选定位置；移动 Skill 不搬迁运行环境。macOS arm64 安装 Jacobian 时还需核 [Z3 wheel 平台元数据修正](integrations/runtime-locks/Z3-MACOS.md)。
 
 [electronics-design](modules/electronics-design/SKILL.md) 是第七种专业能力，电子任务只从它的 `SKILL.md` 进入，按需读取五个内部模块：`easyeda-agent`、`easyeda-api`、`easyeda-schematic-net-fanout`、`lceda-jlc-3d-model-extraction`、`make-worker-wiring-card`。安装说明见[电子设计模块](modules/electronics-design/README.md)；原图保持原样。
 
@@ -50,7 +70,7 @@ oev2 --root "$ONTOLOGY_ENGINEERING_ROOT" memory status
 
 安装器构建本体与记忆的八个原生程序，在 `var/install/` 保存二进制摘要、构建配置和安装身份。默认 development profile、两个编译任务；优化构建使用 `sh scripts/install.sh --release`。安装器不安装外部专业工具、不启动常驻服务，也不替换旧全局 `oe`。
 
-将本仓库 [SKILL.md](SKILL.md) 作为统一技能入口交给 Agent，按 [AGENTS.md](AGENTS.md) 配置项目、记忆及工具，新会话确认加载的是新入口。memory 默认使用本安装的 `var/memory/`；共享库通过 `oev2 memory --home /absolute/shared-memory …` 显式选择，不自动搜索其他 profile 的数据。
+将本仓库 [SKILL.md](SKILL.md) 作为统一技能入口交给 Agent，按 [AGENTS.md](AGENTS.md) 配置项目、记忆及工具；由该入口按需读取 `modules/` 下的专业 Skill。新会话确认加载路径及同名副本情况。先在仓库根运行 `python3 scripts/check_tool_skills.py` 核六工具完整 Skill 摘要，再按 AGENTS 的方法检查宿主发现目录；文件核验不代替新会话的实际发现与调用。memory 默认使用本安装的 `var/memory/`；共享库通过 `oev2 memory --home /absolute/shared-memory …` 显式选择，不自动搜索其他 profile 的数据。
 
 平台资格以实际验证为准。原生 CAD 另需对应平台、SDK 与真实验收；一次源码编译不能授予跨平台或工程资格。
 

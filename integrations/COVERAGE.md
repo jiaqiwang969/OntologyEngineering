@@ -2,20 +2,24 @@
 
 本表从实际安装的六个 Skill 及其可达资源出发，对照固定上游和本项目实现。此前仅有“四个简短追加 diff + 两份说明”不足以复现原接续行为：通用接收器、明确当前 Project 的复核包装、显式记忆续接和部分本地规则遗漏。本次补齐它们，不把历史私人案例作为运行依赖。
 
-## 完整 Skill 文件
+## 随仓库维护的完整 Skill 文件
 
-每个文件的实际 SHA256 在 [tools.lock.json](tools.lock.json) 的 `skill_files` 中。四份补丁均对固定真实上游执行了 `git apply --check`、实际应用和输出字节核对。REA 的上游基线是 npm 发行包内的 Skill，不是仓库模板。
+六个模块直接位于仓库根的 `modules/`，每项路径在 [tools.lock.json](tools.lock.json) 的 `skill_directory` 中；每个文件的实际 SHA256 在 `skill_files` 中。四份补丁均对固定真实上游执行了 `git apply --check`、实际应用和输出字节核对。REA 的上游基线是 npm 发行包内的 Skill，不是仓库模板。
 
 | 当前 Skill 文件 | 新用户取得方式 | 处理 |
 |---|---|---|
-| GitContribute：SKILL.md、LOCAL.md、UPSTREAM.md | 上游 setup 生成的 Skill + `patches/gitcontribute-3.0.2-ontology.patch` | 保留完整上游规则、本地匿名联网/离线语料边界、精确 MCP 参数和完整接续 |
-| LeanToken：SKILL.md | `companions/leantoken/SKILL.md` | 保留本地维护的完整入口、显式 root、先 index、有界 context、generation/live bytes 及变更后重索引；不另装同名上游 Skill |
-| REA：SKILL.md 与 references 下六文件 | 完整 npm 6.5.0 Skill 目录 + `patches/rea-6.5.0-ontology.patch` | 六份 reference 与固定 npm 原件逐字节一致；保留 Peekaboo 后台规则、分页/原生 Evidence、安装/新 stdio/当前宿主身份区分及任务会话清退 |
-| Jacobian：SKILL.md | 固定上游 Skill + `patches/jacobian-0.23.0-ontology.patch` | 保留完整数学规则、独立验算、标量类型、可选后端边界与本地接续 |
-| SmokingGun：SKILL.md、LOCAL.md、UPSTREAM.md | 固定上游 Skill + `patches/smokinggun-5.0.0-ontology.patch` | 保留完整上游规则、Rust 结构覆盖边界、外部测量授权、可比性和接续 |
-| Flameox：SKILL.md | `companions/flameox/SKILL.md` | 保留完整本地入口、三层预算、采样内存边界、preserve→reopen→inspect_evidence、原样分页/重放和清退；不伪称上游 Skill |
+| GitContribute：SKILL.md、LOCAL.md、UPSTREAM.md | [`modules/gitcontribute/`](../modules/gitcontribute/SKILL.md)，由固定上游 + `patches/gitcontribute-3.0.2-ontology.patch` 重建 | 保留完整上游规则、本地匿名联网/离线语料边界、精确 MCP 参数和完整接续 |
+| LeanToken：SKILL.md | [`modules/leantoken/`](../modules/leantoken/SKILL.md) | 保留本地维护的完整入口、显式 root、先 index、有界 context、generation/live bytes 及变更后重索引；不另装同名上游 Skill |
+| REA：SKILL.md 与 references 下六文件 | [`modules/reverse-engineer-anything/`](../modules/reverse-engineer-anything/SKILL.md)，由完整 npm 6.5.0 Skill + `patches/rea-6.5.0-ontology.patch` 重建 | 六份 reference 与固定 npm 原件逐字节一致；保留 Peekaboo 后台规则、分页/原生 Evidence、安装/新 stdio/当前宿主身份区分及任务会话清退 |
+| Jacobian：SKILL.md | [`modules/jacobian-math/`](../modules/jacobian-math/SKILL.md)，由固定上游 + `patches/jacobian-0.23.0-ontology.patch` 重建 | 保留完整数学规则、独立验算、标量类型、可选后端边界与本地接续 |
+| SmokingGun：SKILL.md、LOCAL.md、UPSTREAM.md | [`modules/smokinggun/`](../modules/smokinggun/SKILL.md)，由固定上游 + `patches/smokinggun-5.0.0-ontology.patch` 重建 | 保留完整上游规则、Rust 结构覆盖边界、外部测量授权、可比性和接续 |
+| Flameox：SKILL.md | [`modules/flameox/`](../modules/flameox/SKILL.md) | 保留完整本地入口、三层预算、采样内存边界、preserve→reopen→inspect_evidence、原样分页/重放和清退；不伪称上游 Skill |
 
-共 16 个文件：3 + 1 + 7 + 1 + 3 + 1。个人安装路径转换为用户配置的程序入口与 `ONTOLOGY_ENGINEERING_ROOT`。上游文件不需要随本仓库重复发行；按固定包取得并核摘要。本项目自己的六项差异和资源可完整重建。
+共 16 个文件：3 + 1 + 7 + 1 + 3 + 1，完整文件随本仓库维护，并保留原锁定摘要。个人安装路径已转换为用户配置的程序入口与 `ONTOLOGY_ENGINEERING_ROOT`。四份原始 diff 继续保留，仅用于干净上游副本的重建核验，不能重复应用到已整合模块。上游及派生文件的许可见 [licenses/](licenses/)。LeanToken/Flameox 维护源统一移到 `modules/`，不再保留 `companions/` 的同名发现入口。
+
+第七项 [electronics-design](../modules/electronics-design/SKILL.md) 同在 `modules/`，其五个内部模块、来源和验收范围见自己的 [README](../modules/electronics-design/README.md) 与 [SOURCES.json](../modules/electronics-design/SOURCES.json)。engineering-memory 路径保持 `modules/engineering-memory/skill/`，fleet 继续在本仓库外维护。
+
+在仓库根用 `python3 scripts/check_tool_skills.py` 核上述六项的全部摘要；用可重复的 `--skill-root` 检查宿主同名入口。文件核验、宿主实际发现、MCP 调用和工程能力分别取证。运行程序继续位于原已核 `var/` 或用户指定路径；Skill 目录统一不授予运行或工程资格。
 
 ## 可执行依赖闭包
 
@@ -44,3 +48,5 @@ REA 使用发布标签/发行包身份，不能用源码 main 的不同提交冒
 GitContribute 3.0.2 在 macOS 的源码将配置定位到系统用户的 Application Support 目录；`GITCONTRIBUTE_DATABASE` 只隔离数据库，XDG 配置变量不会覆盖其 macOS 配置路径。保持 HOME 不变时不得声称仅凭独立数据库实现了全部配置隔离；新安装验收应明确验证实际读取范围或使用独立系统用户。这是上游路径行为，不由 Skill 补丁虚构覆盖。
 
 未发布原始会话、私人 Project/证据、数据库、旧安装恢复备份及只服务一次历史案例的接收脚本。旧的 `six-tools.handoff/1` 不是当前 Project 合同。它们可用于解释历史，不属于新用户运行闭包，也不把旧性能收益作为这次新安装的通过。
+
+本表保留原接入准备的历史验证范围。此前的[公开重装验收](../docs/FRESH-INSTALL-20261022.md)另有固定提交；本次模块布局仍需对应的新会话发现和调用记录，不能以文件迁入替代验证。

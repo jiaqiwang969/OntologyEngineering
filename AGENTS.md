@@ -5,7 +5,7 @@
 ## 新用户配置
 
 1. 按 README 在真实目录运行 `sh scripts/install.sh`，核八程序与 `var/install/INSTALLATION.json`。安装身份是本机私有记录。已有 `var/maintenance/status.json` 可能描述历史发行，不能据此覆盖新安装身份。
-2. 将本仓库的 `SKILL.md` 接入当前 Agent 宿主。可克隆到宿主支持的 Skill 目录，或按宿主方式注册真实目录；不再维护脱离源码版本的另一份 Skill。新会话确认加载新入口。CLI 根使用真实路径，不能通过旧安装或软链接绕过来源检查。
+2. 将整个仓库接入当前 Agent 宿主的真实目录，例如 `~/.codex/skills/ontology-engineering-unified/`，以根 `SKILL.md` 统一导航。七个专业 Skill 固定在本根 `modules/`，engineering-memory 保留 `modules/engineering-memory/skill/`，fleet 在仓库外独立维护。按宿主支持的方式发现模块或从根入口按需读取，勿在宿主顶层另装七份 Skill。新会话核实际加载路径和同名副本；CLI 根使用真实路径，不能通过旧安装或软链接绕过来源检查。
 3. 按实际安装位置设置：
 
    ```sh
@@ -17,9 +17,19 @@
    ```
 
 4. memory 默认在本根 `var/memory/`。多个客户端共享时，显式指定同一真实目录：`oev2 memory --home /absolute/shared-memory status`，后续命令保持同一 home。空库是正常状态；已有数据先核格式与来源，不自动改写旧记录。
-5. 按任务安装专业工具并应用匹配上游版本的 diff，执行对应实际案例。四份 diff 按 `integrations/tools.lock.json` 的 `patch_targets` 应用，全部 `skill_files` 核摘要；LeanToken/flameox 安装 `integrations/companions/` 中的完整 Skill，避免同名副本。REA/SmokingGun 按 runtime-locks 执行 npm ci，两个 Python 工具分别建环境、安装各自 requirements，执行 pip check；macOS arm64 的 Z3 修正见 `integrations/runtime-locks/Z3-MACOS.md`。同平台的 REA/Ghidra 原生组件准备见 `integrations/runtime-locks/GHIDRA-MACOS.md`。MCP/CLI 配置按工具与当前宿主的说明完成，REA 启动环境和三个共享接续脚本见 `integrations/bindings/WORKFLOW.md`。不复制开发者个人配置。把实际程序、版本、摘要和接入记录写入本根 `var/capabilities/registry.json`，通过 `project tool-result registry` 核验。
+5. 七个专业 Skill 随本仓库维护，按任务另装固定上游运行程序并执行对应实际案例。`integrations/tools.lock.json` 的 `skill_directory` 指向仓库内模块目录；在仓库根运行 `python3 scripts/check_tool_skills.py` 核六项全部 16 个 `skill_files` 的摘要。四份 diff 保留用于从干净上游副本重建和复核，按 `patch_targets` 应用；不要在已整合的 `modules/` 上重复打补丁。LeanToken/Flameox 的完整维护源为 `modules/leantoken/` 与 `modules/flameox/`。REA/SmokingGun 按 runtime-locks 执行 npm ci，两个 Python 工具分别建环境、安装各自 requirements，执行 pip check；macOS arm64 的 Z3 修正见 `integrations/runtime-locks/Z3-MACOS.md`。同平台的 REA/Ghidra 原生组件准备见 `integrations/runtime-locks/GHIDRA-MACOS.md`。MCP 配置与 Skill 文件布局分开；勿运行会向顶层写 Skill 的上游 setup/upgrade。仅对选定客户端配置已核程序的 MCP 入口，配置前检查影响范围，不重启或改写其他会话的连接。REA 启动环境和三个共享接续脚本见 `integrations/bindings/WORKFLOW.md`。不复制开发者个人配置。把实际程序、版本、摘要和接入记录写入本根 `var/capabilities/registry.json`，通过 `project tool-result registry` 核验。
 6. 核 `oev2 project --help` 和 `oev2 memory --help`。缺工具、原件、模型资产或 SDK 时记录具体缺项。核心 Project 与经验读写无需专用判断服务。hook 为可选便利入口，显式命令必须能独立完成闭环。
 7. 接入实际工程项目时，先确认 Project ID，再按 [项目文件体系](docs/PROJECT-WORKSPACE.md)显式指定 `--project-home /absolute/project/.engineering`。安装根、项目数据根与 memory home 分开；在该工程项目的宿主 AGENTS 或配置中写入恢复命令与明确身份。源码候选、实际安装与新会话接续分别核验；不以文件存在认定自动 hook 已生效。
+
+安装或升级后检查宿主的全部实际 Skill 搜索目录。以下命令只读核摘要和同名入口；`--skill-root` 可重复，未使用的宿主目录可省略：
+
+```sh
+cd "$ONTOLOGY_ENGINEERING_ROOT"
+python3 scripts/check_tool_skills.py
+python3 scripts/check_tool_skills.py --skill-root "$HOME/.codex/skills" --skill-root "$HOME/.agents/skills"
+```
+
+发现同名入口时先核内容、来源及使用者，保全需留存的旧文件，再从宿主发现目录移出本次替换的副本；不要删除私人数据或修改其他会话。运行环境继续使用其已核绝对路径。新会话确认七模块、memory 与本体入口来自同一 checkout；MCP 还需实际发现和调用，不能由 Skill 文件存在推定连接成功。
 
 电子任务由第七个专业模块 `modules/electronics-design/SKILL.md` 统一进入；内部五个模块按该入口读取 `GUIDE.md`，不另装为五个独立 Skill。先读其 README 和 SOURCES.json，按实际需要安装 EasyEDA、CLI/连接器或求解器。调用辅助脚本时设置 `EASYEDA_SKILLS_DIR="$ONTOLOGY_ENGINEERING_ROOT/modules/electronics-design/modules"`，核实际安装和文档身份，不沿用旧机器路径或接收记录。原生 EDA、仿真、制造交付和实物检查分别验收。
 
@@ -46,10 +56,10 @@
 - 构建用锁定工具链与 Cargo.lock；生成失败不切换工作版本，漂移检查比较重新实际生成的字节。源码、程序、安装、工具执行与工程采用分别取证。
 - CAD 使用 v2 自有 Rust、NX controller/worker 或 SW worker 与显式原生 SDK。不得调用旧 cad-agent 脚本、环境、MCP、Journal runner 或默认配置作为入口/备用；Fusion 不执行。详见 `docs/CAD-INDEPENDENT-EXECUTION.md`。
 - `var/` 保存私有任务、项目、记忆、运行及维护记录，`sources/` 保存合法原件与私有索引，两者不进入分发。凭据、账号、设备配置、私人 session 不发布。公开案例必须可独立取得。
-- 外部工具升级时核上游身份，重查 diff，重跑受影响案例；安装成功不等于结果合同或工程能力通过。
+- 外部工具升级时核上游身份，从干净副本重查 diff，再更新模块及锁内摘要，重跑受影响案例；查宿主同名副本，避免上游 setup/upgrade 又生成顶层 Skill。安装成功不等于结果合同或工程能力通过。
 
 ## 重新安装验收
 
 固定远端待测提交，保全旧安装与私人数据后，从 Agent 可发现目录移除本次涉及的旧 Skill。使用新会话、独立配置和空测试记忆库，不能调用备份中的入口。
 
-仅依公开仓库、上游依赖、必要 diff 和资料链接完成安装；验证空库启动、Project—工具—memory 完整回流、各工具案例，以及缺工具、版本不匹配、来源篡改、条件变化时的拒绝。真实工程能力与未验证平台按其范围继续保留。
+仅依公开仓库内的模块、上游运行依赖和资料链接完成安装；必要 diff 另在干净上游副本验证可重建性；验证空库启动、Project—工具—memory 完整回流、各工具案例，以及缺工具、版本不匹配、来源篡改、条件变化时的拒绝。真实工程能力与未验证平台按其范围继续保留。

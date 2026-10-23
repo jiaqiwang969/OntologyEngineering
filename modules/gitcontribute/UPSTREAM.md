@@ -1,0 +1,13 @@
+---
+name: gitcontribute
+description: >
+  Use for source-backed GitHub contribution workflows: repository and code research, issue drafting and triage, pre-filing duplicate checks, pull request review, contributor portfolio analysis, contribution preparation, competing-work detection, investigations, workspaces, and validation evidence. Trigger on requests such as "check for a related issue before filing", "avoid duplicate reports", or "triage these findings". Do not use for simple one-off GitHub lookups, ordinary local git commands, or GitHub mutations.
+---
+
+<!-- Managed by gitcontribute setup. Manual edits may be replaced. -->
+
+When the user's request matches the description above, prefer the GitContribute MCP server. Discover its tools (names prefixed with mcp__gitcontribute__) and choose the narrowest tool for the task. Let the tool schemas and contracts guide arguments; do not invent unsupported fields.
+
+For issue drafting, triage, and duplicate checks: start exact issue audits with corpus.get_coverage and corpus.get_threads; inspect corpus coverage and freshness in each result; when an item is missing or incomplete, replay its typed exact-thread or repository recovery action, poll jobs.get, and reread the stored result before continuing. Search stored threads offline; broaden strict multi-term searches when needed; hydrate only exact finalists; then verify current state with live GitHub before filing. Never treat zero matches as absence when coverage is incomplete or the query may be too strict.
+
+Use native GitHub tools for final live-state verification and every mutation. If no GitContribute tool fits, fall back to ordinary tools.

@@ -724,7 +724,12 @@ fn merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observation
     assert_eq!(updated["update"]["retained"], json!(["unicode"]));
     assert_eq!(updated["index"]["tools"][0], original["index"]["tools"][0]);
     assert_eq!(updated["index"]["counts"]["pages"], 4);
-    assert_eq!(fs::read_to_string(&log).unwrap().lines().count(), 2);
+    assert_eq!(updated["update"]["extracted_source_ids"], json!([]));
+    assert_eq!(
+        updated["update"]["reused_source_ids"],
+        json!(["second", "unicode"])
+    );
+    assert_eq!(fs::read_to_string(&log).unwrap().lines().count(), 0);
     // FTS rowids are reconstructed alongside the new page rows, not copied.
     let db =
         rusqlite::Connection::open(f.0.join("sources/.indexes/local-pdf/catalog.sqlite3")).unwrap();
@@ -897,6 +902,14 @@ fn merge_failure_and_conflicting_modes_leave_original_registration_intact() {
     registration::register(&f.0, &path, &options()).unwrap();
     let old = index_pair(&f);
     m["sources"][0]["edition"] = json!("updated");
+    // A changed original path still requires actual extraction, even when the
+    // bytes match. A metadata-only update no longer requires Poppler.
+    fs::copy(
+        f.0.join("sources/books/中文-original.pdf"),
+        f.0.join("sources/books/relocated.pdf"),
+    )
+    .unwrap();
+    m["sources"][0]["path"] = json!("relocated.pdf");
     save(&path, &m);
     let mut opts = RegistrationOptions {
         merge: true,
@@ -913,4 +926,228 @@ fn merge_failure_and_conflicting_modes_leave_original_registration_intact() {
             .contains("replace_merge_conflict")
     );
     assert_eq!(index_pair(&f), old);
+}
+
+fn native_page_rows(f: &Fixture) -> Vec<Value> {
+    let db =
+        rusqlite::Connection::open(f.0.join("sources/.indexes/local-pdf/catalog.sqlite3")).unwrap();
+    let mut statement = db.prepare("SELECT id,source_sha256,source_bytes,body,text_sha256,raw_text_sha256,raw_text_chars,text_chars,native_text_sparse,source_json FROM pages ORDER BY id").unwrap();
+    statement
+        .query_map([], |row| {
+            Ok(json!(
+                (0..10)
+                    .map(|i| match row.get_ref(i).unwrap() {
+                        rusqlite::types::ValueRef::Text(bytes) =>
+                            json!(std::str::from_utf8(bytes).unwrap()),
+                        rusqlite::types::ValueRef::Integer(n) => json!(n),
+                        _ => panic!("unexpected native row value"),
+                    })
+                    .collect::<Vec<_>>()
+            ))
+        })
+        .unwrap()
+        .map(Result::unwrap)
+        .collect()
+}
+
+#[test]
+fn metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search() {
+    let f = Fixture::new("metadata-navigation-reuse");
+    let (path, mut manifest, original_path) = manifest(&f);
+    manifest["sources"][0]["chapters"][0]["aliases"] = json!(["obsoletealiasword"]);
+    let second = second_source(&f, &manifest["sources"][0]);
+    manifest["sources"].as_array_mut().unwrap().push(second);
+    save(&path, &manifest);
+    let initial = registration::register(&f.0, &path, &options()).unwrap();
+    let before_pair = index_pair(&f);
+    let before_native = native_page_rows(&f);
+    let before_original = fs::read(&original_path).unwrap();
+    let old_registration: Value = serde_json::from_slice(&before_pair.1).unwrap();
+    manifest["sources"].as_array_mut().unwrap().pop();
+    manifest["sources"][0]["title"] = json!("Corrected title");
+    manifest["sources"][0]["edition"] = json!("Corrected bibliographic edition");
+    manifest["sources"][0]["chapters"] = json!([
+        {"id":"first","title":"Corrected first chapter","start_page":1,"end_page":1,"aliases":["updatedaliasword"]},
+        {"id":"remaining","title":"Blank and image pages","start_page":2,"end_page":3,"aliases":[]}
+    ]);
+    save(&path, &manifest);
+    let mut opts = RegistrationOptions {
+        merge: true,
+        dry_run: true,
+        tools: absent_tools(&f),
+        ..options()
+    };
+    let preview = registration::register(&f.0, &path, &opts).unwrap();
+    assert_eq!(preview["status"], "preview");
+    assert_eq!(preview["update"]["updated"], json!(["unicode"]));
+    assert_eq!(preview["update"]["retained"], json!(["second"]));
+    assert_eq!(preview["update"]["extraction_required_ids"], json!([]));
+    assert_eq!(
+        preview["final_counts"],
+        json!({"catalogs":2,"chapters":3,"pages":4})
+    );
+    assert_eq!(index_pair(&f), before_pair);
+    opts.dry_run = false;
+    let updated = registration::register(&f.0, &path, &opts).unwrap();
+    assert_eq!(updated["status"], "registered");
+    assert_eq!(updated["published"], true);
+    assert_eq!(updated["update"]["updated"], json!(["unicode"]));
+    assert_eq!(updated["update"]["retained"], json!(["second"]));
+    assert_eq!(updated["update"]["extracted_source_ids"], json!([]));
+    assert_eq!(
+        updated["update"]["reused_source_ids"],
+        json!(["second", "unicode"])
+    );
+    assert_eq!(updated["index"]["counts"]["chapters"], 3);
+    assert_eq!(updated["index"]["counts"]["pages"], 4);
+    assert_eq!(updated["index"]["tools"], initial["index"]["tools"]);
+    assert_eq!(native_page_rows(&f), before_native);
+    assert_eq!(fs::read(&original_path).unwrap(), before_original);
+    let after_pair = index_pair(&f);
+    assert_ne!(
+        after_pair, before_pair,
+        "navigation update must publish a new identity"
+    );
+    let registered: Value = serde_json::from_slice(&after_pair.1).unwrap();
+    assert_eq!(registered["sources"][1], old_registration["sources"][1]);
+    assert_eq!(
+        registered["sources"][0]["chapters"],
+        manifest["sources"][0]["chapters"]
+    );
+    let db =
+        rusqlite::Connection::open(f.0.join("sources/.indexes/local-pdf/catalog.sqlite3")).unwrap();
+    let matched: String = db.query_row("SELECT p.id FROM search JOIN pages p ON p.rowid=search.rowid WHERE search MATCH 'updatedaliasword'", [], |r|r.get(0)).unwrap();
+    assert_eq!(matched, "local_pdf:unicode:page:1");
+    let obsolete: i64 = db.query_row("SELECT count(*) FROM search JOIN pages p ON p.rowid=search.rowid WHERE search MATCH 'obsoletealiasword' AND p.catalog='local_pdf:unicode'", [], |r|r.get(0)).unwrap();
+    assert_eq!(obsolete, 0);
+    drop(db);
+    let no_op = registration::register(&f.0, &path, &opts).unwrap();
+    assert_eq!(no_op["status"], "unchanged");
+    assert_eq!(index_pair(&f), after_pair);
+}
+
+#[test]
+fn metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply() {
+    let f = Fixture::new("metadata-navigation-range");
+    let (path, mut manifest, _) = manifest(&f);
+    registration::register(&f.0, &path, &options()).unwrap();
+    let before = index_pair(&f);
+    manifest["sources"][0]["chapters"][0]["end_page"] = json!(4);
+    save(&path, &manifest);
+    for dry_run in [true, false] {
+        let opts = RegistrationOptions {
+            merge: true,
+            dry_run,
+            tools: absent_tools(&f),
+            ..options()
+        };
+        let error = registration::register(&f.0, &path, &opts).unwrap_err();
+        assert!(
+            error.to_string().contains("chapter_outside_document"),
+            "{error:#}"
+        );
+        assert_eq!(index_pair(&f), before);
+    }
+}
+
+#[test]
+fn metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration() {
+    for fault in ["chapter", "page"] {
+        let f = Fixture::new(&format!("metadata-rebound-{fault}"));
+        let (path, mut manifest, _) = manifest(&f);
+        registration::register(&f.0, &path, &options()).unwrap();
+        manifest["sources"][0]["chapters"][0]["title"] = json!("Corrected navigation");
+        save(&path, &manifest);
+        let directory = f.0.join("sources/.indexes/local-pdf");
+        let db = rusqlite::Connection::open(directory.join("catalog.sqlite3")).unwrap();
+        // Make a row agree with the desired NEW declaration, but not the bound
+        // OLD declaration. Rebinding the whole file hash must not repair this.
+        if fault == "chapter" {
+            db.execute(
+                "UPDATE chapters SET title=?,source_json=?",
+                rusqlite::params![
+                    "Corrected navigation",
+                    serde_json::to_string(&manifest["sources"][0]["chapters"][0]).unwrap()
+                ],
+            )
+            .unwrap();
+        } else {
+            db.execute(
+                "UPDATE pages SET titles_json=?",
+                [serde_json::to_string(&json!([{"text":"Corrected navigation","origin":"declared_chapter_navigation"}])).unwrap()],
+            ).unwrap();
+        }
+        drop(db);
+        let mut registration: Value =
+            serde_json::from_slice(&fs::read(directory.join("registration.json")).unwrap())
+                .unwrap();
+        registration["index_sha256"] =
+            json!(sha256(fs::read(directory.join("catalog.sqlite3")).unwrap()));
+        save(&directory.join("registration.json"), &registration);
+        let rebound = index_pair(&f);
+        for dry_run in [true, false] {
+            let opts = RegistrationOptions {
+                merge: true,
+                dry_run,
+                tools: absent_tools(&f),
+                ..options()
+            };
+            let error = registration::register(&f.0, &path, &opts).unwrap_err();
+            let expected = if fault == "chapter" {
+                "local_pdf_reuse_chapter_mismatch"
+            } else {
+                "local_pdf_reuse_page_binding_mismatch"
+            };
+            assert!(error.to_string().contains(expected), "{error:#}");
+            assert_eq!(index_pair(&f), rebound);
+        }
+    }
+}
+
+#[test]
+#[cfg(unix)]
+fn changed_original_identity_and_replace_still_require_native_extraction() {
+    for kind in ["path", "sha256", "replace"] {
+        let f = Fixture::new(&format!("metadata-extraction-{kind}"));
+        let (path, mut manifest, original) = manifest(&f);
+        registration::register(&f.0, &path, &options()).unwrap();
+        let before = index_pair(&f);
+        match kind {
+            "path" => {
+                fs::copy(&original, f.0.join("sources/books/relocated.pdf")).unwrap();
+                manifest["sources"][0]["path"] = json!("relocated.pdf");
+            }
+            "sha256" => {
+                let mut bytes = fs::read(&original).unwrap();
+                assert!(bytes.starts_with(b"%PDF-1.4"));
+                bytes[7] = b'5';
+                fs::write(&original, &bytes).unwrap();
+                manifest["sources"][0]["sha256"] = json!(sha256(bytes));
+            }
+            _ => {}
+        }
+        save(&path, &manifest);
+        let mut opts = RegistrationOptions {
+            merge: kind != "replace",
+            replace: kind == "replace",
+            dry_run: true,
+            tools: absent_tools(&f),
+            ..options()
+        };
+        let preview = registration::register(&f.0, &path, &opts).unwrap();
+        assert_eq!(
+            preview["update"]["extraction_required_ids"],
+            json!(["unicode"])
+        );
+        assert!(preview["final_counts"]["pages"].is_null());
+        opts.dry_run = false;
+        assert!(registration::register(&f.0, &path, &opts).is_err());
+        assert_eq!(index_pair(&f), before);
+        let (counted, log) = counted_tools(&f);
+        opts.tools = counted;
+        let result = registration::register(&f.0, &path, &opts).unwrap();
+        assert_eq!(result["update"]["extracted_source_ids"], json!(["unicode"]));
+        assert_eq!(result["update"]["reused_source_ids"], json!([]));
+        assert_eq!(fs::read_to_string(log).unwrap().lines().count(), 2);
+    }
 }

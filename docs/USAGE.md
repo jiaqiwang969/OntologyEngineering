@@ -69,6 +69,8 @@ export OEV2_PROJECT_HOME="/absolute/engineering-project/.engineering"
 
 PDF 投放后先运行 `knowledge library audit-pdf --directory sources/books`，目录由 Agent 按本次范围显式选择；`--index` 默认 `sources/.indexes/local-pdf`，`--output-dir var/...` 可保存报告。分别看已登记原件的缺失/变化、未登记 PDF、同摘要重复及逐书已有原生文本覆盖，索引不可核时保留未知。审计只读原件与索引，不自动登记、OCR 或删除重复；零文本不推定扫描件，`audited` 不表示全部接入。再按实际缺口准备增量预览，用户不需填结构化记录。
 
+`--merge` 更新同一 ID、路径及 SHA256 的题名、版次或章节时，复用已核原生页文本和原提取工具身份，按新导航重建 FTS，仍记录 `updated`。只读预览按已知物理页数核章节边界；路径/摘要改变或使用 `--replace` 仍提取原件。此复用不补空文本、不修复 OCR 或损坏索引，也不代表全书本体化；旧包当前登记状态仍可能 `changed`。
+
 新本地 PDF 查询绑定单来源、章节导航摘要与实际索引目录。`knowledge verify-packet` 的 `source_registration_freshness` 分别报告各候选的当前登记状态；无关新书不会仅因全库摘要改变使旧书失效。原件回读可仍为 `ready_for_agent_review`，同时登记已变或已移除。要求当前本地 PDF 依据时，对 `verify-packet` 与 `feedback` 使用 `--require-current-registration`；包内全部候选必须是已绑定且 `current` 的本地 PDF，否则严格复核或反馈被拒绝。旧包需当前查询重新绑定；米思米与混合非适用包沿各自来源合同。默认历史回读语义保留，登记变化不自动扫描 Project 或改写旧包、反馈与决定；书目当前不代表出版方最新版或工程适用。
 
 工程 work 的来源、功能、物理机理、前提和反例见[工程工作](../references/engineering-work.md)、[工程前提](../references/engineering-premises.md)。必要工程条件或原验收不能因局部计算成功而省略。

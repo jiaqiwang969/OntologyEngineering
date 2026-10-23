@@ -781,8 +781,24 @@ fn local_source_currentness_distinguishes_metadata_and_navigation_changes() {
             "edition" => manifest["sources"][0]["edition"] = json!("corrected-fixture-edition"),
             _ => manifest["sources"][0]["chapters"][0]["aliases"] = json!(["corrected navigation"]),
         }
-        let result = apply_currentness_manifest(&f, &manifest, true, false);
+        f.write("sources/books/currentness-manifest.json", &manifest);
+        let result = registration::register(
+            &f.path,
+            &f.path.join("sources/books/currentness-manifest.json"),
+            &RegistrationOptions {
+                merge: true,
+                tools: PopplerTools {
+                    pdfinfo: f.path.join("absent-pdfinfo"),
+                    pdftotext: f.path.join("absent-pdftotext"),
+                    pdftoppm: f.path.join("absent-pdftoppm"),
+                },
+                ..Default::default()
+            },
+        )
+        .unwrap();
         assert_eq!(result["update"]["updated"], json!(["conditions"]));
+        assert_eq!(result["update"]["extracted_source_ids"], json!([]));
+        assert_eq!(result["update"]["reused_source_ids"], json!(["conditions"]));
         assert_eq!(
             before,
             fs::read(f.path.join("sources/books/条件-original.pdf")).unwrap()

@@ -168,7 +168,18 @@ impl Plan {
                         reuse.insert((*id).to_owned());
                     }
                 }
-                Some(_) => updated.push(*id),
+                Some(prior) => {
+                    updated.push(*id);
+                    // Navigation and descriptive metadata do not change native
+                    // page text. Keep the update visible while reusing only the
+                    // same explicitly identified original in a merge.
+                    if options.merge
+                        && Path::new(text(prior, "path")?) == Path::new(text(source, "path")?)
+                        && prior["sha256"] == source["sha256"]
+                    {
+                        reuse.insert((*id).to_owned());
+                    }
+                }
             }
         }
         for id in old.keys().filter(|id| !supplied.contains_key(*id)) {
@@ -259,7 +270,11 @@ impl Plan {
         }
     }
     pub fn is_noop(&self, options: &RegistrationOptions) -> bool {
-        options.merge && self.reuse.len() == self.sources.len()
+        options.merge
+            && self.reuse.len() == self.sources.len()
+            && ["added", "updated", "removed"]
+                .iter()
+                .all(|key| self.update[*key].as_array().is_some_and(Vec::is_empty))
     }
 }
 
@@ -338,8 +353,7 @@ impl Counts {
     }
 }
 
-pub(super) fn insert_chapters(db: &Connection, source: &Value) -> Result<()> {
-    let code = format!("local_pdf:{}", text(source, "id")?);
+fn validate_chapter_bounds(source: &Value) -> Result<()> {
     for chapter in source["chapters"].as_array().expect("validated") {
         ensure!(
             chapter["end_page"].as_u64().expect("validated")
@@ -348,6 +362,14 @@ pub(super) fn insert_chapters(db: &Connection, source: &Value) -> Result<()> {
                     .context("local_pdf_page_count_invalid")?,
             "local_pdf_chapter_outside_document"
         );
+    }
+    Ok(())
+}
+
+pub(super) fn insert_chapters(db: &Connection, source: &Value) -> Result<()> {
+    validate_chapter_bounds(source)?;
+    let code = format!("local_pdf:{}", text(source, "id")?);
+    for chapter in source["chapters"].as_array().expect("validated") {
         db.execute(
             "INSERT INTO chapters VALUES (?,?,?,?,?,?)",
             params![
@@ -471,14 +493,25 @@ pub(super) fn insert_page(db: &Connection, row: &Value, search: &Value) -> Resul
 }
 
 /// Batches keep the read adapter's per-query budget. Rebuild rowids and FTS from
-/// verified native page text and the unchanged declared navigation.
+/// verified native page text and the current declared navigation. Old pages and
+/// chapters must first match the old declaration in full; a metadata correction
+/// cannot silently repair or legitimize a damaged prior snapshot.
 pub(super) fn reuse(
     read: &ReadIndex,
+    previous: &Value,
     source: &Value,
     options: &RegistrationOptions,
     counts: &mut Counts,
     mut accept: impl FnMut(Value, Value) -> Result<()>,
 ) -> Result<Value> {
+    ensure!(
+        ["id", "sha256", "bytes", "page_count"]
+            .iter()
+            .all(|key| previous[*key] == source[*key])
+            && Path::new(text(previous, "path")?) == Path::new(text(source, "path")?),
+        "local_pdf_reuse_source_identity_mismatch"
+    );
+    validate_chapter_bounds(source)?;
     ensure!(
         read.meta["extraction"]
             == "pdftotext -layout -enc UTF-8; horizontal whitespace collapsed; no OCR"
@@ -546,7 +579,7 @@ pub(super) fn reuse(
         actual_count.len() == 1 && actual_count[0]["pages"] == page_count,
         "local_pdf_reuse_page_count_mismatch"
     );
-    let expected_chapters = source["chapters"].as_array().expect("validated");
+    let expected_chapters = previous["chapters"].as_array().expect("validated");
     let actual_chapters = read.rows(
         "SELECT * FROM chapters WHERE catalog=? ORDER BY id",
         &[&code],
@@ -602,10 +635,11 @@ pub(super) fn reuse(
                     && raw_chars <= options.limits.page_bytes as u64,
                 "local_pdf_reuse_page_bounds_invalid"
             );
-            let (expected, search) = page_record(source, offset, body, raw_sha, raw_chars)?;
+            let (expected, _) = page_record(previous, offset, body, raw_sha, raw_chars)?;
             ensure!(row == expected, "local_pdf_reuse_page_binding_mismatch");
-            counts.add_page(&row)?;
-            accept(row, search)?;
+            let (rebuilt, search) = page_record(source, offset, body, raw_sha, raw_chars)?;
+            counts.add_page(&rebuilt)?;
+            accept(rebuilt, search)?;
         }
     }
     ensure!(offset == page_count, "local_pdf_reuse_page_count_mismatch");

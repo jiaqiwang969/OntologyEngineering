@@ -75,7 +75,7 @@ Agent 根据审计结果辨认本次要接入的文件，再准备下节的 `--m
 
 比较本次文件与已有完整书目：记录稳定来源 ID、题名、版次、来源和取得方式、文件大小、SHA256、实际路径。相同摘要先标记重复，不擅自删除；同名不同摘要需辨认新版、修订、扫描差异或损坏。新版保存与旧版关系，不能沿用旧版的页码和采用结果。路径变化保留原来源身份及新回执，不只改显示名称。
 
-登记清单是私有资料。当前 PDF 登记合同为 `ontology-engineering.local-pdf-manifest/v1`，由 Agent 按实际 `knowledge register` 合同生成，包含 `id`、`title`、`edition`、`path`、`sha256`、`chapters`；来源与许可等补充记录另存私有目录，不向严格合同随意加字段。相对原件路径相对于清单所在目录解析，登记前核对实际解析结果。
+登记清单是私有资料。当前 PDF 登记合同为 `ontology-engineering.local-pdf-manifest/v1`，由 Agent 按实际 `knowledge register` 合同生成，包含 `id`、`title`、`edition`、`path`、`sha256`、`chapters`；来源与许可等补充记录另存私有目录，不向严格合同随意加字段。相对原件路径相对于清单所在目录解析，且不能含 `..`。下例清单位于 `var/source-intake/`，其中原件 `path` 应由 Agent 填为本安装根 `sources/` 下的真实绝对路径；不要用 `../../sources/...`，也不要原样填写环境变量字符串。
 
 ### 2. 按资料类型处理
 
@@ -99,7 +99,9 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 | `--replace` | 按本次完整清单重建；未列出的旧来源退出该索引。 |
 | `--dry-run` | 预览所选模式的输入与差异，可配合 `--merge` 或 `--replace`；不发布变更。 |
 
-`--merge` 与 `--replace` 互斥。合并时，摘要、路径与导航等身份未变的来源复用已有页记录及原提取工具身份，只对新增或需要重提取的来源执行提取；全部相同返回 `unchanged`，索引字节保持。`preview`、`unchanged`、`registered` 分别表示预览、无需修改和已登记，均不等于工程采用。核结果 `update` 中的 `mode`、`added`、`updated`、`unchanged`、`retained`、`removed`、`final_source_count`，以及预览的 `extraction_required_ids`、实际执行的 `reused_source_ids` / `extracted_source_ids`，确认旧来源没有意外退出。
+`--merge` 与 `--replace` 互斥。合并时，同一来源 ID 的原件路径和 SHA256 未变，题名、版次或章节导航修订可复用已核原生页文本与原提取工具身份，不调用 Poppler 重提取；按新导航重建章节、页关联及全文检索索引（FTS）。这仍是 `updated`，不是 `unchanged`。`--dry-run` 只读核验，并按已有物理总页数检查新章节范围；实际执行重新核输入后才发布。新来源、原件路径或摘要改变，以及 `--replace`，仍需提取原件。
+
+全部身份和导航相同才返回 `unchanged`，索引字节保持。`preview`、`unchanged`、`registered` 分别表示预览、无需修改和已登记，均不等于工程采用。核结果 `update` 中的 `mode`、`added`、`updated`、`unchanged`、`retained`、`removed`、`final_source_count`，以及预览的 `extraction_required_ids`、实际执行的 `reused_source_ids` / `extracted_source_ids`，确认旧来源没有意外退出。同原件的描述或导航更新也可能使旧查询包的 `source_registration_freshness` 为 `changed`，须按新登记查询复核；复用文本不会补齐空页、修复 OCR 或损坏索引，也不代表全书已本体化。
 
 已有交付清单时，`knowledge library source-delivery register` 同样支持 `--merge`、`--replace`、`--dry-run`。例如只接入清单中的一项，用 `--select` 配合合并：
 
@@ -111,6 +113,8 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 ```
 
 **完整重建仍使用 `--replace`。** 安装根或原件路径迁移时保全旧清单、索引与回执，准备包含全部保留来源的清单，先用 `--replace --dry-run` 核移除项，再显式重建。仅传新书或以 `--select` 选一项后执行 `--replace`，会使其他书退出目标索引。完成后核全部来源、页数和代表性命中；失败和未知继续保留。
+
+`--replace` 也须核验旧登记和索引，不能用来覆盖损坏的旧索引。先保全原件、故障索引与回执，由 Agent 按可信完整清单在新的 `--index sources/.indexes/…` 位置建库，再对该索引审计并用 `knowledge query --provider local-pdf --local-index sources/.indexes/…` 核验。旧查询包仍绑定原索引，不能静默切换到新库。
 
 米思米目录使用既有供应商读取流程，保留目录版次、原页、完整型号、选项与安装条件；案例图、目录参数、已下载 CAD 和原生模型核验分别记录。历史资料不替代当前型号规格、价格或交期核查，CAD 文件完整也不等于导入、保存重开或工程适用通过。具体边界见[工程工作中的供应商来源](../references/engineering-work.md)。供应商资料不因同在 `sources/` 就自动成为六书 PDF 索引的一部分。
 

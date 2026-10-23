@@ -280,7 +280,17 @@ pub(crate) fn register_with_guard(
         for source in &plan.sources {
             if let Some(old) = plan.reused(source, previous.as_ref()) {
                 let previous = previous.as_ref().expect("reuse has previous");
-                incremental::reuse(&previous.read, old, options, &mut measured, |_, _| Ok(()))?;
+                let mut registered = source.clone();
+                registered["bytes"] = old["bytes"].clone();
+                registered["page_count"] = old["page_count"].clone();
+                incremental::reuse(
+                    &previous.read,
+                    old,
+                    &registered,
+                    options,
+                    &mut measured,
+                    |_, _| Ok(()),
+                )?;
             }
         }
         if plan.is_noop(options) {
@@ -336,6 +346,7 @@ pub(crate) fn register_with_guard(
             let observation = incremental::reuse(
                 &previous.read,
                 old,
+                &registered,
                 options,
                 &mut counts,
                 |record, search| incremental::insert_page(&db, &record, &search),
@@ -345,6 +356,9 @@ pub(crate) fn register_with_guard(
                 json!({"source_id":source["id"],"previous_index":previous.read.identity(),
                 "previous_registration_sha256":previous.snapshot["registration_sha256"],
                 "previous_index_fingerprint":previous.read.meta["fingerprint"],
+                "navigation":"rebuilt_from_current_declaration",
+                "previous_chapters_sha256":oe_core::json::canonical_digest(&old["chapters"])?,
+                "current_chapters_sha256":oe_core::json::canonical_digest(&registered["chapters"])?,
                 "extraction":"reused_verified_native_text; no Poppler invocation"}),
             );
         } else {

@@ -903,7 +903,7 @@ requirement="req_knowledge"
 module="knowledge"
 check="register"
 rust_path="crates/oe-knowledge/src/registration.rs"
-statement="Create and replace retain previous full-catalog semantics; explicit merge upserts supplied stable IDs and retains omitted sources. Merge and replace conflict. Reuse only source descriptors, current original hashes and prior registration/index bindings that match; old extraction observations retain identity. New or changed descriptors are extracted. Rebuild fresh owned SQLite tables with bounded rows; no arbitrary previous SQLite write triggers. No-op verifies current inputs and leaves index bytes unchanged. Dry-run returns differences without native extraction or publication, and never authorizes a later apply. Existing source/page/chapter/text budgets apply to the merged whole. Before publishing, recheck original manifests, source bytes and the exact previous snapshot; errors and races preserve previous files."
+statement="Create and replace retain previous full-catalog semantics; explicit merge upserts supplied stable IDs and retains omitted sources. Merge and replace conflict. In merge, reuse native text only for the same source ID, resolved original path and SHA256 after verifying current original bytes and prior registration/index bindings. Changed title, edition description or chapter navigation remains updated and rebuilds page navigation and FTS from verified old native text, preserving the original extraction observations. Verify old rows against old declarations before constructing new rows; validate new chapter bounds against the verified old page count, including preview. New IDs, changed path or SHA256 and replace require extraction. A fully reusable plan is not unchanged when declarations changed. Rebuild fresh owned SQLite tables with bounded rows; no arbitrary previous SQLite write triggers. No-op verifies current inputs and leaves index bytes unchanged. Dry-run returns differences without native extraction or publication, and never authorizes a later apply. Existing source/page/chapter/text budgets apply to the merged whole. Before publishing, recheck original manifests, source bytes and the exact previous snapshot; errors and races preserve previous files."
 severity="error"
 
 [[constraints]]
@@ -930,7 +930,7 @@ module="knowledge"
 constraint="local_pdf_explicit_incremental_registration"
 behavior="merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations"
 rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Actual small PDFs plus native invocation counter: adding one source preserves old rows and extraction observations; changing one source only extracts that ID; resulting FTS page identities remain bound."
+oracle="Actual small PDFs plus native invocation counter: adding one source preserves old rows and extraction observations; changing only navigation/edition reuses native text without invoking Poppler; resulting FTS page identities remain bound."
 scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
 [[validations]]
@@ -1607,3 +1607,49 @@ behavior="pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private
 rust_path="crates/oe-cli/tests/knowledge_cli.rs"
 oracle="Real CLI requires explicit directory, accepts audit without PATH or native tool arguments, finds a new PDF, stores a new private report, rejects overwrite and source-directory output, rejects whole source/index/private scope, preserves unknown when index absent and original/index bytes unchanged."
 scope="Synthetic macOS CLI fixture; no real Project or all-platform acceptance"
+
+# Same-original descriptive/navigation updates preserve verified extraction identity.
+[[constraints]]
+id="local_pdf_navigation_reuses_verified_native_text"
+requirement="req_knowledge"
+module="knowledge"
+check="reuse"
+rust_path="crates/oe-knowledge/src/registration/incremental.rs"
+statement="Metadata/navigation-only merge reuses verified native text only for identical stable ID, resolved path, SHA256, bytes and page count. Validate old chapters and complete old rows against the prior declaration before building new chapter associations, titles and FTS from the current declaration. Validate new ranges in preview and publication. Preserve original extraction observations and prior index/registration identity; record old and new chapter digests. A changed declaration publishes updated even when no extraction is needed, and old packet registration comparison remains changed. Repeating identical input is unchanged. New IDs, changed original identity and replace still need native extraction. No OCR repair, source adoption or silent index repair."
+severity="error"
+
+[[validations]]
+id="metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search"
+module="knowledge"
+constraint="local_pdf_navigation_reuses_verified_native_text"
+behavior="metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Actual native fixture then unavailable tool paths: preview and merge preserve original/native row/tool identities, retain omitted source, publish updated navigation with known page/chapter counts, new alias matches and old alias is removed for the changed source; repeated input leaves index bytes unchanged."
+scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
+
+[[validations]]
+id="metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply"
+module="knowledge"
+constraint="local_pdf_navigation_reuses_verified_native_text"
+behavior="metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="New chapter end beyond verified page count fails both preview and apply with unchanged prior index pair."
+scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
+
+[[validations]]
+id="changed_original_identity_and_replace_still_require_native_extraction"
+module="knowledge"
+constraint="local_pdf_navigation_reuses_verified_native_text"
+behavior="changed_original_identity_and_replace_still_require_native_extraction"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Path-only change, changed PDF bytes and replacement require extraction in preview, refuse absent tools without publishing, then invoke actual counted tools and publish extracted IDs."
+scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
+
+[[validations]]
+id="metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration"
+module="knowledge"
+constraint="local_pdf_navigation_reuses_verified_native_text"
+behavior="metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Alter old chapter or old page navigation, rebind the outer index SHA, then metadata merge preview and apply must reject disagreement with the old declaration and leave the prior pair byte-exact."
+scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"

@@ -1228,6 +1228,14 @@
 <urn:oev2:design:centered_hole_count_and_mating> <urn:oev2:design:requirement> <urn:oev2:design:req_engineering> .
 <urn:oev2:design:centered_hole_count_and_mating> <urn:oev2:design:severity> "error" .
 <urn:oev2:design:centered_hole_count_and_mating> <urn:oev2:design:statement> "孔列从有来源的十进制实例参数推导，整数孔数跳变、偶数对称、恢复与重复执行明确；配合件跟随控制孔列，变化通过同一Project依赖重开尺寸、视图、图纸、BOM和检验" .
+<urn:oev2:design:changed_original_identity_and_replace_still_require_native_extraction> <urn:oev2:design:behavior> "changed_original_identity_and_replace_still_require_native_extraction" .
+<urn:oev2:design:changed_original_identity_and_replace_still_require_native_extraction> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:changed_original_identity_and_replace_still_require_native_extraction> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:changed_original_identity_and_replace_still_require_native_extraction> <urn:oev2:design:name> "changed_original_identity_and_replace_still_require_native_extraction" .
+<urn:oev2:design:changed_original_identity_and_replace_still_require_native_extraction> <urn:oev2:design:oracle> "Path-only change, changed PDF bytes and replacement require extraction in preview, refuse absent tools without publishing, then invoke actual counted tools and publish extracted IDs." .
+<urn:oev2:design:changed_original_identity_and_replace_still_require_native_extraction> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/source_io.rs" .
+<urn:oev2:design:changed_original_identity_and_replace_still_require_native_extraction> <urn:oev2:design:scope> "Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption" .
+<urn:oev2:design:changed_original_identity_and_replace_still_require_native_extraction> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> .
 <urn:oev2:design:chapter_migration> <urn:oev2:design:check> "migration" .
 <urn:oev2:design:chapter_migration> <urn:oev2:design:checkerPath> "crates/oe-kernel/src/chapters.rs" .
 <urn:oev2:design:chapter_migration> <urn:oev2:design:kind> "Constraint" .
@@ -86131,7 +86139,15 @@
 <urn:oev2:design:local_pdf_explicit_incremental_registration> <urn:oev2:design:name> "local_pdf_explicit_incremental_registration" .
 <urn:oev2:design:local_pdf_explicit_incremental_registration> <urn:oev2:design:requirement> <urn:oev2:design:req_knowledge> .
 <urn:oev2:design:local_pdf_explicit_incremental_registration> <urn:oev2:design:severity> "error" .
-<urn:oev2:design:local_pdf_explicit_incremental_registration> <urn:oev2:design:statement> "Create and replace retain previous full-catalog semantics; explicit merge upserts supplied stable IDs and retains omitted sources. Merge and replace conflict. Reuse only source descriptors, current original hashes and prior registration/index bindings that match; old extraction observations retain identity. New or changed descriptors are extracted. Rebuild fresh owned SQLite tables with bounded rows; no arbitrary previous SQLite write triggers. No-op verifies current inputs and leaves index bytes unchanged. Dry-run returns differences without native extraction or publication, and never authorizes a later apply. Existing source/page/chapter/text budgets apply to the merged whole. Before publishing, recheck original manifests, source bytes and the exact previous snapshot; errors and races preserve previous files." .
+<urn:oev2:design:local_pdf_explicit_incremental_registration> <urn:oev2:design:statement> "Create and replace retain previous full-catalog semantics; explicit merge upserts supplied stable IDs and retains omitted sources. Merge and replace conflict. In merge, reuse native text only for the same source ID, resolved original path and SHA256 after verifying current original bytes and prior registration/index bindings. Changed title, edition description or chapter navigation remains updated and rebuilds page navigation and FTS from verified old native text, preserving the original extraction observations. Verify old rows against old declarations before constructing new rows; validate new chapter bounds against the verified old page count, including preview. New IDs, changed path or SHA256 and replace require extraction. A fully reusable plan is not unchanged when declarations changed. Rebuild fresh owned SQLite tables with bounded rows; no arbitrary previous SQLite write triggers. No-op verifies current inputs and leaves index bytes unchanged. Dry-run returns differences without native extraction or publication, and never authorizes a later apply. Existing source/page/chapter/text budgets apply to the merged whole. Before publishing, recheck original manifests, source bytes and the exact previous snapshot; errors and races preserve previous files." .
+<urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:check> "reuse" .
+<urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:checkerPath> "crates/oe-knowledge/src/registration/incremental.rs" .
+<urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:kind> "Constraint" .
+<urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:name> "local_pdf_navigation_reuses_verified_native_text" .
+<urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:requirement> <urn:oev2:design:req_knowledge> .
+<urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:severity> "error" .
+<urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:statement> "Metadata/navigation-only merge reuses verified native text only for identical stable ID, resolved path, SHA256, bytes and page count. Validate old chapters and complete old rows against the prior declaration before building new chapter associations, titles and FTS from the current declaration. Validate new ranges in preview and publication. Preserve original extraction observations and prior index/registration identity; record old and new chapter digests. A changed declaration publishes updated even when no extraction is needed, and old packet registration comparison remains changed. Repeating identical input is unchanged. New IDs, changed original identity and replace still need native extraction. No OCR repair, source adoption or silent index repair." .
 <urn:oev2:design:local_pdf_source_registration_currentness> <urn:oev2:design:check> "audit" .
 <urn:oev2:design:local_pdf_source_registration_currentness> <urn:oev2:design:checkerPath> "crates/oe-knowledge/src/registration_freshness.rs" .
 <urn:oev2:design:local_pdf_source_registration_currentness> <urn:oev2:design:kind> "Constraint" .
@@ -86301,7 +86317,7 @@
 <urn:oev2:design:merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations> <urn:oev2:design:kind> "Validation" .
 <urn:oev2:design:merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
 <urn:oev2:design:merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations> <urn:oev2:design:name> "merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations" .
-<urn:oev2:design:merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations> <urn:oev2:design:oracle> "Actual small PDFs plus native invocation counter: adding one source preserves old rows and extraction observations; changing one source only extracts that ID; resulting FTS page identities remain bound." .
+<urn:oev2:design:merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations> <urn:oev2:design:oracle> "Actual small PDFs plus native invocation counter: adding one source preserves old rows and extraction observations; changing only navigation/edition reuses native text without invoking Poppler; resulting FTS page identities remain bound." .
 <urn:oev2:design:merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/source_io.rs" .
 <urn:oev2:design:merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations> <urn:oev2:design:scope> "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified" .
 <urn:oev2:design:merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_explicit_incremental_registration> .
@@ -86337,6 +86353,30 @@
 <urn:oev2:design:merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/source_io.rs" .
 <urn:oev2:design:merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair> <urn:oev2:design:scope> "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified" .
 <urn:oev2:design:merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_explicit_incremental_registration> .
+<urn:oev2:design:metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply> <urn:oev2:design:behavior> "metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply" .
+<urn:oev2:design:metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply> <urn:oev2:design:name> "metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply" .
+<urn:oev2:design:metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply> <urn:oev2:design:oracle> "New chapter end beyond verified page count fails both preview and apply with unchanged prior index pair." .
+<urn:oev2:design:metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/source_io.rs" .
+<urn:oev2:design:metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply> <urn:oev2:design:scope> "Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption" .
+<urn:oev2:design:metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> .
+<urn:oev2:design:metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration> <urn:oev2:design:behavior> "metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration" .
+<urn:oev2:design:metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration> <urn:oev2:design:name> "metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration" .
+<urn:oev2:design:metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration> <urn:oev2:design:oracle> "Alter old chapter or old page navigation, rebind the outer index SHA, then metadata merge preview and apply must reject disagreement with the old declaration and leave the prior pair byte-exact." .
+<urn:oev2:design:metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/source_io.rs" .
+<urn:oev2:design:metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration> <urn:oev2:design:scope> "Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption" .
+<urn:oev2:design:metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> .
+<urn:oev2:design:metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search> <urn:oev2:design:behavior> "metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search" .
+<urn:oev2:design:metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search> <urn:oev2:design:name> "metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search" .
+<urn:oev2:design:metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search> <urn:oev2:design:oracle> "Actual native fixture then unavailable tool paths: preview and merge preserve original/native row/tool identities, retain omitted source, publish updated navigation with known page/chapter counts, new alias matches and old alias is removed for the changed source; repeated input leaves index bytes unchanged." .
+<urn:oev2:design:metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/source_io.rs" .
+<urn:oev2:design:metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search> <urn:oev2:design:scope> "Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption" .
+<urn:oev2:design:metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> .
 <urn:oev2:design:method_resource_continuity> <urn:oev2:design:check> "receive_methods" .
 <urn:oev2:design:method_resource_continuity> <urn:oev2:design:checkerPath> "crates/oe-knowledge/src/continuity.rs" .
 <urn:oev2:design:method_resource_continuity> <urn:oev2:design:kind> "Constraint" .
@@ -176448,7 +176488,7 @@ code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:module 
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:path "crates/oe-knowledge/src/registration.rs" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:production true .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:publicType "RegistrationOptions" .
-code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:sha256 "5fd880460c2b03335ac3fdd21402edfbf361b7f42bc2fb039287235b1ea17f52" .
+code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:sha256 "0ea43231b8711cf002cb5cd5aef1c0a4ae0a66e9c663cb9c998728187ffdf113" .
 code:7a83c924649020af83a469b2e623d4604064c3b7d2091e3a927f3c6531908ab5 sp:calls "Vec::new" .
 code:7a83c924649020af83a469b2e623d4604064c3b7d2091e3a927f3c6531908ab5 sp:calls "limits" .
 code:7a83c924649020af83a469b2e623d4604064c3b7d2091e3a927f3c6531908ab5 sp:calls "observed" .
@@ -177038,6 +177078,7 @@ code:7ffa02febd8a51d3b402e74ac2deb0cc94efbbacfeba258b8652692654641145 sp:test "o
 code:7ffa02febd8a51d3b402e74ac2deb0cc94efbbacfeba258b8652692654641145 sp:test "original_83_xml_html_unicode_and_markup_boundary_snapshots" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "BTreeSet::new" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "Ok" .
+code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "Path::new" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "ReadIndex::open" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "Some" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "Value::Object" .
@@ -177057,8 +177098,10 @@ code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "serde_json::to_value" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "sql_value" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "strings" .
+code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "text" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "u64::from" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "usize::try_from" .
+code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:calls "validate_chapter_bounds" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:kind "RustCodeFile" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:module <urn:oev2:design:knowledge> .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:module <urn:oev2:design:knowledge_ocr_page5> .
@@ -177066,7 +177109,7 @@ code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:module 
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:module <urn:oev2:design:knowledge_registered_ocr6> .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:path "crates/oe-knowledge/src/registration/incremental.rs" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:production true .
-code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:sha256 "123a084d741f90a991db237ba4edfe8f2d81b552f0cad3b3a4849673e394d0e9" .
+code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:sha256 "c705f5836c446ff428c6d8a626a394c969416c00f985a79131f28101895ca8bf" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:test "final_publication_rechecks_original_after_owner_guard_and_rolls_back" .
 code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 sp:test "preview_and_noop_run_final_intake_guard_and_preserve_index_bytes" .
 code:803fd30c7a7d5bf48899c47722961adad104ce09b1ebaf2c10b90c3478f3b7ad sp:calls "shacl::validate" .
@@ -192800,6 +192843,7 @@ code:ef82e672bddff0aa152c21cbb8942d9a5abda8c83c0525cf3664ecc7a7a6ba30 sp:publicT
 code:ef82e672bddff0aa152c21cbb8942d9a5abda8c83c0525cf3664ecc7a7a6ba30 sp:publicType "WriterAdmissionRelease" .
 code:ef82e672bddff0aa152c21cbb8942d9a5abda8c83c0525cf3664ecc7a7a6ba30 sp:sha256 "2c2c66d88bc67997c905f66e7ddf30463cf8bb18ac610049c031db40a5dc1298" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "Default::default" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "Ok" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "Path::new" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "Self" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "Vec::new" .
@@ -192810,6 +192854,7 @@ code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::remove_dir_all" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::set_permissions" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::write" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "rusqlite::Connection::open" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "save" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "script" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "serde_json::to_vec_pretty" .
@@ -192829,15 +192874,19 @@ code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:module 
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:module <urn:oev2:design:knowledge_registered_ocr6> .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:path "crates/oe-knowledge/tests/source_io.rs" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:production false .
-code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:sha256 "61887af78efaa7c068dd490bd162b304b6381a9cdf55ee2c9606f259be8f478b" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:sha256 "254b41536c0659d86e9a1e7313abe1088a741e26dab800d5e95040eb78ee47be" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "actual_unicode_registration_all_physical_pages_and_whole_page_view" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "archive_damage_and_hidden_members_never_publish_selected_bytes" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "archive_expansion_and_compressed_trailing_bytes_are_rejected" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "changed_original_identity_and_replace_still_require_native_extraction" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "merge_budgets_apply_to_complete_retained_plus_incoming_catalog" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "merge_failure_and_conflicting_modes_leave_original_registration_intact" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "misumi_selected_single_page_keeps_book_position_and_missing_full_book_status" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "original_mutation_encryption_and_fifo_never_publish_registration" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals" .
@@ -195145,7 +195194,7 @@ code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:module 
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:module <urn:oev2:design:knowledge_registered_ocr6> .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:path "crates/oe-knowledge/tests/query_e2e.rs" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:production false .
-code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:sha256 "b43d3a2edec5a173c59960272d55508da0793a8c2b787aed7338a0066a273a5b" .
+code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:sha256 "47fa1abd61ce9b9afdd7ec3380893d0cf43648e18d2d0e90ef0bf2c577c922b7" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "external_body_search_still_rejects_empty_tokenizer_terms" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "local_query_preserves_names_while_skipping_unsearchable_internal_fragments" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "local_source_currentness_distinguishes_metadata_and_navigation_changes" .
@@ -198900,6 +198949,9 @@ function:19b26d27bc11133c220bdd79ec3ab77f18ae06c08dd7bb4f7e843e11d2ac1990 sp:nam
 function:19c07c972672fb07b4d8668faf76de484edfbe38c19b661fc36324407ec2c002 sp:file code:d247ab4508c326b9fc19b6962458e43cf96d03a31912668c309015cbd39cec64 .
 function:19c07c972672fb07b4d8668faf76de484edfbe38c19b661fc36324407ec2c002 sp:kind "RustFunction" .
 function:19c07c972672fb07b4d8668faf76de484edfbe38c19b661fc36324407ec2c002 sp:name "marker" .
+function:19c72255d1761d4dc461978fee4a18fb9ea65fbec08fa7d6d65defddfdb24bc8 sp:file code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef .
+function:19c72255d1761d4dc461978fee4a18fb9ea65fbec08fa7d6d65defddfdb24bc8 sp:kind "RustFunction" .
+function:19c72255d1761d4dc461978fee4a18fb9ea65fbec08fa7d6d65defddfdb24bc8 sp:name "native_page_rows" .
 function:19c7f90c125bcb1acccf63f9713b86af071aa77a21cb62897ffed56da705315a sp:file code:3e502fae40e03c43897f6d6fe8684b3d50fcb8231097ec0fab308a21b16eed29 .
 function:19c7f90c125bcb1acccf63f9713b86af071aa77a21cb62897ffed56da705315a sp:kind "RustFunction" .
 function:19c7f90c125bcb1acccf63f9713b86af071aa77a21cb62897ffed56da705315a sp:name "escape_local_name" .
@@ -213787,6 +213839,7 @@ function:8243c17836af0fd72db85cf4cb921a32bf26f7b33a8476035e829f9b7caaef10 sp:nam
 function:82454987231130c85dd14953a5a1b897c0653eccf14f952a259333c924ca53ea sp:file code:31945a9b35a7c5ca9d7a140338fac595d753594eaaba97379421ec90e84cbc68 .
 function:82454987231130c85dd14953a5a1b897c0653eccf14f952a259333c924ca53ea sp:kind "RustFunction" .
 function:82454987231130c85dd14953a5a1b897c0653eccf14f952a259333c924ca53ea sp:name "observed_assembly" .
+function:825226d4227a6e3c74a39a042f5ddadd085a0d66a90f5fcab6b9e5d4ba66aca8 sp:executes <urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> .
 function:825226d4227a6e3c74a39a042f5ddadd085a0d66a90f5fcab6b9e5d4ba66aca8 sp:file code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 .
 function:825226d4227a6e3c74a39a042f5ddadd085a0d66a90f5fcab6b9e5d4ba66aca8 sp:kind "RustFunction" .
 function:825226d4227a6e3c74a39a042f5ddadd085a0d66a90f5fcab6b9e5d4ba66aca8 sp:name "reuse" .
@@ -224640,6 +224693,9 @@ function:d14a2580c4290f359168c2f238c0e67115014f6b17989e002fe55544e82a3be6 sp:nam
 function:d14a6af91777fb2902706235f427796c2188905380dcc872dda38a5da3e1c3be sp:file code:4aafd1316567cc25613d57a36fc449803380724e869b69c3c2d5c7cc9a4dcbe6 .
 function:d14a6af91777fb2902706235f427796c2188905380dcc872dda38a5da3e1c3be sp:kind "RustFunction" .
 function:d14a6af91777fb2902706235f427796c2188905380dcc872dda38a5da3e1c3be sp:name "runtime_source" .
+function:d15e0b40e4574daa9b9b3e6babf990d90774f2e0a364753b55e5cb98234daadd sp:file code:801e6f9022db4788e32c29d5f8a6617d43daee078fa06423541c26731f6e9187 .
+function:d15e0b40e4574daa9b9b3e6babf990d90774f2e0a364753b55e5cb98234daadd sp:kind "RustFunction" .
+function:d15e0b40e4574daa9b9b3e6babf990d90774f2e0a364753b55e5cb98234daadd sp:name "validate_chapter_bounds" .
 function:d160efccb9233da7718893401b81b5d1c11dc5fb0e04aad08197f0822abd5d13 sp:file code:96a4beb8d65d29d45a4d6ee1154bbc177767577a580abc70aa651a6bab7574f0 .
 function:d160efccb9233da7718893401b81b5d1c11dc5fb0e04aad08197f0822abd5d13 sp:kind "RustFunction" .
 function:d160efccb9233da7718893401b81b5d1c11dc5fb0e04aad08197f0822abd5d13 sp:name "observation_projection" .

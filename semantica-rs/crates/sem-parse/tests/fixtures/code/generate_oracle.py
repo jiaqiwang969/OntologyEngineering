@@ -136,7 +136,7 @@ x = 1_000 + 0x1F + 0o17 + 0b11 + 1e3 + 2j
     "print_stmt.py": "print 'hello'\n",
     "lambda_default.py": "f = lambda x=1, *a, y, **k: (x, a, y, k)\n",
     "return_outside.py": "return 5\nbreak\n",
-    "nul.py": "x = 1\x00\n",
+    "nul_byte.py": "x = 1\x00\n",
     "bom.py": "﻿import os\n",
     "empty.py": "",
     "only_comments.py": "# a\n# b \"\"\"not doc\"\"\"\n'''doc'''\n",

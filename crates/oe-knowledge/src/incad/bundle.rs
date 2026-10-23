@@ -21,6 +21,12 @@ const MAX_MEMBERS: usize = 262_144;
 const MAX_FILE_BYTES: u64 = 256 * 1024 * 1024;
 const MAX_SHARD_BYTES: u64 = 4 * 1024 * 1024 * 1024;
 const MAX_TOTAL_BYTES: u64 = 64 * 1024 * 1024 * 1024;
+const MAX_IMPORT_WORKERS: usize = 2;
+// Parallel workers are useful for the real, archive-sized shards, but add
+// filesystem and decoder contention for tiny shards. Keep the latter on the
+// already verified serial path. This is based only on declared member bytes;
+// the complete descriptor/path preflight still runs before this decision.
+const MIN_PARALLEL_SHARD_BYTES: u64 = 64 * 1024 * 1024;
 const EXCLUDED: [&str; 5] = [
     "browser_capture",
     "captures",
@@ -130,12 +136,68 @@ struct Part {
     files: Vec<Bound>,
 }
 
+fn parallel_import_eligible(parts: &[Part]) -> bool {
+    parts.len() > 1
+        && parts.iter().all(|part| {
+            part.files
+                .iter()
+                .try_fold(0_u64, |total, file| total.checked_add(file.bytes))
+                .is_some_and(|bytes| bytes >= MIN_PARALLEL_SHARD_BYTES)
+        })
+}
+
 impl Part {
     fn archive_value(&self) -> Value {
         let mut value = self.archive.value();
         value["files"] = json!(self.files.iter().map(Bound::value).collect::<Vec<_>>());
         value
     }
+}
+
+/// A batch owns every worker until it has joined. Keep manifest order when
+/// choosing an error, rather than letting completion order select the result.
+/// No later batch starts after any worker, spawn or panic failure.
+fn import_batches<T: Sync>(parts: &[T], visit: impl Fn(&T) -> Result<()> + Sync) -> Result<()> {
+    for batch in parts.chunks(MAX_IMPORT_WORKERS) {
+        std::thread::scope(|scope| {
+            let mut workers = Vec::with_capacity(batch.len());
+            let mut spawn_error = None;
+            for part in batch {
+                let visit = &visit;
+                match std::thread::Builder::new()
+                    .name("incad-bundle-import".into())
+                    .spawn_scoped(scope, move || visit(part))
+                {
+                    Ok(worker) => workers.push(worker),
+                    Err(error) => {
+                        spawn_error = Some(
+                            anyhow::Error::new(error).context("incad_bundle_worker_spawn_failed"),
+                        );
+                        break;
+                    }
+                }
+            }
+            let mut first_error = None;
+            for worker in workers {
+                let result = match worker.join() {
+                    Ok(result) => result,
+                    Err(_) => Err(anyhow::anyhow!("incad_bundle_worker_panicked")),
+                };
+                if let Err(error) = result
+                    && first_error.is_none()
+                {
+                    first_error = Some(error);
+                }
+            }
+            // Spawn failure belongs after all workers that were actually
+            // started. Preserve an earlier worker's original error and context.
+            match first_error.or(spawn_error) {
+                Some(error) => Err(error),
+                None => Ok(()),
+            }
+        })?;
+    }
+    Ok(())
 }
 
 struct Bundle {
@@ -388,24 +450,33 @@ impl Bundle {
         self.ensure_metadata()
     }
 
-    fn visit(&self, root: &SkillRoot, built: Option<&Path>) -> Result<()> {
+    fn visit_part(&self, root: &SkillRoot, part: &Part, built: Option<&Path>) -> Result<()> {
         let none = BTreeSet::new();
-        for part in &self.parts {
-            source_pack::visit_archive(
-                root.path(),
-                &self.base().join(&part.archive.path),
-                &part.archive_value(),
-                &source_pack::ArchiveLimits {
-                    max_file_bytes: MAX_FILE_BYTES,
-                    max_members: MAX_SHARD_MEMBERS,
-                    max_uncompressed_bytes: MAX_SHARD_BYTES,
-                },
-                built.is_none().then_some(&none),
-                |member| {
-                    let directory = built.context("incad_bundle_unexpected_selected_member")?;
-                    retain_member(member, &directory.join(&member.relative_path))
-                },
-            )?;
+        source_pack::visit_archive(
+            root.path(),
+            &self.base().join(&part.archive.path),
+            &part.archive_value(),
+            &source_pack::ArchiveLimits {
+                max_file_bytes: MAX_FILE_BYTES,
+                max_members: MAX_SHARD_MEMBERS,
+                max_uncompressed_bytes: MAX_SHARD_BYTES,
+            },
+            built.is_none().then_some(&none),
+            |member| {
+                let directory = built.context("incad_bundle_unexpected_selected_member")?;
+                retain_member(member, &directory.join(&member.relative_path))
+            },
+        )?;
+        Ok(())
+    }
+
+    fn visit(&self, root: &SkillRoot, built: Option<&Path>) -> Result<()> {
+        if built.is_some() && parallel_import_eligible(&self.parts) {
+            import_batches(&self.parts, |part| self.visit_part(root, part, built))?;
+        } else {
+            for part in &self.parts {
+                self.visit_part(root, part, built)?;
+            }
         }
         self.ensure_current()
     }
@@ -460,13 +531,25 @@ fn retain_member(member: &source_pack::VerifiedMember, destination: &Path) -> Re
         !destination.try_exists()?,
         "incad_bundle_staged_member_exists"
     );
+    retain_new_member(member, destination)
+}
+
+fn retain_new_member(member: &source_pack::VerifiedMember, destination: &Path) -> Result<()> {
     // The shared visitor has already streamed, hashed and synced this private
     // regular file. Retain that inode in our private stage before the visitor
     // removes its temporary name, as restore_selected already does. No archive
     // supplied links are accepted. The target is hashed here, the visitor
     // rechecks its name after this callback, and publication rechecks every
     // staged file and input. Both stages share this root's cache filesystem.
-    source_pack::publish_same_or_new(&member.path, destination, &member.sha256, member.bytes)
+    // Unlike reusable page-cache entries, each destination must be newly
+    // created. Literal paths can alias on a case-insensitive filesystem, so an
+    // EEXIST race must fail even when the already linked bytes happen to match.
+    source_pack::publish_file_no_replace(&member.path, destination)?;
+    ensure!(
+        source_pack::file_hash(destination, member.bytes)? == (member.sha256.clone(), member.bytes),
+        "incad_bundle_staged_member_changed"
+    );
+    Ok(())
 }
 
 /// Verify every shard and member. Temporary streaming files are removed; no
@@ -514,12 +597,19 @@ pub fn import(root: &SkillRoot, manifest: &Path, directory: &Path) -> Result<Val
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::{
+        Mutex,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
+        mpsc,
+    };
+    use std::time::Duration;
     use tar::{Builder, Header};
     use xz2::write::XzEncoder;
 
     const POINTER: &str = "cases/cn/000210/current.json";
     const CAD: &str = "cases/cn/000210/attempts/fixed/cad/ap203/files/model.step";
     const OMITTED: &str = "cases/cn/000210/attempts/fixed/browser-capture.json";
+    const TEST_DEADLINE: Duration = Duration::from_secs(10);
 
     struct Fixture {
         _temp: tempfile::TempDir,
@@ -592,6 +682,289 @@ mod tests {
             edit(&mut part);
             self.parts[index] = save(&path, &part);
         }
+    }
+
+    fn cache_is_empty(root: &SkillRoot) -> bool {
+        fs::read_dir(root.path().join("var/cache/knowledge"))
+            .unwrap()
+            .next()
+            .is_none()
+    }
+
+    fn synthetic_part(member_bytes: u64) -> Part {
+        let hash = sha256(b"synthetic");
+        Part {
+            descriptor: Bound {
+                path: "descriptor.json".into(),
+                sha256: hash.clone(),
+                bytes: 1,
+            },
+            descriptor_raw: Vec::new(),
+            archive: Bound {
+                path: "archive.tar.xz".into(),
+                sha256: hash.clone(),
+                bytes: 1,
+            },
+            files: vec![Bound {
+                path: "member.bin".into(),
+                sha256: hash,
+                bytes: member_bytes,
+            }],
+        }
+    }
+
+    #[test]
+    fn bundle_parallel_import_requires_two_shards_at_threshold() {
+        assert!(!parallel_import_eligible(&[]));
+        assert!(!parallel_import_eligible(&[synthetic_part(
+            MIN_PARALLEL_SHARD_BYTES
+        )]));
+        assert!(parallel_import_eligible(&[
+            synthetic_part(MIN_PARALLEL_SHARD_BYTES),
+            synthetic_part(MIN_PARALLEL_SHARD_BYTES),
+        ]));
+        assert!(!parallel_import_eligible(&[
+            synthetic_part(MIN_PARALLEL_SHARD_BYTES),
+            synthetic_part(MIN_PARALLEL_SHARD_BYTES - 1),
+        ]));
+    }
+
+    #[test]
+    fn bundle_parallel_import_bounds_workers_and_overlaps_shards() {
+        let parts = [0_usize, 1, 2, 3, 4];
+        let (started, starts) = mpsc::channel();
+        let (finished, finishes) = mpsc::channel();
+        let mut releases = Vec::new();
+        let mut gates = Vec::new();
+        for _ in parts {
+            let (release, gate) = mpsc::channel();
+            releases.push(release);
+            gates.push(Mutex::new(gate));
+        }
+        let active = AtomicUsize::new(0);
+        let peak = AtomicUsize::new(0);
+        let completed = AtomicUsize::new(0);
+        std::thread::scope(|scope| {
+            let runner = scope.spawn(|| {
+                import_batches(&parts, |&part| {
+                    let previous_completed = completed.load(Ordering::SeqCst);
+                    let current = active.fetch_add(1, Ordering::SeqCst) + 1;
+                    peak.fetch_max(current, Ordering::SeqCst);
+                    started.send((part, previous_completed))?;
+                    let released = gates[part].lock().unwrap().recv_timeout(TEST_DEADLINE);
+                    active.fetch_sub(1, Ordering::SeqCst);
+                    completed.fetch_add(1, Ordering::SeqCst);
+                    finished.send(part)?;
+                    released.context("test_worker_release_missing")
+                })
+            });
+            for batch in parts.chunks(2) {
+                let mut observed = BTreeSet::new();
+                for _ in batch {
+                    let (part, previous_completed) = starts.recv_timeout(TEST_DEADLINE).unwrap();
+                    assert!(previous_completed >= batch[0]);
+                    observed.insert(part);
+                }
+                assert_eq!(observed, batch.iter().copied().collect());
+                // Workers have announced entry and are held by explicit gates:
+                // these counts establish overlap without timing or sleeps.
+                assert_eq!(active.load(Ordering::SeqCst), batch.len());
+                assert!(matches!(starts.try_recv(), Err(mpsc::TryRecvError::Empty)));
+                for &part in batch {
+                    releases[part].send(()).unwrap();
+                }
+                let done = (0..batch.len())
+                    .map(|_| finishes.recv_timeout(TEST_DEADLINE).unwrap())
+                    .collect::<BTreeSet<_>>();
+                assert_eq!(done, observed);
+            }
+            runner.join().unwrap().unwrap();
+        });
+        assert_eq!(peak.load(Ordering::SeqCst), 2);
+        assert_eq!(active.load(Ordering::SeqCst), 0);
+        assert_eq!(completed.load(Ordering::SeqCst), parts.len());
+
+        // Real shard visitors create the same previously absent parent tree,
+        // with distinct temporary Stages, and also exercise an odd last batch.
+        let mut fixture = Fixture::new();
+        let members = [
+            "cases/cn/000210/attempts/fixed/shared/one.bin",
+            "cases/cn/000210/attempts/fixed/shared/two.bin",
+            "cases/cn/000210/attempts/fixed/shared/three.bin",
+        ];
+        fixture.shard(&[(POINTER, b"fixed"), (members[0], b"one")], false);
+        fixture.shard(&[(members[1], b"two")], false);
+        fixture.shard(&[(members[2], b"three")], false);
+        let manifest = fixture.manifest();
+        let before = fs::read(&manifest).unwrap();
+        import(&fixture.root, &manifest, &fixture.target()).unwrap();
+        for (member, expected) in members
+            .into_iter()
+            .zip([b"one".as_slice(), b"two", b"three"])
+        {
+            assert_eq!(fs::read(fixture.target().join(member)).unwrap(), expected);
+        }
+        assert_eq!(fs::read(manifest).unwrap(), before);
+        assert!(cache_is_empty(&fixture.root));
+    }
+
+    #[test]
+    fn bundle_parallel_import_joins_workers_before_failure_cleanup() {
+        // A later worker finishes with an error or panic while its earlier peer
+        // is held. Every return path must join that peer before dropping Stage.
+        for (panic_later, fail_first) in [(false, false), (true, false), (false, true)] {
+            let fixture = Fixture::new();
+            let stage = source_pack::Stage::new(fixture.root.path(), "bundle-join-test").unwrap();
+            let stage_path = stage.path.clone();
+            let (started, starts) = mpsc::channel();
+            let (failed, failure) = mpsc::channel();
+            let (release, gate) = mpsc::channel();
+            let gate = Mutex::new(gate);
+            let (returned, returns) = mpsc::channel();
+            let first_done = AtomicBool::new(false);
+            let later_batch = AtomicBool::new(false);
+            std::thread::scope(|scope| {
+                let runner = scope.spawn(|| {
+                    let owned_stage = stage;
+                    let result = import_batches(&[0_usize, 1, 2], |&part| {
+                        started.send(part)?;
+                        match part {
+                            0 => {
+                                gate.lock().unwrap().recv_timeout(TEST_DEADLINE)?;
+                                assert!(
+                                    stage_path.is_dir(),
+                                    "Stage dropped before its worker joined"
+                                );
+                                fs::write(
+                                    stage_path.join("still-owned"),
+                                    b"joined before cleanup",
+                                )?;
+                                first_done.store(true, Ordering::SeqCst);
+                                if fail_first {
+                                    return Err(anyhow::Error::new(std::io::Error::other(
+                                        "first original error",
+                                    ))
+                                    .context("first original context"));
+                                }
+                                Ok(())
+                            }
+                            1 => {
+                                struct Exiting<'a>(&'a mpsc::Sender<()>);
+                                impl Drop for Exiting<'_> {
+                                    fn drop(&mut self) {
+                                        let _ = self.0.send(());
+                                    }
+                                }
+                                let _exiting = Exiting(&failed);
+                                if panic_later {
+                                    panic!("fixture worker panic");
+                                }
+                                anyhow::bail!("later original error")
+                            }
+                            _ => {
+                                later_batch.store(true, Ordering::SeqCst);
+                                Ok(())
+                            }
+                        }
+                    });
+                    assert!(first_done.load(Ordering::SeqCst));
+                    drop(owned_stage);
+                    returned.send(()).unwrap();
+                    result
+                });
+                let begun = (0..2)
+                    .map(|_| starts.recv_timeout(TEST_DEADLINE).unwrap())
+                    .collect::<BTreeSet<_>>();
+                assert_eq!(begun, BTreeSet::from([0, 1]));
+                failure.recv_timeout(TEST_DEADLINE).unwrap();
+                assert!(stage_path.is_dir());
+                assert!(!first_done.load(Ordering::SeqCst));
+                assert!(matches!(returns.try_recv(), Err(mpsc::TryRecvError::Empty)));
+                release.send(()).unwrap();
+                let error = runner.join().unwrap().unwrap_err();
+                if fail_first {
+                    assert_eq!(error.to_string(), "first original context");
+                    assert_eq!(
+                        error.downcast_ref::<std::io::Error>().unwrap().to_string(),
+                        "first original error"
+                    );
+                } else if panic_later {
+                    assert_eq!(error.to_string(), "incad_bundle_worker_panicked");
+                } else {
+                    assert_eq!(error.to_string(), "later original error");
+                }
+            });
+            assert!(!later_batch.load(Ordering::SeqCst));
+            assert!(!stage_path.exists());
+            assert!(!fixture.target().exists());
+            assert!(cache_is_empty(&fixture.root));
+        }
+
+        staged_name_collision_is_exclusive();
+    }
+
+    fn staged_name_collision_is_exclusive() {
+        let fixture = Fixture::new();
+        let stage = source_pack::Stage::new(fixture.root.path(), "bundle-name-test").unwrap();
+        let probe = stage.path.join("CaseProbe");
+        fs::write(&probe, b"probe").unwrap();
+        let aliases_case = stage.path.join("caseprobe").try_exists().unwrap();
+        fs::remove_file(probe).unwrap();
+        let targets = [
+            stage.path.join("built/Case.bin"),
+            stage.path.join(if aliases_case {
+                "built/case.bin"
+            } else {
+                "built/Case.bin"
+            }),
+        ];
+        let members = [0, 1].map(|index| {
+            let path = stage.path.join(format!("source-{index}"));
+            let mut file = oe_core::create_new_regular_file(&path).unwrap();
+            std::io::Write::write_all(&mut file, b"same source bytes").unwrap();
+            file.sync_all().unwrap();
+            source_pack::VerifiedMember {
+                relative_path: format!("member-{index}"),
+                path,
+                sha256: sha256(b"same source bytes"),
+                bytes: 17,
+            }
+        });
+        let (checked, checks) = mpsc::channel();
+        let (release_a, gate_a) = mpsc::channel();
+        let (release_b, gate_b) = mpsc::channel();
+        let gates = [Mutex::new(gate_a), Mutex::new(gate_b)];
+        let linked = AtomicUsize::new(0);
+        std::thread::scope(|scope| {
+            let runner = scope.spawn(|| {
+                import_batches(&[0_usize, 1], |&index| {
+                    assert!(!targets[index].try_exists()?);
+                    checked.send(index)?;
+                    gates[index].lock().unwrap().recv_timeout(TEST_DEADLINE)?;
+                    retain_new_member(&members[index], &targets[index])?;
+                    linked.fetch_add(1, Ordering::SeqCst);
+                    Ok(())
+                })
+            });
+            assert_eq!(
+                (0..2)
+                    .map(|_| checks.recv_timeout(TEST_DEADLINE).unwrap())
+                    .collect::<BTreeSet<_>>(),
+                BTreeSet::from([0, 1])
+            );
+            // Both absence checks have completed before either exclusive link.
+            release_a.send(()).unwrap();
+            release_b.send(()).unwrap();
+            assert!(runner.join().unwrap().is_err());
+        });
+        assert_eq!(linked.load(Ordering::SeqCst), 1);
+        assert_eq!(fs::read_dir(stage.path.join("built")).unwrap().count(), 1);
+        assert_eq!(fs::read(&targets[0]).unwrap(), b"same source bytes");
+        for member in members {
+            assert_eq!(fs::read(member.path).unwrap(), b"same source bytes");
+        }
+        drop(stage);
+        assert!(cache_is_empty(&fixture.root));
     }
 
     #[test]

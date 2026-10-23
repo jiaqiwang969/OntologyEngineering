@@ -85346,6 +85346,14 @@
 <urn:oev2:design:incad_archive_only_preserves_strict_intake> <urn:oev2:design:requirement> <urn:oev2:design:req_knowledge> .
 <urn:oev2:design:incad_archive_only_preserves_strict_intake> <urn:oev2:design:severity> "error" .
 <urn:oev2:design:incad_archive_only_preserves_strict_intake> <urn:oev2:design:statement> "Factor the fixed source/projection closure from task intake. Archive-only verification requires the original CN case, fixed manifest digest, all nine projections, original HTML and case record, existing closed specification shape/text hashes and before/after source snapshots. Existing IncadIntakeRequest additionally retains every original task equality, authority, exposure, budget and four-role check; no generated task or Project is invented for a source library." .
+<urn:oev2:design:incad_bundle_bounded_parallel_execution> <urn:oev2:design:check> "import" .
+<urn:oev2:design:incad_bundle_bounded_parallel_execution> <urn:oev2:design:checkerPath> "crates/oe-knowledge/src/incad/bundle.rs" .
+<urn:oev2:design:incad_bundle_bounded_parallel_execution> <urn:oev2:design:kind> "Constraint" .
+<urn:oev2:design:incad_bundle_bounded_parallel_execution> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:incad_bundle_bounded_parallel_execution> <urn:oev2:design:name> "incad_bundle_bounded_parallel_execution" .
+<urn:oev2:design:incad_bundle_bounded_parallel_execution> <urn:oev2:design:requirement> <urn:oev2:design:req_knowledge> .
+<urn:oev2:design:incad_bundle_bounded_parallel_execution> <urn:oev2:design:severity> "error" .
+<urn:oev2:design:incad_bundle_bounded_parallel_execution> <urn:oev2:design:statement> "After the unchanged complete descriptor/path preflight, inCAD import may visit at most two shards concurrently in one private staged tree only when every shard's declared uncompressed member bytes total is at least 64 MiB; smaller or single-shard bundles remain on the serial path. Each worker retains the existing bounded decoder (128 MiB), selected-member staging, SHA256/length/file-kind checks, sync_all, callback/source rechecks, archive footer and unchanged-input checks. At most two decoder instances and two transient selected members coexist. This is a scheduling change only, not skipped verification, weaker durability, a new delivery format, graph identity or engineering approval. Verify-only remains sequential. Existing total bytes/members and per-shard bounds remain unchanged." .
 <urn:oev2:design:incad_bundle_cross_shard_path_preflight> <urn:oev2:design:behavior> "bundle_rejects_cross_shard_duplicates_and_file_directory_conflicts_before_staging" .
 <urn:oev2:design:incad_bundle_cross_shard_path_preflight> <urn:oev2:design:kind> "Validation" .
 <urn:oev2:design:incad_bundle_cross_shard_path_preflight> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
@@ -85378,6 +85386,14 @@
 <urn:oev2:design:incad_bundle_late_shard_failure_is_transactional> <urn:oev2:design:rustPath> "crates/oe-knowledge/src/incad/bundle.rs" .
 <urn:oev2:design:incad_bundle_late_shard_failure_is_transactional> <urn:oev2:design:scope> "Synthetic late payload failure; no original source mutation" .
 <urn:oev2:design:incad_bundle_late_shard_failure_is_transactional> <urn:oev2:design:validates> <urn:oev2:design:incad_source_bundle_publishes_only_complete_new_tree> .
+<urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> <urn:oev2:design:check> "import" .
+<urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> <urn:oev2:design:checkerPath> "crates/oe-knowledge/src/incad/bundle.rs" .
+<urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> <urn:oev2:design:kind> "Constraint" .
+<urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> <urn:oev2:design:name> "incad_bundle_parallel_failure_joins_before_publication_or_cleanup" .
+<urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> <urn:oev2:design:requirement> <urn:oev2:design:req_knowledge> .
+<urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> <urn:oev2:design:severity> "error" .
+<urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> <urn:oev2:design:statement> "All scoped workers in the current bounded batch must finish and be joined before returning an error, cleaning shared staging or publishing. A worker error or panic prevents later batches and final publication; preserve a deterministic failure in input order. Success still rechecks all staged members and every input identity and uses exclusive directory publication. Workers cannot outlive the command, replace an existing destination, publish a partial tree or modify the source bundle. Each retained member uses atomic no-replace publication into staging: an existing physical target is rejected even if content matches, including filesystem path aliases; global lexical preflight alone is not sufficient under concurrency." .
 <urn:oev2:design:incad_bundle_selected_transport_round_trip> <urn:oev2:design:behavior> "bundle_restores_exact_selected_files_without_rewriting_upstream" .
 <urn:oev2:design:incad_bundle_selected_transport_round_trip> <urn:oev2:design:kind> "Validation" .
 <urn:oev2:design:incad_bundle_selected_transport_round_trip> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
@@ -122293,6 +122309,22 @@
 <urn:oev2:design:verify_hypotheses_do_not_change_facts_or_adopt_decisions> <urn:oev2:design:rustPath> "crates/oe-engineering/tests/exploration.rs" .
 <urn:oev2:design:verify_hypotheses_do_not_change_facts_or_adopt_decisions> <urn:oev2:design:scope> "development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release" .
 <urn:oev2:design:verify_hypotheses_do_not_change_facts_or_adopt_decisions> <urn:oev2:design:validates> <urn:oev2:design:exploration_hypothesis_scope> .
+<urn:oev2:design:verify_incad_bundle_parallel_failure_join> <urn:oev2:design:behavior> "bundle_parallel_import_joins_workers_before_failure_cleanup" .
+<urn:oev2:design:verify_incad_bundle_parallel_failure_join> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:verify_incad_bundle_parallel_failure_join> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:verify_incad_bundle_parallel_failure_join> <urn:oev2:design:name> "verify_incad_bundle_parallel_failure_join" .
+<urn:oev2:design:verify_incad_bundle_parallel_failure_join> <urn:oev2:design:oracle> "Hold one worker while another errors or panics; prove the caller waits for the held worker, no later batch starts, no target is published and owned staging is cleaned only after workers exit. Retain existing malformed-shard, link, duplicate-path and destination tests." .
+<urn:oev2:design:verify_incad_bundle_parallel_failure_join> <urn:oev2:design:rustPath> "crates/oe-knowledge/src/incad/bundle.rs" .
+<urn:oev2:design:verify_incad_bundle_parallel_failure_join> <urn:oev2:design:scope> "Deterministic local thread coordination and adversarial source fixtures; no power-loss transaction guarantee" .
+<urn:oev2:design:verify_incad_bundle_parallel_failure_join> <urn:oev2:design:validates> <urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> .
+<urn:oev2:design:verify_incad_bundle_parallel_worker_bound> <urn:oev2:design:behavior> "bundle_parallel_import_bounds_workers_and_overlaps_shards" .
+<urn:oev2:design:verify_incad_bundle_parallel_worker_bound> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:verify_incad_bundle_parallel_worker_bound> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:verify_incad_bundle_parallel_worker_bound> <urn:oev2:design:name> "verify_incad_bundle_parallel_worker_bound" .
+<urn:oev2:design:verify_incad_bundle_parallel_worker_bound> <urn:oev2:design:oracle> "A boundary fixture proves that two or more shards at the 64 MiB declared-member threshold may use the bounded scheduler, while a smaller shard or a single shard stays serial; a barrier/channel-coordinated synthetic workload observes real overlap and no more than two active workers; full members still restore byte-exact, including shared parent directories. No wall-clock speed threshold stands in for correctness." .
+<urn:oev2:design:verify_incad_bundle_parallel_worker_bound> <urn:oev2:design:rustPath> "crates/oe-knowledge/src/incad/bundle.rs" .
+<urn:oev2:design:verify_incad_bundle_parallel_worker_bound> <urn:oev2:design:scope> "Native local synthetic source bundle; measured performance and full real recovery are separately recorded, with no native CAD or engineering qualification" .
+<urn:oev2:design:verify_incad_bundle_parallel_worker_bound> <urn:oev2:design:validates> <urn:oev2:design:incad_bundle_bounded_parallel_execution> .
 <urn:oev2:design:verify_incad_cad_cli_completion_identity> <urn:oev2:design:behavior> "incad_cad_cli_authority_and_rebound_identity_are_refused" .
 <urn:oev2:design:verify_incad_cad_cli_completion_identity> <urn:oev2:design:kind> "Validation" .
 <urn:oev2:design:verify_incad_cad_cli_completion_identity> <urn:oev2:design:module> <urn:oev2:design:cli> .
@@ -168914,7 +168946,7 @@ code:4558c3d410137a030569d293ae409d002d973a1a21feaf35b510df9c56b281f6 sp:publicT
 code:4558c3d410137a030569d293ae409d002d973a1a21feaf35b510df9c56b281f6 sp:publicType "ArchiveVisit" .
 code:4558c3d410137a030569d293ae409d002d973a1a21feaf35b510df9c56b281f6 sp:publicType "ResolvedSource" .
 code:4558c3d410137a030569d293ae409d002d973a1a21feaf35b510df9c56b281f6 sp:publicType "VerifiedMember" .
-code:4558c3d410137a030569d293ae409d002d973a1a21feaf35b510df9c56b281f6 sp:sha256 "cfb4f97f405870504be13343298355f163e4c5e955687844b7c1502c06ebe7e3" .
+code:4558c3d410137a030569d293ae409d002d973a1a21feaf35b510df9c56b281f6 sp:sha256 "2042ac95887e33f2666d67ffcd48809d8583dd6deca5ed882c69528d403c3e8a" .
 code:45acfdacd13a6deb24df91b0bc1054aa1c2335ae52e47a5478af2907603fd1f3 sp:calls "BigInt::from" .
 code:45acfdacd13a6deb24df91b0bc1054aa1c2335ae52e47a5478af2907603fd1f3 sp:calls "Literal::new_simple_literal" .
 code:45acfdacd13a6deb24df91b0bc1054aa1c2335ae52e47a5478af2907603fd1f3 sp:calls "Literal::new_typed_literal" .
@@ -171307,24 +171339,34 @@ code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Bound::fields" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Bound::parse" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Bundle::load" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Duration::from_secs" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Err" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Ok" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Path::new" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Self::fields" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Some" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Vec::new" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "Vec::with_capacity" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "anyhow::Error::new" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "closed" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "import_batches" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "oe_core::create_new_private_dir" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "oe_core::read_regular_bytes" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "parallel_import_eligible" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "publication::publish_directory" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "relative" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "retain_member" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "retain_new_member" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "serde_json::from_value" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "source_pack::Stage::new" .
-code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "source_pack::publish_same_or_new" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "source_pack::publish_file_no_replace" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "source_pack::relative_path" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "source_pack::visit_archive" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "source_pack::within_root" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "std::thread::Builder::new" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "std::thread::scope" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "strict_json" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:calls "visit" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:kind "RustCodeFile" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:module <urn:oev2:design:knowledge> .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:module <urn:oev2:design:knowledge_ocr_page5> .
@@ -171332,9 +171374,12 @@ code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:module 
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:module <urn:oev2:design:knowledge_registered_ocr6> .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:path "crates/oe-knowledge/src/incad/bundle.rs" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:production true .
-code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:sha256 "a0c44d63c19ea0a1232ecee37156324c864e3358ee4a9f0b14896f9ea767dd3a" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:sha256 "76ca546e9c106fbdf58653a287b2b25e7d43be7306c17b63b147c48c9465bb44" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:test "bundle_declared_budgets_and_target_containment_are_enforced" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:test "bundle_late_invalid_shard_leaves_no_published_target" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:test "bundle_parallel_import_bounds_workers_and_overlaps_shards" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:test "bundle_parallel_import_joins_workers_before_failure_cleanup" .
+code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:test "bundle_parallel_import_requires_two_shards_at_threshold" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:test "bundle_rejects_cross_shard_duplicates_and_file_directory_conflicts_before_staging" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:test "bundle_rejects_private_paths_symlink_members_and_unbound_descriptors" .
 code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a sp:test "bundle_restores_exact_selected_files_without_rewriting_upstream" .
@@ -211662,6 +211707,9 @@ function:6879bc165cc91c6c1a1425f4b574c418f50794f519e19ec251288e0f64f1afca sp:nam
 function:687dc689c66eab62742585c134182c64185456b34158d634a39a00c4a5c6b81a sp:file code:6e655eeb9a0601d242137bb8c078c3457c9465769bcf0baf66d6e92e53441a3e .
 function:687dc689c66eab62742585c134182c64185456b34158d634a39a00c4a5c6b81a sp:kind "RustFunction" .
 function:687dc689c66eab62742585c134182c64185456b34158d634a39a00c4a5c6b81a sp:name "literal_ge" .
+function:687e66351c72d475cb630e819128122f29a0ad5c4be0f549e90412735331ec40 sp:file code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a .
+function:687e66351c72d475cb630e819128122f29a0ad5c4be0f549e90412735331ec40 sp:kind "RustFunction" .
+function:687e66351c72d475cb630e819128122f29a0ad5c4be0f549e90412735331ec40 sp:name "import_batches" .
 function:687fc248e825f832ed5f7e3153b023988d17bd88860fbfab576ef7e25b5c9c52 sp:file code:a39a9439f9111c6f2a00170f58c893807447f770d3c733de155f64ab440e5857 .
 function:687fc248e825f832ed5f7e3153b023988d17bd88860fbfab576ef7e25b5c9c52 sp:kind "RustFunction" .
 function:687fc248e825f832ed5f7e3153b023988d17bd88860fbfab576ef7e25b5c9c52 sp:name "resource_profile" .
@@ -216294,6 +216342,8 @@ function:892e427a52daf88940b81ec489b1762386092ae41d8568596681a585589b6824 sp:nam
 function:892e96bbe841a1f5c914cbd234539aeedff928c9f28f62b2f736403cc8dab49f sp:file code:39c320d1b3d972e15240f822a33d23f12698fdf08285bd6e6a19c8b22e058d6e .
 function:892e96bbe841a1f5c914cbd234539aeedff928c9f28f62b2f736403cc8dab49f sp:kind "RustFunction" .
 function:892e96bbe841a1f5c914cbd234539aeedff928c9f28f62b2f736403cc8dab49f sp:name "sheet_dimension_created_fixture" .
+function:892f45bd4644c41e9af1f7323ba37dcd08618061e075c1bf280bcb33190bb780 sp:executes <urn:oev2:design:incad_bundle_bounded_parallel_execution> .
+function:892f45bd4644c41e9af1f7323ba37dcd08618061e075c1bf280bcb33190bb780 sp:executes <urn:oev2:design:incad_bundle_parallel_failure_joins_before_publication_or_cleanup> .
 function:892f45bd4644c41e9af1f7323ba37dcd08618061e075c1bf280bcb33190bb780 sp:executes <urn:oev2:design:incad_source_bundle_bounded_safe_archive_recovery> .
 function:892f45bd4644c41e9af1f7323ba37dcd08618061e075c1bf280bcb33190bb780 sp:executes <urn:oev2:design:incad_source_bundle_publishes_only_complete_new_tree> .
 function:892f45bd4644c41e9af1f7323ba37dcd08618061e075c1bf280bcb33190bb780 sp:file code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a .
@@ -218114,6 +218164,9 @@ function:96bb793762a8b0749937e108d69743ac0d9bb5284a960d9adc35debac9c297d0 sp:nam
 function:96bef0d8f30533f4c21993659807b27f5fa92ec8755af969e533cf56f2a2c863 sp:file code:c9a4f973ba7fdb0bbf6e8ac4a27f778f55e39ad3604d931c097e79b378d3979c .
 function:96bef0d8f30533f4c21993659807b27f5fa92ec8755af969e533cf56f2a2c863 sp:kind "RustFunction" .
 function:96bef0d8f30533f4c21993659807b27f5fa92ec8755af969e533cf56f2a2c863 sp:name "validate" .
+function:96c479ed8db5b96943d42b7c592fe7e317e05f44df5fdaa7915a2c8c081f9562 sp:file code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a .
+function:96c479ed8db5b96943d42b7c592fe7e317e05f44df5fdaa7915a2c8c081f9562 sp:kind "RustFunction" .
+function:96c479ed8db5b96943d42b7c592fe7e317e05f44df5fdaa7915a2c8c081f9562 sp:name "visit_part" .
 function:96c593ea12f8a918e0b84df3be8388c8087e71735428ce515f094b3c5155692a sp:file code:9f28cf27062091405a14b1e49e02c8b3b4b4b19cf169f51654e4201ff156fe92 .
 function:96c593ea12f8a918e0b84df3be8388c8087e71735428ce515f094b3c5155692a sp:kind "RustFunction" .
 function:96c593ea12f8a918e0b84df3be8388c8087e71735428ce515f094b3c5155692a sp:name "resolve_targets" .
@@ -221075,6 +221128,9 @@ function:aca8d5258d90d76840b249a34e3969198c66d34d0b2b7e2842806bd019df73a1 sp:nam
 function:acaced3390cb1100bbb92dd2a98d102852b3bc93af9615740df2db01fd2743ea sp:file code:d6cc1611c9aac2f20e4f766c8ba5c078b9eac0abddb915aae9a6d07c19ec76ec .
 function:acaced3390cb1100bbb92dd2a98d102852b3bc93af9615740df2db01fd2743ea sp:kind "RustFunction" .
 function:acaced3390cb1100bbb92dd2a98d102852b3bc93af9615740df2db01fd2743ea sp:name "flags" .
+function:acafbf6980366b66f22cd646fbad387f101a0cf527402ac40c586b3f73c4f48d sp:file code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a .
+function:acafbf6980366b66f22cd646fbad387f101a0cf527402ac40c586b3f73c4f48d sp:kind "RustFunction" .
+function:acafbf6980366b66f22cd646fbad387f101a0cf527402ac40c586b3f73c4f48d sp:name "retain_new_member" .
 function:acb41842b2ef878d5578383f92fac68c19a41260db81bb11e8d4813b0e82c317 sp:executes <urn:oev2:design:local_pdf_explicit_incremental_registration> .
 function:acb41842b2ef878d5578383f92fac68c19a41260db81bb11e8d4813b0e82c317 sp:file code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 .
 function:acb41842b2ef878d5578383f92fac68c19a41260db81bb11e8d4813b0e82c317 sp:kind "RustFunction" .
@@ -231118,6 +231174,9 @@ function:f30d6515eb2f5d822c80bb409226a4f7925b1c6ae86273a54097607a82e87532 sp:nam
 function:f3128e0929d02975dbb638783fcfd16cb6ba4cea9b4decc25e236df21dace54c sp:file code:7e37057745d22bdbb4b01f8205916d5c1588713466bfe5b11d8b2fc0632d231e .
 function:f3128e0929d02975dbb638783fcfd16cb6ba4cea9b4decc25e236df21dace54c sp:kind "RustFunction" .
 function:f3128e0929d02975dbb638783fcfd16cb6ba4cea9b4decc25e236df21dace54c sp:name "project_bytes" .
+function:f3130514358e5464becbd66bb3b8e497191848524e9f903021db46192b53d03b sp:file code:53e45da06c314f37b988d7b7752e8c6858a39147361ca371ad0ca01fa9fccb7a .
+function:f3130514358e5464becbd66bb3b8e497191848524e9f903021db46192b53d03b sp:kind "RustFunction" .
+function:f3130514358e5464becbd66bb3b8e497191848524e9f903021db46192b53d03b sp:name "parallel_import_eligible" .
 function:f3165a91a85b91f661cc3043975dec1a989e66b8a4773185accaf30abd42ba61 sp:file code:76fa732c21b30735964a12f3237fea87573a3630836057f7cac209cd789d2029 .
 function:f3165a91a85b91f661cc3043975dec1a989e66b8a4773185accaf30abd42ba61 sp:kind "RustFunction" .
 function:f3165a91a85b91f661cc3043975dec1a989e66b8a4773185accaf30abd42ba61 sp:name "modify" .

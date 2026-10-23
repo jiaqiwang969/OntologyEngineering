@@ -590,7 +590,7 @@ pub(crate) fn directory_fd(path: &Path, create: bool) -> Result<File> {
     Ok(directory)
 }
 #[cfg(unix)]
-fn publish_file_no_replace(stage: &Path, target: &Path) -> Result<()> {
+pub(crate) fn publish_file_no_replace(stage: &Path, target: &Path) -> Result<()> {
     use std::os::fd::AsRawFd;
     use std::os::unix::ffi::OsStrExt;
     let old = directory_fd(stage.parent().context("stage_parent")?, false)?;
@@ -612,6 +612,6 @@ fn publish_file_no_replace(stage: &Path, target: &Path) -> Result<()> {
     Ok(())
 }
 #[cfg(not(unix))]
-fn publish_file_no_replace(_stage: &Path, _target: &Path) -> Result<()> {
+pub(crate) fn publish_file_no_replace(_stage: &Path, _target: &Path) -> Result<()> {
     anyhow::bail!("safe_cache_publication_requires_unix")
 }

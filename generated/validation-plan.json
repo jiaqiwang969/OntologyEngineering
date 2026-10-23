@@ -11865,6 +11865,20 @@
     "scope": "development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
   },
   {
+    "behavior": "bundle_parallel_import_joins_workers_before_failure_cleanup",
+    "name": "verify_incad_bundle_parallel_failure_join",
+    "oracle": "Hold one worker while another errors or panics; prove the caller waits for the held worker, no later batch starts, no target is published and owned staging is cleaned only after workers exit. Retain existing malformed-shard, link, duplicate-path and destination tests.",
+    "rustPath": "crates/oe-knowledge/src/incad/bundle.rs",
+    "scope": "Deterministic local thread coordination and adversarial source fixtures; no power-loss transaction guarantee"
+  },
+  {
+    "behavior": "bundle_parallel_import_bounds_workers_and_overlaps_shards",
+    "name": "verify_incad_bundle_parallel_worker_bound",
+    "oracle": "A boundary fixture proves that two or more shards at the 64 MiB declared-member threshold may use the bounded scheduler, while a smaller shard or a single shard stays serial; a barrier/channel-coordinated synthetic workload observes real overlap and no more than two active workers; full members still restore byte-exact, including shared parent directories. No wall-clock speed threshold stands in for correctness.",
+    "rustPath": "crates/oe-knowledge/src/incad/bundle.rs",
+    "scope": "Native local synthetic source bundle; measured performance and full real recovery are separately recorded, with no native CAD or engineering qualification"
+  },
+  {
     "behavior": "incad_cad_cli_authority_and_rebound_identity_are_refused",
     "name": "verify_incad_cad_cli_completion_identity",
     "oracle": "完整合法软件终态；修改权限flag、追加键、丢输入、重签normalizer/cli/合同或程序字段均拒。真实参考件CLI改签另实跑，不冒CAD验收",

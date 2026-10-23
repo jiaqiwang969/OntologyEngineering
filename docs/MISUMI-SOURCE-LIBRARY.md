@@ -85,4 +85,10 @@ oev2 --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge library incad import-bundle \
 
 交付范围是**选定来源文件的闭包**：原 manifest 保留，但浏览器捕获、下载进程、个人配置、日志和私人 Project 不随包分发。清单明确未交付路径，不能把恢复成功说成上游原 manifest 全部成员都已复现。本地完整历史归档继续保留；新版交付不会改写它。
 
+### 导入调度与性能验收
+
+`import-bundle` 先完成同一套清单、路径和冲突预检，再按分片调度恢复：最多两个 worker；只有当每个分片声明的未压缩成员字节总量都达到 64 MiB 且分片数大于一时才并行，小分片或单分片保持串行。`verify` 始终串行。每个 worker 仍逐成员核对 SHA256、长度、普通文件类型、`sync_all`、归档尾部、回调与输入前后身份；worker 必须全部 join 后才允许发布或清理，暂存发布使用 no-replace 防止并发别名和目标冲突。
+
+性能回执只描述来源字节传输，不代表 CAD/NX 导入、工程适用性或工程采用。候选的旧小文件退化结果保留在私有维护回执 `var/maintenance/incad-restore-throughput-20261023/compare/RESULT.json`；通过阈值的合成三轮与真实全量恢复分别记录在 `compare-threshold2/RESULT.json` 和 `var/maintenance/misumi-source-library-20261023/real-empty-restore-run5/RESULT.json`，不覆盖旧回执。
+
 源码能力、所获资料范围、字节核验、原生 CAD、工程适用和采用分别报告。当前版本是否已上传、使用哪个资料版本以及空目录验收范围，以交付包和维护回执为准。

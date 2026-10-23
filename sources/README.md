@@ -222,7 +222,7 @@ Agent 根据本次真实输入准备参数与私有记录。先核 `knowledge st
 
 机构原件使用 `sources/misumi/incad/`，案例图谱使用 `sources/.indexes/incad/`；已有两套目录的 `source-pack.json` 和索引保持各自身份。Agent 用 `knowledge library incad build/search/view/verify` 建图、找案例和回读来源，再经已有 `project incad` 接入真实 Project/work。图谱关联官网功能/条件段落、BOM 行及型号、CAD 格式包与成员，保留相对路径和摘要；不猜测 BOM—CAD 配对、不自动创建 Project 或确认工程适用。
 
-新版资料交付含独立 inCAD 分片合同，`verify-bundle/import-bundle` 完整核验后恢复到新的资料目录；排除项、原清单与选定文件范围分别保留。已有本地原件不用下载，路径移动保留原字节与历史身份，另做当前验证。具体命令、四环节分工和新用户恢复见[米思米资料使用](../docs/MISUMI-SOURCE-LIBRARY.md)。
+新版资料交付含独立 inCAD 分片合同，`verify-bundle/import-bundle` 完整核验后恢复到新的资料目录；排除项、原清单与选定文件范围分别保留。已有本地原件不用下载，路径移动保留原字节与历史身份，另做当前验证。`import-bundle` 仍逐成员核验；仅当每个分片声明的未压缩成员字节总量达到 64 MiB 时才使用最多两个 worker，`verify` 保持串行。具体命令、四环节分工和新用户恢复见[米思米资料使用](../docs/MISUMI-SOURCE-LIBRARY.md)。
 
 ## 何时更新 Google Drive
 

@@ -70892,3 +70892,40 @@ rust_path = "crates/oe-model-credentials/tests/native_guard.rs"
 oracle = "同一个CredentialPool无lease安全门禁；含synthetic secret的输出拒绝且不回显"
 scope = "原13494分母不变；新增native固定模型/owner局部验收，原未覆盖仍unknown"
 
+
+# Shared source delivery execution; graph representation/identity contract unchanged.
+[[constraints]]
+id = "incad_bundle_bounded_parallel_execution"
+requirement = "req_knowledge"
+module = "knowledge"
+check = "import"
+rust_path = "crates/oe-knowledge/src/incad/bundle.rs"
+statement = "After the unchanged complete descriptor/path preflight, inCAD import may visit at most two shards concurrently in one private staged tree only when every shard's declared uncompressed member bytes total is at least 64 MiB; smaller or single-shard bundles remain on the serial path. Each worker retains the existing bounded decoder (128 MiB), selected-member staging, SHA256/length/file-kind checks, sync_all, callback/source rechecks, archive footer and unchanged-input checks. At most two decoder instances and two transient selected members coexist. This is a scheduling change only, not skipped verification, weaker durability, a new delivery format, graph identity or engineering approval. Verify-only remains sequential. Existing total bytes/members and per-shard bounds remain unchanged."
+severity = "error"
+
+[[constraints]]
+id = "incad_bundle_parallel_failure_joins_before_publication_or_cleanup"
+requirement = "req_knowledge"
+module = "knowledge"
+check = "import"
+rust_path = "crates/oe-knowledge/src/incad/bundle.rs"
+statement = "All scoped workers in the current bounded batch must finish and be joined before returning an error, cleaning shared staging or publishing. A worker error or panic prevents later batches and final publication; preserve a deterministic failure in input order. Success still rechecks all staged members and every input identity and uses exclusive directory publication. Workers cannot outlive the command, replace an existing destination, publish a partial tree or modify the source bundle. Each retained member uses atomic no-replace publication into staging: an existing physical target is rejected even if content matches, including filesystem path aliases; global lexical preflight alone is not sufficient under concurrency."
+severity = "error"
+
+[[validations]]
+id = "verify_incad_bundle_parallel_worker_bound"
+module = "knowledge"
+constraint = "incad_bundle_bounded_parallel_execution"
+behavior = "bundle_parallel_import_bounds_workers_and_overlaps_shards"
+rust_path = "crates/oe-knowledge/src/incad/bundle.rs"
+oracle = "A boundary fixture proves that two or more shards at the 64 MiB declared-member threshold may use the bounded scheduler, while a smaller shard or a single shard stays serial; a barrier/channel-coordinated synthetic workload observes real overlap and no more than two active workers; full members still restore byte-exact, including shared parent directories. No wall-clock speed threshold stands in for correctness."
+scope = "Native local synthetic source bundle; measured performance and full real recovery are separately recorded, with no native CAD or engineering qualification"
+
+[[validations]]
+id = "verify_incad_bundle_parallel_failure_join"
+module = "knowledge"
+constraint = "incad_bundle_parallel_failure_joins_before_publication_or_cleanup"
+behavior = "bundle_parallel_import_joins_workers_before_failure_cleanup"
+rust_path = "crates/oe-knowledge/src/incad/bundle.rs"
+oracle = "Hold one worker while another errors or panics; prove the caller waits for the held worker, no later batch starts, no target is published and owned staging is cleaned only after workers exit. Retain existing malformed-shard, link, duplicate-path and destination tests."
+scope = "Deterministic local thread coordination and adversarial source fixtures; no power-loss transaction guarantee"

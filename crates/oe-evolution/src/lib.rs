@@ -77,7 +77,10 @@ pub fn digest(value: &Value) -> Result<String> {
     Ok(sha256(canonical_json(value)?))
 }
 pub fn public_manifest(root: &Path) -> Result<Value> {
-    public_manifest_with_profile(root, inventory::PublicManifestProfile::CurrentDerived32)
+    public_manifest_with_profile(
+        root,
+        inventory::PublicManifestProfile::SourceReadmeDerived32,
+    )
 }
 fn public_manifest_with_profile(
     root: &Path,
@@ -87,10 +90,11 @@ fn public_manifest_with_profile(
     let first = inventory::manifest_with_profile(root, profile)?;
     let files = first["files"].as_object().context("code_manifest_files")?;
     match profile {
-        inventory::PublicManifestProfile::CurrentDerived32 => {
+        inventory::PublicManifestProfile::SourceReadmeDerived32 => {
             public_source_checks::check_files(root, files)?
         }
-        inventory::PublicManifestProfile::Legacy16 => {
+        inventory::PublicManifestProfile::CurrentDerived32
+        | inventory::PublicManifestProfile::Legacy16 => {
             public_source_checks::check_files_with_profile(root, files, profile)?
         }
     }
@@ -101,7 +105,7 @@ fn public_manifest_with_profile(
     Ok(first)
 }
 fn manifest_profile(expected: &Value) -> Result<inventory::PublicManifestProfile> {
-    use inventory::PublicManifestProfile::{CurrentDerived32, Legacy16};
+    use inventory::PublicManifestProfile::{CurrentDerived32, Legacy16, SourceReadmeDerived32};
     let object = expected
         .as_object()
         .context("code_manifest_profile_unknown")?;
@@ -116,12 +120,18 @@ fn manifest_profile(expected: &Value) -> Result<inventory::PublicManifestProfile
     ];
     // Original manifests have seven keys (schema plus six payload fields).
     let legacy = object.len() == base.len() && base.iter().all(|k| object.contains_key(*k));
-    let current = object.len() == base.len() + 2
-        && base.iter().all(|k| object.contains_key(*k))
+    let derived = base.iter().all(|k| object.contains_key(*k))
         && expected["resource_profile"] == oe_core::source_limits::PROFILE
         && expected["file_byte_limits"]
             == json!({"default":16*1024*1024,"generated/model.ttl":32*1024*1024});
-    ensure!(legacy || current, "code_manifest_profile_unknown");
+    let previous_derived = object.len() == base.len() + 2 && derived;
+    let public_sources = object.len() == base.len() + 3
+        && derived
+        && expected["public_sources"] == json!(["sources/README.md"]);
+    ensure!(
+        legacy || previous_derived || public_sources,
+        "code_manifest_profile_unknown"
+    );
     ensure!(
         expected["schema"] == "oev2.code-public-manifest/1"
             && expected["excluded_private_roots"] == json!(["var", "sources", ".git"])
@@ -134,7 +144,13 @@ fn manifest_profile(expected: &Value) -> Result<inventory::PublicManifestProfile
             && expected["status"] == "bounded_public_identity",
         "code_manifest_profile_unknown"
     );
-    let profile = if legacy { Legacy16 } else { CurrentDerived32 };
+    let profile = if legacy {
+        Legacy16
+    } else if previous_derived {
+        CurrentDerived32
+    } else {
+        SourceReadmeDerived32
+    };
     let files = expected["files"]
         .as_object()
         .context("code_manifest_files")?;
@@ -187,15 +203,18 @@ pub fn public_manifest_matching(root: &Path, expected: &Value) -> Result<Value> 
     Ok(actual)
 }
 fn public_manifest_matching_digest(root: &Path, expected: &str) -> Result<Value> {
-    let current = public_manifest(root)?;
-    if digest(&current)? == expected {
-        return Ok(current);
+    use inventory::PublicManifestProfile::{CurrentDerived32, Legacy16, SourceReadmeDerived32};
+    // Digest-only CodeBinaryRef has no profile field. Re-observe only these
+    // three frozen domains, each with its own real traversal and resource guards.
+    // A new public README can be invalid while remaining private in an old domain.
+    for profile in [SourceReadmeDerived32, CurrentDerived32, Legacy16] {
+        if let Ok(observed) = public_manifest_with_profile(root, profile)
+            && digest(&observed)? == expected
+        {
+            return Ok(observed);
+        }
     }
-    // A digest-only old CodeBinaryRef cannot carry a profile. Try only the
-    // one known original domain, with its real 16MiB read/count/total guards.
-    let legacy = public_manifest_with_profile(root, inventory::PublicManifestProfile::Legacy16)?;
-    ensure!(digest(&legacy)? == expected, "code_binary_source_changed");
-    Ok(legacy)
+    anyhow::bail!("code_binary_source_changed")
 }
 pub fn binary_reference(path: &Path, source_root: &Path) -> Result<CodeBinaryRef> {
     no_symlinks(path)?;

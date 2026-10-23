@@ -3480,7 +3480,7 @@ Requirements and method sources below are design declarations. They do not asser
 | ReleaseFile.path | String | 发行外壳内的规范相对路径，公开源码位于skill、程序位于bin | typed / 显式合同单位 / 精确身份及边界 | 冻结发行清单时写入 | 明确平台与单个发行版本 / 字节、路径、模式和完整性均核对；失败不切换旧版 |
 | ReleaseFile.sha256 | String | 精确文件内容摘要 | typed / 显式合同单位 / 精确身份及边界 | 冻结发行清单时写入 | 明确平台与单个发行版本 / 字节、路径、模式和完整性均核对；失败不切换旧版 |
 | ReleaseManifest.entry | String | 原Mac唯一CLI为bin/oev2；Windows /2唯一CLI为bin/oev2.exe，七程序使用固定.exe名称 | typed / 显式合同单位 / 精确身份及边界 | 冻结发行清单时写入 | 明确平台与单个发行版本 / 字节、路径、模式和完整性均核对；失败不切换旧版 |
-| ReleaseManifest.files | Vec<ReleaseFile> | 完整有序文件清单，不包含私有var/sources或清单自身 | typed / 显式合同单位 / 精确身份及边界 | 冻结发行清单时写入 | 明确平台与单个发行版本 / 字节、路径、模式和完整性均核对；失败不切换旧版 |
+| ReleaseManifest.files | Vec<ReleaseFile> | 完整有序文件清单，不包含私有var/sources内容或清单自身；sources/仅精确README.md可作为公开说明列入 | typed / 显式合同单位 / 精确身份及边界 | 冻结发行清单时写入 | 明确平台与单个发行版本 / 字节、路径、模式和完整性均核对；失败不切换旧版 |
 | ReleaseManifest.schema | String | 显式oev2.release-manifest/1为原Mac合同；/2为Windows本地受保护DACL发行合同，不混用模式语义，不改变旧portable-skill合同 | typed / 显式合同单位 / 精确身份及边界 | 冻结发行清单时写入 | 明确平台与单个发行版本 / 字节、路径、模式和完整性均核对；失败不切换旧版 |
 | ReleaseManifest.skill_root | String | 固定skill子目录，完整公开源身份不混入程序或清单 | typed / 显式合同单位 / 精确身份及边界 | 冻结发行清单时写入 | 明确平台与单个发行版本 / 字节、路径、模式和完整性均核对；失败不切换旧版 |
 | ReleaseManifest.target | String | manifest/1绑定aarch64-apple-darwin；显式manifest/2绑定x86_64-pc-windows-msvc，其他组合拒绝 | typed / 显式合同单位 / 精确身份及边界 | 冻结发行清单时写入 | 明确平台与单个发行版本 / 字节、路径、模式和完整性均核对；失败不切换旧版 |

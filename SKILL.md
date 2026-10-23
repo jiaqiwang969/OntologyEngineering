@@ -52,6 +52,8 @@ metadata:
 
 [能力索引](docs/CAPABILITIES.md)是按工程问题选择工具和合同的统一入口。先确定本轮需要，再读相应专门说明；两卷方法书、机械设计/计量/制造资料与供应商信息按其作用查证，相关性和工程适用性分别判断。
 
+用户向 `sources/` 投放资料或要求整理新增内容时，按 [资料接入说明](sources/README.md)清点来源、版本与摘要，再按文献、供应商资料及实际格式选择登记、检索和原件回读方式。结构化记录由 Agent 准备。替换 PDF 索引前合并完整书目，不能把 `knowledge register --replace` 当成追加；入库、索引、本体化、当前 Project 证据和工程采用分别记录。新增资料不会自动扩展 `project work` 的既有六书角色。
+
 专业工具的结果统一经 `project tool-result verify/register` 带来源回到同一 Project，不得用脚本直接改写 project.json；登记不改结论；结论经 `project decide` 由已登记结果更新，采用仍走 `project adopt`。外接专业能力按[作用与结果交接](references/professional-capabilities.md)选择：先确定要回答的问题、输入对象和所需证据，再调用对应 skill/工具。结果携带来源、条件、版本、覆盖与未知回到同一 Project；多工具同意的独立性要核实际来源与计算依赖。性能候选还需原基线与可比测量，经验保存后仍须在新条件下核适用性。
 
 当前会话负责组织任务、读原件、选择工具、回读结果和更新决定；Rust 执行明确的合同、来源与工程检查。七个专业 Skill 随本仓库在 `modules/` 统一维护；运行程序按[安装与接入](docs/TOOL-INTEGRATIONS.md)使用固定上游版本。四份 diff 只用于干净上游副本的重建核验，已整合模块不重复应用；运行程序与数据继续位于 `var/` 等已核位置。engineering-memory 是本系统内置模块，通过 `oev2 memory` 使用；历史经验是否使用由当前任务决定。需要历史时读[记忆方法](modules/engineering-memory/skill/SKILL.md)，还原时间线、失败、纠正、因果未知和适用条件。召回经 `project memory-candidate verify/register` 核来源与绑定，只作不支持决定的待核候选；实际使用效果经 `project memory-feedback` 与 `memory session feedback` 回写。
@@ -86,4 +88,4 @@ CAD 使用 v2 自有 Rust 模块及显式原生 SDK；调用前读[独立执行�
 
 保存目标、条件、行动、观察、成功/失败、用户纠正与反例，区分项目事实、工作方法、领域候选和软件缺陷。已有表达足够时修正实例或记 `no_delta`。项目内 RRSI 先经 workspace 的 learning-goal / learning-freeze 接续当前完整 Project、根锚定与全部验收；接续试验、评估及记录采用决定前运行 learning-check，再沿[有证据的改进](references/regularized-evolution.md)比较固定候选和判据。目标或来源变化重建基线；恢复会话不自动触发方法晋升。来源匹配、规则复述或文字精简本身不证明方法收益。
 
-项目进度和专属验收从相应项目原件接续；历史案例保留适用范围。`var/` 保存私有任务、调查、构建与维护，`sources/` 保存合法原件及索引，均不进入分发。历史命令按原身份阅读，当前执行使用已核入口。每轮报告先写根验收进度，再写实际新增、完成范围、未决问题及下一依赖。
+项目进度和专属验收从相应项目原件接续；历史案例保留适用范围。`var/` 保存私有任务、调查、构建与维护，`sources/` 保存工程资料原件、处理成果及索引。这些私人内容不进入分发，`sources/` 仅发布接入说明 `README.md`。历史命令按原身份阅读，当前执行使用已核入口。每轮报告先写根验收进度，再写实际新增、完成范围、未决问题及下一依赖。

@@ -193,14 +193,23 @@ fn tree(root: &Path, m: &ReleaseManifest, private: bool) -> Result<BTreeMap<Stri
         for entry in fs::read_dir(dir)? {
             let path = entry?.path();
             let relative = oe_core::portable_source_path(root, &path)?;
+            if relative.starts_with("skill/sources/") && !expected.contains_key(&relative) {
+                ensure!(private, "release_private_payload_forbidden");
+                continue; // Local private children are not statted or traversed.
+            }
             let metadata = fs::symlink_metadata(&path)?;
             platform::reject_reparse(&metadata)?;
-            if matches!(relative.as_str(), "skill/var" | "skill/sources") {
+            if relative == "skill/var" {
                 ensure!(
                     private && metadata.is_dir(),
                     "release_private_payload_forbidden"
                 );
                 continue; // Never traverse private user/project data.
+            }
+            if relative == "skill/sources" && !expected.contains_key(&relative) {
+                ensure!(private, "release_private_payload_forbidden");
+                ensure!(metadata.is_dir(), "release_file_type_mismatch");
+                continue; // Only a listed sources/README.md acquires public identity.
             }
             let directory = expected.get(&relative).context("release_unlisted_path")?;
             ensure!(
@@ -342,7 +351,9 @@ fn check(root: &Path, expected_sha: &str, private: bool) -> Result<Checked> {
 }
 
 /// Verify every public file and reject extras, while never scanning skill/var or
-/// skill/sources. A valid bundle is not a privacy-scan or execution qualification.
+/// unlisted sources data. Listed sources/README.md remains bound; older manifests
+/// retain their entirely private sources tree without acquiring new public files.
+/// A valid bundle is not a privacy-scan or execution qualification.
 pub fn verify(root: &Path, expected_sha: &str) -> Result<VerifiedRelease> {
     Ok(check(root, expected_sha, true)?.release)
 }

@@ -64,7 +64,7 @@ export OEV2_PROJECT_HOME="/absolute/engineering-project/.engineering"
 "$OEV2_BIN" --root "$OEV2_SKILL_ROOT" harness --help
 ```
 
-`knowledge query` 与 `project work` 使用本地来源检索、计算和明确检查，开放式适用性判断由 Agent 对照原文完成。检索候选、OCR、来源摘要匹配和工程适用分别取证。书籍与米思米原件从 README 的独立资料入口取得，按各自合法来源登记；无资料时返回具体缺项。
+`knowledge query` 与 `project work` 使用本地来源检索、计算和明确检查，开放式适用性判断由 Agent 对照原文完成。检索候选、OCR、来源摘要匹配和工程适用分别取证。工程资料统一放在与 `modules/` 同级的 `sources/`：书籍使用 `sources/books/`，米思米使用 `sources/misumi/`，登记与索引保持 `sources/.indexes/`。已有本地原件核摘要后迁入，无需重复下载；安装根或路径改变后重新登记完整书目，`--replace` 不会自动追加旧书。新增格式按实际读取能力接入，不自动获得 PDF 索引或知识图谱。流程与当前范围见[工程资料入口](../sources/README.md)；缺资料时返回具体缺项。
 
 工程 work 的来源、功能、物理机理、前提和反例见[工程工作](../references/engineering-work.md)、[工程前提](../references/engineering-premises.md)。必要工程条件或原验收不能因局部计算成功而省略。
 

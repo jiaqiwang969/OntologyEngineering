@@ -25,6 +25,7 @@ fn fixture(root: &Path, version: &str) -> Result<String> {
         "LICENSE",
         "Cargo.lock",
         "rust-toolchain.toml",
+        "sources/README.md",
     ] {
         values.push((format!("skill/{name}"), b"fixture only\n".to_vec(), 0o644));
     }
@@ -196,6 +197,68 @@ fn release_rejects_symlinks_modes_extra_public_and_private_distribution() -> Res
     symlink(
         root.join("does-not-exist"),
         source.join("skill/var/private-input"),
+    )?;
+    assert!(release::verify(&source, &digest).is_ok());
+    assert!(release::install(&source, &digest, &root.join("received")).is_err());
+    assert!(!root.join("received").exists());
+    Ok(())
+}
+
+#[test]
+fn installed_sources_are_private_but_public_readme_remains_verified() -> Result<()> {
+    let (_temp, root) = temporary()?;
+    let source = root.join("source");
+    let digest = fixture(&source, "2.0.0-rc.1")?;
+    release::install(&source, &digest, &root.join("clean-install"))?;
+    let private = source.join("skill/sources/private.pdf");
+    fs::write(&private, b"private original")?;
+    let catalog = source.join("skill/sources/.catalog");
+    fs::create_dir(&catalog)?;
+    symlink(
+        root.join("unavailable-private-source"),
+        catalog.join("unreadable"),
+    )?;
+    symlink(
+        root.join("unavailable-direct-private-source"),
+        source.join("skill/sources/unreadable"),
+    )?;
+    assert!(release::verify(&source, &digest).is_ok());
+    fs::write(&private, b"updated private original")?;
+    assert!(release::verify(&source, &digest).is_ok());
+    assert!(release::install(&source, &digest, &root.join("private-install")).is_err());
+    assert!(!root.join("private-install").exists());
+    let public = source.join("skill/sources/README.md");
+    fs::remove_file(&public)?;
+    assert!(release::verify(&source, &digest).is_err());
+    symlink(root.join("absent-public-readme"), &public)?;
+    assert!(release::verify(&source, &digest).is_err());
+    fs::remove_file(&public)?;
+    fs::write(public, b"tampered public instructions")?;
+    assert!(release::verify(&source, &digest).is_err());
+    assert_eq!(fs::read(private)?, b"updated private original");
+    Ok(())
+}
+
+#[test]
+fn older_release_without_public_sources_directory_accepts_local_library_only() -> Result<()> {
+    let (_temp, root) = temporary()?;
+    let source = root.join("source");
+    fixture(&source, "2.0.0-rc.1")?;
+    let manifest_path = source.join(MANIFEST_NAME);
+    let mut manifest: ReleaseManifest = serde_json::from_slice(&fs::read(&manifest_path)?)?;
+    manifest
+        .files
+        .retain(|row| row.path != "skill/sources/README.md");
+    let bytes = serde_json::to_vec_pretty(&manifest)?;
+    fs::write(manifest_path, &bytes)?;
+    fs::remove_file(source.join("skill/sources/README.md"))?;
+    fs::write(source.join("skill/sources/private.pdf"), b"local original")?;
+    let digest = oe_core::sha256(&bytes);
+    assert!(release::verify(&source, &digest).is_ok());
+    // A README omitted by the historical manifest stays private under it.
+    fs::write(
+        source.join("skill/sources/README.md"),
+        b"local instructions",
     )?;
     assert!(release::verify(&source, &digest).is_ok());
     assert!(release::install(&source, &digest, &root.join("received")).is_err());

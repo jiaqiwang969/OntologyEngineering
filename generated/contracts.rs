@@ -21240,7 +21240,7 @@ impl ReleaseFile {
 pub struct ReleaseManifest {
     /// 原Mac唯一CLI为bin/oev2；Windows /2唯一CLI为bin/oev2.exe，七程序使用固定.exe名称
     pub entry: String,
-    /// 完整有序文件清单，不包含私有var/sources或清单自身
+    /// 完整有序文件清单，不包含私有var/sources内容或清单自身；sources/仅精确README.md可作为公开说明列入
     pub files: Vec<ReleaseFile>,
     /// 显式oev2.release-manifest/1为原Mac合同；/2为Windows本地受保护DACL发行合同，不混用模式语义，不改变旧portable-skill合同
     pub schema: String,

@@ -579,3 +579,95 @@ fn no_registered_library_keeps_question_and_unknowns_without_dispatch() {
     assert_eq!(report["knowledge_gaps"][0]["status"], "unresolved");
     assert_eq!(report["semantic_review"], "not_run");
 }
+
+#[test]
+fn source_library_query_packet_and_feedback_preserve_source_boundaries() {
+    let f = Fixture::new(false);
+    let bytes = pdf(false, 3);
+    fs::write(f.path.join("sources/books/条件-original.pdf"), &bytes).unwrap();
+    f.write("sources/books/manifest.json", &json!({
+        "schema":"ontology-engineering.local-pdf-manifest/v1",
+        "sources":[{"id":"conditions","title":"Synthetic book","edition":"fixture-1",
+            "path":"条件-original.pdf","sha256":sha256(&bytes),
+            "chapters":[{"id":"conditions","title":"工程条件","start_page":1,"end_page":3,"aliases":[]}]}]
+    }));
+    registration::register(
+        &f.path,
+        &f.path.join("sources/books/manifest.json"),
+        &RegistrationOptions {
+            tools: tools(),
+            ..Default::default()
+        },
+    )
+    .unwrap();
+    let mut options = f.options("books-query");
+    options.providers.retain(|p| p.kind == "local_pdf");
+    let report = query::run(&f.root, &options).unwrap();
+    assert_eq!(report["status"], "completed");
+    let results = report["results"].as_array().unwrap();
+    assert!(!results.is_empty());
+    assert!(
+        results
+            .iter()
+            .all(|r| r["source_pdf"] == "sources/books/条件-original.pdf")
+    );
+    let context = report["context_snapshot"].clone();
+    let packet = packet::make_with_tools(&f.root, &report, &context, &tools()).unwrap();
+    assert_eq!(
+        packet::verify_with_tools(&f.root, &packet, &context, &tools()).unwrap()["status"],
+        "ready_for_agent_review"
+    );
+    f.write("var/projects/p/books-packet.json", &packet);
+    let feedback = feedback::append_with_tools(
+        &f.root,
+        &json!({
+            "packet_path":"var/projects/p/books-packet.json", "context":context,
+            "candidate_id":packet["evidence_candidates"][0]["id"], "disposition":"deferred",
+            "reason":"Fixture requires actual engineering conditions", "next_check":"Measure load",
+            "output":"var/projects/p/feedback/books.json"
+        }),
+        &tools(),
+    )
+    .unwrap();
+    assert_eq!(feedback["semantic_review"], "not_run");
+    // Equal bytes outside the source library must not acquire source authority.
+    fs::write(f.path.join("var/projects/p/outside.pdf"), &bytes).unwrap();
+    for denied in [
+        "var/projects/p/outside.pdf",
+        "sources/books/../../var/projects/p/outside.pdf",
+    ] {
+        let mut bad_report = report.clone();
+        bad_report["results"][0]["source_pdf"] = json!(denied);
+        let error = packet::make_with_tools(&f.root, &bad_report, &context, &tools()).unwrap_err();
+        assert!(
+            error.to_string().contains("source_outside_root"),
+            "{error:#}"
+        );
+        let mut bad_packet = packet.clone();
+        bad_packet["evidence_candidates"][0]["source"]["source_pdf"] = json!(denied);
+        let error =
+            packet::verify_with_tools(&f.root, &bad_packet, &context, &tools()).unwrap_err();
+        assert!(
+            error.to_string().contains("source_outside_root"),
+            "{error:#}"
+        );
+    }
+    #[cfg(unix)]
+    {
+        std::os::unix::fs::symlink(
+            f.path.join("var/projects/p/outside.pdf"),
+            f.path.join("sources/books/linked.pdf"),
+        )
+        .unwrap();
+        let mut bad_report = report.clone();
+        bad_report["results"][0]["source_pdf"] = json!("sources/books/linked.pdf");
+        let error = packet::make_with_tools(&f.root, &bad_report, &context, &tools()).unwrap_err();
+        assert!(error.to_string().contains("symlink"), "{error:#}");
+        let mut bad_packet = packet.clone();
+        bad_packet["evidence_candidates"][0]["source"]["source_pdf"] =
+            json!("sources/books/linked.pdf");
+        let error =
+            packet::verify_with_tools(&f.root, &bad_packet, &context, &tools()).unwrap_err();
+        assert!(error.to_string().contains("symlink"), "{error:#}");
+    }
+}

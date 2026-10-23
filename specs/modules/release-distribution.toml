@@ -125,7 +125,7 @@ name="files"
 rust_type="Vec<ReleaseFile>"
 required=true
 format="typed"
-meaning="完整有序文件清单，不包含私有var/sources或清单自身"
+meaning="完整有序文件清单，不包含私有var/sources内容或清单自身；sources/仅精确README.md可作为公开说明列入"
 unit="显式合同单位"
 precision="精确身份及边界"
 write="冻结发行清单时写入"
@@ -174,8 +174,71 @@ module="cli"
 constraint="release_source_assembly_preserves_private_boundary"
 behavior="maintain_manifest_covers_new_runtime_and_entry_contract_without_private_roots"
 rust_path="crates/oe-cli/tests/release_cli.rs"
-oracle="实际CLI完整列出runtime新增文件及ENTRY-CONTRACT-DETAILS，逐项SHA/bytes一致；不遍历var/sources/.git及其悬空链接"
+oracle="实际CLI完整列出runtime新增文件及ENTRY-CONTRACT-DETAILS，逐项SHA/bytes一致；var/.git和sources中非公开README的私有资料及其悬空链接不采集"
 scope="发行装配的公共输入闭包；装配隐私检查和真实安装由另行发布接收证明，非本反例执行范围"
+
+[[constraints]]
+id="release_sources_public_readme_only"
+requirement="req_delivery"
+module="dist"
+check="package_skill"
+rust_path="crates/oe-dist/src/package.rs"
+statement="sources/ is the private original-library root for books, supplier originals and indexes. Only exact sources/README.md is a public distribution input; nested or case-variant README paths and every other sources payload refuse. Portable manifests, release assembly and platform release checks use the same exception. Installed trees may hold unlisted local source data without reading its content; a listed README remains hash-bound, required and non-symlinked. Distribution installation still refuses private payloads. Historical manifests that never listed the README retain their existing private sources meaning."
+severity="error"
+
+[[validations]]
+id="release_sources_public_readme_transport"
+module="dist"
+constraint="release_sources_public_readme_only"
+behavior="only_public_sources_readme_is_transported_with_local_library_present"
+rust_path="crates/oe-dist/tests/package.rs"
+oracle="The actual shared release inventory and ZIP transport include only the exact public README while books, supplier data, nested README files, indexes and private dangling links remain excluded. Explicit forged inventories cannot distribute those private originals."
+scope="Bounded native transport with owned fixtures; no source-content applicability or engineering adoption claim."
+
+[[validations]]
+id="release_sources_public_readme_mac_installation"
+module="dist"
+constraint="release_sources_public_readme_only"
+behavior="installed_sources_are_private_but_public_readme_remains_verified"
+rust_path="crates/oe-dist/tests/release.rs"
+oracle="An installed macOS release accepts changed local source originals, refuses redistributing them and rejects missing, symlinked or changed public README bytes. Older manifests without this public file continue to ignore local source contents."
+scope="macOS release software boundary only; Windows and engineering acceptance require their own evidence."
+
+[[validations]]
+id="release_sources_public_readme_windows_installation"
+module="dist"
+constraint="release_sources_public_readme_only"
+behavior="windows_installed_sources_are_private_but_public_readme_remains_verified"
+rust_path="crates/oe-dist/tests/release_windows.rs"
+oracle="The Windows release owner preserves native ACL/reparse rules while allowing installed local source data, refusing its redistribution and rejecting missing, linked or changed public README bytes. Historical unlisted local README files remain private."
+scope="Windows native test definition; another platform's pass does not supply Windows execution evidence."
+
+[[constraints]]
+id="code_sources_readme_manifest_domain"
+requirement="req_code_evolution"
+module="code_evolution"
+check="public_manifest_matching"
+rust_path="crates/oe-evolution/src/lib.rs"
+statement="New source captures use an explicit ten-key SourceReadmeDerived32 domain with public_sources exactly [sources/README.md], retaining the existing derived-model resource limits. The shared code_identity owner inventories only that exact regular file under sources and never reads private sibling contents. Historical nine-key CurrentDerived32 and seven-key Legacy16 domains retain their original whole-sources exclusion, byte limits and serialized identities. Full manifests select only their exact known shape; digest-only CodeBinaryRef checks may re-observe the three fixed domains without rewriting the expected digest. Unknown exceptions, caller limits and actual public byte/mode/membership changes refuse."
+severity="error"
+
+[[validations]]
+id="code_sources_readme_private_and_historical_domains"
+module="code_evolution"
+constraint="code_sources_readme_manifest_domain"
+behavior="sources_readme_is_public_only_in_new_profile_and_private_bytes_stay_excluded"
+rust_path="crates/oe-evolution/tests/public_manifest_profiles.rs"
+oracle="Independent literal seven/nine-key expected manifests and digest-only binary references remain unchanged when a local README is added or changed. The new ten-key capture binds that README and rejects its mutation/removal while changes to books, supplier originals, nested README files, indexes and private links do not affect public identity."
+scope="Bounded source identity and compatibility; not executable behavior or engineering qualification."
+
+[[validations]]
+id="code_sources_readme_exact_regular_entry"
+module="code_evolution"
+constraint="code_sources_readme_manifest_domain"
+behavior="source_readme_exception_requires_exact_name_and_regular_file"
+rust_path="crates/oe-evolution/tests/public_manifest_profiles.rs"
+oracle="Case-variant README names remain private, README directories are never traversed, and new-domain README/root symlinks refuse. Historical digest-only references still observe their unchanged whole-sources exclusion even when the new domain refuses that local README."
+scope="Owned filesystem counterexamples; no claim of source-content privacy classification or engineering adoption."
 
 
 [[constraints]]

@@ -380,12 +380,16 @@ fn maintain_manifest_covers_new_runtime_and_entry_contract_without_private_roots
         "docs/NEW-RUNTIME.md".into(),
         b"New runtime profile fixture\n".to_vec(),
     );
+    expected.insert(
+        "sources/README.md".into(),
+        b"Public source-library instructions\n".to_vec(),
+    );
     for (path, bytes) in &expected {
         write_file(&root.join(path), bytes, 0o644)?;
     }
     for excluded in ["var", "sources", ".git"] {
         let directory = root.join(excluded);
-        fs::create_dir(&directory)?;
+        fs::create_dir_all(&directory)?;
         fs::write(directory.join("not-public"), b"Must not be inventoried\n")?;
         // A dangling link would fail public inventory traversal, proving that
         // the excluded roots' contents are not accidentally scanned.
@@ -444,10 +448,32 @@ fn maintain_manifest_covers_new_runtime_and_entry_contract_without_private_roots
     assert_eq!(added.sha256, oe_core::sha256(new_bytes));
     assert_eq!(added.bytes, new_bytes.len() as u64);
     assert!(!manifest.files.iter().any(|row| {
-        ["var/", "sources/", ".git/"]
-            .iter()
-            .any(|prefix| row.path.starts_with(prefix))
+        row.path != "sources/README.md"
+            && ["var/", "sources/", ".git/"]
+                .iter()
+                .any(|prefix| row.path.starts_with(prefix))
     }));
+    let revised = b"Revised public source-library instructions\n";
+    write_file(&root.join("sources/README.md"), revised, 0o644)?;
+    let third = success(
+        command(&root)
+            .args([
+                "maintain",
+                "manifest",
+                "--output",
+                "var/third-inventory.json",
+            ])
+            .output()?,
+    )?;
+    let third: PortableManifest = serde_json::from_value(third)?;
+    let readme = third
+        .files
+        .iter()
+        .find(|row| row.path == "sources/README.md")
+        .context("public_sources_readme_omitted")?;
+    assert_eq!(readme.sha256, oe_core::sha256(revised));
+    assert_eq!(readme.bytes, revised.len() as u64);
+    assert_eq!(third.files.len(), expected.len() + 1);
     assert!(
         manifest
             .files

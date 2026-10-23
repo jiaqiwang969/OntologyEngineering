@@ -323,6 +323,15 @@ fn invalid_inventory_paths_types_collisions_and_limits_are_rejected() -> Result<
         "../escape",
         "var/private",
         "sources/private",
+        "sources/private.pdf",
+        "sources/.catalog/manifest.json",
+        "sources/chapters/text.md",
+        "sources/readme.md",
+        "Sources/README.md",
+        "sources/README.MD",
+        "sources/README.md/child",
+        "docs/sources/README.md",
+        "docs/sources/private.pdf",
         "assets/aux.txt",
         "assets/a.",
         "a\\b",
@@ -367,6 +376,76 @@ fn invalid_inventory_paths_types_collisions_and_limits_are_rejected() -> Result<
     value["unexpected"] = true.into();
     std::fs::write(path, serde_json::to_vec(&value)?)?;
     assert!(read_manifest(&root.path().join("var/inventory.json")).is_err());
+    Ok(())
+}
+#[test]
+fn only_public_sources_readme_is_transported_with_local_library_present() -> Result<()> {
+    let (_temporary, root, baseline) = fixture(false)?;
+    std::fs::create_dir_all(root.path().join("sources"))?;
+    let readme = b"Public library entry instructions\n";
+    std::fs::write(root.path().join("sources/README.md"), readme)?;
+    let private = [
+        "sources/books/original.pdf",
+        "sources/misumi/original.pdf",
+        "sources/.indexes/catalog.sqlite3",
+        "sources/books/README.md",
+    ];
+    for path in private {
+        std::fs::create_dir_all(root.path().join(path).parent().unwrap())?;
+        std::fs::write(root.path().join(path), b"private source fixture")?;
+    }
+    #[cfg(unix)]
+    std::os::unix::fs::symlink(
+        root.path().join("absent-private-original"),
+        root.path().join("sources/unreadable-original"),
+    )?;
+    // Exercise the same public identity owner used by compiled-source capture,
+    // not a hand-built transport whitelist that might omit the README.
+    let manifest = oe_dist::release_build::inventory(&root)?;
+    assert_eq!(manifest.files.len(), baseline.files.len() + 1);
+    assert!(
+        manifest
+            .files
+            .iter()
+            .any(|row| row.path == "sources/README.md")
+    );
+    inventory(&root, &manifest)?;
+    let result = produce(&root)?;
+    assert_eq!(verify_package(&result)?["status"], "transport_verified");
+    let mut archive = ZipArchive::new(std::fs::File::open(result.directory().join("skill.zip"))?)?;
+    let mut actual = Vec::new();
+    archive
+        .by_name("ontology-engineering/sources/README.md")?
+        .read_to_end(&mut actual)?;
+    assert_eq!(actual, readme);
+    for path in private {
+        assert!(
+            archive
+                .by_name(&format!("ontology-engineering/{path}"))
+                .is_err()
+        );
+        assert_eq!(
+            std::fs::read(root.path().join(path))?,
+            b"private source fixture"
+        );
+        let mut leaked = manifest.clone();
+        leaked.files.push(SourceFile {
+            path: path.into(),
+            sha256: sha256(b"private source fixture"),
+            bytes: b"private source fixture".len() as u64,
+        });
+        leaked.files.sort_by(|a, b| a.path.cmp(&b.path));
+        inventory(&root, &leaked)?;
+        assert!(
+            package_skill(
+                &root,
+                Path::new("var/inventory.json"),
+                Path::new("var/leaked")
+            )
+            .is_err()
+        );
+        assert!(!root.path().join("var/leaked").exists());
+    }
     Ok(())
 }
 #[test]

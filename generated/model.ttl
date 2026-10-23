@@ -1495,7 +1495,7 @@
 <urn:oev2:design:code_scope_association_candidate_root> <urn:oev2:design:name> "code_scope_association_candidate_root" .
 <urn:oev2:design:code_scope_association_candidate_root> <urn:oev2:design:requirement> <urn:oev2:design:req_engineering> .
 <urn:oev2:design:code_scope_association_candidate_root> <urn:oev2:design:severity> "error" .
-<urn:oev2:design:code_scope_association_candidate_root> <urn:oev2:design:statement> "Original scope and mapping audit is applied to the actual candidate.source_root after the complete public manifest matches the source artifact. Candidate declarations resolve only in that manifest; missing files are recorded and no driver/owner/private fallback is used. Repeat actual capture after execution and before receipt. Relative request/context/witness references are owner-rooted; witness process references retain the original driver-root role. Known manifest identity domains remain exact: original seven-key manifest from pinned code_identity.rs SHA2563510950c87d452b07d44761efa5de1adb45ed16dd0398a920e4a18cf8da7ce0b and current nine-key derived-model-resource/2 only. Legacy allfiles16MiB and current canonical generated/model.ttl32MiB limits are actually enforced in shared scans and fingerprints; total256MiB/count10000 remain. Complete artifacts compare full original manifest, digest-only binary refs may try only the known original domain after current mismatch. Unknown/hybrid metadata, caller budgets and actual byte/mode/member drift reject; original digests are never rewritten. Default new captures and other current native lifecycle protocols remain unchanged." .
+<urn:oev2:design:code_scope_association_candidate_root> <urn:oev2:design:statement> "Original scope and mapping audit is applied to the actual candidate.source_root after the complete public manifest matches the source artifact. Candidate declarations resolve only in that manifest; missing files are recorded and no driver/owner/private fallback is used. Repeat actual capture after execution and before receipt. Relative request/context/witness references are owner-rooted; witness process references retain the original driver-root role. Known historical manifest domains remain exact: original seven-key manifest from pinned code_identity.rs SHA2563510950c87d452b07d44761efa5de1adb45ed16dd0398a920e4a18cf8da7ce0b and nine-key derived-model-resource/2 retain whole-sources exclusion. New captures use the explicit ten-key public_sources=[sources/README.md] domain, binding only that public source entry. Legacy allfiles16MiB and both derived canonical generated/model.ttl32MiB limits are actually enforced in shared scans and fingerprints; total256MiB/count10000 remain. Complete artifacts compare the full declared domain; digest-only binary refs may re-observe only these three fixed domains. Unknown/hybrid metadata, caller budgets and actual byte/mode/member drift reject; original digests are never rewritten. Other current native lifecycle protocols remain unchanged." .
 <urn:oev2:design:code_scope_association_same_owner> <urn:oev2:design:check> "associate" .
 <urn:oev2:design:code_scope_association_same_owner> <urn:oev2:design:checkerPath> "crates/oe-engineering/src/code_qualification.rs" .
 <urn:oev2:design:code_scope_association_same_owner> <urn:oev2:design:kind> "Constraint" .
@@ -1528,6 +1528,30 @@
 <urn:oev2:design:code_scope_owner_real_dispatch> <urn:oev2:design:rustPath> "crates/oe-engineering/tests/code_qualification.rs" .
 <urn:oev2:design:code_scope_owner_real_dispatch> <urn:oev2:design:scope> "原6/19固定工具显式执行；不覆盖新增snapshot12、19原模块/22owner闭环或工业效果" .
 <urn:oev2:design:code_scope_owner_real_dispatch> <urn:oev2:design:validates> <urn:oev2:design:code_qualification_full_scope_same_owner> .
+<urn:oev2:design:code_sources_readme_exact_regular_entry> <urn:oev2:design:behavior> "source_readme_exception_requires_exact_name_and_regular_file" .
+<urn:oev2:design:code_sources_readme_exact_regular_entry> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:code_sources_readme_exact_regular_entry> <urn:oev2:design:module> <urn:oev2:design:code_evolution> .
+<urn:oev2:design:code_sources_readme_exact_regular_entry> <urn:oev2:design:name> "code_sources_readme_exact_regular_entry" .
+<urn:oev2:design:code_sources_readme_exact_regular_entry> <urn:oev2:design:oracle> "Case-variant README names remain private, README directories are never traversed, and new-domain README/root symlinks refuse. Historical digest-only references still observe their unchanged whole-sources exclusion even when the new domain refuses that local README." .
+<urn:oev2:design:code_sources_readme_exact_regular_entry> <urn:oev2:design:rustPath> "crates/oe-evolution/tests/public_manifest_profiles.rs" .
+<urn:oev2:design:code_sources_readme_exact_regular_entry> <urn:oev2:design:scope> "Owned filesystem counterexamples; no claim of source-content privacy classification or engineering adoption." .
+<urn:oev2:design:code_sources_readme_exact_regular_entry> <urn:oev2:design:validates> <urn:oev2:design:code_sources_readme_manifest_domain> .
+<urn:oev2:design:code_sources_readme_manifest_domain> <urn:oev2:design:check> "public_manifest_matching" .
+<urn:oev2:design:code_sources_readme_manifest_domain> <urn:oev2:design:checkerPath> "crates/oe-evolution/src/lib.rs" .
+<urn:oev2:design:code_sources_readme_manifest_domain> <urn:oev2:design:kind> "Constraint" .
+<urn:oev2:design:code_sources_readme_manifest_domain> <urn:oev2:design:module> <urn:oev2:design:code_evolution> .
+<urn:oev2:design:code_sources_readme_manifest_domain> <urn:oev2:design:name> "code_sources_readme_manifest_domain" .
+<urn:oev2:design:code_sources_readme_manifest_domain> <urn:oev2:design:requirement> <urn:oev2:design:req_code_evolution> .
+<urn:oev2:design:code_sources_readme_manifest_domain> <urn:oev2:design:severity> "error" .
+<urn:oev2:design:code_sources_readme_manifest_domain> <urn:oev2:design:statement> "New source captures use an explicit ten-key SourceReadmeDerived32 domain with public_sources exactly [sources/README.md], retaining the existing derived-model resource limits. The shared code_identity owner inventories only that exact regular file under sources and never reads private sibling contents. Historical nine-key CurrentDerived32 and seven-key Legacy16 domains retain their original whole-sources exclusion, byte limits and serialized identities. Full manifests select only their exact known shape; digest-only CodeBinaryRef checks may re-observe the three fixed domains without rewriting the expected digest. Unknown exceptions, caller limits and actual public byte/mode/membership changes refuse." .
+<urn:oev2:design:code_sources_readme_private_and_historical_domains> <urn:oev2:design:behavior> "sources_readme_is_public_only_in_new_profile_and_private_bytes_stay_excluded" .
+<urn:oev2:design:code_sources_readme_private_and_historical_domains> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:code_sources_readme_private_and_historical_domains> <urn:oev2:design:module> <urn:oev2:design:code_evolution> .
+<urn:oev2:design:code_sources_readme_private_and_historical_domains> <urn:oev2:design:name> "code_sources_readme_private_and_historical_domains" .
+<urn:oev2:design:code_sources_readme_private_and_historical_domains> <urn:oev2:design:oracle> "Independent literal seven/nine-key expected manifests and digest-only binary references remain unchanged when a local README is added or changed. The new ten-key capture binds that README and rejects its mutation/removal while changes to books, supplier originals, nested README files, indexes and private links do not affect public identity." .
+<urn:oev2:design:code_sources_readme_private_and_historical_domains> <urn:oev2:design:rustPath> "crates/oe-evolution/tests/public_manifest_profiles.rs" .
+<urn:oev2:design:code_sources_readme_private_and_historical_domains> <urn:oev2:design:scope> "Bounded source identity and compatibility; not executable behavior or engineering qualification." .
+<urn:oev2:design:code_sources_readme_private_and_historical_domains> <urn:oev2:design:validates> <urn:oev2:design:code_sources_readme_manifest_domain> .
 <urn:oev2:design:compiled_source_binding> <urn:oev2:design:check> "require" .
 <urn:oev2:design:compiled_source_binding> <urn:oev2:design:checkerPath> "crates/oe-design/src/provenance.rs" .
 <urn:oev2:design:compiled_source_binding> <urn:oev2:design:kind> "Constraint" .
@@ -50491,7 +50515,7 @@
 <urn:oev2:design:field_ReleaseManifest_files> <urn:oev2:design:jsonIdentity> "ordinary" .
 <urn:oev2:design:field_ReleaseManifest_files> <urn:oev2:design:jsonOptional> "false" .
 <urn:oev2:design:field_ReleaseManifest_files> <urn:oev2:design:kind> "Field" .
-<urn:oev2:design:field_ReleaseManifest_files> <urn:oev2:design:meaning> "完整有序文件清单，不包含私有var/sources或清单自身" .
+<urn:oev2:design:field_ReleaseManifest_files> <urn:oev2:design:meaning> "完整有序文件清单，不包含私有var/sources内容或清单自身；sources/仅精确README.md可作为公开说明列入" .
 <urn:oev2:design:field_ReleaseManifest_files> <urn:oev2:design:name> "files" .
 <urn:oev2:design:field_ReleaseManifest_files> <urn:oev2:design:owner> <urn:oev2:design:type_ReleaseManifest> .
 <urn:oev2:design:field_ReleaseManifest_files> <urn:oev2:design:precision> "精确身份及边界" .
@@ -88966,7 +88990,7 @@
 <urn:oev2:design:release_public_inventory_includes_runtime_and_excludes_private> <urn:oev2:design:kind> "Validation" .
 <urn:oev2:design:release_public_inventory_includes_runtime_and_excludes_private> <urn:oev2:design:module> <urn:oev2:design:cli> .
 <urn:oev2:design:release_public_inventory_includes_runtime_and_excludes_private> <urn:oev2:design:name> "release_public_inventory_includes_runtime_and_excludes_private" .
-<urn:oev2:design:release_public_inventory_includes_runtime_and_excludes_private> <urn:oev2:design:oracle> "实际CLI完整列出runtime新增文件及ENTRY-CONTRACT-DETAILS，逐项SHA/bytes一致；不遍历var/sources/.git及其悬空链接" .
+<urn:oev2:design:release_public_inventory_includes_runtime_and_excludes_private> <urn:oev2:design:oracle> "实际CLI完整列出runtime新增文件及ENTRY-CONTRACT-DETAILS，逐项SHA/bytes一致；var/.git和sources中非公开README的私有资料及其悬空链接不采集" .
 <urn:oev2:design:release_public_inventory_includes_runtime_and_excludes_private> <urn:oev2:design:rustPath> "crates/oe-cli/tests/release_cli.rs" .
 <urn:oev2:design:release_public_inventory_includes_runtime_and_excludes_private> <urn:oev2:design:scope> "发行装配的公共输入闭包；装配隐私检查和真实安装由另行发布接收证明，非本反例执行范围" .
 <urn:oev2:design:release_public_inventory_includes_runtime_and_excludes_private> <urn:oev2:design:validates> <urn:oev2:design:release_source_assembly_preserves_private_boundary> .
@@ -88986,6 +89010,38 @@
 <urn:oev2:design:release_source_assembly_preserves_private_boundary> <urn:oev2:design:requirement> <urn:oev2:design:req_delivery> .
 <urn:oev2:design:release_source_assembly_preserves_private_boundary> <urn:oev2:design:severity> "error" .
 <urn:oev2:design:release_source_assembly_preserves_private_boundary> <urn:oev2:design:statement> "复用原分发闭包与隐私检查，只复制显式公共清单和固定七个程序；安装根公开源与编译捕获一致，原根私有目录不复制，准备失败不发布不完整发行。" .
+<urn:oev2:design:release_sources_public_readme_mac_installation> <urn:oev2:design:behavior> "installed_sources_are_private_but_public_readme_remains_verified" .
+<urn:oev2:design:release_sources_public_readme_mac_installation> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:release_sources_public_readme_mac_installation> <urn:oev2:design:module> <urn:oev2:design:dist> .
+<urn:oev2:design:release_sources_public_readme_mac_installation> <urn:oev2:design:name> "release_sources_public_readme_mac_installation" .
+<urn:oev2:design:release_sources_public_readme_mac_installation> <urn:oev2:design:oracle> "An installed macOS release accepts changed local source originals, refuses redistributing them and rejects missing, symlinked or changed public README bytes. Older manifests without this public file continue to ignore local source contents." .
+<urn:oev2:design:release_sources_public_readme_mac_installation> <urn:oev2:design:rustPath> "crates/oe-dist/tests/release.rs" .
+<urn:oev2:design:release_sources_public_readme_mac_installation> <urn:oev2:design:scope> "macOS release software boundary only; Windows and engineering acceptance require their own evidence." .
+<urn:oev2:design:release_sources_public_readme_mac_installation> <urn:oev2:design:validates> <urn:oev2:design:release_sources_public_readme_only> .
+<urn:oev2:design:release_sources_public_readme_only> <urn:oev2:design:check> "package_skill" .
+<urn:oev2:design:release_sources_public_readme_only> <urn:oev2:design:checkerPath> "crates/oe-dist/src/package.rs" .
+<urn:oev2:design:release_sources_public_readme_only> <urn:oev2:design:kind> "Constraint" .
+<urn:oev2:design:release_sources_public_readme_only> <urn:oev2:design:module> <urn:oev2:design:dist> .
+<urn:oev2:design:release_sources_public_readme_only> <urn:oev2:design:name> "release_sources_public_readme_only" .
+<urn:oev2:design:release_sources_public_readme_only> <urn:oev2:design:requirement> <urn:oev2:design:req_delivery> .
+<urn:oev2:design:release_sources_public_readme_only> <urn:oev2:design:severity> "error" .
+<urn:oev2:design:release_sources_public_readme_only> <urn:oev2:design:statement> "sources/ is the private original-library root for books, supplier originals and indexes. Only exact sources/README.md is a public distribution input; nested or case-variant README paths and every other sources payload refuse. Portable manifests, release assembly and platform release checks use the same exception. Installed trees may hold unlisted local source data without reading its content; a listed README remains hash-bound, required and non-symlinked. Distribution installation still refuses private payloads. Historical manifests that never listed the README retain their existing private sources meaning." .
+<urn:oev2:design:release_sources_public_readme_transport> <urn:oev2:design:behavior> "only_public_sources_readme_is_transported_with_local_library_present" .
+<urn:oev2:design:release_sources_public_readme_transport> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:release_sources_public_readme_transport> <urn:oev2:design:module> <urn:oev2:design:dist> .
+<urn:oev2:design:release_sources_public_readme_transport> <urn:oev2:design:name> "release_sources_public_readme_transport" .
+<urn:oev2:design:release_sources_public_readme_transport> <urn:oev2:design:oracle> "The actual shared release inventory and ZIP transport include only the exact public README while books, supplier data, nested README files, indexes and private dangling links remain excluded. Explicit forged inventories cannot distribute those private originals." .
+<urn:oev2:design:release_sources_public_readme_transport> <urn:oev2:design:rustPath> "crates/oe-dist/tests/package.rs" .
+<urn:oev2:design:release_sources_public_readme_transport> <urn:oev2:design:scope> "Bounded native transport with owned fixtures; no source-content applicability or engineering adoption claim." .
+<urn:oev2:design:release_sources_public_readme_transport> <urn:oev2:design:validates> <urn:oev2:design:release_sources_public_readme_only> .
+<urn:oev2:design:release_sources_public_readme_windows_installation> <urn:oev2:design:behavior> "windows_installed_sources_are_private_but_public_readme_remains_verified" .
+<urn:oev2:design:release_sources_public_readme_windows_installation> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:release_sources_public_readme_windows_installation> <urn:oev2:design:module> <urn:oev2:design:dist> .
+<urn:oev2:design:release_sources_public_readme_windows_installation> <urn:oev2:design:name> "release_sources_public_readme_windows_installation" .
+<urn:oev2:design:release_sources_public_readme_windows_installation> <urn:oev2:design:oracle> "The Windows release owner preserves native ACL/reparse rules while allowing installed local source data, refusing its redistribution and rejecting missing, linked or changed public README bytes. Historical unlisted local README files remain private." .
+<urn:oev2:design:release_sources_public_readme_windows_installation> <urn:oev2:design:rustPath> "crates/oe-dist/tests/release_windows.rs" .
+<urn:oev2:design:release_sources_public_readme_windows_installation> <urn:oev2:design:scope> "Windows native test definition; another platform's pass does not supply Windows execution evidence." .
+<urn:oev2:design:release_sources_public_readme_windows_installation> <urn:oev2:design:validates> <urn:oev2:design:release_sources_public_readme_only> .
 <urn:oev2:design:release_windows_acl_identity_and_atomic_selection> <urn:oev2:design:check> "verify" .
 <urn:oev2:design:release_windows_acl_identity_and_atomic_selection> <urn:oev2:design:checkerPath> "crates/oe-dist/src/release_windows.rs" .
 <urn:oev2:design:release_windows_acl_identity_and_atomic_selection> <urn:oev2:design:kind> "Constraint" .
@@ -159148,7 +159204,7 @@ code:11b41ac35c2e8e893f662de110dc63a640e29e2ac7cbd3c5da6f0978784ab358 sp:publicT
 code:11b41ac35c2e8e893f662de110dc63a640e29e2ac7cbd3c5da6f0978784ab358 sp:publicType "ComparisonExecutor" .
 code:11b41ac35c2e8e893f662de110dc63a640e29e2ac7cbd3c5da6f0978784ab358 sp:publicType "FixedExperiment" .
 code:11b41ac35c2e8e893f662de110dc63a640e29e2ac7cbd3c5da6f0978784ab358 sp:publicType "ReplayExecutor" .
-code:11b41ac35c2e8e893f662de110dc63a640e29e2ac7cbd3c5da6f0978784ab358 sp:sha256 "396c8abc12c2507506999c4958aeb883fae64810330f42dc9f6d8f6200d98592" .
+code:11b41ac35c2e8e893f662de110dc63a640e29e2ac7cbd3c5da6f0978784ab358 sp:sha256 "435d5162f3f0258f3ac08ea18a408c14bdf6bf78b25dc2932a81765785fc4021" .
 code:123b3c671adfdd14022d290d5ef1694e2579751d54e77e7d351a7975752dcb9c sp:calls "Ok" .
 code:123b3c671adfdd14022d290d5ef1694e2579751d54e77e7d351a7975752dcb9c sp:calls "PathBuf::from" .
 code:123b3c671adfdd14022d290d5ef1694e2579751d54e77e7d351a7975752dcb9c sp:calls "RefineryEngine::new" .
@@ -162093,11 +162149,13 @@ code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:module 
 code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:module <urn:oev2:design:native_runtime5_diagnostic_content> .
 code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:path "crates/oe-evolution/tests/public_manifest_profiles.rs" .
 code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:production false .
-code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:sha256 "12b38f99172e4e4acf2d047b5c6e07b0b9034c3440a34acc1b9e3b931957e639" .
+code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:sha256 "58b84b21436c2821091eacc04f5f2e1d6957d87cf452e73a617a1dc77c634436" .
 code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:test "actual_model_boundary_keeps_legacy_sixteen_and_current_thirty_two_mebibytes" .
 code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:test "current_and_legacy_cannot_bypass_original_file_count_or_total_budget" .
 code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:test "legacy_manifest_exact_identity_and_current_capture_remain_distinct" .
 code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:test "legacy_rechecks_bytes_modes_membership_and_executable_without_rebinding" .
+code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:test "source_readme_exception_requires_exact_name_and_regular_file" .
+code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:test "sources_readme_is_public_only_in_new_profile_and_private_bytes_stay_excluded" .
 code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 sp:test "unknown_manifest_shapes_and_claimed_resource_limits_are_not_profiles" .
 code:2746507fd288444d63dde5a14e66d1992c034700b267b5b3633ccc76e8cec768 sp:calls "BTreeMap::new" .
 code:2746507fd288444d63dde5a14e66d1992c034700b267b5b3633ccc76e8cec768 sp:calls "BTreeSet::new" .
@@ -165825,7 +165883,7 @@ code:3e7fdc7d12e2a042674db68a98a26f58af3cafb9fe7021ca8615865c1a50734f sp:module 
 code:3e7fdc7d12e2a042674db68a98a26f58af3cafb9fe7021ca8615865c1a50734f sp:module <urn:oev2:design:native_runtime5_diagnostic_content> .
 code:3e7fdc7d12e2a042674db68a98a26f58af3cafb9fe7021ca8615865c1a50734f sp:path "crates/oe-evolution/src/public_source_checks.rs" .
 code:3e7fdc7d12e2a042674db68a98a26f58af3cafb9fe7021ca8615865c1a50734f sp:production true .
-code:3e7fdc7d12e2a042674db68a98a26f58af3cafb9fe7021ca8615865c1a50734f sp:sha256 "2d33228dedc5be05d6fc0d8ed50ac1bafdf54bcb2fcbe2006ed82d5419f12e42" .
+code:3e7fdc7d12e2a042674db68a98a26f58af3cafb9fe7021ca8615865c1a50734f sp:sha256 "cd59fe4b0f5cd3d46da1e99c2bcf1e7110f4da04780b589344706ca12281e828" .
 code:3e7fdc7d12e2a042674db68a98a26f58af3cafb9fe7021ca8615865c1a50734f sp:test "checks_are_bounded_and_join_before_first_error" .
 code:3e7fdc7d12e2a042674db68a98a26f58af3cafb9fe7021ca8615865c1a50734f sp:test "empty_and_single_input_preserve_outcomes" .
 code:3e7fdc7d12e2a042674db68a98a26f58af3cafb9fe7021ca8615865c1a50734f sp:test "files_are_rechecked_after_mutation_and_removal" .
@@ -169930,15 +169988,17 @@ code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:kind "R
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:module <urn:oev2:design:dist> .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:path "crates/oe-dist/tests/release_windows.rs" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:production false .
-code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:sha256 "7439ab86dd49c64a82caabeb7343fba82d532ce5a51b9a14b4390484728c631a" .
+code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:sha256 "31353f3103450c3b05a194d4cf480551c666dbdd8b056cd8aa300c7de4bf56eb" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_bound_cargo_version_must_match_release" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_corrupt_candidate_or_previous_does_not_change_current" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_corrupt_current_can_roll_back_to_intact_previous" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_exclusive_lock_blocks_writer_and_release_permits_retry" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_existing_root_and_stale_current_do_not_overwrite" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_fresh_digest_does_not_authorize_changed_manifest_contract" .
+code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_installed_sources_are_private_but_public_readme_remains_verified" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_malformed_current_is_preserved_and_exact_restore_allows_retry" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_multiple_link_payload_refuses_even_with_identical_bytes" .
+code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_older_release_without_public_sources_accepts_local_library_only" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_program_and_root_symlinks_refuse_without_following" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_release_install_upgrade_and_rollback_preserve_exact_selection" .
 code:592252116c94395be96a9b892ef41ac3344ee66721f66237ae35a7d4c2c317a1 sp:test "windows_root_and_payload_parent_junctions_refuse" .
@@ -174328,7 +174388,7 @@ code:74d90ebcd2892e46de2009dab2180a6a7693be0c244a6ce70eccf5f4dac8353f sp:kind "R
 code:74d90ebcd2892e46de2009dab2180a6a7693be0c244a6ce70eccf5f4dac8353f sp:module <urn:oev2:design:cli> .
 code:74d90ebcd2892e46de2009dab2180a6a7693be0c244a6ce70eccf5f4dac8353f sp:path "crates/oe-cli/tests/release_cli.rs" .
 code:74d90ebcd2892e46de2009dab2180a6a7693be0c244a6ce70eccf5f4dac8353f sp:production false .
-code:74d90ebcd2892e46de2009dab2180a6a7693be0c244a6ce70eccf5f4dac8353f sp:sha256 "3fd59d241ca614e985eb0537c1dc1c2305bc95aaa3c68df27f07d8503f783099" .
+code:74d90ebcd2892e46de2009dab2180a6a7693be0c244a6ce70eccf5f4dac8353f sp:sha256 "e527e7e15c012bfc1361d8e609eb96efa7d491b9ed2aea4c434c6063d943ad2e" .
 code:74d90ebcd2892e46de2009dab2180a6a7693be0c244a6ce70eccf5f4dac8353f sp:test "maintain_manifest_covers_new_runtime_and_entry_contract_without_private_roots" .
 code:74d90ebcd2892e46de2009dab2180a6a7693be0c244a6ce70eccf5f4dac8353f sp:test "release_cli_manifest_and_transaction_failures" .
 code:752289760b60cf744edc80b852b9104ea5dab4e31bbd82b4b66964c9861b271a sp:calls "Command::new" .
@@ -178188,7 +178248,7 @@ code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:kind "R
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:module <urn:oev2:design:dist> .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:path "crates/oe-dist/tests/package.rs" .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:production false .
-code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:sha256 "dd8de1e954d365e9b11010013f4e7240ff9714278e61a15b3703c4625d7e9bd7" .
+code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:sha256 "8e50aa0ee05aef5ec72f8b25750dd489e916fcae3664e4c40c0670a6100a6e86" .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "central_local_disagreement_duplicate_name_and_trailing_bytes_are_rejected" .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "existing_delivery_and_changed_frozen_source_never_publish" .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "fresh_digest_cannot_hide_a_wrong_or_mixed_v2_namespace" .
@@ -178197,6 +178257,7 @@ code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "i
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "invalid_inventory_paths_types_collisions_and_limits_are_rejected" .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "missing_workspace_source_or_root_cannot_be_reported_complete" .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "native_zip64_roundtrip_preserves_contract_modes_and_relocated_receiver" .
+code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "only_public_sources_readme_is_transported_with_local_library_present" .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "privacy_failure_retains_scan_and_never_publishes" .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "true_zip64_end_records_and_the_current_python_transport_interoperate" .
 code:8a96d7a115555a54bfc51839d29fb77779001e3342b83ebc651be016bfb26bff sp:test "usage_of_the_same_digest_or_receipt_after_tampering_is_rejected" .
@@ -179931,7 +179992,7 @@ code:9768d43aa1bbdcce88181a512c21863730ae2d994c10ab0d1e00d524c2f37ac2 sp:module 
 code:9768d43aa1bbdcce88181a512c21863730ae2d994c10ab0d1e00d524c2f37ac2 sp:module <urn:oev2:design:native_runtime5_diagnostic_content> .
 code:9768d43aa1bbdcce88181a512c21863730ae2d994c10ab0d1e00d524c2f37ac2 sp:path "crates/oe-evolution/tests/protocol.rs" .
 code:9768d43aa1bbdcce88181a512c21863730ae2d994c10ab0d1e00d524c2f37ac2 sp:production false .
-code:9768d43aa1bbdcce88181a512c21863730ae2d994c10ab0d1e00d524c2f37ac2 sp:sha256 "cd916a227fcd8851b3fdff940b115ddec4b3d95d2de7d1f61d3c1eb72e0ccc8d" .
+code:9768d43aa1bbdcce88181a512c21863730ae2d994c10ab0d1e00d524c2f37ac2 sp:sha256 "6c6f56a3b3b5c84dfadac99a6d72f4a3b8ae64c014924245f91bfb422ede4860" .
 code:9768d43aa1bbdcce88181a512c21863730ae2d994c10ab0d1e00d524c2f37ac2 sp:test "absent_usage_and_cost_stay_unknown" .
 code:9768d43aa1bbdcce88181a512c21863730ae2d994c10ab0d1e00d524c2f37ac2 sp:test "actual_distinct_binary_runs_preserve_fixed_oracle_and_all_slots" .
 code:9768d43aa1bbdcce88181a512c21863730ae2d994c10ab0d1e00d524c2f37ac2 sp:test "actual_ggen_replay_detects_hand_edited_generated_bytes" .
@@ -182494,13 +182555,15 @@ code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:kind "R
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:module <urn:oev2:design:dist> .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:path "crates/oe-dist/tests/release.rs" .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:production false .
-code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:sha256 "3d605870b77781619df15f0b5015d30918ea233b780e5e0f665a673b218291fe" .
+code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:sha256 "e79b37dbeef28db6abedbe114bb99c54ae710980bba3e51bb7792b608785f119" .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "activation_lock_refuses_a_competing_writer" .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "bound_cargo_version_must_match_release_and_version_file" .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "corrupt_candidate_or_previous_does_not_change_current" .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "corrupt_current_can_roll_back_to_verified_previous" .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "existing_install_root_and_stale_activation_are_preserved" .
+code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "installed_sources_are_private_but_public_readme_remains_verified" .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "manifest_rejects_escape_private_payload_unknown_fields_and_wrong_target" .
+code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "older_release_without_public_sources_directory_accepts_local_library_only" .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "release_install_and_atomic_activation_roundtrip" .
 code:a7f0d1e2236a698d13788c1abacabc926dfd10b5eba164b84d88bcf3692256cc sp:test "release_rejects_symlinks_modes_extra_public_and_private_distribution" .
 code:a804bdd7c2e1807d2a2f029080a92085667b655f5f050b9b8ab352d233aeec3f sp:calls "Err" .
@@ -188642,7 +188705,7 @@ code:d88c75cc7b8e5e3895e65db2a750fe4f60917db3466f486df4739c0e1357caae sp:kind "R
 code:d88c75cc7b8e5e3895e65db2a750fe4f60917db3466f486df4739c0e1357caae sp:module <urn:oev2:design:dist> .
 code:d88c75cc7b8e5e3895e65db2a750fe4f60917db3466f486df4739c0e1357caae sp:path "crates/oe-dist/src/release_macos.rs" .
 code:d88c75cc7b8e5e3895e65db2a750fe4f60917db3466f486df4739c0e1357caae sp:production true .
-code:d88c75cc7b8e5e3895e65db2a750fe4f60917db3466f486df4739c0e1357caae sp:sha256 "a59f97b9577be8b674c8b541c99d3dc6d8f105f4b2d9b113a071ff3f645eeca6" .
+code:d88c75cc7b8e5e3895e65db2a750fe4f60917db3466f486df4739c0e1357caae sp:sha256 "e2138a4abb5a8046153410db03784539eaf865993bd3960e9c1be142e6994b83" .
 code:d88c75cc7b8e5e3895e65db2a750fe4f60917db3466f486df4739c0e1357caae sp:test "current_replacement_during_preparation_is_not_overwritten" .
 code:d88c75cc7b8e5e3895e65db2a750fe4f60917db3466f486df4739c0e1357caae sp:test "prepared_record_failure_does_not_replace_current" .
 code:d8988304e80bb5b112d877b04d8224dcaf7521a034648d3e898cf689ff989bfb sp:calls "Duration::from_millis" .
@@ -188753,7 +188816,7 @@ code:d8c3bb39e781f2ca7320dcd79301b92c48fd5f65c198e8350a0501db9100ee5c sp:kind "R
 code:d8c3bb39e781f2ca7320dcd79301b92c48fd5f65c198e8350a0501db9100ee5c sp:module <urn:oev2:design:dist> .
 code:d8c3bb39e781f2ca7320dcd79301b92c48fd5f65c198e8350a0501db9100ee5c sp:path "crates/oe-dist/src/release_windows.rs" .
 code:d8c3bb39e781f2ca7320dcd79301b92c48fd5f65c198e8350a0501db9100ee5c sp:production true .
-code:d8c3bb39e781f2ca7320dcd79301b92c48fd5f65c198e8350a0501db9100ee5c sp:sha256 "031b3bc2e0bddf4ca3e3729c2d1c9e49f8f0028c2d655d78c81764b391eefe35" .
+code:d8c3bb39e781f2ca7320dcd79301b92c48fd5f65c198e8350a0501db9100ee5c sp:sha256 "6f87088db68089fa8282a850ad29162b45129d097199c28d647ae40b7c701cb8" .
 code:d8c3bb39e781f2ca7320dcd79301b92c48fd5f65c198e8350a0501db9100ee5c sp:test "current_replacement_during_preparation_is_not_overwritten" .
 code:d8c3bb39e781f2ca7320dcd79301b92c48fd5f65c198e8350a0501db9100ee5c sp:test "native_shared_locks_coexist_and_exclude_writer" .
 code:d8c3bb39e781f2ca7320dcd79301b92c48fd5f65c198e8350a0501db9100ee5c sp:test "prepared_bytes_change_refuses_without_replacing_current" .
@@ -189062,7 +189125,7 @@ code:db9be10859f485228405b984cd4343325a83ff635ab9d9028fef248a11d3907f sp:product
 code:db9be10859f485228405b984cd4343325a83ff635ab9d9028fef248a11d3907f sp:publicType "PackageResult" .
 code:db9be10859f485228405b984cd4343325a83ff635ab9d9028fef248a11d3907f sp:publicType "PortableManifest" .
 code:db9be10859f485228405b984cd4343325a83ff635ab9d9028fef248a11d3907f sp:publicType "SourceFile" .
-code:db9be10859f485228405b984cd4343325a83ff635ab9d9028fef248a11d3907f sp:sha256 "17d7718e82fd372267bf70b9e39b10a9bd302902856e7eb7f895f5bce3106d4e" .
+code:db9be10859f485228405b984cd4343325a83ff635ab9d9028fef248a11d3907f sp:sha256 "ee76b69226ab3b61aca7f3c77e836de922cae255bc1390f80a8e6a0b46ef7e62" .
 code:dbd913d67ad4f36700d3e921bdb3dd10b8196a1afa4a617671d85840b229d55c sp:calls "Duration::from_secs" .
 code:dbd913d67ad4f36700d3e921bdb3dd10b8196a1afa4a617671d85840b229d55c sp:calls "Err" .
 code:dbd913d67ad4f36700d3e921bdb3dd10b8196a1afa4a617671d85840b229d55c sp:calls "Ok" .
@@ -194021,11 +194084,12 @@ code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:module 
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:module <urn:oev2:design:knowledge_registered_ocr6> .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:path "crates/oe-knowledge/tests/query_e2e.rs" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:production false .
-code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:sha256 "96d8a7403ef8780124247489668a03cfe2c65a9adc1522b5a5b9d17b57142892" .
+code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:sha256 "de69faa6e840bbca76fede24896585195e34b4d82b9dbd0e1db2fd20456e920e" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "external_body_search_still_rejects_empty_tokenizer_terms" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "local_query_preserves_names_while_skipping_unsearchable_internal_fragments" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "native_query_two_sources_originals_packet_deferred_feedback_and_explicit_next_revision" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "no_registered_library_keeps_question_and_unknowns_without_dispatch" .
+code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "source_library_query_packet_and_feedback_preserve_source_boundaries" .
 code:fe4d10d2285a4a46a097b53e9b0f5cbb3b02a6ee960d50399c580725dabf71d0 sp:calls "AtomicU64::new" .
 code:fe4d10d2285a4a46a097b53e9b0f5cbb3b02a6ee960d50399c580725dabf71d0 sp:calls "Path::new" .
 code:fe4d10d2285a4a46a097b53e9b0f5cbb3b02a6ee960d50399c580725dabf71d0 sp:calls "Scratch" .
@@ -203989,6 +204053,9 @@ function:455f4c3c2817d76a5fdef340be477d8801cbca3b911f566b4e4abb4ed1d787e2 sp:nam
 function:4560a2100fac2402d6aa6657b4d2ce38185bd11eb358579c32942d6f0b9a4bcc sp:file code:05655bdd7cc61465a196bdf5ebb010a0f4aa4682ee00a85bb7033c1da33ced7e .
 function:4560a2100fac2402d6aa6657b4d2ce38185bd11eb358579c32942d6f0b9a4bcc sp:kind "RustFunction" .
 function:4560a2100fac2402d6aa6657b4d2ce38185bd11eb358579c32942d6f0b9a4bcc sp:name "verify_scope" .
+function:4567e24a0b0a55f9e115e3d2cb38d502db9dedae51617b4641db470f13f4a6ee sp:file code:273cdf775de0fc56a36ab17ca8a1bdbc42fdc00409fafb36e1c9f273f9d03544 .
+function:4567e24a0b0a55f9e115e3d2cb38d502db9dedae51617b4641db470f13f4a6ee sp:kind "RustFunction" .
+function:4567e24a0b0a55f9e115e3d2cb38d502db9dedae51617b4641db470f13f4a6ee sp:name "derived" .
 function:456df891596892f0d95efec624cf7a4da7f23aa35fc9fb91e9610d2a8a40fc20 sp:file code:fca4d5631b08319fdc366772e9e3cb0baa88d0a613894c90f743413a630e9cd4 .
 function:456df891596892f0d95efec624cf7a4da7f23aa35fc9fb91e9610d2a8a40fc20 sp:kind "RustFunction" .
 function:456df891596892f0d95efec624cf7a4da7f23aa35fc9fb91e9610d2a8a40fc20 sp:name "receive_query" .
@@ -204155,6 +204222,7 @@ function:4682a1a3f7a4e4a673e88ce3efcf71d9a7c526b3278b723a6b1bec389060d59f sp:nam
 function:468a2b0064758fa06d819f6941e8dbdc608f3cd1c3fa909ad2c7f1b63b4332e6 sp:file code:07ad3811dc026b0ba3c7b9a0610cbca3ed42be5d3f45b68342cbb406c4782543 .
 function:468a2b0064758fa06d819f6941e8dbdc608f3cd1c3fa909ad2c7f1b63b4332e6 sp:kind "RustFunction" .
 function:468a2b0064758fa06d819f6941e8dbdc608f3cd1c3fa909ad2c7f1b63b4332e6 sp:name "n3" .
+function:4694c8e125604ef88b5fafad716007de1d60bb12ea8ab85d621f8700ef6b86e4 sp:executes <urn:oev2:design:release_sources_public_readme_only> .
 function:4694c8e125604ef88b5fafad716007de1d60bb12ea8ab85d621f8700ef6b86e4 sp:file code:db9be10859f485228405b984cd4343325a83ff635ab9d9028fef248a11d3907f .
 function:4694c8e125604ef88b5fafad716007de1d60bb12ea8ab85d621f8700ef6b86e4 sp:kind "RustFunction" .
 function:4694c8e125604ef88b5fafad716007de1d60bb12ea8ab85d621f8700ef6b86e4 sp:name "package_skill" .
@@ -225694,6 +225762,7 @@ function:e2d7472b2bc7094973d4daa996b67b2943d242e013fcb82157126baf4a6b060a sp:exe
 function:e2d7472b2bc7094973d4daa996b67b2943d242e013fcb82157126baf4a6b060a sp:file code:9fc54c914b7f8391b8b37d45e98cabc3574cbe72973768f71c6a8b86635ac68f .
 function:e2d7472b2bc7094973d4daa996b67b2943d242e013fcb82157126baf4a6b060a sp:kind "RustFunction" .
 function:e2d7472b2bc7094973d4daa996b67b2943d242e013fcb82157126baf4a6b060a sp:name "build_variable_lookup" .
+function:e2d7700db6d999789f20338911fd47bcf78326f218ed714781c29b292bbfbe7c sp:executes <urn:oev2:design:code_sources_readme_manifest_domain> .
 function:e2d7700db6d999789f20338911fd47bcf78326f218ed714781c29b292bbfbe7c sp:file code:11b41ac35c2e8e893f662de110dc63a640e29e2ac7cbd3c5da6f0978784ab358 .
 function:e2d7700db6d999789f20338911fd47bcf78326f218ed714781c29b292bbfbe7c sp:kind "RustFunction" .
 function:e2d7700db6d999789f20338911fd47bcf78326f218ed714781c29b292bbfbe7c sp:name "public_manifest_matching" .

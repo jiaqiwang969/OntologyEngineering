@@ -98,6 +98,7 @@ fn fixture(root: &Path, version: &str) -> Result<String> {
         "LICENSE",
         "Cargo.lock",
         "rust-toolchain.toml",
+        "sources/README.md",
     ] {
         values.push((
             format!("skill/{name}"),
@@ -285,6 +286,7 @@ fn windows_fresh_digest_does_not_authorize_changed_manifest_contract() -> Result
         "skill/../outside",
         "skill/var/private",
         "skill/sources/private",
+        "skill/sources/private.pdf",
         "bin/other.exe",
     ] {
         let mut changed = original.clone();
@@ -359,6 +361,71 @@ fn windows_unlisted_public_data_refuses_and_private_data_is_not_distributed() ->
     assert!(release::install(&source, &digest, &target).is_err());
     assert!(!target.exists());
     fs::remove_file(private.join("unreadable-original"))?;
+    Ok(())
+}
+
+#[test]
+fn windows_installed_sources_are_private_but_public_readme_remains_verified() -> Result<()> {
+    let (_temporary, root) = temporary()?;
+    let source = root.join("source");
+    let digest = fixture(&source, "2.0.0-rc.1")?;
+    release::install(&source, &digest, &root.join("clean-install"))?;
+    let private = source.join("skill/sources/private.pdf");
+    fs::write(&private, b"private original")?;
+    let catalog = source.join("skill/sources/.catalog");
+    fs::create_dir(&catalog)?;
+    acl(&private, "secure")?;
+    acl(&catalog, "secure")?;
+    symlink_file(
+        root.join("unavailable-private-source"),
+        catalog.join("unreadable"),
+    )?;
+    let direct_link = source.join("skill/sources/unreadable");
+    symlink_file(root.join("unavailable-direct-private-source"), &direct_link)?;
+    assert!(release::verify(&source, &digest).is_ok());
+    fs::write(&private, b"updated private original")?;
+    assert!(release::verify(&source, &digest).is_ok());
+    assert!(release::install(&source, &digest, &root.join("private-install")).is_err());
+    assert!(!root.join("private-install").exists());
+    let public = source.join("skill/sources/README.md");
+    fs::remove_file(&public)?;
+    assert!(release::verify(&source, &digest).is_err());
+    symlink_file(root.join("absent-public-readme"), &public)?;
+    assert!(release::verify(&source, &digest).is_err());
+    fs::remove_file(&public)?;
+    fs::write(public, b"tampered public instructions")?;
+    assert!(release::verify(&source, &digest).is_err());
+    assert_eq!(fs::read(private)?, b"updated private original");
+    fs::remove_file(catalog.join("unreadable"))?;
+    fs::remove_file(direct_link)?;
+    Ok(())
+}
+
+#[test]
+fn windows_older_release_without_public_sources_accepts_local_library_only() -> Result<()> {
+    let (_temporary, root) = temporary()?;
+    let source = root.join("source");
+    fixture(&source, "2.0.0-rc.1")?;
+    let manifest_path = source.join(MANIFEST);
+    let mut manifest: ReleaseManifest = serde_json::from_slice(&fs::read(&manifest_path)?)?;
+    manifest
+        .files
+        .retain(|row| row.path != "skill/sources/README.md");
+    let bytes = serde_json::to_vec_pretty(&manifest)?;
+    fs::write(manifest_path, &bytes)?;
+    fs::remove_file(source.join("skill/sources/README.md"))?;
+    let private = source.join("skill/sources/private.pdf");
+    fs::write(&private, b"local original")?;
+    acl(&private, "secure")?;
+    let digest = oe_core::sha256(&bytes);
+    assert!(release::verify(&source, &digest).is_ok());
+    // An unlisted local README does not acquire public identity retroactively.
+    let readme = source.join("skill/sources/README.md");
+    fs::write(&readme, b"local instructions")?;
+    acl(&readme, "secure")?;
+    assert!(release::verify(&source, &digest).is_ok());
+    assert!(release::install(&source, &digest, &root.join("received")).is_err());
+    assert!(!root.join("received").exists());
     Ok(())
 }
 

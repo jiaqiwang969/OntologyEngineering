@@ -1,4 +1,4 @@
-//! Source-derived original seven-key domain; no candidate output used as oracle.
+//! Independently constructed historical domains and the public-source exception.
 use oe_core::sha256;
 use oe_evolution::{
     CodeBinaryRef, binary_reference, digest, public_manifest, public_manifest_matching,
@@ -36,6 +36,11 @@ fn legacy(files: BTreeMap<String, Value>) -> Value {
         "uncovered":["external Cargo source bytes and resolved transitive feature graph","native SDK/runtime/provider closure","unlisted compile environment"],
         "status":"bounded_public_identity"})
 }
+fn derived(mut original: Value) -> Value {
+    original["resource_profile"] = json!("oev2.derived-design-model-resource/2");
+    original["file_byte_limits"] = json!({"default":16777216,"generated/model.ttl":33554432});
+    original
+}
 fn sample(root: &Path) -> Value {
     legacy(BTreeMap::from([(
         "value.rs".into(),
@@ -71,12 +76,21 @@ fn legacy_manifest_exact_identity_and_current_capture_remain_distinct() {
     let old = reference(&root, &original);
     verify_binary(&old).unwrap();
     let current = public_manifest(&root).unwrap();
-    let mut expected_current = original.clone();
-    expected_current["resource_profile"] = json!("oev2.derived-design-model-resource/2");
-    expected_current["file_byte_limits"] =
-        json!({"default":16777216,"generated/model.ttl":33554432});
+    let previous_derived = derived(original.clone());
+    assert_eq!(previous_derived.as_object().unwrap().len(), 9);
+    assert_eq!(
+        public_manifest_matching(&root, &previous_derived).unwrap(),
+        previous_derived
+    );
+    verify_binary(&reference(&root, &previous_derived)).unwrap();
+    let mut expected_current = previous_derived.clone();
+    expected_current["public_sources"] = json!(["sources/README.md"]);
     assert_eq!(current, expected_current);
-    assert_eq!(current.as_object().unwrap().len(), 9);
+    assert_eq!(current.as_object().unwrap().len(), 10);
+    assert_ne!(
+        digest(&current).unwrap(),
+        digest(&previous_derived).unwrap()
+    );
     assert_ne!(digest(&current).unwrap(), old.source_manifest_sha256);
     assert_eq!(public_manifest_matching(&root, &current).unwrap(), current);
     let new = binary_reference(Path::new(&old.path), &root).unwrap();
@@ -138,6 +152,12 @@ fn unknown_manifest_shapes_and_claimed_resource_limits_are_not_profiles() {
     }
     for (key, value) in [
         ("resource_profile", json!("unknown/9")),
+        ("public_sources", json!([])),
+        ("public_sources", json!(["sources/readme.md"])),
+        (
+            "public_sources",
+            json!(["sources/README.md", "sources/books/original.pdf"]),
+        ),
         (
             "file_byte_limits",
             json!({"default":999999999,"generated/model.ttl":999999999}),
@@ -183,6 +203,102 @@ fn unknown_manifest_shapes_and_claimed_resource_limits_are_not_profiles() {
         public_manifest_matching(&root, &original).unwrap(),
         original
     );
+}
+
+#[test]
+fn sources_readme_is_public_only_in_new_profile_and_private_bytes_stay_excluded() {
+    let (_temp, root) = root();
+    let original = sample(&root);
+    let previous = derived(original.clone());
+    let old_refs = [reference(&root, &original), reference(&root, &previous)];
+    let readme = file(
+        &root,
+        "sources/README.md",
+        b"Public source library instructions\n",
+    );
+    for name in [
+        "sources/books/original.pdf",
+        "sources/misumi/original.pdf",
+        "sources/.indexes/local-pdf/catalog.sqlite3",
+        "sources/books/README.md",
+    ] {
+        file(&root, name, b"private original");
+    }
+    #[cfg(unix)]
+    std::os::unix::fs::symlink(
+        root.join("absent-private-original"),
+        root.join("sources/unreadable-original"),
+    )
+    .unwrap();
+    let mut files = original["files"]
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(k, v)| (k.clone(), v.clone()))
+        .collect::<BTreeMap<_, _>>();
+    files.insert("sources/README.md".into(), readme);
+    let mut expected = derived(legacy(files));
+    expected["public_sources"] = json!(["sources/README.md"]);
+    assert_eq!(public_manifest(&root).unwrap(), expected);
+    let current = reference(&root, &expected);
+    verify_binary(&current).unwrap();
+    for historic in [&original, &previous] {
+        assert_eq!(
+            public_manifest_matching(&root, historic).unwrap(),
+            *historic
+        );
+    }
+    for old in &old_refs {
+        verify_binary(old).unwrap();
+    }
+    file(
+        &root,
+        "sources/books/original.pdf",
+        b"changed private bytes",
+    );
+    file(&root, "sources/new-private-file", b"new private bytes");
+    assert_eq!(public_manifest(&root).unwrap(), expected);
+    verify_binary(&current).unwrap();
+    file(&root, "sources/README.md", b"changed public instructions");
+    assert!(public_manifest_matching(&root, &expected).is_err());
+    assert!(verify_binary(&current).is_err());
+    for old in &old_refs {
+        verify_binary(old).unwrap();
+    }
+    fs::remove_file(root.join("sources/README.md")).unwrap();
+    assert!(public_manifest_matching(&root, &expected).is_err());
+    // Historical matching still does not acquire the new file's authority.
+    assert_eq!(
+        public_manifest_matching(&root, &previous).unwrap(),
+        previous
+    );
+}
+
+#[test]
+fn source_readme_exception_requires_exact_name_and_regular_file() {
+    let (_temp, root) = root();
+    let original = sample(&root);
+    file(&root, "sources/readme.md", b"not the public entry name");
+    let value = public_manifest(&root).unwrap();
+    assert_eq!(value["files"], original["files"]);
+    fs::remove_file(root.join("sources/readme.md")).unwrap();
+    fs::create_dir(root.join("sources/README.md")).unwrap();
+    file(&root, "sources/README.md/child", b"must not be traversed");
+    assert!(public_manifest(&root).is_err());
+    fs::remove_dir_all(root.join("sources/README.md")).unwrap();
+    #[cfg(unix)]
+    {
+        std::os::unix::fs::symlink(root.join("value.rs"), root.join("sources/README.md")).unwrap();
+        assert!(public_manifest(&root).is_err());
+        // New-domain rejection cannot rewrite a digest-only historical domain.
+        verify_binary(&reference(&root, &original)).unwrap();
+        verify_binary(&reference(&root, &derived(original.clone()))).unwrap();
+        fs::remove_file(root.join("sources/README.md")).unwrap();
+        fs::remove_dir(root.join("sources")).unwrap();
+        std::os::unix::fs::symlink(root.join("var"), root.join("sources")).unwrap();
+        assert!(public_manifest(&root).is_err());
+        verify_binary(&reference(&root, &original)).unwrap();
+    }
 }
 
 #[test]

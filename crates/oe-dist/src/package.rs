@@ -87,6 +87,16 @@ fn path_key(name: &str) -> String {
 }
 fn payload_path(name: &str) -> Result<()> {
     oe_semantic::safe_relative(name)?;
+    // The library is private input. Only its exact public entry document is
+    // distributable, including when a supplied inventory tries to add a PDF,
+    // extraction, catalog or a case-variant directory.
+    ensure!(
+        !name
+            .split('/')
+            .any(|component| path_key(component) == "sources")
+            || name == "sources/README.md",
+        "package_private_sources_payload"
+    );
     ensure!(
         name.len() <= 4096 && name.split('/').count() <= 32,
         "package_path_limit"
@@ -106,7 +116,7 @@ fn payload_path(name: &str) -> Result<()> {
         ensure!(
             !matches!(
                 key.as_str(),
-                "var" | "sources" | ".git" | ".venv" | "__pycache__" | "target"
+                "var" | ".git" | ".venv" | "__pycache__" | "target"
             ),
             "package_private_or_generated_path"
         );

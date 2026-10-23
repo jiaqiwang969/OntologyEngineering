@@ -20,6 +20,9 @@
 5. 七个专业 Skill 随本仓库维护，按任务另装固定上游运行程序并执行对应实际案例。`integrations/tools.lock.json` 的 `skill_directory` 指向仓库内模块目录；在仓库根运行 `python3 scripts/check_tool_skills.py` 核六项全部 16 个 `skill_files` 的摘要。四份 diff 保留用于从干净上游副本重建和复核，按 `patch_targets` 应用；不要在已整合的 `modules/` 上重复打补丁。LeanToken/Flameox 的完整维护源为 `modules/leantoken/` 与 `modules/flameox/`。REA/SmokingGun 按 runtime-locks 执行 npm ci，两个 Python 工具分别建环境、安装各自 requirements，执行 pip check；macOS arm64 的 Z3 修正见 `integrations/runtime-locks/Z3-MACOS.md`。同平台的 REA/Ghidra 原生组件准备见 `integrations/runtime-locks/GHIDRA-MACOS.md`。执行前核 CLI 实际路径与本次安装记录；PATH 若指向旧工作区，使用本次已核安装的绝对路径，不能仅凭版本号相同认定来源相同。MCP 配置与 Skill 文件布局分开；勿运行会向顶层写 Skill 的上游 setup/upgrade。仅对选定客户端配置已核程序的 MCP 入口，配置前检查影响范围，不重启或改写其他会话的连接。REA 启动环境和三个共享接续脚本见 `integrations/bindings/WORKFLOW.md`。不复制开发者个人配置。把实际程序、版本、摘要和接入记录写入本根 `var/capabilities/registry.json`，通过 `project tool-result registry` 核验。
 6. 核 `oev2 project --help` 和 `oev2 memory --help`。缺工具、原件、模型资产或 SDK 时记录具体缺项。核心 Project 与经验读写无需专用判断服务。hook 为可选便利入口，显式命令必须能独立完成闭环。
 7. 接入实际工程项目时，先确认 Project ID，再按 [项目文件体系](docs/PROJECT-WORKSPACE.md)显式指定 `--project-home /absolute/project/.engineering`。安装根、项目数据根与 memory home 分开；在该工程项目的宿主 AGENTS 或配置中写入恢复命令与明确身份。源码候选、实际安装与新会话接续分别核验；不以文件存在认定自动 hook 已生效。
+8. 工程资料统一投放本安装根 `sources/`，书籍使用 `sources/books/`，米思米使用 `sources/misumi/`，PDF 索引保持 `sources/.indexes/local-pdf/`。按 [sources/README.md](sources/README.md)清点来源、版本、摘要和现有覆盖，选择与格式相符的读取或登记入口；用户不手填清单。已有本地原件核验后移动，无需重复下载；安装根或路径变化时保全原来源身份与回执，再显式重建完整登记，不以软链接或静默回退维持旧身份。
+
+资料处理先核当前程序的 `knowledge --help` 与 `knowledge library source-delivery --help`。有已核本地原件时不运行 fetch；交付清单中的相对路径继续映射到 `sources/` 下。PDF 的 `knowledge register --replace` 和 source-delivery register 的 `--replace` 都替换所选索引的完整书目：先合并旧清单和新增资料，成功后核全部来源与页数，保留原回执及失败。新增 PDF 登记不会扩展 `project work` 既有六书角色；非 PDF 与供应商资料按各自合同接入。入库、索引、本体化和当前项目采用分别记录，不把路径整理宣称为全书处理。
 
 安装或升级后检查宿主的全部实际 Skill 搜索目录。以下命令只读核摘要和同名入口；`--skill-root` 可重复，未使用的宿主目录可省略：
 
@@ -55,7 +58,7 @@ python3 scripts/check_tool_skills.py --skill-root "$HOME/.codex/skills" --skill-
 - 先复现、分析影响，再修正规范/模板/实现，回归与独立验证。保留失败、未知、未执行和反例，不放宽判据取得通过。
 - 构建用锁定工具链与 Cargo.lock；生成失败不切换工作版本，漂移检查比较重新实际生成的字节。源码、程序、安装、工具执行与工程采用分别取证。
 - CAD 使用 v2 自有 Rust、NX controller/worker 或 SW worker 与显式原生 SDK。不得调用旧 cad-agent 脚本、环境、MCP、Journal runner 或默认配置作为入口/备用；Fusion 不执行。详见 `docs/CAD-INDEPENDENT-EXECUTION.md`。
-- `var/` 保存私有任务、项目、记忆、运行及维护记录，`sources/` 保存合法原件与私有索引，两者不进入分发。凭据、账号、设备配置、私人 session 不发布。公开案例必须可独立取得。
+- `var/` 保存私有任务、项目、记忆、运行及维护记录，`sources/` 保存工程资料原件、处理成果与私有索引。私人内容不进入分发，`sources/` 只允许公开精确路径 `sources/README.md`；不要强制 git add 原件、提取文本、私人清单或导航笔记。凭据、账号、设备配置、私人 session 不发布。公开案例必须可独立取得。
 - 外部工具升级时核上游身份，从干净副本重查 diff，再更新模块及锁内摘要，重跑受影响案例；查宿主同名副本，避免上游 setup/upgrade 又生成顶层 Skill。安装成功不等于结果合同或工程能力通过。
 
 ## 重新安装验收

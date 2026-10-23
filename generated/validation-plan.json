@@ -357,6 +357,20 @@
     "scope": "原6/19固定工具显式执行；不覆盖新增snapshot12、19原模块/22owner闭环或工业效果"
   },
   {
+    "behavior": "source_readme_exception_requires_exact_name_and_regular_file",
+    "name": "code_sources_readme_exact_regular_entry",
+    "oracle": "Case-variant README names remain private, README directories are never traversed, and new-domain README/root symlinks refuse. Historical digest-only references still observe their unchanged whole-sources exclusion even when the new domain refuses that local README.",
+    "rustPath": "crates/oe-evolution/tests/public_manifest_profiles.rs",
+    "scope": "Owned filesystem counterexamples; no claim of source-content privacy classification or engineering adoption."
+  },
+  {
+    "behavior": "sources_readme_is_public_only_in_new_profile_and_private_bytes_stay_excluded",
+    "name": "code_sources_readme_private_and_historical_domains",
+    "oracle": "Independent literal seven/nine-key expected manifests and digest-only binary references remain unchanged when a local README is added or changed. The new ten-key capture binds that README and rejects its mutation/removal while changes to books, supplier originals, nested README files, indexes and private links do not affect public identity.",
+    "rustPath": "crates/oe-evolution/tests/public_manifest_profiles.rs",
+    "scope": "Bounded source identity and compatibility; not executable behavior or engineering qualification."
+  },
+  {
     "behavior": "actual_complete_original_compiler_arguments_and_files_reach_same_owned_native_process",
     "name": "compiler7_actual_complete_dispatch",
     "oracle": "Real current selected7 full build; full ordered original argv, files, source/output, live parent, unchanged original guards, process and complete before/after bytes checked independently",
@@ -2277,9 +2291,30 @@
   {
     "behavior": "maintain_manifest_covers_new_runtime_and_entry_contract_without_private_roots",
     "name": "release_public_inventory_includes_runtime_and_excludes_private",
-    "oracle": "实际CLI完整列出runtime新增文件及ENTRY-CONTRACT-DETAILS，逐项SHA/bytes一致；不遍历var/sources/.git及其悬空链接",
+    "oracle": "实际CLI完整列出runtime新增文件及ENTRY-CONTRACT-DETAILS，逐项SHA/bytes一致；var/.git和sources中非公开README的私有资料及其悬空链接不采集",
     "rustPath": "crates/oe-cli/tests/release_cli.rs",
     "scope": "发行装配的公共输入闭包；装配隐私检查和真实安装由另行发布接收证明，非本反例执行范围"
+  },
+  {
+    "behavior": "installed_sources_are_private_but_public_readme_remains_verified",
+    "name": "release_sources_public_readme_mac_installation",
+    "oracle": "An installed macOS release accepts changed local source originals, refuses redistributing them and rejects missing, symlinked or changed public README bytes. Older manifests without this public file continue to ignore local source contents.",
+    "rustPath": "crates/oe-dist/tests/release.rs",
+    "scope": "macOS release software boundary only; Windows and engineering acceptance require their own evidence."
+  },
+  {
+    "behavior": "only_public_sources_readme_is_transported_with_local_library_present",
+    "name": "release_sources_public_readme_transport",
+    "oracle": "The actual shared release inventory and ZIP transport include only the exact public README while books, supplier data, nested README files, indexes and private dangling links remain excluded. Explicit forged inventories cannot distribute those private originals.",
+    "rustPath": "crates/oe-dist/tests/package.rs",
+    "scope": "Bounded native transport with owned fixtures; no source-content applicability or engineering adoption claim."
+  },
+  {
+    "behavior": "windows_installed_sources_are_private_but_public_readme_remains_verified",
+    "name": "release_sources_public_readme_windows_installation",
+    "oracle": "The Windows release owner preserves native ACL/reparse rules while allowing installed local source data, refusing its redistribution and rejecting missing, linked or changed public README bytes. Historical unlisted local README files remain private.",
+    "rustPath": "crates/oe-dist/tests/release_windows.rs",
+    "scope": "Windows native test definition; another platform's pass does not supply Windows execution evidence."
   },
   {
     "behavior": "endpoint_keeps_transfer_and_native_admission_separate",

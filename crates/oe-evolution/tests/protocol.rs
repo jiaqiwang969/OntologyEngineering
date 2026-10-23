@@ -229,13 +229,28 @@ fn static_manifest_resigning_cannot_hide_an_old_runner_compile() {
     // mismatch. Neither the frozen source nor its original manifest is changed.
     assert_eq!(artifact.manifest.as_object().unwrap().len(), 7);
     let mut forged = public_manifest(&copy).unwrap();
-    // Strip only the two new profile declarations from this deliberately forged
+    // Strip the three current profile declarations from this deliberately forged
     // test descriptor, then independently reread it under the original 16 MiB
     // domain. Merely removing fields cannot bypass that second bounded check.
     let fields = forged.as_object_mut().unwrap();
     assert!(fields.remove("resource_profile").is_some());
     assert!(fields.remove("file_byte_limits").is_some());
+    assert_eq!(
+        fields.remove("public_sources"),
+        Some(json!(["sources/README.md"]))
+    );
     assert_eq!(fields.len(), 7);
+    // The old domain excluded the entire sources tree, including any README
+    // that a current public clone may now carry. Re-observe that exact domain.
+    if let Some(readme) = forged["files"]
+        .as_object_mut()
+        .unwrap()
+        .remove("sources/README.md")
+    {
+        forged["file_count"] = json!(forged["file_count"].as_u64().unwrap() - 1);
+        forged["total_bytes"] =
+            json!(forged["total_bytes"].as_u64().unwrap() - readme["bytes"].as_u64().unwrap());
+    }
     artifact.manifest = public_manifest_matching(&copy, &forged).unwrap();
     artifact.manifest_sha256 = digest(&artifact.manifest).unwrap();
     artifact.runner.source_manifest_sha256 = artifact.manifest_sha256.clone();

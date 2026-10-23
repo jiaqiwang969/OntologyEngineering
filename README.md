@@ -105,6 +105,7 @@ Agent 按以下流程工作：
 - [新用户和开发 Agent 配置](AGENTS.md)
 - [运行与生成方式](docs/USAGE.md)
 - [验证记录](docs/UNIFIED-VERIFICATION.md)与[空 Skill 重装、新会话验收](docs/FRESH-INSTALL-20261022.md)
+- [七模块目录统一、宿主发现与限定接入验收](docs/SKILL-LAYOUT-20261022.md)
 
 v1 保留在仓库历史中。旧通过不授予本候选或新平台资格。
 

@@ -69,7 +69,7 @@ smokinggun --version
 ```
 
 `gitcontribute` 的版本来自 `metadata`；3.0.2 不支持 `--version`。
-CLI 存在不代表当前 Agent 已连接 MCP。
+CLI 存在不代表当前 Agent 已连接 MCP。实际执行前核可执行文件路径与安装记录；已有全局 wrapper 或软链接可能仍指向旧环境。发生这种情况时，用本次已核程序的绝对路径调用，并显式选择 Node 等解释器；版本字符串相同不能代替来源身份。
 
 ### Python 工具
 

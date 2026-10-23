@@ -368,6 +368,9 @@ enum KnowledgeCommand {
         context: KnowledgeContext,
         #[arg(long)]
         output_dir: Option<PathBuf>,
+        /// Require every candidate to match its current local-PDF registration.
+        #[arg(long)]
+        require_current_registration: bool,
         #[command(flatten)]
         tools: KnowledgeTools,
     },
@@ -393,6 +396,9 @@ enum KnowledgeCommand {
         /// New JSON feedback file in the same original project's var/projects directory.
         #[arg(long)]
         output: PathBuf,
+        /// Refuse new feedback unless all packet candidates have current local-PDF bindings.
+        #[arg(long)]
+        require_current_registration: bool,
         #[command(flatten)]
         tools: KnowledgeTools,
     },
@@ -1302,15 +1308,25 @@ fn knowledge_execute(root: &SkillRoot, command: KnowledgeCommand) -> Result<Valu
             packet: path,
             context: context_args,
             output_dir,
+            require_current_registration,
             tools,
         } => {
             let current = knowledge_context(root, &context_args, true)?.expect("required context");
-            let result = packet::verify_with_tools(
+            let mut result = packet::verify_with_tools(
                 root,
                 &knowledge_json(root, &path)?,
                 &current,
                 &tools.resolve()?,
             )?;
+            if require_current_registration {
+                let satisfied = result["source_registration_freshness"]["status"] == "current";
+                result["current_registration_requirement"] =
+                    json!({"required":true,"satisfied":satisfied});
+                if !satisfied {
+                    result["historical_verification_status"] = result["status"].clone();
+                    result["status"] = json!("source_registration_not_current");
+                }
+            }
             let artifact =
                 knowledge_write(root, output_dir.as_deref(), "verification.json", &result)?;
             let mut response = knowledge_result(
@@ -1332,10 +1348,14 @@ fn knowledge_execute(root: &SkillRoot, command: KnowledgeCommand) -> Result<Valu
             result_evidence,
             previous,
             output,
+            require_current_registration,
             tools,
         } => {
             let current = knowledge_context(root, &context_args, true)?.expect("required context");
             let mut request = json!({"packet_path":knowledge_relative(root,&packet)?,"context":current,"candidate_id":candidate,"disposition":disposition,"reason":reason,"next_check":next_check,"result_evidence":result_evidence,"output":knowledge_relative(root,&output)?});
+            if require_current_registration {
+                request["require_current_registration"] = json!(true);
+            }
             if !unit_id.is_empty() {
                 request["unit_ids"] = json!(unit_id);
             }

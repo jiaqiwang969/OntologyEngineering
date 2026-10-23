@@ -54,6 +54,8 @@ metadata:
 
 用户向 `sources/` 投放资料或要求整理新增内容时，按 [资料接入说明](sources/README.md)清点来源、版本与摘要，再按文献、供应商资料及实际格式选择登记、检索和原件回读方式。清单由 Agent 准备；PDF 新增或修订先 `--merge --dry-run` 核差异，再按 ID 合并，保留未列旧来源。预览不锁定后续输入；`--replace` 仍须完整保留书目，不能当成追加。入库、索引、本体化、当前 Project 证据和工程采用分别记录。新增资料不会自动扩展 `project work` 的既有六书角色。
 
+复用查询包时，把原件完整性与当前登记分开核。需要当前本地 PDF 依据时，`knowledge verify-packet/feedback` 使用 `--require-current-registration`，整包候选须已绑定且 `current`；旧包无绑定先重新查询，米思米等按各自来源合同核验。状态解释见资料接入说明。登记变化不改写旧包、反馈或决定；当前书目一致性不授予工程采用。
+
 专业工具的结果统一经 `project tool-result verify/register` 带来源回到同一 Project，不得用脚本直接改写 project.json；登记不改结论；结论经 `project decide` 由已登记结果更新，采用仍走 `project adopt`。外接专业能力按[作用与结果交接](references/professional-capabilities.md)选择：先确定要回答的问题、输入对象和所需证据，再调用对应 skill/工具。结果携带来源、条件、版本、覆盖与未知回到同一 Project；多工具同意的独立性要核实际来源与计算依赖。性能候选还需原基线与可比测量，经验保存后仍须在新条件下核适用性。
 
 当前会话负责组织任务、读原件、选择工具、回读结果和更新决定；Rust 执行明确的合同、来源与工程检查。七个专业 Skill 随本仓库在 `modules/` 统一维护；运行程序按[安装与接入](docs/TOOL-INTEGRATIONS.md)使用固定上游版本。四份 diff 只用于干净上游副本的重建核验，已整合模块不重复应用；运行程序与数据继续位于 `var/` 等已核位置。engineering-memory 是本系统内置模块，通过 `oev2 memory` 使用；历史经验是否使用由当前任务决定。需要历史时读[记忆方法](modules/engineering-memory/skill/SKILL.md)，还原时间线、失败、纠正、因果未知和适用条件。召回经 `project memory-candidate verify/register` 核来源与绑定，只作不支持决定的待核候选；实际使用效果经 `project memory-feedback` 与 `memory session feedback` 回写。

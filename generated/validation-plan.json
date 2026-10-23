@@ -595,6 +595,13 @@
     "scope": "Rust索引及接收；Windows worker、真实失败持久化另验"
   },
   {
+    "behavior": "explicit_current_registration_requirement_rejects_unbound_and_invalid_boolean_without_writes",
+    "name": "explicit_current_registration_requirement_rejects_unbound_and_invalid_boolean_without_writes",
+    "oracle": "Invalid bool and strict unsupported generic-packet feedback leave no file; explicit false retains historical recording with observed not_applicable status.",
+    "rustPath": "crates/oe-knowledge/tests/packet_feedback.rs",
+    "scope": "Rust synthetic packet metadata without native PDF parsing; no engineering adoption or other-platform claim"
+  },
+  {
     "behavior": "external_readback_fields_roundtrip_and_reject_incomplete_or_forged_records",
     "name": "external_readback_fields_roundtrip_and_reject_incomplete_or_forged_records",
     "oracle": "超过2MiB的UTF-8装配字段完整往返；缺块、重复块、改字节、错字段、错任务、错序号、错偏移、摘要/长度伪造、原事件schema/sequence伪造及预算越界均拒绝。",
@@ -866,6 +873,55 @@
     "oracle": "超过4MiB快照经有界payload传输，原控制记录上限保持，批次合并小文件",
     "rustPath": "crates/oe-windows-controller/tests/native_payload_copy.rs",
     "scope": "完整字节观测与实际进程范围读取；原生执行及工程采用另验"
+  },
+  {
+    "behavior": "legacy_packets_above_query_limit_keep_unknown_registration_without_index_reads",
+    "name": "legacy_packets_above_query_limit_keep_unknown_registration_without_index_reads",
+    "oracle": "128 unbound historical local-PDF or supplier candidates remain not_bound or not_applicable without index reads; a later malformed binding is still rejected. Provider budget does not retroactively impose the native query candidate cap on historical packets.",
+    "rustPath": "crates/oe-knowledge/src/registration_freshness.rs",
+    "scope": "Rust synthetic metadata guard; no source file, index, network or engineering decisions"
+  },
+  {
+    "behavior": "local_source_currentness_distinguishes_metadata_and_navigation_changes",
+    "name": "local_source_currentness_distinguishes_metadata_and_navigation_changes",
+    "oracle": "Title, edition and full chapter navigation changes produce exact changed_fields with historical packet still readable.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
+  },
+  {
+    "behavior": "local_source_currentness_distinguishes_removed_from_unavailable_index",
+    "name": "local_source_currentness_distinguishes_removed_from_unavailable_index",
+    "oracle": "Replacement removing ID differs from an unavailable explicit index; neither claims current.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
+  },
+  {
+    "behavior": "local_source_currentness_legacy_packet_is_not_bound",
+    "name": "local_source_currentness_legacy_packet_is_not_bound",
+    "oracle": "Historical local-PDF packet without binding stays readable and explicitly not_bound.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
+  },
+  {
+    "behavior": "local_source_currentness_preserves_old_version_and_historical_feedback",
+    "name": "local_source_currentness_preserves_old_version_and_historical_feedback",
+    "oracle": "Same ID new PDF leaves old original and feedback bytes intact; old registration is changed and historical feedback remains readable.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
+  },
+  {
+    "behavior": "local_source_currentness_rejects_corrupt_binding_and_candidate_identity",
+    "name": "local_source_currentness_rejects_corrupt_binding_and_candidate_identity",
+    "oracle": "Bad schema/hash/ID/path/candidate associations are rejected; no fallback guesses.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
+  },
+  {
+    "behavior": "local_source_currentness_survives_unrelated_incremental_addition",
+    "name": "local_source_currentness_survives_unrelated_incremental_addition",
+    "oracle": "Unrelated addition changes the index snapshot while unchanged book evidence stays current.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
   },
   {
     "behavior": "merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations",
@@ -1834,6 +1890,13 @@
     "scope": "Normal locally observed descendants, not hostile containment, hard realtime or full library behavior"
   },
   {
+    "behavior": "packet_current_registration_option_and_feedback_distinguish_history",
+    "name": "packet_current_registration_option_and_feedback_distinguish_history",
+    "oracle": "Real CLI register/query/strict verify/feedback passes current; updated title remains historically ready, strict verify fails with preserved historical status and strict feedback creates no file; legacy packet is not_bound.",
+    "rustPath": "crates/oe-cli/tests/knowledge_cli.rs",
+    "scope": "Bounded macOS synthetic source fixtures and real CLI; no engineering adoption or other-platform claim"
+  },
+  {
     "behavior": "preparation_rejects_wrong_schema_and_expanded_budget_before_dispatch",
     "name": "preparation_rejects_wrong_schema_and_expanded_budget_before_dispatch",
     "oracle": "Reject incompatible preparation/full protocols, changed resources or expired deadline; absent original owner authority cannot dispatch. Limited fixture evidence cannot confer full build or release.",
@@ -2427,6 +2490,13 @@
     "oracle": "错root、计划、序号、虚假核验状态和native声明拒绝",
     "rustPath": "crates/oe-nx-protocol/tests/transfer_endpoint.rs",
     "scope": "协议、控制器接口与目录用途；远程实传/模型重组/原生准入另验"
+  },
+  {
+    "behavior": "root_relative_paths_use_portable_separators_and_preserve_names",
+    "name": "root_relative_paths_use_portable_separators_and_preserve_names",
+    "oracle": "Normal path components use slash-separated root-relative binding paths; Unicode and spaces remain exact, parent components reject, and Unix colon names are not narrowed.",
+    "rustPath": "crates/oe-knowledge/src/registration_freshness.rs",
+    "scope": "Portable path construction exercised on macOS; Windows native execution not verified"
   },
   {
     "behavior": "same_basename_fetch_uses_distinct_drive_ids",

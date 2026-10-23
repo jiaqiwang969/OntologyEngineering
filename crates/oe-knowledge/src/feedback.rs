@@ -180,6 +180,7 @@ fn require_current(
     packet: &Value,
     current: &Value,
     tools: &PopplerTools,
+    require_current_registration: bool,
 ) -> Result<Value> {
     let checked = packet::verify_with_tools(root, packet, current, tools)?;
     ensure!(
@@ -187,6 +188,11 @@ fn require_current(
             && checked["project_source_freshness"]["status"] == "current"
             && checked["packet_source_freshness"]["status"] == "current",
         "knowledge_feedback_current_bound_context_required"
+    );
+    ensure!(
+        !require_current_registration
+            || checked["source_registration_freshness"]["status"] == "current",
+        "knowledge_feedback_current_source_registration_required"
     );
     Ok(checked)
 }
@@ -239,15 +245,25 @@ pub fn append_with_tools(root: &SkillRoot, request: &Value, tools: &PopplerTools
         "result_evidence",
         "previous",
         "unit_ids",
+        "require_current_registration",
     ];
     ensure!(
         fields.keys().all(|k| allowed.contains(&k.as_str())),
         "knowledge_feedback_request_invalid"
     );
+    let require_current_registration = request
+        .get("require_current_registration")
+        .map(|v| {
+            v.as_bool()
+                .context("knowledge_feedback_registration_requirement_invalid")
+        })
+        .transpose()?
+        .unwrap_or(false);
     let current = context::validate(&request["context"])?;
     let packet_path = relative_project(root, required(request, "packet_path", 600)?)?;
     let (raw, packet) = read_json(root, &packet_path)?;
-    require_current(root, &packet, &current, tools)?;
+    let verification =
+        require_current(root, &packet, &current, tools, require_current_registration)?;
     let owner = owner(&current)?;
     let output = relative_project(root, required(request, "output", 600)?)?;
     for path in [&packet_path, &output] {
@@ -343,12 +359,20 @@ pub fn append_with_tools(root: &SkillRoot, request: &Value, tools: &PopplerTools
     ))[..32]
         .to_owned();
     let mut record = json!({"schema":SCHEMA,"feedback_id":feedback_id,"recorded_at":stamp,"task_id":current["task_id"],"project":current["project"],"object":current["object"],"decision_id":current["decision_id"],"context_sha256":digest(&current)?,"project_source_bindings":current["source_bindings"],"packet":packet_ref,"run":run,"candidate":candidate_ref,"disposition":disposition,"reason":reason,"next_check":next,"result_evidence":result_evidence,"result_evidence_status":if result_evidence.as_array().is_some_and(|a|!a.is_empty()){"referenced_not_evaluated"}else{"not_yet_provided"},"previous_feedback":previous_ref,"previous_binding_changed":!previous_changed.is_empty(),"previous_changed_fields":previous_changed,"query_status":packet["status"],"packet_adoption":"pending_agent_review","engineering_verdict":"not_run","semantic_review":"not_run","ontology_promotion":"not_run","meaning":"Scoped agent work-decision feedback only. Adopted does not accept a source assertion as a Semantica fact, establish engineering success, or authorize execution or promotion."});
+    record["source_registration_freshness"] = verification["source_registration_freshness"].clone();
+    record["require_current_registration"] = json!(require_current_registration);
     record["feedback_sha256"] = json!(digest(&record)?);
     ensure!(
         sha256(read_project(root, &packet_path)?) == packet_ref["sha256"],
         "knowledge_feedback_binding_changed_during_recording"
     );
-    require_current(root, &packet, &current, tools)?;
+    let final_verification =
+        require_current(root, &packet, &current, tools, require_current_registration)?;
+    ensure!(
+        final_verification["source_registration_freshness"]
+            == record["source_registration_freshness"],
+        "knowledge_feedback_registration_changed_during_recording"
+    );
     ensure!(
         evidence(root, &refs, &owner)? == result_evidence,
         "knowledge_feedback_result_evidence_changed_during_recording"

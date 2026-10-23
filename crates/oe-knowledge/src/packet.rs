@@ -373,6 +373,9 @@ fn checked_evidence(
         if let Some(origin) = result.get("text_origin") {
             fields.insert("text_origin".into(), origin.clone());
         }
+        if let Some(binding) = crate::registration_freshness::validate_result(root, result)? {
+            fields.insert("source_registration_binding".into(), binding);
+        }
         evidence.push(json!({"id":id,"source":fields,"knowledge_units":units,"page_native_text":body,"candidate_judgment":result.get("judgment").context("supplier_handoff_packet_evidence_mismatch")?,"applicability":"not_assessed","adoption":"pending_agent_review","engineering_verdict":"not_run"}));
     }
     Ok(json!(evidence))
@@ -828,6 +831,7 @@ pub fn verify_with_tools(
     let current_sha = digest(&current)?;
     let freshness = context::verify_sources(root, &current)?;
     let packet_freshness = context::verify_sources(root, &snapshot)?;
+    let registration_freshness = crate::registration_freshness::audit(root, &results)?;
     let mut missing = Vec::new();
     for name in ["project", "object"] {
         for field in ["id", "revision"] {
@@ -869,7 +873,7 @@ pub fn verify_with_tools(
         .filter(|k| snapshot.get(*k) != current.get(*k))
         .cloned()
         .collect::<Vec<_>>();
-    Ok(
-        json!({"schema":"ontology-engineering.supplier-packet-binding/v1","status":status,"packet_context_sha256":snapshot_sha,"current_context_sha256":current_sha,"changed_fields":changed,"missing_identity":missing,"evidence_candidate_count":checked.as_array().map_or(0,Vec::len),"project_source_freshness":freshness,"packet_source_freshness":packet_freshness,"source_query_status":packet.get("status").unwrap_or(&json!("not_reported")),"source_query_errors":packet.get("errors").unwrap_or(&json!([])),"evidence_availability":if results.is_empty(){"no_returned_candidates"}else{"returned_candidates"},"review_plan_status":packet["review_plan"].get("status").unwrap_or(&json!("not_run")),"integrity":"source_hash_and_exact_text_spans_checked","adoption":"pending_agent_review","semantic_review":"not_run","ontology_promotion":"not_run","meaning":"Same-context handoff integrity only; matching identity does not mean the source query completed. Freshness covers declared source records only; not_bound does not establish current project state. No returned candidates does not establish that source information is absent. No applicability, engineering adoption or execution authority."}),
-    )
+    let mut binding_report = json!({"schema":"ontology-engineering.supplier-packet-binding/v1","status":status,"packet_context_sha256":snapshot_sha,"current_context_sha256":current_sha,"changed_fields":changed,"missing_identity":missing,"evidence_candidate_count":checked.as_array().map_or(0,Vec::len),"project_source_freshness":freshness,"packet_source_freshness":packet_freshness,"source_query_status":packet.get("status").unwrap_or(&json!("not_reported")),"source_query_errors":packet.get("errors").unwrap_or(&json!([])),"evidence_availability":if results.is_empty(){"no_returned_candidates"}else{"returned_candidates"},"review_plan_status":packet["review_plan"].get("status").unwrap_or(&json!("not_run")),"integrity":"source_hash_and_exact_text_spans_checked","adoption":"pending_agent_review","semantic_review":"not_run","ontology_promotion":"not_run","meaning":"Same-context handoff integrity only; matching identity does not mean the source query completed. Freshness covers declared source records only; not_bound does not establish current project state. No returned candidates does not establish that source information is absent. No applicability, engineering adoption or execution authority."});
+    binding_report["source_registration_freshness"] = registration_freshness;
+    Ok(binding_report)
 }

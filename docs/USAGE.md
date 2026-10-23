@@ -66,6 +66,8 @@ export OEV2_PROJECT_HOME="/absolute/engineering-project/.engineering"
 
 `knowledge query` 与 `project work` 使用本地来源检索、计算和明确检查，开放式适用性判断由 Agent 对照原文完成。检索候选、OCR、来源摘要匹配和工程适用分别取证。工程资料统一放在与 `modules/` 同级的 `sources/`：书籍使用 `sources/books/`，米思米使用 `sources/misumi/`，登记与索引保持 `sources/.indexes/`。已有本地原件核摘要后迁入，无需重复下载。新增或修订 PDF 先用 `knowledge register --merge --dry-run` 预览，再用 `--merge` 按 ID 更新、保留未列旧书；source-delivery register 支持相同选项。预览不提取或发布索引，实际操作重新核验输入；全部相同返回 `unchanged`。安装根或路径改变后的完整重建仍准备完整书目并使用 `--replace`，未列旧书会退出索引。米思米构建与查询默认统一使用 `sources/.indexes/misumi`，旧自选路径需显式指定。新增格式按实际读取能力接入，不自动获得 PDF 索引或知识图谱。清单由 Agent 准备，具体命令与边界见[工程资料入口](../sources/README.md)；缺资料时返回具体缺项。
 
+新本地 PDF 查询绑定单来源、章节导航摘要与实际索引目录。`knowledge verify-packet` 的 `source_registration_freshness` 分别报告各候选的当前登记状态；无关新书不会仅因全库摘要改变使旧书失效。原件回读可仍为 `ready_for_agent_review`，同时登记已变或已移除。要求当前本地 PDF 依据时，对 `verify-packet` 与 `feedback` 使用 `--require-current-registration`；包内全部候选必须是已绑定且 `current` 的本地 PDF，否则严格复核或反馈被拒绝。旧包需当前查询重新绑定；米思米与混合非适用包沿各自来源合同。默认历史回读语义保留，登记变化不自动扫描 Project 或改写旧包、反馈与决定；书目当前不代表出版方最新版或工程适用。
+
 工程 work 的来源、功能、物理机理、前提和反例见[工程工作](../references/engineering-work.md)、[工程前提](../references/engineering-premises.md)。必要工程条件或原验收不能因局部计算成功而省略。
 
 `harness step` 接受显式 `oev2.harness-checkpoint-input/1`，执行当前工程检查并保存完整原件、失败与未知；`recorded` 仅说明记录完成。`harness consolidate` 支持明确的空候选原件归档。协议、资源上限及恢复条件见[完整检查点](../references/harness-context.md)，不能用归档代替非空候选评估或工程采用。

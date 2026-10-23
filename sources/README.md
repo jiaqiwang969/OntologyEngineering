@@ -111,11 +111,35 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 
 先明确当前 Project、对象修订、目标和工况，再检索候选。通过原页回读核实版次、公式、单位、假设、适用范围及反例，说明资料支持哪个主张、还缺哪些独立依据。保存实际查询、候选与原页核验包，条件或来源改变时重核。
 
-使用 `knowledge verify-packet` 核包与来源，再按当前 Project 的证据合同登记。检索命中、摘要一致或资料登记成功都不直接更新工程决定；决定与 `project adopt` 仍遵守各自的来源、检查和独立批准要求。专业工具结果使用现有 `project tool-result` 合同，不能把文献摘要伪装成工具实测。
+使用 `knowledge verify-packet` 核包与来源，再按当前 Project 的证据合同登记。新查询为每个本地 PDF 候选保存单来源身份、章节导航摘要和实际索引目录；复核时另以 `source_registration_freshness` 说明它是否仍对应当前登记。比较针对该来源，无关新书导致全库摘要变化，不会使未变的旧书候选失效。
+
+| 登记状态 | 含义与接续 |
+|---|---|
+| `current` | 与所绑定索引中的当前单来源及章节导航一致。仍需核原件、当前 Project 条件与适用性。 |
+| `changed` | 同一来源 ID 的登记身份或章节导航已变化；重新查询并回读受影响原页。 |
+| `removed` | 在已核当前索引中找不到该来源 ID；保留旧包，查清移除原因。 |
+| `unavailable` | 所绑定的当前登记或索引无法取得或核验；先补齐或纠正来源，不能推定当前。 |
+| `not_bound` | 包中缺少当前登记绑定，例如旧版查询包；用当前查询取得新包，不手填绑定。 |
+| `not_applicable` | 候选不属于本地 PDF 登记，例如米思米；按该来源原有合同核验。 |
+| `mixed` | 包内候选的登记状态不同；逐项处理，不能把整包视为当前。 |
+
+原件与历史包的完整性检查仍独立保留：默认复核的 `status` 可以是 `ready_for_agent_review`，同时登记状态为 `changed` 或 `removed`。这表示旧原件仍可回读，不表示它仍是当前书目依据。`current` 也只说明与本地当前登记一致，不证明是出版方最新版、内容正确或适用于当前工程。
+
+当前任务需要以现有本地 PDF 登记为依据时，Agent 在复核和后续反馈中使用 `--require-current-registration`：该选项要求本包**全部候选都是本地 PDF，且都有 `current` 绑定**。仅选一个当前候选不能跳过包内其他候选的检查。以下路径及上下文由 Agent 按实际 Project 准备：
+
+```sh
+"$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge verify-packet \
+  --packet var/projects/example/retrieval/packet.json --context var/projects/example/context.json \
+  --require-current-registration
+```
+
+旧包无绑定、米思米候选或含非适用候选的混合包均不能满足该严格选项。严格复核未满足时报告 `source_registration_not_current`，另以 `historical_verification_status` 保留历史完整性状态；严格反馈拒绝写入。需要当前本地 PDF 证据时，用 `knowledge query --provider local-pdf` 生成新包；供应商资料继续走各自来源合同。默认不加该选项的历史回读保持原语义，不能将默认复核成功写成“当前登记通过”。
+
+登记变化不改写旧 packet 或 feedback，也不自动扫描全部 Project 或更新决定。Agent 根据本次任务找出受影响的引用，保存新查询与复核，再按原 Project 合同处理。检索命中、摘要一致或登记状态 `current` 都不直接更新工程决定；决定与 `project adopt` 仍遵守各自的来源、检查和独立批准要求。专业工具结果使用现有 `project tool-result` 合同，不能把文献摘要伪装成工具实测。
 
 ### 5. 保存实际使用反馈，再考虑改进方法
 
-经 `knowledge feedback` 记录哪些候选实际采用、延后或拒绝及其依据；有真实 Project 使用经验时按工程记忆合同保存时间线、失败、用户纠正、因果未知与适用条件。召回仍须在新任务中复核，不把整本书复制成经验结论。
+经 `knowledge feedback` 记录哪些候选实际采用、延后或拒绝及其依据。需要当前本地 PDF 登记约束的反馈，使用同一 `--require-current-registration`；命令会重新核本包全部候选，登记不当前时拒绝写入，不把先前的复核结果当作本次通行凭证。默认历史反馈语义保留，新反馈另存，旧记录不改写。参数和结构化记录由 Agent 准备，用户不必填写绑定字段。有真实 Project 使用经验时按工程记忆合同保存时间线、失败、用户纠正、因果未知与适用条件。召回仍须在新任务中复核，不把整本书复制成经验结论。
 
 资料提出新方法时，先区分项目实例补充与软件/方法规则改动。需要扩展正式工程路由、共享合同或行为时，沿 `specs → 锁定 ggen → Rust → 回归与独立验证` 推进；RRSI 仍按固定根目标、基线与判据比较，不因读到新书就晋升规则。
 
@@ -136,7 +160,8 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 | 建立或增量更新 PDF 索引 | `knowledge register`，或同组 source-delivery `register`；新增/修订先 `--merge --dry-run`，核差异后 `--merge` |
 | 完整重建 PDF 索引 | 同一登记入口的 `--replace`；传完整保留书目，先预览移除项 |
 | 检索和原页回读 | `knowledge query/view`；查询候选与原页核验分别记录 |
-| 核查询包及实际反馈 | `knowledge verify-packet/feedback`；不授予工程采用 |
+| 核查询包及实际反馈 | `knowledge verify-packet/feedback`；原件完整性与 `source_registration_freshness` 分别读取，不授予工程采用 |
+| 要求当前本地 PDF 登记 | 两命令加 `--require-current-registration`；整包全部候选须为已绑定且当前的本地 PDF |
 
 Agent 根据本次真实输入准备参数与私有记录。先核 `knowledge status`，再核旧书仍可检索、新书来源和页码可回读、失配摘要会拒绝、扫描/图表覆盖如实显示。每轮向用户交代新增数量、完成范围、未处理项及可供当前项目查证的内容，不以命令退出成功代替这些检查。
 

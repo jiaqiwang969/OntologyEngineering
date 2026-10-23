@@ -523,3 +523,30 @@ fn fixture_budget_is_preserved_without_counting_it_as_network() {
     r["query_budget"]["fixture_requests"] = json!(-1);
     assert!(packet::make(&f.root, &r, &c).is_err());
 }
+
+#[test]
+fn explicit_current_registration_requirement_rejects_unbound_and_invalid_boolean_without_writes() {
+    let f = Fixture::new();
+    let c = f.context("r1");
+    f.packet(&c, "var/projects/p/packet.json");
+    let mut request = f.request(&c);
+    request["require_current_registration"] = json!("true");
+    assert!(
+        feedback::append(&f.root, &request)
+            .unwrap_err()
+            .to_string()
+            .contains("registration_requirement_invalid")
+    );
+    request["require_current_registration"] = json!(true);
+    assert!(
+        feedback::append(&f.root, &request)
+            .unwrap_err()
+            .to_string()
+            .contains("current_source_registration_required")
+    );
+    assert!(!f.path.join("var/projects/p/feedback/first.json").exists());
+    request["require_current_registration"] = json!(false);
+    let value = feedback::append(&f.root, &request).unwrap();
+    assert_eq!(value["require_current_registration"], false);
+    assert_ne!(value["source_registration_freshness"]["status"], "current");
+}

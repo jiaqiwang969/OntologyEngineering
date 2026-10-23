@@ -15,6 +15,7 @@ pub mod premise_advisor;
 pub(crate) mod publication;
 pub mod query;
 pub mod registration;
+pub mod registration_freshness;
 pub mod retrieval;
 pub mod source_library;
 pub mod source_pack;

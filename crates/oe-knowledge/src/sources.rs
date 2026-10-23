@@ -322,6 +322,26 @@ impl Provider {
         Ok(())
     }
 
+    pub(crate) fn verify_snapshot(&self) -> Result<()> {
+        self.verify()
+    }
+
+    /// Used inside one freshness audit, which verifies the provider snapshot once
+    /// more after all selected document identities have been compared.
+    pub(crate) fn registered_source_binding(&self, id: &str) -> Result<Option<Value>> {
+        ensure!(
+            self.kind == "local_pdf",
+            "source_registration_provider_mismatch"
+        );
+        self.sources
+            .iter()
+            .find(|source| source["id"] == id)
+            .map(|source| {
+                crate::registration_freshness::capture(&self.root, &self.directory, source)
+            })
+            .transpose()
+    }
+
     pub fn status(&self) -> Value {
         let ready = self.verify().is_ok();
         json!({"status":if ready {"ready"} else {"not_ready"},"provider":self.kind,"index":self.index.meta,"index_identity":self.index.identity(),
@@ -714,6 +734,8 @@ impl Provider {
                     && source_data["document_id"] == source["id"],
                 "page_registration_identity_mismatch"
             );
+            page["source_registration_binding"] =
+                crate::registration_freshness::capture(&self.root, &self.directory, source)?;
             page["source_registration"] = source.clone();
             // Navigation is returned once by chapters(), not copied into every
             // selected page. Keep the registered source identity fields here.

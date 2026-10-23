@@ -2477,6 +2477,18 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("LocalPdfRegistrationUpdate", "reused_source_ids", "Vec<String>"),
     ("LocalPdfRegistrationUpdate", "unchanged", "Vec<String>"),
     ("LocalPdfRegistrationUpdate", "updated", "Vec<String>"),
+    ("LocalPdfSourceRegistrationBinding", "index_directory", "String"),
+    ("LocalPdfSourceRegistrationBinding", "schema", "String"),
+    ("LocalPdfSourceRegistrationBinding", "sha256", "String"),
+    ("LocalPdfSourceRegistrationBinding", "source", "LocalPdfSourceRegistrationIdentity"),
+    ("LocalPdfSourceRegistrationIdentity", "bytes", "u64"),
+    ("LocalPdfSourceRegistrationIdentity", "chapters_sha256", "String"),
+    ("LocalPdfSourceRegistrationIdentity", "edition", "String"),
+    ("LocalPdfSourceRegistrationIdentity", "id", "String"),
+    ("LocalPdfSourceRegistrationIdentity", "page_count", "u64"),
+    ("LocalPdfSourceRegistrationIdentity", "path", "String"),
+    ("LocalPdfSourceRegistrationIdentity", "sha256", "String"),
+    ("LocalPdfSourceRegistrationIdentity", "title", "String"),
     ("MechanismAssessment", "condition_values", "serde_json::Value"),
     ("MechanismAssessment", "drive", "DriveContract"),
     ("MechanismAssessment", "schema", "String"),
@@ -3501,6 +3513,10 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("SourceCitation", "source_id", "String"),
     ("SourceCitation", "source_sha256", "String"),
     ("SourceCitation", "source_uri", "String"),
+    ("SourceRegistrationFreshness", "candidates", "Vec<serde_json::Value>"),
+    ("SourceRegistrationFreshness", "meaning", "String"),
+    ("SourceRegistrationFreshness", "schema", "String"),
+    ("SourceRegistrationFreshness", "status", "String"),
     ("ToolComparisonReport", "baseline_value", "Option<f64>"),
     ("ToolComparisonReport", "candidate_value", "Option<f64>"),
     ("ToolComparisonReport", "comparison_id", "String"),
@@ -4626,6 +4642,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("LocalPdfRegistrationUpdate", "mode", "create"),
     ("LocalPdfRegistrationUpdate", "mode", "merge"),
     ("LocalPdfRegistrationUpdate", "mode", "replace"),
+    ("LocalPdfSourceRegistrationBinding", "schema", "ontology-engineering.local-pdf-source-binding/v1"),
     ("MechanismAssessment", "schema", "oev2.mechanism-assessment/1"),
     ("MemoryCandidateCheck", "project_binding", "condition_changed"),
     ("MemoryCandidateCheck", "project_binding", "matched"),
@@ -4966,6 +4983,14 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("SolidWorksNativeRequest", "action", "update_thickness"),
     ("SolidWorksNativeRequest", "schema", "oev2.solidworks-native-request/1"),
     ("SolidWorksNativeRequest", "schema", "oev2.solidworks-native-request/2"),
+    ("SourceRegistrationFreshness", "schema", "ontology-engineering.source-registration-freshness/v1"),
+    ("SourceRegistrationFreshness", "status", "changed"),
+    ("SourceRegistrationFreshness", "status", "current"),
+    ("SourceRegistrationFreshness", "status", "mixed"),
+    ("SourceRegistrationFreshness", "status", "not_applicable"),
+    ("SourceRegistrationFreshness", "status", "not_bound"),
+    ("SourceRegistrationFreshness", "status", "removed"),
+    ("SourceRegistrationFreshness", "status", "unavailable"),
     ("ToolComparisonReport", "schema", "oev2.tool-comparison-report/1"),
     ("ToolComparisonReport", "verdict", "improved"),
     ("ToolComparisonReport", "verdict", "inconclusive"),
@@ -17444,6 +17469,68 @@ impl LocalPdfRegistrationUpdate {
     }
 }
 
+/// 历史查询包绑定显式登记目录及单来源；不以整库变化判单书失效
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LocalPdfSourceRegistrationBinding {
+    /// 本根sources/.indexes下显式索引目录
+    pub index_directory: String,
+    /// 协议版本
+    pub schema: String,
+    /// 去除此字段后完整规范化绑定的SHA256
+    pub sha256: String,
+    /// 查询时的来源身份
+    pub source: LocalPdfSourceRegistrationIdentity,
+}
+impl LocalPdfSourceRegistrationBinding {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.index_directory.trim().is_empty() { failures.push("LocalPdfSourceRegistrationBinding.index_directory:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("LocalPdfSourceRegistrationBinding.schema:required".into()); }
+        if self.sha256.trim().is_empty() { failures.push("LocalPdfSourceRegistrationBinding.sha256:required".into()); }
+
+        if !["ontology-engineering.local-pdf-source-binding/v1",].contains(&self.schema.as_str()) { failures.push("LocalPdfSourceRegistrationBinding.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 单来源的登记身份；章节完整导航摘要保持页定位与语义版本
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LocalPdfSourceRegistrationIdentity {
+    /// 原件字节数
+    pub bytes: u64,
+    /// 完整章节导航规范化摘要
+    pub chapters_sha256: String,
+    /// 登记版次
+    pub edition: String,
+    /// 稳定来源ID
+    pub id: String,
+    /// 物理总页数
+    pub page_count: u64,
+    /// 本根sources下无软链接原件路径
+    pub path: String,
+    /// 原件SHA256
+    pub sha256: String,
+    /// 登记题名
+    pub title: String,
+}
+impl LocalPdfSourceRegistrationIdentity {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.chapters_sha256.trim().is_empty() { failures.push("LocalPdfSourceRegistrationIdentity.chapters_sha256:required".into()); }
+        if self.edition.trim().is_empty() { failures.push("LocalPdfSourceRegistrationIdentity.edition:required".into()); }
+        if self.id.trim().is_empty() { failures.push("LocalPdfSourceRegistrationIdentity.id:required".into()); }
+        if self.path.trim().is_empty() { failures.push("LocalPdfSourceRegistrationIdentity.path:required".into()); }
+        if self.sha256.trim().is_empty() { failures.push("LocalPdfSourceRegistrationIdentity.sha256:required".into()); }
+        if self.title.trim().is_empty() { failures.push("LocalPdfSourceRegistrationIdentity.title:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
 /// 当前 Project 中有范围的机制检查；不另建状态机或采用决定
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -22462,6 +22549,34 @@ impl SourceCitation {
         if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("SourceCitation.source_sha256:sha256".into()); }
         if self.source_uri.trim().is_empty() { failures.push("SourceCitation.source_uri:required".into()); }
 
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 当前登记对账，与历史完整性和工程Project适用性独立
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SourceRegistrationFreshness {
+    /// 逐候选来源身份、状态、变化字段及未知原因
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub candidates: Vec<serde_json::Value>,
+    /// 登记当前性的范围及不具备的工程采用含义
+    pub meaning: String,
+    /// 报告版本
+    pub schema: String,
+    /// 所有候选登记当前性的保守汇总
+    pub status: String,
+}
+impl SourceRegistrationFreshness {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.meaning.trim().is_empty() { failures.push("SourceRegistrationFreshness.meaning:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("SourceRegistrationFreshness.schema:required".into()); }
+        if self.status.trim().is_empty() { failures.push("SourceRegistrationFreshness.status:required".into()); }
+
+        if !["ontology-engineering.source-registration-freshness/v1",].contains(&self.schema.as_str()) { failures.push("SourceRegistrationFreshness.schema:allowed_values".into()); }
+        if !["changed","current","mixed","not_applicable","not_bound","removed","unavailable",].contains(&self.status.as_str()) { failures.push("SourceRegistrationFreshness.status:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

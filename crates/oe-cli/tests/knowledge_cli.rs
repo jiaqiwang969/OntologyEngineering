@@ -928,3 +928,166 @@ fn supplier_default_build_index_is_readable_by_default_status_and_query() {
         "{result}"
     );
 }
+
+#[test]
+fn packet_current_registration_option_and_feedback_distinguish_history() {
+    if !poppler_present() {
+        return;
+    }
+    let f = Fixture::new();
+    f.pdf();
+    f.project();
+    let run = |args: &[&str]| {
+        let mut args = args.to_vec();
+        args.extend(TOOLS);
+        f.run(&args)
+    };
+    let (code, value) = run(&[
+        "knowledge",
+        "register",
+        "--manifest",
+        "sources/books/manifest.json",
+    ]);
+    assert_eq!(code, 0, "{value}");
+    let (code, value) = run(&[
+        "knowledge",
+        "query",
+        "--query",
+        "shaft",
+        "--provider",
+        "local-pdf",
+        "--project-context",
+        "var/projects/demo/projection.json",
+        "--output-dir",
+        "var/projects/demo/currentness-query",
+    ]);
+    assert_eq!(code, 0, "{value}");
+    assert_eq!(value["packet"]["status"], "created");
+    let packet_path = "var/projects/demo/currentness-query/packet.json";
+    let original_packet = fs::read(f.0.join(packet_path)).unwrap();
+    let mut packet: Value = serde_json::from_slice(&original_packet).unwrap();
+    let candidate = packet["evidence_candidates"][0]["id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let verify = [
+        "knowledge",
+        "verify-packet",
+        "--packet",
+        packet_path,
+        "--project-context",
+        "var/projects/demo/projection.json",
+    ];
+    let mut strict = verify.to_vec();
+    strict.push("--require-current-registration");
+    let (code, value) = run(&strict);
+    assert_eq!(code, 0, "{value}");
+    assert_eq!(
+        value["result"]["source_registration_freshness"]["status"],
+        "current"
+    );
+    assert_eq!(
+        value["result"]["current_registration_requirement"]["satisfied"],
+        true
+    );
+    let feedback = |output: &str| {
+        run(&[
+            "knowledge",
+            "feedback",
+            "--packet",
+            packet_path,
+            "--project-context",
+            "var/projects/demo/projection.json",
+            "--candidate",
+            &candidate,
+            "--disposition",
+            "deferred",
+            "--reason",
+            "Need a measurement",
+            "--next-check",
+            "Read original conditions",
+            "--require-current-registration",
+            "--output",
+            output,
+        ])
+    };
+    let feedback_path = "var/projects/demo/feedback-current.json";
+    let (code, value) = feedback(feedback_path);
+    assert_eq!(code, 0, "{value}");
+    assert_eq!(value["result"]["require_current_registration"], true);
+    assert_eq!(
+        value["result"]["source_registration_freshness"]["status"],
+        "current"
+    );
+    let feedback_bytes = fs::read(f.0.join(feedback_path)).unwrap();
+
+    let mut manifest: Value =
+        serde_json::from_slice(&fs::read(f.0.join("sources/books/manifest.json")).unwrap())
+            .unwrap();
+    manifest["sources"][0]["title"] = json!("Revised navigation title");
+    f.save("sources/books/manifest.json", &manifest);
+    let (code, value) = run(&[
+        "knowledge",
+        "register",
+        "--manifest",
+        "sources/books/manifest.json",
+        "--merge",
+    ]);
+    assert_eq!(code, 0, "{value}");
+    let (code, value) = run(&verify);
+    assert_eq!(code, 0, "{value}");
+    assert_eq!(value["status"], "ready_for_agent_review");
+    assert_eq!(
+        value["result"]["source_registration_freshness"]["status"],
+        "changed"
+    );
+    strict.extend(["--output-dir", "var/projects/demo/strict-rejection"]);
+    let (code, value) = run(&strict);
+    assert_ne!(code, 0);
+    assert_eq!(value["status"], "source_registration_not_current");
+    assert_eq!(
+        value["result"]["historical_verification_status"],
+        "ready_for_agent_review"
+    );
+    assert_eq!(
+        value["result"]["current_registration_requirement"]["satisfied"],
+        false
+    );
+    assert!(
+        f.0.join("var/projects/demo/strict-rejection/verification.json")
+            .is_file()
+    );
+    let blocked = "var/projects/demo/feedback-stale.json";
+    assert_ne!(feedback(blocked).0, 0);
+    assert!(!f.0.join(blocked).exists());
+
+    for c in packet["evidence_candidates"].as_array_mut().unwrap() {
+        c["source"]
+            .as_object_mut()
+            .unwrap()
+            .remove("source_registration_binding");
+    }
+    let legacy = "var/projects/demo/legacy-packet.json";
+    f.save(legacy, &packet);
+    let base = [
+        "knowledge",
+        "verify-packet",
+        "--packet",
+        legacy,
+        "--project-context",
+        "var/projects/demo/projection.json",
+    ];
+    let (code, value) = run(&base);
+    assert_eq!(code, 0, "{value}");
+    assert_eq!(
+        value["result"]["source_registration_freshness"]["status"],
+        "not_bound"
+    );
+    let mut strict = base.to_vec();
+    strict.push("--require-current-registration");
+    let (code, value) = run(&strict);
+    assert_ne!(code, 0);
+    assert_eq!(value["status"], "source_registration_not_current");
+    assert_eq!(fs::read(f.0.join(packet_path)).unwrap(), original_packet);
+    assert_eq!(fs::read(f.0.join(feedback_path)).unwrap(), feedback_bytes);
+}

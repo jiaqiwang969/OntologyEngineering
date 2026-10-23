@@ -671,3 +671,244 @@ fn source_library_query_packet_and_feedback_preserve_source_boundaries() {
         assert!(error.to_string().contains("symlink"), "{error:#}");
     }
 }
+
+// A source can remain physically verifiable after its current library entry has
+// changed. These cases exercise the public query/packet path across real native
+// registration updates, keeping the old PDF and packet as historical evidence.
+fn source_currentness_fixture() -> (Fixture, Value, Value, Value, Value) {
+    let f = Fixture::new(false);
+    let bytes = pdf(false, 3);
+    fs::write(f.path.join("sources/books/条件-original.pdf"), &bytes).unwrap();
+    let manifest = json!({
+        "schema":"ontology-engineering.local-pdf-manifest/v1",
+        "sources":[{"id":"conditions","title":"Synthetic book","edition":"fixture-1",
+            "path":"条件-original.pdf","sha256":sha256(&bytes),
+            "chapters":[{"id":"conditions","title":"工程条件","start_page":1,"end_page":3,"aliases":[]}]}]
+    });
+    apply_currentness_manifest(&f, &manifest, false, false);
+    let mut options = f.options("source-currentness-query");
+    options.providers.retain(|p| p.kind == "local_pdf");
+    options.top = 1;
+    let report = query::run(&f.root, &options).unwrap();
+    assert_eq!(report["status"], "completed", "{report:#}");
+    assert_eq!(report["results"].as_array().unwrap().len(), 1);
+    let context = report["context_snapshot"].clone();
+    let packet = packet::make_with_tools(&f.root, &report, &context, &tools()).unwrap();
+    f.write("var/projects/p/source-currentness-packet.json", &packet);
+    (f, manifest, report, packet, context)
+}
+
+fn apply_currentness_manifest(f: &Fixture, manifest: &Value, merge: bool, replace: bool) -> Value {
+    f.write("sources/books/currentness-manifest.json", manifest);
+    registration::register(
+        &f.path,
+        &f.path.join("sources/books/currentness-manifest.json"),
+        &RegistrationOptions {
+            tools: tools(),
+            merge,
+            replace,
+            ..Default::default()
+        },
+    )
+    .unwrap()
+}
+
+fn currentness_second_book(f: &Fixture, manifest: &Value) -> Value {
+    let bytes = pdf(true, 1);
+    fs::write(f.path.join("sources/books/unrelated.pdf"), &bytes).unwrap();
+    let mut source = manifest["sources"][0].clone();
+    source["id"] = json!("unrelated");
+    source["title"] = json!("Independent second book");
+    source["path"] = json!("unrelated.pdf");
+    source["sha256"] = json!(sha256(&bytes));
+    source["chapters"][0]["end_page"] = json!(1);
+    json!({"schema":manifest["schema"],"sources":[source]})
+}
+
+fn verify_currentness(f: &Fixture, packet: &Value, context: &Value, status: &str) -> Value {
+    let checked = packet::verify_with_tools(&f.root, packet, context, &tools()).unwrap();
+    assert_eq!(checked["status"], "ready_for_agent_review", "{checked:#}");
+    let freshness = &checked["source_registration_freshness"];
+    assert_eq!(freshness["status"], status, "{checked:#}");
+    assert_eq!(freshness["candidates"].as_array().unwrap().len(), 1);
+    assert_eq!(freshness["candidates"][0]["status"], status, "{checked:#}");
+    checked
+}
+
+#[test]
+fn local_source_currentness_survives_unrelated_incremental_addition() {
+    let (f, manifest, report, packet, context) = source_currentness_fixture();
+    let binding = &report["results"][0]["source_registration_binding"];
+    assert_eq!(
+        binding["schema"],
+        "ontology-engineering.local-pdf-source-binding/v1"
+    );
+    assert_eq!(binding["index_directory"], "sources/.indexes/local-pdf");
+    assert_eq!(binding["source"]["id"], "conditions");
+    assert_eq!(binding["source"]["path"], "sources/books/条件-original.pdf");
+    assert_eq!(
+        binding["source"]["chapters_sha256"],
+        canonical_digest(&manifest["sources"][0]["chapters"]).unwrap()
+    );
+    let mut unsigned = binding.clone();
+    unsigned.as_object_mut().unwrap().remove("sha256");
+    assert_eq!(binding["sha256"], canonical_digest(&unsigned).unwrap());
+    assert_eq!(
+        packet["evidence_candidates"][0]["source"]["source_registration_binding"],
+        *binding
+    );
+    verify_currentness(&f, &packet, &context, "current");
+    let index = f.path.join("sources/.indexes/local-pdf/catalog.sqlite3");
+    let before = sha256(fs::read(&index).unwrap());
+    let second = currentness_second_book(&f, &manifest);
+    let result = apply_currentness_manifest(&f, &second, true, false);
+    assert_eq!(result["update"]["retained"], json!(["conditions"]));
+    assert_ne!(before, sha256(fs::read(&index).unwrap()));
+    let checked = verify_currentness(&f, &packet, &context, "current");
+    assert_eq!(
+        checked["source_registration_freshness"]["candidates"][0]["changed_fields"],
+        json!([])
+    );
+}
+
+#[test]
+fn local_source_currentness_distinguishes_metadata_and_navigation_changes() {
+    for field in ["title", "edition", "chapters_sha256"] {
+        let (f, mut manifest, _, packet, context) = source_currentness_fixture();
+        let before = fs::read(f.path.join("sources/books/条件-original.pdf")).unwrap();
+        match field {
+            "title" => manifest["sources"][0]["title"] = json!("Corrected synthetic title"),
+            "edition" => manifest["sources"][0]["edition"] = json!("corrected-fixture-edition"),
+            _ => manifest["sources"][0]["chapters"][0]["aliases"] = json!(["corrected navigation"]),
+        }
+        let result = apply_currentness_manifest(&f, &manifest, true, false);
+        assert_eq!(result["update"]["updated"], json!(["conditions"]));
+        assert_eq!(
+            before,
+            fs::read(f.path.join("sources/books/条件-original.pdf")).unwrap()
+        );
+        let checked = verify_currentness(&f, &packet, &context, "changed");
+        assert_eq!(
+            checked["source_registration_freshness"]["candidates"][0]["changed_fields"],
+            json!([field]),
+            "{checked:#}"
+        );
+        let mut options = f.options("updated-description-query");
+        options.providers.retain(|p| p.kind == "local_pdf");
+        options.top = 1;
+        let report = query::run(&f.root, &options).unwrap();
+        let new_packet = packet::make_with_tools(&f.root, &report, &context, &tools()).unwrap();
+        verify_currentness(&f, &new_packet, &context, "current");
+    }
+}
+
+#[test]
+fn local_source_currentness_preserves_old_version_and_historical_feedback() {
+    let (f, mut manifest, _, packet, context) = source_currentness_fixture();
+    let packet_path = f.path.join("var/projects/p/source-currentness-packet.json");
+    let old_packet = fs::read(&packet_path).unwrap();
+    let old_original = fs::read(f.path.join("sources/books/条件-original.pdf")).unwrap();
+    let record = feedback::append_with_tools(
+        &f.root,
+        &json!({
+            "packet_path":"var/projects/p/source-currentness-packet.json","context":context,
+            "candidate_id":packet["evidence_candidates"][0]["id"],"disposition":"deferred",
+            "reason":"Synthetic source still requires engineering verification",
+            "next_check":"Check actual conditions before adoption",
+            "output":"var/projects/p/feedback/before-source-update.json"
+        }),
+        &tools(),
+    )
+    .unwrap();
+    let feedback_path = f
+        .path
+        .join("var/projects/p/feedback/before-source-update.json");
+    let old_feedback = fs::read(&feedback_path).unwrap();
+    let bytes = pdf(true, 2);
+    fs::write(f.path.join("sources/books/条件-revision-2.pdf"), &bytes).unwrap();
+    manifest["sources"][0]["path"] = json!("条件-revision-2.pdf");
+    manifest["sources"][0]["edition"] = json!("fixture-2");
+    manifest["sources"][0]["sha256"] = json!(sha256(&bytes));
+    manifest["sources"][0]["chapters"][0]["end_page"] = json!(2);
+    apply_currentness_manifest(&f, &manifest, true, false);
+    let checked = verify_currentness(&f, &packet, &context, "changed");
+    let changes = checked["source_registration_freshness"]["candidates"][0]["changed_fields"]
+        .as_array()
+        .unwrap();
+    for field in [
+        "path",
+        "edition",
+        "sha256",
+        "bytes",
+        "page_count",
+        "chapters_sha256",
+    ] {
+        assert!(changes.contains(&json!(field)), "{checked:#}");
+    }
+    let historical = feedback::load_reference_with_tools(&f.root, &json!({
+        "path":"var/projects/p/feedback/before-source-update.json","sha256":sha256(&old_feedback)
+    }), &context, &tools()).unwrap();
+    assert_eq!(historical["status"], "history_verified");
+    assert_eq!(historical["model_observation"]["historical_only"], true);
+    assert_eq!(
+        historical["model_observation"]["disposition"],
+        record["disposition"]
+    );
+    assert_eq!(fs::read(&packet_path).unwrap(), old_packet);
+    assert_eq!(fs::read(&feedback_path).unwrap(), old_feedback);
+    assert_eq!(
+        fs::read(f.path.join("sources/books/条件-original.pdf")).unwrap(),
+        old_original
+    );
+}
+
+#[test]
+fn local_source_currentness_distinguishes_removed_from_unavailable_index() {
+    let (f, manifest, _, packet, context) = source_currentness_fixture();
+    let second = currentness_second_book(&f, &manifest);
+    apply_currentness_manifest(&f, &second, false, true);
+    verify_currentness(&f, &packet, &context, "removed");
+    assert!(f.path.join("sources/books/条件-original.pdf").is_file());
+    fs::rename(
+        f.path.join("sources/.indexes/local-pdf"),
+        f.path.join("var/projects/p/preserved-index"),
+    )
+    .unwrap();
+    verify_currentness(&f, &packet, &context, "unavailable");
+}
+
+#[test]
+fn local_source_currentness_legacy_packet_is_not_bound() {
+    let (f, _, _, mut packet, context) = source_currentness_fixture();
+    packet["evidence_candidates"][0]["source"]
+        .as_object_mut()
+        .unwrap()
+        .remove("source_registration_binding")
+        .expect("new query must emit binding");
+    verify_currentness(&f, &packet, &context, "not_bound");
+}
+
+#[test]
+fn local_source_currentness_rejects_corrupt_binding_and_candidate_identity() {
+    let (f, _, _, packet, context) = source_currentness_fixture();
+    for fault in 0..5 {
+        let mut bad = packet.clone();
+        let binding = &mut bad["evidence_candidates"][0]["source"]["source_registration_binding"];
+        match fault {
+            0 => binding["sha256"] = json!("0".repeat(64)),
+            1 => binding["source"]["id"] = json!("another-source"),
+            2 => binding["source"]["sha256"] = json!("0".repeat(64)),
+            3 => binding["source"]["path"] = json!("sources/books/another-original.pdf"),
+            _ => binding["schema"] = json!("unknown-binding-schema"),
+        }
+        if fault != 0 {
+            let mut unsigned = binding.clone();
+            unsigned.as_object_mut().unwrap().remove("sha256");
+            binding["sha256"] = json!(canonical_digest(&unsigned).unwrap());
+        }
+        assert!(
+            packet::verify_with_tools(&f.root, &bad, &context, &tools()).is_err(),
+            "corrupt binding fault {fault} must fail"
+        );
+    }
+}

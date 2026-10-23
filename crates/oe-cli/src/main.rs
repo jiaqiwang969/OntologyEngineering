@@ -412,6 +412,15 @@ enum KnowledgeCommand {
 
 #[derive(Subcommand)]
 enum KnowledgeLibraryCommand {
+    /// Audit explicitly selected PDF intake and stored native-text coverage, without registration.
+    AuditPdf {
+        #[arg(long)]
+        directory: PathBuf,
+        #[arg(long, default_value = "sources/.indexes/local-pdf")]
+        index: PathBuf,
+        #[arg(long)]
+        output_dir: Option<PathBuf>,
+    },
     /// Manage the complete source-delivery manifest (books and supplier originals).
     SourceDelivery {
         #[command(subcommand)]
@@ -1081,6 +1090,18 @@ fn knowledge_execute(root: &SkillRoot, command: KnowledgeCommand) -> Result<Valu
         KnowledgeCommand::Library { command } => {
             use oe_knowledge::supplier_library as library;
             let (operation, result) = match command {
+                KnowledgeLibraryCommand::AuditPdf {
+                    directory,
+                    index,
+                    output_dir,
+                } => {
+                    let result = oe_knowledge::library_audit::audit(root, &directory, &index)?;
+                    let artifact =
+                        knowledge_write(root, output_dir.as_deref(), "audit.json", &result)?;
+                    let mut response = knowledge_result("audit-pdf", "audited", result);
+                    response["artifact"] = json!(artifact);
+                    return Ok(response);
+                }
                 KnowledgeLibraryCommand::InstallPack { downloads, target } => (
                     "install-pack",
                     library::install_pack(root, &downloads, &target)?,
@@ -1540,6 +1561,7 @@ fn execute(cli: Cli) -> Result<u8> {
                     | "verified"
                     | "restored"
                     | "listed"
+                    | "audited"
                     | "placed"
                     | "received"
                     | "complete"

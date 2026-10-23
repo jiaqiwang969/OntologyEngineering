@@ -1091,3 +1091,121 @@ fn packet_current_registration_option_and_feedback_distinguish_history() {
     assert_eq!(fs::read(f.0.join(packet_path)).unwrap(), original_packet);
     assert_eq!(fs::read(f.0.join(feedback_path)).unwrap(), feedback_bytes);
 }
+
+#[test]
+fn pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output() {
+    let fixture = Fixture::new();
+    fixture.pdf();
+    let mut register = vec![
+        "knowledge",
+        "register",
+        "--manifest",
+        "sources/books/manifest.json",
+    ];
+    register.extend(TOOLS);
+    assert_eq!(fixture.run(&register).0, 0);
+    fs::write(fixture.0.join("sources/books/new.PDF"), pdf_pages(1)).unwrap();
+    let originals = [
+        "sources/books/original.pdf",
+        "sources/books/new.PDF",
+        "sources/.indexes/local-pdf/registration.json",
+        "sources/.indexes/local-pdf/catalog.sqlite3",
+    ]
+    .map(|path| (path, fs::read(fixture.0.join(path)).unwrap()));
+    let (exit, _) = fixture.run(&["knowledge", "library", "audit-pdf"]);
+    assert_ne!(exit, 0);
+    let args = [
+        "knowledge",
+        "library",
+        "audit-pdf",
+        "--directory",
+        "sources/books",
+        "--output-dir",
+        "var/audit/first",
+    ];
+    let (exit, result) = fixture.run(&args);
+    assert_eq!(exit, 0, "{result}");
+    assert_eq!(result["status"], "audited");
+    assert_eq!(
+        result["result"]["schema"],
+        "ontology-engineering.pdf-library-audit/v1"
+    );
+    assert_eq!(result["result"]["index"]["status"], "ready");
+    assert_eq!(result["result"]["sources"].as_array().unwrap().len(), 1);
+    let added = result["result"]["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|row| row["path"] == "sources/books/new.PDF")
+        .unwrap();
+    assert_eq!(added["registration"], "unregistered");
+    let artifact = fixture.0.join(result["artifact"].as_str().unwrap());
+    let saved = fs::read(&artifact).unwrap();
+    assert_eq!(
+        serde_json::from_slice::<Value>(&saved).unwrap(),
+        result["result"]
+    );
+    assert_ne!(fixture.run(&args).0, 0);
+    assert_eq!(fs::read(&artifact).unwrap(), saved);
+    for directory in [
+        "sources",
+        "sources/.indexes",
+        "sources/.indexes/local-pdf",
+        "var/projects",
+    ] {
+        assert_ne!(
+            fixture
+                .run(&[
+                    "knowledge",
+                    "library",
+                    "audit-pdf",
+                    "--directory",
+                    directory
+                ])
+                .0,
+            0
+        );
+    }
+    assert_ne!(
+        fixture
+            .run(&[
+                "knowledge",
+                "library",
+                "audit-pdf",
+                "--directory",
+                "sources/books",
+                "--output-dir",
+                "sources/audit-output"
+            ])
+            .0,
+        0
+    );
+    assert!(!fixture.0.join("sources/audit-output").exists());
+    fs::rename(
+        fixture.0.join("sources/.indexes/local-pdf"),
+        fixture.0.join("var/retained-index"),
+    )
+    .unwrap();
+    let (exit, unknown) = fixture.run(&[
+        "knowledge",
+        "library",
+        "audit-pdf",
+        "--directory",
+        "sources/books",
+    ]);
+    assert_eq!(exit, 0, "{unknown}");
+    assert_eq!(unknown["result"]["index"]["status"], "unavailable");
+    for row in unknown["result"]["files"].as_array().unwrap() {
+        if row["kind"] == "pdf" {
+            assert_eq!(row["registration"], "unknown");
+        }
+    }
+    fs::rename(
+        fixture.0.join("var/retained-index"),
+        fixture.0.join("sources/.indexes/local-pdf"),
+    )
+    .unwrap();
+    for (path, bytes) in originals {
+        assert_eq!(fs::read(fixture.0.join(path)).unwrap(), bytes);
+    }
+}

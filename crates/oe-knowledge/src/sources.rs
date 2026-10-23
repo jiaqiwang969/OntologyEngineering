@@ -326,6 +326,107 @@ impl Provider {
         self.verify()
     }
 
+    /// Registered descriptors and original paths, without opening original files.
+    /// The audit caller restricts these to its explicitly selected source directory.
+    pub(crate) fn audit_sources(&self) -> Result<Vec<(Value, PathBuf)>> {
+        ensure!(self.kind == "local_pdf", "source_audit_provider_mismatch");
+        self.sources
+            .iter()
+            .map(|source| {
+                Ok((
+                    source.clone(),
+                    resolve_original(&self.root, &self.directory, string(source, "path")?)?,
+                ))
+            })
+            .collect()
+    }
+
+    pub(crate) fn audit_identity(&self) -> Result<Value> {
+        ensure!(self.kind == "local_pdf", "source_audit_provider_mismatch");
+        let (path, identity) = self
+            .registration
+            .as_ref()
+            .context("source_audit_registration_missing")?;
+        Ok(
+            json!({"index_identity":self.index.identity(),"registration_identity":{
+            "path":crate::library_audit::relative(&self.root,path)?,"sha256":identity.sha256,"bytes":identity.bytes}}),
+        )
+    }
+
+    /// Coverage of stored native page records, not a fresh PDF extraction.
+    /// A broken or incomplete page sequence must not look like valid empty text.
+    pub(crate) fn audit_coverage(&self, source: &Value) -> Result<Value> {
+        ensure!(self.kind == "local_pdf", "source_audit_provider_mismatch");
+        let id = string(source, "id")?;
+        let catalog = format!("local_pdf:{id}");
+        let expected = source["page_count"]
+            .as_u64()
+            .context("source_audit_pages_invalid")?;
+        ensure!(
+            (1..=20000).contains(&expected),
+            "source_audit_pages_invalid"
+        );
+        let counts = self.index.rows(
+            "SELECT COUNT(*) AS pages, COUNT(DISTINCT pdf_page) AS distinct_pages, MIN(pdf_page) AS first_page, MAX(pdf_page) AS last_page FROM pages WHERE catalog=?",
+            &[&catalog], 1,
+        )?;
+        let count = counts.first().context("source_audit_coverage_invalid")?;
+        ensure!(
+            count["pages"].as_u64() == Some(expected)
+                && count["distinct_pages"].as_u64() == Some(expected)
+                && count["first_page"].as_u64() == Some(1)
+                && count["last_page"].as_u64() == Some(expected),
+            "source_audit_coverage_invalid"
+        );
+        let (mut empty, mut sparse, mut nonempty_sparse, mut bytes) = (0u64, 0u64, 0u64, 0u64);
+        let mut cursor = 0i64;
+        while cursor < expected as i64 {
+            let rows = self.index.rows(
+                "SELECT id,catalog,page_id,pdf_page,source_sha256,source_bytes,body,text_sha256,raw_text_sha256,raw_text_chars,text_chars,native_text_sparse,source_json FROM pages WHERE catalog=? AND pdf_page>? ORDER BY pdf_page LIMIT 8",
+                &[&catalog, &cursor], 8,
+            )?;
+            ensure!(!rows.is_empty(), "source_audit_coverage_invalid");
+            for row in rows {
+                let page = cursor as u64 + 1;
+                let body = string_allow_empty(&row, "body")?;
+                bytes = bytes
+                    .checked_add(body.len() as u64)
+                    .context("source_audit_text_budget")?;
+                ensure!(bytes <= 128 * 1024 * 1024, "source_audit_text_budget");
+                let origin = strict_json(string(&row, "source_json")?.as_bytes())?;
+                let flag = row["native_text_sparse"]
+                    .as_u64()
+                    .filter(|n| *n <= 1)
+                    .context("source_audit_coverage_invalid")?;
+                ensure!(
+                    row["id"] == format!("{catalog}:page:{page}")
+                        && row["catalog"] == catalog
+                        && row["pdf_page"].as_u64() == Some(page)
+                        && row["page_id"].as_u64() == Some(page)
+                        && row["source_sha256"] == source["sha256"]
+                        && row["source_bytes"] == source["bytes"]
+                        && origin["document_id"] == source["id"]
+                        && row["text_sha256"] == oe_core::sha256(body)
+                        && row["text_chars"].as_u64() == Some(body.chars().count() as u64)
+                        && valid_sha(string(&row, "raw_text_sha256")?)
+                        && row["raw_text_chars"].as_u64().is_some(),
+                    "source_audit_page_identity_invalid"
+                );
+                let missing = body.trim().is_empty();
+                empty += u64::from(missing);
+                sparse += flag;
+                nonempty_sparse += u64::from(!missing && flag == 1);
+                cursor += 1;
+            }
+        }
+        Ok(
+            json!({"status":"available","indexed_pages":expected,"empty_text_pages":empty,"sparse_text_pages":sparse,
+            "nonempty_sparse_text_pages":nonempty_sparse,"stored_text_bytes":bytes,
+            "definitions":{"empty_text_pages":"stored body is empty after Unicode whitespace trim","sparse_text_pages":"stored native_text_sparse flag is 1; may include empty pages","nonempty_sparse_text_pages":"stored sparse flag is 1 and body is nonempty"},
+            "meaning":"Stored native text only; no fresh extraction, OCR, image/formula interpretation or engineering coverage."}),
+        )
+    }
+
     /// Used inside one freshness audit, which verifies the provider snapshot once
     /// more after all selected document identities have been compared.
     pub(crate) fn registered_source_binding(&self, id: &str) -> Result<Option<Value>> {

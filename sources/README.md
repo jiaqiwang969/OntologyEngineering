@@ -49,6 +49,30 @@ ontology-engineering-unified/
 
 ### 1. 清点原件和版本
 
+投放 PDF 后，Agent 先对本次指定目录运行只读接入审计。`--directory` 必填，选择 `sources/` 下的资料子目录，不接受整个 `sources/` 或 `.indexes/`，不从当前工作目录或 Project 猜测范围；`--index` 默认是 `sources/.indexes/local-pdf`，使用其他登记索引时显式指定。需要保留报告时，用 `--output-dir` 指定本次 `var/` 下的新报告目录，已有报告不会覆盖：
+
+```sh
+"$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge library audit-pdf \
+  --directory sources/books --index sources/.indexes/local-pdf \
+  --output-dir var/source-intake/pdf-audit-001
+```
+
+审计只覆盖显式目录范围内的文件和已登记来源，不据此宣称全库完成。文件按大小写不敏感的 `.pdf` 扩展名或已登记原件路径识别为 PDF 候选，`format_validation: not_run` 表示尚未验证 PDF 格式与可读性。它核对原件和已有索引，不提取新页文本、不运行 OCR、不自动登记，也不移动、改名或删除同 SHA256 的重复候选；报告可另存 `var/`。`audited` 只表示审计完成，不能当作全部资料已接入。
+
+| 报告位置 | 含义与接续 |
+|---|---|
+| `summary.scan_status` | 本次目录遍历与原件观察为 `complete` 或 `partial`；同时读 `summary.issues`。`complete` 仍可能存在原件缺失/改变、索引不可用或文本覆盖不可评估，须分别读取下面的状态。 |
+| `index.status` | `ready` 或 `unavailable`；先核索引能否作为登记与覆盖依据。 |
+| `files[].registration` | PDF 候选为 `registered`、`unregistered` 或 `unknown`；`not_applicable` 项按实际文件类型处理。相同摘要的重复候选仅列出，不删除。 |
+| `sources[].original.status` | 逐已登记来源报告 `verified`、`missing`、`changed` 或 `unavailable`。索引可读不代表原件存在或摘要一致。 |
+| `sources[].coverage.status` | `available` 或 `unavailable`；可评估时，同一 `coverage` 对象列出 `indexed_pages`、`empty_text_pages`、`sparse_text_pages`、`nonempty_sparse_text_pages`。这些是已有页索引的文本覆盖。 |
+
+空文本页按已有正文去除首尾空白后为空计数；稀疏页沿用已存稀疏标记，可能包含空页，非空稀疏页另列，不能直接把空页与稀疏页相加。目录中的非 PDF、软链接、特殊文件和不可读项分别保留类型与问题。
+
+索引缺失、无效或无法核验时，登记关系与文本覆盖保持未知，不能据此把目录内所有 PDF 都称为“未登记”。越界路径、软链接、无法读取或预算限制也须按报告说明，不能把未评估项写成通过。原生文本为零不证明是扫描件，文本稀疏也不证明原页缺内容；仍需按实际任务回读原页，单独确定是否需要 OCR、图表检查及相应授权与预算。
+
+Agent 根据审计结果辨认本次要接入的文件，再准备下节的 `--merge --dry-run` 清单；审计结果不是登记凭证。现有液压书继续只存放原件，不能因被发现就自动登记。非 PDF 与米思米资料按各自来源合同接入；原件摘要一致、索引可读和登记当前均不授予工程采用。
+
 比较本次文件与已有完整书目：记录稳定来源 ID、题名、版次、来源和取得方式、文件大小、SHA256、实际路径。相同摘要先标记重复，不擅自删除；同名不同摘要需辨认新版、修订、扫描差异或损坏。新版保存与旧版关系，不能沿用旧版的页码和采用结果。路径变化保留原来源身份及新回执，不只改显示名称。
 
 登记清单是私有资料。当前 PDF 登记合同为 `ontology-engineering.local-pdf-manifest/v1`，由 Agent 按实际 `knowledge register` 合同生成，包含 `id`、`title`、`edition`、`path`、`sha256`、`chapters`；来源与许可等补充记录另存私有目录，不向严格合同随意加字段。相对原件路径相对于清单所在目录解析，登记前核对实际解析结果。
@@ -149,12 +173,14 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 
 ```sh
 "$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge --help
+"$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge library audit-pdf --help
 "$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge register --help
 "$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge library source-delivery --help
 ```
 
 | 目的 | 当前入口与边界 |
 |---|---|
+| 审计已投放 PDF 与现有索引 | `knowledge library audit-pdf --directory sources/books`；核原件、登记关系、重复与逐书文本覆盖，不自动登记或 OCR |
 | 清点交付与本地摘要 | `knowledge library source-delivery list/verify`，显式提供实际可用的交付清单 |
 | 取得缺失原件 | 同组 `import/fetch`；本地已取得的资料优先核验后迁入，`fetch` 仅用于实际缺失且授权的下载 |
 | 建立或增量更新 PDF 索引 | `knowledge register`，或同组 source-delivery `register`；新增/修订先 `--merge --dry-run`，核差异后 `--merge` |

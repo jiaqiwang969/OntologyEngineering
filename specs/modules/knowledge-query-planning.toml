@@ -1408,3 +1408,202 @@ behavior="root_relative_paths_use_portable_separators_and_preserve_names"
 rust_path="crates/oe-knowledge/src/registration_freshness.rs"
 oracle="Normal path components use slash-separated root-relative binding paths; Unicode and spaces remain exact, parent components reject, and Unix colon names are not narrowed."
 scope="Portable path construction exercised on macOS; Windows native execution not verified"
+
+# Read-only intake reconciliation and native text coverage for explicit PDF directories.
+
+[[types]]
+name="PdfLibraryAuditReport"
+contract_group="engineering"
+identity="Explicit source directory and independently verified registered index; original integrity, registration and stored text coverage remain separate"
+meaning="用户投放PDF后的只读清点、登记对账与逐书原生文本覆盖；不自动接入或OCR"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="报告协议"
+unit="文件数/页数整数；大小字节；身份无量纲"
+precision="逐文件SHA256与绑定SQLite快照；未知不推定已核"
+write="Rust对显式目录和已有索引进行有界只读核验"
+applicability="本地PDF接入维护；不扩展既有工程书角色、不授予采用"
+acceptance="不变更原件或登记；索引不明则登记未知；零文本不推定扫描件"
+allowed_values=["ontology-engineering.pdf-library-audit/v1"]
+
+[[types.fields]]
+name="status"
+rust_type="String"
+required=true
+format="typed"
+meaning="审计完成而非资料全部可用"
+unit="文件数/页数整数；大小字节；身份无量纲"
+precision="逐文件SHA256与绑定SQLite快照；未知不推定已核"
+write="Rust对显式目录和已有索引进行有界只读核验"
+applicability="本地PDF接入维护；不扩展既有工程书角色、不授予采用"
+acceptance="不变更原件或登记；索引不明则登记未知；零文本不推定扫描件"
+allowed_values=["audited"]
+
+[[types.fields]]
+name="directory"
+rust_type="String"
+required=true
+format="typed"
+meaning="显式本根sources子目录"
+unit="文件数/页数整数；大小字节；身份无量纲"
+precision="逐文件SHA256与绑定SQLite快照；未知不推定已核"
+write="Rust对显式目录和已有索引进行有界只读核验"
+applicability="本地PDF接入维护；不扩展既有工程书角色、不授予采用"
+acceptance="不变更原件或登记；索引不明则登记未知；零文本不推定扫描件"
+
+[[types.fields]]
+name="index"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+meaning="索引身份与可用性；不可用不推定未登记"
+unit="文件数/页数整数；大小字节；身份无量纲"
+precision="逐文件SHA256与绑定SQLite快照；未知不推定已核"
+write="Rust对显式目录和已有索引进行有界只读核验"
+applicability="本地PDF接入维护；不扩展既有工程书角色、不授予采用"
+acceptance="不变更原件或登记；索引不明则登记未知；零文本不推定扫描件"
+
+[[types.fields]]
+name="files"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="有界目录中的PDF候选、其他文件与未知"
+unit="文件数/页数整数；大小字节；身份无量纲"
+precision="逐文件SHA256与绑定SQLite快照；未知不推定已核"
+write="Rust对显式目录和已有索引进行有界只读核验"
+applicability="本地PDF接入维护；不扩展既有工程书角色、不授予采用"
+acceptance="不变更原件或登记；索引不明则登记未知；零文本不推定扫描件"
+
+[[types.fields]]
+name="sources"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="范围内登记来源的原件核对与逐书覆盖"
+unit="文件数/页数整数；大小字节；身份无量纲"
+precision="逐文件SHA256与绑定SQLite快照；未知不推定已核"
+write="Rust对显式目录和已有索引进行有界只读核验"
+applicability="本地PDF接入维护；不扩展既有工程书角色、不授予采用"
+acceptance="不变更原件或登记；索引不明则登记未知；零文本不推定扫描件"
+
+[[types.fields]]
+name="duplicates"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="相同摘要的本地原件组，仅提示不删除"
+unit="文件数/页数整数；大小字节；身份无量纲"
+precision="逐文件SHA256与绑定SQLite快照；未知不推定已核"
+write="Rust对显式目录和已有索引进行有界只读核验"
+applicability="本地PDF接入维护；不扩展既有工程书角色、不授予采用"
+acceptance="不变更原件或登记；索引不明则登记未知；零文本不推定扫描件"
+
+[[types.fields]]
+name="summary"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+meaning="本次清点范围、完成程度与计数"
+unit="文件数/页数整数；大小字节；身份无量纲"
+precision="逐文件SHA256与绑定SQLite快照；未知不推定已核"
+write="Rust对显式目录和已有索引进行有界只读核验"
+applicability="本地PDF接入维护；不扩展既有工程书角色、不授予采用"
+acceptance="不变更原件或登记；索引不明则登记未知；零文本不推定扫描件"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="原生文本覆盖与来源正确性及工程采用的边界"
+unit="文件数/页数整数；大小字节；身份无量纲"
+precision="逐文件SHA256与绑定SQLite快照；未知不推定已核"
+write="Rust对显式目录和已有索引进行有界只读核验"
+applicability="本地PDF接入维护；不扩展既有工程书角色、不授予采用"
+acceptance="不变更原件或登记；索引不明则登记未知；零文本不推定扫描件"
+
+[[constraints]]
+id="pdf_library_readonly_intake_audit"
+requirement="req_knowledge"
+module="knowledge"
+check="audit"
+rust_path="crates/oe-knowledge/src/library_audit.rs"
+statement="Audit only an explicit non-index sources subdirectory, with bounded traversal and hashing and no symlink following. Reconcile against a verified local-PDF provider snapshot, distinguish absent/changed originals, unregistered PDFs, unsupported files, unknown index state and duplicate bytes. Report per-source stored native text coverage without PDF parsing, OCR, network, registration or Project mutation; recheck observations and index before reporting."
+severity="error"
+
+[[constraints]]
+id="pdf_library_audit_cli"
+requirement="req_knowledge"
+module="cli"
+check="knowledge_execute"
+rust_path="crates/oe-cli/src/main.rs"
+statement="knowledge library audit-pdf requires an explicit source directory, uses an explicit/default current local-PDF index, optionally publishes a new private report only. Audited means the read-only examination completed, not all sources are registered/readable/current or adopted. Invalid directories/arguments fail with structured output; no tools or model required."
+severity="error"
+
+[[validations]]
+id="library_audit_reports_unregistered_duplicates_and_per_source_native_coverage"
+module="knowledge"
+constraint="pdf_library_readonly_intake_audit"
+behavior="library_audit_reports_unregistered_duplicates_and_per_source_native_coverage"
+rust_path="crates/oe-knowledge/tests/library_audit.rs"
+oracle="Actual two-page native/empty fixture plus new PDF, duplicate bytes and non-PDF: per-source coverage, unseen PDFs and duplicate paths reported; all source/index bytes unchanged."
+scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+
+[[validations]]
+id="library_audit_distinguishes_missing_and_changed_registered_originals"
+module="knowledge"
+constraint="pdf_library_readonly_intake_audit"
+behavior="library_audit_distinguishes_missing_and_changed_registered_originals"
+rust_path="crates/oe-knowledge/tests/library_audit.rs"
+oracle="Missing and same-size changed registered original are diagnosed independently from the stored index coverage; no repair or publication occurs."
+scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+
+[[validations]]
+id="library_audit_missing_or_invalid_index_preserves_unknown_registration"
+module="knowledge"
+constraint="pdf_library_readonly_intake_audit"
+behavior="library_audit_missing_or_invalid_index_preserves_unknown_registration"
+rust_path="crates/oe-knowledge/tests/library_audit.rs"
+oracle="Missing or corrupt index yields unavailable and PDF registration unknown, never falsely unregistered."
+scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+
+[[validations]]
+id="library_audit_explicit_scope_does_not_inspect_outside_registered_originals"
+module="knowledge"
+constraint="pdf_library_readonly_intake_audit"
+behavior="library_audit_explicit_scope_does_not_inspect_outside_registered_originals"
+rust_path="crates/oe-knowledge/tests/library_audit.rs"
+oracle="Explicit child directory excludes outside registered originals and other files, without inspecting the out-of-scope source bytes."
+scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+
+[[validations]]
+id="library_audit_does_not_follow_symlinked_files_or_directories"
+module="knowledge"
+constraint="pdf_library_readonly_intake_audit"
+behavior="library_audit_does_not_follow_symlinked_files_or_directories"
+rust_path="crates/oe-knowledge/tests/library_audit.rs"
+oracle="File/directory links remain unvisited and are never reported as verified original contents."
+scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+
+[[validations]]
+id="library_audit_bounded_scan_does_not_claim_complete_coverage"
+module="knowledge"
+constraint="pdf_library_readonly_intake_audit"
+behavior="library_audit_bounded_scan_does_not_claim_complete_coverage"
+rust_path="crates/oe-knowledge/tests/library_audit.rs"
+oracle="Depth budget exhaustion yields partial plus issue and does not claim unseen entries processed; source tree remains unchanged."
+scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+
+[[validations]]
+id="pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output"
+module="cli"
+constraint="pdf_library_audit_cli"
+behavior="pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output"
+rust_path="crates/oe-cli/tests/knowledge_cli.rs"
+oracle="Real CLI requires explicit directory, accepts audit without PATH or native tool arguments, finds a new PDF, stores a new private report, rejects overwrite and source-directory output, rejects whole source/index/private scope, preserves unknown when index absent and original/index bytes unchanged."
+scope="Synthetic macOS CLI fixture; no real Project or all-platform acceptance"

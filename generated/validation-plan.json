@@ -882,6 +882,48 @@
     "scope": "Rust synthetic metadata guard; no source file, index, network or engineering decisions"
   },
   {
+    "behavior": "library_audit_bounded_scan_does_not_claim_complete_coverage",
+    "name": "library_audit_bounded_scan_does_not_claim_complete_coverage",
+    "oracle": "Depth budget exhaustion yields partial plus issue and does not claim unseen entries processed; source tree remains unchanged.",
+    "rustPath": "crates/oe-knowledge/tests/library_audit.rs",
+    "scope": "Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+  },
+  {
+    "behavior": "library_audit_distinguishes_missing_and_changed_registered_originals",
+    "name": "library_audit_distinguishes_missing_and_changed_registered_originals",
+    "oracle": "Missing and same-size changed registered original are diagnosed independently from the stored index coverage; no repair or publication occurs.",
+    "rustPath": "crates/oe-knowledge/tests/library_audit.rs",
+    "scope": "Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+  },
+  {
+    "behavior": "library_audit_does_not_follow_symlinked_files_or_directories",
+    "name": "library_audit_does_not_follow_symlinked_files_or_directories",
+    "oracle": "File/directory links remain unvisited and are never reported as verified original contents.",
+    "rustPath": "crates/oe-knowledge/tests/library_audit.rs",
+    "scope": "Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+  },
+  {
+    "behavior": "library_audit_explicit_scope_does_not_inspect_outside_registered_originals",
+    "name": "library_audit_explicit_scope_does_not_inspect_outside_registered_originals",
+    "oracle": "Explicit child directory excludes outside registered originals and other files, without inspecting the out-of-scope source bytes.",
+    "rustPath": "crates/oe-knowledge/tests/library_audit.rs",
+    "scope": "Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+  },
+  {
+    "behavior": "library_audit_missing_or_invalid_index_preserves_unknown_registration",
+    "name": "library_audit_missing_or_invalid_index_preserves_unknown_registration",
+    "oracle": "Missing or corrupt index yields unavailable and PDF registration unknown, never falsely unregistered.",
+    "rustPath": "crates/oe-knowledge/tests/library_audit.rs",
+    "scope": "Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+  },
+  {
+    "behavior": "library_audit_reports_unregistered_duplicates_and_per_source_native_coverage",
+    "name": "library_audit_reports_unregistered_duplicates_and_per_source_native_coverage",
+    "oracle": "Actual two-page native/empty fixture plus new PDF, duplicate bytes and non-PDF: per-source coverage, unseen PDFs and duplicate paths reported; all source/index bytes unchanged.",
+    "rustPath": "crates/oe-knowledge/tests/library_audit.rs",
+    "scope": "Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+  },
+  {
     "behavior": "local_source_currentness_distinguishes_metadata_and_navigation_changes",
     "name": "local_source_currentness_distinguishes_metadata_and_navigation_changes",
     "oracle": "Title, edition and full chapter navigation changes produce exact changed_fields with historical packet still readable.",
@@ -1895,6 +1937,13 @@
     "oracle": "Real CLI register/query/strict verify/feedback passes current; updated title remains historically ready, strict verify fails with preserved historical status and strict feedback creates no file; legacy packet is not_bound.",
     "rustPath": "crates/oe-cli/tests/knowledge_cli.rs",
     "scope": "Bounded macOS synthetic source fixtures and real CLI; no engineering adoption or other-platform claim"
+  },
+  {
+    "behavior": "pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output",
+    "name": "pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output",
+    "oracle": "Real CLI requires explicit directory, accepts audit without PATH or native tool arguments, finds a new PDF, stores a new private report, rejects overwrite and source-directory output, rejects whole source/index/private scope, preserves unknown when index absent and original/index bytes unchanged.",
+    "rustPath": "crates/oe-cli/tests/knowledge_cli.rs",
+    "scope": "Synthetic macOS CLI fixture; no real Project or all-platform acceptance"
   },
   {
     "behavior": "preparation_rejects_wrong_schema_and_expanded_budget_before_dispatch",

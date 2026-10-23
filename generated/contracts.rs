@@ -3176,6 +3176,15 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("ObjectIdentity", "object_id", "String"),
     ("ObjectIdentity", "revision", "String"),
     ("ObjectIdentity", "source_sha256", "String"),
+    ("PdfLibraryAuditReport", "directory", "String"),
+    ("PdfLibraryAuditReport", "duplicates", "Vec<serde_json::Value>"),
+    ("PdfLibraryAuditReport", "files", "Vec<serde_json::Value>"),
+    ("PdfLibraryAuditReport", "index", "serde_json::Value"),
+    ("PdfLibraryAuditReport", "meaning", "String"),
+    ("PdfLibraryAuditReport", "schema", "String"),
+    ("PdfLibraryAuditReport", "sources", "Vec<serde_json::Value>"),
+    ("PdfLibraryAuditReport", "status", "String"),
+    ("PdfLibraryAuditReport", "summary", "serde_json::Value"),
     ("PeekabooTransportIdentity", "bridge_sha256", "String"),
     ("PeekabooTransportIdentity", "chrome_devtools_source_sha256", "String"),
     ("PeekabooTransportIdentity", "chrome_pid", "u64"),
@@ -4897,6 +4906,8 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("NxSteppedShaftIntent", "source_role", "independent_design_declaration"),
     ("NxSteppedShaftIntent", "source_role", "independent_software_fixture"),
     ("NxSteppedShaftIntent", "unit", "mm"),
+    ("PdfLibraryAuditReport", "schema", "ontology-engineering.pdf-library-audit/v1"),
+    ("PdfLibraryAuditReport", "status", "audited"),
     ("PresentationParameter1", "unit", "illustration_unit"),
     ("PresentationParameter1", "unit", "m"),
     ("PresentationParameter1", "unit", "mm"),
@@ -20850,6 +20861,49 @@ impl ObjectIdentity {
         if self.revision.trim().is_empty() { failures.push("ObjectIdentity.revision:required".into()); }
         if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("ObjectIdentity.source_sha256:sha256".into()); }
 
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 用户投放PDF后的只读清点、登记对账与逐书原生文本覆盖；不自动接入或OCR
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PdfLibraryAuditReport {
+    /// 显式本根sources子目录
+    pub directory: String,
+    /// 相同摘要的本地原件组，仅提示不删除
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub duplicates: Vec<serde_json::Value>,
+    /// 有界目录中的PDF候选、其他文件与未知
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub files: Vec<serde_json::Value>,
+    /// 索引身份与可用性；不可用不推定未登记
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub index: serde_json::Value,
+    /// 原生文本覆盖与来源正确性及工程采用的边界
+    pub meaning: String,
+    /// 报告协议
+    pub schema: String,
+    /// 范围内登记来源的原件核对与逐书覆盖
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub sources: Vec<serde_json::Value>,
+    /// 审计完成而非资料全部可用
+    pub status: String,
+    /// 本次清点范围、完成程度与计数
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub summary: serde_json::Value,
+}
+impl PdfLibraryAuditReport {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.directory.trim().is_empty() { failures.push("PdfLibraryAuditReport.directory:required".into()); }
+        if self.meaning.trim().is_empty() { failures.push("PdfLibraryAuditReport.meaning:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("PdfLibraryAuditReport.schema:required".into()); }
+        if self.status.trim().is_empty() { failures.push("PdfLibraryAuditReport.status:required".into()); }
+
+        if !["ontology-engineering.pdf-library-audit/v1",].contains(&self.schema.as_str()) { failures.push("PdfLibraryAuditReport.schema:allowed_values".into()); }
+        if !["audited",].contains(&self.status.as_str()) { failures.push("PdfLibraryAuditReport.status:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

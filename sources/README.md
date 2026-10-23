@@ -59,6 +59,15 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 
 米思米目录使用既有供应商读取流程，保留目录版次、原页、完整型号、选项与安装条件；案例图、目录参数、已下载 CAD 和原生模型核验分别记录。历史资料不替代当前型号规格、价格或交期核查，CAD 文件完整也不等于导入、保存重开或工程适用通过。具体边界见[工程工作中的供应商来源](../references/engineering-work.md)。供应商资料不因同在 `sources/` 就自动成为六书 PDF 索引的一部分。
 
+已有完整米思米 source-pack 资料包时，在当前安装根显式重建到查询使用的索引位置：
+
+```sh
+"$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge build-index \
+  --source-pack sources/misumi/source-pack.json --index sources/.indexes/misumi
+```
+
+`build-index` 的 CLI 默认目标是 `misumi-native`，而默认查询读取 `misumi`，因此这里明确指定 `--index`。需先确认 Poppler 可用；已有目标索引时先核来源与保全记录，再按合同使用 `--replace`。零散网页、模型或手册不直接套用完整 source-pack 的构建命令。
+
 **`--replace` 会按本次完整清单重建目标索引，并非追加一本书。** 更新前先合并已登记书目与新增资料，检查旧 ID、版次、路径、摘要和章节。仅向 `knowledge register --replace` 传新书会使其他书退出该索引；source-delivery register 的 `--replace` 同样不可只选新增子集后覆盖整个库。保全旧清单及索引回执，完成后核新旧全部来源、页数和代表性命中，失败不宣称完成。
 
 扫描页、稀疏文本、公式、表格和图形分别记覆盖与未知。必要时按实际任务读原页、做 OCR 或图表审查；OCR 需要明确可用工具、授权和预算，不在普通登记中自动启动模型。提取成功不证明公式、单位或图表关系正确。大书可逐章推进，逐次记录已处理和待处理范围。

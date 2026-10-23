@@ -1026,3 +1026,276 @@ fn local_source_currentness_rejects_corrupt_binding_and_candidate_identity() {
         );
     }
 }
+
+fn packet_source_audit_fixture() -> (Fixture, Value, Value, Value) {
+    let f = Fixture::new(false);
+    let bytes = pdf(false, 1);
+    fs::write(f.path.join("sources/books/条件-original.pdf"), &bytes).unwrap();
+    let mut manifest = json!({"schema":"ontology-engineering.local-pdf-manifest/v1",
+        "sources":[{"id":"conditions","title":"Synthetic first book","edition":"fixture-1",
+        "path":"条件-original.pdf","sha256":sha256(&bytes),
+        "chapters":[{"id":"conditions","title":"工程条件","start_page":1,"end_page":1,"aliases":[]}]}]});
+    let second = currentness_second_book(&f, &manifest);
+    manifest["sources"]
+        .as_array_mut()
+        .unwrap()
+        .push(second["sources"][0].clone());
+    apply_currentness_manifest(&f, &manifest, false, false);
+    let mut options = f.options("packet-source-audit-query");
+    options.providers.retain(|p| p.kind == "local_pdf");
+    let report = query::run(&f.root, &options).unwrap();
+    assert_eq!(report["results"].as_array().unwrap().len(), 2, "{report:#}");
+    let context = report["context_snapshot"].clone();
+    let packet = packet::make_with_tools(&f.root, &report, &context, &tools()).unwrap();
+    f.write("var/projects/p/audit-packet.json", &packet);
+    (f, manifest, packet, context)
+}
+
+fn audit_statuses(report: &Value, section: &str) -> std::collections::BTreeMap<String, String> {
+    report[section]["candidates"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|row| {
+            (
+                row["candidate_id"].as_str().unwrap().to_owned(),
+                row["status"].as_str().unwrap().to_owned(),
+            )
+        })
+        .collect()
+}
+
+#[test]
+fn packet_source_audit_separates_old_original_failure_from_current_registration() {
+    let (f, mut manifest, packet, context) = packet_source_audit_fixture();
+    let first = "local_pdf:conditions:page:1";
+    let second = "local_pdf:unrelated:page:1";
+    let packet_path = f.path.join("var/projects/p/audit-packet.json");
+    let packet_bytes = fs::read(&packet_path).unwrap();
+    let old_path = f.path.join("sources/books/条件-original.pdf");
+    let old_original = fs::read(&old_path).unwrap();
+    let healthy = packet::audit_sources(&f.root, &packet).unwrap();
+    assert_eq!(healthy["original_bytes"]["status"], "verified");
+    assert_eq!(
+        healthy["source_registration_freshness"]["status"],
+        "current"
+    );
+    feedback::append_with_tools(&f.root, &json!({
+        "packet_path":"var/projects/p/audit-packet.json","context":context,
+        "candidate_id":second,"disposition":"deferred","reason":"Need actual engineering verification",
+        "next_check":"Review physical conditions","output":"var/projects/p/feedback/before-audit.json"
+    }), &tools()).unwrap();
+    let feedback_path = f.path.join("var/projects/p/feedback/before-audit.json");
+    let feedback_bytes = fs::read(&feedback_path).unwrap();
+    let revision = pdf(true, 2);
+    fs::write(f.path.join("sources/books/条件-revised.pdf"), &revision).unwrap();
+    manifest["sources"].as_array_mut().unwrap().truncate(1);
+    manifest["sources"][0]["path"] = json!("条件-revised.pdf");
+    manifest["sources"][0]["sha256"] = json!(sha256(&revision));
+    manifest["sources"][0]["edition"] = json!("fixture-2");
+    manifest["sources"][0]["chapters"][0]["end_page"] = json!(2);
+    apply_currentness_manifest(&f, &manifest, true, false);
+    let stable = [
+        "sources/.indexes/local-pdf/catalog.sqlite3",
+        "sources/.indexes/local-pdf/registration.json",
+        "sources/books/unrelated.pdf",
+        "sources/books/条件-revised.pdf",
+    ]
+    .map(|path| (path, fs::read(f.path.join(path)).unwrap()));
+    let retained = packet::audit_sources(&f.root, &packet).unwrap();
+    assert_eq!(retained["original_bytes"]["status"], "verified");
+    assert_eq!(
+        audit_statuses(&retained, "source_registration_freshness")[first],
+        "changed"
+    );
+    assert_eq!(
+        audit_statuses(&retained, "source_registration_freshness")[second],
+        "current"
+    );
+    assert_eq!(
+        packet::verify_with_tools(&f.root, &packet, &context, &tools()).unwrap()["status"],
+        "ready_for_agent_review"
+    );
+    let mut modified = old_original.clone();
+    assert!(modified.starts_with(b"%PDF-1.4"));
+    modified[7] = b'5';
+    for state in ["same_length_changed", "different_length_changed", "missing"] {
+        match state {
+            "same_length_changed" => fs::write(&old_path, &modified).unwrap(),
+            "different_length_changed" => {
+                modified.extend_from_slice(b"\n% changed fixture\n");
+                fs::write(&old_path, &modified).unwrap();
+            }
+            _ => fs::rename(
+                &old_path,
+                f.path.join("var/projects/p/preserved-modified.pdf"),
+            )
+            .unwrap(),
+        }
+        let audited = packet::audit_sources(&f.root, &packet).unwrap();
+        assert_eq!(audited["status"], "audited");
+        assert_eq!(audited["candidate_count"], 2);
+        assert_eq!(audited["packet_sha256"], canonical_digest(&packet).unwrap());
+        assert_eq!(audited["full_verification"], "not_run");
+        assert_eq!(audited["original_bytes"]["status"], "mixed");
+        let expected = if state == "missing" {
+            "missing"
+        } else {
+            "changed"
+        };
+        assert_eq!(
+            audit_statuses(&audited, "original_bytes")[first],
+            expected,
+            "{audited:#}"
+        );
+        assert_eq!(
+            audit_statuses(&audited, "original_bytes")[second],
+            "verified"
+        );
+        assert_eq!(
+            audited["source_registration_freshness"],
+            retained["source_registration_freshness"]
+        );
+        let mut reordered = packet.clone();
+        reordered["evidence_candidates"]
+            .as_array_mut()
+            .unwrap()
+            .reverse();
+        let reversed = packet::audit_sources(&f.root, &reordered).unwrap();
+        assert_eq!(
+            audit_statuses(&reversed, "original_bytes"),
+            audit_statuses(&audited, "original_bytes")
+        );
+        assert!(packet::verify_with_tools(&f.root, &packet, &context, &tools()).is_err());
+        let output = format!("var/projects/p/feedback/rejected-{state}.json");
+        assert!(feedback::append_with_tools(&f.root, &json!({
+            "packet_path":"var/projects/p/audit-packet.json","context":context,
+            "candidate_id":second,"disposition":"deferred","reason":"Need actual engineering verification",
+            "next_check":"Review physical conditions","output":output
+        }), &tools()).is_err());
+        assert!(!f.path.join(&output).exists());
+        assert!(feedback::load_reference_with_tools(&f.root, &json!({
+            "path":"var/projects/p/feedback/before-audit.json","sha256":sha256(&feedback_bytes)
+        }), &context, &tools()).is_err());
+        assert_eq!(fs::read(&packet_path).unwrap(), packet_bytes);
+        assert_eq!(fs::read(&feedback_path).unwrap(), feedback_bytes);
+        for (path, bytes) in &stable {
+            assert_eq!(fs::read(f.path.join(path)).unwrap(), *bytes);
+        }
+    }
+    assert_eq!(
+        fs::read(f.path.join("var/projects/p/preserved-modified.pdf")).unwrap(),
+        modified
+    );
+}
+
+#[test]
+fn packet_source_audit_preserves_legacy_unknown_and_nonlocal_scope() {
+    let (f, _, packet, _) = packet_source_audit_fixture();
+    let mut legacy = packet.clone();
+    for candidate in legacy["evidence_candidates"].as_array_mut().unwrap() {
+        candidate["source"]
+            .as_object_mut()
+            .unwrap()
+            .remove("source_registration_binding")
+            .unwrap();
+    }
+    let audited = packet::audit_sources(&f.root, &legacy).unwrap();
+    assert_eq!(audited["original_bytes"]["status"], "verified");
+    assert_eq!(
+        audited["source_registration_freshness"]["status"],
+        "not_bound"
+    );
+    fs::rename(
+        f.path.join("sources/.indexes/local-pdf"),
+        f.path.join("var/projects/p/preserved-index"),
+    )
+    .unwrap();
+    let unknown = packet::audit_sources(&f.root, &packet).unwrap();
+    assert_eq!(unknown["original_bytes"]["status"], "verified");
+    assert_eq!(
+        unknown["source_registration_freshness"]["status"],
+        "unavailable"
+    );
+    let supplier = Fixture::new(true);
+    let report = query::run(&supplier.root, &supplier.options("supplier-audit")).unwrap();
+    let packet = packet::make_with_tools(
+        &supplier.root,
+        &report,
+        &report["context_snapshot"],
+        &tools(),
+    )
+    .unwrap();
+    let audited = packet::audit_sources(&supplier.root, &packet).unwrap();
+    assert_eq!(audited["original_bytes"]["status"], "verified");
+    let statuses = audit_statuses(&audited, "source_registration_freshness");
+    assert!(statuses.values().any(|s| s == "current"), "{audited:#}");
+    assert!(
+        statuses.values().any(|s| s == "not_applicable"),
+        "{audited:#}"
+    );
+    assert_eq!(audited["full_verification"], "not_run");
+}
+
+#[test]
+fn packet_source_audit_rejects_late_structural_damage_after_missing_original() {
+    let (f, _, packet, _) = packet_source_audit_fixture();
+    let first_path = packet["evidence_candidates"][0]["source"]["source_pdf"]
+        .as_str()
+        .unwrap();
+    fs::rename(
+        f.path.join(first_path),
+        f.path.join("var/projects/p/preserved-first.pdf"),
+    )
+    .unwrap();
+    assert_eq!(
+        packet::audit_sources(&f.root, &packet).unwrap()["original_bytes"]["status"],
+        "mixed"
+    );
+    let packet_bytes = fs::read(f.path.join("var/projects/p/audit-packet.json")).unwrap();
+    for fault in 0..10 {
+        let mut bad = packet.clone();
+        match fault {
+            0 => bad["evidence_candidates"][1]["page_native_text"] = json!("changed body"),
+            1 => {
+                bad["evidence_candidates"][1]["knowledge_units"][0]["source_span"]["text"] =
+                    json!("changed span")
+            }
+            2 => {
+                bad["evidence_candidates"][1]["source"]["source_registration_binding"]["sha256"] =
+                    json!("0".repeat(64))
+            }
+            3 => {
+                let binding =
+                    &mut bad["evidence_candidates"][1]["source"]["source_registration_binding"];
+                binding["source"]["id"] = json!("wrong-id");
+                let mut unsigned = binding.clone();
+                unsigned.as_object_mut().unwrap().remove("sha256");
+                binding["sha256"] = json!(canonical_digest(&unsigned).unwrap());
+            }
+            4 => {
+                bad["evidence_candidates"][1]["source"]["source_locator"]["physical_page"] =
+                    json!(0)
+            }
+            5 => bad["evidence_candidates"][1]["source"]["source_pdf"] = json!("../../outside.pdf"),
+            6 => {
+                bad["evidence_candidates"][1]["source"]["source_pdf"] =
+                    json!(f.path.parent().unwrap().join("outside.pdf"))
+            }
+            7 => bad["evidence_candidates"][1]["id"] = bad["evidence_candidates"][0]["id"].clone(),
+            8 => {
+                bad["review_plan"]["evidence_input"]["pages"][1]["spans"][0]["text"] =
+                    json!("changed review evidence")
+            }
+            _ => bad["evidence_candidates"][1]["engineering_verdict"] = json!("passed"),
+        }
+        assert!(
+            packet::audit_sources(&f.root, &bad).is_err(),
+            "late structural fault {fault} must not become original unavailable"
+        );
+    }
+    assert_eq!(
+        fs::read(f.path.join("var/projects/p/audit-packet.json")).unwrap(),
+        packet_bytes
+    );
+}

@@ -26,6 +26,8 @@
 
 本地 PDF 查询包复核时，分别读取原件完整性与 `source_registration_freshness`；`ready_for_agent_review` 不代表登记仍当前。当前任务需要本地 PDF 当前登记约束时，在 `knowledge verify-packet` 和 `knowledge feedback` 都加 `--require-current-registration`，要求整包全部候选已绑定且 `current`。旧包无绑定须重新查询；米思米或混合非适用候选不满足此选项，沿各自来源合同核验。登记变化不会自动改旧包、反馈或 Project 决定；Agent 接续受影响引用与复核，用户不填绑定字段。当前登记不等于出版方最新版或工程适用。
 
+旧包因原件缺失或变化无法复核时，用 `knowledge audit-packet --packet PATH` 只读诊断该包，可选 `--output-dir` 保存到新的 `var/` 目录。无需当前上下文或 Poppler；逐候选读取 `original_bytes` 与 `source_registration_freshness`，不混淆原件缺失/改变与登记移除/修订。`audited` 与字节 `verified` 不代表完整复核，`full_verification` 保持 `not_run`；不自动修复或扫描其他历史包。Agent 按诊断补齐原件或接续登记，再重新执行原有 `verify-packet` 和反馈合同，不能用诊断报告绕过其门槛。详见[资料接入说明](sources/README.md)。
+
 安装或升级后检查宿主的全部实际 Skill 搜索目录。以下命令只读核摘要和同名入口；`--skill-root` 可重复，未使用的宿主目录可省略：
 
 ```sh

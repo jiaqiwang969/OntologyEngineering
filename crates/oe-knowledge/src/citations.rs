@@ -37,6 +37,65 @@ fn source_path(root: &Path, page: &Value) -> Result<PathBuf> {
     Ok(path)
 }
 
+/// Validate only locator claims and their relationship to the candidate. No file I/O.
+pub(crate) fn declared_locator(result: &Value) -> Result<Value> {
+    let sha = result["source_sha256"]
+        .as_str()
+        .context("source_locator_hash_missing")?;
+    ensure!(
+        source_pack::valid_sha(sha),
+        "source_locator_document_changed"
+    );
+    let locator = result.get("source_locator").filter(|x| !x.is_null());
+    ensure!(
+        !result["catalog"]
+            .as_str()
+            .is_some_and(|s| s.starts_with("local_pdf:"))
+            || locator.is_some(),
+        "source_locator_missing"
+    );
+    let declared = if let Some(locator) = locator {
+        ensure!(
+            locator["schema"] == "ontology-engineering.source-page/v1"
+                && locator["kind"] == "local_pdf",
+            "source_locator_schema_or_kind_mismatch"
+        );
+        let page = locator["physical_page"]
+            .as_u64()
+            .context("source_locator_page_mismatch")?;
+        let count = locator["page_count"]
+            .as_u64()
+            .context("source_locator_page_mismatch")?;
+        ensure!(
+            page > 0
+                && page <= count
+                && result["pdf_page"].as_u64() == Some(page)
+                && locator["document_sha256"] == sha,
+            "source_locator_page_mismatch"
+        );
+        for k in ["document_id", "title", "edition"] {
+            ensure!(
+                locator[k].as_str().is_some_and(|s| !s.trim().is_empty()),
+                "source_locator_identity_missing"
+            );
+        }
+        ensure!(
+            locator["printed_page_status"] == "unverified"
+                && locator.get("printed_page") == Some(&Value::Null)
+                && result.get("printed_page") == Some(&Value::Null),
+            "source_locator_printed_page_not_verified"
+        );
+        locator.clone()
+    } else {
+        ensure!(
+            result["pdf_page"].as_u64().is_some_and(|p| p > 0),
+            "source_view_requires_explicit_page_locator"
+        );
+        Value::Null
+    };
+    Ok(declared)
+}
+
 pub fn verify_locator(root: &Path, result: &Value) -> Result<Value> {
     verify_locator_with_tools(root, result, &PopplerTools::default())
 }
@@ -61,54 +120,18 @@ pub fn verify_locator_with_tools(
         );
     }
     let info = poppler::inspect(root, &path, tools, &PopplerLimits::default())?;
-    let locator = result.get("source_locator").filter(|x| !x.is_null());
-    ensure!(
-        !result["catalog"]
-            .as_str()
-            .is_some_and(|s| s.starts_with("local_pdf:"))
-            || locator.is_some(),
-        "source_locator_missing"
-    );
-    let verified = if let Some(locator) = locator {
+    let verified = declared_locator(result)?;
+    if verified.is_null() {
         ensure!(
-            locator["schema"] == "ontology-engineering.source-page/v1"
-                && locator["kind"] == "local_pdf",
-            "source_locator_schema_or_kind_mismatch"
-        );
-        let page = locator["physical_page"]
-            .as_u64()
-            .context("source_locator_page_mismatch")?;
-        let count = locator["page_count"]
-            .as_u64()
-            .context("source_locator_page_mismatch")?;
-        ensure!(
-            page > 0
-                && page <= count
-                && count == info.page_count
-                && result["pdf_page"].as_u64() == Some(page)
-                && locator["document_sha256"] == sha,
-            "source_locator_page_mismatch"
-        );
-        for k in ["document_id", "title", "edition"] {
-            ensure!(
-                locator[k].as_str().is_some_and(|s| !s.trim().is_empty()),
-                "source_locator_identity_missing"
-            );
-        }
-        ensure!(
-            locator["printed_page_status"] == "unverified"
-                && locator.get("printed_page") == Some(&Value::Null)
-                && result.get("printed_page") == Some(&Value::Null),
-            "source_locator_printed_page_not_verified"
-        );
-        locator.clone()
-    } else {
-        ensure!(
-            info.page_count == 1 && result["pdf_page"].as_u64().is_some_and(|p| p > 0),
+            info.page_count == 1,
             "source_view_requires_explicit_page_locator"
         );
-        Value::Null
-    };
+    } else {
+        ensure!(
+            verified["page_count"].as_u64() == Some(info.page_count),
+            "source_locator_page_mismatch"
+        );
+    }
     ensure!(
         file_hash(&path, MAX_SOURCE_BYTES)? == original,
         "source_locator_document_changed"

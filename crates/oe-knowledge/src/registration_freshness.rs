@@ -149,7 +149,10 @@ pub(crate) fn capture(root: &SkillRoot, directory: &Path, source: &Value) -> Res
 
 /// Validate a declared binding against this historical candidate. Missing binding
 /// remains explicitly unknown; it must never be inferred from today's default index.
-pub(crate) fn validate_result(root: &SkillRoot, result: &Value) -> Result<Option<Value>> {
+pub(crate) fn validate_result_declaration(
+    root: &SkillRoot,
+    result: &Value,
+) -> Result<Option<Value>> {
     let Some(binding) = result.get("source_registration_binding") else {
         return Ok(None);
     };
@@ -175,7 +178,7 @@ pub(crate) fn validate_result(root: &SkillRoot, result: &Value) -> Result<Option
             && locator["physical_page"].as_u64() == Some(page)
             && page > 0
             && page <= source["page_count"].as_u64().expect("validated count")
-            && crate::packet::source_path(root, &result["source_pdf"])?
+            && crate::packet::declared_source_path(root, &result["source_pdf"])?
                 == root
                     .path()
                     .join(source["path"].as_str().expect("validated path")),
@@ -187,6 +190,15 @@ pub(crate) fn validate_result(root: &SkillRoot, result: &Value) -> Result<Option
             "source_registration_binding_candidate_mismatch"
         );
     }
+    Ok(Some(binding.clone()))
+}
+
+/// Strict verification retains the actual original length and no-follow checks.
+pub(crate) fn validate_result(root: &SkillRoot, result: &Value) -> Result<Option<Value>> {
+    let Some(binding) = validate_result_declaration(root, result)? else {
+        return Ok(None);
+    };
+    let source = &binding["source"];
     // Packet candidates omit source_bytes, so check the already bounded original's
     // actual length as well. Its SHA is independently checked by packet verification.
     let original = crate::packet::source_path(root, &result["source_pdf"])?;
@@ -200,11 +212,30 @@ pub(crate) fn validate_result(root: &SkillRoot, result: &Value) -> Result<Option
 /// Reconcile only explicitly bound documents, sharing a verified read-only provider
 /// per index. Provider snapshots are temporary and are checked again before return.
 pub fn audit(root: &SkillRoot, results: &[Value]) -> Result<Value> {
-    let mut bindings = Vec::new();
+    let bindings = results
+        .iter()
+        .map(|result| validate_result(root, result))
+        .collect::<Result<Vec<_>>>()?;
+    audit_bindings(root, results, bindings)
+}
+
+/// Diagnostic reconciliation does not require the historical original to still exist.
+/// All binding shapes and candidate identities remain mandatory.
+pub(crate) fn audit_declarations(root: &SkillRoot, results: &[Value]) -> Result<Value> {
+    let bindings = results
+        .iter()
+        .map(|result| validate_result_declaration(root, result))
+        .collect::<Result<Vec<_>>>()?;
+    audit_bindings(root, results, bindings)
+}
+fn audit_bindings(
+    root: &SkillRoot,
+    results: &[Value],
+    bindings: Vec<Option<Value>>,
+) -> Result<Value> {
     let mut providers: BTreeMap<String, Option<Provider>> = BTreeMap::new();
-    for result in results {
-        let binding = validate_result(root, result)?;
-        if let Some(binding) = &binding {
+    for binding in &bindings {
+        if let Some(binding) = binding {
             let directory = binding["index_directory"]
                 .as_str()
                 .expect("validated directory");
@@ -217,7 +248,6 @@ pub fn audit(root: &SkillRoot, results: &[Value]) -> Result<Value> {
                 );
             }
         }
-        bindings.push(binding);
     }
     let mut candidates = Vec::new();
     let mut current: BTreeMap<(String, String), Option<Value>> = BTreeMap::new();

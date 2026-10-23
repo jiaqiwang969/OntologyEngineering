@@ -1209,3 +1209,197 @@ fn pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output
         assert_eq!(fs::read(fixture.0.join(path)).unwrap(), bytes);
     }
 }
+
+#[test]
+fn packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification_refusal() {
+    if !poppler_present() {
+        return;
+    }
+    let f = Fixture::new();
+    f.pdf();
+    f.project();
+    let native = |args: &[&str]| {
+        let mut args = args.to_vec();
+        args.extend(TOOLS);
+        f.run(&args)
+    };
+    assert_eq!(
+        native(&[
+            "knowledge",
+            "register",
+            "--manifest",
+            "sources/books/manifest.json"
+        ])
+        .0,
+        0
+    );
+    let (code, result) = native(&[
+        "knowledge",
+        "query",
+        "--query",
+        "shaft",
+        "--provider",
+        "local-pdf",
+        "--project-context",
+        "var/projects/demo/projection.json",
+        "--output-dir",
+        "var/projects/demo/audit-query",
+    ]);
+    assert_eq!(code, 0, "{result}");
+    let path = "var/projects/demo/audit-query/packet.json";
+    let bytes = fs::read(f.0.join(path)).unwrap();
+    let packet: Value = serde_json::from_slice(&bytes).unwrap();
+    let index = [
+        "sources/.indexes/local-pdf/registration.json",
+        "sources/.indexes/local-pdf/catalog.sqlite3",
+    ]
+    .map(|path| (path, fs::read(f.0.join(path)).unwrap()));
+    // Fixture::run clears PATH. No context or Poppler arguments are supplied to audit.
+    let args = [
+        "knowledge",
+        "audit-packet",
+        "--packet",
+        path,
+        "--output-dir",
+        "var/audit/first",
+    ];
+    let (code, result) = f.run(&args);
+    assert_eq!(code, 0, "{result}");
+    assert_eq!(result["status"], "audited");
+    assert_eq!(
+        result["result"]["schema"],
+        "ontology-engineering.packet-source-audit/v1"
+    );
+    assert_eq!(result["result"]["original_bytes"]["status"], "verified");
+    assert_eq!(
+        result["result"]["source_registration_freshness"]["status"],
+        "current"
+    );
+    assert_eq!(result["result"]["full_verification"], "not_run");
+    let artifact = f.0.join(result["artifact"].as_str().unwrap());
+    assert_eq!(artifact.file_name().unwrap(), "source-audit.json");
+    let saved = fs::read(&artifact).unwrap();
+    assert_eq!(
+        serde_json::from_slice::<Value>(&saved).unwrap(),
+        result["result"]
+    );
+    assert_eq!(f.run(&args).0, 2);
+    assert_eq!(fs::read(&artifact).unwrap(), saved);
+    assert_eq!(
+        f.run(&[
+            "knowledge",
+            "audit-packet",
+            "--packet",
+            path,
+            "--output-dir",
+            "sources/audit-rejected"
+        ])
+        .0,
+        2
+    );
+    assert!(!f.0.join("sources/audit-rejected").exists());
+    let original_path = f.0.join("sources/books/original.pdf");
+    let original = fs::read(&original_path).unwrap();
+    assert!(original.starts_with(b"%PDF-1.4"));
+    let mut changed = original.clone();
+    changed[7] = b'5';
+    for state in ["changed", "missing"] {
+        if state == "changed" {
+            fs::write(&original_path, &changed).unwrap();
+        } else {
+            fs::rename(&original_path, f.0.join("var/preserved-original.pdf")).unwrap();
+        }
+        let (code, result) = f.run(&["knowledge", "audit-packet", "--packet", path]);
+        assert_eq!(code, 0, "{result}");
+        assert_eq!(result["result"]["original_bytes"]["status"], state);
+        assert_eq!(
+            result["result"]["source_registration_freshness"]["status"],
+            "current"
+        );
+        let (code, result) = native(&[
+            "knowledge",
+            "verify-packet",
+            "--packet",
+            path,
+            "--project-context",
+            "var/projects/demo/projection.json",
+        ]);
+        assert_eq!(code, 2);
+        assert_eq!(result["status"], "blocked");
+        assert!(result["result"].is_null());
+        let output = format!("var/projects/demo/feedback-{state}.json");
+        let (code, _) = native(&[
+            "knowledge",
+            "feedback",
+            "--packet",
+            path,
+            "--project-context",
+            "var/projects/demo/projection.json",
+            "--candidate",
+            packet["evidence_candidates"][0]["id"].as_str().unwrap(),
+            "--disposition",
+            "deferred",
+            "--reason",
+            "Need actual verification",
+            "--next-check",
+            "Read the original",
+            "--output",
+            &output,
+        ]);
+        assert_eq!(code, 2);
+        assert!(!f.0.join(output).exists());
+        for (path, bytes) in &index {
+            assert_eq!(fs::read(f.0.join(path)).unwrap(), *bytes);
+        }
+        assert_eq!(fs::read(f.0.join(path)).unwrap(), bytes);
+    }
+    let mut legacy = packet.clone();
+    for candidate in legacy["evidence_candidates"].as_array_mut().unwrap() {
+        candidate["source"]
+            .as_object_mut()
+            .unwrap()
+            .remove("source_registration_binding");
+    }
+    f.save("var/projects/demo/legacy-audit.json", &legacy);
+    let (code, report) = f.run(&[
+        "knowledge",
+        "audit-packet",
+        "--packet",
+        "var/projects/demo/legacy-audit.json",
+    ]);
+    assert_eq!(code, 0, "{report}");
+    assert_eq!(report["result"]["original_bytes"]["status"], "missing");
+    assert_eq!(
+        report["result"]["source_registration_freshness"]["status"],
+        "not_bound"
+    );
+    for fault in ["text", "outside"] {
+        let mut bad = packet.clone();
+        if fault == "text" {
+            bad["evidence_candidates"][0]["page_native_text"] = json!("tampered body");
+        } else {
+            bad["evidence_candidates"][0]["source"]["source_pdf"] = json!("../../outside.pdf");
+        }
+        let bad_path = format!("var/projects/demo/bad-{fault}.json");
+        let output = format!("var/audit/rejected-{fault}");
+        f.save(&bad_path, &bad);
+        let (code, result) = f.run(&[
+            "knowledge",
+            "audit-packet",
+            "--packet",
+            &bad_path,
+            "--output-dir",
+            &output,
+        ]);
+        assert_eq!(code, 2);
+        assert_eq!(result["status"], "blocked");
+        assert!(result["result"].is_null());
+        assert!(!f.0.join(output).exists());
+    }
+    assert_eq!(fs::read(f.0.join(path)).unwrap(), bytes);
+    assert_eq!(fs::read(&artifact).unwrap(), saved);
+    assert_eq!(
+        fs::read(f.0.join("var/preserved-original.pdf")).unwrap(),
+        changed
+    );
+}

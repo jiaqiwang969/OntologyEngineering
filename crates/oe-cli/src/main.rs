@@ -361,6 +361,13 @@ enum KnowledgeCommand {
         #[command(flatten)]
         tools: KnowledgeTools,
     },
+    /// Diagnose a packet's original bytes and registrations without full verification.
+    AuditPacket {
+        #[arg(long)]
+        packet: PathBuf,
+        #[arg(long)]
+        output_dir: Option<PathBuf>,
+    },
     VerifyPacket {
         #[arg(long)]
         packet: PathBuf,
@@ -1325,6 +1332,17 @@ fn knowledge_execute(root: &SkillRoot, command: KnowledgeCommand) -> Result<Valu
             response["artifact"] = json!(artifact);
             Ok(response)
         }
+        KnowledgeCommand::AuditPacket {
+            packet: path,
+            output_dir,
+        } => {
+            let result = packet::audit_sources(root, &knowledge_json(root, &path)?)?;
+            let artifact =
+                knowledge_write(root, output_dir.as_deref(), "source-audit.json", &result)?;
+            let mut response = knowledge_result("audit-packet", "audited", result);
+            response["artifact"] = json!(artifact);
+            Ok(response)
+        }
         KnowledgeCommand::VerifyPacket {
             packet: path,
             context: context_args,
@@ -2001,6 +2019,7 @@ fn knowledge_argument_command(arguments: &[std::ffi::OsString]) -> Option<&'stat
                 "register" => Some("register"),
                 "query" => Some("query"),
                 "view" => Some("view"),
+                "audit-packet" => Some("audit-packet"),
                 "verify-packet" => Some("verify-packet"),
                 "feedback" => Some("feedback"),
                 "project-context" => Some("project-context"),

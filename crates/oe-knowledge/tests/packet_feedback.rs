@@ -110,6 +110,49 @@ fn unicode_spans_partial_budget_and_unknowns_survive_handoff() {
     assert_eq!(p["semantic_review"], "not_run");
     assert_eq!(p["adoption"], "pending_agent_review");
 }
+
+#[test]
+fn packet_source_audit_empty_and_generic_packets_do_not_claim_verification() {
+    let f = Fixture::new();
+    let context = f.context("r1");
+    let packet = f.packet(&context, "var/projects/p/packet.json");
+    let mut empty = f.report(&context);
+    empty["results"] = json!([]);
+    let empty = packet::make(&f.root, &empty, &context).unwrap();
+    let bytes = fs::read(f.path.join("var/projects/p/packet.json")).unwrap();
+    let report = packet::audit_sources(&f.root, &packet).unwrap();
+    assert_eq!(report["candidate_count"], 1);
+    assert_eq!(report["original_bytes"]["status"], "verified");
+    assert_eq!(
+        report["source_registration_freshness"]["status"],
+        "not_applicable"
+    );
+    assert_eq!(report["full_verification"], "not_run");
+    fs::rename(
+        f.path.join("sources/source.pdf"),
+        f.path.join("var/projects/p/preserved.pdf"),
+    )
+    .unwrap();
+    let report = packet::audit_sources(&f.root, &packet).unwrap();
+    assert_eq!(report["original_bytes"]["status"], "missing");
+    assert_eq!(
+        report["source_registration_freshness"]["status"],
+        "not_applicable"
+    );
+    assert_eq!(
+        fs::read(f.path.join("var/projects/p/packet.json")).unwrap(),
+        bytes
+    );
+    let report = packet::audit_sources(&f.root, &empty).unwrap();
+    assert_eq!(report["status"], "audited");
+    assert_eq!(report["candidate_count"], 0);
+    assert_eq!(report["original_bytes"]["status"], "no_candidates");
+    assert_eq!(
+        report["source_registration_freshness"]["status"],
+        "not_bound"
+    );
+    assert_eq!(report["full_verification"], "not_run");
+}
 #[test]
 fn source_span_identity_and_caller_verdict_tampering_rejected() {
     let f = Fixture::new();

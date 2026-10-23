@@ -7,6 +7,9 @@ use serde_json::{Map, Value, json};
 use std::collections::{BTreeSet, HashMap};
 use std::path::{Component, Path, PathBuf};
 
+mod source_audit;
+pub use source_audit::audit_sources;
+
 pub const SCHEMA: &str = "ontology-engineering.supplier-evidence/v1";
 use crate::citations::MAX_SOURCE_BYTES as SOURCE_LIMIT;
 fn array<'a>(v: &'a Value, code: &str) -> Result<&'a Vec<Value>> {
@@ -15,8 +18,9 @@ fn array<'a>(v: &'a Value, code: &str) -> Result<&'a Vec<Value>> {
 fn string<'a>(v: &'a Value, code: &str) -> Result<&'a str> {
     v.as_str().with_context(|| code.to_owned())
 }
-pub(crate) fn source_path(root: &SkillRoot, value: &Value) -> Result<PathBuf> {
+pub(crate) fn declared_source_path(root: &SkillRoot, value: &Value) -> Result<PathBuf> {
     let s = string(value, "supplier_handoff_source_path_invalid")?;
+    ensure!(!s.contains('\0'), "supplier_handoff_source_path_invalid");
     let p = Path::new(s);
     let full = if p.is_absolute() {
         p.to_path_buf()
@@ -33,6 +37,10 @@ pub(crate) fn source_path(root: &SkillRoot, value: &Value) -> Result<PathBuf> {
             && (relative.starts_with("sources") || relative.starts_with("var/cache/knowledge")),
         "supplier_handoff_source_outside_root"
     );
+    Ok(full)
+}
+pub(crate) fn source_path(root: &SkillRoot, value: &Value) -> Result<PathBuf> {
+    let full = declared_source_path(root, value)?;
     no_symlinks(&full)?;
     Ok(full)
 }
@@ -278,14 +286,8 @@ pub(crate) fn verify_returned_source(
     Ok(())
 }
 
-fn checked_evidence(
-    root: &SkillRoot,
-    results: &Value,
-    context: &Value,
-    tools: &PopplerTools,
-) -> Result<Value> {
+fn declared_evidence(root: &SkillRoot, results: &Value, context: &Value) -> Result<Value> {
     let mut evidence = Vec::new();
-    let mut hashes = HashMap::new();
     let mut ids = BTreeSet::new();
     let context_sha = digest(context)?;
     for result in array(results, "supplier_handoff_packet_evidence_mismatch")? {
@@ -295,19 +297,17 @@ fn checked_evidence(
             !id.is_empty() && ids.insert(id),
             "supplier_handoff_duplicate_candidate"
         );
-        let source = source_path(root, &result["source_pdf"])?;
-        if !hashes.contains_key(&source) {
-            hashes.insert(
-                source.clone(),
-                fingerprint_file(&source, SOURCE_LIMIT)
-                    .context("supplier_handoff_source_changed")?
-                    .sha256,
+        declared_source_path(root, &result["source_pdf"])?;
+        ensure!(
+            context::hash_string(&result["source_sha256"]),
+            "supplier_handoff_source_hash_invalid"
+        );
+        if let Some(bytes) = result.get("source_bytes") {
+            ensure!(
+                bytes.as_u64().is_some_and(|n| n <= SOURCE_LIMIT),
+                "supplier_handoff_source_size_invalid"
             );
         }
-        ensure!(
-            hashes[&source] == result["source_sha256"],
-            "supplier_handoff_source_changed"
-        );
         let body = string(&result["native_text"], "supplier_handoff_text_mismatch")?;
         ensure!(
             sha256(body) == result["text_sha256"],
@@ -357,7 +357,6 @@ fn checked_evidence(
                     .clone(),
             );
         }
-        fields.extend(relocation(root, result)?);
         let catalog = result["catalog"].as_str().unwrap_or("");
         // Known native providers require physical-page checks even if a caller
         // strips the optional field. Older generic byte evidence stays byte-only.
@@ -367,18 +366,71 @@ fn checked_evidence(
         {
             fields.insert(
                 "source_locator".into(),
-                crate::citations::verify_locator_with_tools(root.path(), result, tools)?,
+                crate::citations::declared_locator(result)?,
             );
         }
         if let Some(origin) = result.get("text_origin") {
             fields.insert("text_origin".into(), origin.clone());
         }
-        if let Some(binding) = crate::registration_freshness::validate_result(root, result)? {
+        if let Some(binding) =
+            crate::registration_freshness::validate_result_declaration(root, result)?
+        {
             fields.insert("source_registration_binding".into(), binding);
         }
         evidence.push(json!({"id":id,"source":fields,"knowledge_units":units,"page_native_text":body,"candidate_judgment":result.get("judgment").context("supplier_handoff_packet_evidence_mismatch")?,"applicability":"not_assessed","adoption":"pending_agent_review","engineering_verdict":"not_run"}));
     }
     Ok(json!(evidence))
+}
+
+fn checked_evidence(
+    root: &SkillRoot,
+    results: &Value,
+    context: &Value,
+    tools: &PopplerTools,
+) -> Result<Value> {
+    // Strict make/verify retain their no-follow refusal before checking a binding
+    // that may name another path. The diagnostic entry remains purely declared-first.
+    for result in array(results, "supplier_handoff_packet_evidence_mismatch")? {
+        source_path(root, &result["source_pdf"])?;
+    }
+    let mut evidence = declared_evidence(root, results, context)?;
+    let mut hashes = HashMap::new();
+    for (result, candidate) in array(results, "supplier_handoff_packet_evidence_mismatch")?
+        .iter()
+        .zip(evidence.as_array_mut().expect("declared evidence array"))
+    {
+        let source = source_path(root, &result["source_pdf"])?;
+        if !hashes.contains_key(&source) {
+            hashes.insert(
+                source.clone(),
+                fingerprint_file(&source, SOURCE_LIMIT)
+                    .context("supplier_handoff_source_changed")?
+                    .sha256,
+            );
+        }
+        ensure!(
+            hashes[&source] == result["source_sha256"],
+            "supplier_handoff_source_changed"
+        );
+        let fields = candidate["source"]
+            .as_object_mut()
+            .expect("declared source object");
+        fields.extend(relocation(root, result)?);
+        let catalog = result["catalog"].as_str().unwrap_or("");
+        if result.get("source_locator").is_some()
+            || catalog.starts_with("local_pdf:")
+            || crate::supplier_index::CATALOG_CODES.contains(&catalog)
+        {
+            fields.insert(
+                "source_locator".into(),
+                crate::citations::verify_locator_with_tools(root.path(), result, tools)?,
+            );
+        }
+        if let Some(binding) = crate::registration_freshness::validate_result(root, result)? {
+            fields.insert("source_registration_binding".into(), binding);
+        }
+    }
+    Ok(evidence)
 }
 
 pub fn validate_pattern_handoff(value: &Value, bundle: &Value) -> Result<()> {
@@ -752,17 +804,7 @@ pub fn make_with_tools(
     Ok(packet)
 }
 
-pub fn verify(root: &SkillRoot, packet: &Value, current: &Value) -> Result<Value> {
-    verify_with_tools(root, packet, current, &PopplerTools::default())
-}
-
-pub fn verify_with_tools(
-    root: &SkillRoot,
-    packet: &Value,
-    current: &Value,
-    tools: &PopplerTools,
-) -> Result<Value> {
-    let current = context::validate(current)?;
+fn packet_declaration(packet: &Value) -> Result<(Value, Vec<Value>)> {
     ensure!(
         packet.is_object() && packet["schema"] == SCHEMA,
         "supplier_handoff_packet_schema_mismatch"
@@ -818,7 +860,9 @@ pub fn verify_with_tools(
         }
         results.push(Value::Object(result));
     }
-    let checked = checked_evidence(root, &json!(results), &snapshot, tools)?;
+    Ok((snapshot, results))
+}
+fn packet_review(packet: &Value, snapshot: &Value, results: &[Value]) -> Result<()> {
     let bundle = packet
         .get("method_bundle")
         .filter(|v| !v.is_null())
@@ -826,8 +870,26 @@ pub fn verify_with_tools(
         .unwrap_or(json!({}));
     review_handoff(
         &json!({"results":results,"review_plan":packet["review_plan"],"routing":packet["routing"],"method_bundle":bundle,"method_bundle_sha256":bundle["sha256"],"knowledge_policy_sha256":bundle["sha256"]}),
-        &snapshot,
+        snapshot,
     )?;
+    Ok(())
+}
+
+pub fn verify(root: &SkillRoot, packet: &Value, current: &Value) -> Result<Value> {
+    verify_with_tools(root, packet, current, &PopplerTools::default())
+}
+
+pub fn verify_with_tools(
+    root: &SkillRoot,
+    packet: &Value,
+    current: &Value,
+    tools: &PopplerTools,
+) -> Result<Value> {
+    let current = context::validate(current)?;
+    let (snapshot, results) = packet_declaration(packet)?;
+    let snapshot_sha = digest(&snapshot)?;
+    let checked = checked_evidence(root, &json!(results), &snapshot, tools)?;
+    packet_review(packet, &snapshot, &results)?;
     let current_sha = digest(&current)?;
     let freshness = context::verify_sources(root, &current)?;
     let packet_freshness = context::verify_sources(root, &snapshot)?;

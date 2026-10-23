@@ -3176,6 +3176,17 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("ObjectIdentity", "object_id", "String"),
     ("ObjectIdentity", "revision", "String"),
     ("ObjectIdentity", "source_sha256", "String"),
+    ("PacketOriginalBytesAudit", "candidates", "Vec<serde_json::Value>"),
+    ("PacketOriginalBytesAudit", "limits", "serde_json::Value"),
+    ("PacketOriginalBytesAudit", "status", "String"),
+    ("PacketSourceAuditReport", "candidate_count", "u64"),
+    ("PacketSourceAuditReport", "full_verification", "String"),
+    ("PacketSourceAuditReport", "meaning", "String"),
+    ("PacketSourceAuditReport", "original_bytes", "PacketOriginalBytesAudit"),
+    ("PacketSourceAuditReport", "packet_sha256", "String"),
+    ("PacketSourceAuditReport", "schema", "String"),
+    ("PacketSourceAuditReport", "source_registration_freshness", "SourceRegistrationFreshness"),
+    ("PacketSourceAuditReport", "status", "String"),
     ("PdfLibraryAuditReport", "directory", "String"),
     ("PdfLibraryAuditReport", "duplicates", "Vec<serde_json::Value>"),
     ("PdfLibraryAuditReport", "files", "Vec<serde_json::Value>"),
@@ -4906,6 +4917,16 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("NxSteppedShaftIntent", "source_role", "independent_design_declaration"),
     ("NxSteppedShaftIntent", "source_role", "independent_software_fixture"),
     ("NxSteppedShaftIntent", "unit", "mm"),
+    ("PacketOriginalBytesAudit", "status", "changed"),
+    ("PacketOriginalBytesAudit", "status", "missing"),
+    ("PacketOriginalBytesAudit", "status", "mixed"),
+    ("PacketOriginalBytesAudit", "status", "no_candidates"),
+    ("PacketOriginalBytesAudit", "status", "not_applicable"),
+    ("PacketOriginalBytesAudit", "status", "unavailable"),
+    ("PacketOriginalBytesAudit", "status", "verified"),
+    ("PacketSourceAuditReport", "full_verification", "not_run"),
+    ("PacketSourceAuditReport", "schema", "ontology-engineering.packet-source-audit/v1"),
+    ("PacketSourceAuditReport", "status", "audited"),
     ("PdfLibraryAuditReport", "schema", "ontology-engineering.pdf-library-audit/v1"),
     ("PdfLibraryAuditReport", "status", "audited"),
     ("PresentationParameter1", "unit", "illustration_unit"),
@@ -20861,6 +20882,68 @@ impl ObjectIdentity {
         if self.revision.trim().is_empty() { failures.push("ObjectIdentity.revision:required".into()); }
         if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("ObjectIdentity.source_sha256:sha256".into()); }
 
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 逐候选原件字节诊断；不代表原生页或工程有效性
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PacketOriginalBytesAudit {
+    /// 逐候选原件期望与观测摘要、大小、状态及不可用原因
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub candidates: Vec<serde_json::Value>,
+    /// 显式读取预算与保守计费消耗上界；共享路径去重，包含失败尝试与末尾复核
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub limits: serde_json::Value,
+    /// 所有候选字节观察的保守汇总
+    pub status: String,
+}
+impl PacketOriginalBytesAudit {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.status.trim().is_empty() { failures.push("PacketOriginalBytesAudit.status:required".into()); }
+
+        if !["changed","missing","mixed","no_candidates","not_applicable","unavailable","verified",].contains(&self.status.as_str()) { failures.push("PacketOriginalBytesAudit.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 显式旧查询包的原件与当前登记诊断，不代替严格验证
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PacketSourceAuditReport {
+    /// 包中候选数量
+    pub candidate_count: u64,
+    /// 本诊断不执行原生页、当前Project和完整验证
+    pub full_verification: String,
+    /// 报告含义及不具有的验证、反馈和工程采用权限
+    pub meaning: String,
+    /// 旧包引用原件的当前字节身份观察
+    pub original_bytes: PacketOriginalBytesAudit,
+    /// 所读包的规范化JSON摘要
+    pub packet_sha256: String,
+    /// 诊断报告协议
+    pub schema: String,
+    /// 与原件完整性独立的显式单来源登记对账
+    pub source_registration_freshness: SourceRegistrationFreshness,
+    /// 诊断完成，不是证据通过
+    pub status: String,
+}
+impl PacketSourceAuditReport {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.full_verification.trim().is_empty() { failures.push("PacketSourceAuditReport.full_verification:required".into()); }
+        if self.meaning.trim().is_empty() { failures.push("PacketSourceAuditReport.meaning:required".into()); }
+        if self.packet_sha256.trim().is_empty() { failures.push("PacketSourceAuditReport.packet_sha256:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("PacketSourceAuditReport.schema:required".into()); }
+        if self.status.trim().is_empty() { failures.push("PacketSourceAuditReport.status:required".into()); }
+
+        if !["not_run",].contains(&self.full_verification.as_str()) { failures.push("PacketSourceAuditReport.full_verification:allowed_values".into()); }
+        if !["ontology-engineering.packet-source-audit/v1",].contains(&self.schema.as_str()) { failures.push("PacketSourceAuditReport.schema:allowed_values".into()); }
+        if !["audited",].contains(&self.status.as_str()) { failures.push("PacketSourceAuditReport.status:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

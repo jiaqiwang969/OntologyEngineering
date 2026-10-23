@@ -1726,3 +1726,243 @@ behavior="metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_
 rust_path="crates/oe-knowledge/tests/source_io.rs"
 oracle="Alter old chapter or old page navigation, rebind the outer index SHA, then metadata merge preview and apply must reject disagreement with the old declaration and leave the prior pair byte-exact."
 scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
+
+# Explicit packet maintenance diagnostics remain separate from verification.
+
+[[constraints]]
+id="packet_source_audit_separates_structure_originals_and_registration"
+requirement="req_knowledge"
+module="knowledge"
+check="audit_sources"
+rust_path="crates/oe-knowledge/src/packet/source_audit.rs"
+statement="An explicit packet-source audit first validates the complete packet's intrinsic context identity, candidate uniqueness, native-text hashes, exact spans, review declarations, local locator declarations and binding digest/cross-identities without requiring old original availability. Structural corruption and lexical path escapes remain errors, including later candidates after an unavailable original. Then independently observe original bytes and compare explicitly bound local-PDF registrations using the same declaration checks as strict verification. Original missing/changed does not erase other candidates or imply registration removed; registration current does not establish original integrity. No Poppler, native-page content validation, source-pack/relocation validation or current Project verification is performed by this diagnostic."
+severity="error"
+
+[[constraints]]
+id="packet_source_audit_bounded_read_only_observation"
+requirement="req_knowledge"
+module="knowledge"
+check="audit_sources"
+rust_path="crates/oe-knowledge/src/packet/source_audit.rs"
+statement="Observe at most 96 distinct original paths and at most 4 GiB total original-byte reads including final rechecks. Deduplicate paths, do not follow symlinks or block on special files, and report budget/IO/race limitations as unavailable rather than current or missing. Recheck observed originals and verified registration snapshots before return; identity changes remain explicit. Preserve packet, original, index and historical feedback bytes. Audited means the diagnostic completed; full_verification remains not_run and this report is never an input substitute for strict verify or feedback. Existing strict make/verify/feedback and historical feedback loading retain all original integrity checks and reject unusable evidence."
+severity="error"
+
+[[constraints]]
+id="knowledge_cli_packet_source_audit"
+requirement="req_knowledge"
+module="cli"
+check="knowledge_execute"
+rust_path="crates/oe-cli/src/main.rs"
+statement="knowledge audit-packet accepts one explicit rooted packet and optional new private output directory, requires neither current context nor native tools, and emits only a source-audit.json diagnostic with status audited. Malformed input remains blocked with no output artifact. Normal and require-current-registration verify/feedback semantics and errors remain unchanged; no automatic history scan, repair, source write or engineering adoption."
+severity="error"
+
+[[validations]]
+id="packet_source_audit_separates_old_original_failure_from_current_registration"
+module="knowledge"
+constraint="packet_source_audit_separates_structure_originals_and_registration"
+behavior="packet_source_audit_separates_old_original_failure_from_current_registration"
+rust_path="crates/oe-knowledge/tests/query_e2e.rs"
+oracle="Actual two-source query packet: changed or missing old original retains its registration comparison and the healthy candidate remains observable; strict verification and feedback continue rejecting and packet/index bytes remain unchanged."
+scope="Synthetic macOS native PDF fixture; diagnostic itself uses no native tools; no real library mutation"
+
+[[validations]]
+id="packet_source_audit_preserves_legacy_unknown_and_nonlocal_scope"
+module="knowledge"
+constraint="packet_source_audit_separates_structure_originals_and_registration"
+behavior="packet_source_audit_preserves_legacy_unknown_and_nonlocal_scope"
+rust_path="crates/oe-knowledge/tests/query_e2e.rs"
+oracle="Legacy local evidence without binding stays not_bound, nonlocal registration remains not_applicable, and unavailable indexes do not imply removed or current. Original byte identity is not native-page or source-pack verification."
+scope="Synthetic packet variants; no engineering applicability or platform-wide claim"
+
+[[validations]]
+id="packet_source_audit_rejects_late_structural_damage_after_missing_original"
+module="knowledge"
+constraint="packet_source_audit_separates_structure_originals_and_registration"
+behavior="packet_source_audit_rejects_late_structural_damage_after_missing_original"
+rust_path="crates/oe-knowledge/tests/query_e2e.rs"
+oracle="An earlier missing original does not hide later corrupt text/span/locator/binding/context/review declarations; malformed packet is rejected before observations can be presented as valid diagnosis."
+scope="Synthetic corrupt metadata; no source or index mutations"
+
+[[validations]]
+id="packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification_refusal"
+module="cli"
+constraint="knowledge_cli_packet_source_audit"
+behavior="packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification_refusal"
+rust_path="crates/oe-cli/tests/knowledge_cli.rs"
+oracle="Real CLI diagnoses source failures with empty PATH, writes an optional new private source-audit.json, retains byte-exact inputs and rejects malformed packets without an artifact; ordinary/strict verification and feedback still reject unusable originals."
+scope="Synthetic macOS CLI fixture; no current Project or native-page validity from diagnosis"
+
+[[types]]
+name="PacketOriginalBytesAudit"
+contract_group="engineering"
+identity="Exact canonical packet snapshot; original bytes and explicit per-document registration are independent observations"
+meaning="逐候选原件字节诊断；不代表原生页或工程有效性"
+
+[[types.fields]]
+name="status"
+rust_type="String"
+required=true
+format="typed"
+meaning="所有候选字节观察的保守汇总"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+allowed_values=["verified", "changed", "missing", "unavailable", "not_applicable", "mixed", "no_candidates"]
+
+[[types.fields]]
+name="candidates"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="逐候选原件期望与观测摘要、大小、状态及不可用原因"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+
+[[types.fields]]
+name="limits"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+meaning="显式读取预算与保守计费消耗上界；共享路径去重，包含失败尝试与末尾复核"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+
+[[types]]
+name="PacketSourceAuditReport"
+contract_group="engineering"
+identity="Exact canonical packet snapshot; original bytes and explicit per-document registration are independent observations"
+meaning="显式旧查询包的原件与当前登记诊断，不代替严格验证"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="诊断报告协议"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+allowed_values=["ontology-engineering.packet-source-audit/v1"]
+
+[[types.fields]]
+name="status"
+rust_type="String"
+required=true
+format="typed"
+meaning="诊断完成，不是证据通过"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+allowed_values=["audited"]
+
+[[types.fields]]
+name="packet_sha256"
+rust_type="String"
+required=true
+format="typed"
+meaning="所读包的规范化JSON摘要"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+
+[[types.fields]]
+name="candidate_count"
+rust_type="u64"
+required=true
+format="typed"
+meaning="包中候选数量"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+
+[[types.fields]]
+name="original_bytes"
+rust_type="PacketOriginalBytesAudit"
+required=true
+format="typed"
+meaning="旧包引用原件的当前字节身份观察"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+
+[[types.fields]]
+name="source_registration_freshness"
+rust_type="SourceRegistrationFreshness"
+required=true
+format="typed"
+meaning="与原件完整性独立的显式单来源登记对账"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+
+[[types.fields]]
+name="full_verification"
+rust_type="String"
+required=true
+format="typed"
+meaning="本诊断不执行原生页、当前Project和完整验证"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+allowed_values=["not_run"]
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="报告含义及不具有的验证、反馈和工程采用权限"
+unit="候选和文件数量为整数，读取量为字节，身份为SHA256"
+precision="规范化JSON及原件字节精确摘要；未知不作通过"
+write="Rust先核包内声明，再有界只读观察原件和当前登记"
+applicability="显式单包资料维护；无当前Project、原生页或工程采用结论"
+acceptance="坏结构拒绝；原件失效与登记变化分别保留；严格verify及feedback门槛不变"
+
+[[validations]]
+id="packet_source_audit_empty_and_generic_packets_do_not_claim_verification"
+module="knowledge"
+constraint="packet_source_audit_separates_structure_originals_and_registration"
+behavior="packet_source_audit_empty_and_generic_packets_do_not_claim_verification"
+rust_path="crates/oe-knowledge/tests/packet_feedback.rs"
+oracle="Empty and generic packets preserve no_candidates or actual original-byte state; registration remains not_applicable and full verification remains not_run."
+scope="Synthetic local software fixtures; no real library mutation or engineering adoption"
+
+[[validations]]
+id="packet_original_recheck_rejects_changed_deleted_and_newly_present_files"
+module="knowledge"
+constraint="packet_source_audit_bounded_read_only_observation"
+behavior="packet_original_recheck_rejects_changed_deleted_and_newly_present_files"
+rust_path="crates/oe-knowledge/src/packet/source_audit.rs"
+oracle="Original replacement, deletion and appearance after initial observation are unavailable; reserved recheck reads are conservatively charged including read headroom."
+scope="Synthetic local software fixtures; no real library mutation or engineering adoption"
+
+[[validations]]
+id="packet_original_hash_budget_reserves_recheck_without_reading_large_sparse_file"
+module="knowledge"
+constraint="packet_source_audit_bounded_read_only_observation"
+behavior="packet_original_hash_budget_reserves_recheck_without_reading_large_sparse_file"
+rust_path="crates/oe-knowledge/src/packet/source_audit.rs"
+oracle="A sparse original whose two reads plus headroom exceed 4 GiB is unavailable without any hash read; final verification budget is reserved before initial read."
+scope="Synthetic local software fixtures; no real library mutation or engineering adoption"

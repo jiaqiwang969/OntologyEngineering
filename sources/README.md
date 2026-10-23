@@ -155,6 +155,26 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 
 原件与历史包的完整性检查仍独立保留：默认复核的 `status` 可以是 `ready_for_agent_review`，同时登记状态为 `changed` 或 `removed`。这表示旧原件仍可回读，不表示它仍是当前书目依据。`current` 也只说明与本地当前登记一致，不证明是出版方最新版、内容正确或适用于当前工程。
 
+旧包因原件缺失或变化而无法复核时，Agent 可先只读诊断该包的来源，不需要当前上下文或 Poppler：
+
+```sh
+"$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge audit-packet \
+  --packet var/projects/example/retrieval/packet.json \
+  --output-dir var/source-intake/packet-audit-001
+```
+
+`--output-dir` 可省略；提供时须为新的 `var/` 报告目录，保存 `source-audit.json`。命令不改旧包、原件或索引，不扫描其他历史包。报告的 `status: audited` 只表示来源诊断完成，`full_verification: not_run` 表示没有执行完整复核；`packet_sha256` 是规范化 JSON 的摘要，不是包文件字节摘要。
+
+| 诊断位置 | 含义与接续 |
+|---|---|
+| `original_bytes.candidates[]` | 按候选对照旧包声明的路径、SHA256 和可用的字节数，列出期望与实际身份。`verified` 表示字节身份一致，`missing` 表示原件缺失，`changed` 表示不一致；`unavailable` 表示无法安全读取或受预算限制，`not_applicable` 表示该候选不适用这项检查。 |
+| `original_bytes.status` | 所有候选状态相同则沿用该状态，不同则为 `mixed`，没有候选则为 `no_candidates`；不能据汇总略过逐项结果。 |
+| `source_registration_freshness` | 沿用上表的登记状态，与原件字节状态分别读取。原件缺失不等于登记已移除，原件变化也不等于登记已修订。 |
+
+诊断最多观察 96 个不同原件，总读取上限为 4 GiB（含重核）；预算外保留 `unavailable`。软链接、特殊文件或不可读原件不会被当作已核；所检查的包内声明、上下文/文本摘要、跨度或登记绑定无效时拒绝诊断，不伪装成原件不可用。字节 `verified` 不表示原生页文本、供应商 source-pack、迁移对应关系或当前 Project 已核验。
+
+原件 `missing` 而登记 `current` 时，补回与旧包身份一致的原件后重做正式复核；原件 `changed` 时先辨认误覆盖或新版，保全旧版关系，不改旧包摘要来消除错误。原件仍 `verified` 但登记 `changed` 或 `removed` 时，保留历史包，按当前任务重新查询并复核受影响引用。诊断报告不能替代 `verify-packet`，也不作为反馈写入凭证；正式复核和反馈仍按原合同重新核验。
+
 当前任务需要以现有本地 PDF 登记为依据时，Agent 在复核和后续反馈中使用 `--require-current-registration`：该选项要求本包**全部候选都是本地 PDF，且都有 `current` 绑定**。仅选一个当前候选不能跳过包内其他候选的检查。以下路径及上下文由 Agent 按实际 Project 准备：
 
 ```sh
@@ -193,6 +213,7 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 | 完整重建 PDF 索引 | 同一登记入口的 `--replace`；传完整保留书目，先预览移除项 |
 | 检索和原页回读 | `knowledge query/view`；查询候选与原页核验分别记录 |
 | 核查询包及实际反馈 | `knowledge verify-packet/feedback`；原件完整性与 `source_registration_freshness` 分别读取，不授予工程采用 |
+| 诊断一个旧包的来源失效 | `knowledge audit-packet --packet …`；原件字节身份与登记变化分别报告，无需上下文或 Poppler，不代替完整复核 |
 | 要求当前本地 PDF 登记 | 两命令加 `--require-current-registration`；整包全部候选须为已绑定且当前的本地 PDF |
 
 Agent 根据本次真实输入准备参数与私有记录。先核 `knowledge status`，再核旧书仍可检索、新书来源和页码可回读、失配摘要会拒绝、扫描/图表覆盖如实显示。每轮向用户交代新增数量、完成范围、未处理项及可供当前项目查证的内容，不以命令退出成功代替这些检查。

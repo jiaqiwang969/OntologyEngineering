@@ -2002,6 +2002,55 @@
     "scope": "Bounded macOS synthetic source fixtures and real CLI; no engineering adoption or other-platform claim"
   },
   {
+    "behavior": "packet_original_hash_budget_reserves_recheck_without_reading_large_sparse_file",
+    "name": "packet_original_hash_budget_reserves_recheck_without_reading_large_sparse_file",
+    "oracle": "A sparse original whose two reads plus headroom exceed 4 GiB is unavailable without any hash read; final verification budget is reserved before initial read.",
+    "rustPath": "crates/oe-knowledge/src/packet/source_audit.rs",
+    "scope": "Synthetic local software fixtures; no real library mutation or engineering adoption"
+  },
+  {
+    "behavior": "packet_original_recheck_rejects_changed_deleted_and_newly_present_files",
+    "name": "packet_original_recheck_rejects_changed_deleted_and_newly_present_files",
+    "oracle": "Original replacement, deletion and appearance after initial observation are unavailable; reserved recheck reads are conservatively charged including read headroom.",
+    "rustPath": "crates/oe-knowledge/src/packet/source_audit.rs",
+    "scope": "Synthetic local software fixtures; no real library mutation or engineering adoption"
+  },
+  {
+    "behavior": "packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification_refusal",
+    "name": "packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification_refusal",
+    "oracle": "Real CLI diagnoses source failures with empty PATH, writes an optional new private source-audit.json, retains byte-exact inputs and rejects malformed packets without an artifact; ordinary/strict verification and feedback still reject unusable originals.",
+    "rustPath": "crates/oe-cli/tests/knowledge_cli.rs",
+    "scope": "Synthetic macOS CLI fixture; no current Project or native-page validity from diagnosis"
+  },
+  {
+    "behavior": "packet_source_audit_empty_and_generic_packets_do_not_claim_verification",
+    "name": "packet_source_audit_empty_and_generic_packets_do_not_claim_verification",
+    "oracle": "Empty and generic packets preserve no_candidates or actual original-byte state; registration remains not_applicable and full verification remains not_run.",
+    "rustPath": "crates/oe-knowledge/tests/packet_feedback.rs",
+    "scope": "Synthetic local software fixtures; no real library mutation or engineering adoption"
+  },
+  {
+    "behavior": "packet_source_audit_preserves_legacy_unknown_and_nonlocal_scope",
+    "name": "packet_source_audit_preserves_legacy_unknown_and_nonlocal_scope",
+    "oracle": "Legacy local evidence without binding stays not_bound, nonlocal registration remains not_applicable, and unavailable indexes do not imply removed or current. Original byte identity is not native-page or source-pack verification.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Synthetic packet variants; no engineering applicability or platform-wide claim"
+  },
+  {
+    "behavior": "packet_source_audit_rejects_late_structural_damage_after_missing_original",
+    "name": "packet_source_audit_rejects_late_structural_damage_after_missing_original",
+    "oracle": "An earlier missing original does not hide later corrupt text/span/locator/binding/context/review declarations; malformed packet is rejected before observations can be presented as valid diagnosis.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Synthetic corrupt metadata; no source or index mutations"
+  },
+  {
+    "behavior": "packet_source_audit_separates_old_original_failure_from_current_registration",
+    "name": "packet_source_audit_separates_old_original_failure_from_current_registration",
+    "oracle": "Actual two-source query packet: changed or missing old original retains its registration comparison and the healthy candidate remains observable; strict verification and feedback continue rejecting and packet/index bytes remain unchanged.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Synthetic macOS native PDF fixture; diagnostic itself uses no native tools; no real library mutation"
+  },
+  {
     "behavior": "pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output",
     "name": "pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output",
     "oracle": "Real CLI requires explicit directory, accepts audit without PATH or native tool arguments, finds a new PDF, stores a new private report, rejects overwrite and source-directory output, rejects whole source/index/private scope, preserves unknown when index absent and original/index bytes unchanged.",

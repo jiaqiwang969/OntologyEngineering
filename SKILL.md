@@ -54,6 +54,8 @@ metadata:
 
 用户向 `sources/` 投放资料或要求整理新增内容时，按 [资料接入说明](sources/README.md)清点来源、版本与摘要。PDF 先用 `knowledge library audit-pdf --directory sources/books` 对显式目录做只读审计，区分原件状态、登记关系、重复与逐书文本覆盖；索引不可核时保留未知，零文本不推定扫描件，不自动登记或 OCR。再按资料实际格式选择接入方式，清单由 Agent 准备；PDF 新增或修订先 `--merge --dry-run` 核差异，再按 ID 合并，保留未列旧来源。同 ID、路径和摘要下的描述/导航更新可复用已核文本，仍为 `updated`，旧查询包须重核当前登记。预览不锁定后续输入；`--replace` 仍须完整保留书目，不能当成追加。入库、索引、本体化、当前 Project 证据和工程采用分别记录。新增资料不会自动扩展 `project work` 的既有六书角色。
 
+米思米机构案例、BOM 与 CAD 归入 `sources/misumi/incad/`，按[资料图谱](docs/MISUMI-SOURCE-LIBRARY.md)用 `knowledge library incad` 建立、查找和复核来源关系。命中后核官网条件与原件，再接入已有 Project/work；资料图谱不自动授予工程适用或采用。分片恢复只面向新的资料目录，先核明确交付范围。
+
 复用查询包时，把原件完整性与当前登记分开核。需要当前本地 PDF 依据时，`knowledge verify-packet/feedback` 使用 `--require-current-registration`，整包候选须已绑定且 `current`；旧包无绑定先重新查询，米思米等按各自来源合同核验。状态解释见资料接入说明。登记变化不改写旧包、反馈或决定；当前书目一致性不授予工程采用。
 
 旧包因原件失效而无法验证时，可用 `knowledge audit-packet --packet <包路径>` 只读查看逐候选原件字节状态与登记变化，确定需要恢复原件还是重新查询。诊断不核当前 Project 或原生页内容，不能代替 `verify-packet` 或作为反馈凭证。

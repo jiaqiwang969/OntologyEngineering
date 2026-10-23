@@ -24,6 +24,8 @@
 
 资料处理先核当前程序的 `knowledge --help` 与 `knowledge library source-delivery --help`。有已核本地原件时不运行 fetch；交付清单中的相对路径继续映射到 `sources/` 下。PDF 投放后先 `knowledge library audit-pdf --directory sources/books`，按实际目录与索引核原件、登记关系、重复和逐书原生文本覆盖；索引不可核时保留未知，零文本不推定扫描件，不自动登记、OCR 或删除重复。再由 Agent 为本次新增或修订准备清单，先 `knowledge register --merge --dry-run` 核原件、旧索引与差异，再 `--merge` 按 ID 更新并保留未列旧来源；source-delivery register 同样支持这些选项。同 ID、路径及摘要下的描述/导航更新复用已核页文本，按新导航重建索引，仍记录 `updated`；预览按已知页数核章节边界。预览不提取或发布，也不是后续执行凭证。`--replace` 仍按完整清单重建并移除未列来源，路径迁移等完整重建先预览移除项。成功后核全部来源与页数，保留原回执及失败；`unchanged` 只表示索引无需修改。详见[资料接入说明](sources/README.md)。新增 PDF 登记不会扩展 `project work` 既有六书角色；非 PDF 与供应商资料按各自合同接入。入库、索引、本体化和当前项目采用分别记录，不把路径整理宣称为全书处理。
 
+米思米 inCAD 案例采用 `sources/misumi/incad/` 与 `sources/.indexes/incad/`。按[米思米资料使用](docs/MISUMI-SOURCE-LIBRARY.md)显式建图、检索、回读和复核；固定来源与派生图都要核，不把图中官网声明升级为 Project 事实。新版交付需携带实际 `source-delivery.json` 及独立 inCAD bundle，空目录恢复后重建或复核图谱，不能依赖开发者工具目录、旧绝对路径或默认清单。
+
 本地 PDF 查询包复核时，分别读取原件完整性与 `source_registration_freshness`；`ready_for_agent_review` 不代表登记仍当前。当前任务需要本地 PDF 当前登记约束时，在 `knowledge verify-packet` 和 `knowledge feedback` 都加 `--require-current-registration`，要求整包全部候选已绑定且 `current`。旧包无绑定须重新查询；米思米或混合非适用候选不满足此选项，沿各自来源合同核验。登记变化不会自动改旧包、反馈或 Project 决定；Agent 接续受影响引用与复核，用户不填绑定字段。当前登记不等于出版方最新版或工程适用。
 
 旧包因原件缺失或变化无法复核时，用 `knowledge audit-packet --packet PATH` 只读诊断该包，可选 `--output-dir` 保存到新的 `var/` 目录。无需当前上下文或 Poppler；逐候选读取 `original_bytes` 与 `source_registration_freshness`，不混淆原件缺失/改变与登记移除/修订。`audited` 与字节 `verified` 不代表完整复核，`full_verification` 保持 `not_run`；不自动修复或扫描其他历史包。Agent 按诊断补齐原件或接续登记，再重新执行原有 `verify-packet` 和反馈合同，不能用诊断报告绕过其门槛。详见[资料接入说明](sources/README.md)。

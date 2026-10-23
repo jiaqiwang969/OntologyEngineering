@@ -2318,6 +2318,48 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("IncadNxAssemblyBridgeResult", "source_binding", "serde_json::Value"),
     ("IncadNxAssemblyBridgeResult", "source_role", "String"),
     ("IncadNxAssemblyBridgeResult", "status", "String"),
+    ("IncadSourceBundleManifest", "bundle_id", "String"),
+    ("IncadSourceBundleManifest", "case_count", "u64"),
+    ("IncadSourceBundleManifest", "schema", "String"),
+    ("IncadSourceBundleManifest", "scope", "serde_json::Value"),
+    ("IncadSourceBundleManifest", "shards", "Vec<serde_json::Value>"),
+    ("IncadSourceGraph", "case_id", "String"),
+    ("IncadSourceGraph", "case_number", "String"),
+    ("IncadSourceGraph", "coverage", "serde_json::Value"),
+    ("IncadSourceGraph", "edges", "Vec<serde_json::Value>"),
+    ("IncadSourceGraph", "engineering_adoption", "String"),
+    ("IncadSourceGraph", "native_validation", "String"),
+    ("IncadSourceGraph", "nodes", "Vec<serde_json::Value>"),
+    ("IncadSourceGraph", "purpose", "String"),
+    ("IncadSourceGraph", "schema", "String"),
+    ("IncadSourceGraph", "source_files", "Vec<serde_json::Value>"),
+    ("IncadSourceGraph", "source_revision", "String"),
+    ("IncadSourceGraph", "title", "String"),
+    ("IncadSourceLibraryManifest", "archive_directory", "String"),
+    ("IncadSourceLibraryManifest", "builder_sha256", "String"),
+    ("IncadSourceLibraryManifest", "cases", "Vec<serde_json::Value>"),
+    ("IncadSourceLibraryManifest", "limits", "serde_json::Value"),
+    ("IncadSourceLibraryManifest", "meaning", "String"),
+    ("IncadSourceLibraryManifest", "schema", "String"),
+    ("IncadSourceLibraryReport", "archive_directory", "String"),
+    ("IncadSourceLibraryReport", "case_count", "u64"),
+    ("IncadSourceLibraryReport", "case_summaries", "Vec<serde_json::Value>"),
+    ("IncadSourceLibraryReport", "index_directory", "String"),
+    ("IncadSourceLibraryReport", "limits", "serde_json::Value"),
+    ("IncadSourceLibraryReport", "meaning", "String"),
+    ("IncadSourceLibraryReport", "schema", "String"),
+    ("IncadSourceLibraryReport", "status", "String"),
+    ("IncadSourceSearchResult", "coverage", "serde_json::Value"),
+    ("IncadSourceSearchResult", "meaning", "String"),
+    ("IncadSourceSearchResult", "query", "String"),
+    ("IncadSourceSearchResult", "results", "Vec<serde_json::Value>"),
+    ("IncadSourceSearchResult", "schema", "String"),
+    ("IncadSourceSearchResult", "status", "String"),
+    ("IncadSourceViewResult", "case_number", "String"),
+    ("IncadSourceViewResult", "graph", "IncadSourceGraph"),
+    ("IncadSourceViewResult", "meaning", "String"),
+    ("IncadSourceViewResult", "schema", "String"),
+    ("IncadSourceViewResult", "status", "String"),
     ("IncadWorkPreparationRequest", "intake", "IncadIntakeRequest"),
     ("IncadWorkPreparationRequest", "schema", "String"),
     ("IncadWorkPreparationRequest", "source_ids", "serde_json::Value"),
@@ -4616,6 +4658,18 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("IncadNxAssemblyBridgeResult", "source_role", "supplier_reference_assembly"),
     ("IncadNxAssemblyBridgeResult", "status", "prepared"),
     ("IncadNxAssemblyBridgeResult", "status", "verified"),
+    ("IncadSourceBundleManifest", "schema", "ontology-engineering.incad-source-bundle/v1"),
+    ("IncadSourceGraph", "engineering_adoption", "not_assessed"),
+    ("IncadSourceGraph", "native_validation", "not_run"),
+    ("IncadSourceGraph", "schema", "oev2.incad-source-graph/1"),
+    ("IncadSourceLibraryManifest", "schema", "oev2.incad-source-library-manifest/1"),
+    ("IncadSourceLibraryReport", "schema", "oev2.incad-source-library/1"),
+    ("IncadSourceLibraryReport", "status", "built"),
+    ("IncadSourceLibraryReport", "status", "verified"),
+    ("IncadSourceSearchResult", "schema", "oev2.incad-source-search/1"),
+    ("IncadSourceSearchResult", "status", "candidates"),
+    ("IncadSourceViewResult", "schema", "oev2.incad-source-view/1"),
+    ("IncadSourceViewResult", "status", "source_verified"),
     ("IncadWorkPreparationRequest", "schema", "oev2.incad-work-preparation/1"),
     ("KnowledgeOcrLanguage5", "name", "chi_sim"),
     ("KnowledgeOcrLanguage5", "name", "eng"),
@@ -16875,6 +16929,222 @@ impl IncadNxAssemblyBridgeResult {
         if !["oev2.incad-nx-assembly-bridge-result/1",].contains(&self.schema.as_str()) { failures.push("IncadNxAssemblyBridgeResult.schema:allowed_values".into()); }
         if !["supplier_reference_assembly",].contains(&self.source_role.as_str()) { failures.push("IncadNxAssemblyBridgeResult.source_role:allowed_values".into()); }
         if !["prepared","verified",].contains(&self.status.as_str()) { failures.push("IncadNxAssemblyBridgeResult.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 米思米案例资料的分片运输合同；原始manifest保持原字节，明确未交付的运行与浏览器过程记录
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct IncadSourceBundleManifest {
+    /// 该选定文件交付的版本标识
+    pub bundle_id: String,
+    /// 成员清单中中国案例current指针的数目
+    pub case_count: u64,
+    /// 独立于标准品PDF source-pack的版本
+    pub schema: String,
+    /// 选定当前案例闭包声明、原manifest非全成员复现及明确排除路径
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub scope: serde_json::Value,
+    /// 每份分片JSON的相对路径、SHA256及长度；分片再绑定tar.xz与全部成员
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub shards: Vec<serde_json::Value>,
+}
+impl IncadSourceBundleManifest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.bundle_id.trim().is_empty() { failures.push("IncadSourceBundleManifest.bundle_id:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("IncadSourceBundleManifest.schema:required".into()); }
+
+        if !["ontology-engineering.incad-source-bundle/v1",].contains(&self.schema.as_str()) { failures.push("IncadSourceBundleManifest.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-library graph and retrieval; supplier claims remain unassessed engineering evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct IncadSourceGraph {
+    /// case_id of the source-bound inCAD library
+    pub case_id: String,
+    /// case_number of the source-bound inCAD library
+    pub case_number: String,
+    /// coverage of the source-bound inCAD library
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub coverage: serde_json::Value,
+    /// edges of the source-bound inCAD library
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub edges: Vec<serde_json::Value>,
+    /// engineering_adoption of the source-bound inCAD library
+    pub engineering_adoption: String,
+    /// native_validation of the source-bound inCAD library
+    pub native_validation: String,
+    /// nodes of the source-bound inCAD library
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub nodes: Vec<serde_json::Value>,
+    /// purpose of the source-bound inCAD library
+    pub purpose: String,
+    /// schema of the source-bound inCAD library
+    pub schema: String,
+    /// source_files of the source-bound inCAD library
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub source_files: Vec<serde_json::Value>,
+    /// source_revision of the source-bound inCAD library
+    pub source_revision: String,
+    /// title of the source-bound inCAD library
+    pub title: String,
+}
+impl IncadSourceGraph {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.case_id.trim().is_empty() { failures.push("IncadSourceGraph.case_id:required".into()); }
+        if self.case_number.trim().is_empty() { failures.push("IncadSourceGraph.case_number:required".into()); }
+        if self.engineering_adoption.trim().is_empty() { failures.push("IncadSourceGraph.engineering_adoption:required".into()); }
+        if self.native_validation.trim().is_empty() { failures.push("IncadSourceGraph.native_validation:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("IncadSourceGraph.schema:required".into()); }
+        if self.source_revision.trim().is_empty() { failures.push("IncadSourceGraph.source_revision:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("IncadSourceGraph.engineering_adoption:allowed_values".into()); }
+        if !["not_run",].contains(&self.native_validation.as_str()) { failures.push("IncadSourceGraph.native_validation:allowed_values".into()); }
+        if !["oev2.incad-source-graph/1",].contains(&self.schema.as_str()) { failures.push("IncadSourceGraph.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-library graph and retrieval; supplier claims remain unassessed engineering evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct IncadSourceLibraryManifest {
+    /// archive_directory of the source-bound inCAD library
+    pub archive_directory: String,
+    /// builder_sha256 of the source-bound inCAD library
+    pub builder_sha256: String,
+    /// cases of the source-bound inCAD library
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub cases: Vec<serde_json::Value>,
+    /// limits of the source-bound inCAD library
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub limits: serde_json::Value,
+    /// meaning of the source-bound inCAD library
+    pub meaning: String,
+    /// schema of the source-bound inCAD library
+    pub schema: String,
+}
+impl IncadSourceLibraryManifest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.archive_directory.trim().is_empty() { failures.push("IncadSourceLibraryManifest.archive_directory:required".into()); }
+        if self.builder_sha256.trim().is_empty() { failures.push("IncadSourceLibraryManifest.builder_sha256:required".into()); }
+        if self.meaning.trim().is_empty() { failures.push("IncadSourceLibraryManifest.meaning:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("IncadSourceLibraryManifest.schema:required".into()); }
+
+        if !["oev2.incad-source-library-manifest/1",].contains(&self.schema.as_str()) { failures.push("IncadSourceLibraryManifest.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-library graph and retrieval; supplier claims remain unassessed engineering evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct IncadSourceLibraryReport {
+    /// archive_directory of the source-bound inCAD library
+    pub archive_directory: String,
+    /// case_count of the source-bound inCAD library
+    pub case_count: u64,
+    /// case_summaries of the source-bound inCAD library
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub case_summaries: Vec<serde_json::Value>,
+    /// index_directory of the source-bound inCAD library
+    pub index_directory: String,
+    /// limits of the source-bound inCAD library
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub limits: serde_json::Value,
+    /// meaning of the source-bound inCAD library
+    pub meaning: String,
+    /// schema of the source-bound inCAD library
+    pub schema: String,
+    /// status of the source-bound inCAD library
+    pub status: String,
+}
+impl IncadSourceLibraryReport {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.archive_directory.trim().is_empty() { failures.push("IncadSourceLibraryReport.archive_directory:required".into()); }
+        if self.index_directory.trim().is_empty() { failures.push("IncadSourceLibraryReport.index_directory:required".into()); }
+        if self.meaning.trim().is_empty() { failures.push("IncadSourceLibraryReport.meaning:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("IncadSourceLibraryReport.schema:required".into()); }
+        if self.status.trim().is_empty() { failures.push("IncadSourceLibraryReport.status:required".into()); }
+
+        if !["oev2.incad-source-library/1",].contains(&self.schema.as_str()) { failures.push("IncadSourceLibraryReport.schema:allowed_values".into()); }
+        if !["built","verified",].contains(&self.status.as_str()) { failures.push("IncadSourceLibraryReport.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-library graph and retrieval; supplier claims remain unassessed engineering evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct IncadSourceSearchResult {
+    /// Declaration reconstruction count, returned closure byte verification count and explicit nonreturned CAD byte revalidation not_run
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub coverage: serde_json::Value,
+    /// meaning of the source-bound inCAD library
+    pub meaning: String,
+    /// query of the source-bound inCAD library
+    pub query: String,
+    /// results of the source-bound inCAD library
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub results: Vec<serde_json::Value>,
+    /// schema of the source-bound inCAD library
+    pub schema: String,
+    /// status of the source-bound inCAD library
+    pub status: String,
+}
+impl IncadSourceSearchResult {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.meaning.trim().is_empty() { failures.push("IncadSourceSearchResult.meaning:required".into()); }
+        if self.query.trim().is_empty() { failures.push("IncadSourceSearchResult.query:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("IncadSourceSearchResult.schema:required".into()); }
+        if self.status.trim().is_empty() { failures.push("IncadSourceSearchResult.status:required".into()); }
+
+        if !["oev2.incad-source-search/1",].contains(&self.schema.as_str()) { failures.push("IncadSourceSearchResult.schema:allowed_values".into()); }
+        if !["candidates",].contains(&self.status.as_str()) { failures.push("IncadSourceSearchResult.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-library graph and retrieval; supplier claims remain unassessed engineering evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct IncadSourceViewResult {
+    /// case_number of the source-bound inCAD library
+    pub case_number: String,
+    /// graph of the source-bound inCAD library
+    pub graph: IncadSourceGraph,
+    /// meaning of the source-bound inCAD library
+    pub meaning: String,
+    /// schema of the source-bound inCAD library
+    pub schema: String,
+    /// status of the source-bound inCAD library
+    pub status: String,
+}
+impl IncadSourceViewResult {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.case_number.trim().is_empty() { failures.push("IncadSourceViewResult.case_number:required".into()); }
+        if self.meaning.trim().is_empty() { failures.push("IncadSourceViewResult.meaning:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("IncadSourceViewResult.schema:required".into()); }
+        if self.status.trim().is_empty() { failures.push("IncadSourceViewResult.status:required".into()); }
+
+        if !["oev2.incad-source-view/1",].contains(&self.schema.as_str()) { failures.push("IncadSourceViewResult.schema:allowed_values".into()); }
+        if !["source_verified",].contains(&self.status.as_str()) { failures.push("IncadSourceViewResult.status:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

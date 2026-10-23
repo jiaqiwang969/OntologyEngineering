@@ -1,4 +1,6 @@
 use serde_json::{Value, json};
+#[path = "../../oe-knowledge/tests/support/incad_fixture.rs"]
+mod incad_source_fixture;
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -1402,4 +1404,231 @@ fn packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification
         fs::read(f.0.join("var/preserved-original.pdf")).unwrap(),
         changed
     );
+}
+
+#[test]
+fn incad_library_cli_requires_explicit_paths_and_preserves_boundaries() {
+    let f = Fixture::new();
+    let archive = "sources/misumi/incad/cli-fixture";
+    let index = "sources/.indexes/incad/cli-fixture";
+    let source = incad_source_fixture::Fixture::new(&f.0.join(archive));
+    let folder = source.root.join("cases/cn/000019/attempts/fixed");
+    let read = |path: &Path| serde_json::from_slice::<Value>(&fs::read(path).unwrap()).unwrap();
+    let mut case = read(&folder.join("case.json"));
+    case["official_bom"] = json!({"headers":["案例No.","零件No.","零件名称","制造厂名称","型式","数量"],
+        "rows":[["000019","1","Synthetic support","MISUMI","CLI-MODEL-19","1"]],"rows_count":1,"links":[]});
+    case["cad_downloads"] = json!([]);
+    incad_source_fixture::save(&folder.join("case.json"), &case);
+    let mut manifest = read(&folder.join("manifest.json"));
+    manifest["files"][1] = incad_source_fixture::entry(&folder, "case.json");
+    manifest["offered_formats"] = json!(0);
+    manifest["downloaded_formats"] = json!(0);
+    let case_sha = incad_source_fixture::save(&folder.join("manifest.json"), &manifest);
+    let mut projection = read(&source.projection.join("manifest.json"));
+    let mut binding = projection["source"].clone();
+    binding["manifest_sha256"] = json!(case_sha);
+    binding["case_record_sha256"] =
+        incad_source_fixture::entry(&folder, "case.json")["sha256"].clone();
+    for name in [
+        "input.json",
+        "reference.json",
+        "study.json",
+        "original.json",
+    ] {
+        let path = source.projection.join(name);
+        let mut value = read(&path);
+        value["source"] = binding.clone();
+        if name == "reference.json" {
+            value["bom"] = case["official_bom"].clone();
+            value["cad"] = case["cad_downloads"].clone();
+        }
+        incad_source_fixture::save(&path, &value);
+    }
+    projection["source"] = binding;
+    for file in projection["files"].as_array_mut().unwrap() {
+        *file = incad_source_fixture::entry(&source.projection, file["path"].as_str().unwrap());
+    }
+    incad_source_fixture::save(&source.projection.join("manifest.json"), &projection);
+    incad_source_fixture::save(
+        &source.root.join("design-inputs/index.json"),
+        &json!({
+            "schema":"incad.design-input-index/1","cases":[{"number":"000019","folder":"design-inputs/cn/000019/fixed","source_manifest_sha256":case_sha}]
+        }),
+    );
+    incad_source_fixture::save(
+        &source.root.join("cases/cn/000019/current.json"),
+        &json!({
+            "number":"000019","site":"cn","folder":"cases/cn/000019/attempts/fixed","manifest_sha256":case_sha,"complete_for_requested_scope":false
+        }),
+    );
+    for args in [
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "build",
+            "--archive",
+            archive,
+        ],
+        vec!["knowledge", "library", "incad", "verify"],
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "search",
+            "--query",
+            "fixture",
+        ],
+        vec!["knowledge", "library", "incad", "view", "--index", index],
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "import-bundle",
+            "--manifest",
+            "sources/missing.json",
+        ],
+    ] {
+        assert_eq!(f.run(&args).0, 2);
+    }
+    let original = fs::read(folder.join("source.html")).unwrap();
+    let (code, result) = f.run(&[
+        "knowledge",
+        "library",
+        "incad",
+        "build",
+        "--archive",
+        archive,
+        "--index",
+        index,
+    ]);
+    assert_eq!(code, 0, "{result}");
+    assert_eq!(result["status"], "built");
+    assert_eq!(result["result"]["case_count"], 1);
+    assert_eq!(
+        f.run(&["knowledge", "library", "incad", "verify", "--index", index])
+            .0,
+        0
+    );
+    let (code, result) = f.run(&[
+        "knowledge",
+        "library",
+        "incad",
+        "search",
+        "--index",
+        index,
+        "--query",
+        "CLI-MODEL-19",
+    ]);
+    assert_eq!(code, 0, "{result}");
+    assert_eq!(result["result"]["results"].as_array().unwrap().len(), 1);
+    let (code, result) = f.run(&[
+        "knowledge",
+        "library",
+        "incad",
+        "view",
+        "--index",
+        index,
+        "--case",
+        "000019",
+    ]);
+    assert_eq!(code, 0, "{result}");
+    assert_eq!(result["status"], "source_verified");
+    assert_eq!(result["result"]["graph"]["native_validation"], "not_run");
+    assert_eq!(
+        result["result"]["graph"]["engineering_adoption"],
+        "not_assessed"
+    );
+    for args in [
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "build",
+            "--archive",
+            archive,
+            "--index",
+            index,
+        ],
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "build",
+            "--archive",
+            archive,
+            "--index",
+            "sources/misumi/rejected-index",
+        ],
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "search",
+            "--index",
+            index,
+            "--query",
+            "fixture",
+            "--limit",
+            "0",
+        ],
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "search",
+            "--index",
+            index,
+            "--query",
+            "fixture",
+            "--limit",
+            "21",
+        ],
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "view",
+            "--index",
+            index,
+            "--case",
+            "../000019",
+        ],
+    ] {
+        assert_eq!(f.run(&args).0, 2);
+    }
+    assert!(!f.0.join("sources/misumi/rejected-index").exists());
+    assert_eq!(fs::read(folder.join("source.html")).unwrap(), original);
+    let graph_path = f.0.join(index).join("cases/000019.json");
+    let graph = fs::read(&graph_path).unwrap();
+    fs::write(folder.join("source.html"), b"changed original source").unwrap();
+    for args in [
+        vec!["knowledge", "library", "incad", "verify", "--index", index],
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "search",
+            "--index",
+            index,
+            "--query",
+            "CLI-MODEL-19",
+        ],
+        vec![
+            "knowledge",
+            "library",
+            "incad",
+            "view",
+            "--index",
+            index,
+            "--case",
+            "000019",
+        ],
+    ] {
+        let (code, result) = f.run(&args);
+        assert_eq!(code, 2);
+        assert_eq!(result["status"], "blocked");
+        assert!(result["result"].is_null());
+    }
+    assert_eq!(fs::read(graph_path).unwrap(), graph);
 }

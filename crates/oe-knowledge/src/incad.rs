@@ -7,7 +7,9 @@ use std::{
     collections::BTreeMap,
     path::{Component, Path, PathBuf},
 };
+pub mod bundle;
 pub mod cad;
+pub mod library;
 
 const MAX_FILE: usize = 16 * 1024 * 1024;
 const MAX_TOTAL: usize = 64 * 1024 * 1024;
@@ -22,6 +24,37 @@ const PROJECTIONS: [&str; 9] = [
     "original.html",
     "original-page.html",
 ];
+
+/// The archive-only closure used by both library projection and the strict
+/// existing task intake. No caller-supplied audit can construct this snapshot.
+pub struct VerifiedArchive {
+    input_bytes: Vec<u8>,
+    specifications: Value,
+    projections: BTreeMap<String, Value>,
+    sources: BTreeMap<PathBuf, FileIdentity>,
+    roles: BTreeMap<String, ArtifactReference>,
+    audit: Value,
+    case_folder: PathBuf,
+    case_manifest: Value,
+    case_record: Value,
+    total: usize,
+}
+impl VerifiedArchive {
+    pub fn ensure_current(&self) -> Result<()> {
+        for (path, expected) in &self.sources {
+            let raw = read_regular_bytes(path, MAX_FILE)?;
+            ensure!(
+                raw.len() as u64 == expected.bytes && sha256(raw) == expected.sha256,
+                "incad_source_changed:{}",
+                path.display()
+            );
+        }
+        Ok(())
+    }
+    pub fn audit(&self) -> &Value {
+        &self.audit
+    }
+}
 
 /// Verified source snapshot; a caller-supplied JSON audit cannot construct this.
 pub struct VerifiedIntake {
@@ -180,23 +213,21 @@ impl Reader {
     }
 }
 
-pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
-    request
-        .validate()
-        .map_err(|_| anyhow::anyhow!("incad_generated_contract_invalid"))?;
+pub fn verify_archive(
+    root: &Path,
+    case_number: &str,
+    projection_manifest: &ArtifactReference,
+) -> Result<VerifiedArchive> {
     ensure!(
-        request.schema == "oev2.incad-intake/1"
-            && request.case_number.len() == 6
-            && request.case_number.bytes().all(|b| b.is_ascii_digit()),
+        case_number.len() == 6 && case_number.bytes().all(|b| b.is_ascii_digit()),
         "incad_request_identity_invalid"
     );
-    let root = Path::new(&request.archive_root);
     ensure!(
         root.is_absolute() && root.is_dir(),
         "incad_archive_root_invalid"
     );
     no_symlinks(root)?;
-    let manifest_path = path(root, &request.projection_manifest.path)?;
+    let manifest_path = path(root, &projection_manifest.path)?;
     let folder = manifest_path.parent().context("incad_projection_parent")?;
     ensure!(
         manifest_path
@@ -208,11 +239,11 @@ pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
         sources: BTreeMap::new(),
         total: 0,
     };
-    let raw = reader.read(&manifest_path, &request.projection_manifest.sha256, None)?;
+    let raw = reader.read(&manifest_path, &projection_manifest.sha256, None)?;
     let manifest = oe_core::json::strict_json(&raw)?;
     ensure!(
         manifest["schema"] == "incad.design-projection-manifest/1"
-            && manifest["number"] == request.case_number,
+            && manifest["number"] == case_number,
         "incad_projection_identity"
     );
     let projection_files = inventory(&manifest)?;
@@ -282,7 +313,7 @@ pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
     ensure!(source["id"] == "supplier-html", "incad_source_role_changed");
     ensure!(
         input["schema"] == "incad.design-input/1"
-            && input["number"] == request.case_number
+            && input["number"] == case_number
             && input["source"] == *source,
         "incad_specification_identity"
     );
@@ -353,6 +384,7 @@ pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
             .all(Value::is_string),
         "incad_missing_sections_type"
     );
+    let mut projection_values = BTreeMap::new();
     for (name, schema) in [
         ("reference.json", "incad.design-reference/1"),
         ("study.json", "incad.design-study/1"),
@@ -360,9 +392,10 @@ pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
     ] {
         let v = oe_core::json::strict_json(&projections[name])?;
         ensure!(
-            v["schema"] == schema && v["number"] == request.case_number && v["source"] == *source,
+            v["schema"] == schema && v["number"] == case_number && v["source"] == *source,
             "incad_projection_source_mismatch"
         );
+        projection_values.insert(name.to_owned(), v.clone());
         if name == "original.json" {
             for key in ["primary", "whole_page"] {
                 ensure!(
@@ -380,14 +413,14 @@ pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
     ensure!(
         case_manifest["schema"] == "incad.full-case-manifest/1"
             && case_manifest["site"] == "cn"
-            && case_manifest["number"] == request.case_number,
+            && case_manifest["number"] == case_number,
         "incad_case_manifest_identity"
     );
     ensure!(
         text(source, "url")?
             == format!(
                 "https://www.misumi.com.cn/asia/incadlibrary/detail/{}.html",
-                request.case_number
+                case_number
             )
             && case_manifest["source_url"] == source["url"],
         "incad_supplier_url_mismatch"
@@ -411,11 +444,68 @@ pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
     );
     let case = oe_core::json::strict_json(&case_bytes)?;
     ensure!(
-        case["number"] == request.case_number
+        case["number"] == case_number
             && case["site"] == "cn"
             && case["source_sha256"] == source["sha256"],
         "incad_case_record_identity"
     );
+    let roles = BTreeMap::from([
+        (
+            "supplier_html".into(),
+            pin(&html_path, text(source, "sha256")?),
+        ),
+        (
+            "projection_manifest".into(),
+            pin(&manifest_path, &projection_manifest.sha256),
+        ),
+        (
+            "specifications".into(),
+            pin(&folder.join("input.json"), &sha256(&input_bytes)),
+        ),
+    ]);
+    let audit = json!({"schema":"oev2.incad-archive-audit/1","case_number":case_number,
+        "source_integrity":"verified_selected_source_closure","checked_files":reader.sources,
+        "roles":roles,"reference_solution":pin(&folder.join("reference.json"),text(projection_files["reference.json"],"sha256")?),
+        "complete_original":pin(&folder.join("original.json"),text(projection_files["original.json"],"sha256")?),
+        "reference_file_payload_in_design_window":false,"specification_bytes_preserved":true,
+        "missing_sections":input["missing_sections"],"archive_status":{"errors":case_manifest["errors"],"offered_formats":case_manifest["offered_formats"],"downloaded_formats":case_manifest["downloaded_formats"],"complete_for_requested_scope":case_manifest["complete_for_requested_scope"],"native_cad_validation":case_manifest["native_cad_validation"]},
+        "baseline_exposure":"development_replay","html_extraction_reexecuted":false,"cad_files_revalidated":false,
+        "project_mutated":false,"engineering_adoption":"not_assessed"});
+    let result = VerifiedArchive {
+        input_bytes,
+        specifications: input,
+        projections: projection_values,
+        sources: reader.sources,
+        roles,
+        audit,
+        case_folder: case_folder.to_owned(),
+        case_manifest,
+        case_record: case,
+        total: reader.total,
+    };
+    result.ensure_current()?;
+    Ok(result)
+}
+
+pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
+    request
+        .validate()
+        .map_err(|_| anyhow::anyhow!("incad_generated_contract_invalid"))?;
+    ensure!(
+        request.schema == "oev2.incad-intake/1",
+        "incad_request_identity_invalid"
+    );
+    let archive = verify_archive(
+        Path::new(&request.archive_root),
+        &request.case_number,
+        &request.projection_manifest,
+    )?;
+    let input = archive.specifications;
+    let input_bytes = archive.input_bytes;
+    let mut reader = Reader {
+        sources: archive.sources,
+        total: archive.total,
+    };
     let task_path = Path::new(&request.zero_design_task.path);
     ensure!(task_path.is_absolute(), "incad_task_absolute_path_required");
     let task_bytes = reader.read(task_path, &request.zero_design_task.sha256, None)?;
@@ -457,32 +547,15 @@ pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
     );
     text(&task, "current_request")?;
     text(&task, "next_step")?;
-    let roles = BTreeMap::from([
-        (
-            "supplier_html".into(),
-            pin(&html_path, text(source, "sha256")?),
-        ),
-        (
-            "projection_manifest".into(),
-            pin(&manifest_path, &request.projection_manifest.sha256),
-        ),
-        (
-            "specifications".into(),
-            pin(&folder.join("input.json"), &sha256(&input_bytes)),
-        ),
-        (
-            "task".into(),
-            pin(task_path, &request.zero_design_task.sha256),
-        ),
-    ]);
-    let audit = json!({"schema":"oev2.incad-intake-audit/1","case_number":request.case_number,
-        "source_integrity":"verified_selected_source_closure","checked_files":reader.sources,
-        "roles":roles,"reference_solution":pin(&folder.join("reference.json"),text(projection_files["reference.json"],"sha256")?),
-        "complete_original":pin(&folder.join("original.json"),text(projection_files["original.json"],"sha256")?),
-        "reference_file_payload_in_design_window":false,"specification_bytes_preserved":true,
-        "missing_sections":input["missing_sections"],"archive_status":{"errors":case_manifest["errors"],"offered_formats":case_manifest["offered_formats"],"downloaded_formats":case_manifest["downloaded_formats"],"complete_for_requested_scope":case_manifest["complete_for_requested_scope"],"native_cad_validation":case_manifest["native_cad_validation"]},
-        "baseline_exposure":"development_replay","html_extraction_reexecuted":false,"cad_files_revalidated":false,
-        "project_mutated":false,"engineering_adoption":"not_assessed"});
+    let mut roles = archive.roles;
+    roles.insert(
+        "task".into(),
+        pin(task_path, &request.zero_design_task.sha256),
+    );
+    let mut audit = archive.audit;
+    audit["schema"] = json!("oev2.incad-intake-audit/1");
+    audit["roles"] = json!(roles);
+    audit["checked_files"] = json!(reader.sources);
     let result = VerifiedIntake {
         input_bytes,
         task_bytes,
@@ -491,9 +564,9 @@ pub fn verify(request: &IncadIntakeRequest) -> Result<VerifiedIntake> {
         sources: reader.sources,
         roles,
         audit,
-        case_folder: case_folder.to_owned(),
-        case_manifest,
-        case_record: case,
+        case_folder: archive.case_folder,
+        case_manifest: archive.case_manifest,
+        case_record: archive.case_record,
     };
     result.ensure_current()?;
     Ok(result)

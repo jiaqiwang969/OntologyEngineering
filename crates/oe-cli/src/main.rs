@@ -419,6 +419,11 @@ enum KnowledgeCommand {
 
 #[derive(Subcommand)]
 enum KnowledgeLibraryCommand {
+    /// Verify and search a source-bound inCAD case library; no Project adoption or CAD execution.
+    Incad {
+        #[command(subcommand)]
+        command: IncadLibraryCommand,
+    },
     /// Audit explicitly selected PDF intake and stored native-text coverage, without registration.
     AuditPdf {
         #[arg(long)]
@@ -466,6 +471,50 @@ enum KnowledgeLibraryCommand {
     RestoreBooks {
         #[arg(long)]
         target: PathBuf,
+    },
+}
+
+#[derive(Subcommand)]
+enum IncadLibraryCommand {
+    /// Build a new source-bound case graph from an explicitly selected local archive.
+    Build {
+        #[arg(long)]
+        archive: PathBuf,
+        #[arg(long)]
+        index: PathBuf,
+    },
+    /// Recheck graph identities and their declared source closure.
+    Verify {
+        #[arg(long)]
+        index: PathBuf,
+    },
+    /// Find source candidates; results do not establish engineering applicability.
+    Search {
+        #[arg(long)]
+        index: PathBuf,
+        #[arg(long)]
+        query: String,
+        #[arg(long, default_value_t = 10, value_parser = clap::value_parser!(u64).range(1..=20))]
+        limit: u64,
+    },
+    /// Read one explicitly selected six-digit case and its bound sources.
+    View {
+        #[arg(long)]
+        index: PathBuf,
+        #[arg(long)]
+        case: String,
+    },
+    /// Verify every declared archive member without publishing a restored directory.
+    VerifyBundle {
+        #[arg(long)]
+        manifest: PathBuf,
+    },
+    /// Restore a verified selected source closure into a new explicit sources directory.
+    ImportBundle {
+        #[arg(long)]
+        manifest: PathBuf,
+        #[arg(long)]
+        directory: PathBuf,
     },
 }
 
@@ -1097,6 +1146,40 @@ fn knowledge_execute(root: &SkillRoot, command: KnowledgeCommand) -> Result<Valu
         KnowledgeCommand::Library { command } => {
             use oe_knowledge::supplier_library as library;
             let (operation, result) = match command {
+                KnowledgeLibraryCommand::Incad { command } => {
+                    use oe_knowledge::incad::{bundle, library as incad_library};
+                    let (operation, result) = match command {
+                        IncadLibraryCommand::Build { archive, index } => {
+                            ("incad-build", incad_library::build(root, &archive, &index)?)
+                        }
+                        IncadLibraryCommand::Verify { index } => {
+                            ("incad-verify", incad_library::verify(root, &index)?)
+                        }
+                        IncadLibraryCommand::Search {
+                            index,
+                            query,
+                            limit,
+                        } => (
+                            "incad-search",
+                            incad_library::search(root, &index, &query, limit as usize)?,
+                        ),
+                        IncadLibraryCommand::View { index, case } => {
+                            ("incad-view", incad_library::view(root, &index, &case)?)
+                        }
+                        IncadLibraryCommand::VerifyBundle { manifest } => {
+                            ("incad-verify-bundle", bundle::verify(root, &manifest)?)
+                        }
+                        IncadLibraryCommand::ImportBundle {
+                            manifest,
+                            directory,
+                        } => (
+                            "incad-import-bundle",
+                            bundle::import(root, &manifest, &directory)?,
+                        ),
+                    };
+                    let status = result["status"].as_str().unwrap_or("complete").to_owned();
+                    return Ok(knowledge_result(operation, &status, result));
+                }
                 KnowledgeLibraryCommand::AuditPdf {
                     directory,
                     index,
@@ -1577,6 +1660,9 @@ fn execute(cli: Cli) -> Result<u8> {
                     | "installed"
                     | "imported"
                     | "verified"
+                    | "built"
+                    | "source_verified"
+                    | "candidates"
                     | "restored"
                     | "listed"
                     | "audited"

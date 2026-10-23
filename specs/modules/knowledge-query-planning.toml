@@ -1966,3 +1966,743 @@ behavior="packet_original_hash_budget_reserves_recheck_without_reading_large_spa
 rust_path="crates/oe-knowledge/src/packet/source_audit.rs"
 oracle="A sparse original whose two reads plus headroom exceed 4 GiB is unavailable without any hash read; final verification budget is reserved before initial read."
 scope="Synthetic local software fixtures; no real library mutation or engineering adoption"
+
+
+# knowledge-incad-library
+
+# Source-library projections are derived records, never a second Project authority.
+[[constraints]]
+id="incad_archive_only_preserves_strict_intake"
+requirement="req_knowledge"
+module="knowledge"
+check="verify_archive"
+rust_path="crates/oe-knowledge/src/incad.rs"
+statement="Factor the fixed source/projection closure from task intake. Archive-only verification requires the original CN case, fixed manifest digest, all nine projections, original HTML and case record, existing closed specification shape/text hashes and before/after source snapshots. Existing IncadIntakeRequest additionally retains every original task equality, authority, exposure, budget and four-role check; no generated task or Project is invented for a source library."
+severity="error"
+
+[[constraints]]
+id="incad_library_source_graph"
+requirement="req_knowledge"
+module="knowledge"
+check="build"
+rust_path="crates/oe-knowledge/src/incad/library.rs"
+statement="Read explicit sources/misumi archive and publish a new sources/.indexes/incad directory or child directory only. Discovery rows supply fixed locations, never trusted embedded claims. Generate deterministic case/revision/source-bound nodes, edges and named N-Quads from verified source projections: supplier function/condition/reference statements, exact BOM rows/header semantics/model designations and declared CAD archive/member identities. New consumers validate reference BOM/CAD equality to the case record and inventory relationships; preserve exact title/purpose text including empty strings with missing status, missing sections, errors, development_replay and unknown BOM-CAD correspondence. Do not infer physical causality, units, native geometry, universal engineering facts or adoption. Omitted browser capture/private assets are not required or claimed verified. Source, prior indexes and historical Project receipts remain unchanged."
+severity="error"
+
+[[constraints]]
+id="incad_library_rebuilds_claims_and_portable_paths"
+requirement="req_knowledge"
+module="knowledge"
+check="verify"
+rust_path="crates/oe-knowledge/src/incad/library.rs"
+statement="Persist only portable root/archive-relative paths and exact original/projection digests. Verification and retrieval reconstruct case graphs from fixed source closures and compare JSON values and N-Quads bytes, so re-signing a modified derived graph is insufficient. No changed root implies fresh engineering evidence. A new library snapshot preserves earlier snapshots and unchanged case graph identities. No automatic current Project binding. Existing index/source mismatches and unsafe paths fail before an output is published."
+severity="error"
+
+[[constraints]]
+id="incad_library_bounded_reads_and_retrieval"
+requirement="req_knowledge"
+module="knowledge"
+check="search"
+rust_path="crates/oe-knowledge/src/incad/library.rs"
+statement="At most1024 cases,8192 selected files per case,262144 selected files overall,1GiB per streamed member,2GiB selected bytes per case and128GiB conservative hash charges including final rechecks and64KiB growth headroom per read. Archive metadata separately retains16MiB/file and64MiB/case plus one recheck, bounded across1024 cases. Derived JSON and RDF are16MiB each per case and2GiB output total. Search is bounded lexical source retrieval,1..20 results and at most1000 query characters; reconstruct all selected case declarations and rehash returned case source closures. Explicit search coverage marks nonreturned CAD byte revalidation not_run. Full verify rehashes all selected closures. Recheck returned/full original closures, read derived records and manifest snapshots before completion; no network, browser, Poppler, CAD execution or Project mutation."
+severity="error"
+
+[[types]]
+name="IncadSourceGraph"
+contract_group="engineering"
+identity="Fixed CN supplier case, source/projection revision and portable byte references"
+meaning="Source-library graph and retrieval; supplier claims remain unassessed engineering evidence"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="schema of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["oev2.incad-source-graph/1"]
+
+[[types.fields]]
+name="case_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="case_id of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="case_number"
+rust_type="String"
+required=true
+format="typed"
+meaning="case_number of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="source_revision"
+rust_type="String"
+required=true
+format="typed"
+meaning="source_revision of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="title"
+rust_type="String"
+required=true
+format="raw_utf8"
+meaning="title of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="purpose"
+rust_type="String"
+required=true
+format="raw_utf8"
+meaning="purpose of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="nodes"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="nodes of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="edges"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="edges of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="source_files"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="source_files of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="coverage"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+meaning="coverage of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="native_validation"
+rust_type="String"
+required=true
+format="typed"
+meaning="native_validation of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["not_run"]
+
+[[types.fields]]
+name="engineering_adoption"
+rust_type="String"
+required=true
+format="typed"
+meaning="engineering_adoption of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["not_assessed"]
+
+[[types]]
+name="IncadSourceLibraryManifest"
+contract_group="engineering"
+identity="Fixed CN supplier case, source/projection revision and portable byte references"
+meaning="Source-library graph and retrieval; supplier claims remain unassessed engineering evidence"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="schema of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["oev2.incad-source-library-manifest/1"]
+
+[[types.fields]]
+name="archive_directory"
+rust_type="String"
+required=true
+format="typed"
+meaning="archive_directory of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="builder_sha256"
+rust_type="String"
+required=true
+format="typed"
+meaning="builder_sha256 of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="cases"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="cases of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="limits"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+meaning="limits of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="meaning of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types]]
+name="IncadSourceLibraryReport"
+contract_group="engineering"
+identity="Fixed CN supplier case, source/projection revision and portable byte references"
+meaning="Source-library graph and retrieval; supplier claims remain unassessed engineering evidence"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="schema of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["oev2.incad-source-library/1"]
+
+[[types.fields]]
+name="status"
+rust_type="String"
+required=true
+format="typed"
+meaning="status of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["built", "verified"]
+
+[[types.fields]]
+name="index_directory"
+rust_type="String"
+required=true
+format="typed"
+meaning="index_directory of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="archive_directory"
+rust_type="String"
+required=true
+format="typed"
+meaning="archive_directory of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="case_count"
+rust_type="u64"
+required=true
+format="typed"
+meaning="case_count of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="case_summaries"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="case_summaries of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="limits"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+meaning="limits of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="meaning of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types]]
+name="IncadSourceSearchResult"
+contract_group="engineering"
+identity="Fixed CN supplier case, source/projection revision and portable byte references"
+meaning="Source-library graph and retrieval; supplier claims remain unassessed engineering evidence"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="schema of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["oev2.incad-source-search/1"]
+
+[[types.fields]]
+name="status"
+rust_type="String"
+required=true
+format="typed"
+meaning="status of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["candidates"]
+
+[[types.fields]]
+name="query"
+rust_type="String"
+required=true
+format="typed"
+meaning="query of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="results"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="results of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="meaning of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+
+[[types.fields]]
+name="coverage"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+meaning="Declaration reconstruction count, returned closure byte verification count and explicit nonreturned CAD byte revalidation not_run"
+unit="Exact case counts and bounded verification scope"
+precision="Observed scope, never implicit complete library validation"
+write="Rust after declared source reconstruction and returned closure rechecks"
+applicability="Lexical inCAD source library retrieval"
+acceptance="An unreturned CAD original is not claimed revalidated; returned closure failures reject the search"
+
+[[types]]
+name="IncadSourceViewResult"
+contract_group="engineering"
+identity="Fixed CN supplier case, source/projection revision and portable byte references"
+meaning="Source-library graph and retrieval; supplier claims remain unassessed engineering evidence"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="schema of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["oev2.incad-source-view/1"]
+
+[[types.fields]]
+name="status"
+rust_type="String"
+required=true
+format="typed"
+meaning="status of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+allowed_values=["source_verified"]
+
+[[types.fields]]
+name="case_number"
+rust_type="String"
+required=true
+format="typed"
+meaning="case_number of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="graph"
+rust_type="IncadSourceGraph"
+required=true
+format="typed"
+meaning="graph of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="meaning of the source-bound inCAD library"
+unit="Source literals retain original units; identities are SHA256 and counts are integers"
+precision="Exact source bytes and declared projection text, without semantic or numeric conversion"
+write="Rust verifies fixed sources and emits derived immutable records"
+applicability="Explicit source library only; no current Project or native engineering authority"
+acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
+
+[[validations]]
+id="incad_library_builds_source_bound_graph_without_project_adoption"
+module="knowledge"
+constraint="incad_library_source_graph"
+behavior="incad_library_builds_source_bound_graph_without_project_adoption"
+rust_path="crates/oe-knowledge/tests/incad_library.rs"
+oracle="Synthetic projection/HTML/case/BOM/CAD closure produces retained statement/source/BOM/model/member relationships, preserves declared missing coverage and creates no Project or engineering adoption."
+scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
+
+[[validations]]
+id="incad_library_rejects_changed_sources_and_rebound_graph"
+module="knowledge"
+constraint="incad_library_rebuilds_claims_and_portable_paths"
+behavior="incad_library_rejects_changed_sources_and_rebound_graph"
+rust_path="crates/oe-knowledge/tests/incad_library.rs"
+oracle="Alter original or derived graph and re-sign its outer SHA; verify/search/view reject rather than trust author-controlled graph claims."
+scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
+
+[[validations]]
+id="incad_library_rejects_unsafe_or_incomplete_source_closure"
+module="knowledge"
+constraint="incad_library_source_graph"
+behavior="incad_library_rejects_unsafe_or_incomplete_source_closure"
+rust_path="crates/oe-knowledge/tests/incad_library.rs"
+oracle="Missing member, malformed source identity, duplicate cases, wrong BOM association and unsafe paths fail without publishing a library."
+scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
+
+[[validations]]
+id="incad_library_copies_portably_with_relative_source_bindings"
+module="knowledge"
+constraint="incad_library_rebuilds_claims_and_portable_paths"
+behavior="incad_library_copies_portably_with_relative_source_bindings"
+rust_path="crates/oe-knowledge/tests/incad_library.rs"
+oracle="Copy the complete selected archive/index to a different real root, remove the old archive and still verify/retrieve by portable references."
+scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
+
+[[validations]]
+id="incad_library_reads_large_cad_members_beyond_intake_limit"
+module="knowledge"
+constraint="incad_library_bounded_reads_and_retrieval"
+behavior="incad_library_reads_large_cad_members_beyond_intake_limit"
+rust_path="crates/oe-knowledge/tests/incad_library.rs"
+oracle="A17MiB synthetic member and ZIP use the explicit library streaming profile while old16MiB staging semantics remain unchanged; originals remain byte-exact."
+scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
+
+[[validations]]
+id="incad_library_cli_requires_explicit_paths_and_preserves_boundaries"
+module="knowledge"
+constraint="incad_library_source_graph"
+behavior="incad_library_cli_requires_explicit_paths_and_preserves_boundaries"
+rust_path="crates/oe-cli/tests/knowledge_cli.rs"
+oracle="Actual CLI requires explicit archive/index/query/case, creates source-library reports and preserves error/adoption boundaries."
+scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
+
+
+[[validations]]
+id="incad_library_search_only_rehashes_returned_case_payloads"
+module="knowledge"
+constraint="incad_library_bounded_reads_and_retrieval"
+behavior="incad_library_search_only_rehashes_returned_case_payloads"
+rust_path="crates/oe-knowledge/tests/incad_library.rs"
+oracle="A healthy returned case succeeds despite a nonreturned CAD payload change; explicit coverage leaves nonreturned CAD unchecked, while full verify and retrieval of the changed case reject."
+scope="Synthetic source fixtures; no CAD execution or adoption"
+
+[[validations]]
+id="incad_library_preserves_missing_purpose_without_inventing_it"
+module="knowledge"
+constraint="incad_library_source_graph"
+behavior="incad_library_preserves_missing_purpose_without_inventing_it"
+rust_path="crates/oe-knowledge/tests/incad_library.rs"
+oracle="An empty source purpose remains empty and is explicitly missing after build and view, without invented engineering text."
+scope="Synthetic source fixtures; no CAD execution or adoption"
+
+
+# knowledge-incad-delivery
+
+[[types]]
+name="IncadSourceBundleManifest"
+contract_group="engineering"
+identity="Versioned selected inCAD file delivery, rooted in exact shard descriptor and member byte identities; never a Project or complete upstream archive claim"
+meaning="米思米案例资料的分片运输合同；原始manifest保持原字节，明确未交付的运行与浏览器过程记录"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="独立于标准品PDF source-pack的版本"
+unit="无量纲身份"
+precision="精确协议字符串"
+write="Agent准备；Rust核验"
+applicability="显式本地inCAD分片包"
+acceptance="未知协议拒绝；不推断来源图谱或工程采用"
+allowed_values=["ontology-engineering.incad-source-bundle/v1"]
+
+[[types.fields]]
+name="bundle_id"
+rust_type="String"
+required=true
+format="typed"
+meaning="该选定文件交付的版本标识"
+unit="无量纲身份"
+precision="不超过128个ASCII字母数字及减号下划线点"
+write="Agent从固定交付版本准备"
+applicability="不替代原case/projection身份"
+acceptance="须与完整原件和分片摘要一同读取"
+
+[[types.fields]]
+name="case_count"
+rust_type="u64"
+required=true
+format="typed"
+meaning="成员清单中中国案例current指针的数目"
+unit="整数案例数"
+precision="1至4096；精确对照成员路径数量"
+write="Agent列出；Rust核对"
+applicability="只核运输清单中六位CN案例指针路径"
+acceptance="不把路径计数当作case语义或全部来源闭包通过"
+
+[[types.fields]]
+name="scope"
+rust_type="serde_json::Value"
+required=true
+format="typed"
+meaning="选定当前案例闭包声明、原manifest非全成员复现及明确排除路径"
+unit="无量纲范围与相对路径"
+precision="固定五类排除项及至多4096个唯一排除路径"
+write="Agent冻结选择范围；Rust核字段、路径策略及排除冲突"
+applicability="原browser-capture/captures/jobs/runtime/实际Project不随此合同恢复"
+acceptance="full_upstream_manifest_reproduction必须false；原资料语义另核"
+
+[[types.fields]]
+name="shards"
+rust_type="Vec<serde_json::Value>"
+required=true
+format="typed"
+meaning="每份分片JSON的相对路径、SHA256及长度；分片再绑定tar.xz与全部成员"
+unit="字节、SHA256、相对路径"
+precision="1至256片；所有跨片成员全局唯一且无文件/目录冲突"
+write="Agent按实际归档计算；Rust全部复读"
+applicability="分片JSON与压缩归档路径相对总清单父目录；成员相对新恢复根"
+acceptance="缺项、越界、重复、改变身份及晚到坏片均拒绝"
+
+[[constraints]]
+id="incad_source_bundle_preserves_selected_source_identity"
+requirement="req_knowledge"
+module="knowledge"
+check="verify"
+rust_path="crates/oe-knowledge/src/incad/bundle.rs"
+statement="A separate inCAD source-bundle/v1 binds bounded shard JSON bytes, each tar.xz identity and every selected relative member SHA256/length. Root and descriptor JSON objects reject duplicate, unknown and missing keys. Explicit scope excludes browser captures, captures/jobs/runtime and private Projects; case browser-capture.json and runtime navigation paths cannot enter the restored layout. Original upstream manifests may retain entries absent from this selected delivery and are never rewritten. Verified means transport bytes and path inventory only; source closure, ontology, native CAD and engineering adoption remain unverified. It does not replace the two-catalog PDF source-pack or create a Project."
+severity="error"
+
+[[constraints]]
+id="incad_source_bundle_bounded_safe_archive_recovery"
+requirement="req_knowledge"
+module="knowledge"
+check="import"
+rust_path="crates/oe-knowledge/src/incad/bundle.rs"
+statement="Preflight all descriptors and global member paths before an import stage: root JSON at most 1 MiB, each descriptor at most 16 MiB and descriptor total at most 128 MiB; at most 256 shards, 16384 members per shard and 262144 total, each member at most 256 MiB, each compressed or expanded shard at most 4 GiB, compressed and expanded totals each at most 64 GiB. Reject lexical escapes, duplicate paths and file/directory prefix collisions. Shared bounded XZ/tar streaming checks every member identity, regular-file kind, inventory completeness, footer, trailing data and unchanged archive identity; it does not extract archive-supplied links or trust member names as destinations. Verify may use cleaned temporary staging but creates no restored library."
+severity="error"
+
+[[constraints]]
+id="incad_source_bundle_publishes_only_complete_new_tree"
+requirement="req_knowledge"
+module="knowledge"
+check="import"
+rust_path="crates/oe-knowledge/src/incad/bundle.rs"
+statement="Import requires an explicit new real directory below this skill's sources/misumi. Do not replace an existing destination. Copy verified members into one private stage, validate all shards before publication, recheck the staged bytes and input descriptor/archive identities, then publish the entire tree with the shared exclusive directory rename. Late malformed or changed input leaves no partial target and temporary staged files are cleaned. Current originals, old receipts, configuration and Projects are not modified; no symlink fallback, download, browser or model execution."
+severity="error"
+
+[[validations]]
+id="incad_bundle_selected_transport_round_trip"
+module="knowledge"
+constraint="incad_source_bundle_preserves_selected_source_identity"
+behavior="bundle_restores_exact_selected_files_without_rewriting_upstream"
+rust_path="crates/oe-knowledge/src/incad/bundle.rs"
+oracle="Verify two synthetic shards without creating a target; import restores exact selected pointer/CAD/upstream-manifest bytes, including the old path declaration inside the original manifest. Omitted browser capture remains absent; repeat import refuses overwrite; source bundle bytes stay unchanged and report retains source-closure not_run/engineering not_granted."
+scope="Synthetic transport fixture; no real CAD, source graph, Project or platform-wide qualification"
+
+[[validations]]
+id="incad_bundle_cross_shard_path_preflight"
+module="knowledge"
+constraint="incad_source_bundle_bounded_safe_archive_recovery"
+behavior="bundle_rejects_cross_shard_duplicates_and_file_directory_conflicts_before_staging"
+rust_path="crates/oe-knowledge/src/incad/bundle.rs"
+oracle="A duplicate member across shards and a child member below another declared file are rejected before creating an import stage or target."
+scope="Synthetic adversarial inventories"
+
+[[validations]]
+id="incad_bundle_late_shard_failure_is_transactional"
+module="knowledge"
+constraint="incad_source_bundle_publishes_only_complete_new_tree"
+behavior="bundle_late_invalid_shard_leaves_no_published_target"
+rust_path="crates/oe-knowledge/src/incad/bundle.rs"
+oracle="A valid first shard followed by an archive with a correctly bound outer identity but wrong declared member hash fails; no target is published and temporary stages are removed."
+scope="Synthetic late payload failure; no original source mutation"
+
+[[validations]]
+id="incad_bundle_excluded_and_untrusted_input_rejection"
+module="knowledge"
+constraint="incad_source_bundle_bounded_safe_archive_recovery"
+behavior="bundle_rejects_private_paths_symlink_members_and_unbound_descriptors"
+rust_path="crates/oe-knowledge/src/incad/bundle.rs"
+oracle="Browser capture, jobs, capture root, watcher log and root configuration member paths are rejected, including nested captures/jobs/runtime/private_projects/browser_capture components under otherwise allowed prefixes. A symlink tar member with an otherwise declared path is rejected. Changing a shard JSON without updating its bound identity is rejected; no restored target appears."
+scope="Synthetic excluded metadata and archive type fixtures"
+
+[[validations]]
+id="incad_bundle_file_budget_and_target_scope"
+module="knowledge"
+constraint="incad_source_bundle_publishes_only_complete_new_tree"
+behavior="bundle_declared_budgets_and_target_containment_are_enforced"
+rust_path="crates/oe-knowledge/src/incad/bundle.rs"
+oracle="A declared file larger than 256 MiB fails preflight; an import destination outside sources/misumi is rejected without creating it. Other bounded values remain explicit implementation limits, not empirically exercised by this test."
+scope="Synthetic representative limit and destination tests"

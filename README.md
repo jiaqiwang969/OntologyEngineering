@@ -99,9 +99,9 @@ Agent 按以下流程工作：
 
 工程资料统一放在与 `modules/` 同级的 `sources/`，书籍在 `sources/books/`，米思米资料在 `sources/misumi/`；论文、标准、器件手册等按需要增加分类。放入后告诉 Agent“整理新增资料”，由它清点来源、版本和摘要，按格式接入已有读取与检索能力，再对照原件服务当前 Project。流程、登记边界及资料在“工程本体 → ggen → Rust → RRSI”中的作用见 [sources/README.md](sources/README.md)。放入文件不会自动建立索引或知识图谱，也不授予工程采用。
 
-书籍和米思米目录继续使用 [Google Drive 原始资料包](https://drive.google.com/drive/folders/1QoNTu0gy9aPwQ-Sk6y5IWSBcVUCDVdXK)。交付包中的 `books/`、`misumi/` 分别映射到本安装根 `sources/books/`、`sources/misumi/`；`upload-manifest.json` 用于交付清点。已有本地原件优先核摘要后迁入，无需重新下载；安装根或原件路径改变时，保留旧回执并显式重建完整登记与索引。来源登记、内容适用性与工程采用分别核查，资料按其权限和许可使用。
+书籍和米思米目录继续使用 [Google Drive 原始资料包](https://drive.google.com/drive/folders/1QoNTu0gy9aPwQ-Sk6y5IWSBcVUCDVdXK)。交付包中的 `books/`、`misumi/` 分别映射到本安装根 `sources/books/`、`sources/misumi/`。旧包以 `upload-manifest.json` 清点；新版本地资料包使用 `source-delivery.json` 和独立 inCAD 分片清单。上方 Drive 链接在实际上传前仍代表旧包，不能据此假定已包含新增案例和图谱。已有本地原件优先核摘要后迁入，无需重新下载；安装根或原件路径改变时，保留旧回执并显式重建完整登记与索引。来源登记、内容适用性与工程采用分别核查，资料按其权限和许可使用。
 
-`sources/` 中只有 `README.md` 随 GitHub 和软件包公开；原件、提取内容、私人清单、导航笔记和索引均排除。PDF 索引保持 `sources/.indexes/local-pdf/`，`var/` 保存项目、记忆与运行记录。私人 session、客户资料、设备配置、凭据和缓存同样不发布。本轮只整理路径、接续已有登记；逐书本体化另行设计。仅路径调整或软件升级不更新 Drive，新增资料或可复用处理成果另按版本、来源和摘要更新交付包。
+`sources/` 中只有 `README.md` 随 GitHub 和软件包公开；原件、提取内容、私人清单、导航笔记和索引均排除。PDF 索引保持 `sources/.indexes/local-pdf/`，`var/` 保存项目、记忆与运行记录。私人 session、客户资料、设备配置、凭据和缓存同样不发布。inCAD 已提供来源图谱的建立、检索、回读和复核，将功能、条件、BOM 与 CAD 关联到固定来源，见[米思米资料使用](docs/MISUMI-SOURCE-LIBRARY.md)。逐书完整本体化仍需另行推进。仅路径调整或软件升级不更新 Drive，新增资料或可复用处理成果另按版本、来源和摘要更新交付包。
 
 ## 开发与范围
 

@@ -52,7 +52,7 @@
 | 现在有哪些变化、失效决定和缺项 | `project task-view` / `verify-task-view`；[当前任务](CONVERSATION-METHOD-USE.md) | 完整原 Project/work 与同版本变化、来源原件、当前工程检查；派生视图只读，下一动作仍待编排 |
 | 聊天中的经验依据何在 | task-view 的显式 `/2`、原 `oe-knowledge::conversation`；[原消息与方法使用](CONVERSATION-METHOD-USE.md) | 选定原消息的角色、时间、文本、位置与当前方法事实绑定；缺失/伪造/漂移及恢复；来源一致、原因解释、实际使用与收益分开 |
 | 长资料、图片和上下文判断 | 当前 Agent 按[协作编排](AGENT-ORCHESTRATION.md)处理；已有登记页、OCR/typed 和明确专用工具按各自合同使用 | 读到和未读到的范围、必要条件、原问题、反例、双预算、模型身份、实际 usage/费用、失败恢复；仍交由同 Project 正式审查 |
-| 米思米案例及零件如何进入设计 | supplier 与 `project incad`；[来源接入](CAD-INCAD-INTEGRATION.md)、[CAD 暂存](INCAD-CAD-STAGING.md) | 官网原规格/参考答案、实际下载与文件闭包、真实 CAD 原生核验、选型适用性；已曝光案例作为开发回放 |
+| 米思米案例及零件如何进入设计 | `knowledge library incad` [资料图谱](MISUMI-SOURCE-LIBRARY.md)、supplier 与 `project incad`；[来源接入](CAD-INCAD-INTEGRATION.md)、[CAD 暂存](INCAD-CAD-STAGING.md) | 官网原规格/参考答案、实际下载与文件闭包、真实 CAD 原生核验、选型适用性；已曝光案例作为开发回放 |
 | NX/SolidWorks 如何执行设计 | `oe-cad`、NX 协议/controller/worker、有限 SW Rust worker；[独立执行](CAD-INDEPENDENT-EXECUTION.md)、[工程交付](ENGINEERING-DELIVERY.md)、[SW 范围](SOLIDWORKS-NATIVE-WORKER.md) | 原生动作、完整对象与装配、单位与变换、设计意图、保存及独立进程重开、模型/图纸/BOM/工艺/检验依赖；各后端按其当前源独立取证 |
 | 如何形成施工图及检验依据 | 数值、孔列、原生图纸意图与 CAD handoff；[数值交付](../references/numeric-cad-delivery.md)、[图纸关联](../references/native-drawing-associations.md) | 尺寸、公差、基准、材料、工艺、装配与测量方法、覆盖及不确定度；几何参考页和视觉演示不替代制造图或实测 |
 | 哪个结论现在可以采用 | `kernel review --project`、工程前提/数值/制造检查及现有治理 owner | 当前对象/条件/来源、必要检查、失败/未知/覆盖与批准；语义支持、工具状态和工程采用分别保存 |

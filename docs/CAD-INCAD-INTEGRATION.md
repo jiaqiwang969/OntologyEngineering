@@ -2,6 +2,8 @@
 
 Engineering ontology defines meaning → actual locked ggen produces shared contracts → Rust executes and checks → RRSI-inspired comparisons evaluate improvements. SolidWorks and NX are parallel CAD backends; inCAD supplies source material and design exercises. They share the existing Project, sources, conditions and engineering adoption owner. Fusion stays retired.
 
+Source archives can now be organized under `sources/misumi/incad/` with a source-bound case graph and portable selected-file delivery. See [MISUMI source library](MISUMI-SOURCE-LIBRARY.md) for build/search/view/verify and bundle restoration. This source layer does not invent a Project or replace the existing intake checks below.
+
 ## Source preparation that runs now
 
 `oev2 project incad prepare --input var/request.json --output var/new-preparation` verifies an `oev2.incad-work-preparation/1` request. Its `work` references an existing complete `oev2.engineering-work/3`; the original current Project, context, object and conditions must pass the existing workflow checks. The command does not invent a Project or translate supplier declarations into project facts.

@@ -13,6 +13,7 @@ use std::{
     path::{Path, PathBuf},
     time::SystemTime,
 };
+mod incremental;
 
 pub const TABLES:&str="CREATE TABLE meta(key TEXT PRIMARY KEY,value TEXT NOT NULL);
 CREATE TABLE chapters(id TEXT PRIMARY KEY,catalog TEXT,title TEXT,start_page INTEGER,end_page INTEGER,source_json TEXT);
@@ -24,6 +25,8 @@ CREATE VIRTUAL TABLE search USING fts5(models,titles,body,chapter);";
 pub struct RegistrationOptions {
     pub data_root: PathBuf,
     pub replace: bool,
+    pub merge: bool,
+    pub dry_run: bool,
     pub tools: PopplerTools,
     pub limits: PopplerLimits,
 }
@@ -32,6 +35,8 @@ impl Default for RegistrationOptions {
         Self {
             data_root: "sources/.indexes/local-pdf".into(),
             replace: false,
+            merge: false,
+            dry_run: false,
             tools: Default::default(),
             limits: Default::default(),
         }
@@ -213,184 +218,174 @@ fn owned_snapshot(target: &Path) -> Result<Value> {
 }
 
 pub fn register(root: &Path, manifest: &Path, options: &RegistrationOptions) -> Result<Value> {
+    register_with_guard(root, manifest, options, || Ok(()))
+}
+
+/// The owning intake layer may add a final source-document check. A preview is
+/// informational: apply always rereads, hashes and validates all current inputs.
+pub(crate) fn register_with_guard(
+    root: &Path,
+    manifest: &Path,
+    options: &RegistrationOptions,
+    guard: impl FnOnce() -> Result<()>,
+) -> Result<Value> {
+    ensure!(
+        !(options.replace && options.merge),
+        "local_pdf_replace_merge_conflict"
+    );
     let root = oe_core::SkillRoot::new(root)?;
-    let root = root.path();
-    let target = within_root(root, &options.data_root)?;
-    let indexes = root.join("sources/.indexes");
+    let target = within_root(root.path(), &options.data_root)?;
+    let indexes = root.path().join("sources/.indexes");
     ensure!(
         target.starts_with(&indexes) && target != indexes,
         "local_pdf_index_outside_sources_indexes"
     );
-    let previous = if target.exists() {
-        ensure!(options.replace, "local_pdf_data_root_exists");
-        let previous = owned_snapshot(&target)?;
-        let registration = oe_core::json::strict_json(&oe_core::read_regular_bytes(
-            &target.join("registration.json"),
-            8 * 1024 * 1024,
-        )?)?;
-        let read =
-            crate::index::ReadIndex::open(&oe_core::SkillRoot::new(root)?, &target, "local_pdf")?;
-        ensure!(
-            read.identity()["sha256"] == previous["index_sha256"]
-                && read.meta["registration_sha256"]
-                    == oe_core::json::canonical_digest(
-                        &json!({"schema":registration["schema"],"sources":registration["sources"]})
-                    )?,
-            "local_pdf_existing_registration_binding_mismatch"
-        );
-        Some(previous)
-    } else {
-        None
-    };
-    let manifest = within_root(root, manifest)?;
+    let previous = incremental::Previous::open(&root, &target, options)?;
+    let manifest = within_root(root.path(), manifest)?;
     let manifest_raw = oe_core::read_regular_bytes(&manifest, 8 * 1024 * 1024)?;
-    let mut sources = manifest_sources(root, &manifest, &manifest_raw)?;
-    let stage = Stage::new(root, "registration")?;
+    let incoming = manifest_sources(root.path(), &manifest, &manifest_raw)?;
+    let mut plan = incremental::Plan::new(incoming, previous.as_ref(), options)?;
+    let mut originals = Vec::new();
+    for source in &plan.sources {
+        let path = PathBuf::from(text(source, "path")?);
+        let actual = file_hash(&path, 4 * 1024 * 1024 * 1024)?;
+        ensure!(
+            actual.0 == text(source, "sha256")?,
+            "local_pdf_source_hash_mismatch"
+        );
+        if let Some(old) = plan.reused(source, previous.as_ref()) {
+            ensure!(
+                old["bytes"] == actual.1,
+                "local_pdf_existing_source_bytes_mismatch"
+            );
+        }
+        originals.push((path, actual));
+    }
+    let recheck_inputs = || -> Result<()> {
+        for (path, expected) in &originals {
+            ensure!(
+                file_hash(path, 4 * 1024 * 1024 * 1024)? == *expected,
+                "local_pdf_source_changed_during_registration"
+            );
+        }
+        ensure!(
+            oe_core::read_regular_bytes(&manifest, 8 * 1024 * 1024)? == manifest_raw,
+            "local_pdf_manifest_changed"
+        );
+        Ok(())
+    };
+    if options.dry_run || plan.is_noop(options) {
+        // Validate reuse eligibility and bounded page rows even without a writer.
+        let mut measured = incremental::Counts::new(plan.sources.len());
+        for source in &plan.sources {
+            if let Some(old) = plan.reused(source, previous.as_ref()) {
+                let previous = previous.as_ref().expect("reuse has previous");
+                incremental::reuse(&previous.read, old, options, &mut measured, |_, _| Ok(()))?;
+            }
+        }
+        if plan.is_noop(options) {
+            ensure!(
+                measured.value == previous.as_ref().expect("noop has previous").read.meta["counts"],
+                "local_pdf_existing_counts_mismatch"
+            );
+        }
+        guard()?;
+        recheck_inputs()?;
+        if let Some(previous) = &previous {
+            previous.verify(&target)?;
+        }
+        let status = if options.dry_run {
+            "preview"
+        } else {
+            "unchanged"
+        };
+        let reuse_candidate_ids = if options.dry_run {
+            std::mem::replace(&mut plan.update["reused_source_ids"], json!([]))
+        } else {
+            json!([])
+        };
+        return Ok(
+            json!({"status":status,"provider":"local_pdf","data_root":target,
+            "update":plan.update,"final_counts":plan.final_counts,"index":if status == "unchanged" {previous.as_ref().map(|p| &p.read.meta)} else {None},
+            "previous":previous.as_ref().map(|p| &p.snapshot),
+            "reuse_candidate_ids":reuse_candidate_ids,
+            "published":false,"originals_modified":false,"network_requests":0}),
+        );
+    }
+    let stage = Stage::new(root.path(), "registration")?;
     let built = stage.path.join("index");
     oe_core::create_new_private_dir(&built)?;
     let index = built.join("catalog.sqlite3");
-    let file = oe_core::create_new_regular_file(&index)?;
-    drop(file);
+    drop(oe_core::create_new_regular_file(&index)?);
     let db = Connection::open(&index)?;
     db.execute_batch("PRAGMA journal_mode=DELETE; PRAGMA trusted_schema=OFF;")?;
     db.execute_batch(TABLES)?;
-    let mut counts = json!({"catalogs":sources.len(),"pages":0,"chapters":0,"native_text_sparse":0,"native_text_missing":0,"native_text_chars":0});
-    let total_chapters: usize = sources
-        .iter()
-        .map(|s| s["chapters"].as_array().expect("validated").len())
-        .sum();
-    ensure!(total_chapters <= 4096, "local_pdf_total_chapter_limit");
-    let mut total_text_bytes = 0_usize;
-    let mut total_pages = 0_usize;
-    let mut tools = Vec::new();
-    let mut originals = Vec::new();
     db.execute_batch("BEGIN IMMEDIATE")?;
-    for source in &mut sources {
-        let original = PathBuf::from(text(source, "path")?);
-        let expected = text(source, "sha256")?.to_owned();
-        let identity = file_hash(&original, 4 * 1024 * 1024 * 1024)?;
-        ensure!(identity.0 == expected, "local_pdf_source_hash_mismatch");
-        let extracted =
-            poppler::extract(root, &original, &expected, &options.tools, &options.limits)?;
-        total_text_bytes = total_text_bytes
-            .checked_add(extracted.pages.iter().map(String::len).sum::<usize>())
-            .context("local_pdf_total_text_limit")?;
-        total_pages += extracted.pages.len();
-        ensure!(
-            total_text_bytes <= 128 * 1024 * 1024 && total_pages <= 20000,
-            "local_pdf_registration_total_limit"
-        );
-        source["page_count"] = json!(extracted.pages.len());
-        source["bytes"] = json!(identity.1);
-        let chapters = source["chapters"].as_array().expect("validated");
-        ensure!(chapters.iter().all(|c|c["end_page"].as_u64().expect("validated")<=extracted.pages.len() as u64),"local_pdf_chapter_outside_document");
-        let code = format!("local_pdf:{}", text(source, "id")?);
-        for chapter in chapters {
-            let cid = format!("{code}:chapter:{}", text(chapter, "id")?);
-            db.execute(
-                "INSERT INTO chapters VALUES (?,?,?,?,?,?)",
-                params![
-                    cid,
-                    code,
-                    text(chapter, "title")?,
-                    chapter["start_page"].as_u64(),
-                    chapter["end_page"].as_u64(),
-                    encoded(chapter)?
-                ],
+    let mut counts = incremental::Counts::new(plan.sources.len());
+    let mut tools = Vec::new();
+    let mut sources = Vec::new();
+    let mut reused = Vec::new();
+    let mut extracted_ids = Vec::new();
+    for (source, (original, identity)) in plan.sources.iter().zip(&originals) {
+        let mut registered = source.clone();
+        registered["bytes"] = json!(identity.1);
+        if let Some(old) = plan.reused(source, previous.as_ref()) {
+            let previous = previous.as_ref().expect("reuse has previous");
+            registered["page_count"] = old["page_count"].clone();
+            incremental::insert_chapters(&db, &registered)?;
+            let observation = incremental::reuse(
+                &previous.read,
+                old,
+                options,
+                &mut counts,
+                |record, search| incremental::insert_page(&db, &record, &search),
             )?;
-            counts["chapters"] = json!(counts["chapters"].as_u64().unwrap() + 1);
-        }
-        for (offset, raw) in extracted.pages.iter().enumerate() {
-            let n = (offset + 1) as u64;
-            let body = normalize_body(raw);
-            let relevant: Vec<_> = chapters
-                .iter()
-                .filter(|c| {
-                    c["start_page"].as_u64().unwrap() <= n && c["end_page"].as_u64().unwrap() >= n
-                })
-                .collect();
-            let chapter = relevant.iter().min_by_key(|c| {
-                c["end_page"].as_u64().unwrap() - c["start_page"].as_u64().unwrap()
-            });
-            let cid = chapter.map(|c| format!("{code}:chapter:{}", c["id"].as_str().unwrap()));
-            let headings: Vec<_> = relevant
-                .iter()
-                .map(|c| json!({"text":c["title"],"origin":"declared_chapter_navigation"}))
-                .collect();
-            let terms = relevant
-                .iter()
-                .map(|c| {
-                    format!(
-                        "{} {}",
-                        c["title"].as_str().unwrap(),
-                        c["aliases"]
-                            .as_array()
-                            .unwrap()
-                            .iter()
-                            .map(|a| a.as_str().unwrap())
-                            .collect::<Vec<_>>()
-                            .join(" ")
-                    )
-                })
-                .collect::<Vec<_>>()
-                .join(" ");
-            let sparse = body.chars().filter(|c| !c.is_whitespace()).count() < 80;
-            db.execute(
-                "INSERT INTO pages VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                params![
-                    format!("{code}:page:{n}"),
-                    code,
-                    n,
-                    n,
-                    Option::<String>::None,
-                    cid,
-                    "",
-                    "",
-                    expected,
-                    identity.1,
-                    body,
-                    oe_core::sha256(&body),
-                    oe_core::sha256(raw),
+            tools.push(observation);
+            reused.push(
+                json!({"source_id":source["id"],"previous_index":previous.read.identity(),
+                "previous_registration_sha256":previous.snapshot["registration_sha256"],
+                "previous_index_fingerprint":previous.read.meta["fingerprint"],
+                "extraction":"reused_verified_native_text; no Poppler invocation"}),
+            );
+        } else {
+            let extracted = poppler::extract(
+                root.path(),
+                original,
+                &identity.0,
+                &options.tools,
+                &options.limits,
+            )?;
+            registered["page_count"] = json!(extracted.pages.len());
+            incremental::insert_chapters(&db, &registered)?;
+            counts.add_source(&registered, extracted.pages.iter().map(String::len).sum())?;
+            for (offset, raw) in extracted.pages.iter().enumerate() {
+                let body = normalize_body(raw);
+                let (record, search) = incremental::page_record(
+                    &registered,
+                    (offset + 1) as u64,
+                    &body,
+                    &oe_core::sha256(raw),
                     raw.chars().count() as u64,
-                    body.chars().count() as u64,
-                    sparse,
-                    encoded(&json!(headings))?,
-                    "[]",
-                    0,
-                    encoded(
-                        &json!({"document_id":source["id"],"text_origin":"poppler_native_text"})
-                    )?
-                ],
-            )?;
-            db.execute(
-                "INSERT INTO search(rowid,models,titles,body,chapter) VALUES (?,?,?,?,?)",
-                params![
-                    db.last_insert_rowid(),
-                    "",
-                    crate::text::tokens(&terms).join(" "),
-                    crate::text::tokens(&body).join(" "),
-                    crate::text::tokens(
-                        chapter.map(|c| c["title"].as_str().unwrap()).unwrap_or("")
-                    )
-                    .join(" ")
-                ],
-            )?;
-            for (key, addition) in [
-                ("pages", 1),
-                ("native_text_sparse", u64::from(sparse)),
-                ("native_text_missing", u64::from(body.trim().is_empty())),
-                ("native_text_chars", body.chars().count() as u64),
-            ] {
-                counts[key] = json!(counts[key].as_u64().unwrap() + addition);
+                )?;
+                counts.add_page(&record)?;
+                incremental::insert_page(&db, &record, &search)?;
             }
+            tools.push(json!({"source_id":source["id"],"tools":extracted.observations}));
+            extracted_ids.push(source["id"].clone());
         }
-        tools.push(json!({"source_id":source["id"],"tools":extracted.observations}));
-        originals.push((original.clone(), identity));
-        source["path"] = json!(relative_original(&original, &target)?);
+        registered["path"] = json!(relative_original(original, &target)?);
+        sources.push(registered);
     }
+    plan.update["extracted_source_ids"] = json!(extracted_ids);
+    plan.final_counts = counts.value.clone();
     let identity =
         json!({"schema":"ontology-engineering.local-pdf-registration/v1","sources":sources});
-    let mut meta = json!({"schema":"ontology-engineering.local-pdf-index/v1","built_at":chrono::DateTime::<chrono::Utc>::from(SystemTime::now()).to_rfc3339_opts(chrono::SecondsFormat::Secs,true),"counts":counts,"registration_sha256":oe_core::json::canonical_digest(&identity)?,"builder_sha256":oe_core::sha256(include_bytes!("registration.rs")),"builder":"oe-knowledge Rust registration","extraction":"pdftotext -layout -enc UTF-8; horizontal whitespace collapsed; no OCR","scope":"native text retrieval plus declared chapter navigation; no claim extraction or semantic adoption","tools":tools,"sqlite_version":rusqlite::version(),"tokenizer":"Rust Unicode NFKC + Unicode lowercase; ASCII/CJK ngrams"});
+    let builder = [
+        include_bytes!("registration.rs").as_slice(),
+        include_bytes!("registration/incremental.rs").as_slice(),
+    ]
+    .concat();
+    let mut meta = json!({"schema":"ontology-engineering.local-pdf-index/v1","built_at":chrono::DateTime::<chrono::Utc>::from(SystemTime::now()).to_rfc3339_opts(chrono::SecondsFormat::Secs,true),"counts":counts.value,"registration_sha256":oe_core::json::canonical_digest(&identity)?,"builder_sha256":oe_core::sha256(builder),"builder":"oe-knowledge Rust registration","extraction":"pdftotext -layout -enc UTF-8; horizontal whitespace collapsed; no OCR","scope":"native text retrieval plus declared chapter navigation; no claim extraction or semantic adoption","tools":tools,"reused_sources":reused,"sqlite_version":rusqlite::version(),"tokenizer":"Rust Unicode NFKC + Unicode lowercase; ASCII/CJK ngrams"});
     meta["fingerprint"] = json!(oe_core::json::canonical_digest(&meta)?);
     ensure!(
         encoded(&meta)?.len() <= 8 * 1024 * 1024,
@@ -417,26 +412,24 @@ pub fn register(root: &Path, manifest: &Path, options: &RegistrationOptions) -> 
         "local_pdf_registration_limit"
     );
     oe_core::write_new(&built.join("registration.json"), &registration)?;
-    for (path, expected) in originals {
-        ensure!(
-            file_hash(&path, 4 * 1024 * 1024 * 1024)? == expected,
-            "local_pdf_source_changed_during_registration"
-        );
+    if let Some(previous) = &previous {
+        previous.verify(&target)?;
     }
-    ensure!(
-        oe_core::read_regular_bytes(&manifest, 8 * 1024 * 1024)? == manifest_raw,
-        "local_pdf_manifest_changed"
-    );
     crate::publication::publish_directory(
         stage,
         &built,
         &target,
-        previous.as_ref(),
+        previous.as_ref().map(|p| &p.snapshot),
         owned_snapshot,
-        || Ok(()),
+        || {
+            guard()?;
+            recheck_inputs()
+        },
     )?;
     Ok(
-        json!({"status":"registered","provider":"local_pdf","data_root":target,"index":meta,"originals_modified":false,"network_requests":0}),
+        json!({"status":"registered","provider":"local_pdf","data_root":target,
+        "index":meta,"update":plan.update,"final_counts":plan.final_counts,"previous":previous.as_ref().map(|p| &p.snapshot),
+        "published":true,"originals_modified":false,"network_requests":0}),
     )
 }
 

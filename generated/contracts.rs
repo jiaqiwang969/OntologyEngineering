@@ -2467,6 +2467,16 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("KnowledgeTypedExtractionReceipt8", "source_current", "bool"),
     ("KnowledgeTypedExtractionReceipt8", "unknown", "Vec<String>"),
     ("KnowledgeTypedExtractionReceipt8", "wire_observations", "serde_json::Value"),
+    ("LocalPdfRegistrationUpdate", "added", "Vec<String>"),
+    ("LocalPdfRegistrationUpdate", "extracted_source_ids", "Vec<String>"),
+    ("LocalPdfRegistrationUpdate", "extraction_required_ids", "Vec<String>"),
+    ("LocalPdfRegistrationUpdate", "final_source_count", "u64"),
+    ("LocalPdfRegistrationUpdate", "mode", "String"),
+    ("LocalPdfRegistrationUpdate", "removed", "Vec<String>"),
+    ("LocalPdfRegistrationUpdate", "retained", "Vec<String>"),
+    ("LocalPdfRegistrationUpdate", "reused_source_ids", "Vec<String>"),
+    ("LocalPdfRegistrationUpdate", "unchanged", "Vec<String>"),
+    ("LocalPdfRegistrationUpdate", "updated", "Vec<String>"),
     ("MechanismAssessment", "condition_values", "serde_json::Value"),
     ("MechanismAssessment", "drive", "DriveContract"),
     ("MechanismAssessment", "schema", "String"),
@@ -4613,6 +4623,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("KnowledgeTypedExtractionReceipt8", "execution", "completed"),
     ("KnowledgeTypedExtractionReceipt8", "execution", "failed"),
     ("KnowledgeTypedExtractionReceipt8", "schema", "oev2.source-bound-typed-extraction-receipt/8"),
+    ("LocalPdfRegistrationUpdate", "mode", "create"),
+    ("LocalPdfRegistrationUpdate", "mode", "merge"),
+    ("LocalPdfRegistrationUpdate", "mode", "replace"),
     ("MechanismAssessment", "schema", "oev2.mechanism-assessment/1"),
     ("MemoryCandidateCheck", "project_binding", "condition_changed"),
     ("MemoryCandidateCheck", "project_binding", "matched"),
@@ -17391,6 +17404,42 @@ impl KnowledgeTypedExtractionReceipt8 {
 
         if !["completed","failed",].contains(&self.execution.as_str()) { failures.push("KnowledgeTypedExtractionReceipt8.execution:allowed_values".into()); }
         if !["oev2.source-bound-typed-extraction-receipt/8",].contains(&self.schema.as_str()) { failures.push("KnowledgeTypedExtractionReceipt8.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// PDF登记的增量差异与实际提取/复用范围，保持旧create/replace合同
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct LocalPdfRegistrationUpdate {
+    /// 新增来源ID
+    pub added: Vec<String>,
+    /// 本轮实际Poppler提取来源；preview与unchanged为空
+    pub extracted_source_ids: Vec<String>,
+    /// 预览及执行的需要提取来源，不伪造未知页数
+    pub extraction_required_ids: Vec<String>,
+    /// 本次成功后或预览的完整来源数
+    pub final_source_count: u64,
+    /// 本次create、replace或merge模式
+    pub mode: String,
+    /// replace移出的旧来源，merge为空
+    pub removed: Vec<String>,
+    /// merge保留未在本次清单出现的旧来源
+    pub retained: Vec<String>,
+    /// 已核旧原件及索引且实际复用的来源；preview不冒称执行
+    pub reused_source_ids: Vec<String>,
+    /// 本次清单中未变的来源
+    pub unchanged: Vec<String>,
+    /// 同ID且描述变化的来源
+    pub updated: Vec<String>,
+}
+impl LocalPdfRegistrationUpdate {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.mode.trim().is_empty() { failures.push("LocalPdfRegistrationUpdate.mode:required".into()); }
+
+        if !["create","merge","replace",].contains(&self.mode.as_str()) { failures.push("LocalPdfRegistrationUpdate.mode:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

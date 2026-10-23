@@ -609,3 +609,308 @@ fn replacement_rejects_self_consistent_hashes_of_non_index_bytes() {
     assert!(format!("{error:#}").contains("index_"));
     assert_eq!(fs::read(target.join("catalog.sqlite3")).unwrap(), bytes);
 }
+
+fn index_pair(f: &Fixture) -> (Vec<u8>, Vec<u8>) {
+    let dir = f.0.join("sources/.indexes/local-pdf");
+    (
+        fs::read(dir.join("catalog.sqlite3")).unwrap(),
+        fs::read(dir.join("registration.json")).unwrap(),
+    )
+}
+fn second_source(f: &Fixture, first: &Value) -> Value {
+    let path = f.0.join("sources/books/second.pdf");
+    let raw = unicode_pdf_pages(1);
+    fs::write(&path, &raw).unwrap();
+    let mut source = first.clone();
+    source["id"] = json!("second");
+    source["path"] = json!("second.pdf");
+    source["sha256"] = json!(sha256(raw));
+    source["chapters"][0]["end_page"] = json!(1);
+    source
+}
+fn absent_tools(f: &Fixture) -> PopplerTools {
+    PopplerTools {
+        pdfinfo: f.0.join("absent-pdfinfo"),
+        pdftotext: f.0.join("absent-pdftotext"),
+        pdftoppm: f.0.join("absent-pdftoppm"),
+    }
+}
+#[cfg(unix)]
+fn counted_tools(f: &Fixture) -> (PopplerTools, PathBuf) {
+    fn quote(path: &Path) -> String {
+        format!("'{}'", path.to_str().unwrap().replace('\'', "'\\''"))
+    }
+    let log = f.0.join("tool-calls.log");
+    fs::write(&log, "").unwrap();
+    let pdfinfo = script(
+        f,
+        "counted-info",
+        &format!(
+            "printf '%s\\n' \"$*\" >> {}\nexec /opt/homebrew/bin/pdfinfo \"$@\"",
+            quote(&log)
+        ),
+    );
+    let pdftotext = script(
+        f,
+        "counted-text",
+        &format!(
+            "printf '%s\\n' \"$*\" >> {}\nexec /opt/homebrew/bin/pdftotext \"$@\"",
+            quote(&log)
+        ),
+    );
+    (
+        PopplerTools {
+            pdfinfo,
+            pdftotext,
+            pdftoppm: tools().pdftoppm,
+        },
+        log,
+    )
+}
+
+#[test]
+#[cfg(unix)]
+fn merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations() {
+    let f = Fixture::new("incremental-reuse");
+    let (path, mut m, _) = manifest(&f);
+    let (tools, log) = counted_tools(&f);
+    let mut opts = RegistrationOptions { tools, ..options() };
+    let original = registration::register(&f.0, &path, &opts).unwrap();
+    let original_pair = index_pair(&f);
+    let second = second_source(&f, &m["sources"][0]);
+    m["sources"] = json!([second]);
+    save(&path, &m);
+    opts.merge = true;
+    fs::write(&log, "").unwrap();
+    let merged = registration::register(&f.0, &path, &opts).unwrap();
+    assert_eq!(merged["update"]["added"], json!(["second"]));
+    assert_eq!(merged["update"]["retained"], json!(["unicode"]));
+    assert_eq!(merged["update"]["reused_source_ids"], json!(["unicode"]));
+    assert_eq!(merged["update"]["extracted_source_ids"], json!(["second"]));
+    assert_eq!(merged["index"]["counts"]["pages"], 4);
+    assert_eq!(merged["index"]["tools"][0], original["index"]["tools"][0]);
+    assert_eq!(
+        merged["index"]["reused_sources"][0]["previous_index"]["sha256"],
+        sha256(&original_pair.0)
+    );
+    let calls = fs::read_to_string(&log).unwrap();
+    assert_eq!(calls.lines().count(), 2, "{calls}");
+    assert!(
+        calls
+            .lines()
+            .all(|l| l.contains("second.pdf") && !l.contains("中文-original.pdf"))
+    );
+    let root = SkillRoot::new(&f.0).unwrap();
+    let provider = Provider::open(&root, "local_pdf", None).unwrap();
+    assert!(
+        provider.page("local_pdf:unicode:page:1").unwrap()["body"]
+            .as_str()
+            .unwrap()
+            .contains("工程")
+    );
+    assert!(
+        provider.page("local_pdf:second:page:1").unwrap()["body"]
+            .as_str()
+            .unwrap()
+            .contains("工程")
+    );
+    drop(provider);
+    m["sources"][0]["edition"] = json!("revision-2");
+    m["sources"][0]["chapters"][0]["title"] = json!("Changed navigation");
+    save(&path, &m);
+    fs::write(&log, "").unwrap();
+    let updated = registration::register(&f.0, &path, &opts).unwrap();
+    assert_eq!(updated["update"]["updated"], json!(["second"]));
+    assert_eq!(updated["update"]["retained"], json!(["unicode"]));
+    assert_eq!(updated["index"]["tools"][0], original["index"]["tools"][0]);
+    assert_eq!(updated["index"]["counts"]["pages"], 4);
+    assert_eq!(fs::read_to_string(&log).unwrap().lines().count(), 2);
+    // FTS rowids are reconstructed alongside the new page rows, not copied.
+    let db =
+        rusqlite::Connection::open(f.0.join("sources/.indexes/local-pdf/catalog.sqlite3")).unwrap();
+    let matched:String = db.query_row("SELECT p.id FROM search JOIN pages p ON p.rowid=search.rowid WHERE search MATCH 'changed'",[],|r|r.get(0)).unwrap();
+    assert_eq!(matched, "local_pdf:second:page:1");
+}
+
+#[test]
+fn merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source() {
+    let f = Fixture::new("incremental-noop");
+    let (path, mut m, _) = manifest(&f);
+    let second = second_source(&f, &m["sources"][0]);
+    m["sources"].as_array_mut().unwrap().push(second);
+    save(&path, &m);
+    registration::register(&f.0, &path, &options()).unwrap();
+    let old = index_pair(&f);
+    m["sources"].as_array_mut().unwrap().pop();
+    save(&path, &m);
+    let opts = RegistrationOptions {
+        merge: true,
+        tools: absent_tools(&f),
+        ..options()
+    };
+    let result = registration::register(&f.0, &path, &opts).unwrap();
+    assert_eq!(result["status"], "unchanged");
+    assert_eq!(result["published"], false);
+    assert_eq!(result["update"]["unchanged"], json!(["unicode"]));
+    assert_eq!(result["update"]["retained"], json!(["second"]));
+    assert_eq!(result["final_counts"]["pages"], 4);
+    assert_eq!(index_pair(&f), old);
+}
+
+#[test]
+fn registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals() {
+    let f = Fixture::new("incremental-preview");
+    let (path, mut m, _) = manifest(&f);
+    let mut opts = RegistrationOptions {
+        dry_run: true,
+        tools: absent_tools(&f),
+        ..options()
+    };
+    let preview = registration::register(&f.0, &path, &opts).unwrap();
+    assert_eq!(preview["status"], "preview");
+    assert_eq!(preview["update"]["added"], json!(["unicode"]));
+    assert!(preview["final_counts"]["pages"].is_null());
+    assert!(!f.0.join("sources/.indexes/local-pdf").exists());
+    registration::register(&f.0, &path, &options()).unwrap();
+    let old = index_pair(&f);
+    let second = second_source(&f, &m["sources"][0]);
+    m["sources"] = json!([second]);
+    save(&path, &m);
+    opts.merge = true;
+    let preview = registration::register(&f.0, &path, &opts).unwrap();
+    assert_eq!(preview["update"]["retained"], json!(["unicode"]));
+    assert_eq!(preview["update"]["reused_source_ids"], json!([]));
+    assert_eq!(preview["reuse_candidate_ids"], json!(["unicode"]));
+    assert_eq!(preview["update"]["final_source_count"], 2);
+    assert_eq!(index_pair(&f), old);
+    opts.merge = false;
+    opts.replace = true;
+    let preview = registration::register(&f.0, &path, &opts).unwrap();
+    assert_eq!(preview["update"]["removed"], json!(["unicode"]));
+    assert_eq!(preview["update"]["retained"], json!([]));
+    assert_eq!(preview["update"]["final_source_count"], 1);
+    assert_eq!(index_pair(&f), old);
+    m["sources"][0]["sha256"] = json!("0".repeat(64));
+    save(&path, &m);
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("source_hash_mismatch")
+    );
+    assert_eq!(index_pair(&f), old);
+}
+
+#[test]
+fn merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair() {
+    let f = Fixture::new("incremental-drift");
+    let (path, mut m, pdf) = manifest(&f);
+    registration::register(&f.0, &path, &options()).unwrap();
+    let old = index_pair(&f);
+    let second = second_source(&f, &m["sources"][0]);
+    m["sources"] = json!([second]);
+    save(&path, &m);
+    let opts = RegistrationOptions {
+        merge: true,
+        ..options()
+    };
+    fs::write(&pdf, b"changed old original").unwrap();
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("source_hash_mismatch")
+    );
+    assert_eq!(index_pair(&f), old);
+    fs::write(&pdf, unicode_pdf()).unwrap();
+    let dir = f.0.join("sources/.indexes/local-pdf");
+    let mut changed = old.0.clone();
+    changed.push(0);
+    fs::write(dir.join("catalog.sqlite3"), &changed).unwrap();
+    let drifted = index_pair(&f);
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("existing_index_identity_mismatch")
+    );
+    assert_eq!(index_pair(&f), drifted);
+}
+
+#[test]
+fn merge_budgets_apply_to_complete_retained_plus_incoming_catalog() {
+    let f = Fixture::new("incremental-budget");
+    let (path, mut m, _) = manifest(&f);
+    registration::register(&f.0, &path, &options()).unwrap();
+    let old = index_pair(&f);
+    let base = m["sources"][0].clone();
+    m["sources"] = json!(
+        (0..256)
+            .map(|n| {
+                let mut s = base.clone();
+                s["id"] = json!(format!("new-{n}"));
+                s
+            })
+            .collect::<Vec<_>>()
+    );
+    save(&path, &m);
+    let opts = RegistrationOptions {
+        merge: true,
+        dry_run: true,
+        tools: absent_tools(&f),
+        ..options()
+    };
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("source_count_invalid")
+    );
+    assert_eq!(index_pair(&f), old);
+    let mut added = base.clone();
+    added["id"] = json!("added");
+    let chapter = base["chapters"][0].clone();
+    added["chapters"] = json!(
+        (0..4096)
+            .map(|n| {
+                let mut c = chapter.clone();
+                c["id"] = json!(format!("chapter-{n}"));
+                c
+            })
+            .collect::<Vec<_>>()
+    );
+    m["sources"] = json!([added]);
+    save(&path, &m);
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("total_chapter_limit")
+    );
+    assert_eq!(index_pair(&f), old);
+}
+
+#[test]
+fn merge_failure_and_conflicting_modes_leave_original_registration_intact() {
+    let f = Fixture::new("incremental-failure");
+    let (path, mut m, _) = manifest(&f);
+    registration::register(&f.0, &path, &options()).unwrap();
+    let old = index_pair(&f);
+    m["sources"][0]["edition"] = json!("updated");
+    save(&path, &m);
+    let mut opts = RegistrationOptions {
+        merge: true,
+        tools: absent_tools(&f),
+        ..options()
+    };
+    assert!(registration::register(&f.0, &path, &opts).is_err());
+    assert_eq!(index_pair(&f), old);
+    opts.replace = true;
+    assert!(
+        registration::register(&f.0, &path, &opts)
+            .unwrap_err()
+            .to_string()
+            .contains("replace_merge_conflict")
+    );
+    assert_eq!(index_pair(&f), old);
+}

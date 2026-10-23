@@ -22,7 +22,7 @@
 7. 接入实际工程项目时，先确认 Project ID，再按 [项目文件体系](docs/PROJECT-WORKSPACE.md)显式指定 `--project-home /absolute/project/.engineering`。安装根、项目数据根与 memory home 分开；在该工程项目的宿主 AGENTS 或配置中写入恢复命令与明确身份。源码候选、实际安装与新会话接续分别核验；不以文件存在认定自动 hook 已生效。
 8. 工程资料统一投放本安装根 `sources/`，书籍使用 `sources/books/`，米思米使用 `sources/misumi/`，PDF 索引保持 `sources/.indexes/local-pdf/`。按 [sources/README.md](sources/README.md)清点来源、版本、摘要和现有覆盖，选择与格式相符的读取或登记入口；用户不手填清单。已有本地原件核验后移动，无需重复下载；安装根或路径变化时保全原来源身份与回执，再显式重建完整登记，不以软链接或静默回退维持旧身份。
 
-资料处理先核当前程序的 `knowledge --help` 与 `knowledge library source-delivery --help`。有已核本地原件时不运行 fetch；交付清单中的相对路径继续映射到 `sources/` 下。PDF 的 `knowledge register --replace` 和 source-delivery register 的 `--replace` 都替换所选索引的完整书目：先合并旧清单和新增资料，成功后核全部来源与页数，保留原回执及失败。新增 PDF 登记不会扩展 `project work` 既有六书角色；非 PDF 与供应商资料按各自合同接入。入库、索引、本体化和当前项目采用分别记录，不把路径整理宣称为全书处理。
+资料处理先核当前程序的 `knowledge --help` 与 `knowledge library source-delivery --help`。有已核本地原件时不运行 fetch；交付清单中的相对路径继续映射到 `sources/` 下。PDF 新增或修订由 Agent 准备清单，先 `knowledge register --merge --dry-run` 核原件、旧索引与差异，再 `--merge` 按 ID 更新并保留未列旧来源；source-delivery register 同样支持这些选项。预览不提取或发布，也不是后续执行凭证。`--replace` 仍按完整清单重建并移除未列来源，路径迁移等完整重建先预览移除项。成功后核全部来源与页数，保留原回执及失败；`unchanged` 只表示索引无需修改。详见[资料接入说明](sources/README.md)。新增 PDF 登记不会扩展 `project work` 既有六书角色；非 PDF 与供应商资料按各自合同接入。入库、索引、本体化和当前项目采用分别记录，不把路径整理宣称为全书处理。
 
 安装或升级后检查宿主的全部实际 Skill 搜索目录。以下命令只读核摘要和同名入口；`--skill-root` 可重复，未使用的宿主目录可省略：
 

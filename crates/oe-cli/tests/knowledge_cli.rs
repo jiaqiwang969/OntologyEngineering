@@ -93,6 +93,9 @@ impl Drop for Fixture {
 }
 
 fn pdf() -> Vec<u8> {
+    pdf_pages(2)
+}
+fn pdf_pages(count: usize) -> Vec<u8> {
     let mut objects = vec![
         b"<< /Type /Catalog /Pages 2 0 R >>".to_vec(),
         b"<< /Type /Pages /Count 2 /Kids [4 0 R 6 0 R] >>".to_vec(),
@@ -101,7 +104,7 @@ fn pdf() -> Vec<u8> {
     for text in [
         "Shaft transmits torque under stated operating conditions. Check the supporting bearings before selecting a design.",
         "",
-    ] {
+    ].into_iter().take(count) {
         let page = objects.len() + 1;
         objects.push(format!("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 400] /Resources << /Font << /F1 3 0 R >> >> /Contents {} 0 R >>",page+1).into_bytes());
         let stream = format!("BT /F1 10 Tf 20 350 Td ({text}) Tj ET");
@@ -113,6 +116,11 @@ fn pdf() -> Vec<u8> {
             .into_bytes(),
         );
     }
+    let kids = (0..count)
+        .map(|n| format!("{} 0 R", 4 + n * 2))
+        .collect::<Vec<_>>()
+        .join(" ");
+    objects[1] = format!("<< /Type /Pages /Count {count} /Kids [{kids}] >>").into_bytes();
     let mut out = b"%PDF-1.4\n".to_vec();
     let mut offsets = Vec::new();
     for (i, obj) in objects.iter().enumerate() {
@@ -687,4 +695,236 @@ fn query_rejects_secret_shaped_text_even_with_separate_valid_context() {
     assert_eq!(v["status"], "blocked");
     assert!(!v.to_string().contains(&secret));
     assert!(!f.0.join("var/projects/demo/unsafe-query").exists());
+}
+
+#[test]
+fn registration_merge_preview_and_noop_preserve_prior_sources_without_path() {
+    if !poppler_present() {
+        return;
+    }
+    let f = Fixture::new();
+    f.pdf();
+    let mut initial = vec![
+        "knowledge",
+        "register",
+        "--manifest",
+        "sources/books/manifest.json",
+    ];
+    initial.extend(TOOLS);
+    assert_eq!(f.run(&initial).0, 0);
+    let index = f.0.join("sources/.indexes/local-pdf");
+    let before = fs::read(index.join("catalog.sqlite3")).unwrap();
+    let before_registration = fs::read(index.join("registration.json")).unwrap();
+    let mut manifest: Value =
+        serde_json::from_slice(&fs::read(f.0.join("sources/books/manifest.json")).unwrap())
+            .unwrap();
+    manifest["sources"][0]["id"] = json!("second");
+    manifest["sources"][0]["path"] = json!("second.pdf");
+    fs::write(f.0.join("sources/books/second.pdf"), pdf()).unwrap();
+    f.save("sources/books/addition.json", &manifest);
+    let request = [
+        "knowledge",
+        "register",
+        "--manifest",
+        "sources/books/addition.json",
+        "--merge",
+    ];
+    let mut preview = request.to_vec();
+    preview.push("--dry-run");
+    let (code, plan) = f.run(&preview);
+    assert_eq!(
+        (code, plan["status"].as_str()),
+        (0, Some("preview")),
+        "{plan}"
+    );
+    assert_eq!(plan["result"]["update"]["added"], json!(["second"]));
+    assert_eq!(plan["result"]["update"]["retained"], json!(["fixture"]));
+    assert_eq!(fs::read(index.join("catalog.sqlite3")).unwrap(), before);
+    assert_eq!(
+        fs::read(index.join("registration.json")).unwrap(),
+        before_registration
+    );
+    let mut apply = request.to_vec();
+    apply.extend(TOOLS);
+    let (code, result) = f.run(&apply);
+    assert_eq!(
+        (code, result["status"].as_str()),
+        (0, Some("registered")),
+        "{result}"
+    );
+    assert_eq!(result["result"]["index"]["counts"]["catalogs"], 2);
+    assert_eq!(
+        result["result"]["update"]["extracted_source_ids"],
+        json!(["second"])
+    );
+    assert_eq!(
+        result["result"]["update"]["reused_source_ids"],
+        json!(["fixture"])
+    );
+    let after = fs::read(index.join("catalog.sqlite3")).unwrap();
+    let after_registration = fs::read(index.join("registration.json")).unwrap();
+    let (code, result) = f.run(&request); // empty PATH: no native extraction is possible
+    assert_eq!(
+        (code, result["status"].as_str()),
+        (0, Some("unchanged")),
+        "{result}"
+    );
+    assert_eq!(fs::read(index.join("catalog.sqlite3")).unwrap(), after);
+    assert_eq!(
+        fs::read(index.join("registration.json")).unwrap(),
+        after_registration
+    );
+    let (code, removal) = f.run(&[
+        "knowledge",
+        "register",
+        "--manifest",
+        "sources/books/addition.json",
+        "--replace",
+        "--dry-run",
+    ]);
+    assert_eq!(code, 0, "{removal}");
+    assert_eq!(removal["result"]["update"]["removed"], json!(["fixture"]));
+    assert_eq!(fs::read(index.join("catalog.sqlite3")).unwrap(), after);
+    let conflict = f
+        .command()
+        .args([
+            "knowledge",
+            "register",
+            "--manifest",
+            "sources/books/addition.json",
+            "--replace",
+            "--merge",
+        ])
+        .output()
+        .unwrap();
+    assert!(!conflict.status.success());
+    assert_eq!(fs::read(index.join("catalog.sqlite3")).unwrap(), after);
+}
+
+#[test]
+fn source_delivery_merge_preview_and_unchanged_are_successful_cli_results() {
+    if !poppler_present() {
+        return;
+    }
+    let f = Fixture::new();
+    delivery_fixture(&f);
+    assert_eq!(
+        f.run(&[
+            "knowledge",
+            "library",
+            "source-delivery",
+            "import",
+            "--from",
+            "var/downloads"
+        ])
+        .0,
+        0
+    );
+    let base = [
+        "knowledge",
+        "library",
+        "source-delivery",
+        "register",
+        "--select",
+        "fixture",
+        "--merge",
+    ];
+    let mut preview = base.to_vec();
+    preview.push("--dry-run");
+    let (code, result) = f.run(&preview);
+    assert_eq!(
+        (code, result["status"].as_str()),
+        (0, Some("preview")),
+        "{result}"
+    );
+    assert!(!f.0.join("sources/.indexes/local-pdf").exists());
+    let mut apply = base.to_vec();
+    apply.extend(TOOLS);
+    let (code, result) = f.run(&apply);
+    assert_eq!(code, 0, "{result}");
+    let (code, result) = f.run(&base);
+    assert_eq!(
+        (code, result["status"].as_str()),
+        (0, Some("unchanged")),
+        "{result}"
+    );
+}
+
+fn supplier_archive(f: &Fixture) {
+    let archive = "sources/supplier-fixture";
+    for (ci, code) in oe_knowledge::supplier_index::CATALOG_CODES
+        .iter()
+        .enumerate()
+    {
+        let page_id = ci * 100 + 1;
+        for relative in [
+            format!("{archive}/tmp/pdfs/{code}/pages"),
+            format!("{archive}/下载记录"),
+            format!("{archive}/output/pdf"),
+            format!("{archive}/output/校验"),
+        ] {
+            fs::create_dir_all(f.0.join(relative)).unwrap();
+        }
+        let raw = pdf_pages(1);
+        let hash = oe_core::sha256(&raw);
+        fs::write(
+            f.0.join(format!("{archive}/tmp/pdfs/{code}/pages/0001.pdf")),
+            &raw,
+        )
+        .unwrap();
+        fs::write(f.0.join(format!("{archive}/output/pdf/{code}.pdf")), &raw).unwrap();
+        f.save(&format!("{archive}/tmp/pdfs/{code}/metadata.json"),&json!({"ebook":{"catalogCode":code,"catalogTitle":"Synthetic shaft bearings","pages":{"info":[{"id":page_id,"pageNo":1,"pageNoReal":"1","pdfUrl":"0001.pdf","hotArea":[{"id":1,"type":"形式Tpye","keyword":"SFJ12","target":"https://example.invalid/model"}]}]},"class":[{"id":1,"pageId":page_id,"title":"Shaft bearings"}]}}));
+        f.save(&format!("{archive}/下载记录/{code}-manifest.json"),&json!([{"page_number":1,"page_id":page_id,"filename":"0001.pdf","printed_page":"1","bytes":raw.len(),"sha256":hash,"url":"https://example.invalid/source.pdf"}]));
+        f.save(
+            &format!("{archive}/output/校验/{code}-qc.json"),
+            &json!({"status":"synthetic_observation_only"}),
+        );
+        f.save(&format!("{archive}/下载记录/{code}-assembly.json"),&json!({"book":code,"pages":1,"file":format!("output/pdf/{code}.pdf"),"sha256":hash,"qc_report":format!("output/校验/{code}-qc.json")}));
+    }
+}
+
+#[test]
+fn supplier_default_build_index_is_readable_by_default_status_and_query() {
+    if !poppler_present() {
+        return;
+    }
+    let f = Fixture::new();
+    supplier_archive(&f);
+    let mut args = vec![
+        "knowledge",
+        "build-index",
+        "--archive",
+        "sources/supplier-fixture",
+    ];
+    args.extend(TOOLS);
+    let (code, result) = f.run(&args);
+    assert_eq!(code, 0, "{result}");
+    assert!(
+        f.0.join("sources/.indexes/misumi/catalog.sqlite3")
+            .is_file()
+    );
+    assert!(!f.0.join("sources/.indexes/misumi-native").exists());
+    let (code, result) = f.run(&["knowledge", "status", "--provider", "misumi"]);
+    assert_eq!(
+        (code, result["status"].as_str()),
+        (0, Some("ready")),
+        "{result}"
+    );
+    let mut query = vec![
+        "knowledge",
+        "query",
+        "--provider",
+        "misumi",
+        "--query",
+        "MISUMI SFJ12 shaft bearing",
+        "--output-dir",
+        "var/projects/demo/default-supplier-query",
+    ];
+    query.extend(TOOLS);
+    let (code, result) = f.run(&query);
+    assert_eq!(code, 0, "{result}");
+    assert!(
+        !result["result"]["results"].as_array().unwrap().is_empty(),
+        "{result}"
+    );
 }

@@ -286,7 +286,7 @@ enum KnowledgeCommand {
         archive: Option<PathBuf>,
         #[arg(long, conflicts_with = "archive", required_unless_present = "archive")]
         source_pack: Option<PathBuf>,
-        #[arg(long, default_value = "sources/.indexes/misumi-native")]
+        #[arg(long, default_value = "sources/.indexes/misumi")]
         index: PathBuf,
         #[arg(long)]
         replace: bool,
@@ -309,8 +309,15 @@ enum KnowledgeCommand {
         manifest: PathBuf,
         #[arg(long, default_value = "sources/.indexes/local-pdf")]
         index: PathBuf,
-        #[arg(long)]
+        /// Replace the complete catalog; omitted source IDs leave this index.
+        #[arg(long, conflicts_with = "merge")]
         replace: bool,
+        /// Add/update supplied IDs while preserving all other registered sources.
+        #[arg(long, conflicts_with = "replace")]
+        merge: bool,
+        /// Verify source identities and preview changes without extracting or publishing.
+        #[arg(long)]
+        dry_run: bool,
         #[command(flatten)]
         tools: KnowledgeTools,
     },
@@ -478,8 +485,15 @@ enum SourceDeliveryCommand {
         manifest: PathBuf,
         #[arg(long)]
         select: Option<String>,
-        #[arg(long, visible_alias = "replace-index")]
+        /// Replace the complete catalog with the selected books.
+        #[arg(long, visible_alias = "replace-index", conflicts_with = "merge")]
         replace: bool,
+        /// Merge selected books, retaining other registered source IDs.
+        #[arg(long, conflicts_with = "replace")]
+        merge: bool,
+        /// Preview source changes without extraction or index publication.
+        #[arg(long)]
+        dry_run: bool,
         #[command(flatten)]
         tools: KnowledgeTools,
     },
@@ -1105,15 +1119,22 @@ fn knowledge_execute(root: &SkillRoot, command: KnowledgeCommand) -> Result<Valu
                             manifest,
                             select,
                             replace,
+                            merge,
+                            dry_run,
                             tools,
                         } => (
                             "source-delivery-register",
-                            delivery::register(
+                            delivery::register_with_options(
                                 root,
                                 &manifest,
                                 select.as_deref(),
-                                replace,
-                                tools.resolve()?,
+                                &oe_knowledge::registration::RegistrationOptions {
+                                    replace,
+                                    merge,
+                                    dry_run,
+                                    tools: tools.resolve()?,
+                                    ..Default::default()
+                                },
                             )?,
                         ),
                     };
@@ -1166,6 +1187,8 @@ fn knowledge_execute(root: &SkillRoot, command: KnowledgeCommand) -> Result<Valu
             manifest,
             index,
             replace,
+            merge,
+            dry_run,
             tools,
         } => {
             let manifest = root.path().join(knowledge_relative(root, &manifest)?);
@@ -1175,11 +1198,14 @@ fn knowledge_execute(root: &SkillRoot, command: KnowledgeCommand) -> Result<Valu
                 &oe_knowledge::registration::RegistrationOptions {
                     data_root: index,
                     replace,
+                    merge,
+                    dry_run,
                     tools: tools.resolve()?,
                     limits: Default::default(),
                 },
             )?;
-            Ok(knowledge_result("register", "registered", result))
+            let status = result["status"].as_str().unwrap_or("registered").to_owned();
+            Ok(knowledge_result("register", &status, result))
         }
         KnowledgeCommand::Query {
             query: question,
@@ -1481,6 +1507,8 @@ fn execute(cli: Cli) -> Result<u8> {
                 status,
                 "ready"
                     | "registered"
+                    | "preview"
+                    | "unchanged"
                     | "completed"
                     | "rendered"
                     | "recorded"

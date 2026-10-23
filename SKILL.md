@@ -52,7 +52,7 @@ metadata:
 
 [能力索引](docs/CAPABILITIES.md)是按工程问题选择工具和合同的统一入口。先确定本轮需要，再读相应专门说明；两卷方法书、机械设计/计量/制造资料与供应商信息按其作用查证，相关性和工程适用性分别判断。
 
-用户向 `sources/` 投放资料或要求整理新增内容时，按 [资料接入说明](sources/README.md)清点来源、版本与摘要，再按文献、供应商资料及实际格式选择登记、检索和原件回读方式。结构化记录由 Agent 准备。替换 PDF 索引前合并完整书目，不能把 `knowledge register --replace` 当成追加；入库、索引、本体化、当前 Project 证据和工程采用分别记录。新增资料不会自动扩展 `project work` 的既有六书角色。
+用户向 `sources/` 投放资料或要求整理新增内容时，按 [资料接入说明](sources/README.md)清点来源、版本与摘要，再按文献、供应商资料及实际格式选择登记、检索和原件回读方式。清单由 Agent 准备；PDF 新增或修订先 `--merge --dry-run` 核差异，再按 ID 合并，保留未列旧来源。预览不锁定后续输入；`--replace` 仍须完整保留书目，不能当成追加。入库、索引、本体化、当前 Project 证据和工程采用分别记录。新增资料不会自动扩展 `project work` 的既有六书角色。
 
 专业工具的结果统一经 `project tool-result verify/register` 带来源回到同一 Project，不得用脚本直接改写 project.json；登记不改结论；结论经 `project decide` 由已登记结果更新，采用仍走 `project adopt`。外接专业能力按[作用与结果交接](references/professional-capabilities.md)选择：先确定要回答的问题、输入对象和所需证据，再调用对应 skill/工具。结果携带来源、条件、版本、覆盖与未知回到同一 Project；多工具同意的独立性要核实际来源与计算依赖。性能候选还需原基线与可比测量，经验保存后仍须在新条件下核适用性。
 

@@ -346,41 +346,42 @@ fn place(
     if let Some(path) = &incoming {
         oe_core::no_symlinks(path)?;
     }
-    let mut reports = Vec::new();
-    let mut names = BTreeSet::new();
-    for entry in &entries {
-        ensure!(
-            names.insert(
-                Path::new(entry["relative_path"].as_str().unwrap())
-                    .file_name()
-                    .unwrap()
-                    .to_owned()
-            ),
-            "source_library_ambiguous_download_names"
-        );
+    // Resolve the complete import before publishing any original. Separate
+    // nested paths may share a basename; only two destinations claiming the
+    // same actual incoming path are ambiguous. Already verified originals and
+    // explicit Drive IDs do not consume a local incoming path.
+    enum Input {
+        Existing,
+        Local(PathBuf),
+        Drive(String),
     }
+    let mut plan = Vec::new();
+    let mut local_paths = BTreeSet::new();
     for entry in entries {
         let target = destination(root, &source_root, &entry)?;
-        if fs::symlink_metadata(&target).is_ok() {
+        let input = if fs::symlink_metadata(&target).is_ok() {
             ensure!(
                 status(&target, &entry)? == "verified",
                 "source_library_existing_file_mismatch"
             );
-            reports
-                .push(json!({"relative_path":entry["relative_path"],"status":"already_verified"}));
-            continue;
-        }
-        let stage = source_pack::Stage::new(root.path(), "source-delivery")?;
-        let source = if let Some(incoming) = &incoming {
+            Input::Existing
+        } else if let Some(incoming) = &incoming {
             let rel = Path::new(entry["relative_path"].as_str().unwrap());
             let flat = incoming.join(rel.file_name().unwrap());
             let nested = incoming.join(rel);
             oe_core::no_symlinks(&nested)?;
-            if fs::symlink_metadata(&nested).is_ok() {
+            let source = if fs::symlink_metadata(&nested).is_ok() {
                 nested
             } else {
                 flat
-            }
+            };
+            oe_core::no_symlinks(&source)?;
+            let source = fs::canonicalize(&source).context("source_library_incoming_missing")?;
+            ensure!(
+                local_paths.insert(source.clone()),
+                "source_library_ambiguous_download_names"
+            );
+            Input::Local(source)
         } else {
             let id = entry["drive"]["file_id"]
                 .as_str()
@@ -393,7 +394,27 @@ fn place(
                         .all(|b| b.is_ascii_alphanumeric() || b == b'_' || b == b'-'),
                 "source_library_drive_id_invalid"
             );
-            download(root, id, &stage, options)?
+            Input::Drive(id.to_owned())
+        };
+        plan.push((entry, target, input));
+    }
+    document.verify_current()?;
+    let mut reports = Vec::new();
+    for (entry, target, input) in plan {
+        if matches!(input, Input::Existing) {
+            ensure!(
+                status(&target, &entry)? == "verified",
+                "source_library_existing_file_mismatch"
+            );
+            reports
+                .push(json!({"relative_path":entry["relative_path"],"status":"already_verified"}));
+            continue;
+        }
+        let stage = source_pack::Stage::new(root.path(), "source-delivery")?;
+        let source = match input {
+            Input::Local(path) => path,
+            Input::Drive(id) => download(root, &id, &stage, options)?,
+            Input::Existing => unreachable!("handled above"),
         };
         let verified = stage.path.join("verified");
         copy_verified(&source, &verified, &entry)?;
@@ -419,6 +440,27 @@ pub fn register(
     replace: bool,
     tools: crate::poppler::PopplerTools,
 ) -> Result<Value> {
+    register_with_options(
+        root,
+        manifest,
+        selection,
+        &registration::RegistrationOptions {
+            replace,
+            tools,
+            ..Default::default()
+        },
+    )
+}
+
+/// Register selected delivery entries with the same explicit update semantics
+/// as local PDF registration. The original delivery remains bound until the
+/// final publication (or read-only preview/no-op result).
+pub fn register_with_options(
+    root: &SkillRoot,
+    manifest: &Path,
+    selection: Option<&str>,
+    options: &registration::RegistrationOptions,
+) -> Result<Value> {
     let source_root = root_path(root, Path::new("sources"))?;
     let document = load(root, manifest)?;
     let entries = selected(&document.value, Some(selection.unwrap_or("books")))?;
@@ -440,14 +482,7 @@ pub fn register(
         &json!({"schema":"ontology-engineering.local-pdf-manifest/v1","sources":sources}),
     )?;
     document.verify_current()?;
-    registration::register(
-        root.path(),
-        &manifest_path,
-        &registration::RegistrationOptions {
-            data_root: "sources/.indexes/local-pdf".into(),
-            replace,
-            tools,
-            limits: Default::default(),
-        },
-    )
+    registration::register_with_guard(root.path(), &manifest_path, options, || {
+        document.verify_current()
+    })
 }

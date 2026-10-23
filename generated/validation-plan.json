@@ -574,6 +574,20 @@
     "scope": "Rust局部图示合同；实际浏览器及原生CAD另验"
   },
   {
+    "behavior": "delivery_change_during_extraction_blocks_new_replace_and_merge_publication",
+    "name": "delivery_change_during_extraction_blocks_new_replace_and_merge_publication",
+    "oracle": "Actual Poppler wrapper changes original delivery during extraction: create publishes nothing; replace/merge restore exact prior index and registration.",
+    "rustPath": "crates/oe-knowledge/tests/source_library.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
+    "behavior": "delivery_selected_merge_preserves_previous_books_and_preview_is_read_only",
+    "name": "delivery_selected_merge_preserves_previous_books_and_preview_is_read_only",
+    "oracle": "Selecting one book with merge preserves other sources; preview/no-op keep old bytes and have no extraction.",
+    "rustPath": "crates/oe-knowledge/tests/source_library.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
     "behavior": "event_index_preserves_large_failure_and_rejects_loss_or_tampering",
     "name": "event_index_preserves_large_failure_and_rejects_loss_or_tampering",
     "oracle": "4546项原引用完整往返，缺页/重复页/改字节/异任务/序列缺口/写入失败拒绝，无截断和假成功。",
@@ -586,6 +600,13 @@
     "oracle": "超过2MiB的UTF-8装配字段完整往返；缺块、重复块、改字节、错字段、错任务、错序号、错偏移、摘要/长度伪造、原事件schema/sequence伪造及预算越界均拒绝。",
     "rustPath": "crates/oe-nx-worker/tests/event_index.rs",
     "scope": "Rust分块与接收；Windows worker与完整项目原生重开另验"
+  },
+  {
+    "behavior": "final_publication_rechecks_original_after_owner_guard_and_rolls_back",
+    "name": "final_publication_rechecks_original_after_owner_guard_and_rolls_back",
+    "oracle": "Deterministic final guard mutates original source; post-guard source recheck blocks publication and replacement restores old registration/index.",
+    "rustPath": "crates/oe-knowledge/src/registration/incremental.rs",
+    "scope": "Actual local bounded fixtures; no engineering adoption or full concurrent filesystem guarantee"
   },
   {
     "behavior": "asserted_success_or_confidence1",
@@ -845,6 +866,48 @@
     "oracle": "超过4MiB快照经有界payload传输，原控制记录上限保持，批次合并小文件",
     "rustPath": "crates/oe-windows-controller/tests/native_payload_copy.rs",
     "scope": "完整字节观测与实际进程范围读取；原生执行及工程采用另验"
+  },
+  {
+    "behavior": "merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations",
+    "name": "merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations",
+    "oracle": "Actual small PDFs plus native invocation counter: adding one source preserves old rows and extraction observations; changing one source only extracts that ID; resulting FTS page identities remain bound.",
+    "rustPath": "crates/oe-knowledge/tests/source_io.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
+    "behavior": "merge_budgets_apply_to_complete_retained_plus_incoming_catalog",
+    "name": "merge_budgets_apply_to_complete_retained_plus_incoming_catalog",
+    "oracle": "The complete merged catalog obeys source/chapter/page limits, not only the newly supplied subset.",
+    "rustPath": "crates/oe-knowledge/tests/source_io.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
+    "behavior": "merge_failure_and_conflicting_modes_leave_original_registration_intact",
+    "name": "merge_failure_and_conflicting_modes_leave_original_registration_intact",
+    "oracle": "Conflicting merge/replace and extraction failure preserve old pair and no partial new catalog is adopted.",
+    "rustPath": "crates/oe-knowledge/tests/source_io.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
+    "behavior": "merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source",
+    "name": "merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source",
+    "oracle": "Identical partial merge with unusable Poppler returns unchanged, keeps omitted source and exact registration/index bytes.",
+    "rustPath": "crates/oe-knowledge/tests/source_io.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
+    "behavior": "merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair",
+    "name": "merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair",
+    "oracle": "Changed retained original and corrupt/rebound index refuse with previous pair retained.",
+    "rustPath": "crates/oe-knowledge/tests/source_io.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
+    "behavior": "mixed_nested_and_flat_same_basename_uses_distinct_inputs",
+    "name": "mixed_nested_and_flat_same_basename_uses_distinct_inputs",
+    "oracle": "Mixed nested and flat source resolution succeeds when actual input paths differ.",
+    "rustPath": "crates/oe-knowledge/tests/source_library.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
   },
   {
     "behavior": "changed_input_and_insufficient_plan_budget_stop_before_motion",
@@ -1785,6 +1848,13 @@
     "scope": "Admission and protocol rejection controls; real guarded preparation and full build remain separately required"
   },
   {
+    "behavior": "preview_and_noop_run_final_intake_guard_and_preserve_index_bytes",
+    "name": "preview_and_noop_run_final_intake_guard_and_preserve_index_bytes",
+    "oracle": "Preview and no-op both invoke the original intake owner guard; rejection leaves existing index pair exact.",
+    "rustPath": "crates/oe-knowledge/src/registration/incremental.rs",
+    "scope": "Actual local bounded fixtures; no engineering adoption or full concurrent filesystem guarantee"
+  },
+  {
     "behavior": "private_authority_preserves_exact_bytes_and_rechecks_current_content",
     "name": "private_authority_preserves_exact_bytes_and_rechecks_current_content",
     "oracle": "Private synthetic JSON returns its exact value and original-byte SHA; a later changed file returns the changed current SHA, never a cached policy. No input rewrite.",
@@ -2268,6 +2338,20 @@
     "scope": "重组与接口；原子发布、完整native准入及工程采用另验"
   },
   {
+    "behavior": "registration_merge_preview_and_noop_preserve_prior_sources_without_path",
+    "name": "registration_merge_preview_and_noop_preserve_prior_sources_without_path",
+    "oracle": "Actual CLI with empty PATH previews, merges only new source with explicit Poppler, reports unchanged without tools, preserves old book, exposes replace removals, and refuses mode conflict.",
+    "rustPath": "crates/oe-cli/tests/knowledge_cli.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
+    "behavior": "registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals",
+    "name": "registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals",
+    "oracle": "Preview checks SHA and prior binding without Poppler/publishing; lists merge additions and replacement removals; unknown new page count remains unknown.",
+    "rustPath": "crates/oe-knowledge/tests/source_io.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
     "behavior": "release_cli_manifest_and_transaction_failures",
     "name": "release_cli_manifest_and_transaction_failures",
     "oracle": "实际CLI完整verify/install/init/activate/status/rollback接线和错误退出，拒绝错误摘要且不泄露私有路径",
@@ -2343,6 +2427,20 @@
     "oracle": "错root、计划、序号、虚假核验状态和native声明拒绝",
     "rustPath": "crates/oe-nx-protocol/tests/transfer_endpoint.rs",
     "scope": "协议、控制器接口与目录用途；远程实传/模型重组/原生准入另验"
+  },
+  {
+    "behavior": "same_basename_fetch_uses_distinct_drive_ids",
+    "name": "same_basename_fetch_uses_distinct_drive_ids",
+    "oracle": "Synthetic local gws fixture uses separate declared file IDs despite equal basenames; no real network.",
+    "rustPath": "crates/oe-knowledge/tests/source_library.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
+    "behavior": "same_basename_nested_import_and_existing_fetch_are_unambiguous",
+    "name": "same_basename_nested_import_and_existing_fetch_are_unambiguous",
+    "oracle": "Separate source directories with equal basename import successfully; existing verified originals do not trigger fetch.",
+    "rustPath": "crates/oe-knowledge/tests/source_library.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
   },
   {
     "behavior": "duplicate_prototypes_preserve_instances_and_staged_tools",
@@ -2693,6 +2791,13 @@
     "oracle": "页面字段虽匹配，期间权限开放给其他主体后仍返回account_check_unconfirmed及account_verified=false",
     "rustPath": "crates/oe-cad/tests/acquisition.rs",
     "scope": "独立反例；真实供应商采用另验"
+  },
+  {
+    "behavior": "shared_flat_input_is_rejected_before_any_original_is_published",
+    "name": "shared_flat_input_is_rejected_before_any_original_is_published",
+    "oracle": "Two declarations sharing one actual flat input reject before either destination is published, including nested-versus-flat alias.",
+    "rustPath": "crates/oe-knowledge/tests/source_library.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
   },
   {
     "behavior": "stdin_file_actual_source_change_keeps_original_snapshot_and_rejects_success",
@@ -3631,6 +3736,13 @@
     "oracle": "Fixed original input/results published from independently executed old RDFLib7.6.0 observations, with original hashes retained; candidate outputs never supply expected values. Explicit owner, cancellation and unsupported-boundary controls are separate active Rust tests.",
     "rustPath": "vendor/spareval/src/eval/source_bgp_receiving.rs",
     "scope": "Only the bounded contract linked by this mapping. BO12 receives ordering output only; BR protocols receive original sink ordering only.34 original full query inputs include correct error/empty outcomes. No named Dataset, paths, mutation/time/bnode, public profile5, formal installation, independent release acceptance or full63 qualification."
+  },
+  {
+    "behavior": "source_delivery_merge_preview_and_unchanged_are_successful_cli_results",
+    "name": "source_delivery_merge_preview_and_unchanged_are_successful_cli_results",
+    "oracle": "Actual selected delivery CLI supports merge/dry-run and exits zero for truthful preview/unchanged without claiming registered.",
+    "rustPath": "crates/oe-cli/tests/knowledge_cli.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
   },
   {
     "behavior": "source_graph_terms_duplicate_occurrences_keep_actual_owner",
@@ -8139,6 +8251,13 @@
     "oracle": "Generated new budget request rejects unrecognized certification fields, wrong schema and cannot be parsed as old CodeBuildRequest",
     "rustPath": "crates/oe-engineering/tests/code_build_budget.rs",
     "scope": "Closed request contract preserving original/1 protocol rather than automatic schema upgrade"
+  },
+  {
+    "behavior": "supplier_default_build_index_is_readable_by_default_status_and_query",
+    "name": "supplier_default_build_index_is_readable_by_default_status_and_query",
+    "oracle": "Actual tiny supplier archive build without --index produces default reader directory; default status and query return source-bound pages; no legacy misumi-native fallback.",
+    "rustPath": "crates/oe-cli/tests/knowledge_cli.rs",
+    "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
   },
   {
     "behavior": "executable_name_source_and_auto_bin_rules_stay_bound",

@@ -767,3 +767,312 @@ rust_path="crates/oe-cli/tests/host_agent.rs"
 oracle="实际空PATH且无密钥CLI按freeze→advance→work→advance执行，1/60mm结果改变限定模型决定；无结果不完成、改为1mm被拒；来源或载荷变化保持原检查。"
 scope="本机构建候选真实CLI；独立接收及物理验证另验"
 
+
+# Source library intake and explicit incremental registration.
+
+[[types]]
+name="LocalPdfRegistrationUpdate"
+contract_group="engineering"
+identity="Explicit source IDs, normalized descriptors and checked previous index; preview grants no apply authority"
+meaning="PDF登记的增量差异与实际提取/复用范围，保持旧create/replace合同"
+
+[[types.fields]]
+name="mode"
+rust_type="String"
+required=true
+format="typed"
+meaning="本次create、replace或merge模式"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+allowed_values=["create","replace","merge"]
+
+[[types.fields]]
+name="added"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="新增来源ID"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+
+[[types.fields]]
+name="updated"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="同ID且描述变化的来源"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+
+[[types.fields]]
+name="unchanged"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="本次清单中未变的来源"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+
+[[types.fields]]
+name="retained"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="merge保留未在本次清单出现的旧来源"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+
+[[types.fields]]
+name="removed"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="replace移出的旧来源，merge为空"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+
+[[types.fields]]
+name="final_source_count"
+rust_type="u64"
+required=true
+format="typed"
+meaning="本次成功后或预览的完整来源数"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+
+[[types.fields]]
+name="reused_source_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="已核旧原件及索引且实际复用的来源；preview不冒称执行"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+
+[[types.fields]]
+name="extracted_source_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="本轮实际Poppler提取来源；preview与unchanged为空"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+
+[[types.fields]]
+name="extraction_required_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="预览及执行的需要提取来源，不伪造未知页数"
+unit="ID无量纲；来源数整数"
+precision="稳定ID、版次、路径、导航及SHA精确核对"
+write="Rust读取当前请求、原件和已绑定旧索引后"
+applicability="本地PDF新增与更新；不扩展工程角色或授予采用"
+acceptance="失败/变更不发布；全未变不改索引；预览不调用提取"
+
+[[constraints]]
+id="local_pdf_explicit_incremental_registration"
+requirement="req_knowledge"
+module="knowledge"
+check="register"
+rust_path="crates/oe-knowledge/src/registration.rs"
+statement="Create and replace retain previous full-catalog semantics; explicit merge upserts supplied stable IDs and retains omitted sources. Merge and replace conflict. Reuse only source descriptors, current original hashes and prior registration/index bindings that match; old extraction observations retain identity. New or changed descriptors are extracted. Rebuild fresh owned SQLite tables with bounded rows; no arbitrary previous SQLite write triggers. No-op verifies current inputs and leaves index bytes unchanged. Dry-run returns differences without native extraction or publication, and never authorizes a later apply. Existing source/page/chapter/text budgets apply to the merged whole. Before publishing, recheck original manifests, source bytes and the exact previous snapshot; errors and races preserve previous files."
+severity="error"
+
+[[constraints]]
+id="source_delivery_precise_paths_and_guard"
+requirement="req_knowledge"
+module="knowledge"
+check="register_with_options"
+rust_path="crates/oe-knowledge/src/source_library.rs"
+statement="Full nested source paths distinguish equal filenames; verified destinations and independent fetch IDs need no basename uniqueness. Preflight actual selected local import paths and reject shared flat fallback before any publication. Original delivery manifest bytes are checked again inside registration before final publication, including replacement rollback. Source delivery selection with merge keeps other registered books; preview/unchanged are explicit statuses. No implicit network, OCR, adoption or source role extension."
+severity="error"
+
+[[constraints]]
+id="supplier_default_index_matches_reader"
+requirement="req_knowledge"
+module="cli"
+check="knowledge_execute"
+rust_path="crates/oe-cli/src/main.rs"
+statement="Default build-index writes sources/.indexes/misumi, same as the supplier reader and Rust BuildOptions. Explicit custom targets retain meaning. Legacy misumi-native is never silently selected, moved or overwritten."
+severity="error"
+
+[[validations]]
+id="merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations"
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+behavior="merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Actual small PDFs plus native invocation counter: adding one source preserves old rows and extraction observations; changing one source only extracts that ID; resulting FTS page identities remain bound."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source"
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+behavior="merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Identical partial merge with unusable Poppler returns unchanged, keeps omitted source and exact registration/index bytes."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals"
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+behavior="registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Preview checks SHA and prior binding without Poppler/publishing; lists merge additions and replacement removals; unknown new page count remains unknown."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair"
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+behavior="merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Changed retained original and corrupt/rebound index refuse with previous pair retained."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="merge_budgets_apply_to_complete_retained_plus_incoming_catalog"
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+behavior="merge_budgets_apply_to_complete_retained_plus_incoming_catalog"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="The complete merged catalog obeys source/chapter/page limits, not only the newly supplied subset."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="merge_failure_and_conflicting_modes_leave_original_registration_intact"
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+behavior="merge_failure_and_conflicting_modes_leave_original_registration_intact"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Conflicting merge/replace and extraction failure preserve old pair and no partial new catalog is adopted."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="same_basename_nested_import_and_existing_fetch_are_unambiguous"
+module="knowledge"
+constraint="source_delivery_precise_paths_and_guard"
+behavior="same_basename_nested_import_and_existing_fetch_are_unambiguous"
+rust_path="crates/oe-knowledge/tests/source_library.rs"
+oracle="Separate source directories with equal basename import successfully; existing verified originals do not trigger fetch."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="mixed_nested_and_flat_same_basename_uses_distinct_inputs"
+module="knowledge"
+constraint="source_delivery_precise_paths_and_guard"
+behavior="mixed_nested_and_flat_same_basename_uses_distinct_inputs"
+rust_path="crates/oe-knowledge/tests/source_library.rs"
+oracle="Mixed nested and flat source resolution succeeds when actual input paths differ."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="shared_flat_input_is_rejected_before_any_original_is_published"
+module="knowledge"
+constraint="source_delivery_precise_paths_and_guard"
+behavior="shared_flat_input_is_rejected_before_any_original_is_published"
+rust_path="crates/oe-knowledge/tests/source_library.rs"
+oracle="Two declarations sharing one actual flat input reject before either destination is published, including nested-versus-flat alias."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="same_basename_fetch_uses_distinct_drive_ids"
+module="knowledge"
+constraint="source_delivery_precise_paths_and_guard"
+behavior="same_basename_fetch_uses_distinct_drive_ids"
+rust_path="crates/oe-knowledge/tests/source_library.rs"
+oracle="Synthetic local gws fixture uses separate declared file IDs despite equal basenames; no real network."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="delivery_selected_merge_preserves_previous_books_and_preview_is_read_only"
+module="knowledge"
+constraint="source_delivery_precise_paths_and_guard"
+behavior="delivery_selected_merge_preserves_previous_books_and_preview_is_read_only"
+rust_path="crates/oe-knowledge/tests/source_library.rs"
+oracle="Selecting one book with merge preserves other sources; preview/no-op keep old bytes and have no extraction."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="delivery_change_during_extraction_blocks_new_replace_and_merge_publication"
+module="knowledge"
+constraint="source_delivery_precise_paths_and_guard"
+behavior="delivery_change_during_extraction_blocks_new_replace_and_merge_publication"
+rust_path="crates/oe-knowledge/tests/source_library.rs"
+oracle="Actual Poppler wrapper changes original delivery during extraction: create publishes nothing; replace/merge restore exact prior index and registration."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="registration_merge_preview_and_noop_preserve_prior_sources_without_path"
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+behavior="registration_merge_preview_and_noop_preserve_prior_sources_without_path"
+rust_path="crates/oe-cli/tests/knowledge_cli.rs"
+oracle="Actual CLI with empty PATH previews, merges only new source with explicit Poppler, reports unchanged without tools, preserves old book, exposes replace removals, and refuses mode conflict."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="source_delivery_merge_preview_and_unchanged_are_successful_cli_results"
+module="knowledge"
+constraint="source_delivery_precise_paths_and_guard"
+behavior="source_delivery_merge_preview_and_unchanged_are_successful_cli_results"
+rust_path="crates/oe-cli/tests/knowledge_cli.rs"
+oracle="Actual selected delivery CLI supports merge/dry-run and exits zero for truthful preview/unchanged without claiming registered."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="supplier_default_build_index_is_readable_by_default_status_and_query"
+module="cli"
+constraint="supplier_default_index_matches_reader"
+behavior="supplier_default_build_index_is_readable_by_default_status_and_query"
+rust_path="crates/oe-cli/tests/knowledge_cli.rs"
+oracle="Actual tiny supplier archive build without --index produces default reader directory; default status and query return source-bound pages; no legacy misumi-native fallback."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validations]]
+id="preview_and_noop_run_final_intake_guard_and_preserve_index_bytes"
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+behavior="preview_and_noop_run_final_intake_guard_and_preserve_index_bytes"
+rust_path="crates/oe-knowledge/src/registration/incremental.rs"
+oracle="Preview and no-op both invoke the original intake owner guard; rejection leaves existing index pair exact."
+scope="Actual local bounded fixtures; no engineering adoption or full concurrent filesystem guarantee"
+
+[[validations]]
+id="final_publication_rechecks_original_after_owner_guard_and_rolls_back"
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+behavior="final_publication_rechecks_original_after_owner_guard_and_rolls_back"
+rust_path="crates/oe-knowledge/src/registration/incremental.rs"
+oracle="Deterministic final guard mutates original source; post-guard source recheck blocks publication and replacement restores old registration/index."
+scope="Actual local bounded fixtures; no engineering adoption or full concurrent filesystem guarantee"

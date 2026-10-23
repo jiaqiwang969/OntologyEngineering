@@ -6,11 +6,11 @@
 
 Agent 负责清点、登记、处理和使用记录，用户不必填写 JSON、TOML 或 RDF。投放不会自动触发后台处理；索引、本体化、适用性核验和工程采用分别记录。
 
-当前重构只整理资料路径并接续已有登记和索引，沿用 v2 的 `sources/` 布局。已登记的六本书保持来源身份；第七本液压书先保留原件，尚不登记。逐书按 v2 建立本体知识图谱是下一阶段待讨论的工作，本轮不做全书分解、OCR 或 Drive 内容更新。
+资料路径沿用 v2 的 `sources/` 布局；已有登记支持先预览差异，再按稳定来源 ID 合并新增或修订资料。已登记的六本书保持来源身份；第七本液压书先保留原件，尚不登记。逐书按 v2 建立本体知识图谱是下一阶段待讨论的工作，本轮不做全书分解、OCR 或 Drive 内容更新。
 
 ## 放在哪里
 
-按资料类型、书或资料集建子目录。保留原件及旧版；处理成果另存，并保留回到原件的对应关系。资料目录不另建专业 Skill。
+按资料类型、书或资料集建子目录。不同书可各自保存 `original.pdf`，导入时按交付清单的完整相对路径辨认；扁平目录中的同名文件无法唯一匹配时拒绝导入，不猜所属资料。保留原件及旧版；处理成果另存，并保留回到原件的对应关系。资料目录不另建专业 Skill。
 
 ```text
 ontology-engineering-unified/
@@ -57,6 +57,37 @@ ontology-engineering-unified/
 
 PDF 文献先核可读性和总页数，再对照实际目录记录章节范围、标题及检索别名，区分 PDF 页序与书上印刷页码。当前原生登记使用 Poppler 提取有界文本；保留原件摘要、页级位置、提取工具和覆盖结果。非 PDF 资料先记录清点状态，按实际读取能力接入；转换时保留原件、格式与转换记录，不声称已被 PDF 索引接收。
 
+**新增或修订 PDF 使用 `--merge`。** Agent 只需为本次新增、修订的来源准备私有清单：新 ID 加入书目，同 ID 更新该来源，未列出的旧书保留。更新前先用 `--dry-run` 核原件、旧索引摘要和差异；预览不提取页文本、不发布索引，也不是锁定输入或后续执行的凭证。实际登记会重新核验输入，预览后文件变化需重新判断。
+
+```sh
+# 清单由 Agent 根据实际新增或修订资料准备，以下路径是示例。
+"$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge register \
+  --manifest var/source-intake/new-books.json --index sources/.indexes/local-pdf --merge --dry-run
+# 核对差异符合本次任务后执行。
+"$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge register \
+  --manifest var/source-intake/new-books.json --index sources/.indexes/local-pdf --merge
+```
+
+| 登记模式 | 对目标书目的作用 |
+|---|---|
+| 不加 `--merge` 或 `--replace` | 创建新索引；已有目标不会被隐式覆盖。 |
+| `--merge` | 按稳定 ID 加入或更新，保留本次未列出的旧来源。 |
+| `--replace` | 按本次完整清单重建；未列出的旧来源退出该索引。 |
+| `--dry-run` | 预览所选模式的输入与差异，可配合 `--merge` 或 `--replace`；不发布变更。 |
+
+`--merge` 与 `--replace` 互斥。合并时，摘要、路径与导航等身份未变的来源复用已有页记录及原提取工具身份，只对新增或需要重提取的来源执行提取；全部相同返回 `unchanged`，索引字节保持。`preview`、`unchanged`、`registered` 分别表示预览、无需修改和已登记，均不等于工程采用。核结果 `update` 中的 `mode`、`added`、`updated`、`unchanged`、`retained`、`removed`、`final_source_count`，以及预览的 `extraction_required_ids`、实际执行的 `reused_source_ids` / `extracted_source_ids`，确认旧来源没有意外退出。
+
+已有交付清单时，`knowledge library source-delivery register` 同样支持 `--merge`、`--replace`、`--dry-run`。例如只接入清单中的一项，用 `--select` 配合合并：
+
+```sh
+"$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge library source-delivery register \
+  --manifest var/source-intake/delivery.json --select new-book --merge --dry-run
+"$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge library source-delivery register \
+  --manifest var/source-intake/delivery.json --select new-book --merge
+```
+
+**完整重建仍使用 `--replace`。** 安装根或原件路径迁移时保全旧清单、索引与回执，准备包含全部保留来源的清单，先用 `--replace --dry-run` 核移除项，再显式重建。仅传新书或以 `--select` 选一项后执行 `--replace`，会使其他书退出目标索引。完成后核全部来源、页数和代表性命中；失败和未知继续保留。
+
 米思米目录使用既有供应商读取流程，保留目录版次、原页、完整型号、选项与安装条件；案例图、目录参数、已下载 CAD 和原生模型核验分别记录。历史资料不替代当前型号规格、价格或交期核查，CAD 文件完整也不等于导入、保存重开或工程适用通过。具体边界见[工程工作中的供应商来源](../references/engineering-work.md)。供应商资料不因同在 `sources/` 就自动成为六书 PDF 索引的一部分。
 
 已有完整米思米 source-pack 资料包时，在当前安装根显式重建到查询使用的索引位置：
@@ -66,9 +97,7 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
   --source-pack sources/misumi/source-pack.json --index sources/.indexes/misumi
 ```
 
-`build-index` 的 CLI 默认目标是 `misumi-native`，而默认查询读取 `misumi`，因此这里明确指定 `--index`。需先确认 Poppler 可用；已有目标索引时先核来源与保全记录，再按合同使用 `--replace`。零散网页、模型或手册不直接套用完整 source-pack 的构建命令。
-
-**`--replace` 会按本次完整清单重建目标索引，并非追加一本书。** 更新前先合并已登记书目与新增资料，检查旧 ID、版次、路径、摘要和章节。仅向 `knowledge register --replace` 传新书会使其他书退出该索引；source-delivery register 的 `--replace` 同样不可只选新增子集后覆盖整个库。保全旧清单及索引回执，完成后核新旧全部来源、页数和代表性命中，失败不宣称完成。
+`build-index` 与默认查询均使用 `sources/.indexes/misumi`。已有 `misumi-native` 索引若需继续使用，应显式选择其路径；程序不会自动搬迁或猜测旧索引。需先确认 Poppler 可用；已有目标索引时先核来源与保全记录，再按合同使用 `--replace`。零散网页、模型或手册不直接套用完整 source-pack 的构建命令，供应商重建也不套用 PDF 登记的 `--merge`。
 
 扫描页、稀疏文本、公式、表格和图形分别记覆盖与未知。必要时按实际任务读原页、做 OCR 或图表审查；OCR 需要明确可用工具、授权和预算，不在普通登记中自动启动模型。提取成功不证明公式、单位或图表关系正确。大书可逐章推进，逐次记录已处理和待处理范围。
 
@@ -104,7 +133,8 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 |---|---|
 | 清点交付与本地摘要 | `knowledge library source-delivery list/verify`，显式提供实际可用的交付清单 |
 | 取得缺失原件 | 同组 `import/fetch`；本地已取得的资料优先核验后迁入，`fetch` 仅用于实际缺失且授权的下载 |
-| 建立本地 PDF 索引 | `knowledge register`，或同组 source-delivery `register`；替换前合并完整书目 |
+| 建立或增量更新 PDF 索引 | `knowledge register`，或同组 source-delivery `register`；新增/修订先 `--merge --dry-run`，核差异后 `--merge` |
+| 完整重建 PDF 索引 | 同一登记入口的 `--replace`；传完整保留书目，先预览移除项 |
 | 检索和原页回读 | `knowledge query/view`；查询候选与原页核验分别记录 |
 | 核查询包及实际反馈 | `knowledge verify-packet/feedback`；不授予工程采用 |
 

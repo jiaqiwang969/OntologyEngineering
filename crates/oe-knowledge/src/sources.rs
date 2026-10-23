@@ -836,7 +836,7 @@ fn safe_relative(s: &str) -> Result<()> {
     Ok(())
 }
 
-fn resolve_original(root: &SkillRoot, directory: &Path, value: &str) -> Result<PathBuf> {
+pub(crate) fn resolve_original(root: &SkillRoot, directory: &Path, value: &str) -> Result<PathBuf> {
     let result = resolve_registered(root, directory, value)?;
     ensure!(
         !result.starts_with(root.path().join("sources/.indexes")),

@@ -1151,3 +1151,138 @@ fn changed_original_identity_and_replace_still_require_native_extraction() {
         assert_eq!(fs::read_to_string(log).unwrap().lines().count(), 2);
     }
 }
+
+fn original_file_bytes(directory: &Path) -> Vec<(PathBuf, Vec<u8>)> {
+    let mut rows = Vec::new();
+    for entry in fs::read_dir(directory).unwrap() {
+        let entry = entry.unwrap();
+        if entry.file_type().unwrap().is_dir() {
+            rows.extend(original_file_bytes(&entry.path()));
+        } else {
+            rows.push((entry.path(), fs::read(entry.path()).unwrap()));
+        }
+    }
+    rows.sort_by(|a, b| a.0.cmp(&b.0));
+    rows
+}
+
+#[test]
+#[cfg(unix)]
+fn registration_rejects_unreadable_original_paths_before_publish_in_all_modes() {
+    let f = Fixture::new("original-path-contract");
+    let (manifest_path, mut manifest, original) = manifest(&f);
+    registration::register(&f.0, &manifest_path, &options()).unwrap();
+    let old_pair = index_pair(&f);
+    let bytes = fs::read(original).unwrap();
+    let (guarded_tools, log) = counted_tools(&f);
+    let bad_paths = [
+        "bad\\name.pdf",
+        "bad\nname.pdf",
+        "bad\tname.pdf",
+        "bad\u{7f}name.pdf",
+        "bad\u{85}name.pdf",
+        "bad\\parent/normal.pdf",
+        "bad\nparent/normal.pdf",
+    ];
+    for relative in bad_paths {
+        let path = f.0.join("sources/books").join(relative);
+        fs::create_dir_all(path.parent().unwrap()).unwrap();
+        fs::write(&path, &bytes).unwrap();
+        for absolute in [false, true] {
+            manifest["sources"][0]["path"] = if absolute {
+                json!(path)
+            } else {
+                json!(relative)
+            };
+            save(&manifest_path, &manifest);
+            let before = original_file_bytes(&f.0.join("sources/books"));
+            for mode in ["create", "merge", "replace"] {
+                for dry_run in [true, false] {
+                    let opts = RegistrationOptions {
+                        data_root: if mode == "create" {
+                            "sources/.indexes/unpublished-candidate".into()
+                        } else {
+                            RegistrationOptions::default().data_root
+                        },
+                        merge: mode == "merge",
+                        replace: mode == "replace",
+                        dry_run,
+                        tools: guarded_tools.clone(),
+                        ..options()
+                    };
+                    let result = registration::register(&f.0, &manifest_path, &opts);
+                    let error = result.expect_err("unreadable stored path must not publish");
+                    assert!(
+                        error.to_string().contains("local_pdf_path_invalid"),
+                        "path={relative:?} absolute={absolute} mode={mode} dry_run={dry_run}: {error:#}"
+                    );
+                    assert_eq!(index_pair(&f), old_pair);
+                    assert!(!f.0.join("sources/.indexes/unpublished-candidate").exists());
+                    assert_eq!(original_file_bytes(&f.0.join("sources/books")), before);
+                    assert!(fs::read_to_string(&log).unwrap().is_empty());
+                }
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg(unix)]
+fn registration_rejects_unreadable_index_paths_before_publish_in_all_modes() {
+    use std::os::unix::ffi::OsStringExt;
+    let f = Fixture::new("index-path-contract");
+    let (manifest_path, _, _) = manifest(&f);
+    registration::register(&f.0, &manifest_path, &options()).unwrap();
+    let before = original_file_bytes(&f.0.join("sources"));
+    let (guarded_tools, log) = counted_tools(&f);
+    let mut paths: Vec<PathBuf> = [
+        "bad\\index",
+        "bad\nindex",
+        "bad\tindex",
+        "bad\u{7f}index",
+        "bad\u{85}index",
+    ]
+    .into_iter()
+    .map(|name| Path::new("sources/.indexes").join(name))
+    .collect();
+    paths.push(
+        Path::new("sources/.indexes")
+            .join(std::ffi::OsString::from_vec(b"bad-\xff-index".to_vec())),
+    );
+    for path in paths {
+        for absolute in [false, true] {
+            for mode in ["create", "merge", "replace"] {
+                for dry_run in [true, false] {
+                    let opts = RegistrationOptions {
+                        data_root: if absolute {
+                            f.0.join(&path)
+                        } else {
+                            path.clone()
+                        },
+                        merge: mode == "merge",
+                        replace: mode == "replace",
+                        dry_run,
+                        tools: guarded_tools.clone(),
+                        ..options()
+                    };
+                    // An unrepresentable PathBuf must return an error, never a
+                    // serialization panic after publishing the two index files.
+                    let result = std::panic::catch_unwind(|| {
+                        registration::register(&f.0, &manifest_path, &opts)
+                    });
+                    let error = result
+                        .expect("invalid index path must not panic")
+                        .expect_err("invalid index path must fail");
+                    assert!(
+                        path.to_str().is_none()
+                            || error.to_string().contains("local_pdf_path_invalid")
+                            || error.to_string().contains("local_pdf_path_not_utf8"),
+                        "path={path:?} absolute={absolute} mode={mode} dry_run={dry_run}: {error:#}"
+                    );
+                    assert_eq!(original_file_bytes(&f.0.join("sources")), before);
+                    assert!(fs::read_to_string(&log).unwrap().is_empty());
+                }
+            }
+        }
+    }
+}

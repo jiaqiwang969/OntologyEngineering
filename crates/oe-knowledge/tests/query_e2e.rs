@@ -819,6 +819,104 @@ fn local_source_currentness_distinguishes_metadata_and_navigation_changes() {
 }
 
 #[test]
+#[cfg(unix)]
+fn local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse() {
+    let f = Fixture::new(false);
+    let source_relative = "sources/books/资料 空格/𠮷　条件:第一版.pdf";
+    let index_relative = "sources/.indexes/自定义 索引:𠮷";
+    let original = f.path.join(source_relative);
+    fs::create_dir_all(original.parent().unwrap()).unwrap();
+    let bytes = pdf(false, 3);
+    fs::write(&original, &bytes).unwrap();
+    let mut manifest = json!({
+        "schema":"ontology-engineering.local-pdf-manifest/v1",
+        "sources":[{"id":"conditions","title":"Synthetic Unicode path book","edition":"fixture-1",
+            "path":"资料 空格/𠮷　条件:第一版.pdf","sha256":sha256(&bytes),
+            "chapters":[{"id":"conditions","title":"工程条件","start_page":1,"end_page":3,"aliases":[]}]}]
+    });
+    let manifest_relative = "sources/books/路径 清单.json";
+    f.write(manifest_relative, &manifest);
+    let mut registration_options = RegistrationOptions {
+        data_root: index_relative.into(),
+        tools: tools(),
+        ..Default::default()
+    };
+    registration::register(
+        &f.path,
+        &f.path.join(manifest_relative),
+        &registration_options,
+    )
+    .unwrap();
+    let mut query_options = f.options("unicode-path-query-before");
+    query_options.providers = vec![ProviderSpec {
+        kind: "local_pdf".into(),
+        index: Some(index_relative.into()),
+    }];
+    query_options.top = 1;
+    let report = query::run(&f.root, &query_options).unwrap();
+    assert_eq!(report["results"].as_array().unwrap().len(), 1);
+    let binding = &report["results"][0]["source_registration_binding"];
+    assert_eq!(binding["source"]["path"], source_relative);
+    assert_eq!(binding["index_directory"], index_relative);
+    let context = report["context_snapshot"].clone();
+    let packet = packet::make_with_tools(&f.root, &report, &context, &tools()).unwrap();
+    verify_currentness(&f, &packet, &context, "current");
+    f.write("var/projects/p/unicode-path-packet.json", &packet);
+    let packet_bytes = fs::read(f.path.join("var/projects/p/unicode-path-packet.json")).unwrap();
+    // Absolute manifest spelling resolves to the same original. Descriptive
+    // changes must continue to reuse text across the admitted Unicode paths.
+    manifest["sources"][0]["path"] = json!(original);
+    manifest["sources"][0]["title"] = json!("Corrected title");
+    manifest["sources"][0]["edition"] = json!("corrected-description");
+    manifest["sources"][0]["chapters"][0]["aliases"] = json!(["corrected navigation"]);
+    f.write(manifest_relative, &manifest);
+    registration_options.merge = true;
+    registration_options.tools = PopplerTools {
+        pdfinfo: f.path.join("absent-pdfinfo"),
+        pdftotext: f.path.join("absent-pdftotext"),
+        pdftoppm: f.path.join("absent-pdftoppm"),
+    };
+    let updated = registration::register(
+        &f.path,
+        &f.path.join(manifest_relative),
+        &registration_options,
+    )
+    .unwrap();
+    assert_eq!(updated["update"]["updated"], json!(["conditions"]));
+    assert_eq!(updated["update"]["extracted_source_ids"], json!([]));
+    assert_eq!(
+        updated["update"]["reused_source_ids"],
+        json!(["conditions"])
+    );
+    verify_currentness(&f, &packet, &context, "changed");
+    query_options.output = "var/projects/p/unicode-path-query-after".into();
+    let report = query::run(&f.root, &query_options).unwrap();
+    let fresh = packet::make_with_tools(&f.root, &report, &context, &tools()).unwrap();
+    verify_currentness(&f, &fresh, &context, "current");
+    let index = f.path.join(index_relative);
+    let snapshot = || {
+        (
+            fs::read(index.join("catalog.sqlite3")).unwrap(),
+            fs::read(index.join("registration.json")).unwrap(),
+        )
+    };
+    let before = snapshot();
+    let noop = registration::register(
+        &f.path,
+        &f.path.join(manifest_relative),
+        &registration_options,
+    )
+    .unwrap();
+    assert_eq!(noop["status"], "unchanged");
+    assert_eq!(snapshot(), before);
+    assert_eq!(fs::read(&original).unwrap(), bytes);
+    assert_eq!(
+        fs::read(f.path.join("var/projects/p/unicode-path-packet.json")).unwrap(),
+        packet_bytes
+    );
+}
+
+#[test]
 fn local_source_currentness_preserves_old_version_and_historical_feedback() {
     let (f, mut manifest, _, packet, context) = source_currentness_fixture();
     let packet_path = f.path.join("var/projects/p/source-currentness-packet.json");

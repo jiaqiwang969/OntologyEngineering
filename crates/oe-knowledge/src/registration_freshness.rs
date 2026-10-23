@@ -8,10 +8,7 @@ use oe_contracts::{
 };
 use oe_core::{SkillRoot, json::canonical_digest};
 use serde_json::{Value, json};
-use std::{
-    collections::BTreeMap,
-    path::{Component, Path},
-};
+use std::{collections::BTreeMap, path::Path};
 
 pub const BINDING_SCHEMA: &str = "ontology-engineering.local-pdf-source-binding/v1";
 pub const FRESHNESS_SCHEMA: &str = "ontology-engineering.source-registration-freshness/v1";
@@ -57,22 +54,8 @@ fn digest(value: &Value) -> Result<&str> {
 }
 
 fn relative_path(value: &str, directory: bool) -> Result<()> {
-    ensure!(
-        !value.contains('\\')
-            && !value.chars().any(char::is_control)
-            && value
-                .split('/')
-                .all(|s| !s.is_empty() && s != "." && s != "..")
-            && if directory {
-                value.starts_with("sources/.indexes/")
-            } else {
-                value.starts_with("sources/")
-                    && value != "sources/.indexes"
-                    && !value.starts_with("sources/.indexes/")
-            },
-        "source_registration_binding_path_invalid"
-    );
-    Ok(())
+    crate::local_pdf_paths::validate_root_relative(value, directory)
+        .context("source_registration_binding_path_invalid")
 }
 
 fn validate_binding(binding: &Value) -> Result<()> {
@@ -124,25 +107,9 @@ fn validate_binding(binding: &Value) -> Result<()> {
     Ok(())
 }
 
-fn root_relative_path(root: &SkillRoot, path: &Path) -> Result<String> {
-    let relative = path
-        .strip_prefix(root.path())
-        .context("source_registration_binding_path_invalid")?;
-    let mut parts = Vec::new();
-    for component in relative.components() {
-        let Component::Normal(name) = component else {
-            anyhow::bail!("source_registration_binding_path_invalid");
-        };
-        parts.push(
-            name.to_str()
-                .context("source_registration_binding_path_invalid")?,
-        );
-    }
-    ensure!(
-        !parts.is_empty(),
-        "source_registration_binding_path_invalid"
-    );
-    Ok(parts.join("/"))
+fn root_relative_path(root: &SkillRoot, path: &Path, index: bool) -> Result<String> {
+    crate::local_pdf_paths::root_relative_path(root, path, index)
+        .context("source_registration_binding_path_invalid")
 }
 
 /// Bind the complete registered navigation by digest, without copying it into each page.
@@ -156,7 +123,7 @@ pub(crate) fn capture(root: &SkillRoot, directory: &Path, source: &Value) -> Res
         id: text(source, "id")?.to_owned(),
         title: text(source, "title")?.to_owned(),
         edition: text(source, "edition")?.to_owned(),
-        path: root_relative_path(root, &path)?,
+        path: root_relative_path(root, &path, false)?,
         sha256: digest(&source["sha256"])?.to_owned(),
         bytes: source["bytes"]
             .as_u64()
@@ -166,7 +133,7 @@ pub(crate) fn capture(root: &SkillRoot, directory: &Path, source: &Value) -> Res
             .context("source_registration_binding_invalid")?,
         chapters_sha256: canonical_digest(&source["chapters"])?,
     };
-    let index_directory = root_relative_path(root, directory)?;
+    let index_directory = root_relative_path(root, directory, true)?;
     let sha256 = canonical_digest(
         &json!({"schema":BINDING_SCHEMA,"index_directory":index_directory,"source":identity}),
     )?;
@@ -374,17 +341,23 @@ mod tests {
             .join("books")
             .join("工程 原件.pdf");
         assert_eq!(
-            root_relative_path(&root, &relative).unwrap(),
+            root_relative_path(&root, &relative, false).unwrap(),
             "sources/books/工程 原件.pdf"
         );
         assert!(
-            root_relative_path(&root, &root.path().join("sources").join("..").join("var")).is_err()
+            root_relative_path(
+                &root,
+                &root.path().join("sources").join("..").join("var"),
+                false
+            )
+            .is_err()
         );
         #[cfg(not(windows))]
         assert_eq!(
             root_relative_path(
                 &root,
-                &root.path().join("sources").join("books").join("part:1.pdf")
+                &root.path().join("sources").join("books").join("part:1.pdf"),
+                false
             )
             .unwrap(),
             "sources/books/part:1.pdf"

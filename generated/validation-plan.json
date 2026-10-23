@@ -931,6 +931,34 @@
     "scope": "Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
   },
   {
+    "behavior": "local_pdf_path_limits_count_characters_and_check_final_relative_form",
+    "name": "local_pdf_path_limits_count_characters_and_check_final_relative_form",
+    "oracle": "Each final persisted path respects the existing 2000-character reader limit, including a long index-relative traversal even when root-relative forms individually fit; UTF-8 bytes are not counted as characters.",
+    "rustPath": "crates/oe-knowledge/src/local_pdf_paths.rs",
+    "scope": "Synthetic path strings independent of filesystem path-length limits"
+  },
+  {
+    "behavior": "local_pdf_paths_do_not_blacklist_installation_root_names",
+    "name": "local_pdf_paths_do_not_blacklist_installation_root_names",
+    "oracle": "A synthetic Unix installation root containing backslash, control characters, colon and Unicode does not invalidate otherwise valid source and index names below it; stored references still round-trip exactly.",
+    "rustPath": "crates/oe-knowledge/src/local_pdf_paths.rs",
+    "scope": "Private synthetic Unix root fixture; no actual library or other-platform acceptance"
+  },
+  {
+    "behavior": "local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip",
+    "name": "local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip",
+    "oracle": "Component-based slash encoding preserves valid source names and round-trips stored parent-relative paths to the exact original.",
+    "rustPath": "crates/oe-knowledge/src/local_pdf_paths.rs",
+    "scope": "Pure synthetic path representation; no sources, network or engineering decisions"
+  },
+  {
+    "behavior": "local_pdf_paths_reject_unreadable_components_and_non_utf8",
+    "name": "local_pdf_paths_reject_unreadable_components_and_non_utf8",
+    "oracle": "Unrepresentable path components reject rather than renaming, normalizing or using lossy replacement; existing containment and no-symlink rules remain authoritative.",
+    "rustPath": "crates/oe-knowledge/src/local_pdf_paths.rs",
+    "scope": "Synthetic path guard, including Unix invalid bytes; no other-platform execution claim"
+  },
+  {
     "behavior": "local_source_currentness_distinguishes_metadata_and_navigation_changes",
     "name": "local_source_currentness_distinguishes_metadata_and_navigation_changes",
     "oracle": "Title, edition and full chapter navigation changes produce exact changed_fields with historical packet still readable.",
@@ -971,6 +999,13 @@
     "oracle": "Unrelated addition changes the index snapshot while unchanged book evidence stays current.",
     "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
     "scope": "Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
+  },
+  {
+    "behavior": "local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse",
+    "name": "local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse",
+    "oracle": "Normal Unicode, spaces and Unix colons in source and custom index paths survive native registration, query bindings, metadata/navigation merge with unavailable extraction tools, repeated-input no-op and historical packet verification.",
+    "rustPath": "crates/oe-knowledge/tests/query_e2e.rs",
+    "scope": "Synthetic macOS native PDF and query fixtures; Windows native execution not verified"
   },
   {
     "behavior": "merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations",
@@ -2490,6 +2525,20 @@
     "oracle": "Preview checks SHA and prior binding without Poppler/publishing; lists merge additions and replacement removals; unknown new page count remains unknown.",
     "rustPath": "crates/oe-knowledge/tests/source_io.rs",
     "scope": "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+  },
+  {
+    "behavior": "registration_rejects_unreadable_index_paths_before_publish_in_all_modes",
+    "name": "registration_rejects_unreadable_index_paths_before_publish_in_all_modes",
+    "oracle": "Custom index directory containing backslash, control characters or Unix non-UTF8 rejects without panic or publication in every registration mode; existing snapshots and originals remain exact.",
+    "rustPath": "crates/oe-knowledge/tests/source_io.rs",
+    "scope": "Synthetic macOS files; non-UTF8 remains a rejection regression, not a claimed baseline CLI defect"
+  },
+  {
+    "behavior": "registration_rejects_unreadable_original_paths_before_publish_in_all_modes",
+    "name": "registration_rejects_unreadable_original_paths_before_publish_in_all_modes",
+    "oracle": "Backslash and control characters in original filenames or directory components reject before extraction/publication in create, merge, replace and dry-run, preserving originals and existing index pair.",
+    "rustPath": "crates/oe-knowledge/tests/source_io.rs",
+    "scope": "Synthetic macOS files; no real library mutation or engineering adoption"
   },
   {
     "behavior": "release_cli_manifest_and_transaction_failures",

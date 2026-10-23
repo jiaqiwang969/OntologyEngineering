@@ -77,6 +77,8 @@ Agent 根据审计结果辨认本次要接入的文件，再准备下节的 `--m
 
 登记清单是私有资料。当前 PDF 登记合同为 `ontology-engineering.local-pdf-manifest/v1`，由 Agent 按实际 `knowledge register` 合同生成，包含 `id`、`title`、`edition`、`path`、`sha256`、`chapters`；来源与许可等补充记录另存私有目录，不向严格合同随意加字段。相对原件路径相对于清单所在目录解析，且不能含 `..`。下例清单位于 `var/source-intake/`，其中原件 `path` 应由 Agent 填为本安装根 `sources/` 下的真实绝对路径；不要用 `../../sources/...`，也不要原样填写环境变量字符串。
 
+PDF 登记前，Agent 要核对原件文件名、资料子目录名和自选 `--index` 目录名：这些名称须能以 UTF-8 表示，不含作为名称字符的反斜杠 `\`、换行或制表符等控制字符。最终持久化的根相对原件/索引路径、原件相对索引的路径统一用 `/` 分隔，各不超过 2000 个字符；清单原件路径另有同样的字符数上限。中文、其他正常 Unicode 名称和普通空格可以保留，直接 PDF 登记也保留 Unix 文件名中的冒号。稳定来源 ID 的字符规则不等于文件名规则。程序不自动改名；确需调整路径时，保全原件、旧路径身份和回执，再按路径变更重新登记。
+
 ### 2. 按资料类型处理
 
 PDF 文献先核可读性和总页数，再对照实际目录记录章节范围、标题及检索别名，区分 PDF 页序与书上印刷页码。当前原生登记使用 Poppler 提取有界文本；保留原件摘要、页级位置、提取工具和覆盖结果。非 PDF 资料先记录清点状态，按实际读取能力接入；转换时保留原件、格式与转换记录，不声称已被 PDF 索引接收。
@@ -103,7 +105,7 @@ PDF 文献先核可读性和总页数，再对照实际目录记录章节范围�
 
 全部身份和导航相同才返回 `unchanged`，索引字节保持。`preview`、`unchanged`、`registered` 分别表示预览、无需修改和已登记，均不等于工程采用。核结果 `update` 中的 `mode`、`added`、`updated`、`unchanged`、`retained`、`removed`、`final_source_count`，以及预览的 `extraction_required_ids`、实际执行的 `reused_source_ids` / `extracted_source_ids`，确认旧来源没有意外退出。同原件的描述或导航更新也可能使旧查询包的 `source_registration_freshness` 为 `changed`，须按新登记查询复核；复用文本不会补齐空页、修复 OCR 或损坏索引，也不代表全书已本体化。
 
-已有交付清单时，`knowledge library source-delivery register` 同样支持 `--merge`、`--replace`、`--dry-run`。例如只接入清单中的一项，用 `--select` 配合合并：
+已有交付清单时，`knowledge library source-delivery register` 同样支持 `--merge`、`--replace`、`--dry-run`。交付清单的 `relative_path` 使用 `/` 分隔，不能含空路径段、`.`、`..`、反斜杠、冒号或控制字符；这套规则比直接 PDF 登记更严格，不能混同。例如只接入清单中的一项，用 `--select` 配合合并：
 
 ```sh
 "$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2" --root "$ONTOLOGY_ENGINEERING_ROOT" knowledge library source-delivery register \

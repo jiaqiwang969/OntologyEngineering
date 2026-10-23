@@ -9,6 +9,7 @@ pub mod feedback;
 pub mod incad;
 pub mod index;
 pub mod library_audit;
+pub(crate) mod local_pdf_paths;
 pub mod packet;
 pub mod policy;
 pub mod poppler;

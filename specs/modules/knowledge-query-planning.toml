@@ -1609,6 +1609,16 @@ oracle="Real CLI requires explicit directory, accepts audit without PATH or nati
 scope="Synthetic macOS CLI fixture; no real Project or all-platform acceptance"
 
 # Same-original descriptive/navigation updates preserve verified extraction identity.
+
+[[constraints]]
+id="local_pdf_registration_paths_roundtrip_before_publication"
+requirement="req_knowledge"
+module="knowledge"
+check="preflight"
+rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
+statement="Before extraction or publication, local PDF registration validates each persisted original root-relative path, index root-relative directory and original index-relative path against the same reader/binding representation: exact UTF-8, no backslash or control characters, at most 2000 Unicode scalar values, and slash-separated components. Reject paths that cannot resolve back to the same rooted original. Check create, merge, replace and preview, including retained sources; rejection preserves originals and existing index snapshots. Existing valid index-relative parent segments remain readable; new manifest paths retain their stricter no-parent-components rule. Preserve normal Unicode, spaces and Unix colon names without rename, escaping, normalization or lossy conversion. Source-delivery retains its own stricter path contract. Installation-root spelling is not an original-name blacklist, and filesystem containment/no-symlink checks are not relaxed."
+severity="error"
+
 [[constraints]]
 id="local_pdf_navigation_reuses_verified_native_text"
 requirement="req_knowledge"
@@ -1617,6 +1627,69 @@ check="reuse"
 rust_path="crates/oe-knowledge/src/registration/incremental.rs"
 statement="Metadata/navigation-only merge reuses verified native text only for identical stable ID, resolved path, SHA256, bytes and page count. Validate old chapters and complete old rows against the prior declaration before building new chapter associations, titles and FTS from the current declaration. Validate new ranges in preview and publication. Preserve original extraction observations and prior index/registration identity; record old and new chapter digests. A changed declaration publishes updated even when no extraction is needed, and old packet registration comparison remains changed. Repeating identical input is unchanged. New IDs, changed original identity and replace still need native extraction. No OCR repair, source adoption or silent index repair."
 severity="error"
+
+[[validations]]
+id="registration_rejects_unreadable_original_paths_before_publish_in_all_modes"
+module="knowledge"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="registration_rejects_unreadable_original_paths_before_publish_in_all_modes"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Backslash and control characters in original filenames or directory components reject before extraction/publication in create, merge, replace and dry-run, preserving originals and existing index pair."
+scope="Synthetic macOS files; no real library mutation or engineering adoption"
+
+[[validations]]
+id="registration_rejects_unreadable_index_paths_before_publish_in_all_modes"
+module="knowledge"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="registration_rejects_unreadable_index_paths_before_publish_in_all_modes"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Custom index directory containing backslash, control characters or Unix non-UTF8 rejects without panic or publication in every registration mode; existing snapshots and originals remain exact."
+scope="Synthetic macOS files; non-UTF8 remains a rejection regression, not a claimed baseline CLI defect"
+
+[[validations]]
+id="local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse"
+module="knowledge"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse"
+rust_path="crates/oe-knowledge/tests/query_e2e.rs"
+oracle="Normal Unicode, spaces and Unix colons in source and custom index paths survive native registration, query bindings, metadata/navigation merge with unavailable extraction tools, repeated-input no-op and historical packet verification."
+scope="Synthetic macOS native PDF and query fixtures; Windows native execution not verified"
+
+[[validations]]
+id="local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip"
+module="knowledge"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip"
+rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
+oracle="Component-based slash encoding preserves valid source names and round-trips stored parent-relative paths to the exact original."
+scope="Pure synthetic path representation; no sources, network or engineering decisions"
+
+[[validations]]
+id="local_pdf_paths_do_not_blacklist_installation_root_names"
+module="knowledge"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="local_pdf_paths_do_not_blacklist_installation_root_names"
+rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
+oracle="A synthetic Unix installation root containing backslash, control characters, colon and Unicode does not invalidate otherwise valid source and index names below it; stored references still round-trip exactly."
+scope="Private synthetic Unix root fixture; no actual library or other-platform acceptance"
+
+[[validations]]
+id="local_pdf_paths_reject_unreadable_components_and_non_utf8"
+module="knowledge"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="local_pdf_paths_reject_unreadable_components_and_non_utf8"
+rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
+oracle="Unrepresentable path components reject rather than renaming, normalizing or using lossy replacement; existing containment and no-symlink rules remain authoritative."
+scope="Synthetic path guard, including Unix invalid bytes; no other-platform execution claim"
+
+[[validations]]
+id="local_pdf_path_limits_count_characters_and_check_final_relative_form"
+module="knowledge"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="local_pdf_path_limits_count_characters_and_check_final_relative_form"
+rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
+oracle="Each final persisted path respects the existing 2000-character reader limit, including a long index-relative traversal even when root-relative forms individually fit; UTF-8 bytes are not counted as characters."
+scope="Synthetic path strings independent of filesystem path-length limits"
 
 [[validations]]
 id="metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search"

@@ -86148,6 +86148,46 @@
 <urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:requirement> <urn:oev2:design:req_knowledge> .
 <urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:severity> "error" .
 <urn:oev2:design:local_pdf_navigation_reuses_verified_native_text> <urn:oev2:design:statement> "Metadata/navigation-only merge reuses verified native text only for identical stable ID, resolved path, SHA256, bytes and page count. Validate old chapters and complete old rows against the prior declaration before building new chapter associations, titles and FTS from the current declaration. Validate new ranges in preview and publication. Preserve original extraction observations and prior index/registration identity; record old and new chapter digests. A changed declaration publishes updated even when no extraction is needed, and old packet registration comparison remains changed. Repeating identical input is unchanged. New IDs, changed original identity and replace still need native extraction. No OCR repair, source adoption or silent index repair." .
+<urn:oev2:design:local_pdf_path_limits_count_characters_and_check_final_relative_form> <urn:oev2:design:behavior> "local_pdf_path_limits_count_characters_and_check_final_relative_form" .
+<urn:oev2:design:local_pdf_path_limits_count_characters_and_check_final_relative_form> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:local_pdf_path_limits_count_characters_and_check_final_relative_form> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:local_pdf_path_limits_count_characters_and_check_final_relative_form> <urn:oev2:design:name> "local_pdf_path_limits_count_characters_and_check_final_relative_form" .
+<urn:oev2:design:local_pdf_path_limits_count_characters_and_check_final_relative_form> <urn:oev2:design:oracle> "Each final persisted path respects the existing 2000-character reader limit, including a long index-relative traversal even when root-relative forms individually fit; UTF-8 bytes are not counted as characters." .
+<urn:oev2:design:local_pdf_path_limits_count_characters_and_check_final_relative_form> <urn:oev2:design:rustPath> "crates/oe-knowledge/src/local_pdf_paths.rs" .
+<urn:oev2:design:local_pdf_path_limits_count_characters_and_check_final_relative_form> <urn:oev2:design:scope> "Synthetic path strings independent of filesystem path-length limits" .
+<urn:oev2:design:local_pdf_path_limits_count_characters_and_check_final_relative_form> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> .
+<urn:oev2:design:local_pdf_paths_do_not_blacklist_installation_root_names> <urn:oev2:design:behavior> "local_pdf_paths_do_not_blacklist_installation_root_names" .
+<urn:oev2:design:local_pdf_paths_do_not_blacklist_installation_root_names> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:local_pdf_paths_do_not_blacklist_installation_root_names> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:local_pdf_paths_do_not_blacklist_installation_root_names> <urn:oev2:design:name> "local_pdf_paths_do_not_blacklist_installation_root_names" .
+<urn:oev2:design:local_pdf_paths_do_not_blacklist_installation_root_names> <urn:oev2:design:oracle> "A synthetic Unix installation root containing backslash, control characters, colon and Unicode does not invalidate otherwise valid source and index names below it; stored references still round-trip exactly." .
+<urn:oev2:design:local_pdf_paths_do_not_blacklist_installation_root_names> <urn:oev2:design:rustPath> "crates/oe-knowledge/src/local_pdf_paths.rs" .
+<urn:oev2:design:local_pdf_paths_do_not_blacklist_installation_root_names> <urn:oev2:design:scope> "Private synthetic Unix root fixture; no actual library or other-platform acceptance" .
+<urn:oev2:design:local_pdf_paths_do_not_blacklist_installation_root_names> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> .
+<urn:oev2:design:local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip> <urn:oev2:design:behavior> "local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip" .
+<urn:oev2:design:local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip> <urn:oev2:design:name> "local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip" .
+<urn:oev2:design:local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip> <urn:oev2:design:oracle> "Component-based slash encoding preserves valid source names and round-trips stored parent-relative paths to the exact original." .
+<urn:oev2:design:local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip> <urn:oev2:design:rustPath> "crates/oe-knowledge/src/local_pdf_paths.rs" .
+<urn:oev2:design:local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip> <urn:oev2:design:scope> "Pure synthetic path representation; no sources, network or engineering decisions" .
+<urn:oev2:design:local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> .
+<urn:oev2:design:local_pdf_paths_reject_unreadable_components_and_non_utf8> <urn:oev2:design:behavior> "local_pdf_paths_reject_unreadable_components_and_non_utf8" .
+<urn:oev2:design:local_pdf_paths_reject_unreadable_components_and_non_utf8> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:local_pdf_paths_reject_unreadable_components_and_non_utf8> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:local_pdf_paths_reject_unreadable_components_and_non_utf8> <urn:oev2:design:name> "local_pdf_paths_reject_unreadable_components_and_non_utf8" .
+<urn:oev2:design:local_pdf_paths_reject_unreadable_components_and_non_utf8> <urn:oev2:design:oracle> "Unrepresentable path components reject rather than renaming, normalizing or using lossy replacement; existing containment and no-symlink rules remain authoritative." .
+<urn:oev2:design:local_pdf_paths_reject_unreadable_components_and_non_utf8> <urn:oev2:design:rustPath> "crates/oe-knowledge/src/local_pdf_paths.rs" .
+<urn:oev2:design:local_pdf_paths_reject_unreadable_components_and_non_utf8> <urn:oev2:design:scope> "Synthetic path guard, including Unix invalid bytes; no other-platform execution claim" .
+<urn:oev2:design:local_pdf_paths_reject_unreadable_components_and_non_utf8> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> .
+<urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> <urn:oev2:design:check> "preflight" .
+<urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> <urn:oev2:design:checkerPath> "crates/oe-knowledge/src/local_pdf_paths.rs" .
+<urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> <urn:oev2:design:kind> "Constraint" .
+<urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> <urn:oev2:design:name> "local_pdf_registration_paths_roundtrip_before_publication" .
+<urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> <urn:oev2:design:requirement> <urn:oev2:design:req_knowledge> .
+<urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> <urn:oev2:design:severity> "error" .
+<urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> <urn:oev2:design:statement> "Before extraction or publication, local PDF registration validates each persisted original root-relative path, index root-relative directory and original index-relative path against the same reader/binding representation: exact UTF-8, no backslash or control characters, at most 2000 Unicode scalar values, and slash-separated components. Reject paths that cannot resolve back to the same rooted original. Check create, merge, replace and preview, including retained sources; rejection preserves originals and existing index snapshots. Existing valid index-relative parent segments remain readable; new manifest paths retain their stricter no-parent-components rule. Preserve normal Unicode, spaces and Unix colon names without rename, escaping, normalization or lossy conversion. Source-delivery retains its own stricter path contract. Installation-root spelling is not an original-name blacklist, and filesystem containment/no-symlink checks are not relaxed." .
 <urn:oev2:design:local_pdf_source_registration_currentness> <urn:oev2:design:check> "audit" .
 <urn:oev2:design:local_pdf_source_registration_currentness> <urn:oev2:design:checkerPath> "crates/oe-knowledge/src/registration_freshness.rs" .
 <urn:oev2:design:local_pdf_source_registration_currentness> <urn:oev2:design:kind> "Constraint" .
@@ -86204,6 +86244,14 @@
 <urn:oev2:design:local_source_currentness_survives_unrelated_incremental_addition> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/query_e2e.rs" .
 <urn:oev2:design:local_source_currentness_survives_unrelated_incremental_addition> <urn:oev2:design:scope> "Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged" .
 <urn:oev2:design:local_source_currentness_survives_unrelated_incremental_addition> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_source_registration_currentness> .
+<urn:oev2:design:local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse> <urn:oev2:design:behavior> "local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse" .
+<urn:oev2:design:local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse> <urn:oev2:design:name> "local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse" .
+<urn:oev2:design:local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse> <urn:oev2:design:oracle> "Normal Unicode, spaces and Unix colons in source and custom index paths survive native registration, query bindings, metadata/navigation merge with unavailable extraction tools, repeated-input no-op and historical packet verification." .
+<urn:oev2:design:local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/query_e2e.rs" .
+<urn:oev2:design:local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse> <urn:oev2:design:scope> "Synthetic macOS native PDF and query fixtures; Windows native execution not verified" .
+<urn:oev2:design:local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> .
 <urn:oev2:design:machine_ControlledVersionState> <urn:oev2:design:initial> "Unselected" .
 <urn:oev2:design:machine_ControlledVersionState> <urn:oev2:design:kind> "Machine" .
 <urn:oev2:design:machine_ControlledVersionState> <urn:oev2:design:module> <urn:oev2:design:engineering> .
@@ -89755,6 +89803,22 @@
 <urn:oev2:design:registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/source_io.rs" .
 <urn:oev2:design:registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals> <urn:oev2:design:scope> "Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified" .
 <urn:oev2:design:registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_explicit_incremental_registration> .
+<urn:oev2:design:registration_rejects_unreadable_index_paths_before_publish_in_all_modes> <urn:oev2:design:behavior> "registration_rejects_unreadable_index_paths_before_publish_in_all_modes" .
+<urn:oev2:design:registration_rejects_unreadable_index_paths_before_publish_in_all_modes> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:registration_rejects_unreadable_index_paths_before_publish_in_all_modes> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:registration_rejects_unreadable_index_paths_before_publish_in_all_modes> <urn:oev2:design:name> "registration_rejects_unreadable_index_paths_before_publish_in_all_modes" .
+<urn:oev2:design:registration_rejects_unreadable_index_paths_before_publish_in_all_modes> <urn:oev2:design:oracle> "Custom index directory containing backslash, control characters or Unix non-UTF8 rejects without panic or publication in every registration mode; existing snapshots and originals remain exact." .
+<urn:oev2:design:registration_rejects_unreadable_index_paths_before_publish_in_all_modes> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/source_io.rs" .
+<urn:oev2:design:registration_rejects_unreadable_index_paths_before_publish_in_all_modes> <urn:oev2:design:scope> "Synthetic macOS files; non-UTF8 remains a rejection regression, not a claimed baseline CLI defect" .
+<urn:oev2:design:registration_rejects_unreadable_index_paths_before_publish_in_all_modes> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> .
+<urn:oev2:design:registration_rejects_unreadable_original_paths_before_publish_in_all_modes> <urn:oev2:design:behavior> "registration_rejects_unreadable_original_paths_before_publish_in_all_modes" .
+<urn:oev2:design:registration_rejects_unreadable_original_paths_before_publish_in_all_modes> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:registration_rejects_unreadable_original_paths_before_publish_in_all_modes> <urn:oev2:design:module> <urn:oev2:design:knowledge> .
+<urn:oev2:design:registration_rejects_unreadable_original_paths_before_publish_in_all_modes> <urn:oev2:design:name> "registration_rejects_unreadable_original_paths_before_publish_in_all_modes" .
+<urn:oev2:design:registration_rejects_unreadable_original_paths_before_publish_in_all_modes> <urn:oev2:design:oracle> "Backslash and control characters in original filenames or directory components reject before extraction/publication in create, merge, replace and dry-run, preserving originals and existing index pair." .
+<urn:oev2:design:registration_rejects_unreadable_original_paths_before_publish_in_all_modes> <urn:oev2:design:rustPath> "crates/oe-knowledge/tests/source_io.rs" .
+<urn:oev2:design:registration_rejects_unreadable_original_paths_before_publish_in_all_modes> <urn:oev2:design:scope> "Synthetic macOS files; no real library mutation or engineering adoption" .
+<urn:oev2:design:registration_rejects_unreadable_original_paths_before_publish_in_all_modes> <urn:oev2:design:validates> <urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> .
 <urn:oev2:design:release_cli_manifest_and_transaction_failures> <urn:oev2:design:behavior> "release_cli_manifest_and_transaction_failures" .
 <urn:oev2:design:release_cli_manifest_and_transaction_failures> <urn:oev2:design:kind> "Validation" .
 <urn:oev2:design:release_cli_manifest_and_transaction_failures> <urn:oev2:design:module> <urn:oev2:design:cli> .
@@ -158125,7 +158189,7 @@ code:047c97d49007d50f3feaa0340bf04a7f27851e332e68ed4b3b9596aea72ca5fd sp:module 
 code:047c97d49007d50f3feaa0340bf04a7f27851e332e68ed4b3b9596aea72ca5fd sp:module <urn:oev2:design:knowledge_registered_ocr6> .
 code:047c97d49007d50f3feaa0340bf04a7f27851e332e68ed4b3b9596aea72ca5fd sp:path "crates/oe-knowledge/src/lib.rs" .
 code:047c97d49007d50f3feaa0340bf04a7f27851e332e68ed4b3b9596aea72ca5fd sp:production true .
-code:047c97d49007d50f3feaa0340bf04a7f27851e332e68ed4b3b9596aea72ca5fd sp:sha256 "1703c7f46542bb06b1e1374f3072f8f5977e3f305f53fac35a5137a75d360cf7" .
+code:047c97d49007d50f3feaa0340bf04a7f27851e332e68ed4b3b9596aea72ca5fd sp:sha256 "5f5db944049b2f91c07bafa04574b4388170ae1aadbd80e5f3c7e0883ea5fcad" .
 code:04b9892576ab9235b866e5e291c45cb6d654057ed9ec75dd3cb88ef5168f37f4 sp:calls "JobId::new" .
 code:04b9892576ab9235b866e5e291c45cb6d654057ed9ec75dd3cb88ef5168f37f4 sp:calls "OsStr::new" .
 code:04b9892576ab9235b866e5e291c45cb6d654057ed9ec75dd3cb88ef5168f37f4 sp:calls "PinnedTarget::new" .
@@ -159530,6 +159594,8 @@ code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:calls "
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:calls "Some" .
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:calls "Vec::new" .
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:calls "canonical_digest" .
+code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:calls "crate::local_pdf_paths::root_relative_path" .
+code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:calls "crate::local_pdf_paths::validate_root_relative" .
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:calls "crate::packet::source_path" .
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:calls "crate::sources::resolve_original" .
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:calls "digest" .
@@ -159548,7 +159614,7 @@ code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:module 
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:module <urn:oev2:design:knowledge_registered_ocr6> .
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:path "crates/oe-knowledge/src/registration_freshness.rs" .
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:production true .
-code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:sha256 "c6881b8eebb2df02e4e1473de7ba6402c65f8449a53c269861f4e39df2a96559" .
+code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:sha256 "6408bb6dec0e31a63f3e1d86b43dd3f72ba7214bee373d5211b5af3f93a3f781" .
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:test "legacy_packets_above_query_limit_keep_unknown_registration_without_index_reads" .
 code:0f26a2206950ad025404c3b34e2ab8afea184a88a791c974ef6fb52355967267 sp:test "root_relative_paths_use_portable_separators_and_preserve_names" .
 code:0f2dd46d0c94f5dd81118b3258a10cd25b94c0f9a6a02369b030bd0009533f7e sp:calls "BTreeMap::new" .
@@ -176445,11 +176511,12 @@ code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "Ok" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "Path::new" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "PathBuf::from" .
-code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "PathBuf::new" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "Stage::new" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "String::from_utf8" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "String::new" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "Vec::new" .
+code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "crate::local_pdf_paths::preflight" .
+code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "crate::local_pdf_paths::root_relative_path" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "crate::publication::publish_directory" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "drop" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:calls "file_hash" .
@@ -176488,7 +176555,7 @@ code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:module 
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:path "crates/oe-knowledge/src/registration.rs" .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:production true .
 code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:publicType "RegistrationOptions" .
-code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:sha256 "0ea43231b8711cf002cb5cd5aef1c0a4ae0a66e9c663cb9c998728187ffdf113" .
+code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 sp:sha256 "7bfaad80758e6aae90dadee69c1d1d7047b70758b373d9fc3138029b26b0391d" .
 code:7a83c924649020af83a469b2e623d4604064c3b7d2091e3a927f3c6531908ab5 sp:calls "Vec::new" .
 code:7a83c924649020af83a469b2e623d4604064c3b7d2091e3a927f3c6531908ab5 sp:calls "limits" .
 code:7a83c924649020af83a469b2e623d4604064c3b7d2091e3a927f3c6531908ab5 sp:calls "observed" .
@@ -190923,6 +190990,23 @@ code:e026e65612917080e7403586c0fc51f30f5e57b29081e66cc5da11feccecad7c sp:test "s
 code:e026e65612917080e7403586c0fc51f30f5e57b29081e66cc5da11feccecad7c sp:test "tool_owner_rechecks_original_records_and_registered_followup_project" .
 code:e026e65612917080e7403586c0fc51f30f5e57b29081e66cc5da11feccecad7c sp:test "unsupported_exploration_never_reexecutes_or_dispatches_a_stage" .
 code:e026e65612917080e7403586c0fc51f30f5e57b29081e66cc5da11feccecad7c sp:test "wrong_stage_or_acceptance_cannot_reuse_an_unrelated_real_result" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:calls "Ok" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:calls "Vec::new" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:calls "root_relative_path" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:calls "validate_root_relative" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:calls "validate_text" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:kind "RustCodeFile" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:module <urn:oev2:design:knowledge> .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:module <urn:oev2:design:knowledge_ocr_page5> .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:module <urn:oev2:design:knowledge_page_content4> .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:module <urn:oev2:design:knowledge_registered_ocr6> .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:path "crates/oe-knowledge/src/local_pdf_paths.rs" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:production true .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:sha256 "d0d6321cf4b1619aca1801e2a68babf5b418858d61b53c6ab0e19d9abff84dd8" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:test "local_pdf_path_limits_count_characters_and_check_final_relative_form" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:test "local_pdf_paths_do_not_blacklist_installation_root_names" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:test "local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip" .
+code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 sp:test "local_pdf_paths_reject_unreadable_components_and_non_utf8" .
 code:e05222d00896886b55ae59f2c21f013623d27b21da0f61d73dbe482945a05810 sp:calls "ExitCode::from" .
 code:e05222d00896886b55ae59f2c21f013623d27b21da0f61d73dbe482945a05810 sp:calls "Ok" .
 code:e05222d00896886b55ae59f2c21f013623d27b21da0f61d73dbe482945a05810 sp:calls "oe_evolution::compiled" .
@@ -192851,9 +192935,11 @@ code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::Permissions::from_mode" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::create_dir_all" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::read" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::read_dir" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::remove_dir_all" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::set_permissions" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "fs::write" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "original_file_bytes" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "rusqlite::Connection::open" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "save" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:calls "script" .
@@ -192874,7 +192960,7 @@ code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:module 
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:module <urn:oev2:design:knowledge_registered_ocr6> .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:path "crates/oe-knowledge/tests/source_io.rs" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:production false .
-code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:sha256 "254b41536c0659d86e9a1e7313abe1088a741e26dab800d5e95040eb78ee47be" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:sha256 "5672101971bfb2e751e4771d9ae931316b45de71f6ba727bca105b5689f7e906" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "actual_unicode_registration_all_physical_pages_and_whole_page_view" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "archive_damage_and_hidden_members_never_publish_selected_bytes" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "archive_expansion_and_compressed_trailing_bytes_are_rejected" .
@@ -192890,6 +192976,8 @@ code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "m
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "misumi_selected_single_page_keeps_book_position_and_missing_full_book_status" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "original_mutation_encryption_and_fifo_never_publish_registration" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "registration_rejects_unreadable_index_paths_before_publish_in_all_modes" .
+code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "registration_rejects_unreadable_original_paths_before_publish_in_all_modes" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "relative_source_identity_survives_complete_library_relocation" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "replacement_is_explicit_and_extraction_failure_retains_previous_bytes" .
 code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef sp:test "replacement_rejects_self_consistent_hashes_of_non_index_bytes" .
@@ -195194,7 +195282,7 @@ code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:module 
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:module <urn:oev2:design:knowledge_registered_ocr6> .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:path "crates/oe-knowledge/tests/query_e2e.rs" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:production false .
-code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:sha256 "47fa1abd61ce9b9afdd7ec3380893d0cf43648e18d2d0e90ef0bf2c577c922b7" .
+code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:sha256 "7bd96a366d3b9fc1c414329c29b54d512123ec0ce7a67e0d3b37ea699cb28319" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "external_body_search_still_rejects_empty_tokenizer_terms" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "local_query_preserves_names_while_skipping_unsearchable_internal_fragments" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "local_source_currentness_distinguishes_metadata_and_navigation_changes" .
@@ -195203,6 +195291,7 @@ code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "l
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "local_source_currentness_preserves_old_version_and_historical_feedback" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "local_source_currentness_rejects_corrupt_binding_and_candidate_identity" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "local_source_currentness_survives_unrelated_incremental_addition" .
+code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "native_query_two_sources_originals_packet_deferred_feedback_and_explicit_next_revision" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "no_registered_library_keeps_question_and_unknowns_without_dispatch" .
 code:fe3f0811c9ff68a08d7fd4d08452fdd260744e7bfcba9c5fe92b5b1852812147 sp:test "source_library_query_packet_and_feedback_preserve_source_boundaries" .
@@ -195679,6 +195768,9 @@ function:01d2c8f09e44ca18b97db8436d4a7ee657807746b006c5bd008c51b513d662ac sp:nam
 function:01dddb89d366e15422e968e3aa89fbb913c63192ac14e1e76e9f3b15e16be19b sp:file code:4a1e8bb2b3f83b35bda3dd5f860c17d4a002d2e45eadc6926a712497e7ac4a64 .
 function:01dddb89d366e15422e968e3aa89fbb913c63192ac14e1e76e9f3b15e16be19b sp:kind "RustFunction" .
 function:01dddb89d366e15422e968e3aa89fbb913c63192ac14e1e76e9f3b15e16be19b sp:name "inspect_current" .
+function:01e5ab96f1f84109be9fca63b86cc3ad1cb2c56b9b7b4adb8f5983c6cbdc5d7e sp:file code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 .
+function:01e5ab96f1f84109be9fca63b86cc3ad1cb2c56b9b7b4adb8f5983c6cbdc5d7e sp:kind "RustFunction" .
+function:01e5ab96f1f84109be9fca63b86cc3ad1cb2c56b9b7b4adb8f5983c6cbdc5d7e sp:name "root_relative_path" .
 function:01f5776129585748bd58a9839355a00bb5ca9f33ec670456811f2bd75a14c07e sp:file code:d33b94d65b2f18fb8707ae6774533671e8703fc0355140f78144558bfb2725a6 .
 function:01f5776129585748bd58a9839355a00bb5ca9f33ec670456811f2bd75a14c07e sp:kind "RustFunction" .
 function:01f5776129585748bd58a9839355a00bb5ca9f33ec670456811f2bd75a14c07e sp:name "execute_neutral" .
@@ -196103,6 +196195,10 @@ function:04c5ea59c6de641a26b7c3295619b7d1419266261423fc0bd8c0b517583ee76b sp:nam
 function:04cbe1bfcb1b8779e0c746cff3df0150bc8ba220e6457bf036e4376e177b6eb0 sp:file code:cea71d6c015d9a256854db0816bc60447a8d4381295f8c1f1d5aa4d883b8962a .
 function:04cbe1bfcb1b8779e0c746cff3df0150bc8ba220e6457bf036e4376e177b6eb0 sp:kind "RustFunction" .
 function:04cbe1bfcb1b8779e0c746cff3df0150bc8ba220e6457bf036e4376e177b6eb0 sp:name "capabilities" .
+function:04cc2ba03aa7be6560fd22dd9b23f756d38ebd0f711efc4fba7aa32fa60d8d7f sp:executes <urn:oev2:design:local_pdf_registration_paths_roundtrip_before_publication> .
+function:04cc2ba03aa7be6560fd22dd9b23f756d38ebd0f711efc4fba7aa32fa60d8d7f sp:file code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 .
+function:04cc2ba03aa7be6560fd22dd9b23f756d38ebd0f711efc4fba7aa32fa60d8d7f sp:kind "RustFunction" .
+function:04cc2ba03aa7be6560fd22dd9b23f756d38ebd0f711efc4fba7aa32fa60d8d7f sp:name "preflight" .
 function:04d366a37f09495acae4fcaef9d3665ba6ec5e00ab1e0d3d1b8e1c1952b8817b sp:file code:82ec8a7bfd5e2ddf5e43c1df37fa0b85246da82f438ae35ed2bd097581165252 .
 function:04d366a37f09495acae4fcaef9d3665ba6ec5e00ab1e0d3d1b8e1c1952b8817b sp:kind "RustFunction" .
 function:04d366a37f09495acae4fcaef9d3665ba6ec5e00ab1e0d3d1b8e1c1952b8817b sp:name "make_entry" .
@@ -199903,6 +199999,9 @@ function:2090bfff0c4a22bd0c6b5bd15bc2e42964333c6a9e5ba7acbfac84b7e76fb950 sp:nam
 function:209262ed02c00daf04b8875dd840a3a2351b0712d910602ac4f0f2f2a1a42325 sp:file code:8d8a508a6b280515fa5fa22d759e8239553b5a8fc4d3582665eedb649edffdbf .
 function:209262ed02c00daf04b8875dd840a3a2351b0712d910602ac4f0f2f2a1a42325 sp:kind "RustFunction" .
 function:209262ed02c00daf04b8875dd840a3a2351b0712d910602ac4f0f2f2a1a42325 sp:name "set_context" .
+function:20999e7dcdc4038804365c307c09e08d273eb7d935c80b3b6acd04d852a59779 sp:file code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 .
+function:20999e7dcdc4038804365c307c09e08d273eb7d935c80b3b6acd04d852a59779 sp:kind "RustFunction" .
+function:20999e7dcdc4038804365c307c09e08d273eb7d935c80b3b6acd04d852a59779 sp:name "validate_text" .
 function:209a0da575b9084285f2c42cd117b5f280172cb2118d16361e3df6af2d92b806 sp:file code:5a8c2536f266959b7d752e7c53ff089f0d30b823436e8cfc8d288902e017907f .
 function:209a0da575b9084285f2c42cd117b5f280172cb2118d16361e3df6af2d92b806 sp:kind "RustFunction" .
 function:209a0da575b9084285f2c42cd117b5f280172cb2118d16361e3df6af2d92b806 sp:name "rdf" .
@@ -212921,6 +213020,9 @@ function:7bb3d7e04ed2558129173d3da8d1608010b5ec7b52f319a2721b2b5baf615ee6 sp:exe
 function:7bb3d7e04ed2558129173d3da8d1608010b5ec7b52f319a2721b2b5baf615ee6 sp:file code:9945675eb7ec26622bf8e2b79a2e6d6a15bd0d0ef883e9ca23da512731d870c5 .
 function:7bb3d7e04ed2558129173d3da8d1608010b5ec7b52f319a2721b2b5baf615ee6 sp:kind "RustFunction" .
 function:7bb3d7e04ed2558129173d3da8d1608010b5ec7b52f319a2721b2b5baf615ee6 sp:name "verify" .
+function:7bbcdfce9648dc1a106f2d4772688514c7eefd8a367125a4cd575a5a5793bf84 sp:file code:efe43ca1dfe08183b4429ea48cbf9eeef3be7ea5137d56aa91c7738797ec9bef .
+function:7bbcdfce9648dc1a106f2d4772688514c7eefd8a367125a4cd575a5a5793bf84 sp:kind "RustFunction" .
+function:7bbcdfce9648dc1a106f2d4772688514c7eefd8a367125a4cd575a5a5793bf84 sp:name "original_file_bytes" .
 function:7bc0e209b78b198cb597e2419bf25a5feca9326037298a09aac27efb2d4c1a4d sp:file code:590386ec7e5b197dee8c71b9e983645648473841365c8895c39cbabc6d65220d .
 function:7bc0e209b78b198cb597e2419bf25a5feca9326037298a09aac27efb2d4c1a4d sp:kind "RustFunction" .
 function:7bc0e209b78b198cb597e2419bf25a5feca9326037298a09aac27efb2d4c1a4d sp:name "execute_probed" .
@@ -215962,6 +216064,9 @@ function:918ca1d7ce78673b0586d349c0e4cc868210c55ee614cf7750c4526d09b81f40 sp:nam
 function:9194725905eda5e73f30dbf9d9827fe00b890e7e24d63349d0be12aacd3d9a73 sp:file code:b4b96aac388784291db783e73405f660c96f7b22aa2fec052c269e605bb7e717 .
 function:9194725905eda5e73f30dbf9d9827fe00b890e7e24d63349d0be12aacd3d9a73 sp:kind "RustFunction" .
 function:9194725905eda5e73f30dbf9d9827fe00b890e7e24d63349d0be12aacd3d9a73 sp:name "catalog" .
+function:919c10d2635aa066e650480da2391a20b28931f864d4db6f631db4d271434728 sp:file code:e04dfde788dbab45ff0926a23711288e55e251fff4cb4644d563ac111ade6208 .
+function:919c10d2635aa066e650480da2391a20b28931f864d4db6f631db4d271434728 sp:kind "RustFunction" .
+function:919c10d2635aa066e650480da2391a20b28931f864d4db6f631db4d271434728 sp:name "validate_root_relative" .
 function:91a196f3d476f9f057463a7073d89dae8a0d599a05d1ae8a28fb822b5edace66 sp:file code:bf74aec043b248739897de52f0095968a96cdf9d50c37eaf504b5ec4f65602ae .
 function:91a196f3d476f9f057463a7073d89dae8a0d599a05d1ae8a28fb822b5edace66 sp:kind "RustFunction" .
 function:91a196f3d476f9f057463a7073d89dae8a0d599a05d1ae8a28fb822b5edace66 sp:name "text" .
@@ -217000,9 +217105,6 @@ function:99f5f72081131087082cf96f579c9aab3c5d8717721439405627d1600f5ca672 sp:nam
 function:99f75f7e42cc5c274ef9cf40518024de10a329c3e7ed9d5ed4006eb199e2c653 sp:file code:4aafd1316567cc25613d57a36fc449803380724e869b69c3c2d5c7cc9a4dcbe6 .
 function:99f75f7e42cc5c274ef9cf40518024de10a329c3e7ed9d5ed4006eb199e2c653 sp:kind "RustFunction" .
 function:99f75f7e42cc5c274ef9cf40518024de10a329c3e7ed9d5ed4006eb199e2c653 sp:name "registry_event" .
-function:99fdc31f2707fc2cc22817d3a37b182a6e8712187415a4d425cf0b98d5e08ba8 sp:file code:7a4dbcb480218b2546016ef245c0dc5e677e8c48cd2e675ddcec7eaf3da03c53 .
-function:99fdc31f2707fc2cc22817d3a37b182a6e8712187415a4d425cf0b98d5e08ba8 sp:kind "RustFunction" .
-function:99fdc31f2707fc2cc22817d3a37b182a6e8712187415a4d425cf0b98d5e08ba8 sp:name "relative_original" .
 function:99fdc6d88edf05b399da9cb7dd30227f0b81abea023b32fa08166996ad959a6d sp:executes <urn:oev2:design:source_jsonld_existing_stage_and_graph_meaning> .
 function:99fdc6d88edf05b399da9cb7dd30227f0b81abea023b32fa08166996ad959a6d sp:file code:2ddf9d839f288883f60a311910a58a72487068ba3492445a83a75389c667275b .
 function:99fdc6d88edf05b399da9cb7dd30227f0b81abea023b32fa08166996ad959a6d sp:kind "RustFunction" .

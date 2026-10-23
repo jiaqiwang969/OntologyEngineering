@@ -87,7 +87,8 @@ fn manifest_sources(root: &Path, path: &Path, raw: &[u8]) -> Result<Vec<Value>> 
     );
     let mut ids = BTreeSet::new();
     let mut result = Vec::new();
-    let source_root = oe_core::SkillRoot::new(root)?.path().join("sources");
+    let skill_root = oe_core::SkillRoot::new(root)?;
+    let source_root = skill_root.path().join("sources");
     for source in sources {
         keys(
             source,
@@ -114,6 +115,7 @@ fn manifest_sources(root: &Path, path: &Path, raw: &[u8]) -> Result<Vec<Value>> 
                 && !original.starts_with(source_root.join(".indexes")),
             "local_pdf_original_must_be_in_sources_outside_indexes"
         );
+        crate::local_pdf_paths::root_relative_path(&skill_root, &original, false)?;
         let (mut chapter_ids, mut chapters) = (BTreeSet::new(), Vec::new());
         for chapter in source["chapters"]
             .as_array()
@@ -173,19 +175,6 @@ fn normalize_body(raw: &str) -> String {
     }
     body
 }
-fn relative_original(original: &Path, index: &Path) -> Result<String> {
-    let a: Vec<_> = original.components().collect();
-    let b: Vec<_> = index.components().collect();
-    let common = a.iter().zip(&b).take_while(|(a, b)| a == b).count();
-    let mut result = PathBuf::new();
-    for _ in common..b.len() {
-        result.push("..");
-    }
-    for c in &a[common..] {
-        result.push(c.as_os_str());
-    }
-    Ok(result.to_str().context("source_path_utf8")?.to_owned())
-}
 fn owned_snapshot(target: &Path) -> Result<Value> {
     oe_core::no_symlinks(target)?;
     ensure!(
@@ -240,11 +229,19 @@ pub(crate) fn register_with_guard(
         target.starts_with(&indexes) && target != indexes,
         "local_pdf_index_outside_sources_indexes"
     );
+    crate::local_pdf_paths::root_relative_path(&root, &target, true)?;
     let previous = incremental::Previous::open(&root, &target, options)?;
     let manifest = within_root(root.path(), manifest)?;
     let manifest_raw = oe_core::read_regular_bytes(&manifest, 8 * 1024 * 1024)?;
     let incoming = manifest_sources(root.path(), &manifest, &manifest_raw)?;
     let mut plan = incremental::Plan::new(incoming, previous.as_ref(), options)?;
+    let stored_paths = plan
+        .sources
+        .iter()
+        .map(|source| {
+            crate::local_pdf_paths::preflight(&root, &target, Path::new(text(source, "path")?))
+        })
+        .collect::<Result<Vec<_>>>()?;
     let mut originals = Vec::new();
     for source in &plan.sources {
         let path = PathBuf::from(text(source, "path")?);
@@ -336,7 +333,9 @@ pub(crate) fn register_with_guard(
     let mut sources = Vec::new();
     let mut reused = Vec::new();
     let mut extracted_ids = Vec::new();
-    for (source, (original, identity)) in plan.sources.iter().zip(&originals) {
+    for ((source, (original, identity)), stored_path) in
+        plan.sources.iter().zip(&originals).zip(&stored_paths)
+    {
         let mut registered = source.clone();
         registered["bytes"] = json!(identity.1);
         if let Some(old) = plan.reused(source, previous.as_ref()) {
@@ -387,7 +386,7 @@ pub(crate) fn register_with_guard(
             tools.push(json!({"source_id":source["id"],"tools":extracted.observations}));
             extracted_ids.push(source["id"].clone());
         }
-        registered["path"] = json!(relative_original(original, &target)?);
+        registered["path"] = json!(stored_path);
         sources.push(registered);
     }
     plan.update["extracted_source_ids"] = json!(extracted_ids);
@@ -397,6 +396,7 @@ pub(crate) fn register_with_guard(
     let builder = [
         include_bytes!("registration.rs").as_slice(),
         include_bytes!("registration/incremental.rs").as_slice(),
+        include_bytes!("local_pdf_paths.rs").as_slice(),
     ]
     .concat();
     let mut meta = json!({"schema":"ontology-engineering.local-pdf-index/v1","built_at":chrono::DateTime::<chrono::Utc>::from(SystemTime::now()).to_rfc3339_opts(chrono::SecondsFormat::Secs,true),"counts":counts.value,"registration_sha256":oe_core::json::canonical_digest(&identity)?,"builder_sha256":oe_core::sha256(builder),"builder":"oe-knowledge Rust registration","extraction":"pdftotext -layout -enc UTF-8; horizontal whitespace collapsed; no OCR","scope":"native text retrieval plus declared chapter navigation; no claim extraction or semantic adoption","tools":tools,"reused_sources":reused,"sqlite_version":rusqlite::version(),"tokenizer":"Rust Unicode NFKC + Unicode lowercase; ASCII/CJK ngrams"});

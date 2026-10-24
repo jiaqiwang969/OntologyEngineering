@@ -69,7 +69,9 @@ pub fn evaluate(scene: &PresentationScene1) -> Result<Evaluation> {
         .map_err(|e| anyhow::anyhow!("presentation_contract:{e:?}"))?;
     ensure!(
         (1..=64).contains(&scene.parts.len())
-            && (1..=8).contains(&scene.parameters.len())
+            // A CAD snapshot may be intentionally static; zero parameters is
+            // a valid finite scene and avoids inventing a motion control.
+            && (0..=8).contains(&scene.parameters.len())
             && (1..=32).contains(&scene.states.len()),
         "presentation_budget"
     );

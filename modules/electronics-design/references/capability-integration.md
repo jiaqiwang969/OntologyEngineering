@@ -1,7 +1,8 @@
 # 电子设计专业模块与同一 Project 的接续
 
 电子设计与原六工具共享统一系统的 Project、context、ToolResult、决定和内置 memory。
-本文件描述接续方法，不定义新的机器 schema，也不宣称存在专用 PCB Rust 适配器。
+本文件描述接续方法，并说明电子原生观测如何通过专用 Rust 外层桥进入 Project；它不把
+通用 ToolResult 扩展成 PCB 解析器，也不把外部工具结果自动变成工程采用。
 唯一电子入口为本模块的 [SKILL](../SKILL.md)，五个内部 GUIDE 按缺口展开。
 
 ## 实际安装与结果合同
@@ -19,7 +20,11 @@
    原生文件、测量、失败和未执行项。后台约束与服务归属沿当前用户要求，不能从指南继承授权。
 4. 用独立设计意图、厂商引脚来源、解析预期或独立实验核对结果；同一原生数据经两种显示
    通道输出并不成为两份独立证据。工具成功、连接成功、DRC 通过和电路功能分别判断。
-5. 准备 `oev2.tool-result/1`，经 `project tool-result verify/register` 登记，再用
+5. 先将外部工具结果整理为严格的 `oev2.electronics-native-observation/1`，运行
+   `oev2 project electronics project --request ... --source ... --aux role=path ...`。
+   该入口只重读来源、核 SHA、Project context、操作类型和辅助原件，保留 source-observation、
+   projection、aux 副本及 receipt；它不启动 EasyEDA，也不执行 DRC、仿真、模型导入或接线卡渲染。
+   随后准备 `oev2.tool-result/1`，经 `project tool-result verify/register` 登记，再用
    `project decide` 更新有依据的有限结论。登记不改变结论，decide 不授予 adopted。
    条件、对象或来源变化后用当前 reconcile 合同定位受影响决定，必要时重新专业检查和内核审查。
 6. 交付前按路线锚定 /2 核已登记决定与证据，仅交付被验证的范围；缺电子规则或实测仍未知。
@@ -42,7 +47,7 @@ memory 的 home 独立选择。原件不在所选项目、项目快照已更新�
 | PCB 实现 | 当前器件关联、pad→net、板层/板框/实际铜线 | 网络标签相符不能证明铜连通 |
 | ERC/DRC/布局 | 当前规则来源、完整输出和遗留问题 | blocked、超时、不支持不能算零错误；通过不能证明功能 |
 | 制造与接线 | 同一修订的原生输出、BOM/坐标、实物证据和审阅 | 文件完整不表示允许下单、焊接或上电 |
-| v2 接收 | 当前绑定、来源、决定及已实现规则的实际检查 | 通用审查不重算缺失的电子规则，不自动采用 |
+| v2 接收 | 当前绑定、来源、决定及电子投影回执的实际检查 | 外层桥不重算缺失的电子规则，不自动采用 |
 
 本次模块迁移的离线测试只覆盖公开合成输入和辅助程序行为；EDA 原生执行、模型下载、
 真实 CAD 对齐、制造、接线及实物性能须另行明确范围并实际验收。不得沿用开发机私人案例通过。

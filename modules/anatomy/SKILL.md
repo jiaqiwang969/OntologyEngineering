@@ -174,6 +174,12 @@ top-level copy for a second agent host.
   `presentation generate`, then `presentation verify`. Keep each delivery in
   a new `var/` directory and preserve the request, receipt and source
   identity.
+- For a CAD-backed visual, enter through `oev2 cad presentation project` with
+  a verified `NxAssemblyObservation`. Keep its `projection.json` beside the
+  generated `source.json`; the latter is only the finite `PresentationScene1`
+  renderer proxy. Occurrences, source digests, transforms and analytic losses
+  remain in the projection receipt so an Anatomy figure can be traced back to
+  the same Project and CAD evidence.
 - Use this upstream kit for richer SVG, WebGL, 3D, motion, capture or PDF
   output only when the task needs it. Bind the resulting artifact back to the
   same Project and record the actual tool version, source, conditions,

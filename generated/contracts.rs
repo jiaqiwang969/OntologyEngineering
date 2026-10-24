@@ -162,6 +162,43 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("CadOccurrenceBindingRequest1", "assembly", "CadAssemblyUseSource1"),
     ("CadOccurrenceBindingRequest1", "definition", "CadCorrespondenceState1"),
     ("CadOccurrenceBindingRequest1", "schema", "String"),
+    ("CadPresentationGeometry1", "body_tag", "u64"),
+    ("CadPresentationGeometry1", "exact_box_corners_m", "Vec<f64>"),
+    ("CadPresentationGeometry1", "exact_box_corners_native", "Vec<f64>"),
+    ("CadPresentationGeometry1", "native_units", "String"),
+    ("CadPresentationGeometry1", "owning_part_tag", "u64"),
+    ("CadPresentationGeometry1", "projection_loss", "String"),
+    ("CadPresentationGeometry1", "representation", "String"),
+    ("CadPresentationGeometry1", "source_pointer", "String"),
+    ("CadPresentationGeometry1", "transformed_box_corners_m", "Vec<f64>"),
+    ("CadPresentationGeometry1", "unit_to_m", "f64"),
+    ("CadPresentationGeometry1", "volume_m3", "Option<f64>"),
+    ("CadPresentationMember1", "geometries", "Vec<CadPresentationGeometry1>"),
+    ("CadPresentationMember1", "local_to_parent_m", "Vec<f64>"),
+    ("CadPresentationMember1", "local_to_root_m", "Vec<f64>"),
+    ("CadPresentationMember1", "name", "String"),
+    ("CadPresentationMember1", "occurrence_id", "String"),
+    ("CadPresentationMember1", "parent_occurrence_id", "Option<String>"),
+    ("CadPresentationMember1", "prototype_id", "String"),
+    ("CadPresentationMember1", "reference_set", "String"),
+    ("CadPresentationMember1", "scene_part_ids", "Vec<String>"),
+    ("CadPresentationProjection1", "engineering_adoption", "String"),
+    ("CadPresentationProjection1", "limitations", "Vec<String>"),
+    ("CadPresentationProjection1", "members", "Vec<CadPresentationMember1>"),
+    ("CadPresentationProjection1", "projection_losses", "Vec<String>"),
+    ("CadPresentationProjection1", "renderer_proxy", "Option<PresentationScene1>"),
+    ("CadPresentationProjection1", "request", "CadPresentationProjectionRequest1"),
+    ("CadPresentationProjection1", "samples", "Vec<CadPresentationSample1>"),
+    ("CadPresentationProjection1", "schema", "String"),
+    ("CadPresentationProjectionRequest1", "assembly", "CadAssemblyUseSource1"),
+    ("CadPresentationProjectionRequest1", "native_observation", "ArtifactReference"),
+    ("CadPresentationProjectionRequest1", "ordered_scene", "Option<ArtifactReference>"),
+    ("CadPresentationProjectionRequest1", "projection_policy", "String"),
+    ("CadPresentationProjectionRequest1", "schema", "String"),
+    ("CadPresentationSample1", "derivation", "String"),
+    ("CadPresentationSample1", "ordinal", "u64"),
+    ("CadPresentationSample1", "sample_id", "String"),
+    ("CadPresentationSample1", "targets", "Vec<NxAssemblyPoseTarget>"),
     ("CadSourcePointer1", "pointer", "String"),
     ("CadSourcePointer1", "source", "ArtifactReference"),
     ("CapabilityRegistry", "capabilities", "Vec<RegisteredCapability>"),
@@ -2044,6 +2081,62 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("DriveSample", "screw_holder", "String"),
     ("DriveSample", "screw_travel", "Quantity"),
     ("DriveSample", "time", "Option<Quantity>"),
+    ("ElectronicsNativeObservation1", "artifacts", "Vec<ElectronicsProjectionArtifact1>"),
+    ("ElectronicsNativeObservation1", "engineering_adoption", "String"),
+    ("ElectronicsNativeObservation1", "limitations", "Vec<String>"),
+    ("ElectronicsNativeObservation1", "observations", "serde_json::Value"),
+    ("ElectronicsNativeObservation1", "operation", "String"),
+    ("ElectronicsNativeObservation1", "project_context", "ProjectReviewContext"),
+    ("ElectronicsNativeObservation1", "schema", "String"),
+    ("ElectronicsNativeObservation1", "validations", "Vec<ElectronicsProjectionValidation1>"),
+    ("ElectronicsProjection1", "artifacts", "Vec<ElectronicsProjectionArtifact1>"),
+    ("ElectronicsProjection1", "coverage", "Vec<String>"),
+    ("ElectronicsProjection1", "engineering_adoption", "String"),
+    ("ElectronicsProjection1", "issues", "Vec<String>"),
+    ("ElectronicsProjection1", "limitations", "Vec<String>"),
+    ("ElectronicsProjection1", "operation", "String"),
+    ("ElectronicsProjection1", "request", "ElectronicsProjectionRequest1"),
+    ("ElectronicsProjection1", "schema", "String"),
+    ("ElectronicsProjection1", "source_observation", "ArtifactReference"),
+    ("ElectronicsProjection1", "source_sha256", "String"),
+    ("ElectronicsProjection1", "status", "String"),
+    ("ElectronicsProjection1", "validated_artifacts", "Vec<ElectronicsProjectionAuxiliary1>"),
+    ("ElectronicsProjection1", "validations", "Vec<ElectronicsProjectionValidation1>"),
+    ("ElectronicsProjectionArtifact1", "artifact_id", "String"),
+    ("ElectronicsProjectionArtifact1", "kind", "String"),
+    ("ElectronicsProjectionArtifact1", "notes", "Vec<String>"),
+    ("ElectronicsProjectionArtifact1", "source", "ArtifactReference"),
+    ("ElectronicsProjectionArtifact1", "source_pointer", "String"),
+    ("ElectronicsProjectionArtifact1", "status", "String"),
+    ("ElectronicsProjectionAuxiliary1", "artifact", "ArtifactReference"),
+    ("ElectronicsProjectionAuxiliary1", "role", "String"),
+    ("ElectronicsProjectionFile1", "path", "String"),
+    ("ElectronicsProjectionFile1", "role", "String"),
+    ("ElectronicsProjectionFile1", "sha256", "String"),
+    ("ElectronicsProjectionReceipt1", "engineering_adoption", "String"),
+    ("ElectronicsProjectionReceipt1", "execution_binding", "serde_json::Value"),
+    ("ElectronicsProjectionReceipt1", "files", "Vec<ElectronicsProjectionFile1>"),
+    ("ElectronicsProjectionReceipt1", "issues", "Vec<String>"),
+    ("ElectronicsProjectionReceipt1", "output_dir", "String"),
+    ("ElectronicsProjectionReceipt1", "projection_sha256", "String"),
+    ("ElectronicsProjectionReceipt1", "request_sha256", "String"),
+    ("ElectronicsProjectionReceipt1", "schema", "String"),
+    ("ElectronicsProjectionReceipt1", "source_sha256", "String"),
+    ("ElectronicsProjectionReceipt1", "status", "String"),
+    ("ElectronicsProjectionReceipt1", "warnings", "Vec<String>"),
+    ("ElectronicsProjectionRequest1", "auxiliary", "Vec<ElectronicsProjectionAuxiliary1>"),
+    ("ElectronicsProjectionRequest1", "operation", "String"),
+    ("ElectronicsProjectionRequest1", "policy", "String"),
+    ("ElectronicsProjectionRequest1", "project_context", "ProjectReviewContext"),
+    ("ElectronicsProjectionRequest1", "requested_claims", "Vec<String>"),
+    ("ElectronicsProjectionRequest1", "schema", "String"),
+    ("ElectronicsProjectionRequest1", "source", "ArtifactReference"),
+    ("ElectronicsProjectionValidation1", "check_id", "String"),
+    ("ElectronicsProjectionValidation1", "evidence", "Vec<ArtifactReference>"),
+    ("ElectronicsProjectionValidation1", "execution", "String"),
+    ("ElectronicsProjectionValidation1", "kind", "String"),
+    ("ElectronicsProjectionValidation1", "unknowns", "Vec<String>"),
+    ("ElectronicsProjectionValidation1", "verdict", "String"),
     ("EngineeringAdoptionRequest", "actor", "String"),
     ("EngineeringAdoptionRequest", "approval", "ArtifactReference"),
     ("EngineeringAdoptionRequest", "binding", "ArtifactReference"),
@@ -2364,6 +2457,64 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("IncadWorkPreparationRequest", "schema", "String"),
     ("IncadWorkPreparationRequest", "source_ids", "serde_json::Value"),
     ("IncadWorkPreparationRequest", "work", "ArtifactReference"),
+    ("JacobianMathCertificate1", "details", "Vec<String>"),
+    ("JacobianMathCertificate1", "evidence", "Vec<ArtifactReference>"),
+    ("JacobianMathCertificate1", "kind", "String"),
+    ("JacobianMathCertificate1", "status", "String"),
+    ("JacobianMathCertificate1", "verifier", "String"),
+    ("JacobianMathObservation1", "assumptions", "Vec<String>"),
+    ("JacobianMathObservation1", "certificate", "JacobianMathCertificate1"),
+    ("JacobianMathObservation1", "engineering_adoption", "String"),
+    ("JacobianMathObservation1", "error_bound", "Option<String>"),
+    ("JacobianMathObservation1", "inputs", "Vec<JacobianMathValue1>"),
+    ("JacobianMathObservation1", "method", "String"),
+    ("JacobianMathObservation1", "numeric_mode", "String"),
+    ("JacobianMathObservation1", "operation", "String"),
+    ("JacobianMathObservation1", "outputs", "Vec<JacobianMathValue1>"),
+    ("JacobianMathObservation1", "project_context", "ProjectReviewContext"),
+    ("JacobianMathObservation1", "schema", "String"),
+    ("JacobianMathObservation1", "unknowns", "Vec<String>"),
+    ("JacobianMathProjection1", "assumptions", "Vec<String>"),
+    ("JacobianMathProjection1", "certificate", "JacobianMathCertificate1"),
+    ("JacobianMathProjection1", "coverage", "Vec<String>"),
+    ("JacobianMathProjection1", "engineering_adoption", "String"),
+    ("JacobianMathProjection1", "error_bound", "Option<String>"),
+    ("JacobianMathProjection1", "inputs", "Vec<JacobianMathValue1>"),
+    ("JacobianMathProjection1", "issues", "Vec<String>"),
+    ("JacobianMathProjection1", "limitations", "Vec<String>"),
+    ("JacobianMathProjection1", "method", "String"),
+    ("JacobianMathProjection1", "numeric_mode", "String"),
+    ("JacobianMathProjection1", "observation", "ArtifactReference"),
+    ("JacobianMathProjection1", "operation", "String"),
+    ("JacobianMathProjection1", "outputs", "Vec<JacobianMathValue1>"),
+    ("JacobianMathProjection1", "request", "JacobianMathProjectionRequest1"),
+    ("JacobianMathProjection1", "schema", "String"),
+    ("JacobianMathProjection1", "status", "String"),
+    ("JacobianMathProjectionFile1", "path", "String"),
+    ("JacobianMathProjectionFile1", "role", "String"),
+    ("JacobianMathProjectionFile1", "sha256", "String"),
+    ("JacobianMathProjectionReceipt1", "engineering_adoption", "String"),
+    ("JacobianMathProjectionReceipt1", "execution_binding", "serde_json::Value"),
+    ("JacobianMathProjectionReceipt1", "files", "Vec<JacobianMathProjectionFile1>"),
+    ("JacobianMathProjectionReceipt1", "issues", "Vec<String>"),
+    ("JacobianMathProjectionReceipt1", "output_dir", "String"),
+    ("JacobianMathProjectionReceipt1", "projection_sha256", "String"),
+    ("JacobianMathProjectionReceipt1", "request_sha256", "String"),
+    ("JacobianMathProjectionReceipt1", "schema", "String"),
+    ("JacobianMathProjectionReceipt1", "source_sha256", "String"),
+    ("JacobianMathProjectionReceipt1", "status", "String"),
+    ("JacobianMathProjectionReceipt1", "warnings", "Vec<String>"),
+    ("JacobianMathProjectionRequest1", "operation", "String"),
+    ("JacobianMathProjectionRequest1", "policy", "String"),
+    ("JacobianMathProjectionRequest1", "project_context", "ProjectReviewContext"),
+    ("JacobianMathProjectionRequest1", "requested_claims", "Vec<String>"),
+    ("JacobianMathProjectionRequest1", "schema", "String"),
+    ("JacobianMathProjectionRequest1", "source", "ArtifactReference"),
+    ("JacobianMathValue1", "name", "String"),
+    ("JacobianMathValue1", "representation", "String"),
+    ("JacobianMathValue1", "source_pointer", "String"),
+    ("JacobianMathValue1", "unit", "String"),
+    ("JacobianMathValue1", "value", "String"),
     ("KnowledgeOcrLanguage5", "name", "String"),
     ("KnowledgeOcrLanguage5", "source", "KnowledgePageAsset4"),
     ("KnowledgeOcrRequest5", "config", "KnowledgePageAsset4"),
@@ -3247,6 +3398,72 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("PeekabooTransportIdentity", "schema", "String"),
     ("PeekabooTransportIdentity", "worker_pid", "u64"),
     ("PeekabooTransportIdentity", "worker_session", "String"),
+    ("PerformanceCleanup1", "details", "Vec<String>"),
+    ("PerformanceCleanup1", "evidence", "Vec<ArtifactReference>"),
+    ("PerformanceCleanup1", "status", "String"),
+    ("PerformanceMeasurement1", "evidence", "Vec<ArtifactReference>"),
+    ("PerformanceMeasurement1", "name", "String"),
+    ("PerformanceMeasurement1", "notes", "Vec<String>"),
+    ("PerformanceMeasurement1", "phase", "String"),
+    ("PerformanceMeasurement1", "source_pointer", "String"),
+    ("PerformanceMeasurement1", "status", "String"),
+    ("PerformanceMeasurement1", "unit", "String"),
+    ("PerformanceMeasurement1", "value", "String"),
+    ("PerformanceNativeObservation1", "artifacts", "Vec<ArtifactReference>"),
+    ("PerformanceNativeObservation1", "budget", "String"),
+    ("PerformanceNativeObservation1", "candidates", "Vec<SourceProjectionFinding1>"),
+    ("PerformanceNativeObservation1", "cleanup", "PerformanceCleanup1"),
+    ("PerformanceNativeObservation1", "covered", "Vec<String>"),
+    ("PerformanceNativeObservation1", "engineering_adoption", "String"),
+    ("PerformanceNativeObservation1", "environment", "String"),
+    ("PerformanceNativeObservation1", "limitations", "Vec<String>"),
+    ("PerformanceNativeObservation1", "measurements", "Vec<PerformanceMeasurement1>"),
+    ("PerformanceNativeObservation1", "module", "String"),
+    ("PerformanceNativeObservation1", "not_covered", "Vec<String>"),
+    ("PerformanceNativeObservation1", "operation", "String"),
+    ("PerformanceNativeObservation1", "project_context", "ProjectReviewContext"),
+    ("PerformanceNativeObservation1", "schema", "String"),
+    ("PerformanceNativeObservation1", "workload", "String"),
+    ("PerformanceProjection1", "artifacts", "Vec<ArtifactReference>"),
+    ("PerformanceProjection1", "budget", "String"),
+    ("PerformanceProjection1", "candidates", "Vec<SourceProjectionFinding1>"),
+    ("PerformanceProjection1", "cleanup", "PerformanceCleanup1"),
+    ("PerformanceProjection1", "covered", "Vec<String>"),
+    ("PerformanceProjection1", "engineering_adoption", "String"),
+    ("PerformanceProjection1", "environment", "String"),
+    ("PerformanceProjection1", "issues", "Vec<String>"),
+    ("PerformanceProjection1", "limitations", "Vec<String>"),
+    ("PerformanceProjection1", "measurements", "Vec<PerformanceMeasurement1>"),
+    ("PerformanceProjection1", "module", "String"),
+    ("PerformanceProjection1", "not_covered", "Vec<String>"),
+    ("PerformanceProjection1", "operation", "String"),
+    ("PerformanceProjection1", "request", "PerformanceProjectionRequest1"),
+    ("PerformanceProjection1", "schema", "String"),
+    ("PerformanceProjection1", "source_observation", "ArtifactReference"),
+    ("PerformanceProjection1", "source_sha256", "String"),
+    ("PerformanceProjection1", "status", "String"),
+    ("PerformanceProjection1", "workload", "String"),
+    ("PerformanceProjectionFile1", "path", "String"),
+    ("PerformanceProjectionFile1", "role", "String"),
+    ("PerformanceProjectionFile1", "sha256", "String"),
+    ("PerformanceProjectionReceipt1", "engineering_adoption", "String"),
+    ("PerformanceProjectionReceipt1", "execution_binding", "serde_json::Value"),
+    ("PerformanceProjectionReceipt1", "files", "Vec<PerformanceProjectionFile1>"),
+    ("PerformanceProjectionReceipt1", "issues", "Vec<String>"),
+    ("PerformanceProjectionReceipt1", "output_dir", "String"),
+    ("PerformanceProjectionReceipt1", "projection_sha256", "String"),
+    ("PerformanceProjectionReceipt1", "request_sha256", "String"),
+    ("PerformanceProjectionReceipt1", "schema", "String"),
+    ("PerformanceProjectionReceipt1", "source_sha256", "String"),
+    ("PerformanceProjectionReceipt1", "status", "String"),
+    ("PerformanceProjectionReceipt1", "warnings", "Vec<String>"),
+    ("PerformanceProjectionRequest1", "module", "String"),
+    ("PerformanceProjectionRequest1", "operation", "String"),
+    ("PerformanceProjectionRequest1", "policy", "String"),
+    ("PerformanceProjectionRequest1", "project_context", "ProjectReviewContext"),
+    ("PerformanceProjectionRequest1", "requested_claims", "Vec<String>"),
+    ("PerformanceProjectionRequest1", "schema", "String"),
+    ("PerformanceProjectionRequest1", "source", "ArtifactReference"),
     ("PresentationParameter1", "id", "String"),
     ("PresentationParameter1", "label", "String"),
     ("PresentationParameter1", "maximum", "f64"),
@@ -3575,6 +3792,74 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("SourceCitation", "source_id", "String"),
     ("SourceCitation", "source_sha256", "String"),
     ("SourceCitation", "source_uri", "String"),
+    ("SourceNativeObservation1", "artifacts", "Vec<SourceProjectionArtifact1>"),
+    ("SourceNativeObservation1", "covered", "Vec<String>"),
+    ("SourceNativeObservation1", "edges", "Vec<SourceProjectionEdge1>"),
+    ("SourceNativeObservation1", "engineering_adoption", "String"),
+    ("SourceNativeObservation1", "findings", "Vec<SourceProjectionFinding1>"),
+    ("SourceNativeObservation1", "limitations", "Vec<String>"),
+    ("SourceNativeObservation1", "module", "String"),
+    ("SourceNativeObservation1", "not_covered", "Vec<String>"),
+    ("SourceNativeObservation1", "operation", "String"),
+    ("SourceNativeObservation1", "project_context", "ProjectReviewContext"),
+    ("SourceNativeObservation1", "schema", "String"),
+    ("SourceNativeObservation1", "subject_identity", "String"),
+    ("SourceNativeObservation1", "subject_kind", "String"),
+    ("SourceProjection1", "artifacts", "Vec<SourceProjectionArtifact1>"),
+    ("SourceProjection1", "covered", "Vec<String>"),
+    ("SourceProjection1", "edges", "Vec<SourceProjectionEdge1>"),
+    ("SourceProjection1", "engineering_adoption", "String"),
+    ("SourceProjection1", "findings", "Vec<SourceProjectionFinding1>"),
+    ("SourceProjection1", "issues", "Vec<String>"),
+    ("SourceProjection1", "limitations", "Vec<String>"),
+    ("SourceProjection1", "module", "String"),
+    ("SourceProjection1", "not_covered", "Vec<String>"),
+    ("SourceProjection1", "operation", "String"),
+    ("SourceProjection1", "request", "SourceProjectionRequest1"),
+    ("SourceProjection1", "schema", "String"),
+    ("SourceProjection1", "source_observation", "ArtifactReference"),
+    ("SourceProjection1", "source_sha256", "String"),
+    ("SourceProjection1", "status", "String"),
+    ("SourceProjection1", "subject_identity", "String"),
+    ("SourceProjectionArtifact1", "artifact_id", "String"),
+    ("SourceProjectionArtifact1", "kind", "String"),
+    ("SourceProjectionArtifact1", "notes", "Vec<String>"),
+    ("SourceProjectionArtifact1", "source", "ArtifactReference"),
+    ("SourceProjectionArtifact1", "source_pointer", "String"),
+    ("SourceProjectionArtifact1", "status", "String"),
+    ("SourceProjectionEdge1", "basis", "Vec<String>"),
+    ("SourceProjectionEdge1", "edge_id", "String"),
+    ("SourceProjectionEdge1", "from_artifact", "String"),
+    ("SourceProjectionEdge1", "kind", "String"),
+    ("SourceProjectionEdge1", "status", "String"),
+    ("SourceProjectionEdge1", "to_artifact", "String"),
+    ("SourceProjectionFile1", "path", "String"),
+    ("SourceProjectionFile1", "role", "String"),
+    ("SourceProjectionFile1", "sha256", "String"),
+    ("SourceProjectionFinding1", "basis", "Vec<String>"),
+    ("SourceProjectionFinding1", "finding_id", "String"),
+    ("SourceProjectionFinding1", "kind", "String"),
+    ("SourceProjectionFinding1", "statement", "String"),
+    ("SourceProjectionReceipt1", "engineering_adoption", "String"),
+    ("SourceProjectionReceipt1", "execution_binding", "serde_json::Value"),
+    ("SourceProjectionReceipt1", "files", "Vec<SourceProjectionFile1>"),
+    ("SourceProjectionReceipt1", "issues", "Vec<String>"),
+    ("SourceProjectionReceipt1", "output_dir", "String"),
+    ("SourceProjectionReceipt1", "projection_sha256", "String"),
+    ("SourceProjectionReceipt1", "request_sha256", "String"),
+    ("SourceProjectionReceipt1", "schema", "String"),
+    ("SourceProjectionReceipt1", "source_sha256", "String"),
+    ("SourceProjectionReceipt1", "status", "String"),
+    ("SourceProjectionReceipt1", "warnings", "Vec<String>"),
+    ("SourceProjectionRequest1", "acceptance", "Vec<String>"),
+    ("SourceProjectionRequest1", "module", "String"),
+    ("SourceProjectionRequest1", "operation", "String"),
+    ("SourceProjectionRequest1", "policy", "String"),
+    ("SourceProjectionRequest1", "project_context", "ProjectReviewContext"),
+    ("SourceProjectionRequest1", "schema", "String"),
+    ("SourceProjectionRequest1", "source", "ArtifactReference"),
+    ("SourceProjectionRequest1", "subject_identity", "String"),
+    ("SourceProjectionRequest1", "subject_kind", "String"),
     ("SourceRegistrationFreshness", "candidates", "Vec<serde_json::Value>"),
     ("SourceRegistrationFreshness", "meaning", "String"),
     ("SourceRegistrationFreshness", "schema", "String"),
@@ -3896,6 +4181,12 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("CadNativeMotionAssertion1", "claim", "sampled_no_interference"),
     ("CadNativeMotionAssertion1", "schema", "oev2.cad-native-motion-assertion/1"),
     ("CadOccurrenceBindingRequest1", "schema", "oev2.cad-occurrence-binding/1"),
+    ("CadPresentationGeometry1", "representation", "analytic_proxy"),
+    ("CadPresentationProjection1", "engineering_adoption", "not_assessed"),
+    ("CadPresentationProjection1", "schema", "oev2.cad-presentation-projection/1"),
+    ("CadPresentationProjectionRequest1", "projection_policy", "axis_aligned_analytic_proxy"),
+    ("CadPresentationProjectionRequest1", "schema", "oev2.cad-presentation-projection-request/1"),
+    ("CadPresentationSample1", "derivation", "source_absolute_targets"),
     ("CapabilityRegistry", "schema", "oev2.capability-registry/1"),
     ("CenteredHoleRow", "schema", "oev2.centered-hole-row/1"),
     ("CenteredHoleRow", "unit", "mm"),
@@ -4564,6 +4855,55 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("DriveSample", "screw_holder", "absent"),
     ("DriveSample", "screw_holder", "present"),
     ("DriveSample", "screw_holder", "unknown"),
+    ("ElectronicsNativeObservation1", "engineering_adoption", "not_assessed"),
+    ("ElectronicsNativeObservation1", "operation", "easyeda_api_trace"),
+    ("ElectronicsNativeObservation1", "operation", "easyeda_snapshot"),
+    ("ElectronicsNativeObservation1", "operation", "model_3d"),
+    ("ElectronicsNativeObservation1", "operation", "schematic_net_fanout"),
+    ("ElectronicsNativeObservation1", "operation", "worker_wiring_card"),
+    ("ElectronicsNativeObservation1", "schema", "oev2.electronics-native-observation/1"),
+    ("ElectronicsProjection1", "engineering_adoption", "not_assessed"),
+    ("ElectronicsProjection1", "operation", "easyeda_api_trace"),
+    ("ElectronicsProjection1", "operation", "easyeda_snapshot"),
+    ("ElectronicsProjection1", "operation", "model_3d"),
+    ("ElectronicsProjection1", "operation", "schematic_net_fanout"),
+    ("ElectronicsProjection1", "operation", "worker_wiring_card"),
+    ("ElectronicsProjection1", "schema", "oev2.electronics-projection/1"),
+    ("ElectronicsProjection1", "status", "blocked"),
+    ("ElectronicsProjection1", "status", "invalid"),
+    ("ElectronicsProjection1", "status", "projected"),
+    ("ElectronicsProjectionArtifact1", "kind", "bom"),
+    ("ElectronicsProjectionArtifact1", "kind", "model_3d"),
+    ("ElectronicsProjectionArtifact1", "kind", "native_project"),
+    ("ElectronicsProjectionArtifact1", "kind", "netlist"),
+    ("ElectronicsProjectionArtifact1", "kind", "other"),
+    ("ElectronicsProjectionArtifact1", "kind", "pcb"),
+    ("ElectronicsProjectionArtifact1", "kind", "report"),
+    ("ElectronicsProjectionArtifact1", "kind", "schematic"),
+    ("ElectronicsProjectionArtifact1", "kind", "wiring_card"),
+    ("ElectronicsProjectionArtifact1", "status", "available"),
+    ("ElectronicsProjectionArtifact1", "status", "missing"),
+    ("ElectronicsProjectionArtifact1", "status", "partial"),
+    ("ElectronicsProjectionReceipt1", "engineering_adoption", "not_assessed"),
+    ("ElectronicsProjectionReceipt1", "schema", "oev2.electronics-projection-receipt/1"),
+    ("ElectronicsProjectionReceipt1", "status", "blocked"),
+    ("ElectronicsProjectionReceipt1", "status", "invalid"),
+    ("ElectronicsProjectionReceipt1", "status", "projected"),
+    ("ElectronicsProjectionRequest1", "operation", "easyeda_api_trace"),
+    ("ElectronicsProjectionRequest1", "operation", "easyeda_snapshot"),
+    ("ElectronicsProjectionRequest1", "operation", "model_3d"),
+    ("ElectronicsProjectionRequest1", "operation", "schematic_net_fanout"),
+    ("ElectronicsProjectionRequest1", "operation", "worker_wiring_card"),
+    ("ElectronicsProjectionRequest1", "policy", "exact_source_no_inference"),
+    ("ElectronicsProjectionRequest1", "schema", "oev2.electronics-projection-request/1"),
+    ("ElectronicsProjectionValidation1", "execution", "completed"),
+    ("ElectronicsProjectionValidation1", "execution", "failed"),
+    ("ElectronicsProjectionValidation1", "execution", "not_run"),
+    ("ElectronicsProjectionValidation1", "execution", "unsupported"),
+    ("ElectronicsProjectionValidation1", "verdict", "blocked"),
+    ("ElectronicsProjectionValidation1", "verdict", "fail"),
+    ("ElectronicsProjectionValidation1", "verdict", "pass"),
+    ("ElectronicsProjectionValidation1", "verdict", "unknown"),
     ("EngineeringAdoptionResult", "execution", "completed"),
     ("EngineeringAssertion", "kind", "cad_drafting_sheet"),
     ("EngineeringAssertion", "kind", "cad_drawing_reference"),
@@ -4671,6 +5011,63 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("IncadSourceViewResult", "schema", "oev2.incad-source-view/1"),
     ("IncadSourceViewResult", "status", "source_verified"),
     ("IncadWorkPreparationRequest", "schema", "oev2.incad-work-preparation/1"),
+    ("JacobianMathCertificate1", "kind", "custom"),
+    ("JacobianMathCertificate1", "kind", "identity"),
+    ("JacobianMathCertificate1", "kind", "independent_recompute"),
+    ("JacobianMathCertificate1", "kind", "interval"),
+    ("JacobianMathCertificate1", "kind", "none"),
+    ("JacobianMathCertificate1", "kind", "residual"),
+    ("JacobianMathCertificate1", "status", "failed"),
+    ("JacobianMathCertificate1", "status", "not_run"),
+    ("JacobianMathCertificate1", "status", "unverified"),
+    ("JacobianMathCertificate1", "status", "verified"),
+    ("JacobianMathObservation1", "engineering_adoption", "not_assessed"),
+    ("JacobianMathObservation1", "numeric_mode", "exact"),
+    ("JacobianMathObservation1", "numeric_mode", "floating"),
+    ("JacobianMathObservation1", "numeric_mode", "interval"),
+    ("JacobianMathObservation1", "numeric_mode", "rational"),
+    ("JacobianMathObservation1", "numeric_mode", "symbolic"),
+    ("JacobianMathObservation1", "operation", "calculation"),
+    ("JacobianMathObservation1", "operation", "finite_search"),
+    ("JacobianMathObservation1", "operation", "formal_check"),
+    ("JacobianMathObservation1", "operation", "optimization"),
+    ("JacobianMathObservation1", "operation", "probability"),
+    ("JacobianMathObservation1", "operation", "structural_analysis"),
+    ("JacobianMathObservation1", "schema", "oev2.jacobian-math-observation/1"),
+    ("JacobianMathProjection1", "engineering_adoption", "not_assessed"),
+    ("JacobianMathProjection1", "numeric_mode", "exact"),
+    ("JacobianMathProjection1", "numeric_mode", "floating"),
+    ("JacobianMathProjection1", "numeric_mode", "interval"),
+    ("JacobianMathProjection1", "numeric_mode", "rational"),
+    ("JacobianMathProjection1", "numeric_mode", "symbolic"),
+    ("JacobianMathProjection1", "operation", "calculation"),
+    ("JacobianMathProjection1", "operation", "finite_search"),
+    ("JacobianMathProjection1", "operation", "formal_check"),
+    ("JacobianMathProjection1", "operation", "optimization"),
+    ("JacobianMathProjection1", "operation", "probability"),
+    ("JacobianMathProjection1", "operation", "structural_analysis"),
+    ("JacobianMathProjection1", "schema", "oev2.jacobian-math-projection/1"),
+    ("JacobianMathProjection1", "status", "blocked"),
+    ("JacobianMathProjection1", "status", "invalid"),
+    ("JacobianMathProjection1", "status", "projected"),
+    ("JacobianMathProjectionReceipt1", "engineering_adoption", "not_assessed"),
+    ("JacobianMathProjectionReceipt1", "schema", "oev2.jacobian-math-projection-receipt/1"),
+    ("JacobianMathProjectionReceipt1", "status", "blocked"),
+    ("JacobianMathProjectionReceipt1", "status", "invalid"),
+    ("JacobianMathProjectionReceipt1", "status", "projected"),
+    ("JacobianMathProjectionRequest1", "operation", "calculation"),
+    ("JacobianMathProjectionRequest1", "operation", "finite_search"),
+    ("JacobianMathProjectionRequest1", "operation", "formal_check"),
+    ("JacobianMathProjectionRequest1", "operation", "optimization"),
+    ("JacobianMathProjectionRequest1", "operation", "probability"),
+    ("JacobianMathProjectionRequest1", "operation", "structural_analysis"),
+    ("JacobianMathProjectionRequest1", "policy", "exact_source_no_inference"),
+    ("JacobianMathProjectionRequest1", "schema", "oev2.jacobian-math-projection-request/1"),
+    ("JacobianMathValue1", "representation", "decimal"),
+    ("JacobianMathValue1", "representation", "exact"),
+    ("JacobianMathValue1", "representation", "interval"),
+    ("JacobianMathValue1", "representation", "scientific"),
+    ("JacobianMathValue1", "representation", "symbolic"),
     ("KnowledgeOcrLanguage5", "name", "chi_sim"),
     ("KnowledgeOcrLanguage5", "name", "eng"),
     ("KnowledgeOcrRequest5", "schema", "oev2.knowledge-ocr-source-request/5"),
@@ -4983,6 +5380,54 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("PacketSourceAuditReport", "status", "audited"),
     ("PdfLibraryAuditReport", "schema", "ontology-engineering.pdf-library-audit/v1"),
     ("PdfLibraryAuditReport", "status", "audited"),
+    ("PerformanceCleanup1", "status", "completed"),
+    ("PerformanceCleanup1", "status", "failed"),
+    ("PerformanceCleanup1", "status", "not_applicable"),
+    ("PerformanceCleanup1", "status", "unknown"),
+    ("PerformanceMeasurement1", "phase", "baseline"),
+    ("PerformanceMeasurement1", "phase", "candidate"),
+    ("PerformanceMeasurement1", "phase", "replay"),
+    ("PerformanceMeasurement1", "phase", "run"),
+    ("PerformanceMeasurement1", "phase", "unknown"),
+    ("PerformanceMeasurement1", "status", "missing"),
+    ("PerformanceMeasurement1", "status", "observed"),
+    ("PerformanceMeasurement1", "status", "partial"),
+    ("PerformanceMeasurement1", "status", "unknown"),
+    ("PerformanceNativeObservation1", "engineering_adoption", "not_assessed"),
+    ("PerformanceNativeObservation1", "module", "flameox"),
+    ("PerformanceNativeObservation1", "module", "smokinggun"),
+    ("PerformanceNativeObservation1", "operation", "analysis"),
+    ("PerformanceNativeObservation1", "operation", "capture"),
+    ("PerformanceNativeObservation1", "operation", "complexity_candidates"),
+    ("PerformanceNativeObservation1", "operation", "measurement"),
+    ("PerformanceNativeObservation1", "operation", "replay"),
+    ("PerformanceNativeObservation1", "schema", "oev2.performance-native-observation/1"),
+    ("PerformanceProjection1", "engineering_adoption", "not_assessed"),
+    ("PerformanceProjection1", "module", "flameox"),
+    ("PerformanceProjection1", "module", "smokinggun"),
+    ("PerformanceProjection1", "operation", "analysis"),
+    ("PerformanceProjection1", "operation", "capture"),
+    ("PerformanceProjection1", "operation", "complexity_candidates"),
+    ("PerformanceProjection1", "operation", "measurement"),
+    ("PerformanceProjection1", "operation", "replay"),
+    ("PerformanceProjection1", "schema", "oev2.performance-projection/1"),
+    ("PerformanceProjection1", "status", "blocked"),
+    ("PerformanceProjection1", "status", "invalid"),
+    ("PerformanceProjection1", "status", "projected"),
+    ("PerformanceProjectionReceipt1", "engineering_adoption", "not_assessed"),
+    ("PerformanceProjectionReceipt1", "schema", "oev2.performance-projection-receipt/1"),
+    ("PerformanceProjectionReceipt1", "status", "blocked"),
+    ("PerformanceProjectionReceipt1", "status", "invalid"),
+    ("PerformanceProjectionReceipt1", "status", "projected"),
+    ("PerformanceProjectionRequest1", "module", "flameox"),
+    ("PerformanceProjectionRequest1", "module", "smokinggun"),
+    ("PerformanceProjectionRequest1", "operation", "analysis"),
+    ("PerformanceProjectionRequest1", "operation", "capture"),
+    ("PerformanceProjectionRequest1", "operation", "complexity_candidates"),
+    ("PerformanceProjectionRequest1", "operation", "measurement"),
+    ("PerformanceProjectionRequest1", "operation", "replay"),
+    ("PerformanceProjectionRequest1", "policy", "exact_source_no_execution"),
+    ("PerformanceProjectionRequest1", "schema", "oev2.performance-projection-request/1"),
     ("PresentationParameter1", "unit", "illustration_unit"),
     ("PresentationParameter1", "unit", "m"),
     ("PresentationParameter1", "unit", "mm"),
@@ -5069,6 +5514,79 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("SolidWorksNativeRequest", "action", "update_thickness"),
     ("SolidWorksNativeRequest", "schema", "oev2.solidworks-native-request/1"),
     ("SolidWorksNativeRequest", "schema", "oev2.solidworks-native-request/2"),
+    ("SourceNativeObservation1", "engineering_adoption", "not_assessed"),
+    ("SourceNativeObservation1", "module", "gitcontribute"),
+    ("SourceNativeObservation1", "module", "leantoken"),
+    ("SourceNativeObservation1", "module", "reverse_engineer_anything"),
+    ("SourceNativeObservation1", "operation", "artifact_analysis"),
+    ("SourceNativeObservation1", "operation", "contribution_research"),
+    ("SourceNativeObservation1", "operation", "source_search"),
+    ("SourceNativeObservation1", "schema", "oev2.source-native-observation/1"),
+    ("SourceNativeObservation1", "subject_kind", "artifact"),
+    ("SourceNativeObservation1", "subject_kind", "file_set"),
+    ("SourceNativeObservation1", "subject_kind", "issue"),
+    ("SourceNativeObservation1", "subject_kind", "other"),
+    ("SourceNativeObservation1", "subject_kind", "patch"),
+    ("SourceNativeObservation1", "subject_kind", "repository"),
+    ("SourceNativeObservation1", "subject_kind", "review"),
+    ("SourceProjection1", "engineering_adoption", "not_assessed"),
+    ("SourceProjection1", "module", "gitcontribute"),
+    ("SourceProjection1", "module", "leantoken"),
+    ("SourceProjection1", "module", "reverse_engineer_anything"),
+    ("SourceProjection1", "operation", "artifact_analysis"),
+    ("SourceProjection1", "operation", "contribution_research"),
+    ("SourceProjection1", "operation", "source_search"),
+    ("SourceProjection1", "schema", "oev2.source-projection/1"),
+    ("SourceProjection1", "status", "blocked"),
+    ("SourceProjection1", "status", "invalid"),
+    ("SourceProjection1", "status", "projected"),
+    ("SourceProjectionArtifact1", "kind", "binary"),
+    ("SourceProjectionArtifact1", "kind", "input"),
+    ("SourceProjectionArtifact1", "kind", "other"),
+    ("SourceProjectionArtifact1", "kind", "patch"),
+    ("SourceProjectionArtifact1", "kind", "report"),
+    ("SourceProjectionArtifact1", "kind", "review"),
+    ("SourceProjectionArtifact1", "kind", "source_tree"),
+    ("SourceProjectionArtifact1", "kind", "symbol_index"),
+    ("SourceProjectionArtifact1", "kind", "trace"),
+    ("SourceProjectionArtifact1", "status", "available"),
+    ("SourceProjectionArtifact1", "status", "missing"),
+    ("SourceProjectionArtifact1", "status", "partial"),
+    ("SourceProjectionEdge1", "kind", "calls"),
+    ("SourceProjectionEdge1", "kind", "changed_by"),
+    ("SourceProjectionEdge1", "kind", "contains"),
+    ("SourceProjectionEdge1", "kind", "depends_on"),
+    ("SourceProjectionEdge1", "kind", "imports"),
+    ("SourceProjectionEdge1", "kind", "other"),
+    ("SourceProjectionEdge1", "kind", "references"),
+    ("SourceProjectionEdge1", "kind", "reviewed_by"),
+    ("SourceProjectionEdge1", "status", "inferred"),
+    ("SourceProjectionEdge1", "status", "observed"),
+    ("SourceProjectionEdge1", "status", "unknown"),
+    ("SourceProjectionFinding1", "kind", "imported"),
+    ("SourceProjectionFinding1", "kind", "inferred"),
+    ("SourceProjectionFinding1", "kind", "observed"),
+    ("SourceProjectionFinding1", "kind", "unknown"),
+    ("SourceProjectionReceipt1", "engineering_adoption", "not_assessed"),
+    ("SourceProjectionReceipt1", "schema", "oev2.source-projection-receipt/1"),
+    ("SourceProjectionReceipt1", "status", "blocked"),
+    ("SourceProjectionReceipt1", "status", "invalid"),
+    ("SourceProjectionReceipt1", "status", "projected"),
+    ("SourceProjectionRequest1", "module", "gitcontribute"),
+    ("SourceProjectionRequest1", "module", "leantoken"),
+    ("SourceProjectionRequest1", "module", "reverse_engineer_anything"),
+    ("SourceProjectionRequest1", "operation", "artifact_analysis"),
+    ("SourceProjectionRequest1", "operation", "contribution_research"),
+    ("SourceProjectionRequest1", "operation", "source_search"),
+    ("SourceProjectionRequest1", "policy", "exact_source_no_inference"),
+    ("SourceProjectionRequest1", "schema", "oev2.source-projection-request/1"),
+    ("SourceProjectionRequest1", "subject_kind", "artifact"),
+    ("SourceProjectionRequest1", "subject_kind", "file_set"),
+    ("SourceProjectionRequest1", "subject_kind", "issue"),
+    ("SourceProjectionRequest1", "subject_kind", "other"),
+    ("SourceProjectionRequest1", "subject_kind", "patch"),
+    ("SourceProjectionRequest1", "subject_kind", "repository"),
+    ("SourceProjectionRequest1", "subject_kind", "review"),
     ("SourceRegistrationFreshness", "schema", "ontology-engineering.source-registration-freshness/v1"),
     ("SourceRegistrationFreshness", "status", "changed"),
     ("SourceRegistrationFreshness", "status", "current"),
@@ -6025,6 +6543,171 @@ impl CadOccurrenceBindingRequest1 {
         if self.schema.trim().is_empty() { failures.push("CadOccurrenceBindingRequest1.schema:required".into()); }
 
         if !["oev2.cad-occurrence-binding/1",].contains(&self.schema.as_str()) { failures.push("CadOccurrenceBindingRequest1.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 保留原型实体和变换后的八角点；显示包围盒是明确的analytic proxy
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CadPresentationGeometry1 {
+    /// body tag
+    pub body_tag: u64,
+    /// exact box corners m
+    pub exact_box_corners_m: Vec<f64>,
+    /// exact box corners native
+    pub exact_box_corners_native: Vec<f64>,
+    /// native units
+    pub native_units: String,
+    /// owning part tag
+    pub owning_part_tag: u64,
+    /// projection loss
+    pub projection_loss: String,
+    /// representation
+    pub representation: String,
+    /// 原NxAssemblyObservation中prototype solid的JSON指针
+    pub source_pointer: String,
+    /// transformed box corners m
+    pub transformed_box_corners_m: Vec<f64>,
+    /// unit to m
+    pub unit_to_m: f64,
+    /// volume m3
+    pub volume_m3: Option<f64>,
+}
+impl CadPresentationGeometry1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.native_units.trim().is_empty() { failures.push("CadPresentationGeometry1.native_units:required".into()); }
+        if self.projection_loss.trim().is_empty() { failures.push("CadPresentationGeometry1.projection_loss:required".into()); }
+        if self.representation.trim().is_empty() { failures.push("CadPresentationGeometry1.representation:required".into()); }
+        if self.source_pointer.trim().is_empty() { failures.push("CadPresentationGeometry1.source_pointer:required".into()); }
+        if !self.unit_to_m.is_finite() { failures.push("CadPresentationGeometry1.unit_to_m:finite".into()); }
+
+        if !["analytic_proxy",].contains(&self.representation.as_str()) { failures.push("CadPresentationGeometry1.representation:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 保留装配实例、父链、原型、参考集和每个实体的投影来源
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CadPresentationMember1 {
+    /// geometries
+    pub geometries: Vec<CadPresentationGeometry1>,
+    /// local to parent m
+    pub local_to_parent_m: Vec<f64>,
+    /// local to root m
+    pub local_to_root_m: Vec<f64>,
+    /// name
+    pub name: String,
+    /// occurrence id
+    pub occurrence_id: String,
+    /// parent occurrence id
+    pub parent_occurrence_id: Option<String>,
+    /// prototype id
+    pub prototype_id: String,
+    /// reference set
+    pub reference_set: String,
+    /// scene part ids
+    pub scene_part_ids: Vec<String>,
+}
+impl CadPresentationMember1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.name.trim().is_empty() { failures.push("CadPresentationMember1.name:required".into()); }
+        if self.occurrence_id.trim().is_empty() { failures.push("CadPresentationMember1.occurrence_id:required".into()); }
+        if self.prototype_id.trim().is_empty() { failures.push("CadPresentationMember1.prototype_id:required".into()); }
+        if self.reference_set.trim().is_empty() { failures.push("CadPresentationMember1.reference_set:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 完整CAD投影结果；renderer_proxy可供Anatomy/Presentation消费但不替代CAD证据
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CadPresentationProjection1 {
+    /// engineering adoption
+    pub engineering_adoption: String,
+    /// limitations
+    pub limitations: Vec<String>,
+    /// members
+    pub members: Vec<CadPresentationMember1>,
+    /// projection losses
+    pub projection_losses: Vec<String>,
+    /// renderer proxy
+    pub renderer_proxy: Option<PresentationScene1>,
+    /// request
+    pub request: CadPresentationProjectionRequest1,
+    /// samples
+    pub samples: Vec<CadPresentationSample1>,
+    /// schema
+    pub schema: String,
+}
+impl CadPresentationProjection1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("CadPresentationProjection1.engineering_adoption:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("CadPresentationProjection1.schema:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("CadPresentationProjection1.engineering_adoption:allowed_values".into()); }
+        if !["oev2.cad-presentation-projection/1",].contains(&self.schema.as_str()) { failures.push("CadPresentationProjection1.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 将已验证的完整装配观察接入有界可视化投影；不启动CAD、不授予工程采用
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CadPresentationProjectionRequest1 {
+    /// assembly
+    pub assembly: CadAssemblyUseSource1,
+    /// native observation
+    pub native_observation: ArtifactReference,
+    /// ordered scene
+    pub ordered_scene: Option<ArtifactReference>,
+    /// projection policy
+    pub projection_policy: String,
+    /// schema
+    pub schema: String,
+}
+impl CadPresentationProjectionRequest1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.projection_policy.trim().is_empty() { failures.push("CadPresentationProjectionRequest1.projection_policy:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("CadPresentationProjectionRequest1.schema:required".into()); }
+
+        if !["axis_aligned_analytic_proxy",].contains(&self.projection_policy.as_str()) { failures.push("CadPresentationProjectionRequest1.projection_policy:allowed_values".into()); }
+        if !["oev2.cad-presentation-projection-request/1",].contains(&self.schema.as_str()) { failures.push("CadPresentationProjectionRequest1.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 保留有序装配采样及其来源姿态；ordinal不是秒，不推导速度
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CadPresentationSample1 {
+    /// derivation
+    pub derivation: String,
+    /// ordinal
+    pub ordinal: u64,
+    /// sample id
+    pub sample_id: String,
+    /// targets
+    pub targets: Vec<NxAssemblyPoseTarget>,
+}
+impl CadPresentationSample1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.derivation.trim().is_empty() { failures.push("CadPresentationSample1.derivation:required".into()); }
+        if self.sample_id.trim().is_empty() { failures.push("CadPresentationSample1.sample_id:required".into()); }
+
+        if !["source_absolute_targets",].contains(&self.derivation.as_str()) { failures.push("CadPresentationSample1.derivation:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -15575,6 +16258,283 @@ impl DriveSample {
     }
 }
 
+/// 保留外部EDA工具提供的结构化摘要；payload仅由对应工具定义，Rust不重算专业结论
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ElectronicsNativeObservation1 {
+    /// artifacts
+    pub artifacts: Vec<ElectronicsProjectionArtifact1>,
+    /// engineering adoption
+    pub engineering_adoption: String,
+    /// limitations
+    pub limitations: Vec<String>,
+    /// observations
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub observations: serde_json::Value,
+    /// operation
+    pub operation: String,
+    /// project context
+    pub project_context: ProjectReviewContext,
+    /// schema
+    pub schema: String,
+    /// validations
+    pub validations: Vec<ElectronicsProjectionValidation1>,
+}
+impl ElectronicsNativeObservation1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("ElectronicsNativeObservation1.engineering_adoption:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("ElectronicsNativeObservation1.operation:required".into()); }
+        if let Err(errors) = self.project_context.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("ElectronicsNativeObservation1.schema:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("ElectronicsNativeObservation1.engineering_adoption:allowed_values".into()); }
+        if !["easyeda_api_trace","easyeda_snapshot","model_3d","schematic_net_fanout","worker_wiring_card",].contains(&self.operation.as_str()) { failures.push("ElectronicsNativeObservation1.operation:allowed_values".into()); }
+        if !["oev2.electronics-native-observation/1",].contains(&self.schema.as_str()) { failures.push("ElectronicsNativeObservation1.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 将严格原生观测接入同一Project；保留五类电子专业操作的原始摘要并明确不作工程采用
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ElectronicsProjection1 {
+    /// artifacts
+    pub artifacts: Vec<ElectronicsProjectionArtifact1>,
+    /// coverage
+    pub coverage: Vec<String>,
+    /// engineering adoption
+    pub engineering_adoption: String,
+    /// issues
+    pub issues: Vec<String>,
+    /// limitations
+    pub limitations: Vec<String>,
+    /// operation
+    pub operation: String,
+    /// request
+    pub request: ElectronicsProjectionRequest1,
+    /// schema
+    pub schema: String,
+    /// source observation
+    pub source_observation: ArtifactReference,
+    /// source sha256
+    pub source_sha256: String,
+    /// status
+    pub status: String,
+    /// validated artifacts
+    pub validated_artifacts: Vec<ElectronicsProjectionAuxiliary1>,
+    /// validations
+    pub validations: Vec<ElectronicsProjectionValidation1>,
+}
+impl ElectronicsProjection1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("ElectronicsProjection1.engineering_adoption:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("ElectronicsProjection1.operation:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("ElectronicsProjection1.schema:required".into()); }
+        if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("ElectronicsProjection1.source_sha256:sha256".into()); }
+        if self.status.trim().is_empty() { failures.push("ElectronicsProjection1.status:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("ElectronicsProjection1.engineering_adoption:allowed_values".into()); }
+        if !["easyeda_api_trace","easyeda_snapshot","model_3d","schematic_net_fanout","worker_wiring_card",].contains(&self.operation.as_str()) { failures.push("ElectronicsProjection1.operation:allowed_values".into()); }
+        if !["oev2.electronics-projection/1",].contains(&self.schema.as_str()) { failures.push("ElectronicsProjection1.schema:allowed_values".into()); }
+        if !["blocked","invalid","projected",].contains(&self.status.as_str()) { failures.push("ElectronicsProjection1.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 保留电子设计原生或导出原件、来源指针和可见状态；不表示工程采用
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ElectronicsProjectionArtifact1 {
+    /// artifact id
+    pub artifact_id: String,
+    /// kind
+    pub kind: String,
+    /// notes
+    pub notes: Vec<String>,
+    /// source
+    pub source: ArtifactReference,
+    /// source pointer
+    pub source_pointer: String,
+    /// status
+    pub status: String,
+}
+impl ElectronicsProjectionArtifact1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.artifact_id.trim().is_empty() { failures.push("ElectronicsProjectionArtifact1.artifact_id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("ElectronicsProjectionArtifact1.kind:required".into()); }
+        if self.source_pointer.trim().is_empty() { failures.push("ElectronicsProjectionArtifact1.source_pointer:required".into()); }
+        if self.status.trim().is_empty() { failures.push("ElectronicsProjectionArtifact1.status:required".into()); }
+
+        if !["bom","model_3d","native_project","netlist","other","pcb","report","schematic","wiring_card",].contains(&self.kind.as_str()) { failures.push("ElectronicsProjectionArtifact1.kind:allowed_values".into()); }
+        if !["available","missing","partial",].contains(&self.status.as_str()) { failures.push("ElectronicsProjectionArtifact1.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 将BOM、网表、模型、渲染或其他辅助原件按角色绑定；不由角色名推断内容
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ElectronicsProjectionAuxiliary1 {
+    /// artifact
+    pub artifact: ArtifactReference,
+    /// role
+    pub role: String,
+}
+impl ElectronicsProjectionAuxiliary1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.role.trim().is_empty() { failures.push("ElectronicsProjectionAuxiliary1.role:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 回执中的输出文件字节身份
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ElectronicsProjectionFile1 {
+    /// path
+    pub path: String,
+    /// role
+    pub role: String,
+    /// sha256
+    pub sha256: String,
+}
+impl ElectronicsProjectionFile1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.path.trim().is_empty() { failures.push("ElectronicsProjectionFile1.path:required".into()); }
+        if self.role.trim().is_empty() { failures.push("ElectronicsProjectionFile1.role:required".into()); }
+        if self.sha256.len() != 64 || !self.sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("ElectronicsProjectionFile1.sha256:sha256".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 记录请求、原件、投影和执行绑定的完整回执；不授予工程采用
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ElectronicsProjectionReceipt1 {
+    /// engineering adoption
+    pub engineering_adoption: String,
+    /// Actual projector execution identity
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub execution_binding: serde_json::Value,
+    /// files
+    pub files: Vec<ElectronicsProjectionFile1>,
+    /// issues
+    pub issues: Vec<String>,
+    /// output dir
+    pub output_dir: String,
+    /// projection sha256
+    pub projection_sha256: String,
+    /// request sha256
+    pub request_sha256: String,
+    /// schema
+    pub schema: String,
+    /// source sha256
+    pub source_sha256: String,
+    /// status
+    pub status: String,
+    /// warnings
+    pub warnings: Vec<String>,
+}
+impl ElectronicsProjectionReceipt1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("ElectronicsProjectionReceipt1.engineering_adoption:required".into()); }
+        if self.output_dir.trim().is_empty() { failures.push("ElectronicsProjectionReceipt1.output_dir:required".into()); }
+        if self.projection_sha256.len() != 64 || !self.projection_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("ElectronicsProjectionReceipt1.projection_sha256:sha256".into()); }
+        if self.request_sha256.len() != 64 || !self.request_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("ElectronicsProjectionReceipt1.request_sha256:sha256".into()); }
+        if self.schema.trim().is_empty() { failures.push("ElectronicsProjectionReceipt1.schema:required".into()); }
+        if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("ElectronicsProjectionReceipt1.source_sha256:sha256".into()); }
+        if self.status.trim().is_empty() { failures.push("ElectronicsProjectionReceipt1.status:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("ElectronicsProjectionReceipt1.engineering_adoption:allowed_values".into()); }
+        if !["oev2.electronics-projection-receipt/1",].contains(&self.schema.as_str()) { failures.push("ElectronicsProjectionReceipt1.schema:allowed_values".into()); }
+        if !["blocked","invalid","projected",].contains(&self.status.as_str()) { failures.push("ElectronicsProjectionReceipt1.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 把电子专业工具的原始结果接入当前Project；Rust只做身份、来源、结构和接收边界
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ElectronicsProjectionRequest1 {
+    /// auxiliary
+    pub auxiliary: Vec<ElectronicsProjectionAuxiliary1>,
+    /// operation
+    pub operation: String,
+    /// policy
+    pub policy: String,
+    /// project context
+    pub project_context: ProjectReviewContext,
+    /// requested claims
+    pub requested_claims: Vec<String>,
+    /// schema
+    pub schema: String,
+    /// source
+    pub source: ArtifactReference,
+}
+impl ElectronicsProjectionRequest1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.operation.trim().is_empty() { failures.push("ElectronicsProjectionRequest1.operation:required".into()); }
+        if self.policy.trim().is_empty() { failures.push("ElectronicsProjectionRequest1.policy:required".into()); }
+        if let Err(errors) = self.project_context.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("ElectronicsProjectionRequest1.schema:required".into()); }
+
+        if !["easyeda_api_trace","easyeda_snapshot","model_3d","schematic_net_fanout","worker_wiring_card",].contains(&self.operation.as_str()) { failures.push("ElectronicsProjectionRequest1.operation:allowed_values".into()); }
+        if !["exact_source_no_inference",].contains(&self.policy.as_str()) { failures.push("ElectronicsProjectionRequest1.policy:allowed_values".into()); }
+        if !["oev2.electronics-projection-request/1",].contains(&self.schema.as_str()) { failures.push("ElectronicsProjectionRequest1.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 记录ERC、DRC、网表、模型、渲染等检查的执行状态与证据；不把未执行变成通过
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ElectronicsProjectionValidation1 {
+    /// check id
+    pub check_id: String,
+    /// evidence
+    pub evidence: Vec<ArtifactReference>,
+    /// execution
+    pub execution: String,
+    /// kind
+    pub kind: String,
+    /// unknowns
+    pub unknowns: Vec<String>,
+    /// verdict
+    pub verdict: String,
+}
+impl ElectronicsProjectionValidation1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.check_id.trim().is_empty() { failures.push("ElectronicsProjectionValidation1.check_id:required".into()); }
+        if self.execution.trim().is_empty() { failures.push("ElectronicsProjectionValidation1.execution:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("ElectronicsProjectionValidation1.kind:required".into()); }
+        if self.verdict.trim().is_empty() { failures.push("ElectronicsProjectionValidation1.verdict:required".into()); }
+
+        if !["completed","failed","not_run","unsupported",].contains(&self.execution.as_str()) { failures.push("ElectronicsProjectionValidation1.execution:allowed_values".into()); }
+        if !["blocked","fail","pass","unknown",].contains(&self.verdict.as_str()) { failures.push("ElectronicsProjectionValidation1.verdict:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
 /// 将当前审查和独立批准连接到有范围工程采用的请求
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -17170,6 +18130,271 @@ impl IncadWorkPreparationRequest {
         if self.schema.trim().is_empty() { failures.push("IncadWorkPreparationRequest.schema:required".into()); }
 
         if !["oev2.incad-work-preparation/1",].contains(&self.schema.as_str()) { failures.push("IncadWorkPreparationRequest.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 数学核验证书
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct JacobianMathCertificate1 {
+    /// 核验细节
+    pub details: Vec<String>,
+    /// 证据原件
+    pub evidence: Vec<ArtifactReference>,
+    /// 证书类型
+    pub kind: String,
+    /// 核验状态
+    pub status: String,
+    /// 核验器
+    pub verifier: String,
+}
+impl JacobianMathCertificate1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.kind.trim().is_empty() { failures.push("JacobianMathCertificate1.kind:required".into()); }
+        if self.status.trim().is_empty() { failures.push("JacobianMathCertificate1.status:required".into()); }
+        if self.verifier.trim().is_empty() { failures.push("JacobianMathCertificate1.verifier:required".into()); }
+
+        if !["custom","identity","independent_recompute","interval","none","residual",].contains(&self.kind.as_str()) { failures.push("JacobianMathCertificate1.kind:status".into()); }
+        if !["failed","not_run","unverified","verified",].contains(&self.status.as_str()) { failures.push("JacobianMathCertificate1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 严格数学观察
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct JacobianMathObservation1 {
+    /// 前提
+    pub assumptions: Vec<String>,
+    /// 证书
+    pub certificate: JacobianMathCertificate1,
+    /// 工程采用
+    pub engineering_adoption: String,
+    /// 误差界
+    pub error_bound: Option<String>,
+    /// 输入
+    pub inputs: Vec<JacobianMathValue1>,
+    /// 方法
+    pub method: String,
+    /// 数值模式
+    pub numeric_mode: String,
+    /// 操作
+    pub operation: String,
+    /// 输出
+    pub outputs: Vec<JacobianMathValue1>,
+    /// Project上下文
+    pub project_context: ProjectReviewContext,
+    /// 版本
+    pub schema: String,
+    /// 未知项
+    pub unknowns: Vec<String>,
+}
+impl JacobianMathObservation1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("JacobianMathObservation1.engineering_adoption:required".into()); }
+        if self.method.trim().is_empty() { failures.push("JacobianMathObservation1.method:required".into()); }
+        if self.numeric_mode.trim().is_empty() { failures.push("JacobianMathObservation1.numeric_mode:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("JacobianMathObservation1.operation:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("JacobianMathObservation1.schema:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("JacobianMathObservation1.engineering_adoption:status".into()); }
+        if !["exact","floating","interval","rational","symbolic",].contains(&self.numeric_mode.as_str()) { failures.push("JacobianMathObservation1.numeric_mode:status".into()); }
+        if !["calculation","finite_search","formal_check","optimization","probability","structural_analysis",].contains(&self.operation.as_str()) { failures.push("JacobianMathObservation1.operation:status".into()); }
+        if !["oev2.jacobian-math-observation/1",].contains(&self.schema.as_str()) { failures.push("JacobianMathObservation1.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 数学观察Project投影
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct JacobianMathProjection1 {
+    /// 前提
+    pub assumptions: Vec<String>,
+    /// 证书
+    pub certificate: JacobianMathCertificate1,
+    /// 覆盖
+    pub coverage: Vec<String>,
+    /// 工程采用
+    pub engineering_adoption: String,
+    /// 误差界
+    pub error_bound: Option<String>,
+    /// 输入
+    pub inputs: Vec<JacobianMathValue1>,
+    /// 问题
+    pub issues: Vec<String>,
+    /// 限制
+    pub limitations: Vec<String>,
+    /// 方法
+    pub method: String,
+    /// 数值模式
+    pub numeric_mode: String,
+    /// 观察原件
+    pub observation: ArtifactReference,
+    /// 操作
+    pub operation: String,
+    /// 输出
+    pub outputs: Vec<JacobianMathValue1>,
+    /// 请求快照
+    pub request: JacobianMathProjectionRequest1,
+    /// 版本
+    pub schema: String,
+    /// 状态
+    pub status: String,
+}
+impl JacobianMathProjection1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("JacobianMathProjection1.engineering_adoption:required".into()); }
+        if self.method.trim().is_empty() { failures.push("JacobianMathProjection1.method:required".into()); }
+        if self.numeric_mode.trim().is_empty() { failures.push("JacobianMathProjection1.numeric_mode:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("JacobianMathProjection1.operation:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("JacobianMathProjection1.schema:required".into()); }
+        if self.status.trim().is_empty() { failures.push("JacobianMathProjection1.status:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("JacobianMathProjection1.engineering_adoption:status".into()); }
+        if !["exact","floating","interval","rational","symbolic",].contains(&self.numeric_mode.as_str()) { failures.push("JacobianMathProjection1.numeric_mode:status".into()); }
+        if !["calculation","finite_search","formal_check","optimization","probability","structural_analysis",].contains(&self.operation.as_str()) { failures.push("JacobianMathProjection1.operation:status".into()); }
+        if !["oev2.jacobian-math-projection/1",].contains(&self.schema.as_str()) { failures.push("JacobianMathProjection1.schema:allowed_values".into()); }
+        if !["blocked","invalid","projected",].contains(&self.status.as_str()) { failures.push("JacobianMathProjection1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 投影文件身份
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct JacobianMathProjectionFile1 {
+    /// 路径
+    pub path: String,
+    /// 角色
+    pub role: String,
+    /// 摘要
+    pub sha256: String,
+}
+impl JacobianMathProjectionFile1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.path.trim().is_empty() { failures.push("JacobianMathProjectionFile1.path:required".into()); }
+        if self.role.trim().is_empty() { failures.push("JacobianMathProjectionFile1.role:required".into()); }
+        if self.sha256.len() != 64 || !self.sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("JacobianMathProjectionFile1.sha256:sha256".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 数学投影回执
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct JacobianMathProjectionReceipt1 {
+    /// 工程采用
+    pub engineering_adoption: String,
+    /// 执行身份
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub execution_binding: serde_json::Value,
+    /// 输出文件
+    pub files: Vec<JacobianMathProjectionFile1>,
+    /// 问题
+    pub issues: Vec<String>,
+    /// 输出目录
+    pub output_dir: String,
+    /// 投影摘要
+    pub projection_sha256: String,
+    /// 请求摘要
+    pub request_sha256: String,
+    /// 版本
+    pub schema: String,
+    /// 源摘要
+    pub source_sha256: String,
+    /// 状态
+    pub status: String,
+    /// 警告
+    pub warnings: Vec<String>,
+}
+impl JacobianMathProjectionReceipt1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("JacobianMathProjectionReceipt1.engineering_adoption:required".into()); }
+        if self.output_dir.trim().is_empty() { failures.push("JacobianMathProjectionReceipt1.output_dir:required".into()); }
+        if self.projection_sha256.len() != 64 || !self.projection_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("JacobianMathProjectionReceipt1.projection_sha256:sha256".into()); }
+        if self.request_sha256.len() != 64 || !self.request_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("JacobianMathProjectionReceipt1.request_sha256:sha256".into()); }
+        if self.schema.trim().is_empty() { failures.push("JacobianMathProjectionReceipt1.schema:required".into()); }
+        if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("JacobianMathProjectionReceipt1.source_sha256:sha256".into()); }
+        if self.status.trim().is_empty() { failures.push("JacobianMathProjectionReceipt1.status:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("JacobianMathProjectionReceipt1.engineering_adoption:status".into()); }
+        if !["oev2.jacobian-math-projection-receipt/1",].contains(&self.schema.as_str()) { failures.push("JacobianMathProjectionReceipt1.schema:allowed_values".into()); }
+        if !["blocked","invalid","projected",].contains(&self.status.as_str()) { failures.push("JacobianMathProjectionReceipt1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 数学观察投影请求
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct JacobianMathProjectionRequest1 {
+    /// 操作
+    pub operation: String,
+    /// 策略
+    pub policy: String,
+    /// Project上下文
+    pub project_context: ProjectReviewContext,
+    /// 主张
+    pub requested_claims: Vec<String>,
+    /// 版本
+    pub schema: String,
+    /// 观察原件
+    pub source: ArtifactReference,
+}
+impl JacobianMathProjectionRequest1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.operation.trim().is_empty() { failures.push("JacobianMathProjectionRequest1.operation:required".into()); }
+        if self.policy.trim().is_empty() { failures.push("JacobianMathProjectionRequest1.policy:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("JacobianMathProjectionRequest1.schema:required".into()); }
+
+        if !["calculation","finite_search","formal_check","optimization","probability","structural_analysis",].contains(&self.operation.as_str()) { failures.push("JacobianMathProjectionRequest1.operation:status".into()); }
+        if !["exact_source_no_inference",].contains(&self.policy.as_str()) { failures.push("JacobianMathProjectionRequest1.policy:status".into()); }
+        if !["oev2.jacobian-math-projection-request/1",].contains(&self.schema.as_str()) { failures.push("JacobianMathProjectionRequest1.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 有单位数学值
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct JacobianMathValue1 {
+    /// 名称
+    pub name: String,
+    /// 表示法
+    pub representation: String,
+    /// 来源指针
+    pub source_pointer: String,
+    /// 单位
+    pub unit: String,
+    /// 原始值
+    pub value: String,
+}
+impl JacobianMathValue1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.name.trim().is_empty() { failures.push("JacobianMathValue1.name:required".into()); }
+        if self.representation.trim().is_empty() { failures.push("JacobianMathValue1.representation:required".into()); }
+        if self.source_pointer.trim().is_empty() { failures.push("JacobianMathValue1.source_pointer:required".into()); }
+        if self.unit.trim().is_empty() { failures.push("JacobianMathValue1.unit:required".into()); }
+        if self.value.trim().is_empty() { failures.push("JacobianMathValue1.value:required".into()); }
+
+        if !["decimal","exact","interval","scientific","symbolic",].contains(&self.representation.as_str()) { failures.push("JacobianMathValue1.representation:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -21299,6 +22524,307 @@ impl PeekabooTransportIdentity {
     }
 }
 
+/// Producer cleanup evidence, not inferred from successful analysis
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PerformanceCleanup1 {
+    /// Ownership, released resources and unresolved processes
+    pub details: Vec<String>,
+    /// Raw cleanup records
+    pub evidence: Vec<ArtifactReference>,
+    /// Reported lifecycle outcome
+    pub status: String,
+}
+impl PerformanceCleanup1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.status.trim().is_empty() { failures.push("PerformanceCleanup1.status:required".into()); }
+
+        if !["completed","failed","not_applicable","unknown",].contains(&self.status.as_str()) { failures.push("PerformanceCleanup1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One source-bound performance measurement; no adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PerformanceMeasurement1 {
+    /// evidence
+    pub evidence: Vec<ArtifactReference>,
+    /// name
+    pub name: String,
+    /// Measurement limits
+    pub notes: Vec<String>,
+    /// phase
+    pub phase: String,
+    /// Pointer in the retained producer record
+    pub source_pointer: String,
+    /// status
+    pub status: String,
+    /// unit
+    pub unit: String,
+    /// value
+    pub value: String,
+}
+impl PerformanceMeasurement1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.name.trim().is_empty() { failures.push("PerformanceMeasurement1.name:required".into()); }
+        if self.phase.trim().is_empty() { failures.push("PerformanceMeasurement1.phase:required".into()); }
+        if self.source_pointer.trim().is_empty() { failures.push("PerformanceMeasurement1.source_pointer:required".into()); }
+        if self.status.trim().is_empty() { failures.push("PerformanceMeasurement1.status:required".into()); }
+        if self.unit.trim().is_empty() { failures.push("PerformanceMeasurement1.unit:required".into()); }
+        if self.value.trim().is_empty() { failures.push("PerformanceMeasurement1.value:required".into()); }
+
+        if !["baseline","candidate","replay","run","unknown",].contains(&self.phase.as_str()) { failures.push("PerformanceMeasurement1.phase:status".into()); }
+        if !["missing","observed","partial","unknown",].contains(&self.status.as_str()) { failures.push("PerformanceMeasurement1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Strict native SmokingGun/Flameox observation; no adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PerformanceNativeObservation1 {
+    /// artifacts
+    pub artifacts: Vec<ArtifactReference>,
+    /// budget
+    pub budget: String,
+    /// Complexity candidates retaining epistemic state and raw pointers
+    pub candidates: Vec<SourceProjectionFinding1>,
+    /// Reported cleanup and exact supporting records
+    pub cleanup: PerformanceCleanup1,
+    /// covered
+    pub covered: Vec<String>,
+    /// engineering adoption
+    pub engineering_adoption: String,
+    /// environment
+    pub environment: String,
+    /// limitations
+    pub limitations: Vec<String>,
+    /// measurements
+    pub measurements: Vec<PerformanceMeasurement1>,
+    /// module
+    pub module: String,
+    /// not covered
+    pub not_covered: Vec<String>,
+    /// operation
+    pub operation: String,
+    /// project context
+    pub project_context: ProjectReviewContext,
+    /// schema
+    pub schema: String,
+    /// workload
+    pub workload: String,
+}
+impl PerformanceNativeObservation1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.budget.trim().is_empty() { failures.push("PerformanceNativeObservation1.budget:required".into()); }
+        if let Err(errors) = self.cleanup.validate() { failures.extend(errors); }
+
+        if self.engineering_adoption.trim().is_empty() { failures.push("PerformanceNativeObservation1.engineering_adoption:required".into()); }
+        if self.environment.trim().is_empty() { failures.push("PerformanceNativeObservation1.environment:required".into()); }
+        if self.module.trim().is_empty() { failures.push("PerformanceNativeObservation1.module:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("PerformanceNativeObservation1.operation:required".into()); }
+        if let Err(errors) = self.project_context.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("PerformanceNativeObservation1.schema:required".into()); }
+        if self.workload.trim().is_empty() { failures.push("PerformanceNativeObservation1.workload:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("PerformanceNativeObservation1.engineering_adoption:status".into()); }
+        if !["flameox","smokinggun",].contains(&self.module.as_str()) { failures.push("PerformanceNativeObservation1.module:allowed_values".into()); }
+        if !["analysis","capture","complexity_candidates","measurement","replay",].contains(&self.operation.as_str()) { failures.push("PerformanceNativeObservation1.operation:status".into()); }
+        if !["oev2.performance-native-observation/1",].contains(&self.schema.as_str()) { failures.push("PerformanceNativeObservation1.schema:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// SmokingGun/Flameox performance projection; no adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PerformanceProjection1 {
+    /// artifacts
+    pub artifacts: Vec<ArtifactReference>,
+    /// budget
+    pub budget: String,
+    /// Complexity candidates retaining epistemic state and raw pointers
+    pub candidates: Vec<SourceProjectionFinding1>,
+    /// Reported cleanup and exact supporting records
+    pub cleanup: PerformanceCleanup1,
+    /// covered
+    pub covered: Vec<String>,
+    /// engineering adoption
+    pub engineering_adoption: String,
+    /// environment
+    pub environment: String,
+    /// issues
+    pub issues: Vec<String>,
+    /// limitations
+    pub limitations: Vec<String>,
+    /// measurements
+    pub measurements: Vec<PerformanceMeasurement1>,
+    /// module
+    pub module: String,
+    /// not covered
+    pub not_covered: Vec<String>,
+    /// operation
+    pub operation: String,
+    /// request
+    pub request: PerformanceProjectionRequest1,
+    /// schema
+    pub schema: String,
+    /// source observation
+    pub source_observation: ArtifactReference,
+    /// source sha256
+    pub source_sha256: String,
+    /// status
+    pub status: String,
+    /// workload
+    pub workload: String,
+}
+impl PerformanceProjection1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.budget.trim().is_empty() { failures.push("PerformanceProjection1.budget:required".into()); }
+        if let Err(errors) = self.cleanup.validate() { failures.extend(errors); }
+
+        if self.engineering_adoption.trim().is_empty() { failures.push("PerformanceProjection1.engineering_adoption:required".into()); }
+        if self.environment.trim().is_empty() { failures.push("PerformanceProjection1.environment:required".into()); }
+        if self.module.trim().is_empty() { failures.push("PerformanceProjection1.module:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("PerformanceProjection1.operation:required".into()); }
+        if let Err(errors) = self.request.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("PerformanceProjection1.schema:required".into()); }
+        if let Err(errors) = self.source_observation.validate() { failures.extend(errors); }
+
+        if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("PerformanceProjection1.source_sha256:sha256".into()); }
+        if self.status.trim().is_empty() { failures.push("PerformanceProjection1.status:required".into()); }
+        if self.workload.trim().is_empty() { failures.push("PerformanceProjection1.workload:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("PerformanceProjection1.engineering_adoption:status".into()); }
+        if !["flameox","smokinggun",].contains(&self.module.as_str()) { failures.push("PerformanceProjection1.module:allowed_values".into()); }
+        if !["analysis","capture","complexity_candidates","measurement","replay",].contains(&self.operation.as_str()) { failures.push("PerformanceProjection1.operation:status".into()); }
+        if !["oev2.performance-projection/1",].contains(&self.schema.as_str()) { failures.push("PerformanceProjection1.schema:status".into()); }
+        if !["blocked","invalid","projected",].contains(&self.status.as_str()) { failures.push("PerformanceProjection1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Performance projection output file; no adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PerformanceProjectionFile1 {
+    /// path
+    pub path: String,
+    /// role
+    pub role: String,
+    /// sha256
+    pub sha256: String,
+}
+impl PerformanceProjectionFile1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.path.trim().is_empty() { failures.push("PerformanceProjectionFile1.path:required".into()); }
+        if self.role.trim().is_empty() { failures.push("PerformanceProjectionFile1.role:required".into()); }
+        if self.sha256.len() != 64 || !self.sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("PerformanceProjectionFile1.sha256:sha256".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Performance projection receipt; no adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PerformanceProjectionReceipt1 {
+    /// engineering adoption
+    pub engineering_adoption: String,
+    /// Actual projector execution identity
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub execution_binding: serde_json::Value,
+    /// files
+    pub files: Vec<PerformanceProjectionFile1>,
+    /// issues
+    pub issues: Vec<String>,
+    /// output dir
+    pub output_dir: String,
+    /// projection sha256
+    pub projection_sha256: String,
+    /// request sha256
+    pub request_sha256: String,
+    /// schema
+    pub schema: String,
+    /// source sha256
+    pub source_sha256: String,
+    /// status
+    pub status: String,
+    /// Limits of this projection
+    pub warnings: Vec<String>,
+}
+impl PerformanceProjectionReceipt1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("PerformanceProjectionReceipt1.engineering_adoption:required".into()); }
+        if self.output_dir.trim().is_empty() { failures.push("PerformanceProjectionReceipt1.output_dir:required".into()); }
+        if self.projection_sha256.len() != 64 || !self.projection_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("PerformanceProjectionReceipt1.projection_sha256:sha256".into()); }
+        if self.request_sha256.len() != 64 || !self.request_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("PerformanceProjectionReceipt1.request_sha256:sha256".into()); }
+        if self.schema.trim().is_empty() { failures.push("PerformanceProjectionReceipt1.schema:required".into()); }
+        if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("PerformanceProjectionReceipt1.source_sha256:sha256".into()); }
+        if self.status.trim().is_empty() { failures.push("PerformanceProjectionReceipt1.status:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("PerformanceProjectionReceipt1.engineering_adoption:status".into()); }
+        if !["oev2.performance-projection-receipt/1",].contains(&self.schema.as_str()) { failures.push("PerformanceProjectionReceipt1.schema:status".into()); }
+        if !["blocked","invalid","projected",].contains(&self.status.as_str()) { failures.push("PerformanceProjectionReceipt1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// SmokingGun/Flameox projection request; no adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PerformanceProjectionRequest1 {
+    /// module
+    pub module: String,
+    /// operation
+    pub operation: String,
+    /// policy
+    pub policy: String,
+    /// project context
+    pub project_context: ProjectReviewContext,
+    /// Requested review claims; not automatically supported
+    pub requested_claims: Vec<String>,
+    /// schema
+    pub schema: String,
+    /// source
+    pub source: ArtifactReference,
+}
+impl PerformanceProjectionRequest1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.module.trim().is_empty() { failures.push("PerformanceProjectionRequest1.module:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("PerformanceProjectionRequest1.operation:required".into()); }
+        if self.policy.trim().is_empty() { failures.push("PerformanceProjectionRequest1.policy:required".into()); }
+        if let Err(errors) = self.project_context.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("PerformanceProjectionRequest1.schema:required".into()); }
+        if let Err(errors) = self.source.validate() { failures.extend(errors); }
+
+
+        if !["flameox","smokinggun",].contains(&self.module.as_str()) { failures.push("PerformanceProjectionRequest1.module:allowed_values".into()); }
+        if !["analysis","capture","complexity_candidates","measurement","replay",].contains(&self.operation.as_str()) { failures.push("PerformanceProjectionRequest1.operation:status".into()); }
+        if !["exact_source_no_execution",].contains(&self.policy.as_str()) { failures.push("PerformanceProjectionRequest1.policy:status".into()); }
+        if !["oev2.performance-projection-request/1",].contains(&self.schema.as_str()) { failures.push("PerformanceProjectionRequest1.schema:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
 /// 显式位移范围；读数与姿态共用状态值
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -22956,6 +24482,331 @@ impl SourceCitation {
         if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("SourceCitation.source_sha256:sha256".into()); }
         if self.source_uri.trim().is_empty() { failures.push("SourceCitation.source_uri:required".into()); }
 
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 保留REA、LeanToken或GitContribute的结构化输出；Rust不重算源代码或逆向结论
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SourceNativeObservation1 {
+    /// 原件列表
+    pub artifacts: Vec<SourceProjectionArtifact1>,
+    /// 已覆盖范围
+    pub covered: Vec<String>,
+    /// 源图谱边
+    pub edges: Vec<SourceProjectionEdge1>,
+    /// 工程采用状态
+    pub engineering_adoption: String,
+    /// 结论列表
+    pub findings: Vec<SourceProjectionFinding1>,
+    /// 模块限制
+    pub limitations: Vec<String>,
+    /// 专业模块
+    pub module: String,
+    /// 未覆盖范围
+    pub not_covered: Vec<String>,
+    /// 分析操作
+    pub operation: String,
+    /// 观测时Project绑定
+    pub project_context: ProjectReviewContext,
+    /// 合同版本
+    pub schema: String,
+    /// 对象版本身份
+    pub subject_identity: String,
+    /// 对象类别
+    pub subject_kind: String,
+}
+impl SourceNativeObservation1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("SourceNativeObservation1.engineering_adoption:required".into()); }
+        if self.module.trim().is_empty() { failures.push("SourceNativeObservation1.module:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("SourceNativeObservation1.operation:required".into()); }
+        if let Err(errors) = self.project_context.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("SourceNativeObservation1.schema:required".into()); }
+        if self.subject_identity.trim().is_empty() { failures.push("SourceNativeObservation1.subject_identity:required".into()); }
+        if self.subject_kind.trim().is_empty() { failures.push("SourceNativeObservation1.subject_kind:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("SourceNativeObservation1.engineering_adoption:status".into()); }
+        if !["gitcontribute","leantoken","reverse_engineer_anything",].contains(&self.module.as_str()) { failures.push("SourceNativeObservation1.module:allowed_values".into()); }
+        if !["artifact_analysis","contribution_research","source_search",].contains(&self.operation.as_str()) { failures.push("SourceNativeObservation1.operation:status".into()); }
+        if !["oev2.source-native-observation/1",].contains(&self.schema.as_str()) { failures.push("SourceNativeObservation1.schema:status".into()); }
+        if !["artifact","file_set","issue","other","patch","repository","review",].contains(&self.subject_kind.as_str()) { failures.push("SourceNativeObservation1.subject_kind:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 将严格源观测接入同一Project；保留图谱、覆盖和静态/运行时边界并明确不作工程采用
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SourceProjection1 {
+    /// 投影原件列表
+    pub artifacts: Vec<SourceProjectionArtifact1>,
+    /// 已覆盖范围
+    pub covered: Vec<String>,
+    /// 投影关系边
+    pub edges: Vec<SourceProjectionEdge1>,
+    /// 工程采用状态
+    pub engineering_adoption: String,
+    /// 投影结论
+    pub findings: Vec<SourceProjectionFinding1>,
+    /// 阻断或不一致项
+    pub issues: Vec<String>,
+    /// 投影限制
+    pub limitations: Vec<String>,
+    /// 专业模块
+    pub module: String,
+    /// 未覆盖范围
+    pub not_covered: Vec<String>,
+    /// 分析操作
+    pub operation: String,
+    /// 原始请求
+    pub request: SourceProjectionRequest1,
+    /// 合同版本
+    pub schema: String,
+    /// 复制后的观测原件引用
+    pub source_observation: ArtifactReference,
+    /// 观测原件摘要
+    pub source_sha256: String,
+    /// 投影状态
+    pub status: String,
+    /// 对象身份
+    pub subject_identity: String,
+}
+impl SourceProjection1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("SourceProjection1.engineering_adoption:required".into()); }
+        if self.module.trim().is_empty() { failures.push("SourceProjection1.module:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("SourceProjection1.operation:required".into()); }
+        if let Err(errors) = self.request.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("SourceProjection1.schema:required".into()); }
+        if let Err(errors) = self.source_observation.validate() { failures.extend(errors); }
+
+        if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("SourceProjection1.source_sha256:sha256".into()); }
+        if self.status.trim().is_empty() { failures.push("SourceProjection1.status:required".into()); }
+        if self.subject_identity.trim().is_empty() { failures.push("SourceProjection1.subject_identity:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("SourceProjection1.engineering_adoption:status".into()); }
+        if !["gitcontribute","leantoken","reverse_engineer_anything",].contains(&self.module.as_str()) { failures.push("SourceProjection1.module:allowed_values".into()); }
+        if !["artifact_analysis","contribution_research","source_search",].contains(&self.operation.as_str()) { failures.push("SourceProjection1.operation:status".into()); }
+        if !["oev2.source-projection/1",].contains(&self.schema.as_str()) { failures.push("SourceProjection1.schema:status".into()); }
+        if !["blocked","invalid","projected",].contains(&self.status.as_str()) { failures.push("SourceProjection1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 保留源代码、二进制制品、报告、符号索引或审查资料的原件引用；不授予工程采用
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SourceProjectionArtifact1 {
+    /// 投影内稳定原件标识
+    pub artifact_id: String,
+    /// 原件类别
+    pub kind: String,
+    /// 原件限制或来源说明
+    pub notes: Vec<String>,
+    /// 本根精确原件引用
+    pub source: ArtifactReference,
+    /// 原始报告或图谱中的字段/行/节点指针
+    pub source_pointer: String,
+    /// 原件可用状态
+    pub status: String,
+}
+impl SourceProjectionArtifact1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.artifact_id.trim().is_empty() { failures.push("SourceProjectionArtifact1.artifact_id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("SourceProjectionArtifact1.kind:required".into()); }
+        if let Err(errors) = self.source.validate() { failures.extend(errors); }
+
+        if self.source_pointer.trim().is_empty() { failures.push("SourceProjectionArtifact1.source_pointer:required".into()); }
+        if self.status.trim().is_empty() { failures.push("SourceProjectionArtifact1.status:required".into()); }
+
+        if !["binary","input","other","patch","report","review","source_tree","symbol_index","trace",].contains(&self.kind.as_str()) { failures.push("SourceProjectionArtifact1.kind:status".into()); }
+        if !["available","missing","partial",].contains(&self.status.as_str()) { failures.push("SourceProjectionArtifact1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 保留文件、符号、调用、依赖或审查关系；不把静态关系升级为运行时事实
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SourceProjectionEdge1 {
+    /// 关系依据的原件标识或指针
+    pub basis: Vec<String>,
+    /// 关系标识
+    pub edge_id: String,
+    /// 起点原件标识
+    pub from_artifact: String,
+    /// 关系类别
+    pub kind: String,
+    /// 关系认知状态
+    pub status: String,
+    /// 终点原件标识
+    pub to_artifact: String,
+}
+impl SourceProjectionEdge1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.edge_id.trim().is_empty() { failures.push("SourceProjectionEdge1.edge_id:required".into()); }
+        if self.from_artifact.trim().is_empty() { failures.push("SourceProjectionEdge1.from_artifact:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("SourceProjectionEdge1.kind:required".into()); }
+        if self.status.trim().is_empty() { failures.push("SourceProjectionEdge1.status:required".into()); }
+        if self.to_artifact.trim().is_empty() { failures.push("SourceProjectionEdge1.to_artifact:required".into()); }
+
+        if !["calls","changed_by","contains","depends_on","imports","other","references","reviewed_by",].contains(&self.kind.as_str()) { failures.push("SourceProjectionEdge1.kind:status".into()); }
+        if !["inferred","observed","unknown",].contains(&self.status.as_str()) { failures.push("SourceProjectionEdge1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 回执中的输出文件字节身份
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SourceProjectionFile1 {
+    /// 本根相对路径
+    pub path: String,
+    /// 文件角色
+    pub role: String,
+    /// 文件字节摘要
+    pub sha256: String,
+}
+impl SourceProjectionFile1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.path.trim().is_empty() { failures.push("SourceProjectionFile1.path:required".into()); }
+        if self.role.trim().is_empty() { failures.push("SourceProjectionFile1.role:required".into()); }
+        if self.sha256.len() != 64 || !self.sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("SourceProjectionFile1.sha256:sha256".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 保留模块输出的结论及其原件依据；不表示当前工程适用
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SourceProjectionFinding1 {
+    /// 依据的原件、边或指针标识
+    pub basis: Vec<String>,
+    /// 结论标识
+    pub finding_id: String,
+    /// 结论认知状态
+    pub kind: String,
+    /// 原始结论陈述
+    pub statement: String,
+}
+impl SourceProjectionFinding1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.finding_id.trim().is_empty() { failures.push("SourceProjectionFinding1.finding_id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("SourceProjectionFinding1.kind:required".into()); }
+        if self.statement.trim().is_empty() { failures.push("SourceProjectionFinding1.statement:required".into()); }
+
+        if !["imported","inferred","observed","unknown",].contains(&self.kind.as_str()) { failures.push("SourceProjectionFinding1.kind:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 记录请求、观测、投影、文件和执行绑定；不授予工程采用
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SourceProjectionReceipt1 {
+    /// 工程采用状态
+    pub engineering_adoption: String,
+    /// Actual projector execution identity
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub execution_binding: serde_json::Value,
+    /// 输出文件清单
+    pub files: Vec<SourceProjectionFile1>,
+    /// 阻断项
+    pub issues: Vec<String>,
+    /// 输出目录
+    pub output_dir: String,
+    /// 投影摘要
+    pub projection_sha256: String,
+    /// 请求摘要
+    pub request_sha256: String,
+    /// 合同版本
+    pub schema: String,
+    /// 观测摘要
+    pub source_sha256: String,
+    /// 投影状态
+    pub status: String,
+    /// 限制提醒
+    pub warnings: Vec<String>,
+}
+impl SourceProjectionReceipt1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("SourceProjectionReceipt1.engineering_adoption:required".into()); }
+        if self.output_dir.trim().is_empty() { failures.push("SourceProjectionReceipt1.output_dir:required".into()); }
+        if self.projection_sha256.len() != 64 || !self.projection_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("SourceProjectionReceipt1.projection_sha256:sha256".into()); }
+        if self.request_sha256.len() != 64 || !self.request_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("SourceProjectionReceipt1.request_sha256:sha256".into()); }
+        if self.schema.trim().is_empty() { failures.push("SourceProjectionReceipt1.schema:required".into()); }
+        if self.source_sha256.len() != 64 || !self.source_sha256.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) { failures.push("SourceProjectionReceipt1.source_sha256:sha256".into()); }
+        if self.status.trim().is_empty() { failures.push("SourceProjectionReceipt1.status:required".into()); }
+
+        if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("SourceProjectionReceipt1.engineering_adoption:status".into()); }
+        if !["oev2.source-projection-receipt/1",].contains(&self.schema.as_str()) { failures.push("SourceProjectionReceipt1.schema:status".into()); }
+        if !["blocked","invalid","projected",].contains(&self.status.as_str()) { failures.push("SourceProjectionReceipt1.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// 把源代码或制品分析请求绑定到当前Project；Rust只核身份、来源和边界
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SourceProjectionRequest1 {
+    /// 调用方验收项
+    pub acceptance: Vec<String>,
+    /// 专业模块
+    pub module: String,
+    /// 分析操作
+    pub operation: String,
+    /// 投影政策
+    pub policy: String,
+    /// 当前Project显式内容绑定
+    pub project_context: ProjectReviewContext,
+    /// 合同版本
+    pub schema: String,
+    /// 原生模块输出原件引用
+    pub source: ArtifactReference,
+    /// 被分析对象版本身份
+    pub subject_identity: String,
+    /// 被分析对象类别
+    pub subject_kind: String,
+}
+impl SourceProjectionRequest1 {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.module.trim().is_empty() { failures.push("SourceProjectionRequest1.module:required".into()); }
+        if self.operation.trim().is_empty() { failures.push("SourceProjectionRequest1.operation:required".into()); }
+        if self.policy.trim().is_empty() { failures.push("SourceProjectionRequest1.policy:required".into()); }
+        if let Err(errors) = self.project_context.validate() { failures.extend(errors); }
+
+        if self.schema.trim().is_empty() { failures.push("SourceProjectionRequest1.schema:required".into()); }
+        if let Err(errors) = self.source.validate() { failures.extend(errors); }
+
+        if self.subject_identity.trim().is_empty() { failures.push("SourceProjectionRequest1.subject_identity:required".into()); }
+        if self.subject_kind.trim().is_empty() { failures.push("SourceProjectionRequest1.subject_kind:required".into()); }
+
+        if !["gitcontribute","leantoken","reverse_engineer_anything",].contains(&self.module.as_str()) { failures.push("SourceProjectionRequest1.module:allowed_values".into()); }
+        if !["artifact_analysis","contribution_research","source_search",].contains(&self.operation.as_str()) { failures.push("SourceProjectionRequest1.operation:status".into()); }
+        if !["exact_source_no_inference",].contains(&self.policy.as_str()) { failures.push("SourceProjectionRequest1.policy:status".into()); }
+        if !["oev2.source-projection-request/1",].contains(&self.schema.as_str()) { failures.push("SourceProjectionRequest1.schema:status".into()); }
+        if !["artifact","file_set","issue","other","patch","repository","review",].contains(&self.subject_kind.as_str()) { failures.push("SourceProjectionRequest1.subject_kind:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

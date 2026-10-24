@@ -305,3 +305,9 @@ TypeScript 项目语义范围仍是 partial；REA 只核了静态 JavaScript 发
 Flameox 只核了已有计时原件分析。完整验收以新安装的当次回执为准。
 
 此前的空 Skill 重装范围见[2026-10-22 验收记录](FRESH-INSTALL-20261022.md)。该记录保留原提交与布局身份；本次统一到 `modules/` 后的摘要、发现与调用须有对应的新记录，不继承此前通过。
+电子设计、Anatomy、源/制品、Jacobian、SmokingGun 与 Flameox 现在都有仓库维护的专用外层桥。
+`oev2 project electronics project`、`source-projection project`、`jacobian project` 和
+`performance project` 分别把严格原生观测绑定到同一 Project，保存原件、结构化投影和回执。
+这些入口只做路径、SHA、Project、覆盖和未知状态核验，不启动 EDA、逆向、数学计算或性能采集；
+原生 pin/net、CAD、图谱、证书、测量和清理细节仍以源记录为准，通用 ToolResult 登记、决定更新和
+工程采用继续由后续审查完成。

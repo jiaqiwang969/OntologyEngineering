@@ -250,6 +250,26 @@ pub enum KernelCommand {
 }
 #[derive(Subcommand)]
 pub enum ProjectCommand {
+    /// Preserve SmokingGun/Flameox evidence without running a workload.
+    Performance {
+        #[command(subcommand)]
+        command: crate::performance::PerformanceCommand,
+    },
+    /// Source-bound electronics evidence projection for the current Project.
+    Electronics {
+        #[command(subcommand)]
+        command: crate::electronics::ElectronicsCommand,
+    },
+    /// Source/artifact evidence projection for REA, LeanToken and GitContribute.
+    SourceProjection {
+        #[command(subcommand)]
+        command: crate::source_projection::SourceProjectionCommand,
+    },
+    /// Typed mathematics evidence projection for Jacobian.
+    Jacobian {
+        #[command(subcommand)]
+        command: crate::jacobian::JacobianCommand,
+    },
     /// Persistent project commits, source-bound recovery and root-goal learning binding.
     Workspace {
         #[command(subcommand)]
@@ -1504,6 +1524,26 @@ pub fn kernel(root: &SkillRoot, command: KernelCommand) -> Result<u8> {
 }
 pub fn project(root: &SkillRoot, command: ProjectCommand) -> Result<u8> {
     match command {
+        ProjectCommand::Electronics { command } => {
+            let (value, status) = crate::electronics::run(root, command)?;
+            println!("{}", serde_json::to_string_pretty(&value)?);
+            Ok(status)
+        }
+        ProjectCommand::SourceProjection { command } => {
+            let (value, status) = crate::source_projection::run(root, command)?;
+            println!("{}", serde_json::to_string_pretty(&value)?);
+            Ok(status)
+        }
+        ProjectCommand::Performance { command } => {
+            let (value, status) = crate::performance::run(root, command)?;
+            println!("{}", serde_json::to_string_pretty(&value)?);
+            Ok(status)
+        }
+        ProjectCommand::Jacobian { command } => {
+            let (value, status) = crate::jacobian::run(root, command)?;
+            println!("{}", serde_json::to_string_pretty(&value)?);
+            Ok(status)
+        }
         ProjectCommand::Workspace { command } => crate::workspace::execute(root, command),
         ProjectCommand::ReconcileReviewed { input, output } => {
             require_execution(root, "reviewed_reconciliation")?;

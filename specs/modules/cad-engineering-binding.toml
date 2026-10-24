@@ -4795,3 +4795,458 @@ behavior="addition_cli_reviews_old_and_new_dependencies"
 rust_path="crates/oe-cli/tests/cad_feature_add.rs"
 oracle="生产CLI核来源、完整旧新Project依赖并集；被删旧边仍须重审，原件不写，无关项不伪造变化"
 scope="有源软件检查；原生、正式选用、工程与方法收益分别取证"
+
+
+
+# Module projections preserve native evidence; never grant adoption.
+
+[[types]]
+name="CadPresentationProjectionRequest1"
+contract_group="engineering"
+identity="Verified CAD observation bound to one Project before visual projection"
+meaning="将已验证的完整装配观察接入有界可视化投影；不启动CAD、不授予工程采用"
+fields=[
+{meaning="schema",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="schema",rust_type="String",required=true,format="typed",allowed_values=["oev2.cad-presentation-projection-request/1"]},
+{meaning="assembly",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="assembly",rust_type="CadAssemblyUseSource1",required=true,format="typed"},
+{meaning="native observation",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="native_observation",rust_type="ArtifactReference",required=true,format="typed"},
+{meaning="ordered scene",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="ordered_scene",rust_type="Option<ArtifactReference>",required=false,format="typed"},
+{meaning="projection policy",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="projection_policy",rust_type="String",required=true,format="typed",allowed_values=["axis_aligned_analytic_proxy"]}
+]
+
+[[types]]
+name="CadPresentationGeometry1"
+contract_group="engineering"
+identity="One source CAD solid retained alongside its visual proxy"
+meaning="保留原型实体和变换后的八角点；显示包围盒是明确的analytic proxy"
+fields=[
+{meaning="body tag",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="body_tag",rust_type="u64",required=true,format="typed"},
+{meaning="owning part tag",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="owning_part_tag",rust_type="u64",required=true,format="typed"},
+{name="source_pointer",rust_type="String",required=true,format="typed",meaning="原NxAssemblyObservation中prototype solid的JSON指针",unit="JSON指针；不含外部时间",precision="保留原索引与来源SHA；不按标签推断",write="Rust根据完整观测位置写入",applicability="每个CAD实体的可回指来源",acceptance="回读指针仍指向同一native observation字节"},
+{meaning="exact box corners m",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="exact_box_corners_m",rust_type="Vec<f64>",required=true,format="typed"},
+{meaning="exact box corners native",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="exact_box_corners_native",rust_type="Vec<f64>",required=true,format="typed"},
+{meaning="transformed box corners m",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="transformed_box_corners_m",rust_type="Vec<f64>",required=true,format="typed"},
+{meaning="native units",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="native_units",rust_type="String",required=true,format="typed"},
+{meaning="unit to m",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="unit_to_m",rust_type="f64",required=true,format="typed"},
+{meaning="volume m3",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="volume_m3",rust_type="Option<f64>",required=false,format="typed"},
+{meaning="representation",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="representation",rust_type="String",required=true,format="typed",allowed_values=["analytic_proxy"]},
+{meaning="projection loss",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="projection_loss",rust_type="String",required=true,format="typed"}
+]
+
+[[types]]
+name="CadPresentationMember1"
+contract_group="engineering"
+identity="One assembly occurrence with source transform and projected solids"
+meaning="保留装配实例、父链、原型、参考集和每个实体的投影来源"
+fields=[
+{meaning="occurrence id",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="occurrence_id",rust_type="String",required=true,format="typed"},
+{meaning="parent occurrence id",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="parent_occurrence_id",rust_type="Option<String>",required=false,format="typed"},
+{meaning="prototype id",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="prototype_id",rust_type="String",required=true,format="typed"},
+{meaning="name",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="name",rust_type="String",required=true,format="typed"},
+{meaning="reference set",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="reference_set",rust_type="String",required=true,format="typed"},
+{meaning="local to parent m",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="local_to_parent_m",rust_type="Vec<f64>",required=true,format="typed"},
+{meaning="local to root m",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="local_to_root_m",rust_type="Vec<f64>",required=true,format="typed"},
+{meaning="geometries",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="geometries",rust_type="Vec<CadPresentationGeometry1>",required=true,format="typed"},
+{meaning="scene part ids",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="scene_part_ids",rust_type="Vec<String>",required=true,format="typed"}
+]
+
+[[types]]
+name="CadPresentationSample1"
+contract_group="engineering"
+identity="Discrete source sample retained without physical time"
+meaning="保留有序装配采样及其来源姿态；ordinal不是秒，不推导速度"
+fields=[
+{meaning="sample id",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="sample_id",rust_type="String",required=true,format="typed"},
+{meaning="ordinal",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="ordinal",rust_type="u64",required=true,format="typed"},
+{meaning="targets",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="targets",rust_type="Vec<NxAssemblyPoseTarget>",required=true,format="typed"},
+{meaning="derivation",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="derivation",rust_type="String",required=true,format="typed",allowed_values=["source_absolute_targets"]}
+]
+
+[[types]]
+name="CadPresentationProjection1"
+contract_group="engineering"
+identity="Source-bound CAD projection and explicit downstream renderer proxy"
+meaning="完整CAD投影结果；renderer_proxy可供Anatomy/Presentation消费但不替代CAD证据"
+fields=[
+{meaning="schema",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="schema",rust_type="String",required=true,format="typed",allowed_values=["oev2.cad-presentation-projection/1"]},
+{meaning="request",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="request",rust_type="CadPresentationProjectionRequest1",required=true,format="typed"},
+{meaning="members",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="members",rust_type="Vec<CadPresentationMember1>",required=true,format="typed"},
+{meaning="samples",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="samples",rust_type="Vec<CadPresentationSample1>",required=true,format="typed"},
+{meaning="renderer proxy",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="renderer_proxy",rust_type="Option<PresentationScene1>",required=false,format="typed"},
+{meaning="projection losses",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="projection_losses",rust_type="Vec<String>",required=true,format="typed"},
+{meaning="limitations",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="limitations",rust_type="Vec<String>",required=true,format="typed"},
+{meaning="engineering adoption",unit="SI or explicit native units",precision="exact source; lossy proxy",write="Rust",applicability="NX visualization",acceptance="source and Project bound; no adoption",name="engineering_adoption",rust_type="String",required=true,format="typed",allowed_values=["not_assessed"]}
+]
+
+[[types]]
+name="ElectronicsProjectionAuxiliary1"
+contract_group="engineering"
+identity="Role-bound auxiliary electronic-design artifact"
+meaning="将BOM、网表、模型、渲染或其他辅助原件按角色绑定；不由角色名推断内容"
+fields=[
+{name="role",rust_type="String",required=true,format="typed",meaning="role",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="artifact",rust_type="ArtifactReference",required=true,format="typed",meaning="artifact",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="ElectronicsProjectionArtifact1"
+contract_group="engineering"
+identity="Electronic design artifact retained by exact source reference"
+meaning="保留电子设计原生或导出原件、来源指针和可见状态；不表示工程采用"
+fields=[
+{name="artifact_id",rust_type="String",required=true,format="typed",meaning="artifact id",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="kind",rust_type="String",required=true,format="typed",meaning="kind",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["native_project","schematic","pcb","bom","netlist","model_3d","wiring_card","report","other"]},
+{name="source",rust_type="ArtifactReference",required=true,format="typed",meaning="source",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="status",rust_type="String",required=true,format="typed",meaning="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["available","missing","partial"]},
+{name="source_pointer",rust_type="String",required=true,format="typed",meaning="source pointer",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="notes",rust_type="Vec<String>",required=true,format="typed",meaning="notes",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="ElectronicsProjectionValidation1"
+contract_group="engineering"
+identity="Electronic design check summary with explicit execution and unknowns"
+meaning="记录ERC、DRC、网表、模型、渲染等检查的执行状态与证据；不把未执行变成通过"
+fields=[
+{name="check_id",rust_type="String",required=true,format="typed",meaning="check id",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="kind",rust_type="String",required=true,format="typed",meaning="kind",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="execution",rust_type="String",required=true,format="typed",meaning="execution",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["completed","failed","not_run","unsupported"]},
+{name="verdict",rust_type="String",required=true,format="typed",meaning="verdict",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["pass","fail","unknown","blocked"]},
+{name="evidence",rust_type="Vec<ArtifactReference>",required=true,format="typed",meaning="evidence",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="unknowns",rust_type="Vec<String>",required=true,format="typed",meaning="unknowns",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="ElectronicsProjectionRequest1"
+contract_group="engineering"
+identity="Source-bound electronic design projection request"
+meaning="把电子专业工具的原始结果接入当前Project；Rust只做身份、来源、结构和接收边界"
+fields=[
+{name="schema",rust_type="String",required=true,format="typed",meaning="schema",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["oev2.electronics-projection-request/1"]},
+{name="project_context",rust_type="ProjectReviewContext",required=true,format="object",meaning="project context",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="operation",rust_type="String",required=true,format="typed",meaning="operation",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["easyeda_snapshot","easyeda_api_trace","schematic_net_fanout","model_3d","worker_wiring_card"]},
+{name="source",rust_type="ArtifactReference",required=true,format="typed",meaning="source",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="auxiliary",rust_type="Vec<ElectronicsProjectionAuxiliary1>",required=true,format="typed",meaning="auxiliary",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="policy",rust_type="String",required=true,format="typed",meaning="policy",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["exact_source_no_inference"]},
+{name="requested_claims",rust_type="Vec<String>",required=true,format="typed",meaning="requested claims",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="ElectronicsNativeObservation1"
+contract_group="engineering"
+identity="Strict electronic design native observation envelope"
+meaning="保留外部EDA工具提供的结构化摘要；payload仅由对应工具定义，Rust不重算专业结论"
+fields=[
+{name="schema",rust_type="String",required=true,format="typed",meaning="schema",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["oev2.electronics-native-observation/1"]},
+{name="project_context",rust_type="ProjectReviewContext",required=true,format="object",meaning="project context",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="operation",rust_type="String",required=true,format="typed",meaning="operation",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["easyeda_snapshot","easyeda_api_trace","schematic_net_fanout","model_3d","worker_wiring_card"]},
+{name="artifacts",rust_type="Vec<ElectronicsProjectionArtifact1>",required=true,format="typed",meaning="artifacts",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="validations",rust_type="Vec<ElectronicsProjectionValidation1>",required=true,format="typed",meaning="validations",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="observations",rust_type="serde_json::Value",required=true,format="json",meaning="observations",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="limitations",rust_type="Vec<String>",required=true,format="typed",meaning="limitations",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="engineering_adoption",rust_type="String",required=true,format="typed",meaning="engineering adoption",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["not_assessed"]}
+]
+
+[[types]]
+name="ElectronicsProjection1"
+contract_group="engineering"
+identity="Source-bound electronic design projection"
+meaning="将严格原生观测接入同一Project；保留五类电子专业操作的原始摘要并明确不作工程采用"
+fields=[
+{name="schema",rust_type="String",required=true,format="typed",meaning="schema",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["oev2.electronics-projection/1"]},
+{name="request",rust_type="ElectronicsProjectionRequest1",required=true,format="typed",meaning="request",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="operation",rust_type="String",required=true,format="typed",meaning="operation",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["easyeda_snapshot","easyeda_api_trace","schematic_net_fanout","model_3d","worker_wiring_card"]},
+{name="status",rust_type="String",required=true,format="typed",meaning="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["projected","blocked","invalid"]},
+{name="source_sha256",rust_type="String",required=true,format="sha256",meaning="source sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="artifacts",rust_type="Vec<ElectronicsProjectionArtifact1>",required=true,format="typed",meaning="artifacts",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="validations",rust_type="Vec<ElectronicsProjectionValidation1>",required=true,format="typed",meaning="validations",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="source_observation",rust_type="ArtifactReference",required=true,format="typed",meaning="source observation",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="validated_artifacts",rust_type="Vec<ElectronicsProjectionAuxiliary1>",required=true,format="typed",meaning="validated artifacts",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="coverage",rust_type="Vec<String>",required=true,format="typed",meaning="coverage",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="limitations",rust_type="Vec<String>",required=true,format="typed",meaning="limitations",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="issues",rust_type="Vec<String>",required=true,format="typed",meaning="issues",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="engineering_adoption",rust_type="String",required=true,format="typed",meaning="engineering adoption",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["not_assessed"]}
+]
+
+[[types]]
+name="ElectronicsProjectionFile1"
+contract_group="engineering"
+identity="Electronic projection output file identity"
+meaning="回执中的输出文件字节身份"
+fields=[
+{name="role",rust_type="String",required=true,format="typed",meaning="role",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="path",rust_type="String",required=true,format="typed",meaning="path",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="sha256",rust_type="String",required=true,format="sha256",meaning="sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="ElectronicsProjectionReceipt1"
+contract_group="engineering"
+identity="Electronic projection receipt"
+meaning="记录请求、原件、投影和执行绑定的完整回执；不授予工程采用"
+fields=[
+{name="schema",rust_type="String",required=true,format="typed",meaning="schema",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["oev2.electronics-projection-receipt/1"]},
+{name="request_sha256",rust_type="String",required=true,format="sha256",meaning="request sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="source_sha256",rust_type="String",required=true,format="sha256",meaning="source sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="projection_sha256",rust_type="String",required=true,format="sha256",meaning="projection sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="output_dir",rust_type="String",required=true,format="typed",meaning="output dir",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="files",rust_type="Vec<ElectronicsProjectionFile1>",required=true,format="typed",meaning="files",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="status",rust_type="String",required=true,format="typed",meaning="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["projected","blocked","invalid"]},
+{name="issues",rust_type="Vec<String>",required=true,format="typed",meaning="issues",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="warnings",rust_type="Vec<String>",required=true,format="typed",meaning="warnings",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="execution_binding",rust_type="serde_json::Value",required=true,format="json",meaning="Actual projector execution identity",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="engineering_adoption",rust_type="String",required=true,format="typed",meaning="engineering adoption",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["not_assessed"]}
+]
+
+[[types]]
+name="SourceProjectionArtifact1"
+contract_group="engineering"
+identity="Exact source or artifact retained by a module projection"
+meaning="保留源代码、二进制制品、报告、符号索引或审查资料的原件引用；不授予工程采用"
+fields=[
+{name="artifact_id",meaning="投影内稳定原件标识",rust_type="String",required=true,format="id",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="唯一且有来源引用"},
+{name="kind",meaning="原件类别",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="限制在声明集合",allowed_values=["source_tree","binary","report","symbol_index","trace","patch","review","input","other"]},
+{name="source",meaning="本根精确原件引用",rust_type="ArtifactReference",required=true,format="object",unit="原始字节",precision="原样",write="采集/核验",applicability="来源投影",acceptance="路径、摘要与当前字节一致"},
+{name="status",meaning="原件可用状态",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="缺失和部分覆盖保持显式",allowed_values=["available","missing","partial"]},
+{name="source_pointer",meaning="原始报告或图谱中的字段/行/节点指针",rust_type="String",required=true,format="text",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="可回指原始记录"},
+{name="notes",meaning="原件限制或来源说明",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="未知不省略"}
+]
+
+[[types]]
+name="SourceProjectionEdge1"
+contract_group="engineering"
+identity="Source graph edge with explicit provenance and epistemic state"
+meaning="保留文件、符号、调用、依赖或审查关系；不把静态关系升级为运行时事实"
+fields=[
+{name="edge_id",meaning="关系标识",rust_type="String",required=true,format="id",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="唯一"},
+{name="kind",meaning="关系类别",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="限制在声明集合",allowed_values=["contains","imports","calls","references","depends_on","changed_by","reviewed_by","other"]},
+{name="from_artifact",meaning="起点原件标识",rust_type="String",required=true,format="id",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="须指向当前artifacts"},
+{name="to_artifact",meaning="终点原件标识",rust_type="String",required=true,format="id",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="须指向当前artifacts"},
+{name="status",meaning="关系认知状态",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="观察、推断、未知分开",allowed_values=["observed","inferred","unknown"]},
+{name="basis",meaning="关系依据的原件标识或指针",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="每条边可追溯"}
+]
+
+[[types]]
+name="SourceProjectionFinding1"
+contract_group="engineering"
+identity="Module finding with explicit observed/inferred/imported/unknown state"
+meaning="保留模块输出的结论及其原件依据；不表示当前工程适用"
+fields=[
+{name="finding_id",meaning="结论标识",rust_type="String",required=true,format="id",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="唯一"},
+{name="statement",meaning="原始结论陈述",rust_type="String",required=true,format="text",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="非空"},
+{name="kind",meaning="结论认知状态",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="观察、推断、外部导入、未知分开",allowed_values=["observed","inferred","imported","unknown"]},
+{name="basis",meaning="依据的原件、边或指针标识",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="结论可追溯"}
+]
+
+[[types]]
+name="SourceProjectionRequest1"
+contract_group="engineering"
+identity="Source-bound REA/LeanToken/GitContribute projection request"
+meaning="把源代码或制品分析请求绑定到当前Project；Rust只核身份、来源和边界"
+fields=[
+{name="schema",meaning="合同版本",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="固定版本",allowed_values=["oev2.source-projection-request/1"]},
+{name="project_context",meaning="当前Project显式内容绑定",rust_type="ProjectReviewContext",required=true,format="object",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与原件观测完全相等"},
+{name="module",meaning="专业模块",rust_type="String",required=true,format="id",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="固定模块集合",allowed_values=["reverse_engineer_anything","leantoken","gitcontribute"]},
+{name="operation",meaning="分析操作",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="固定操作集合",allowed_values=["artifact_analysis","source_search","contribution_research"]},
+{name="subject_kind",meaning="被分析对象类别",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="固定对象集合",allowed_values=["repository","artifact","file_set","patch","issue","review","other"]},
+{name="subject_identity",meaning="被分析对象版本身份",rust_type="String",required=true,format="text",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="非空且与观测一致"},
+{name="source",meaning="原生模块输出原件引用",rust_type="ArtifactReference",required=true,format="object",unit="原始字节",precision="原样",write="采集/核验",applicability="来源投影",acceptance="路径、摘要与源文件一致"},
+{name="policy",meaning="投影政策",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="不允许推断",allowed_values=["exact_source_no_inference"]},
+{name="acceptance",meaning="调用方验收项",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="允许空但必须显式"}
+]
+
+[[types]]
+name="SourceNativeObservation1"
+contract_group="engineering"
+identity="Strict source/artifact native observation envelope"
+meaning="保留REA、LeanToken或GitContribute的结构化输出；Rust不重算源代码或逆向结论"
+fields=[
+{name="schema",meaning="合同版本",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="固定版本",allowed_values=["oev2.source-native-observation/1"]},
+{name="project_context",meaning="观测时Project绑定",rust_type="ProjectReviewContext",required=true,format="object",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与请求完全相等"},
+{name="module",meaning="专业模块",rust_type="String",required=true,format="id",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="固定模块集合",allowed_values=["reverse_engineer_anything","leantoken","gitcontribute"]},
+{name="operation",meaning="分析操作",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="固定操作集合",allowed_values=["artifact_analysis","source_search","contribution_research"]},
+{name="subject_kind",meaning="对象类别",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与请求一致",allowed_values=["repository","artifact","file_set","patch","issue","review","other"]},
+{name="subject_identity",meaning="对象版本身份",rust_type="String",required=true,format="text",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与请求一致"},
+{name="artifacts",meaning="原件列表",rust_type="Vec<SourceProjectionArtifact1>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="标识唯一；可回指原件"},
+{name="edges",meaning="源图谱边",rust_type="Vec<SourceProjectionEdge1>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="起终点存在且边依据可回指"},
+{name="findings",meaning="结论列表",rust_type="Vec<SourceProjectionFinding1>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="结论依据可回指"},
+{name="covered",meaning="已覆盖范围",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与未覆盖分开"},
+{name="not_covered",meaning="未覆盖范围",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="未知不省略"},
+{name="limitations",meaning="模块限制",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="未知不省略"},
+{name="engineering_adoption",meaning="工程采用状态",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="不得由投影授予",allowed_values=["not_assessed"]}
+]
+
+[[types]]
+name="SourceProjection1"
+contract_group="engineering"
+identity="Source/artifact projection for REA, LeanToken and GitContribute"
+meaning="将严格源观测接入同一Project；保留图谱、覆盖和静态/运行时边界并明确不作工程采用"
+fields=[
+{name="schema",meaning="合同版本",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="固定版本",allowed_values=["oev2.source-projection/1"]},
+{name="request",meaning="原始请求",rust_type="SourceProjectionRequest1",required=true,format="object",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与输入字节对应"},
+{name="module",meaning="专业模块",rust_type="String",required=true,format="id",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与请求/观测一致",allowed_values=["reverse_engineer_anything","leantoken","gitcontribute"]},
+{name="operation",meaning="分析操作",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与请求/观测一致",allowed_values=["artifact_analysis","source_search","contribution_research"]},
+{name="subject_identity",meaning="对象身份",rust_type="String",required=true,format="text",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与请求/观测一致"},
+{name="status",meaning="投影状态",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="失败和未知保留",allowed_values=["projected","blocked","invalid"]},
+{name="source_sha256",meaning="观测原件摘要",rust_type="String",required=true,format="sha256",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="当前字节一致"},
+{name="source_observation",meaning="复制后的观测原件引用",rust_type="ArtifactReference",required=true,format="object",unit="原始字节",precision="原样",write="采集/核验",applicability="来源投影",acceptance="复制后可重读"},
+{name="artifacts",meaning="投影原件列表",rust_type="Vec<SourceProjectionArtifact1>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="来源可回读"},
+{name="edges",meaning="投影关系边",rust_type="Vec<SourceProjectionEdge1>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="边端点和依据可回读"},
+{name="findings",meaning="投影结论",rust_type="Vec<SourceProjectionFinding1>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="工程采用另审"},
+{name="covered",meaning="已覆盖范围",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="非空或显式未知"},
+{name="not_covered",meaning="未覆盖范围",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="未知不省略"},
+{name="limitations",meaning="投影限制",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="未知不省略"},
+{name="issues",meaning="阻断或不一致项",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="失败不抹除"},
+{name="engineering_adoption",meaning="工程采用状态",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="不得由投影授予",allowed_values=["not_assessed"]}
+]
+
+[[types]]
+name="SourceProjectionFile1"
+contract_group="engineering"
+identity="Source projection output file identity"
+meaning="回执中的输出文件字节身份"
+fields=[
+{name="role",meaning="文件角色",rust_type="String",required=true,format="id",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="唯一"},
+{name="path",meaning="本根相对路径",rust_type="String",required=true,format="path",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="非符号链接"},
+{name="sha256",meaning="文件字节摘要",rust_type="String",required=true,format="sha256",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与当前字节一致"}
+]
+
+[[types]]
+name="SourceProjectionReceipt1"
+contract_group="engineering"
+identity="Source projection receipt"
+meaning="记录请求、观测、投影、文件和执行绑定；不授予工程采用"
+fields=[
+{name="schema",meaning="合同版本",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="固定版本",allowed_values=["oev2.source-projection-receipt/1"]},
+{name="request_sha256",meaning="请求摘要",rust_type="String",required=true,format="sha256",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="当前字节一致"},
+{name="source_sha256",meaning="观测摘要",rust_type="String",required=true,format="sha256",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="当前字节一致"},
+{name="projection_sha256",meaning="投影摘要",rust_type="String",required=true,format="sha256",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="当前字节一致"},
+{name="output_dir",meaning="输出目录",rust_type="String",required=true,format="path",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="本根私有目录"},
+{name="files",meaning="输出文件清单",rust_type="Vec<SourceProjectionFile1>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="摘要可重读"},
+{name="status",meaning="投影状态",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="失败和未知保留",allowed_values=["projected","blocked","invalid"]},
+{name="issues",meaning="阻断项",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="失败不抹除"},
+{name="warnings",meaning="限制提醒",rust_type="Vec<String>",required=true,format="list",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="工程采用另审"},
+{name="execution_binding",meaning="Actual projector execution identity",rust_type="serde_json::Value",required=true,format="json",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="与本次执行一致"},
+{name="engineering_adoption",meaning="工程采用状态",rust_type="String",required=true,format="status",unit="无",precision="原样",write="采集/核验",applicability="来源投影",acceptance="不得由投影授予",allowed_values=["not_assessed"]}
+]
+
+[[types]]
+name="PerformanceMeasurement1"
+contract_group="engineering"
+identity="One source-bound performance measurement"
+meaning="One source-bound performance measurement; no adoption"
+fields=[
+{name="phase",meaning="phase",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["baseline","candidate","run","replay","unknown"]},
+{name="name",meaning="name",rust_type="String",required=true,format="text",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="value",meaning="value",rust_type="String",required=true,format="text",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="unit",meaning="unit",rust_type="String",required=true,format="text",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="status",meaning="status",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["observed","missing","partial","unknown"]},
+{name="evidence",meaning="evidence",rust_type="Vec<ArtifactReference>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="source_pointer",meaning="Pointer in the retained producer record",rust_type="String",required=true,format="typed",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="notes",meaning="Measurement limits",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="PerformanceProjectionRequest1"
+contract_group="engineering"
+identity="SmokingGun/Flameox projection request"
+meaning="SmokingGun/Flameox projection request; no adoption"
+fields=[
+{name="schema",meaning="schema",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["oev2.performance-projection-request/1"]},
+{name="project_context",meaning="project context",rust_type="ProjectReviewContext",required=true,format="object",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="module",meaning="module",rust_type="String",required=true,format="id",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["smokinggun","flameox"]},
+{name="operation",meaning="operation",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["complexity_candidates","measurement","capture","analysis","replay"]},
+{name="source",meaning="source",rust_type="ArtifactReference",required=true,format="object",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="policy",meaning="policy",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["exact_source_no_execution"]},
+{name="requested_claims",meaning="Requested review claims; not automatically supported",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="PerformanceNativeObservation1"
+contract_group="engineering"
+identity="Strict native SmokingGun/Flameox observation"
+meaning="Strict native SmokingGun/Flameox observation; no adoption"
+fields=[
+{name="schema",meaning="schema",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["oev2.performance-native-observation/1"]},
+{name="project_context",meaning="project context",rust_type="ProjectReviewContext",required=true,format="object",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="module",meaning="module",rust_type="String",required=true,format="id",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["smokinggun","flameox"]},
+{name="operation",meaning="operation",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["complexity_candidates","measurement","capture","analysis","replay"]},
+{name="workload",meaning="workload",rust_type="String",required=true,format="text",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="environment",meaning="environment",rust_type="String",required=true,format="text",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="budget",meaning="budget",rust_type="String",required=true,format="text",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="measurements",meaning="measurements",rust_type="Vec<PerformanceMeasurement1>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="artifacts",meaning="artifacts",rust_type="Vec<ArtifactReference>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="covered",meaning="covered",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="not_covered",meaning="not covered",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="cleanup",meaning="Reported cleanup and exact supporting records",rust_type="PerformanceCleanup1",required=true,format="object",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="limitations",meaning="limitations",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="engineering_adoption",meaning="engineering adoption",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["not_assessed"]},
+{name="candidates",meaning="Complexity candidates retaining epistemic state and raw pointers",rust_type="Vec<SourceProjectionFinding1>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="PerformanceProjection1"
+contract_group="engineering"
+identity="SmokingGun/Flameox performance projection"
+meaning="SmokingGun/Flameox performance projection; no adoption"
+fields=[
+{name="schema",meaning="schema",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["oev2.performance-projection/1"]},
+{name="request",meaning="request",rust_type="PerformanceProjectionRequest1",required=true,format="object",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="module",meaning="module",rust_type="String",required=true,format="id",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["smokinggun","flameox"]},
+{name="operation",meaning="operation",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["complexity_candidates","measurement","capture","analysis","replay"]},
+{name="status",meaning="status",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["projected","blocked","invalid"]},
+{name="source_sha256",meaning="source sha256",rust_type="String",required=true,format="sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="source_observation",meaning="source observation",rust_type="ArtifactReference",required=true,format="object",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="workload",meaning="workload",rust_type="String",required=true,format="text",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="environment",meaning="environment",rust_type="String",required=true,format="text",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="budget",meaning="budget",rust_type="String",required=true,format="text",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="measurements",meaning="measurements",rust_type="Vec<PerformanceMeasurement1>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="artifacts",meaning="artifacts",rust_type="Vec<ArtifactReference>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="covered",meaning="covered",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="not_covered",meaning="not covered",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="cleanup",meaning="Reported cleanup and exact supporting records",rust_type="PerformanceCleanup1",required=true,format="object",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="limitations",meaning="limitations",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="issues",meaning="issues",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="engineering_adoption",meaning="engineering adoption",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["not_assessed"]},
+{name="candidates",meaning="Complexity candidates retaining epistemic state and raw pointers",rust_type="Vec<SourceProjectionFinding1>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="PerformanceProjectionFile1"
+contract_group="engineering"
+identity="Performance projection output file"
+meaning="Performance projection output file; no adoption"
+fields=[
+{name="role",meaning="role",rust_type="String",required=true,format="id",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="path",meaning="path",rust_type="String",required=true,format="path",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="sha256",meaning="sha256",rust_type="String",required=true,format="sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="PerformanceProjectionReceipt1"
+contract_group="engineering"
+identity="Performance projection receipt"
+meaning="Performance projection receipt; no adoption"
+fields=[
+{name="schema",meaning="schema",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["oev2.performance-projection-receipt/1"]},
+{name="request_sha256",meaning="request sha256",rust_type="String",required=true,format="sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="source_sha256",meaning="source sha256",rust_type="String",required=true,format="sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="projection_sha256",meaning="projection sha256",rust_type="String",required=true,format="sha256",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="output_dir",meaning="output dir",rust_type="String",required=true,format="path",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="files",meaning="files",rust_type="Vec<PerformanceProjectionFile1>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="status",meaning="status",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["projected","blocked","invalid"]},
+{name="issues",meaning="issues",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="execution_binding",meaning="Actual projector execution identity",rust_type="serde_json::Value",required=true,format="json",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="engineering_adoption",meaning="engineering adoption",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["not_assessed"]},
+{name="warnings",meaning="Limits of this projection",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]
+
+[[types]]
+name="PerformanceCleanup1"
+contract_group="engineering"
+identity="Workload cleanup report"
+meaning="Producer cleanup evidence, not inferred from successful analysis"
+fields=[
+{name="status",meaning="Reported lifecycle outcome",rust_type="String",required=true,format="status",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用",allowed_values=["completed","failed","unknown","not_applicable"]},
+{name="evidence",meaning="Raw cleanup records",rust_type="Vec<ArtifactReference>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"},
+{name="details",meaning="Ownership, released resources and unresolved processes",rust_type="Vec<String>",required=true,format="list",unit="source",precision="exact",write="Rust",applicability="模块投影",acceptance="来源核验；无采用"}
+]

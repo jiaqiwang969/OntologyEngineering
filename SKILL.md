@@ -83,6 +83,20 @@ metadata:
 
 工程概念图示、交互 SVG、WebGL/3D 展示与可打印图进入 [Anatomy](modules/anatomy/SKILL.md)。它默认接入既有 `oev2 presentation bind/generate/verify`，上游 kit 只负责渲染与图示检查；Project、Source、Object、Condition、Evidence 和工程采用仍由 v2 维护。
 
+CAD 装配需要可视化时，先用 `oev2 cad presentation project` 将已验证的 NX
+装配观察投影为带来源指针的 `projection.json` 和有界 `source.json`，再进入
+Anatomy 的 presentation 流程；投影保留 occurrence、变换、离散姿态和损失说明，
+不把渲染代理当作原生 CAD 或工程采用结论。
+
+其他专业模块也通过同一条 Project 边界回交：REA、LeanToken 和 GitContribute 使用
+`oev2 project source-projection project` 保留源代码/制品图谱及发现；Jacobian 使用
+`oev2 project jacobian project` 保留带单位、假设和证书的数学结果；SmokingGun 与
+Flameox 使用 `oev2 project performance project` 保留性能观测、基线、环境和清理记录；
+电子设计使用 `oev2 project electronics project` 保留原理图、PCB、器件模型和接线卡的
+来源与验证。上述命令只做来源核验、边界投影和证据归档，不运行外部工具、不补造测量、
+不自动授予工程采用；engineering-memory 仍经 `oev2 memory` 原生接入，fleet 仍是仓库外
+的环境能力。
+
 需要执行 v2 程序、维护软件或声明当前能力时，按[使用说明](docs/USAGE.md)核发行 manifest、实际程序、根目录及维护回执；统一源码安装从 `var/install/INSTALLATION.json` 核实际根与八程序身份，初次配置读 [AGENTS.md](AGENTS.md)。旧维护状态只接续对应的历史发行，不覆盖新安装。源码候选版本、已安装程序、历史回执和当前任务各保留身份，能力范围见[发布范围](docs/RELEASE-SCOPE.md)。
 
 CAD 使用 v2 自有 Rust 模块及显式原生 SDK；调用前读[独立执行合同](docs/CAD-INDEPENDENT-EXECUTION.md)。不调用原 cad-agent 的脚本、环境、MCP、Journal runner 或旧默认配置，缺项在 v2 内补齐并验证。Fusion 已退出执行范围。原生工具结果按对应合同回读、保存及独立重开；浏览器遵守当前用户的不抢焦点规则。

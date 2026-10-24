@@ -22,6 +22,7 @@ mod feature_delete;
 mod instances;
 mod motion_receiving;
 mod occurrence;
+mod presentation;
 mod variant;
 
 #[derive(Subcommand)]
@@ -50,6 +51,11 @@ pub enum CadCommand {
     Evidence {
         #[command(subcommand)]
         command: evidence::EvidenceCommand,
+    },
+    /// Project a verified NX assembly observation into CAD provenance and an Anatomy renderer proxy.
+    Presentation {
+        #[command(subcommand)]
+        command: presentation::CadPresentationCommand,
     },
     /// Project CAD/process questions, dependencies and authoring views.
     Handoff {
@@ -347,6 +353,7 @@ pub fn run(root: &SkillRoot, command: CadCommand) -> Result<(Value, u8)> {
         CadCommand::Drawing { command } => return variant::run_drawing(root, command),
         CadCommand::Motion { command } => return variant::run_motion(root, command),
         CadCommand::Evidence { command } => return evidence::run_evidence(root, command),
+        CadCommand::Presentation { command } => return presentation::run(root, command),
         CadCommand::Handoff { command } => return evidence::run_handoff(root, command),
         CadCommand::Nx { command } => command,
     };

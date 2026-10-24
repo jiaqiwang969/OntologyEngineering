@@ -386,6 +386,43 @@ Requirements and method sources below are design declarations. They do not asser
 | CadOccurrenceBindingRequest1.assembly | CadAssemblyUseSource1 | 同一Project根装配的另一次源绑定原生观察；tags不跨进程复用 | typed / 声明局部CAD单位；变换与派生几何统一SI，plane normal无量纲 / 保留原专门圆边容差、完整父链、来源与原拒绝；数值容差不是制造/测量公差 | agent整理源声明；Rust重读原件，Project owner独立核语义与依赖 | 显式当前NX实例绑定/1；原correspondence/1继续instance unresolved，SW与完整跨版本另验 / 冻结原件/正反例、生产caller、当前平台各自取证；没有自动工程采用或RRSI收益 |
 | CadOccurrenceBindingRequest1.definition | CadCorrespondenceState1 | 复用原Project、inspect_detailed、特征声明与完整圆边检查；原occurrence声明仍不是资格 | typed / 声明局部CAD单位；变换与派生几何统一SI，plane normal无量纲 / 保留原专门圆边容差、完整父链、来源与原拒绝；数值容差不是制造/测量公差 | agent整理源声明；Rust重读原件，Project owner独立核语义与依赖 | 显式当前NX实例绑定/1；原correspondence/1继续instance unresolved，SW与完整跨版本另验 / 冻结原件/正反例、生产caller、当前平台各自取证；没有自动工程采用或RRSI收益 |
 | CadOccurrenceBindingRequest1.schema | String | 显式当前实例绑定版本 | typed / 声明局部CAD单位；变换与派生几何统一SI，plane normal无量纲 / 保留原专门圆边容差、完整父链、来源与原拒绝；数值容差不是制造/测量公差 | agent整理源声明；Rust重读原件，Project owner独立核语义与依赖 | 显式当前NX实例绑定/1；原correspondence/1继续instance unresolved，SW与完整跨版本另验 / 冻结原件/正反例、生产caller、当前平台各自取证；没有自动工程采用或RRSI收益 |
+| CadPresentationGeometry1.body_tag | u64 | body tag | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationGeometry1.exact_box_corners_m | Vec<f64> | exact box corners m | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationGeometry1.exact_box_corners_native | Vec<f64> | exact box corners native | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationGeometry1.native_units | String | native units | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationGeometry1.owning_part_tag | u64 | owning part tag | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationGeometry1.projection_loss | String | projection loss | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationGeometry1.representation | String | representation | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationGeometry1.source_pointer | String | 原NxAssemblyObservation中prototype solid的JSON指针 | typed / JSON指针；不含外部时间 / 保留原索引与来源SHA；不按标签推断 | Rust根据完整观测位置写入 | 每个CAD实体的可回指来源 / 回读指针仍指向同一native observation字节 |
+| CadPresentationGeometry1.transformed_box_corners_m | Vec<f64> | transformed box corners m | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationGeometry1.unit_to_m | f64 | unit to m | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationGeometry1.volume_m3 | Option<f64> | volume m3 | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationMember1.geometries | Vec<CadPresentationGeometry1> | geometries | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationMember1.local_to_parent_m | Vec<f64> | local to parent m | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationMember1.local_to_root_m | Vec<f64> | local to root m | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationMember1.name | String | name | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationMember1.occurrence_id | String | occurrence id | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationMember1.parent_occurrence_id | Option<String> | parent occurrence id | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationMember1.prototype_id | String | prototype id | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationMember1.reference_set | String | reference set | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationMember1.scene_part_ids | Vec<String> | scene part ids | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjection1.engineering_adoption | String | engineering adoption | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjection1.limitations | Vec<String> | limitations | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjection1.members | Vec<CadPresentationMember1> | members | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjection1.projection_losses | Vec<String> | projection losses | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjection1.renderer_proxy | Option<PresentationScene1> | renderer proxy | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjection1.request | CadPresentationProjectionRequest1 | request | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjection1.samples | Vec<CadPresentationSample1> | samples | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjection1.schema | String | schema | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjectionRequest1.assembly | CadAssemblyUseSource1 | assembly | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjectionRequest1.native_observation | ArtifactReference | native observation | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjectionRequest1.ordered_scene | Option<ArtifactReference> | ordered scene | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjectionRequest1.projection_policy | String | projection policy | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationProjectionRequest1.schema | String | schema | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationSample1.derivation | String | derivation | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationSample1.ordinal | u64 | ordinal | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationSample1.sample_id | String | sample id | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
+| CadPresentationSample1.targets | Vec<NxAssemblyPoseTarget> | targets | typed / SI or explicit native units / exact source; lossy proxy | Rust | NX visualization / source and Project bound; no adoption |
 | CadSourcePointer1.pointer | String | 严格非空JSON pointer，不解引用外部文件 | typed / 保留模型声明单位与原始长度/角容差；不隐式换算 / 原JSON字节及严格指针；原专门几何容差保持 | agent整理来源；Rust重新读取并检查 | 显式CAD对应/1；既有NX检查和Project重审；不新建几何后端 / 本次对应、原生观察、工程审查与采用分别验收 |
 | CadSourcePointer1.source | ArtifactReference | 原件路径及SHA256 | typed / 保留模型声明单位与原始长度/角容差；不隐式换算 / 原JSON字节及严格指针；原专门几何容差保持 | agent整理来源；Rust重新读取并检查 | 显式CAD对应/1；既有NX检查和Project重审；不新建几何后端 / 本次对应、原生观察、工程审查与采用分别验收 |
 | CapabilityRegistry.capabilities | Vec<RegisteredCapability> | 登记的能力 | typed / 无 / 精确 | agent | 回交 / 名称唯一；至少一项 |
@@ -2268,6 +2305,62 @@ Requirements and method sources below are design declarations. They do not asser
 | DriveSample.screw_holder | String | 退牙后及刀具离开前独立保持螺钉 | status / Quantity 保留mm、deg、s或mm/rev；身份无量纲，禁止把矩阵差写成长度 / 容差用于明确几何合同；测量、传力与最终产品精度另取证 | agent 恢复原动作和条件并绑定来源；用户自然语言表达 | 有界共同坐标、同步旋拧、承托和退头；复杂机构、全程包络与真实保持尚需原生及实物验证 / 明确阶段和原因；缺承托、不同时间、角度重置或过期条件不得通过 |
 | DriveSample.screw_travel | Quantity | 沿约定正轴的螺钉行程；单位mm | typed / Quantity 保留mm、deg、s或mm/rev；身份无量纲，禁止把矩阵差写成长度 / 容差用于明确几何合同；测量、传力与最终产品精度另取证 | agent 恢复原动作和条件并绑定来源；用户自然语言表达 | 有界共同坐标、同步旋拧、承托和退头；复杂机构、全程包络与真实保持尚需原生及实物验证 / 明确阶段和原因；缺承托、不同时间、角度重置或过期条件不得通过 |
 | DriveSample.time | Option<Quantity> | 全机时间，可缺失但不可声称动画同步；单位s | typed / Quantity 保留mm、deg、s或mm/rev；身份无量纲，禁止把矩阵差写成长度 / 容差用于明确几何合同；测量、传力与最终产品精度另取证 | agent 恢复原动作和条件并绑定来源；用户自然语言表达 | 有界共同坐标、同步旋拧、承托和退头；复杂机构、全程包络与真实保持尚需原生及实物验证 / 明确阶段和原因；缺承托、不同时间、角度重置或过期条件不得通过 |
+| ElectronicsNativeObservation1.artifacts | Vec<ElectronicsProjectionArtifact1> | artifacts | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsNativeObservation1.engineering_adoption | String | engineering adoption | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsNativeObservation1.limitations | Vec<String> | limitations | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsNativeObservation1.observations | serde_json::Value | observations | json / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsNativeObservation1.operation | String | operation | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsNativeObservation1.project_context | ProjectReviewContext | project context | object / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsNativeObservation1.schema | String | schema | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsNativeObservation1.validations | Vec<ElectronicsProjectionValidation1> | validations | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.artifacts | Vec<ElectronicsProjectionArtifact1> | artifacts | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.coverage | Vec<String> | coverage | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.engineering_adoption | String | engineering adoption | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.issues | Vec<String> | issues | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.limitations | Vec<String> | limitations | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.operation | String | operation | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.request | ElectronicsProjectionRequest1 | request | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.schema | String | schema | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.source_observation | ArtifactReference | source observation | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.source_sha256 | String | source sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.status | String | status | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.validated_artifacts | Vec<ElectronicsProjectionAuxiliary1> | validated artifacts | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjection1.validations | Vec<ElectronicsProjectionValidation1> | validations | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionArtifact1.artifact_id | String | artifact id | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionArtifact1.kind | String | kind | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionArtifact1.notes | Vec<String> | notes | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionArtifact1.source | ArtifactReference | source | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionArtifact1.source_pointer | String | source pointer | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionArtifact1.status | String | status | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionAuxiliary1.artifact | ArtifactReference | artifact | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionAuxiliary1.role | String | role | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionFile1.path | String | path | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionFile1.role | String | role | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionFile1.sha256 | String | sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.engineering_adoption | String | engineering adoption | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.execution_binding | serde_json::Value | Actual projector execution identity | json / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.files | Vec<ElectronicsProjectionFile1> | files | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.issues | Vec<String> | issues | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.output_dir | String | output dir | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.projection_sha256 | String | projection sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.request_sha256 | String | request sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.schema | String | schema | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.source_sha256 | String | source sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.status | String | status | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionReceipt1.warnings | Vec<String> | warnings | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionRequest1.auxiliary | Vec<ElectronicsProjectionAuxiliary1> | auxiliary | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionRequest1.operation | String | operation | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionRequest1.policy | String | policy | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionRequest1.project_context | ProjectReviewContext | project context | object / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionRequest1.requested_claims | Vec<String> | requested claims | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionRequest1.schema | String | schema | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionRequest1.source | ArtifactReference | source | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionValidation1.check_id | String | check id | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionValidation1.evidence | Vec<ArtifactReference> | evidence | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionValidation1.execution | String | execution | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionValidation1.kind | String | kind | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionValidation1.unknowns | Vec<String> | unknowns | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| ElectronicsProjectionValidation1.verdict | String | verdict | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
 | EngineeringAdoptionRequest.actor | String | 申请者；权限由独立本地策略决定 | id / 身份和状态无量纲；路径和摘要绑定原字节 / 标识和摘要精确匹配；不以近似代替版本或授权 | agent 从当前目标和受控来源整理；缺项保留未知 | 当前私有工程、方法与规则生命周期 / 真实当前检查、独立本地批准、不可变资产和恢复反例 |
 | EngineeringAdoptionRequest.approval | ArtifactReference | 独立批准者提供的当前范围批准记录 | typed / 身份和状态无量纲；路径和摘要绑定原字节 / 标识和摘要精确匹配；不以近似代替版本或授权 | agent 从当前目标和受控来源整理；缺项保留未知 | 当前私有工程、方法与规则生命周期 / 真实当前检查、独立本地批准、不可变资产和恢复反例 |
 | EngineeringAdoptionRequest.binding | ArtifactReference | 当前对象、来源、条件与必要检查绑定 | typed / 身份和状态无量纲；路径和摘要绑定原字节 / 标识和摘要精确匹配；不以近似代替版本或授权 | agent 从当前目标和受控来源整理；缺项保留未知 | 当前私有工程、方法与规则生命周期 / 真实当前检查、独立本地批准、不可变资产和恢复反例 |
@@ -2588,6 +2681,64 @@ Requirements and method sources below are design declarations. They do not asser
 | IncadWorkPreparationRequest.schema | String | 协议 | typed / 原文数值和单位原样保留；不隐式换算 / SHA绑定精确字节；原文/投影一致不等于工程适用 | agent按用户自然语言维护，来源读取由Rust复核 | 显式私有源文件与完整准备，不运行CAD/模型/浏览器 / 当前来源复读、规格与答案分离、Project完整绑定；工程采用与独立收益另验 |
 | IncadWorkPreparationRequest.source_ids | serde_json::Value | supplier_html/projection_manifest/specifications/task四角色在现有Project evidence中的ID | typed / 原文数值和单位原样保留；不隐式换算 / SHA绑定精确字节；原文/投影一致不等于工程适用 | agent按用户自然语言维护，来源读取由Rust复核 | 显式私有源文件与完整准备，不运行CAD/模型/浏览器 / 当前来源复读、规格与答案分离、Project完整绑定；工程采用与独立收益另验 |
 | IncadWorkPreparationRequest.work | ArtifactReference | 当前完整engineering-work/3原件 | typed / 原文数值和单位原样保留；不隐式换算 / SHA绑定精确字节；原文/投影一致不等于工程适用 | agent按用户自然语言维护，来源读取由Rust复核 | 显式私有源文件与完整准备，不运行CAD/模型/浏览器 / 当前来源复读、规格与答案分离、Project完整绑定；工程采用与独立收益另验 |
+| JacobianMathCertificate1.details | Vec<String> | 核验细节 | list / 无 / 原文 | native | jacobian / 保留未知 |
+| JacobianMathCertificate1.evidence | Vec<ArtifactReference> | 证据原件 | typed / 无 / SHA | native | jacobian / 重读 |
+| JacobianMathCertificate1.kind | String | 证书类型 | status / 无 / 原文 | native | jacobian / 固定集合 |
+| JacobianMathCertificate1.status | String | 核验状态 | status / 无 / 不升级 | native | jacobian / 固定集合 |
+| JacobianMathCertificate1.verifier | String | 核验器 | text / 无 / 原文 | native | jacobian / 非空 |
+| JacobianMathObservation1.assumptions | Vec<String> | 前提 | list / 无 / 原文 | native | jacobian / 保留 |
+| JacobianMathObservation1.certificate | JacobianMathCertificate1 | 证书 | typed / 无 / 精确 | native | jacobian / 重读 |
+| JacobianMathObservation1.engineering_adoption | String | 工程采用 | status / 无 / 不授予 | Rust | jacobian / 固定 |
+| JacobianMathObservation1.error_bound | Option<String> | 误差界 | numeric / 声明 / 原文 | native | jacobian / 不推导 |
+| JacobianMathObservation1.inputs | Vec<JacobianMathValue1> | 输入 | typed / 声明 / 原文 | native | jacobian / 非空唯一 |
+| JacobianMathObservation1.method | String | 方法 | text / 无 / 原文 | native | jacobian / 非空 |
+| JacobianMathObservation1.numeric_mode | String | 数值模式 | status / 无 / 不升级 | native | jacobian / 固定集合 |
+| JacobianMathObservation1.operation | String | 操作 | status / 无 / 精确 | native | jacobian / 与请求一致 |
+| JacobianMathObservation1.outputs | Vec<JacobianMathValue1> | 输出 | typed / 声明 / 原文 | native | jacobian / 明确 |
+| JacobianMathObservation1.project_context | ProjectReviewContext | Project上下文 | typed / 无 / 精确 | agent | jacobian / 完全匹配 |
+| JacobianMathObservation1.schema | String | 版本 | typed / 无 / 精确 | native | jacobian / 核验 |
+| JacobianMathObservation1.unknowns | Vec<String> | 未知项 | list / 无 / 原文 | native | jacobian / 保留 |
+| JacobianMathProjection1.assumptions | Vec<String> | 前提 | list / 无 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.certificate | JacobianMathCertificate1 | 证书 | typed / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.coverage | Vec<String> | 覆盖 | list / 无 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.engineering_adoption | String | 工程采用 | status / 无 / 不授予 | Rust | jacobian / 固定 |
+| JacobianMathProjection1.error_bound | Option<String> | 误差界 | numeric / 声明 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.inputs | Vec<JacobianMathValue1> | 输入 | typed / 声明 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.issues | Vec<String> | 问题 | list / 无 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.limitations | Vec<String> | 限制 | list / 无 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.method | String | 方法 | text / 无 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.numeric_mode | String | 数值模式 | status / 无 / 不升级 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.observation | ArtifactReference | 观察原件 | typed / 无 / SHA | Rust | jacobian / 核验 |
+| JacobianMathProjection1.operation | String | 操作 | status / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.outputs | Vec<JacobianMathValue1> | 输出 | typed / 声明 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.request | JacobianMathProjectionRequest1 | 请求快照 | typed / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.schema | String | 版本 | typed / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjection1.status | String | 状态 | status / 无 / 保留失败 | Rust | jacobian / 核验 |
+| JacobianMathProjectionFile1.path | String | 路径 | text / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjectionFile1.role | String | 角色 | text / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjectionFile1.sha256 | String | 摘要 | sha256 / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.engineering_adoption | String | 工程采用 | status / 无 / 不授予 | Rust | jacobian / 固定 |
+| JacobianMathProjectionReceipt1.execution_binding | serde_json::Value | 执行身份 | json / 无 / 原样 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.files | Vec<JacobianMathProjectionFile1> | 输出文件 | typed / 无 / 完整 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.issues | Vec<String> | 问题 | list / 无 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.output_dir | String | 输出目录 | text / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.projection_sha256 | String | 投影摘要 | sha256 / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.request_sha256 | String | 请求摘要 | sha256 / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.schema | String | 版本 | typed / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.source_sha256 | String | 源摘要 | sha256 / 无 / 精确 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.status | String | 状态 | status / 无 / 保留失败 | Rust | jacobian / 核验 |
+| JacobianMathProjectionReceipt1.warnings | Vec<String> | 警告 | list / 无 / 原文 | Rust | jacobian / 核验 |
+| JacobianMathProjectionRequest1.operation | String | 操作 | status / 无 / 精确 | agent | jacobian / 匹配 |
+| JacobianMathProjectionRequest1.policy | String | 策略 | status / 无 / 不放宽 | agent | jacobian / 固定 |
+| JacobianMathProjectionRequest1.project_context | ProjectReviewContext | Project上下文 | typed / 无 / 精确 | agent | jacobian / 匹配 |
+| JacobianMathProjectionRequest1.requested_claims | Vec<String> | 主张 | list / 无 / 原文 | agent | jacobian / 核验 |
+| JacobianMathProjectionRequest1.schema | String | 版本 | typed / 无 / 精确 | agent | jacobian / 核验 |
+| JacobianMathProjectionRequest1.source | ArtifactReference | 观察原件 | typed / 无 / SHA | agent | jacobian / 重读 |
+| JacobianMathValue1.name | String | 名称 | id / 无 / 原文 | native | jacobian / 非空唯一 |
+| JacobianMathValue1.representation | String | 表示法 | status / 无 / 精确 | native | jacobian / 固定集合 |
+| JacobianMathValue1.source_pointer | String | 来源指针 | text / 无 / 原文 | native | jacobian / 非空 |
+| JacobianMathValue1.unit | String | 单位 | text / 无 / 原文 | native | jacobian / 非空 |
+| JacobianMathValue1.value | String | 原始值 | numeric / 声明 / 原文 | native | jacobian / 非空 |
 | KnowledgeOcrLanguage5.name | String | name in the separately bound source/content/process domain | status / Raw source bytes/SHA, original pixel coordinates, exact process observations or monotonic milliseconds as named / Original bytes/rows/lexical confidence preserved; unknown not projected to verified | Existing neutral source parser or existing knowledge opaque factory only | Explicit TSV source content and one controlled local188/144dpi OCR observation; full original scope remains required / Actually consumed source and private producer checks; structural DTO validation does not create authority |
 | KnowledgeOcrLanguage5.source | KnowledgePageAsset4 | source in the separately bound source/content/process domain | typed / Raw source bytes/SHA, original pixel coordinates, exact process observations or monotonic milliseconds as named / Original bytes/rows/lexical confidence preserved; unknown not projected to verified | Existing neutral source parser or existing knowledge opaque factory only | Explicit TSV source content and one controlled local188/144dpi OCR observation; full original scope remains required / Actually consumed source and private producer checks; structural DTO validation does not create authority |
 | KnowledgeOcrRequest5.config | KnowledgePageAsset4 | config in the separately bound source/content/process domain | typed / Raw source bytes/SHA, original pixel coordinates, exact process observations or monotonic milliseconds as named / Original bytes/rows/lexical confidence preserved; unknown not projected to verified | Existing neutral source parser or existing knowledge opaque factory only | Explicit TSV source content and one controlled local188/144dpi OCR observation; full original scope remains required / Actually consumed source and private producer checks; structural DTO validation does not create authority |
@@ -3471,6 +3622,72 @@ Requirements and method sources below are design declarations. They do not asser
 | PeekabooTransportIdentity.schema | String | Protocol requires oev2.peekaboo-bridge/1 | nonempty / identity; not a physical quantity / exact original scalar or SHA256 | Rust retains actual transport fields; producer is pinned Peekaboo bridge | Current background connection and supplier session / Generated shape checks and original Rust provider/foreground/session guards; actual read-only browser proof separately |
 | PeekabooTransportIdentity.worker_pid | u64 | Owned transport process PID | positive / identity; not a physical quantity / exact original scalar or SHA256 | Rust retains actual transport fields; producer is pinned Peekaboo bridge | Current background connection and supplier session / Generated shape checks and original Rust provider/foreground/session guards; actual read-only browser proof separately |
 | PeekabooTransportIdentity.worker_session | String | Unique owned transport process instance, never inherited from browser task | nonempty / identity; not a physical quantity / exact original scalar or SHA256 | Rust retains actual transport fields; producer is pinned Peekaboo bridge | Current background connection and supplier session / Generated shape checks and original Rust provider/foreground/session guards; actual read-only browser proof separately |
+| PerformanceCleanup1.details | Vec<String> | Ownership, released resources and unresolved processes | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceCleanup1.evidence | Vec<ArtifactReference> | Raw cleanup records | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceCleanup1.status | String | Reported lifecycle outcome | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceMeasurement1.evidence | Vec<ArtifactReference> | evidence | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceMeasurement1.name | String | name | text / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceMeasurement1.notes | Vec<String> | Measurement limits | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceMeasurement1.phase | String | phase | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceMeasurement1.source_pointer | String | Pointer in the retained producer record | typed / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceMeasurement1.status | String | status | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceMeasurement1.unit | String | unit | text / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceMeasurement1.value | String | value | text / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.artifacts | Vec<ArtifactReference> | artifacts | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.budget | String | budget | text / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.candidates | Vec<SourceProjectionFinding1> | Complexity candidates retaining epistemic state and raw pointers | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.cleanup | PerformanceCleanup1 | Reported cleanup and exact supporting records | object / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.covered | Vec<String> | covered | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.engineering_adoption | String | engineering adoption | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.environment | String | environment | text / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.limitations | Vec<String> | limitations | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.measurements | Vec<PerformanceMeasurement1> | measurements | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.module | String | module | id / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.not_covered | Vec<String> | not covered | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.operation | String | operation | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.project_context | ProjectReviewContext | project context | object / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.schema | String | schema | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceNativeObservation1.workload | String | workload | text / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.artifacts | Vec<ArtifactReference> | artifacts | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.budget | String | budget | text / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.candidates | Vec<SourceProjectionFinding1> | Complexity candidates retaining epistemic state and raw pointers | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.cleanup | PerformanceCleanup1 | Reported cleanup and exact supporting records | object / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.covered | Vec<String> | covered | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.engineering_adoption | String | engineering adoption | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.environment | String | environment | text / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.issues | Vec<String> | issues | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.limitations | Vec<String> | limitations | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.measurements | Vec<PerformanceMeasurement1> | measurements | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.module | String | module | id / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.not_covered | Vec<String> | not covered | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.operation | String | operation | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.request | PerformanceProjectionRequest1 | request | object / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.schema | String | schema | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.source_observation | ArtifactReference | source observation | object / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.source_sha256 | String | source sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.status | String | status | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjection1.workload | String | workload | text / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionFile1.path | String | path | path / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionFile1.role | String | role | id / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionFile1.sha256 | String | sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.engineering_adoption | String | engineering adoption | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.execution_binding | serde_json::Value | Actual projector execution identity | json / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.files | Vec<PerformanceProjectionFile1> | files | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.issues | Vec<String> | issues | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.output_dir | String | output dir | path / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.projection_sha256 | String | projection sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.request_sha256 | String | request sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.schema | String | schema | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.source_sha256 | String | source sha256 | sha256 / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.status | String | status | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionReceipt1.warnings | Vec<String> | Limits of this projection | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionRequest1.module | String | module | id / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionRequest1.operation | String | operation | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionRequest1.policy | String | policy | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionRequest1.project_context | ProjectReviewContext | project context | object / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionRequest1.requested_claims | Vec<String> | Requested review claims; not automatically supported | list / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionRequest1.schema | String | schema | status / source / exact | Rust | 模块投影 / 来源核验；无采用 |
+| PerformanceProjectionRequest1.source | ArtifactReference | source | object / source / exact | Rust | 模块投影 / 来源核验；无采用 |
 | PresentationParameter1.id | String | 唯一参数身份 | typed / 场景显式单位；无时间轴 / 来源f64保留；显示舍入不回写 | agent整理来源；Rust校验；ggen生成合同 | 离散状态与有限图元；macOS本次验收，其他平台另验 / 来源/Project/范围/完整覆盖/文件字节分别核验 |
 | PresentationParameter1.label | String | 参数名称 | typed / 场景显式单位；无时间轴 / 来源f64保留；显示舍入不回写 | agent整理来源；Rust校验；ggen生成合同 | 离散状态与有限图元；macOS本次验收，其他平台另验 / 来源/Project/范围/完整覆盖/文件字节分别核验 |
 | PresentationParameter1.maximum | f64 | 允许上界 | typed / 场景显式单位；无时间轴 / 来源f64保留；显示舍入不回写 | agent整理来源；Rust校验；ggen生成合同 | 离散状态与有限图元；macOS本次验收，其他平台另验 / 来源/Project/范围/完整覆盖/文件字节分别核验 |
@@ -5632,6 +5849,74 @@ Requirements and method sources below are design declarations. They do not asser
 | SourceCitation.source_id | String | 稳定来源身份 | id / 显式字段或无量纲 / 不截断摘要/版本；数值精度由原证据声明 | agent 从自然语言及受控证据整理；生成后禁止手改 | 本轮对象、来源、条件与版本绑定 / 独立案例验证；未知、失败和执行范围分别保留 |
 | SourceCitation.source_sha256 | String | 当前来源字节 SHA-256 | sha256 / 显式字段或无量纲 / 不截断摘要/版本；数值精度由原证据声明 | agent 从自然语言及受控证据整理；生成后禁止手改 | 本轮对象、来源、条件与版本绑定 / 独立案例验证；未知、失败和执行范围分别保留 |
 | SourceCitation.source_uri | String | 私有原件定位；分发只用合成引用 | text / 显式字段或无量纲 / 不截断摘要/版本；数值精度由原证据声明 | agent 从自然语言及受控证据整理；生成后禁止手改 | 本轮对象、来源、条件与版本绑定 / 独立案例验证；未知、失败和执行范围分别保留 |
+| SourceNativeObservation1.artifacts | Vec<SourceProjectionArtifact1> | 原件列表 | list / 无 / 原样 | 采集/核验 | 来源投影 / 标识唯一；可回指原件 |
+| SourceNativeObservation1.covered | Vec<String> | 已覆盖范围 | list / 无 / 原样 | 采集/核验 | 来源投影 / 与未覆盖分开 |
+| SourceNativeObservation1.edges | Vec<SourceProjectionEdge1> | 源图谱边 | list / 无 / 原样 | 采集/核验 | 来源投影 / 起终点存在且边依据可回指 |
+| SourceNativeObservation1.engineering_adoption | String | 工程采用状态 | status / 无 / 原样 | 采集/核验 | 来源投影 / 不得由投影授予 |
+| SourceNativeObservation1.findings | Vec<SourceProjectionFinding1> | 结论列表 | list / 无 / 原样 | 采集/核验 | 来源投影 / 结论依据可回指 |
+| SourceNativeObservation1.limitations | Vec<String> | 模块限制 | list / 无 / 原样 | 采集/核验 | 来源投影 / 未知不省略 |
+| SourceNativeObservation1.module | String | 专业模块 | id / 无 / 原样 | 采集/核验 | 来源投影 / 固定模块集合 |
+| SourceNativeObservation1.not_covered | Vec<String> | 未覆盖范围 | list / 无 / 原样 | 采集/核验 | 来源投影 / 未知不省略 |
+| SourceNativeObservation1.operation | String | 分析操作 | status / 无 / 原样 | 采集/核验 | 来源投影 / 固定操作集合 |
+| SourceNativeObservation1.project_context | ProjectReviewContext | 观测时Project绑定 | object / 无 / 原样 | 采集/核验 | 来源投影 / 与请求完全相等 |
+| SourceNativeObservation1.schema | String | 合同版本 | status / 无 / 原样 | 采集/核验 | 来源投影 / 固定版本 |
+| SourceNativeObservation1.subject_identity | String | 对象版本身份 | text / 无 / 原样 | 采集/核验 | 来源投影 / 与请求一致 |
+| SourceNativeObservation1.subject_kind | String | 对象类别 | status / 无 / 原样 | 采集/核验 | 来源投影 / 与请求一致 |
+| SourceProjection1.artifacts | Vec<SourceProjectionArtifact1> | 投影原件列表 | list / 无 / 原样 | 采集/核验 | 来源投影 / 来源可回读 |
+| SourceProjection1.covered | Vec<String> | 已覆盖范围 | list / 无 / 原样 | 采集/核验 | 来源投影 / 非空或显式未知 |
+| SourceProjection1.edges | Vec<SourceProjectionEdge1> | 投影关系边 | list / 无 / 原样 | 采集/核验 | 来源投影 / 边端点和依据可回读 |
+| SourceProjection1.engineering_adoption | String | 工程采用状态 | status / 无 / 原样 | 采集/核验 | 来源投影 / 不得由投影授予 |
+| SourceProjection1.findings | Vec<SourceProjectionFinding1> | 投影结论 | list / 无 / 原样 | 采集/核验 | 来源投影 / 工程采用另审 |
+| SourceProjection1.issues | Vec<String> | 阻断或不一致项 | list / 无 / 原样 | 采集/核验 | 来源投影 / 失败不抹除 |
+| SourceProjection1.limitations | Vec<String> | 投影限制 | list / 无 / 原样 | 采集/核验 | 来源投影 / 未知不省略 |
+| SourceProjection1.module | String | 专业模块 | id / 无 / 原样 | 采集/核验 | 来源投影 / 与请求/观测一致 |
+| SourceProjection1.not_covered | Vec<String> | 未覆盖范围 | list / 无 / 原样 | 采集/核验 | 来源投影 / 未知不省略 |
+| SourceProjection1.operation | String | 分析操作 | status / 无 / 原样 | 采集/核验 | 来源投影 / 与请求/观测一致 |
+| SourceProjection1.request | SourceProjectionRequest1 | 原始请求 | object / 无 / 原样 | 采集/核验 | 来源投影 / 与输入字节对应 |
+| SourceProjection1.schema | String | 合同版本 | status / 无 / 原样 | 采集/核验 | 来源投影 / 固定版本 |
+| SourceProjection1.source_observation | ArtifactReference | 复制后的观测原件引用 | object / 原始字节 / 原样 | 采集/核验 | 来源投影 / 复制后可重读 |
+| SourceProjection1.source_sha256 | String | 观测原件摘要 | sha256 / 无 / 原样 | 采集/核验 | 来源投影 / 当前字节一致 |
+| SourceProjection1.status | String | 投影状态 | status / 无 / 原样 | 采集/核验 | 来源投影 / 失败和未知保留 |
+| SourceProjection1.subject_identity | String | 对象身份 | text / 无 / 原样 | 采集/核验 | 来源投影 / 与请求/观测一致 |
+| SourceProjectionArtifact1.artifact_id | String | 投影内稳定原件标识 | id / 无 / 原样 | 采集/核验 | 来源投影 / 唯一且有来源引用 |
+| SourceProjectionArtifact1.kind | String | 原件类别 | status / 无 / 原样 | 采集/核验 | 来源投影 / 限制在声明集合 |
+| SourceProjectionArtifact1.notes | Vec<String> | 原件限制或来源说明 | list / 无 / 原样 | 采集/核验 | 来源投影 / 未知不省略 |
+| SourceProjectionArtifact1.source | ArtifactReference | 本根精确原件引用 | object / 原始字节 / 原样 | 采集/核验 | 来源投影 / 路径、摘要与当前字节一致 |
+| SourceProjectionArtifact1.source_pointer | String | 原始报告或图谱中的字段/行/节点指针 | text / 无 / 原样 | 采集/核验 | 来源投影 / 可回指原始记录 |
+| SourceProjectionArtifact1.status | String | 原件可用状态 | status / 无 / 原样 | 采集/核验 | 来源投影 / 缺失和部分覆盖保持显式 |
+| SourceProjectionEdge1.basis | Vec<String> | 关系依据的原件标识或指针 | list / 无 / 原样 | 采集/核验 | 来源投影 / 每条边可追溯 |
+| SourceProjectionEdge1.edge_id | String | 关系标识 | id / 无 / 原样 | 采集/核验 | 来源投影 / 唯一 |
+| SourceProjectionEdge1.from_artifact | String | 起点原件标识 | id / 无 / 原样 | 采集/核验 | 来源投影 / 须指向当前artifacts |
+| SourceProjectionEdge1.kind | String | 关系类别 | status / 无 / 原样 | 采集/核验 | 来源投影 / 限制在声明集合 |
+| SourceProjectionEdge1.status | String | 关系认知状态 | status / 无 / 原样 | 采集/核验 | 来源投影 / 观察、推断、未知分开 |
+| SourceProjectionEdge1.to_artifact | String | 终点原件标识 | id / 无 / 原样 | 采集/核验 | 来源投影 / 须指向当前artifacts |
+| SourceProjectionFile1.path | String | 本根相对路径 | path / 无 / 原样 | 采集/核验 | 来源投影 / 非符号链接 |
+| SourceProjectionFile1.role | String | 文件角色 | id / 无 / 原样 | 采集/核验 | 来源投影 / 唯一 |
+| SourceProjectionFile1.sha256 | String | 文件字节摘要 | sha256 / 无 / 原样 | 采集/核验 | 来源投影 / 与当前字节一致 |
+| SourceProjectionFinding1.basis | Vec<String> | 依据的原件、边或指针标识 | list / 无 / 原样 | 采集/核验 | 来源投影 / 结论可追溯 |
+| SourceProjectionFinding1.finding_id | String | 结论标识 | id / 无 / 原样 | 采集/核验 | 来源投影 / 唯一 |
+| SourceProjectionFinding1.kind | String | 结论认知状态 | status / 无 / 原样 | 采集/核验 | 来源投影 / 观察、推断、外部导入、未知分开 |
+| SourceProjectionFinding1.statement | String | 原始结论陈述 | text / 无 / 原样 | 采集/核验 | 来源投影 / 非空 |
+| SourceProjectionReceipt1.engineering_adoption | String | 工程采用状态 | status / 无 / 原样 | 采集/核验 | 来源投影 / 不得由投影授予 |
+| SourceProjectionReceipt1.execution_binding | serde_json::Value | Actual projector execution identity | json / 无 / 原样 | 采集/核验 | 来源投影 / 与本次执行一致 |
+| SourceProjectionReceipt1.files | Vec<SourceProjectionFile1> | 输出文件清单 | list / 无 / 原样 | 采集/核验 | 来源投影 / 摘要可重读 |
+| SourceProjectionReceipt1.issues | Vec<String> | 阻断项 | list / 无 / 原样 | 采集/核验 | 来源投影 / 失败不抹除 |
+| SourceProjectionReceipt1.output_dir | String | 输出目录 | path / 无 / 原样 | 采集/核验 | 来源投影 / 本根私有目录 |
+| SourceProjectionReceipt1.projection_sha256 | String | 投影摘要 | sha256 / 无 / 原样 | 采集/核验 | 来源投影 / 当前字节一致 |
+| SourceProjectionReceipt1.request_sha256 | String | 请求摘要 | sha256 / 无 / 原样 | 采集/核验 | 来源投影 / 当前字节一致 |
+| SourceProjectionReceipt1.schema | String | 合同版本 | status / 无 / 原样 | 采集/核验 | 来源投影 / 固定版本 |
+| SourceProjectionReceipt1.source_sha256 | String | 观测摘要 | sha256 / 无 / 原样 | 采集/核验 | 来源投影 / 当前字节一致 |
+| SourceProjectionReceipt1.status | String | 投影状态 | status / 无 / 原样 | 采集/核验 | 来源投影 / 失败和未知保留 |
+| SourceProjectionReceipt1.warnings | Vec<String> | 限制提醒 | list / 无 / 原样 | 采集/核验 | 来源投影 / 工程采用另审 |
+| SourceProjectionRequest1.acceptance | Vec<String> | 调用方验收项 | list / 无 / 原样 | 采集/核验 | 来源投影 / 允许空但必须显式 |
+| SourceProjectionRequest1.module | String | 专业模块 | id / 无 / 原样 | 采集/核验 | 来源投影 / 固定模块集合 |
+| SourceProjectionRequest1.operation | String | 分析操作 | status / 无 / 原样 | 采集/核验 | 来源投影 / 固定操作集合 |
+| SourceProjectionRequest1.policy | String | 投影政策 | status / 无 / 原样 | 采集/核验 | 来源投影 / 不允许推断 |
+| SourceProjectionRequest1.project_context | ProjectReviewContext | 当前Project显式内容绑定 | object / 无 / 原样 | 采集/核验 | 来源投影 / 与原件观测完全相等 |
+| SourceProjectionRequest1.schema | String | 合同版本 | status / 无 / 原样 | 采集/核验 | 来源投影 / 固定版本 |
+| SourceProjectionRequest1.source | ArtifactReference | 原生模块输出原件引用 | object / 原始字节 / 原样 | 采集/核验 | 来源投影 / 路径、摘要与源文件一致 |
+| SourceProjectionRequest1.subject_identity | String | 被分析对象版本身份 | text / 无 / 原样 | 采集/核验 | 来源投影 / 非空且与观测一致 |
+| SourceProjectionRequest1.subject_kind | String | 被分析对象类别 | status / 无 / 原样 | 采集/核验 | 来源投影 / 固定对象集合 |
 | SourceRegistrationFreshness.candidates | Vec<serde_json::Value> | 逐候选来源身份、状态、变化字段及未知原因 | typed / 身份无量纲；bytes为字节、page_count为物理页数 / 原件与规范化JSON的SHA256精确比较；未知不作当前 | Rust从显式来源登记、查询候选与只读快照核验后 | 本地PDF登记当前性；不声称最新出版、工程适用或采用 / 旧包可回读；严格要求时全部候选必须current；坏绑定拒绝 |
 | SourceRegistrationFreshness.meaning | String | 登记当前性的范围及不具备的工程采用含义 | typed / 身份无量纲；bytes为字节、page_count为物理页数 / 原件与规范化JSON的SHA256精确比较；未知不作当前 | Rust从显式来源登记、查询候选与只读快照核验后 | 本地PDF登记当前性；不声称最新出版、工程适用或采用 / 旧包可回读；严格要求时全部候选必须current；坏绑定拒绝 |
 | SourceRegistrationFreshness.schema | String | 报告版本 | typed / 身份无量纲；bytes为字节、page_count为物理页数 / 原件与规范化JSON的SHA256精确比较；未知不作当前 | Rust从显式来源登记、查询候选与只读快照核验后 | 本地PDF登记当前性；不声称最新出版、工程适用或采用 / 旧包可回读；严格要求时全部候选必须current；坏绑定拒绝 |

@@ -43,7 +43,27 @@ anatomy.
    task-owned directory. Record the exact input source, Project context,
    object revision, condition, Node/Chrome identity, command, output hashes,
    capture/audit coverage and any failure or skipped check.
-4. Return the result through the existing Project tool-result and review
+
+4. For a CAD-backed figure, project the verified v2 NX observation first. The
+   projection keeps the occurrence/prototype hierarchy, source SHA and solid
+   corners in `projection.json`, and writes `source.json` when the bounded
+   `PresentationScene1` proxy fits the renderer budget:
+
+   ```sh
+   "$OEV2_BIN" --root "$ONTOLOGY_ENGINEERING_ROOT" cad presentation project \
+     --request var/projects/<project>/cad-presentation-request.json \
+     --observation var/projects/<project>/cad-occurrence-binding-report.json \
+     --output var/presentations/<new-cad-projection>
+   ```
+
+   The command accepts the verified occurrence report (`/assembly/assembly`)
+   and also accepts a direct `NxAssemblyObservation` for bounded fixtures.
+   Use the returned `source.json` as the source for the native presentation
+   bind sequence above. Keep `projection.json` and `receipt.json` beside the
+   figure; they are the link back to the CAD evidence. If an ordered CAD
+   scene is supplied, its samples remain discrete source poses. The current
+   proxy depicts the initial pose and does not claim continuous motion.
+5. Return the result through the existing Project tool-result and review
    contracts. Do not edit `project.json` with a figure script and do not turn
    a visual pass into an engineering adoption decision.
 

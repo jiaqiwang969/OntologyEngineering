@@ -5,6 +5,7 @@
 //! owned Python algorithms is not completion of the Rust rewrite.
 
 pub mod acceptance;
+pub mod cad_projection;
 pub mod evidence;
 pub mod intake;
 pub mod protocol;

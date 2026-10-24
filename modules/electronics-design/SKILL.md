@@ -98,7 +98,10 @@ DRC 无错不能证明电路功能、噪声、动态恢复或目标产品兼容�
 ## 规则维护与历史边界
 
 本接入复用 v2 既有 Project/context/来源与审查合同，通过专业工具执行电子任务。
-这不表示 v2 已有专用 PCB Rust 适配器，也不表示旧 SHACL 已迁移进当前内核。
+外部结果先整理为 `oev2.electronics-native-observation/1`，再由
+`oev2 project electronics project` 做 Project、路径、SHA、辅助原件和状态投影；这条外层桥
+不启动 EDA、不重算专业规则，也不把投影当作工程采用。五类操作的详细字段仍由各自原生
+source 合同逐步收紧，也不表示旧 SHACL 已迁移进当前内核。
 新增 v2 自有可执行规则时，在 v2 `specs/` 表达含义、输入、错误/状态和来源，沿
 真实 ggen → Rust → 独立正反例与接收流程实施；不能在本 skill 新造平行检查器并自称 v2 权威。
 

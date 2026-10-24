@@ -2,6 +2,12 @@
 
 本表从实际安装的六个运行工具、electronics-design 与 Anatomy 模块及其可达资源出发，对照固定上游和本项目实现。此前仅有“四个简短追加 diff + 两份说明”不足以复现原接续行为：通用接收器、明确当前 Project 的复核包装、显式记忆续接和部分本地规则遗漏。本次补齐它们，不把历史私人案例作为运行依赖。
 
+当前专用桥状态：Anatomy 已有 CAD→受限渲染代理；electronics-design 已有
+`project electronics project` 的严格外层投影（请求、canonical source、辅助原件、哈希、
+Project context、projection 和 receipt）。REA/LeanToken/GitContribute 已有源/制品图谱投影，
+Jacobian 已有带单位、前提和证书的数学投影，SmokingGun/Flameox 已有性能测量与清理边界投影；
+这些入口仍只做原件接入和严格回执，通用 ToolResult 登记、决定更新与工程采用另行审查。
+
 ## 随仓库维护的完整 Skill 文件
 
 六个模块直接位于仓库根的 `modules/`，每项路径在 [tools.lock.json](tools.lock.json) 的 `skill_directory` 中；每个文件的实际 SHA256 在 `skill_files` 中。四份补丁均对固定真实上游执行了 `git apply --check`、实际应用和输出字节核对。REA 的上游基线是 npm 发行包内的 Skill，不是仓库模板。

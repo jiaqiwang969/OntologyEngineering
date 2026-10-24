@@ -1,6 +1,6 @@
 # 专业工具的可移植 Project 接续
 
-这份流程保留当前六个 Skill 的本地接续行为。运行程序从固定上游安装；此目录的 Python 代码只核传输字节、绑定显式输入并监督进程。Project 语义审查、依赖传播、记忆检索与核验仍由同一安装中的 Rust 程序执行。工具完成、原件核验、决定与工程采用分别记录。
+这份流程保留当前六个外部工具以及 `electronics-design`、`anatomy` 的本地接续行为。运行程序从固定上游安装；此目录的 Python 代码只核传输字节、绑定显式输入并监督进程。Project 语义审查、依赖传播、记忆检索与核验仍由同一安装中的 Rust 程序执行。工具完成、原件核验、决定与工程采用分别记录。模块原始输出、投影和回执的共同边界见 [MODULE-ADAPTERS.md](MODULE-ADAPTERS.md)。Anatomy 的 CAD、电子、源/制品、Jacobian 与性能投影已有专用 Rust bridge；这些 bridge 不替代外部工具执行或工程采用审查。
 
 ## 安装选择
 
@@ -26,18 +26,20 @@
 
 | 工具 | 可提供的中间依据 | 必须保留的边界 |
 |---|---|---|
-| REA | 发布制品的限定结构、原生 Evidence 与授权运行观察 | 精确制品及工具身份；静态推断不写成动态事实，反编译表示不冒充原源码 |
+| REA | 发布制品的限定结构、原生 Evidence 与授权运行观察 | `project source-projection project`；保留精确制品及工具身份；静态推断不写成动态事实，反编译表示不冒充原源码 |
 | LeanToken | 当前源码实现、测试位置与有界范围 | 提交与脏文件摘要、索引 generation、实际返回字节；找到测试不表示已运行 |
-| GitContribute | 来源、相关工作、贡献规范和覆盖 | 来源版本、时间、缺失与冲突；无命中不表示不存在，匿名访问也可能联网 |
-| Jacobian | 明确数学前提下的关系 | 精确合同、输入映射、单位、标量类型和独立验算；数学成立不等于工程适用 |
-| SmokingGun | 复杂度候选和已导入的性能比较 | 理论、实测、行为与采用分开；Rust 结构覆盖不等于完整语义分析 |
-| Flameox | 明确工作负载的采集和运行原件分析 | 完整/部分状态、预算、生产者、重放与清退；一次采集不证明因果 |
+| GitContribute | 来源、相关工作、贡献规范和覆盖 | `project source-projection project`；保留来源版本、时间、缺失与冲突；无命中不表示不存在，匿名访问也可能联网 |
+| Jacobian | 明确数学前提下的关系 | `project jacobian project`；保留输入、单位、前提、数值模式和证书；数学成立不等于工程适用 |
+| SmokingGun | 复杂度候选和已导入的性能比较 | `project performance project`；保留候选、基线/候选测量和覆盖；结构分析不等于完整语义分析 |
+| Flameox | 明确工作负载的采集和运行原件分析 | `project performance project`；保留工作负载、环境、预算、重放、清理和未知；一次采集不证明因果 |
+| electronics-design | 原理图、PCB、器件、网表、BOM、三维模型和接线原件 | 先 canonicalize 为 `oev2.electronics-native-observation/1`，再运行 `project electronics project`；当前外层桥已核 Project、路径、哈希、辅助原件和状态，五类操作的专业字段仍以原生 source 为准 |
+| Anatomy | 工程概念图示和 CAD 观察的有限渲染代理 | 普通图示走 presentation 合同；CAD 图示先走 `oev2 cad presentation project`，投影损失与原生 CAD 证据分开 |
 
 1. 原件写成 `oev2.subject-manifest/1`，工具原生输出保存到当前 Project 私有区，再写 `oev2.tool-result/1`。实际工具身份与本机 `var/capabilities/registry.json` 相符；观察、推断、导入与未知分开。
 2. 用 `project tool-result verify/register` 重读原件、核对象修订/条件/来源，登记为新的 Project 修订。结构化失败和部分结果保留，不能支持肯定决定。
 3. 仅经 `project decide` 从已登记并重新核验的结果更新决定。来源或对象变化后，旧结果不得继续支持当前决定。性能比较先登记基线和候选，再用 `project tool-result compare`。
 4. 交付前按原生 `project route-audit` 核可交付范围。`adopted=true` 只经 `project adopt` 的独立本地批准与 `verify-adoption`；结果接收器不授予采用。
-5. 依赖必须来自实际关系，不为凑齐六个工具而杜撰。变化后使用 impact/reconcile；保留旧影响与支持历史，当前采用转待审。新的业务证据和当前审查才支持复核。
+5. 依赖必须来自实际关系，不为凑齐工具或模块而杜撰。变化后使用 impact/reconcile；保留旧影响与支持历史，当前采用转待审。新的业务证据和当前审查才支持复核。
 
 完整原生结果字段及命令见根目录 `references/professional-capabilities.md`。
 

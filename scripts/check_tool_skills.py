@@ -83,8 +83,8 @@ def main():
                 patch = regular_file(root, "integrations/" + tool["patch"])
                 if digest(patch) != tool["patch_sha256"]:
                     errors.append("patch digest mismatch: " + name)
-        if len(expected) != 7:
-            errors.append("expected seven declared professional modules")
+        if len(expected) != 8:
+            errors.append("expected eight declared professional modules")
     except (OSError, ValueError, KeyError, TypeError) as error:
         errors.append(str(error))
 

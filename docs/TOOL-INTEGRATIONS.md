@@ -4,10 +4,10 @@
 证据和决定；memory 提供带来源的历史候选；Agent 依据任务调用专业工具，把实际结果
 交回 Project 审查。安装成功、工具执行成功和工程采用分别记录。
 
-本仓库接入七种专业能力，七份 Skill 入口及其引用资源统一在 `modules/` 维护，
+本仓库接入八种专业能力，八份 Skill 入口及其引用资源统一在 `modules/` 维护，
 保留各自的名称、自动发现元数据和完整规则。原六个工具的运行程序由用户从上游安装；
 电子设计的五个内部模块随仓库维护，EDA、连接器和求解器按需另装。全部按任务选用，
-不要求每个项目安装或调用全部七项。核心 Project 和 memory 流程不依赖它们全部可用。
+不要求每个项目安装或调用全部八项。核心 Project 和 memory 流程不依赖它们全部可用。
 这些接入材料不要求额外的托管判断服务。
 
 ## 固定上游与用途
@@ -24,6 +24,7 @@
 | [SmokingGun](../modules/smokinggun/SKILL.md) | [5.0.0](https://github.com/morluto/smokinggun/tree/v5.0.0) | 静态复杂度候选、导入的性能证据 | Skill、LOCAL.md、UPSTREAM.md 的完整本地 diff |
 | Flameox | [0.2.9](https://github.com/morluto/flameox/tree/v0.2.9) | 显式运行原件的分析及有界工作负载采集 | [本项目维护的完整 Skill](../modules/flameox/SKILL.md) |
 | electronics-design | [2.1.4 模块及固定来源](../modules/electronics-design/SOURCES.json) | 电子设计、原理图/PCB、模型和接线证据 | [统一 Skill 与五个内部模块](../modules/electronics-design/README.md)，保留上游来源和必要 diff |
+| [Anatomy](../modules/anatomy/SKILL.md) | [bc943e4](https://github.com/wheresryan22/anatomy/tree/bc943e40c59998be5da61f9d39c6a983b1116099) | 工程概念的等距图示、交互 SVG、WebGL/3D 展示与可打印图 | 完整固定上游树 + `LOCAL.md` 的 Project/source/evidence 边界；默认使用 `oev2 presentation` |
 
 原六项的第三方算法与固定官方发行一致。本仓库直接提供实际使用的完整 Skill 文件、引用资源、
 REA 启动环境选择和三个共享接续脚本；完整对应关系见[源码覆盖表](../integrations/COVERAGE.md)。
@@ -102,7 +103,7 @@ macOS arm64 用户先按 [Z3 平台元数据修正](../integrations/runtime-lock
 
 ## Agent 接入与 Skill
 
-### 第七项：电子设计
+### 电子设计
 
 本仓库的 [electronics-design/SKILL.md](../modules/electronics-design/SKILL.md) 是电子任务的
 唯一入口，内部按需读取以下五个 `GUIDE.md`，无需把它们分别装成同级 Skill：
@@ -128,14 +129,34 @@ export EASYEDA_SKILLS_DIR="$ONTOLOGY_ENGINEERING_ROOT/modules/electronics-design
 项目与原生结果写入私有目录，仍经下述 `project tool-result` 和 memory 接续。模块文件可读、
 离线脚本通过、连接器连通、EDA 操作与实物电气检查各自记录；当前范围见模块验收说明。
 
+### Anatomy：工程图示与本体边界
+
+`modules/anatomy/` 是完整固定上游树的独立模块，来源和本地差异见
+[LOCAL.md](../modules/anatomy/LOCAL.md) 与 [SOURCES.json](../modules/anatomy/SOURCES.json)。
+它不需要单独安装一个顶层宿主 Skill，也不自动安装 Node、Chrome 或发布服务。
+
+普通离散图示优先使用同一 Project 的：
+
+```sh
+oev2 presentation bind
+oev2 presentation generate
+oev2 presentation verify
+```
+
+需要 Anatomy 的 SVG、WebGL、3D、动画、浏览器 capture/audit 或 PDF 时，使用模块内
+固定版本的 `kit/`、`scripts/` 和 `references/`。输出必须保存到新任务目录，带上输入来源、
+Project/object/condition、工具版本、输出摘要、实际检查覆盖和未知。图示、截图、PDF 或
+浏览器 audit 不能代替 native CAD、BOM、制造、物理试验或工程采用。`scripts/publish.mjs`
+只在用户明确要求发布时执行。
+
 ### 原六项工具：模块与 MCP 分开配置
 
-六个 Skill 已在仓库内，运行程序安装后无需再执行会写入宿主顶层 Skill 的上游 setup。
+六个原有工具 Skill 已在仓库内，运行程序安装后无需再执行会写入宿主顶层 Skill 的上游 setup。
 保留 `modules/` 下的真实目录及其发现元数据；由根入口导航并按宿主能力正常发现。
 不要向 `~/.codex/skills/`、`~/.agents/skills/` 或其他宿主目录另复制同名 Skill，
 也不要把缓存或临时上游重建目录注册为额外搜索根。
 
-在仓库根只读核对六项完整的 16 份文件；需要检查宿主重复入口时，逐个给出实际搜索根：
+在仓库根只读核对工具锁中的全部模块；六个原有工具仍核对完整的 16 份文件。需要检查宿主重复入口时，逐个给出实际搜索根：
 
 ```sh
 python3 scripts/check_tool_skills.py
@@ -274,8 +295,8 @@ rustc --edition=2021 -O "$ONTOLOGY_ENGINEERING_ROOT/integrations/examples/runtim
 - 补丁或版本不匹配：保留原文件，比较确切上游版本后重建差异，不默认使用 latest。
 - 部分结果：回交 `partial` 与原因；原生结果和未知项都保留。
 - 重新安装：保全旧 Skill 并从发现范围移出本次替换的入口后，从公开仓库取得完整模块，
-  安装固定上游运行程序；diff 在独立干净副本重建核验。新会话重新核七模块发现、实际调用
-  以及 Project/memory 完整案例；旧布局或旧机器的日志不能作为新布局通过。
+  安装固定上游运行程序；diff 在独立干净副本重建核验。新会话重新核八模块发现、实际调用
+ 以及 Project/memory 完整案例；旧布局或旧机器的日志不能作为新布局通过。
 
 2026-10-22 的接入准备已经对上述六项执行真实小案例，并对四份固定 Skill 补丁执行
 `git apply --check`、实际应用和结果字节核对。该记录属于原安装上的接入准备，

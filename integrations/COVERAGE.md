@@ -1,6 +1,6 @@
-# 当前六个 Skill 的源代码覆盖
+# 当前专业模块的源代码覆盖
 
-本表从实际安装的六个 Skill 及其可达资源出发，对照固定上游和本项目实现。此前仅有“四个简短追加 diff + 两份说明”不足以复现原接续行为：通用接收器、明确当前 Project 的复核包装、显式记忆续接和部分本地规则遗漏。本次补齐它们，不把历史私人案例作为运行依赖。
+本表从实际安装的六个运行工具、electronics-design 与 Anatomy 模块及其可达资源出发，对照固定上游和本项目实现。此前仅有“四个简短追加 diff + 两份说明”不足以复现原接续行为：通用接收器、明确当前 Project 的复核包装、显式记忆续接和部分本地规则遗漏。本次补齐它们，不把历史私人案例作为运行依赖。
 
 ## 随仓库维护的完整 Skill 文件
 
@@ -17,9 +17,9 @@
 
 共 16 个文件：3 + 1 + 7 + 1 + 3 + 1，完整文件随本仓库维护，并保留原锁定摘要。个人安装路径已转换为用户配置的程序入口与 `ONTOLOGY_ENGINEERING_ROOT`。四份原始 diff 继续保留，仅用于干净上游副本的重建核验，不能重复应用到已整合模块。上游及派生文件的许可见 [licenses/](licenses/)。LeanToken/Flameox 维护源统一移到 `modules/`，不再保留 `companions/` 的同名发现入口。
 
-第七项 [electronics-design](../modules/electronics-design/SKILL.md) 同在 `modules/`，其五个内部模块、来源和验收范围见自己的 [README](../modules/electronics-design/README.md) 与 [SOURCES.json](../modules/electronics-design/SOURCES.json)。engineering-memory 路径保持 `modules/engineering-memory/skill/`，fleet 继续在本仓库外维护。
+`[electronics-design](../modules/electronics-design/SKILL.md)` 和 `[Anatomy](../modules/anatomy/SKILL.md)` 同在 `modules/`。电子模块的五个内部模块、来源和验收范围见自己的 [README](../modules/electronics-design/README.md) 与 [SOURCES.json](../modules/electronics-design/SOURCES.json)；Anatomy 的固定上游树、Project/source/evidence 边界见自己的 [LOCAL.md](../modules/anatomy/LOCAL.md) 与 [SOURCES.json](../modules/anatomy/SOURCES.json)。engineering-memory 路径保持 `modules/engineering-memory/skill/`，fleet 继续在本仓库外维护。
 
-在仓库根用 `python3 scripts/check_tool_skills.py` 核上述六项的全部摘要；用可重复的 `--skill-root` 检查宿主同名入口。文件核验、宿主实际发现、MCP 调用和工程能力分别取证。运行程序继续位于原已核 `var/` 或用户指定路径；Skill 目录统一不授予运行或工程资格。
+在仓库根用 `python3 scripts/check_tool_skills.py` 核全部八个模块的入口和关键文件摘要；用可重复的 `--skill-root` 检查宿主同名入口。文件核验、宿主实际发现、MCP 调用和工程能力分别取证。运行程序继续位于原已核 `var/` 或用户指定路径；Skill 目录统一不授予运行或工程资格。
 
 ## 可执行依赖闭包
 

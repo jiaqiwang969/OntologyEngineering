@@ -1,4 +1,4 @@
-# 电子设计：第七专业模块
+# 电子设计专业模块
 
 唯一电子入口为 [SKILL.md](SKILL.md)。本模块保留 electronics-design 2.1.4 的五个内部 GUIDE，与统一工程本体和内置 memory 使用同一 Project；不把五个内部目录重新安装成五个同级 Skill。
 

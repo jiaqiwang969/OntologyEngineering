@@ -62,7 +62,7 @@ metadata:
 
 专业工具的结果统一经 `project tool-result verify/register` 带来源回到同一 Project，不得用脚本直接改写 project.json；登记不改结论；结论经 `project decide` 由已登记结果更新，采用仍走 `project adopt`。外接专业能力按[作用与结果交接](references/professional-capabilities.md)选择：先确定要回答的问题、输入对象和所需证据，再调用对应 skill/工具。结果携带来源、条件、版本、覆盖与未知回到同一 Project；多工具同意的独立性要核实际来源与计算依赖。性能候选还需原基线与可比测量，经验保存后仍须在新条件下核适用性。
 
-当前会话负责组织任务、读原件、选择工具、回读结果和更新决定；Rust 执行明确的合同、来源与工程检查。七个专业 Skill 随本仓库在 `modules/` 统一维护；运行程序按[安装与接入](docs/TOOL-INTEGRATIONS.md)使用固定上游版本。四份 diff 只用于干净上游副本的重建核验，已整合模块不重复应用；运行程序与数据继续位于 `var/` 等已核位置。engineering-memory 是本系统内置模块，通过 `oev2 memory` 使用；历史经验是否使用由当前任务决定。需要历史时读[记忆方法](modules/engineering-memory/skill/SKILL.md)，还原时间线、失败、纠正、因果未知和适用条件。召回经 `project memory-candidate verify/register` 核来源与绑定，只作不支持决定的待核候选；实际使用效果经 `project memory-feedback` 与 `memory session feedback` 回写。
+当前会话负责组织任务、读原件、选择工具、回读结果和更新决定；Rust 执行明确的合同、来源与工程检查。八个专业 Skill 随本仓库在 `modules/` 统一维护；运行程序按[安装与接入](docs/TOOL-INTEGRATIONS.md)使用固定上游版本。四份 diff 只用于干净上游副本的重建核验，已整合模块不重复应用；运行程序与数据继续位于 `var/` 等已核位置。engineering-memory 是本系统内置模块，通过 `oev2 memory` 使用；历史经验是否使用由当前任务决定。需要历史时读[记忆方法](modules/engineering-memory/skill/SKILL.md)，还原时间线、失败、纠正、因果未知和适用条件。召回经 `project memory-candidate verify/register` 核来源与绑定，只作不支持决定的待核候选；实际使用效果经 `project memory-feedback` 与 `memory session feedback` 回写。
 
 按当前缺口读取对应模块入口，保留其完整规则与引用资源，不将本表当作工具执行合同：
 
@@ -75,10 +75,13 @@ metadata:
 | 复杂度候选与优化证据组织 | [SmokingGun](modules/smokinggun/SKILL.md) |
 | 性能原件分析与授权工作负载采集 | [Flameox](modules/flameox/SKILL.md) |
 | 电子设计、原理图/PCB 与接线 | [electronics-design](modules/electronics-design/SKILL.md) |
+| 工程概念的等距图示、交互 SVG、WebGL/3D 展示与可打印图 | [Anatomy](modules/anatomy/SKILL.md) |
 
-模块入口无需复制到宿主 Skill 顶层；检查本体、memory、七模块的实际路径与同名副本，MCP 连接单独配置和验证。fleet 保持仓库外的独立 Skill。模块可读不代表程序已安装或工程已验收。
+模块入口无需复制到宿主 Skill 顶层；检查本体、memory、八模块的实际路径与同名副本，MCP 连接单独配置和验证。fleet 保持仓库外的独立 Skill。模块可读不代表程序已安装或工程已验收。
 
-电子电路、原理图/PCB、器件模型与接线指导进入第七种专业能力 [electronics-design](modules/electronics-design/SKILL.md)。该入口统一选择五个内部模块，各自 `GUIDE.md` 按需展开；保持同一 Project、对象修订、条件与来源，经共同结果合同回交，再保存实际使用反馈。安装、仿真、EDA 原生检查和实物验收分别取证。
+电子电路、原理图/PCB、器件模型与接线指导进入 [electronics-design](modules/electronics-design/SKILL.md)。该入口统一选择五个内部模块，各自 `GUIDE.md` 按需展开；保持同一 Project、对象修订、条件与来源，经共同结果合同回交，再保存实际使用反馈。安装、仿真、EDA 原生检查和实物验收分别取证。
+
+工程概念图示、交互 SVG、WebGL/3D 展示与可打印图进入 [Anatomy](modules/anatomy/SKILL.md)。它默认接入既有 `oev2 presentation bind/generate/verify`，上游 kit 只负责渲染与图示检查；Project、Source、Object、Condition、Evidence 和工程采用仍由 v2 维护。
 
 需要执行 v2 程序、维护软件或声明当前能力时，按[使用说明](docs/USAGE.md)核发行 manifest、实际程序、根目录及维护回执；统一源码安装从 `var/install/INSTALLATION.json` 核实际根与八程序身份，初次配置读 [AGENTS.md](AGENTS.md)。旧维护状态只接续对应的历史发行，不覆盖新安装。源码候选版本、已安装程序、历史回执和当前任务各保留身份，能力范围见[发布范围](docs/RELEASE-SCOPE.md)。
 
@@ -86,7 +89,7 @@ CAD 使用 v2 自有 Rust 模块及显式原生 SDK；调用前读[独立执行�
 
 工程采用前，由当前 Rust 内核审查真实 Project、对象、条件与来源，并核必要的独立批准。生成、编译、语义答复、工具完成、审查覆盖和工程采用分别取证，未实现、未执行及部分失败保留具体状态。局部验收说明对父目标的贡献和剩余义务，不扩大为整体完成。
 
-七个专业模块统一由本仓库维护；模块上游原文若提到 setup，按[本布局安装约定](docs/TOOL-INTEGRATIONS.md)只配置 MCP，不能重新向宿主顶层安装同名 Skill。
+八个专业模块统一由本仓库维护；模块上游原文若提到 setup，按[本布局安装约定](docs/TOOL-INTEGRATIONS.md)只配置 MCP，不能重新向宿主顶层安装同名 Skill。
 
 ## 维护与反馈
 

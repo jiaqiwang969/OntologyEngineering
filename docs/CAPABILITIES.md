@@ -62,7 +62,7 @@
 | Agent 组织任务、并行与回读 | [会话编排](AGENT-ORCHESTRATION.md)、[工具接入](TOOL-INTEGRATIONS.md) | 独立任务可并行，有依赖的步骤先回读；来源、失败与未知保持，实际方法收益另验 |
 | 保存过程与读取历史方法 | [Harness](../references/harness-context.md)、[来源接续](USAGE.md#旧来源和真实过程接续) | 完整条件、纠正、未知与必要验收保持；归档、not_run、来源匹配和实际使用效果分开；memory 可选 |
 | 展示工程过程或检索关系线索 | [工程图示](ENGINEERING-PRESENTATION.md)、[Rust 搜索](EXPLORER-SEARCH.md)、[typed 抽取](TYPED-RELATION-EXTRACTION8.md)、[登记页 OCR](REGISTERED-OCR-MODEL7.md) | 图示、命中、抽取与 OCR 分别提供线索；原页适用、真实 CAD、连续行为、制造和工程采用仍按对应证据判断 |
-| 七种外接专业能力：电子设计、GitContribute、LeanToken、REA、Jacobian、SmokingGun、flameox | [专业能力的作用与交接](../references/professional-capabilities.md)；按本轮问题进入相应 skill | 共用 Project、原生审查及变更复核；专业工具返回原件并补独立验证。电子工具内部按 EDA/仿真/模型/接线分工；安装、执行、工程适用各自核验，不要求全部调用 |
+| 八种专业能力：电子设计、Anatomy、GitContribute、LeanToken、REA、Jacobian、SmokingGun、flameox | [专业能力的作用与交接](../references/professional-capabilities.md)；按本轮问题进入相应 skill | 共用 Project、原生审查及变更复核；专业工具返回原件并补独立验证。电子工具内部按 EDA/仿真/模型/接线分工；Anatomy 图示与浏览器检查不替代 native CAD 或工程采用；安装、执行、工程适用各自核验，不要求全部调用 |
 
 按需继续读对应部分：[来源与方法](#来源与方法)、[语义与数据](#语义与数据)、[CAD与工程交付](#cad与工程交付)、[判断与路由](#判断与路由)、[构建与平台](#构建与平台)。
 

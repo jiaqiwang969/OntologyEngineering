@@ -1,6 +1,6 @@
 # 专业能力在四环中的作用与结果交接
 
-在当前问题需要电子设计、仓库调研、源码定位、逆向调查、数学计算或性能分析时阅读。先按[主方法](../SKILL.md)辨明对象、活动及依据关系，再选择专业能力；能力可以组合、跳过或反复查证，不要求每个任务调用全部工具。
+在当前问题需要电子设计、工程图示、仓库调研、源码定位、逆向调查、数学计算或性能分析时阅读。先按[主方法](../SKILL.md)辨明对象、活动及依据关系，再选择专业能力；能力可以组合、跳过或反复查证，不要求每个任务调用全部工具。
 
 ## 在四环中如何讨论工具
 
@@ -15,17 +15,23 @@
 
 ## 按当前问题选能力
 
-下表说明七种能力的常见作用。前六项读取应用完整 diff 后的 Skill 或本项目维护的完整 Skill，电子设计读取本仓库的统一模块入口；安装、锁定来源、必要 diff 与验收见[专业工具安装与接入](../docs/TOOL-INTEGRATIONS.md)。软件版本、安装路径、精确命令、授权和恢复条件以所选版本及实际入口为准，不把历史图示的安装标记当成当前状态。
+下表说明八种能力的常见作用。前六项读取应用完整 diff 后的 Skill 或本项目维护的完整 Skill，电子设计与 Anatomy 读取本仓库的统一模块入口；安装、锁定来源、必要 diff 与验收见[专业工具安装与接入](../docs/TOOL-INTEGRATIONS.md)。软件版本、安装路径、精确命令、授权和恢复条件以所选版本及实际入口为准，不把历史图示的安装标记当成当前状态。
 
-电子设计作为第七种专业能力，与原六项共用 Project、证据接收、kernel review 和
+电子设计与 Anatomy 作为本仓库维护的专业能力，与原六项共用 Project、证据接收、kernel review 和
 reviewed reconciliation。其配套 EDA、器件模型和接线 skills 属于专业能力内部。
 专业工具保持原生执行身份，当前 Rust owner 执行共同工程合同；不需要按工具数量
 复制内核模块。电子任务由 [electronics-design/SKILL.md](../modules/electronics-design/SKILL.md)
 统一调度五个内部模块，执行与独立核验见其[能力接续](../modules/electronics-design/references/capability-integration.md)，某一仿真范围通过不能代表 EDA 或实物全部通过。
 
+工程图示任务由 [anatomy/SKILL.md](../modules/anatomy/SKILL.md) 进入；普通离散图示优先走
+`oev2 presentation bind/generate/verify`，高级 SVG/WebGL/3D/PDF 仍必须记录输入来源、
+Project/object/condition、工具版本、输出摘要和实际检查覆盖。图示与浏览器 audit 不代替
+native CAD、BOM、制造或工程采用。
+
 | 能力及 Skill 名称 | 何时有帮助、返回什么 | 接续时要辨清什么 |
 |---|---|---|
 | 电子设计 · `electronics-design`（按需调用 EasyEDA、仿真、器件模型与接线 skill） | 将电子需求转为有条件的电路/PCB 候选，执行专业操作并返回网表、原生文件、模型及检查/测量原件 | 保持同一 Project 与对象/条件/来源；资料电路、目标产品、仿真与实测分开。旧 ISAC SHACL 仅在原范围作辅助检查，尚无专用 PCB Rust 适配器；DRC 无错不等于电路功能或制造采用。 |
+| Anatomy · `anatomy` | 将工程概念、机制或关系制作成有来源边界的等距图示、交互 SVG、WebGL/3D 视图或打印页 | 图示是解释性产物或有限观察；保持同一 Project、对象修订、来源与条件。`presentation verify`、几何 audit、截图或 PDF 不证明 native CAD、连续物理行为、BOM、制造或工程采用。 |
 | GitContribute · `gitcontribute` | 调查仓库、相关工作、issue/PR、贡献约束；返回有来源和覆盖范围的资料与线索 | 来源/版本/时间与覆盖、冲突资料及必要的当前性核验；无命中不等于不存在。读本地语料与联网刷新按实际操作区分。 |
 | LeanToken · `leantoken` | 在明确选定的本地仓库中定位实现、测试和有限上下文 | 仓库与提交/脏文件身份、索引 generation、实际返回字节和必要原文；找到测试不等于已运行测试。LeanToken 承担源码检索，Lean 证明检查属于另一项能力。 |
 | REA · `reverse-engineer-anything` | 研究发布制品、二进制、托管代码或运行时；返回静态结构、反编译、调用关系或限定行为观察 | 区分源代码、发布制品、重建表示与实际执行；猜测的函数含义须有相应依据。动态观察按目标进程、授权、环境和覆盖记录，静态结果不冒作运行事实。 |

@@ -1,4 +1,4 @@
-# 第七专业模块与同一 Project 的接续
+# 电子设计专业模块与同一 Project 的接续
 
 电子设计与原六工具共享统一系统的 Project、context、ToolResult、决定和内置 memory。
 本文件描述接续方法，不定义新的机器 schema，也不宣称存在专用 PCB Rust 适配器。

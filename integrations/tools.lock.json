@@ -362,6 +362,57 @@
           "source": "bundled electronics module; component provenance in SOURCES.json"
         }
       ]
+    },
+    {
+      "id": "anatomy",
+      "version": "pinned-bc943e4",
+      "upstream_repository": "https://github.com/wheresryan22/anatomy",
+      "upstream_commit": "bc943e40c59998be5da61f9d39c6a983b1116099",
+      "documentation_url": "https://github.com/wheresryan22/anatomy/tree/bc943e40c59998be5da61f9d39c6a983b1116099",
+      "skill_name": "anatomy",
+      "upstream_skill_source_path": "SKILL.md",
+      "integration_kind": "upstream-skill-ontology-bound-module",
+      "patch": null,
+      "companion": "../modules/anatomy/LOCAL.md",
+      "reason": "Full pinned upstream figure skill with an OntologyEngineering Project/source/evidence boundary; native presentation remains the default path.",
+      "license": "MIT",
+      "upstream_skill_sha256": "1993151ca39afd7880a20d871aacc0ddd348090530d8135dc5ea51af28f25305",
+      "integrated_skill_sha256": "bf467cc14a5b859a570b1f567352a0c232704e363e1e0e64911892c5b1ba8be7",
+      "source_manifest": "../modules/anatomy/SOURCES.json",
+      "source_manifest_sha256": "594aa3dbcbb7ffa76108bfa8440492bb824d4c1c63857ecc3c5501deae2a8bb3",
+      "skill_files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "bf467cc14a5b859a570b1f567352a0c232704e363e1e0e64911892c5b1ba8be7",
+          "source": "pinned upstream plus local ontology boundary"
+        },
+        {
+          "path": "LOCAL.md",
+          "sha256": "34ec7fdcbc31038178b148d81b095b0a8904f10e7df9a8b7f472e10b1f007ccf",
+          "source": "local ontology integration"
+        },
+        {
+          "path": "SOURCES.json",
+          "sha256": "594aa3dbcbb7ffa76108bfa8440492bb824d4c1c63857ecc3c5501deae2a8bb3",
+          "source": "local source and boundary manifest"
+        },
+        {
+          "path": "README.md",
+          "sha256": "4dbc46611f0ba62e140bec723fd8a95f6e792fe52764d6727832002219e341e1",
+          "source": "pinned upstream"
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "87c078ab9d90a3044f359e6b563d4e6afea7aa060897cf4f21618687b3856796",
+          "source": "pinned upstream MIT license"
+        },
+        {
+          "path": "kit/iso-kit.mjs",
+          "sha256": "6d3ecc725d30c3b0346da309cf61dfa5a65017c23620bbd4093009d4fb104018",
+          "source": "pinned upstream renderer core"
+        }
+      ],
+      "skill_directory": "modules/anatomy"
     }
   ],
   "shared_bindings": {
@@ -390,6 +441,6 @@
   "skill_layout": {
     "kind": "bundled-professional-modules",
     "directory_base": "repository root",
-    "policy": "Seven complete Skill directories under modules; runtime environments installed separately. Four unchanged diffs reproduce the bundled upstream-derived files. One discoverable copy per name."
+    "policy": "Eight complete Skill directories under modules; runtime environments installed separately. Four unchanged diffs reproduce the bundled upstream-derived files. One discoverable copy per name."
   }
 }

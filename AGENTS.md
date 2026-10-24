@@ -5,7 +5,7 @@
 ## 新用户配置
 
 1. 按 README 在真实目录运行 `sh scripts/install.sh`，核八程序与 `var/install/INSTALLATION.json`。安装身份是本机私有记录。已有 `var/maintenance/status.json` 可能描述历史发行，不能据此覆盖新安装身份。
-2. 将整个仓库接入当前 Agent 宿主的真实目录，例如 `~/.codex/skills/ontology-engineering-unified/`，以根 `SKILL.md` 统一导航。七个专业 Skill 固定在本根 `modules/`，engineering-memory 保留 `modules/engineering-memory/skill/`，fleet 在仓库外独立维护。按宿主支持的方式发现模块或从根入口按需读取，勿在宿主顶层另装七份 Skill。新会话核实际加载路径和同名副本；CLI 根使用真实路径，不能通过旧安装或软链接绕过来源检查。
+2. 将整个仓库接入当前 Agent 宿主的真实目录，例如 `~/.codex/skills/ontology-engineering-unified/`，以根 `SKILL.md` 统一导航。八个专业 Skill 固定在本根 `modules/`，engineering-memory 保留 `modules/engineering-memory/skill/`，fleet 在仓库外独立维护。按宿主支持的方式发现模块或从根入口按需读取，勿在宿主顶层另装八份 Skill。新会话核实际加载路径和同名副本；CLI 根使用真实路径，不能通过旧安装或软链接绕过来源检查。
 3. 按实际安装位置设置：
 
    ```sh
@@ -17,7 +17,7 @@
    ```
 
 4. memory 默认在本根 `var/memory/`。多个客户端共享时，显式指定同一真实目录：`oev2 memory --home /absolute/shared-memory status`，后续命令保持同一 home。空库是正常状态；已有数据先核格式与来源，不自动改写旧记录。
-5. 七个专业 Skill 随本仓库维护，按任务另装固定上游运行程序并执行对应实际案例。`integrations/tools.lock.json` 的 `skill_directory` 指向仓库内模块目录；在仓库根运行 `python3 scripts/check_tool_skills.py` 核六项全部 16 个 `skill_files` 的摘要。四份 diff 保留用于从干净上游副本重建和复核，按 `patch_targets` 应用；不要在已整合的 `modules/` 上重复打补丁。LeanToken/Flameox 的完整维护源为 `modules/leantoken/` 与 `modules/flameox/`。REA/SmokingGun 按 runtime-locks 执行 npm ci，两个 Python 工具分别建环境、安装各自 requirements，执行 pip check；macOS arm64 的 Z3 修正见 `integrations/runtime-locks/Z3-MACOS.md`。同平台的 REA/Ghidra 原生组件准备见 `integrations/runtime-locks/GHIDRA-MACOS.md`。执行前核 CLI 实际路径与本次安装记录；PATH 若指向旧工作区，使用本次已核安装的绝对路径，不能仅凭版本号相同认定来源相同。MCP 配置与 Skill 文件布局分开；勿运行会向顶层写 Skill 的上游 setup/upgrade。仅对选定客户端配置已核程序的 MCP 入口，配置前检查影响范围，不重启或改写其他会话的连接。REA 启动环境和三个共享接续脚本见 `integrations/bindings/WORKFLOW.md`。不复制开发者个人配置。把实际程序、版本、摘要和接入记录写入本根 `var/capabilities/registry.json`，通过 `project tool-result registry` 核验。
+5. 八个专业 Skill 随本仓库维护，按任务另装固定上游运行程序并执行对应实际案例。`integrations/tools.lock.json` 的 `skill_directory` 指向仓库内模块目录；在仓库根运行 `python3 scripts/check_tool_skills.py` 核工具锁中八个模块的入口和关键文件摘要。四份 diff 保留用于从干净上游副本重建和复核，按 `patch_targets` 应用；不要在已整合的 `modules/` 上重复打补丁。LeanToken/Flameox 的完整维护源为 `modules/leantoken/` 与 `modules/flameox/`。REA/SmokingGun 按 runtime-locks 执行 npm ci，两个 Python 工具分别建环境、安装各自 requirements，执行 pip check；macOS arm64 的 Z3 修正见 `integrations/runtime-locks/Z3-MACOS.md`。同平台的 REA/Ghidra 原生组件准备见 `integrations/runtime-locks/GHIDRA-MACOS.md`。执行前核 CLI 实际路径与本次安装记录；PATH 若指向旧工作区，使用本次已核安装的绝对路径，不能仅凭版本号相同认定来源相同。MCP 配置与 Skill 文件布局分开；勿运行会向顶层写 Skill 的上游 setup/upgrade。仅对选定客户端配置已核程序的 MCP 入口，配置前检查影响范围，不重启或改写其他会话的连接。Anatomy 的上游 kit、Node/Chrome 检查和可选发布按 `modules/anatomy/LOCAL.md` 使用；默认先走同一 Project 的 `oev2 presentation`，不能把图示检查写成工程采用。REA 启动环境和三个共享接续脚本见 `integrations/bindings/WORKFLOW.md`。不复制开发者个人配置。把实际程序、版本、摘要和接入记录写入本根 `var/capabilities/registry.json`，通过 `project tool-result registry` 核验。
 6. 核 `oev2 project --help` 和 `oev2 memory --help`。缺工具、原件、模型资产或 SDK 时记录具体缺项。核心 Project 与经验读写无需专用判断服务。hook 为可选便利入口，显式命令必须能独立完成闭环。
 7. 接入实际工程项目时，先确认 Project ID，再按 [项目文件体系](docs/PROJECT-WORKSPACE.md)显式指定 `--project-home /absolute/project/.engineering`。安装根、项目数据根与 memory home 分开；在该工程项目的宿主 AGENTS 或配置中写入恢复命令与明确身份。源码候选、实际安装与新会话接续分别核验；不以文件存在认定自动 hook 已生效。
 8. 工程资料统一投放本安装根 `sources/`，书籍使用 `sources/books/`，米思米使用 `sources/misumi/`，PDF 索引保持 `sources/.indexes/local-pdf/`。按 [sources/README.md](sources/README.md)清点来源、版本、摘要和现有覆盖，选择与格式相符的读取或登记入口；用户不手填清单。已有本地原件核验后移动，无需重复下载；安装根或路径变化时保全原来源身份与回执，再显式重建完整登记，不以软链接或静默回退维持旧身份。
@@ -38,9 +38,9 @@ python3 scripts/check_tool_skills.py
 python3 scripts/check_tool_skills.py --skill-root "$HOME/.codex/skills" --skill-root "$HOME/.agents/skills"
 ```
 
-发现同名入口时先核内容、来源及使用者，保全需留存的旧文件，再从宿主发现目录移出本次替换的副本；不要删除私人数据或修改其他会话。运行环境继续使用其已核绝对路径。新会话确认七模块、memory 与本体入口来自同一 checkout；MCP 还需实际发现和调用，不能由 Skill 文件存在推定连接成功。
+发现同名入口时先核内容、来源及使用者，保全需留存的旧文件，再从宿主发现目录移出本次替换的副本；不要删除私人数据或修改其他会话。运行环境继续使用其已核绝对路径。新会话确认八模块、memory 与本体入口来自同一 checkout；MCP 还需实际发现和调用，不能由 Skill 文件存在推定连接成功。
 
-电子任务由第七个专业模块 `modules/electronics-design/SKILL.md` 统一进入；内部五个模块按该入口读取 `GUIDE.md`，不另装为五个独立 Skill。先读其 README 和 SOURCES.json，按实际需要安装 EasyEDA、CLI/连接器或求解器。调用辅助脚本时设置 `EASYEDA_SKILLS_DIR="$ONTOLOGY_ENGINEERING_ROOT/modules/electronics-design/modules"`，核实际安装和文档身份，不沿用旧机器路径或接收记录。原生 EDA、仿真、制造交付和实物检查分别验收。
+电子任务由 `modules/electronics-design/SKILL.md` 统一进入；内部五个模块按该入口读取 `GUIDE.md`，不另装为五个独立 Skill。先读其 README 和 SOURCES.json，按实际需要安装 EasyEDA、CLI/连接器或求解器。调用辅助脚本时设置 `EASYEDA_SKILLS_DIR="$ONTOLOGY_ENGINEERING_ROOT/modules/electronics-design/modules"`，核实际安装和文档身份，不沿用旧机器路径或接收记录。原生 EDA、仿真、制造交付和实物检查分别验收。工程图示任务由 `modules/anatomy/SKILL.md` 进入，默认绑定同一 Project 的 presentation 合同；其可视化结果、浏览器检查与工程采用分别记录。
 
 用户用自然语言提出要求；Project、registry 和反馈等内部合同由 Agent 根据真实输入准备，不要求用户代填。
 

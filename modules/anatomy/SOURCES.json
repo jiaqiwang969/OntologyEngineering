@@ -1,0 +1,39 @@
+{
+  "schema": "ontology-engineering.anatomy-source/1",
+  "module": "anatomy",
+  "upstream_repository": "https://github.com/wheresryan22/anatomy",
+  "upstream_commit": "bc943e40c59998be5da61f9d39c6a983b1116099",
+  "upstream_skill_path": "SKILL.md",
+  "upstream_skill_sha256": "1993151ca39afd7880a20d871aacc0ddd348090530d8135dc5ea51af28f25305",
+  "license": "MIT",
+  "source_registration": {
+    "id": "anatomy_projection_source",
+    "spec": "specs/modules/cad-engineering-binding.toml",
+    "role": "pinned upstream projection and presentation method"
+  },
+  "copied_tree": "git archive of the pinned upstream commit; .git metadata excluded",
+  "local_delta": [
+    "SKILL.md: normalized local frontmatter and appended OntologyEngineering v2 integration section",
+    "LOCAL.md: Project/source/evidence routing and limits",
+    "SOURCES.json: pinned source and boundary metadata"
+  ],
+  "ontology_boundary": {
+    "project_authority": "existing ontology-engineering-v2 Project",
+    "source_authority": "existing source registration and artifact references",
+    "object_and_condition": "existing object revision and explicit condition scope",
+    "evidence_return": "existing project tool-result/review contracts",
+    "adoption": "never implied by a visual, geometry, browser or PDF check"
+  },
+  "native_presentation": {
+    "entry": "oev2 presentation bind -> generate -> verify",
+    "implementation": "crates/oe-geometry/src/presentation.rs and related presentation crates",
+    "default_output": "new var/presentations delivery with request, receipt and offline HTML/SVG"
+  },
+  "advanced_output": [
+    "SVG",
+    "WebGL",
+    "3D beta",
+    "headless browser capture and audit",
+    "A4/Letter PDF"
+  ]
+}

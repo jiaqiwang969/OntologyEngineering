@@ -23,6 +23,7 @@ mod schemas;
 mod services;
 mod source_projection;
 mod supplier;
+mod supplier_selection;
 mod tool_result;
 mod v2;
 mod versions;

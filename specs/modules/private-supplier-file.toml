@@ -80,6 +80,24 @@ rust_path="crates/oe-core/src/private_file/windows.rs"
 oracle="原生描述符中只供继承的Everyone条目不授予当前常规文件权限，同一条目去掉inherit-only则拒绝"
 scope="当前私有文件准入；历史会话与供应商工程采用另验"
 
+[[constraints]]
+id="misumi_selection_review_contract"
+requirement="req_supplier"
+module="cli"
+check="review"
+rust_path="crates/oe-cli/src/supplier_selection.rs"
+statement="MISUMI review binds Project/work, subject, inCAD, catalogue, dated official configuration, alternatives, unknowns and checks; inCAD BOM/history cannot become current. Validator emits receipt only: no selection, download, purchase, CAD or adoption."
+severity="error"
+
+[[validations]]
+id="selection_review_preserves_three_source_roles"
+module="cli"
+constraint="misumi_selection_review_contract"
+behavior="selection_review_preserves_three_source_roles"
+rust_path="crates/oe-cli/tests/supplier_cli.rs"
+oracle="Three-layer receipt => selected_pending_engineering_verification; purchasing/CAD/adoption not performed"
+scope="Receipt only; source, native and engineering owners separate"
+
 [[validations]]
 id="receipt_rejects_public_permissions_despite_valid_account_binding"
 module="cad"

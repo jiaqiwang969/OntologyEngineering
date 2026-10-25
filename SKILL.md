@@ -56,6 +56,8 @@ metadata:
 
 米思米机构案例、BOM 与 CAD 归入 `sources/misumi/incad/`，按[资料图谱](docs/MISUMI-SOURCE-LIBRARY.md)用 `knowledge library incad` 建立、查找和复核来源关系。命中后核官网条件与原件，再接入已有 Project/work；资料图谱不自动授予工程适用或采用。分片恢复只面向新的资料目录，先核明确交付范围。
 
+涉及米思米零件选型时，沿[三层选型审查](docs/MISUMI-SELECTION.md)区分 inCAD 机构参考、标准目录/技术手册依据和官网当前配置。三层必须绑定同一 Project/work、对象、条件和选择理由；案例 BOM 或历史 CAD 不能替代具体当前型号。现有 `supplier selection-review` 只验证这份离线回执的身份、来源角色、理由与必要检查，不执行网页选型、下载、采购、NX 或工程采用。网页观察必须由当前浏览器合同取得并带日期，结果再经项目 workspace 保存和后续 owner 验收。
+
 复用查询包时，把原件完整性与当前登记分开核。需要当前本地 PDF 依据时，`knowledge verify-packet/feedback` 使用 `--require-current-registration`，整包候选须已绑定且 `current`；旧包无绑定先重新查询，米思米等按各自来源合同核验。状态解释见资料接入说明。登记变化不改写旧包、反馈或决定；当前书目一致性不授予工程采用。
 
 旧包因原件失效而无法验证时，可用 `knowledge audit-packet --packet <包路径>` 只读查看逐候选原件字节状态与登记变化，确定需要恢复原件还是重新查询。诊断不核当前 Project 或原生页内容，不能代替 `verify-packet` 或作为反馈凭证。

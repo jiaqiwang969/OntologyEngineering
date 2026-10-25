@@ -1,13 +1,14 @@
 //! Supplier evidence belongs to the current project; selection is not acceptance.
-use anyhow::{Context, Result, ensure};
+use crate::supplier_selection;
+use anyhow::{ensure, Context, Result};
 use clap::{Args, Subcommand};
-use oe_browser::{BackendKind, BrowserTask, SnapshotSource, backend};
+use oe_browser::{backend, BackendKind, BrowserTask, SnapshotSource};
 use oe_cad::supplier::{archive, artifacts, session, source};
 use oe_core::{
-    SkillRoot, create_new_private_dir, fingerprint_file, read_regular_bytes, sha256, write_new,
-    write_new_bytes,
+    create_new_private_dir, fingerprint_file, read_regular_bytes, sha256, write_new,
+    write_new_bytes, SkillRoot,
 };
-use serde_json::{Value, json};
+use serde_json::{json, Value};
 use std::path::PathBuf;
 
 #[derive(Args)]
@@ -23,6 +24,15 @@ pub struct ConnectionArgs {
 
 #[derive(Subcommand)]
 pub enum SupplierCommand {
+    /// Validate a source-bound MISUMI choice record; this never selects, downloads or orders.
+    SelectionReview {
+        /// Private JSON receipt following oev2.misumi-selection-review/1.
+        #[arg(long)]
+        input: PathBuf,
+        /// New private directory for the review result.
+        #[arg(long)]
+        output: PathBuf,
+    },
     /// Check exact supplied fields on the normal account page; never log in.
     SessionCheck {
         #[command(flatten)]
@@ -156,6 +166,10 @@ impl Connection {
 
 pub fn run(root: &SkillRoot, command: SupplierCommand) -> Result<(Value, u8)> {
     match command {
+        SupplierCommand::SelectionReview { input, output } => supplier_selection::run(
+            root,
+            supplier_selection::SelectionReviewArgs { input, output },
+        ),
         SupplierCommand::SessionCheck {
             connection,
             identity,

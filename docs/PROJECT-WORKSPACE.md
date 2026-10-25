@@ -88,6 +88,8 @@ export OEV2_BIN="$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2"
 `results_recorded` 需要 `WorkspaceStageReceipt` 包装的实际原件。本版支持两种 owner：
 
 - `tool_result`：核原 registry、实际程序与原始记录，分别绑定执行前 Project 和当前 Project；原结果的 `route_stage` 与验收须对应本阶段。登记后新增证据或修订可被识别，对象、条件、来源和目的仍需核对。失败/partial 的真实记录保留其执行状态。
+
+米思米选型回执也沿这条 workspace 边界保存。`supplier selection-review` 的输出是阶段回执和候选/决定的来源证据；Agent 将其完整字节作为 ArtifactReference 绑定当前 Project/work、对象和验收，再由 `workspace commit` 保存。不要在安装根或项目旁建立第二张选型状态表。原件、官网配置、工况、接口或型号变化时，经 `reconcile` 将受影响决定置为 `pending_decisions`；旧回执保留其历史身份，不能继续作为当前选型依据。
 - `harness`：用既有 `load_step` 核完整附件、真实 task ID 与当前完整 Project 快照。`recorded` 不替代工程验收。
 
 `exploration` 的阶段回执目前明确返回 `workspace_stage_exploration_readback_unsupported`。既有探索功能仍按自身合同工作，本入口不调用 `advance` 重复副作用，也不把任意 completed JSON 当作其接收证明。

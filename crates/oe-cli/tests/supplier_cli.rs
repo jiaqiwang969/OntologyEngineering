@@ -306,6 +306,49 @@ fn existing_tab_inputs(c: &Case) {
     );
 }
 
+fn selection_input(c: &Case, selected: bool, official: bool) {
+    let source = |name: &str| json!({"path":format!("var/input/{name}.html"),"sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"});
+    let incad = json!({"status":"used","references":[{"id":"case-000210","role":"mechanism_reference","source":source("incad"),"locator":"case/000210/function"}]});
+    let catalog = json!({"status":if official {"used"} else {"not_used"},"references":if official {vec![json!({"id":"manual-612","role":"series_basis","source":source("catalog"),"locator":"page-42"})]} else {Vec::new()}});
+    let web_refs = if official {vec![json!({"id":"web-612","role":"current_configuration","source":source("official"),"locator":"product/612","observed_at":"2026-10-24T00:00:00Z","part_number":"612-ABC","configuration":"L=100;M=20"})]} else {Vec::new()};
+    c.json("var/input/selection.json", &json!({
+        "schema":"oev2.misumi-selection-review/1",
+        "project":{"project_id":"PRJ-SYNTHETIC","work_id":"WORK-1","context_sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+        "subject":{"kind":"standard_part","identity":"clearance-fit"},
+        "decision":{"status":if selected {"selected"} else {"candidate"},"part_number":if selected {"612-ABC"} else {""}},
+        "layers":{"incad":incad,"catalog":catalog,"official_web":{"status":if official {"used"} else {"unavailable"},"references":web_refs}},
+        "rationale":{"function":"guide a moving plate","mechanism":"guided bearing","conditions":"20 C; 100 N","interfaces":"12 mm bore","why_selected":if selected {"matches current configuration"} else {"pending current configuration"},"alternatives":["612-DEF"],"unknowns":["service life pending native review"]},
+        "checks":[
+            {"id":"official_configuration","status":if official {"pass"} else {"not_run"},"basis":["web-612"]},
+            {"id":"catalog_basis","status":if official {"pass"} else {"not_run"},"basis":["manual-612"]},
+            {"id":"condition_match","status":if official {"pass"} else {"unknown"},"basis":["work-1"]},
+            {"id":"identity","status":if official {"pass"} else {"not_run"},"basis":["web-612"]}
+        ]
+    }));
+}
+
+#[test]
+fn selection_review_keeps_three_source_roles_and_allows_only_reviewable_selection() {
+    let c = Case::new();
+    selection_input(&c, true, true);
+    let report = c.run(&["supplier","selection-review","--input","var/input/selection.json","--output","var/selection-review"], 0);
+    assert_eq!(report["status"], "selected_pending_engineering_verification");
+    assert_eq!(report["engineering_adoption"], "not_established");
+    assert_eq!(report["purchasing"], "not_performed");
+    let saved: Value = serde_json::from_slice(&fs::read(c.0.join("var/selection-review/selection-review.json")).unwrap()).unwrap();
+    assert_eq!(saved["layers"]["incad"]["status"], "used");
+    assert_eq!(saved["source_bytes"], "not_read");
+}
+
+#[test]
+fn selection_review_blocks_a_selected_bom_without_current_official_configuration() {
+    let c = Case::new();
+    selection_input(&c, true, false);
+    let report = c.run(&["supplier","selection-review","--input","var/input/selection.json","--output","var/selection-review"], 1);
+    assert_eq!(report["status"], "selection_blocked");
+    assert!(report["issues"].as_array().unwrap().iter().any(|v| v == "selected_part_lacks_current_official_configuration"));
+}
+
 #[cfg(unix)]
 #[test]
 fn session_check_keeps_private_identity_out_of_the_failed_connection_record() {

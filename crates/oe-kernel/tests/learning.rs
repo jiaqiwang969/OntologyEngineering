@@ -1136,3 +1136,89 @@ fn evaluation_three_binds_original_source_separately_and_retains_two_oracle() {
     .unwrap();
     learning::apply(&f.root, dir, &f.case, Path::new("var/origin-three-apply")).unwrap();
 }
+
+#[test]
+fn evaluation_four_keeps_diagnostic_oracle_separate_from_ontology_adoption() {
+    let mut f = Fixture::new("diagnostic-four", "required_semantic_review");
+    protocol_two(&mut f);
+    let put = |name: &str, value: &Value| {
+        let path = format!("var/inputs/{name}");
+        let bytes = serde_json::to_vec(value).unwrap();
+        fs::write(f.temp.path().join(&path), &bytes).unwrap();
+        json!({"path":path,"sha256":sha256(bytes)})
+    };
+    let mut binding: oe_kernel::Binding =
+        serde_json::from_value(f.read("var/inputs/binding-current.json")).unwrap();
+    binding.required_checks.extend([
+        "current_project_context".into(),
+        "current_condition_model".into(),
+    ]);
+    f.case["binding"] = put(
+        "binding-diagnostic-four.json",
+        &serde_json::to_value(&binding).unwrap(),
+    );
+    let mut evaluation = f.read("var/inputs/evaluation-current.json");
+    evaluation["schema"] = json!("oev2.experience-evaluation/4");
+    evaluation["cases"] = json!([{
+        "case_id":f.case["case_id"],"source_family":f.case["source_family"],"exposure":"development_replay",
+        "project":f.case["project"],"binding":f.case["binding"],"evidence":f.case["evidence"],"bundle":f.case["bundle"],
+        "query_ids":f.case["query_ids"],"shape_ids":f.case["shape_ids"],"expected_conclusion":"unknown",
+        "required_reasons":["required_condition_not_established"],"current_use":true,
+        "expected_checks":[
+            {"id":"bound_focus_context","conclusion":"pass"},
+            {"id":"current_condition_model","conclusion":"pass"},
+            {"id":"current_project_context","conclusion":"pass"},
+            {"id":"findings-pattern-scope","conclusion":"unknown"},
+            {"id":"shape-pattern-scope","conclusion":"pass"}
+        ]
+    }]);
+    f.input["evaluation"] = put("evaluation-diagnostic-four.json", &evaluation);
+    f.input["candidate"]["candidate_id"] = json!("diagnostic-four-no-delta");
+    let no_delta = Path::new("var/candidates/diagnostic-four-no-delta");
+    learning::freeze(&f.root, &f.input, no_delta).unwrap();
+    let assessed = learning::assess(
+        &f.root,
+        no_delta,
+        Path::new("var/diagnostic-four-assessment.json"),
+    )
+    .unwrap();
+    assert_eq!(assessed["assessment"]["verdict"], "no_delta");
+    let record = f.read("var/diagnostic-four-assessment.json");
+    assert_eq!(record["comparison"]["denominator"], 1);
+    assert_eq!(record["comparison"]["engineering_adoption"], "not_granted");
+    assert_eq!(
+        record["comparison"]["live_agent_task_benefit"],
+        "not_measured"
+    );
+
+    // A complete method diagnosis still cannot promote a candidate that
+    // changes ontology knowledge. That revision needs Project exploration and
+    // engineering governance at the affected model/relationship depth.
+    f.input["candidate"]["candidate_id"] = json!("diagnostic-four-ontology");
+    f.input["candidate"]["kind"] = json!("ontology_knowledge");
+    f.input["candidate"]["ontology_delta"] = json!("candidate");
+    let candidate = &f.input["candidate"];
+    let experiment = json!({"schema":"oev2.experience-experiment/2","experiment_id":"diagnostic-four-ontology-experiment",
+        "project_id":candidate["project_id"],"object_id":candidate["object"]["object_id"],
+        "condition_scope":candidate["object"]["condition_scope"],"kind":candidate["kind"],
+        "applicability":candidate["applicability"],"hypotheses":{"ontology-hypothesis":candidate["hypotheses"][0]},
+        "goal_sha256":f.input["goal"]["sha256"]});
+    let experiment_ref = put("diagnostic-four-ontology-experiment.json", &experiment);
+    f.input["retry"] = json!({"experiment":experiment_ref,"hypothesis_ids":["ontology-hypothesis"],"prior_rejections":[]});
+    let ontology = Path::new("var/candidates/diagnostic-four-ontology");
+    learning::freeze(&f.root, &f.input, ontology).unwrap();
+    let assessed = learning::assess(
+        &f.root,
+        ontology,
+        Path::new("var/diagnostic-four-ontology-assessment.json"),
+    )
+    .unwrap();
+    assert_eq!(assessed["assessment"]["verdict"], "inconclusive");
+    assert!(
+        assessed["assessment"]["reasons"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|r| r.as_str().unwrap().contains("ontology revision"))
+    );
+}

@@ -37132,7 +37132,9 @@
 <urn:oev2:design:field_EvolutionAssessment_verdict> <urn:oev2:design:acceptance> "来源/未知/必要验收各自检查；原预期和反例保留" .
 <urn:oev2:design:field_EvolutionAssessment_verdict> <urn:oev2:design:allowedValueRust> "\"admissible_trial\"" .
 <urn:oev2:design:field_EvolutionAssessment_verdict> <urn:oev2:design:allowedValueRust> "\"inconclusive\"" .
+<urn:oev2:design:field_EvolutionAssessment_verdict> <urn:oev2:design:allowedValueRust> "\"ineligible\"" .
 <urn:oev2:design:field_EvolutionAssessment_verdict> <urn:oev2:design:allowedValueRust> "\"no_delta\"" .
+<urn:oev2:design:field_EvolutionAssessment_verdict> <urn:oev2:design:allowedValueRust> "\"regressed\"" .
 <urn:oev2:design:field_EvolutionAssessment_verdict> <urn:oev2:design:allowedValueRust> "\"rejected\"" .
 <urn:oev2:design:field_EvolutionAssessment_verdict> <urn:oev2:design:applicability> "冻结候选、现有 project/harness、Rust 审查和私有试用反馈" .
 <urn:oev2:design:field_EvolutionAssessment_verdict> <urn:oev2:design:format> "status" .
@@ -57136,6 +57138,37 @@
 <urn:oev2:design:field_RouteUtterance_text> <urn:oev2:design:rustType> "String" .
 <urn:oev2:design:field_RouteUtterance_text> <urn:oev2:design:unit> "无" .
 <urn:oev2:design:field_RouteUtterance_text> <urn:oev2:design:write> "agent" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:acceptance> "Preserve native unknown/violated" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:allowedValueRust> "\"pass\"" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:allowedValueRust> "\"unknown\"" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:allowedValueRust> "\"violated\"" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:applicability> "Evaluation/4" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:format> "status" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:meaning> "Expected diagnosis" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:name> "conclusion" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:owner> <urn:oev2:design:type_RrsiCheckExpectation> .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:precision> "Exact" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:unit> "Status" .
+<urn:oev2:design:field_RrsiCheckExpectation_conclusion> <urn:oev2:design:write> "Freeze before comparison" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:acceptance> "Complete unique set; identity expects pass" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:applicability> "Evaluation/4" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:format> "text" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:meaning> "Required native check" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:name> "id" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:owner> <urn:oev2:design:type_RrsiCheckExpectation> .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:precision> "Exact" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:unit> "ID" .
+<urn:oev2:design:field_RrsiCheckExpectation_id> <urn:oev2:design:write> "Freeze before comparison" .
 <urn:oev2:design:field_SemanticBiTemporalFields_recorded_at> <urn:oev2:design:acceptance> "Frozen62 original observations, independent position/identity and resource guards, current platform receiving" .
 <urn:oev2:design:field_SemanticBiTemporalFields_recorded_at> <urn:oev2:design:applicability> "Explicit clock and bounded string times; no historical fact inferred from fallback" .
 <urn:oev2:design:field_SemanticBiTemporalFields_recorded_at> <urn:oev2:design:format> "typed" .
@@ -95439,6 +95472,38 @@
 <urn:oev2:design:rrsi_code_protocol> <urn:oev2:design:identity> "FULL-CODE-RRSI-DRIVER-MINIMUM.md SHA256 8ec04b0de79a62628c39df77c3bc214ee17916b06e83abe7931ad1d7564361ac" .
 <urn:oev2:design:rrsi_code_protocol> <urn:oev2:design:kind> "Source" .
 <urn:oev2:design:rrsi_code_protocol> <urn:oev2:design:role> "fixed driver/evaluator/source artifact comparison requirements and 19 frozen cases" .
+<urn:oev2:design:rrsi_current_root> <urn:oev2:design:check> "current_workspace_guard" .
+<urn:oev2:design:rrsi_current_root> <urn:oev2:design:checkerPath> "crates/oe-kernel/src/learning.rs" .
+<urn:oev2:design:rrsi_current_root> <urn:oev2:design:kind> "Constraint" .
+<urn:oev2:design:rrsi_current_root> <urn:oev2:design:module> <urn:oev2:design:kernel> .
+<urn:oev2:design:rrsi_current_root> <urn:oev2:design:name> "rrsi_current_root" .
+<urn:oev2:design:rrsi_current_root> <urn:oev2:design:requirement> <urn:oev2:design:req_project> .
+<urn:oev2:design:rrsi_current_root> <urn:oev2:design:severity> "error" .
+<urn:oev2:design:rrsi_current_root> <urn:oev2:design:statement> "Compare frozen goal with current HEAD, Project, anchor, acceptance and source bytes under workspace lock at freeze/assess/decide/apply/registry. Application runs full resume. Sidecar deletion cannot bypass. Recover remains available." .
+<urn:oev2:design:rrsi_current_root_entries> <urn:oev2:design:behavior> "changed_root_blocks_direct_entries" .
+<urn:oev2:design:rrsi_current_root_entries> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:rrsi_current_root_entries> <urn:oev2:design:module> <urn:oev2:design:kernel> .
+<urn:oev2:design:rrsi_current_root_entries> <urn:oev2:design:name> "rrsi_current_root_entries" .
+<urn:oev2:design:rrsi_current_root_entries> <urn:oev2:design:oracle> "Root correction blocks native/application entries before outputs or events, including missing sidecar. Unchanged root and exact recovery still work." .
+<urn:oev2:design:rrsi_current_root_entries> <urn:oev2:design:rustPath> "crates/oe-engineering/tests/project_workspace_learning.rs" .
+<urn:oev2:design:rrsi_current_root_entries> <urn:oev2:design:scope> "Synthetic macOS; no global interception or engineering adoption" .
+<urn:oev2:design:rrsi_current_root_entries> <urn:oev2:design:validates> <urn:oev2:design:rrsi_current_root> .
+<urn:oev2:design:rrsi_diagnostic_four> <urn:oev2:design:check> "assessment" .
+<urn:oev2:design:rrsi_diagnostic_four> <urn:oev2:design:checkerPath> "crates/oe-kernel/src/learning.rs" .
+<urn:oev2:design:rrsi_diagnostic_four> <urn:oev2:design:kind> "Constraint" .
+<urn:oev2:design:rrsi_diagnostic_four> <urn:oev2:design:module> <urn:oev2:design:kernel> .
+<urn:oev2:design:rrsi_diagnostic_four> <urn:oev2:design:name> "rrsi_diagnostic_four" .
+<urn:oev2:design:rrsi_diagnostic_four> <urn:oev2:design:requirement> <urn:oev2:design:req_semantics> .
+<urn:oev2:design:rrsi_diagnostic_four> <urn:oev2:design:severity> "error" .
+<urn:oev2:design:rrsi_diagnostic_four> <urn:oev2:design:statement> "Explicit /4 retains /3 source/RDF, exact diagnostic expectations and regressed/ineligible. Identity must pass. Physical unknown/violated stays. Ontology changes require governance. Failed cases count; /1-/3 retain meaning." .
+<urn:oev2:design:rrsi_diagnostic_outcomes> <urn:oev2:design:behavior> "frozen_diagnosis_preserves_engineering_outcome" .
+<urn:oev2:design:rrsi_diagnostic_outcomes> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:rrsi_diagnostic_outcomes> <urn:oev2:design:module> <urn:oev2:design:kernel> .
+<urn:oev2:design:rrsi_diagnostic_outcomes> <urn:oev2:design:name> "rrsi_diagnostic_outcomes" .
+<urn:oev2:design:rrsi_diagnostic_outcomes> <urn:oev2:design:oracle> "Pass/violated/unknown receipts, retrieval gain/regression, oracle/identity mismatch, failed execution and legacy verdicts remain distinct." .
+<urn:oev2:design:rrsi_diagnostic_outcomes> <urn:oev2:design:rustPath> "crates/oe-kernel/tests/learning.rs" .
+<urn:oev2:design:rrsi_diagnostic_outcomes> <urn:oev2:design:scope> "Bounded development replay; live Agent costs and transfer unmeasured" .
+<urn:oev2:design:rrsi_diagnostic_outcomes> <urn:oev2:design:validates> <urn:oev2:design:rrsi_diagnostic_four> .
 <urn:oev2:design:rrsi_method> <urn:oev2:design:applicability> "参考 references/regularized-evolution.md；Rust 已实现冻结闭合操作计划、同执行器评估、私有试用/拒绝/恢复；未知成本与新颖性不替代工程硬条件；任意代码候选、随机噪声校准和独立迁移仍未验" .
 <urn:oev2:design:rrsi_method> <urn:oev2:design:identity> "https://github.com/google-research/rrsi/tree/be50316e1db05914068a973f322770ef08ed7ba1 ; arXiv:2609.24972v2" .
 <urn:oev2:design:rrsi_method> <urn:oev2:design:kind> "Source" .
@@ -119508,6 +119573,13 @@
 <urn:oev2:design:type_RouteUtterance> <urn:oev2:design:kind> "Type" .
 <urn:oev2:design:type_RouteUtterance> <urn:oev2:design:meaning> "用户原话记录" .
 <urn:oev2:design:type_RouteUtterance> <urn:oev2:design:name> "RouteUtterance" .
+<urn:oev2:design:type_RrsiCheckExpectation> <urn:oev2:design:contractGroup> "engineering" .
+<urn:oev2:design:type_RrsiCheckExpectation> <urn:oev2:design:field> <urn:oev2:design:field_RrsiCheckExpectation_conclusion> .
+<urn:oev2:design:type_RrsiCheckExpectation> <urn:oev2:design:field> <urn:oev2:design:field_RrsiCheckExpectation_id> .
+<urn:oev2:design:type_RrsiCheckExpectation> <urn:oev2:design:identity> "Exact evaluation bytes and check ID; development replay" .
+<urn:oev2:design:type_RrsiCheckExpectation> <urn:oev2:design:kind> "Type" .
+<urn:oev2:design:type_RrsiCheckExpectation> <urn:oev2:design:meaning> "Frozen diagnostic oracle for evaluation/4; matching a rejection never grants adoption" .
+<urn:oev2:design:type_RrsiCheckExpectation> <urn:oev2:design:name> "RrsiCheckExpectation" .
 <urn:oev2:design:type_SemanticBiTemporalFields> <urn:oev2:design:contractGroup> "semantic" .
 <urn:oev2:design:type_SemanticBiTemporalFields> <urn:oev2:design:field> <urn:oev2:design:field_SemanticBiTemporalFields_recorded_at> .
 <urn:oev2:design:type_SemanticBiTemporalFields> <urn:oev2:design:field> <urn:oev2:design:field_SemanticBiTemporalFields_superseded_at> .
@@ -170251,7 +170323,7 @@ code:2e2bfea4bbe564bf252ff395c3745f65fff3069e645328e394bfea4f9eb5421a sp:kind "R
 code:2e2bfea4bbe564bf252ff395c3745f65fff3069e645328e394bfea4f9eb5421a sp:module <urn:oev2:design:engineering> .
 code:2e2bfea4bbe564bf252ff395c3745f65fff3069e645328e394bfea4f9eb5421a sp:path "crates/oe-engineering/tests/project_workspace_learning.rs" .
 code:2e2bfea4bbe564bf252ff395c3745f65fff3069e645328e394bfea4f9eb5421a sp:production false .
-code:2e2bfea4bbe564bf252ff395c3745f65fff3069e645328e394bfea4f9eb5421a sp:sha256 "4500447100d789066f8f353b4e028ba63a696140072f294e1c63390af48db6c6" .
+code:2e2bfea4bbe564bf252ff395c3745f65fff3069e645328e394bfea4f9eb5421a sp:sha256 "5d33ae91bdb0fc00d812f85f485955b66677cbf78e25f54b1509f1be3c6613b7" .
 code:2e2bfea4bbe564bf252ff395c3745f65fff3069e645328e394bfea4f9eb5421a sp:test "current_root_goal_freezes_with_native_evaluator_and_later_root_change_blocks_trial" .
 code:2e2c20770bd8b3492e2afac50946592c4b27307b2825ab3346c13b036febb493 sp:calls "Path::new" .
 code:2e2c20770bd8b3492e2afac50946592c4b27307b2825ab3346c13b036febb493 sp:calls "SkillRoot::new" .
@@ -175412,6 +175484,7 @@ code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:calls "
 code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:calls "crate::native_reproduction8::reproduce_sdk8_native" .
 code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:calls "crate::native_reproduction9::reproduce_probe9_native" .
 code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:calls "crate::native_reproduction::reproduce_full_native" .
+code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:calls "crate::project_workspace::with_learning_candidate" .
 code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:calls "definition" .
 code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:calls "definition_path" .
 code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:calls "eligibility" .
@@ -175470,7 +175543,7 @@ code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:publicT
 code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:publicType "NativeStream11CodeBuildSupervisionExecutor" .
 code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:publicType "NativeStream11CodeReproductionExecutor" .
 code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:publicType "SelectionExecutor" .
-code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:sha256 "a8bf1ae97f2014dfeea75cf6177f11b3eada7efdfe4e7b2ffb71f5aa8086ebc4" .
+code:510fe6a55303b9946dfed067895e29d63b3c096fe46890169ad9c390681fe093 sp:sha256 "d6e3cc5192648999e5efcc86583233abfddc72ee834b40d34e16a5497b89b466" .
 code:5154296fbf1b24d335b983d35baa7e99efd92f5f70170c7279e2d4f29c7a00c2 sp:calls "GeometryJob::new" .
 code:5154296fbf1b24d335b983d35baa7e99efd92f5f70170c7279e2d4f29c7a00c2 sp:calls "Ok" .
 code:5154296fbf1b24d335b983d35baa7e99efd92f5f70170c7279e2d4f29c7a00c2 sp:calls "Path::new" .
@@ -180864,6 +180937,7 @@ code:6ecc54d45189dd9b52907ee51be55c6f63b382143775c95946fb9ae8069f95ef sp:product
 code:6ecc54d45189dd9b52907ee51be55c6f63b382143775c95946fb9ae8069f95ef sp:publicType "GraphUpdateOperation" .
 code:6ecc54d45189dd9b52907ee51be55c6f63b382143775c95946fb9ae8069f95ef sp:publicType "Update" .
 code:6ecc54d45189dd9b52907ee51be55c6f63b382143775c95946fb9ae8069f95ef sp:sha256 "2c1928995d0a2c889f653ccc2d6cbb108bfc3f40155c12b486982166e41aa110" .
+code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "AdvisoryFileLock::acquire" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "BTreeMap::new" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "BTreeSet::new" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "HistoryWriter::acquire" .
@@ -180876,6 +180950,7 @@ code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "append" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "apply_selected" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "assessment" .
+code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "candidate_workspace_guard" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "canonical_json" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "check_retry_history" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "checked" .
@@ -180884,6 +180959,7 @@ code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "crate::evaluate" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "crate::project::review_current" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "crate::project::validate" .
+code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "current_workspace_guard" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "events_dir" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "failure" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "frozen_read" .
@@ -180892,6 +180968,7 @@ code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "historical_candidate" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "history" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "history_capacity" .
+code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "json_at" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "oe_core::AdvisoryFileLock::acquire" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "oe_core::ensure_directory" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:calls "oe_core::fingerprint_file" .
@@ -180923,7 +181000,7 @@ code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:product
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:publicType "Case" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:publicType "Reference" .
 code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:publicType "RetrievalCase" .
-code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:sha256 "a129a062218da44360d41f1ff85fdb7bb116dc20095f8fb2cd91853ea00cbdea" .
+code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 sp:sha256 "dce863097f36ec5b212e4c7a16432bb157b52a37dc1728c15e6b1e5eda698ee8" .
 code:6f47c7a66f958af7282ea9810ad44a49197e5121f8fa7182a9b03cb01f4a70c0 sp:calls "BlankNode::new_unchecked" .
 code:6f47c7a66f958af7282ea9810ad44a49197e5121f8fa7182a9b03cb01f4a70c0 sp:calls "DecimalContext::default" .
 code:6f47c7a66f958af7282ea9810ad44a49197e5121f8fa7182a9b03cb01f4a70c0 sp:calls "NamedNode::new_unchecked" .
@@ -194337,6 +194414,7 @@ code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "Ok" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "Path::new" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "Some" .
+code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "action" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "archived" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "artifacts::json" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "artifacts::read" .
@@ -194356,6 +194434,7 @@ code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "oe_core::rename_regular_file" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "oe_core::sync_directory" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "oe_kernel::learning::freeze" .
+code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "oe_kernel::learning::workspace_goal" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "oe_semantic::safe_relative" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "project::reconcile" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:calls "project::validate" .
@@ -194376,7 +194455,7 @@ code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:kind "R
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:module <urn:oev2:design:engineering> .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:path "crates/oe-engineering/src/project_workspace/mod.rs" .
 code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:production true .
-code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:sha256 "3500b96bb5de4ec820681ad1983795b7bf3a2a8bcfda3fe1eec46479073e2abf" .
+code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 sp:sha256 "5cc5fbd7049b4ef4c9737f6cb9880755b520e9cc574fbed48e027253158eb8d8" .
 code:cce15dcfae41c20529caabb4ff5ed903d5d1b69758c80cfe276352c92c4551c6 sp:kind "RustCodeFile" .
 code:cce15dcfae41c20529caabb4ff5ed903d5d1b69758c80cfe276352c92c4551c6 sp:module <urn:oev2:design:core> .
 code:cce15dcfae41c20529caabb4ff5ed903d5d1b69758c80cfe276352c92c4551c6 sp:path "crates/oe-core/tests/windows_paths.rs" .
@@ -194973,11 +195052,12 @@ code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:kind "R
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:module <urn:oev2:design:kernel> .
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:path "crates/oe-kernel/tests/learning.rs" .
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:production false .
-code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:sha256 "74a8826071e6ee271b9d01c43e69dcadbe993a001864881dee88e568e73615d2" .
+code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:sha256 "7f6c477b519f94912e97b6afd58aa901084be13bc1042af718d605ee09e69bda" .
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:test "active_trial_keeps_capacity_for_restore_and_full_legacy_trial_stays_unchanged" .
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:test "active_trial_uses_its_last_reserved_slot_to_restore_exact_baseline" .
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:test "competing_history_writer_is_refused_before_trial_or_recovery_outputs" .
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:test "current_trial_rejects_same_scope_old_rdf_after_project_condition_change" .
+code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:test "evaluation_four_keeps_diagnostic_oracle_separate_from_ontology_adoption" .
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:test "evaluation_three_binds_original_source_separately_and_retains_two_oracle" .
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:test "external_project_store_freezes_equivalent_bytes_and_keeps_software_evaluator" .
 code:d14ee46bb47b39376eedc5ba33b42da33a8f6dc143ef53cf7a0aa21ee1b96b1e sp:test "frozen_candidate_refuses_drift_and_keeps_evaluator_history" .
@@ -197177,6 +197257,7 @@ code:e05222d00896886b55ae59f2c21f013623d27b21da0f61d73dbe482945a05810 sp:path "c
 code:e05222d00896886b55ae59f2c21f013623d27b21da0f61d73dbe482945a05810 sp:production true .
 code:e05222d00896886b55ae59f2c21f013623d27b21da0f61d73dbe482945a05810 sp:sha256 "d19712daf35ebaac2ae2b0aed29b666c1ac402c2046c83f0e4e0a6c0e8bf11ab" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "Ok" .
+code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "Path::new" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "PathBuf::from" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "SkillRoot::new" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "Some" .
@@ -197275,6 +197356,8 @@ code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "oe_semantic::review::execute_reviews_in_context_with" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "oe_semantic::review::execute_reviews_with" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "oe_wire_json" .
+code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "project_workspace::learning_freeze" .
+code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "project_workspace::with_learning_candidate" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "read_regular_bytes" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "require_execution" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:calls "serde_json::from_value" .
@@ -197296,7 +197379,7 @@ code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:publicT
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:publicType "MaintainCommand" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:publicType "ProjectCommand" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:publicType "RustReviews" .
-code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:sha256 "36526fbe393f002d773ba2ad46a71019a056b445e1d851ea2ca720fa7b3ad9cb" .
+code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:sha256 "cdd78443310cfc9df6751582a7c6039ab2088d7fc40f368a9f0817b346985a07" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:test "cad_copy_failure_preserves_fixed_reason_without_details" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:test "cad_delete_failure_preserves_fixed_reason_without_private_details" .
 code:e0c4c2f9d750be7760ba2742559ec5bb3837060985d6578c55256ccc2ce14150 sp:test "cad_failure_preserves_safe_reason_without_source_path" .
@@ -204192,6 +204275,7 @@ function:1150ddb48fc6dff433d2a98093698d040f63936f807504a44fee2226a77802e5 sp:exe
 function:1150ddb48fc6dff433d2a98093698d040f63936f807504a44fee2226a77802e5 sp:file code:35fbe18a2e3bba06ea57b884b84d0642adeac87195642780680ef909a2b90b0b .
 function:1150ddb48fc6dff433d2a98093698d040f63936f807504a44fee2226a77802e5 sp:kind "RustFunction" .
 function:1150ddb48fc6dff433d2a98093698d040f63936f807504a44fee2226a77802e5 sp:name "capture_sparql" .
+function:115685123b0773db898706e94db3de40346243f07795c1a4802b3ccd992db2af sp:executes <urn:oev2:design:rrsi_diagnostic_four> .
 function:115685123b0773db898706e94db3de40346243f07795c1a4802b3ccd992db2af sp:file code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 .
 function:115685123b0773db898706e94db3de40346243f07795c1a4802b3ccd992db2af sp:kind "RustFunction" .
 function:115685123b0773db898706e94db3de40346243f07795c1a4802b3ccd992db2af sp:name "assessment" .
@@ -204358,6 +204442,9 @@ function:127559e3120d9a665706ac9c4cd4373062e6e784ba7df8b46649376563f04788 sp:nam
 function:127993eb42f28511e796864f90a11ccc6ca7037448f51359d2e99096bec9d779 sp:file code:62c935f643245b8ddc3aca1756e9b5222a1217de429ccd76ea55bb793e9a750c .
 function:127993eb42f28511e796864f90a11ccc6ca7037448f51359d2e99096bec9d779 sp:kind "RustFunction" .
 function:127993eb42f28511e796864f90a11ccc6ca7037448f51359d2e99096bec9d779 sp:name "preamble" .
+function:127cc62539e1fd70429f5dec466cf18403b0787531645f836c2c47de699597e2 sp:file code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 .
+function:127cc62539e1fd70429f5dec466cf18403b0787531645f836c2c47de699597e2 sp:kind "RustFunction" .
+function:127cc62539e1fd70429f5dec466cf18403b0787531645f836c2c47de699597e2 sp:name "candidate_workspace_guard" .
 function:127ed16ec85a1dd57b058f6aa6c97ba74f2c421f2672cad5369f718d1af70b0c sp:file code:0f9e4b1ff97b46bfefb7756f4e11dc81214e78f3cf1687a838bde66e48c374dd .
 function:127ed16ec85a1dd57b058f6aa6c97ba74f2c421f2672cad5369f718d1af70b0c sp:kind "RustFunction" .
 function:127ed16ec85a1dd57b058f6aa6c97ba74f2c421f2672cad5369f718d1af70b0c sp:name "untranslated_graph_node" .
@@ -219920,6 +220007,10 @@ function:7eeafcb70b6fca91f639d9647369d5ba08de4fe2ca676ed1bb087f3a98c8620e sp:nam
 function:7eed9082910bf78b8cc84f2e7d2d3fd55b757c29bc985aa781e6bbf9fc3477ec sp:file code:3b1b18145eb9f75a35ad22a05f2a78f35ed7bbd653385c28b07ab24042cabd72 .
 function:7eed9082910bf78b8cc84f2e7d2d3fd55b757c29bc985aa781e6bbf9fc3477ec sp:kind "RustFunction" .
 function:7eed9082910bf78b8cc84f2e7d2d3fd55b757c29bc985aa781e6bbf9fc3477ec sp:name "save" .
+function:7efab7d059c04480948048431bce82827395057b12183261af7806757be749b4 sp:executes <urn:oev2:design:rrsi_current_root> .
+function:7efab7d059c04480948048431bce82827395057b12183261af7806757be749b4 sp:file code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 .
+function:7efab7d059c04480948048431bce82827395057b12183261af7806757be749b4 sp:kind "RustFunction" .
+function:7efab7d059c04480948048431bce82827395057b12183261af7806757be749b4 sp:name "current_workspace_guard" .
 function:7f01cf120d3f862419d0dd23bec037a33277eccd07cdff66fb221e8c99a906e0 sp:file code:9fc54c914b7f8391b8b37d45e98cabc3574cbe72973768f71c6a8b86635ac68f .
 function:7f01cf120d3f862419d0dd23bec037a33277eccd07cdff66fb221e8c99a906e0 sp:kind "RustFunction" .
 function:7f01cf120d3f862419d0dd23bec037a33277eccd07cdff66fb221e8c99a906e0 sp:name "ensure_alive" .
@@ -231187,6 +231278,9 @@ function:cfd2329bd3582dc09252386815c06e25613029ec72a79e01d929737ff89853f7 sp:nam
 function:cfd40f620dd50fbc12d5a60d280b84d51825d809346ef69617104c5db08203f0 sp:file code:d31570cd53eab2fac1f3edc0ffc09d3fa24febdc4c7235aad74d181d1e72d026 .
 function:cfd40f620dd50fbc12d5a60d280b84d51825d809346ef69617104c5db08203f0 sp:kind "RustFunction" .
 function:cfd40f620dd50fbc12d5a60d280b84d51825d809346ef69617104c5db08203f0 sp:name "fixture" .
+function:cfe63c7bcd3e2e2e4a4354ab363a2a72163d9db6e0ccd7d9c31f6b6ccf3877ec sp:file code:ccc33cedd7eb92449de1a9deebb0e043f407120ef72db4486eb70d9e1a28b573 .
+function:cfe63c7bcd3e2e2e4a4354ab363a2a72163d9db6e0ccd7d9c31f6b6ccf3877ec sp:kind "RustFunction" .
+function:cfe63c7bcd3e2e2e4a4354ab363a2a72163d9db6e0ccd7d9c31f6b6ccf3877ec sp:name "with_learning_candidate" .
 function:cfe9383202d2d1d26687f6e46bde56e67addd137bb1f9df131dbab1595ac1d64 sp:file code:59f5c2c7cf73d8a6cbb954e58460606f03de3d6d037cf6f4d76e866e5db5d87c .
 function:cfe9383202d2d1d26687f6e46bde56e67addd137bb1f9df131dbab1595ac1d64 sp:kind "RustFunction" .
 function:cfe9383202d2d1d26687f6e46bde56e67addd137bb1f9df131dbab1595ac1d64 sp:name "receive" .
@@ -235784,6 +235878,9 @@ function:efa076c33c34d35b9de082bed3bd3c030c1f46191fc485956ea99b3063c63e9a sp:nam
 function:efa8e5023aa9c0d3584d32ea777fab601347659ee07518c67fbb5bbe814809ff sp:file code:4931e611c17057dcbbe648ccc82885abfd723aaafe9f9cd307e99c7961737907 .
 function:efa8e5023aa9c0d3584d32ea777fab601347659ee07518c67fbb5bbe814809ff sp:kind "RustFunction" .
 function:efa8e5023aa9c0d3584d32ea777fab601347659ee07518c67fbb5bbe814809ff sp:name "group" .
+function:efae3929921e962072f2a76cadbb0f07d9e7a2611907be34635f73d70c0422da sp:file code:6f0656ee8b353eff18747a7a582af3f32453eae2c57bd0cbbc2aba3af19d69b2 .
+function:efae3929921e962072f2a76cadbb0f07d9e7a2611907be34635f73d70c0422da sp:kind "RustFunction" .
+function:efae3929921e962072f2a76cadbb0f07d9e7a2611907be34635f73d70c0422da sp:name "workspace_goal" .
 function:efb0c1131b2abaddfcc196073bdfa9e313e9993374e2aa7d320701d4be99e8f0 sp:file code:d9008883ae16f4767b05e260a2efa20a02d675496a7439fd335beeae66271e0c .
 function:efb0c1131b2abaddfcc196073bdfa9e313e9993374e2aa7d320701d4be99e8f0 sp:kind "RustFunction" .
 function:efb0c1131b2abaddfcc196073bdfa9e313e9993374e2aa7d320701d4be99e8f0 sp:name "save" .

@@ -1,6 +1,52 @@
 schema="oev2.design-fragment/2"
 
 [[types]]
+name="RrsiCheckExpectation"
+meaning="Frozen diagnostic oracle for evaluation/4; matching a rejection never grants adoption"
+identity="Exact evaluation bytes and check ID; development replay"
+fields=[
+{name="id",meaning="Required native check",rust_type="String",required=true,format="text",unit="ID",precision="Exact",write="Freeze before comparison",applicability="Evaluation/4",acceptance="Complete unique set; identity expects pass"},
+{name="conclusion",meaning="Expected diagnosis",rust_type="String",required=true,format="status",unit="Status",precision="Exact",write="Freeze before comparison",applicability="Evaluation/4",acceptance="Preserve native unknown/violated",allowed_values=["pass","unknown","violated"]}
+]
+
+[[constraints]]
+id="rrsi_current_root"
+requirement="req_project"
+module="kernel"
+check="current_workspace_guard"
+rust_path="crates/oe-kernel/src/learning.rs"
+statement="Compare frozen goal with current HEAD, Project, anchor, acceptance and source bytes under workspace lock at freeze/assess/decide/apply/registry. Application runs full resume. Sidecar deletion cannot bypass. Recover remains available."
+severity="error"
+
+[[constraints]]
+id="rrsi_diagnostic_four"
+requirement="req_semantics"
+module="kernel"
+check="assessment"
+rust_path="crates/oe-kernel/src/learning.rs"
+statement="Explicit /4 retains /3 source/RDF, exact diagnostic expectations and regressed/ineligible. Identity must pass. Physical unknown/violated stays. Ontology changes require governance. Failed cases count; /1-/3 retain meaning."
+severity="error"
+
+[[validations]]
+id="rrsi_current_root_entries"
+module="kernel"
+constraint="rrsi_current_root"
+behavior="changed_root_blocks_direct_entries"
+rust_path="crates/oe-engineering/tests/project_workspace_learning.rs"
+oracle="Root correction blocks native/application entries before outputs or events, including missing sidecar. Unchanged root and exact recovery still work."
+scope="Synthetic macOS; no global interception or engineering adoption"
+
+[[validations]]
+id="rrsi_diagnostic_outcomes"
+module="kernel"
+constraint="rrsi_diagnostic_four"
+behavior="frozen_diagnosis_preserves_engineering_outcome"
+rust_path="crates/oe-kernel/tests/learning.rs"
+oracle="Pass/violated/unknown receipts, retrieval gain/regression, oracle/identity mismatch, failed execution and legacy verdicts remain distinct."
+scope="Bounded development replay; live Agent costs and transfer unmeasured"
+
+
+[[types]]
 name="UnifiedProgram"
 contract_group="engineering"
 identity="UnifiedProgram"

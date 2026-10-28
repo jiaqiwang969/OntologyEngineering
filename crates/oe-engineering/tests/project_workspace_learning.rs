@@ -159,6 +159,26 @@ fn current_root_goal_freezes_with_native_evaluator_and_later_root_change_blocks_
     );
     let failure = workspace::learning_check(&root, &workspace_binding).unwrap_err();
     assert!(format!("{failure:#}").contains("workspace_learning_root_changed"));
+    assert!(
+        oe_kernel::learning::decide(
+            &root,
+            candidate_path,
+            "reject",
+            "stale root must be refused"
+        )
+        .is_err(),
+        "direct experience entry bypassed the changed workspace root"
+    );
+    assert!(
+        oe_kernel::learning::assess(
+            &root,
+            candidate_path,
+            Path::new("learning/stale-assessment.json")
+        )
+        .is_err(),
+        "direct assessment entry bypassed the changed workspace root"
+    );
+    assert!(!home.join("learning/stale-assessment.json").exists());
     assert_eq!(
         fs::read(home.join(candidate_path).join("freeze.json")).unwrap(),
         original_manifest

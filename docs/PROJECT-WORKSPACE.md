@@ -128,7 +128,7 @@ effect_unknown 先回读；历史记录和 ready 不扩大当前动作授权。
   project workspace learning-check --input inputs/learning-binding-ref.json
 ```
 
-新 goal 同时绑定当前完整 Project、完整 anchor 和全部有序验收项；`learning-freeze` 重读当前状态，检查候选的 Project、对象、条件和来源，再调用既有 experience freeze，并保存 `workspace-binding.json`。压缩接续后、继续评估或记录采用决定前运行 `learning-check`，核冻结 binding 与当前完整根目标仍一致。`root_consistent` 只说明该绑定未变，试验本身仍由原 experience owner 验证；该检查不自动包裹所有原命令。目标变更、纠正或当前来源变化须重新建立相应基线，不能沿用旧 goal 字节宣称根目标未变。原 experience 的有限评估、试用、拒绝、使用反馈与恢复语义保持，见[有证据的改进](../references/regularized-evolution.md)。本层没有扩展任意方法评估器或自动 promotion，`method_benefit` 保持未测。
+新 goal 同时绑定当前完整 Project、完整 anchor 和全部有序验收项；`learning-freeze` 重读当前状态，检查候选的 Project、对象、条件和来源，再调用既有 experience freeze，并保存 `workspace-binding.json`。压缩接续后可运行 `learning-check` 获取显式诊断；绑定候选的正式 `assess`、`decide`、`apply` 与 registry 使用入口会在既有评估/登记前重核同一完整根目标、HEAD、原件和 workspace 锁，不能靠遗漏 `learning-check` 绕过。`root_consistent` 只说明该绑定未变，试验本身仍由原 experience owner 验证。目标变更、纠正或当前来源变化须重新建立相应基线，不能沿用旧 goal 字节宣称根目标未变。原 experience 的有限评估、试用、拒绝、使用反馈与恢复语义保持，见[有证据的改进](../references/regularized-evolution.md)。本层没有扩展任意方法评估器或自动 promotion，`method_benefit` 保持未测。
 
 共享 memory 继续通过原 `session prepare/handoff` 与 Project 候选、反馈接口接续。记忆提示是待核经验，不能取代本项目当前 HEAD 或关闭验收；项目原件与共享经验各保留精确修订。`--project-home` 不等于选择共享 memory home，多个客户端共享库仍须显式指定同一目录。
 

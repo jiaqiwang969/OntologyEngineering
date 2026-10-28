@@ -36,7 +36,7 @@ export OEV2_PROJECT_HOME="/absolute/engineering-project/.engineering"
 "$OEV2_BIN" --root "$OEV2_SKILL_ROOT" --project-home "$OEV2_PROJECT_HOME" project workspace resume
 ```
 
-`begin` 只检查当前阶段；执行前保存派发状态，真实工具回读后再提交结果。`dispatched`/`effect_unknown` 恢复时不自动重试。RRSI 经 `learning-goal` / `learning-freeze` 绑定当前完整 Project 与根验收，接续试验和评估前以 `learning-check` 重核；memory home 继续独立显式配置。状态、回执支持范围、宿主 AGENTS 接入及预算统一见上述文档；当前安装是否已有命令以实际程序为准。
+`begin` 只检查当前阶段；执行前保存派发状态，真实工具回读后再提交结果。`dispatched`/`effect_unknown` 恢复时不自动重试。RRSI 经 `learning-goal` / `learning-freeze` 绑定当前完整 Project 与根验收；可显式运行 `learning-check`，而正式候选评估、决定、应用和 registry 入口会自行重核 workspace 根身份。memory home 继续独立显式配置。状态、回执支持范围、宿主 AGENTS 接入及预算统一见上述文档；当前安装是否已有命令以实际程序为准。
 
 ```sh
 "$OEV2_BIN" --root "$OEV2_SKILL_ROOT" project --help

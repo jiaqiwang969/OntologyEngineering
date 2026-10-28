@@ -141,8 +141,11 @@ fn eligibility(root: &SkillRoot, d: &ControlledVersionDefinition) -> Result<Valu
                 path.file_name().is_some_and(|n| n == "freeze.json"),
                 "version_method_source_not_freeze"
             );
-            let verified =
-                oe_kernel::learning::registered_plan(root, path.parent().unwrap(), &d.kind)?;
+            let verified = crate::project_workspace::with_learning_candidate(
+                root,
+                path.parent().unwrap(),
+                || oe_kernel::learning::registered_plan(root, path.parent().unwrap(), &d.kind),
+            )?;
             ensure!(
                 verified["assurance"] == serde_json::to_value(&d.assurance)?,
                 "version_method_assurance_mismatch"
@@ -438,14 +441,17 @@ pub fn use_method(root: &SkillRoot, id: &str, input: &Value, output: &Path) -> R
         artifacts::json(root, &selection)? == head,
         "version_selection_changed_before_use"
     );
-    let mut result = oe_kernel::learning::apply_registered_bound(
-        root,
-        path.parent().unwrap(),
-        &d.kind,
-        input,
-        output,
-        &selection,
-    )?;
+    let mut result =
+        crate::project_workspace::with_learning_candidate(root, path.parent().unwrap(), || {
+            oe_kernel::learning::apply_registered_bound(
+                root,
+                path.parent().unwrap(),
+                &d.kind,
+                input,
+                output,
+                &selection,
+            )
+        })?;
     selection_lock.ensure_current()?;
     let (_, current) = active(root, id)?;
     ensure!(

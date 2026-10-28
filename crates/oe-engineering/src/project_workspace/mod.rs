@@ -924,6 +924,40 @@ pub fn learning_freeze(root: &SkillRoot, input: &Value, output: &Path) -> Result
 
 /// Recheck the complete root goal before continuing an existing method trial.
 /// Native experience assess/decide still owns frozen-evaluator validation.
+pub fn with_learning_candidate<T>(
+    root: &SkillRoot,
+    candidate: &Path,
+    action: impl FnOnce() -> Result<T>,
+) -> Result<T> {
+    let Some(goal) = oe_kernel::learning::workspace_goal(root, candidate)? else {
+        ensure!(
+            root.data_path() == root.path()
+                || !root
+                    .private_path(Path::new("manifest.json"))?
+                    .try_exists()?,
+            "workspace_learning_goal_required"
+        );
+        return action();
+    };
+    let lock = AdvisoryFileLock::acquire(&root.private_path(Path::new("workspace.lock"))?, false)?;
+    let restored = resume(root)?;
+    ensure!(
+        restored["status"] == "ready",
+        "workspace_not_ready_for_learning"
+    );
+    let project_ref = serde_json::from_value(restored["project"].clone())?;
+    let anchor_ref = serde_json::from_value(restored["root_anchor"].clone())?;
+    semantics::validate_learning_goal(
+        &goal,
+        &project_ref,
+        &anchor_ref,
+        &artifacts::json(root, &anchor_ref)?,
+    )?;
+    let result = action()?;
+    lock.ensure_current()?;
+    Ok(result)
+}
+
 pub fn learning_check(root: &SkillRoot, reference: &ArtifactReference) -> Result<Value> {
     let _lock = AdvisoryFileLock::acquire(&root.private_path(Path::new("workspace.lock"))?, false)?;
     let restored = resume(root)?;

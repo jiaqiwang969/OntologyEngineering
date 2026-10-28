@@ -2,7 +2,9 @@
 //! Immutable events select a private trial plan, never a skill/package release.
 use anyhow::{Context, Result, ensure};
 use oe_contracts::{EvolutionAssessment, ExperienceCandidate, ExperienceState};
-use oe_core::{SkillRoot, read_regular_bytes, sha256, write_new, write_new_bytes};
+use oe_core::{
+    AdvisoryFileLock, SkillRoot, read_regular_bytes, sha256, write_new, write_new_bytes,
+};
 use oe_wire::json::{canonical_json, strict_json};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -48,6 +50,8 @@ pub struct Case {
     pub current_use: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub retrieval: Option<RetrievalCase>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expected_checks: Option<Vec<oe_contracts::RrsiCheckExpectation>>,
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -320,8 +324,176 @@ fn frozen_read(dir: &Path, r: &Reference) -> Result<Vec<u8>> {
     ensure!(sha256(&bytes) == r.sha256, "experience_frozen_bytes_drift");
     Ok(bytes)
 }
+
+/// Root identity belongs to the frozen goal, not the optional workspace sidecar.
+/// Keep the existing workspace lock through the operation. The application owner
+/// additionally runs full resume checks; the kernel cannot skip root freshness.
+fn current_workspace_guard(root: &SkillRoot, goal: &Value) -> Result<Option<AdvisoryFileLock>> {
+    if goal["schema"] != "oev2.workspace-goal/1" {
+        ensure!(
+            root.data_path() == root.path()
+                || !root
+                    .private_path(Path::new("manifest.json"))?
+                    .try_exists()?,
+            "workspace_learning_goal_required"
+        );
+        return Ok(None);
+    }
+    ensure!(
+        root.data_path() != root.path(),
+        "workspace_explicit_project_home_required"
+    );
+    let goal: oe_contracts::WorkspaceGoal = serde_json::from_value(goal.clone())?;
+    goal.validate()
+        .map_err(|_| anyhow::anyhow!("workspace_learning_goal_invalid"))?;
+    let lock = AdvisoryFileLock::acquire(&root.private_path(Path::new("workspace.lock"))?, false)?;
+    let json_at = |name: &str| -> Result<Value> {
+        Ok(strict_json(&read_regular_bytes(
+            &root.private_path(Path::new(name))?,
+            LIMIT,
+        )?)?)
+    };
+    let manifest: oe_contracts::WorkspaceManifest =
+        serde_json::from_value(json_at("manifest.json")?)?;
+    let head: oe_contracts::WorkspaceHead = serde_json::from_value(json_at("HEAD.json")?)?;
+    manifest
+        .validate()
+        .map_err(|_| anyhow::anyhow!("workspace_manifest_invalid"))?;
+    head.validate()
+        .map_err(|_| anyhow::anyhow!("workspace_head_invalid"))?;
+    let commit: oe_contracts::WorkspaceCommit = serde_json::from_value(strict_json(&read(
+        root,
+        &Reference {
+            path: head.commit.path.clone(),
+            sha256: head.commit.sha256.clone(),
+        },
+    )?)?)?;
+    commit
+        .validate()
+        .map_err(|_| anyhow::anyhow!("workspace_commit_invalid"))?;
+    commit
+        .proposal
+        .validate()
+        .map_err(|_| anyhow::anyhow!("workspace_commit_invalid"))?;
+    ensure!(
+        manifest.project_id == goal.project_id
+            && manifest.workspace_id == head.workspace_id
+            && commit.proposal.workspace_id == head.workspace_id
+            && commit.sequence == head.sequence
+            && head.commit.path == format!("commits/{}/commit.json", commit.proposal.commit_id),
+        "workspace_learning_head_mismatch"
+    );
+    ensure!(
+        serde_json::to_value(&commit.proposal.project)? == serde_json::to_value(&goal.project)?
+            && serde_json::to_value(&commit.proposal.anchor)?
+                == serde_json::to_value(&goal.root_anchor)?,
+        "workspace_learning_root_changed"
+    );
+    // Equal declared digests do not replace re-reading the current original bytes.
+    let project: crate::project::Project = serde_json::from_value(strict_json(&read(
+        root,
+        &Reference {
+            path: goal.project.path.clone(),
+            sha256: goal.project.sha256.clone(),
+        },
+    )?)?)?;
+    crate::project::validate(&project)?;
+    let anchor = strict_json(&read(
+        root,
+        &Reference {
+            path: goal.root_anchor.path.clone(),
+            sha256: goal.root_anchor.sha256.clone(),
+        },
+    )?)?;
+    let acceptance: Vec<_> = anchor["acceptance"]
+        .as_array()
+        .context("workspace_learning_acceptance_missing")?
+        .iter()
+        .map(|a| {
+            a["id"]
+                .as_str()
+                .context("workspace_learning_acceptance_invalid")
+                .map(str::to_owned)
+        })
+        .collect::<Result<_>>()?;
+    ensure!(
+        project.project_id == goal.project_id
+            && anchor["project_id"] == goal.project_id
+            && acceptance == goal.acceptance_ids,
+        "workspace_learning_acceptance_changed"
+    );
+    for source in &commit.proposal.sources {
+        read(
+            root,
+            &Reference {
+                path: source.path.clone(),
+                sha256: source.sha256.clone(),
+            },
+        )?;
+    }
+    ensure!(
+        project.evidence.values().all(|hash| commit
+            .proposal
+            .sources
+            .iter()
+            .any(|r| &r.sha256 == hash)),
+        "workspace_not_ready_for_learning"
+    );
+    ensure!(
+        commit.proposal.stage.as_ref().is_none_or(|stage| {
+            !matches!(stage.execution.as_str(), "dispatched" | "effect_unknown")
+        }),
+        "workspace_not_ready_for_learning"
+    );
+    lock.ensure_current()?;
+    Ok(Some(lock))
+}
+
+fn candidate_workspace_guard(
+    root: &SkillRoot,
+    dir: &Path,
+    manifest: &Value,
+) -> Result<Option<AdvisoryFileLock>> {
+    let goal = frozen_read(
+        dir,
+        &Reference {
+            path: "goal.json".into(),
+            sha256: manifest["goal_sha256"]
+                .as_str()
+                .context("experience_goal_missing")?
+                .into(),
+        },
+    )?;
+    current_workspace_guard(root, &strict_json(&goal)?)
+}
+
+/// Application adapters use the same checked frozen identity before full resume.
+pub fn workspace_goal(
+    root: &SkillRoot,
+    path: &Path,
+) -> Result<Option<oe_contracts::WorkspaceGoal>> {
+    let (dir, m, _, _) = checked(root, path)?;
+    let goal = strict_json(&frozen_read(
+        &dir,
+        &Reference {
+            path: "goal.json".into(),
+            sha256: m["goal_sha256"]
+                .as_str()
+                .context("experience_goal_missing")?
+                .into(),
+        },
+    )?)?;
+    if goal["schema"] == "oev2.workspace-goal/1" {
+        Ok(Some(serde_json::from_value(goal)?))
+    } else {
+        Ok(None)
+    }
+}
 fn full_check_budget(dir: &Path, c: &Contract) -> Result<()> {
-    if c.schema != "oev2.experience-evaluation/3" {
+    if !matches!(
+        c.schema.as_str(),
+        "oev2.experience-evaluation/3" | "oev2.experience-evaluation/4"
+    ) {
         return Ok(());
     }
     let total = c
@@ -330,6 +502,13 @@ fn full_check_budget(dir: &Path, c: &Contract) -> Result<()> {
         .map(|case| -> Result<u64> {
             let binding: crate::Binding =
                 serde_json::from_value(strict_json(&frozen_read(dir, &case.binding)?)?)?;
+            if let Some(expected) = &case.expected_checks {
+                let ids: BTreeSet<_> = expected.iter().map(|e| e.id.clone()).collect();
+                ensure!(
+                    ids == binding.required_checks,
+                    "experience_diagnostic_check_set_changed"
+                );
+            }
             Ok(binding.required_checks.len() as u64)
         })
         .collect::<Result<Vec<_>>>()?
@@ -346,7 +525,8 @@ fn contract_valid(c: &Contract) -> Result<()> {
         [
             "oev2.experience-evaluation/1",
             "oev2.experience-evaluation/2",
-            "oev2.experience-evaluation/3"
+            "oev2.experience-evaluation/3",
+            "oev2.experience-evaluation/4"
         ]
         .contains(&c.schema.as_str())
             && c.model == format!("{}@{}", crate::ENGINE_ID, crate::ENGINE_VERSION),
@@ -364,6 +544,43 @@ fn contract_valid(c: &Contract) -> Result<()> {
     let mut ids = BTreeSet::new();
     let mut checks = 0;
     for case in &c.cases {
+        if c.schema == "oev2.experience-evaluation/4" {
+            let expected = case
+                .expected_checks
+                .as_ref()
+                .context("experience_diagnostic_expectations_required")?;
+            ensure!(
+                !expected.is_empty() && expected.len() <= 256,
+                "experience_diagnostic_expectations_budget"
+            );
+            let mut expected_ids = BTreeSet::new();
+            for check in expected {
+                check
+                    .validate()
+                    .map_err(|_| anyhow::anyhow!("experience_diagnostic_expectation_invalid"))?;
+                ensure!(
+                    !check.id.trim().is_empty() && expected_ids.insert(check.id.as_str()),
+                    "experience_diagnostic_duplicate_check"
+                );
+                if [
+                    "bound_focus_context",
+                    "current_project_context",
+                    "current_condition_model",
+                ]
+                .contains(&check.id.as_str())
+                {
+                    ensure!(
+                        check.conclusion == "pass",
+                        "experience_diagnostic_identity_cannot_be_relaxed"
+                    );
+                }
+            }
+        } else {
+            ensure!(
+                case.expected_checks.is_none(),
+                "experience_diagnostic_expectations_require_evaluation_four"
+            );
+        }
         ensure!(
             c.schema == "oev2.experience-evaluation/1" || case.current_use,
             "experience_current_context_required"
@@ -555,6 +772,7 @@ pub fn freeze(root: &SkillRoot, input: &Value, output: &Path) -> Result<Value> {
     // must not replace either by providing similarly named data files.
     let software = SkillRoot::new(root.path())?;
     let input: FreezeInput = serde_json::from_value(input.clone())?;
+    let _workspace_guard = current_workspace_guard(root, &strict_json(&read(root, &input.goal)?)?)?;
     ensure!(
         ["oev2.experience-freeze/1", "oev2.experience-freeze/2"].contains(&input.schema.as_str()),
         "experience_freeze_schema"
@@ -696,7 +914,8 @@ pub fn freeze(root: &SkillRoot, input: &Value, output: &Path) -> Result<Value> {
         input.schema != "oev2.experience-freeze/2"
             || [
                 "oev2.experience-evaluation/2",
-                "oev2.experience-evaluation/3"
+                "oev2.experience-evaluation/3",
+                "oev2.experience-evaluation/4"
             ]
             .contains(&contract.schema.as_str()),
         "experience_new_protocol_needs_new_evaluation"
@@ -965,7 +1184,10 @@ fn run_case(
     binding.validate()?;
     let evidence = frozen_read(dir, &case.evidence)?;
     let bundle = oe_semantic::load_bundle(root.path(), &case.bundle)?;
-    let linked_origin = evaluation_schema == "oev2.experience-evaluation/3";
+    let linked_origin = matches!(
+        evaluation_schema,
+        "oev2.experience-evaluation/3" | "oev2.experience-evaluation/4"
+    );
     ensure!(
         binding.project_id == project.project_id
             && project.objects.get(&binding.object_id) == Some(&binding.object_revision)
@@ -1099,8 +1321,18 @@ fn run_case(
             }
         }
     }
+    let check_expectations_matched = case.expected_checks.as_ref().is_none_or(|expected| {
+        expected.len() == receipt.checks.len()
+            && expected.iter().all(|e| {
+                receipt.checks.iter().filter(|c| c.id == e.id).count() == 1
+                    && receipt.checks.iter().any(|c| {
+                        c.id == e.id && c.execution == "completed" && c.conclusion == e.conclusion
+                    })
+            })
+    });
     let matched = receipt.conclusion == case.expected_conclusion
-        && case.required_reasons.iter().all(|r| reasons.contains(r));
+        && case.required_reasons.iter().all(|r| reasons.contains(r))
+        && check_expectations_matched;
     Ok(
         json!({"case_id":case.case_id,"source_family":case.source_family,"exposure":case.exposure,"required_condition_diagnosis":if matched{"matched"}else{"not_matched"},
         "receipt":receipt,"observed_reasons":reasons,"top_level_checks":check_count,"wall_time_ns":start.elapsed().as_nanos().to_string(),"engineering_adoption":"blocked_or_separate",
@@ -1110,6 +1342,7 @@ fn run_case(
 }
 fn assessment(root: &SkillRoot, path: &Path) -> Result<Value> {
     let (dir, m, candidate, contract) = checked(root, path)?;
+    let _workspace_guard = candidate_workspace_guard(root, &dir, &m)?;
     let baseline = plan(&read_regular_bytes(&dir.join("baseline-plan.json"), LIMIT)?)?;
     let candidate_plan = plan(&read_regular_bytes(
         &dir.join("candidate-plan.json"),
@@ -1150,6 +1383,7 @@ fn assessment(root: &SkillRoot, path: &Path) -> Result<Value> {
     let all_matched = candidate_runs
         .iter()
         .all(|r| r["required_condition_diagnosis"] == "matched");
+    let diagnostic_four = contract.schema == "oev2.experience-evaluation/4";
     let current_guards_clear = contract.schema == "oev2.experience-evaluation/1"
         || baseline_runs.iter().chain(&candidate_runs).all(|run| {
             ["current_project_context", "current_condition_model"]
@@ -1160,16 +1394,19 @@ fn assessment(root: &SkillRoot, path: &Path) -> Result<Value> {
                             check["id"] == *id
                                 && check["execution"] == "completed"
                                 && check["conclusion"] == "pass"
-                        }) && checks
-                            .iter()
-                            .filter(|check| {
-                                check["id"].as_str().is_some_and(|id| {
-                                    id.starts_with("engineering:") || id.starts_with("engineering_")
+                        }) && (diagnostic_four
+                            || checks
+                                .iter()
+                                .filter(|check| {
+                                    check["id"].as_str().is_some_and(|id| {
+                                        id.starts_with("engineering:")
+                                            || id.starts_with("engineering_")
+                                    })
                                 })
-                            })
-                            .all(|check| {
-                                check["execution"] == "completed" && check["conclusion"] == "pass"
-                            })
+                                .all(|check| {
+                                    check["execution"] == "completed"
+                                        && check["conclusion"] == "pass"
+                                }))
                     })
                 })
         });
@@ -1191,10 +1428,39 @@ fn assessment(root: &SkillRoot, path: &Path) -> Result<Value> {
                 after["retrieval"]["inapplicable_selected"].as_u64()
                     < before["retrieval"]["inapplicable_selected"].as_u64()
             });
+    let retrieval_regressed = baseline_runs
+        .iter()
+        .zip(&candidate_runs)
+        .any(|(before, after)| {
+            before["retrieval"]["execution"] == "completed"
+                && after["retrieval"]["execution"] == "completed"
+                && ((before["retrieval"]["necessary_pages_retained"] == true
+                    && after["retrieval"]["necessary_pages_retained"] != true)
+                    || after["retrieval"]["inapplicable_selected"].as_u64()
+                        > before["retrieval"]["inapplicable_selected"].as_u64())
+        });
+    let diagnosis_regressed = baseline_runs
+        .iter()
+        .zip(&candidate_runs)
+        .any(|(before, after)| {
+            before["required_condition_diagnosis"] == "matched"
+                && after["required_condition_diagnosis"] != "matched"
+        });
     let verdict = if !critics.is_empty() {
         "rejected"
-    } else if failed || candidate.kind == "implementation_fix" {
+    } else if failed
+        || candidate.kind == "implementation_fix"
+        || (diagnostic_four
+            && candidate.kind == "ontology_knowledge"
+            && candidate.ontology_delta != "no_delta")
+    {
         "inconclusive"
+    } else if diagnostic_four && !current_guards_clear {
+        "ineligible"
+    } else if diagnostic_four && (diagnosis_regressed || retrieval_regressed) {
+        "regressed"
+    } else if diagnostic_four && (!complete || !all_matched) {
+        "ineligible"
     } else if candidate.kind == "ontology_knowledge" && candidate.ontology_delta == "no_delta" {
         "no_delta"
     } else if complete
@@ -1221,19 +1487,37 @@ fn assessment(root: &SkillRoot, path: &Path) -> Result<Value> {
     if candidate.kind == "implementation_fix" {
         reasons.push("method evaluator cannot verify a Rust implementation repair; use frozen compiler/regression contract separately".into());
     }
+    if diagnostic_four
+        && candidate.kind == "ontology_knowledge"
+        && candidate.ontology_delta != "no_delta"
+    {
+        reasons.push("retrieval and diagnostic gains cannot establish an ontology revision; revisit affected premises through Project exploration, impact review and governance".into());
+    }
+    if diagnostic_four {
+        reasons.push(format!("frozen per-check diagnostic expectations; regression: diagnosis={diagnosis_regressed}, retrieval={retrieval_regressed}; engineering unknown/violated remains unchanged"));
+    }
     let dto=EvolutionAssessment {candidate_id:candidate.candidate_id,verdict:verdict.into(),baseline_sha256:m["baseline_sha256"].as_str().context("baseline_sha")?.into(),candidate_sha256:m["candidate_sha256"].as_str().context("candidate_sha")?.into(),
         evaluation_sha256:m["evaluation_sha256"].as_str().context("evaluation_sha")?.into(),cost_status:if failed{"unknown"}else{"measured_execution_only"}.into(),transfer:"development_replay".into(),hard_conditions:HARD.iter().map(|s|s.to_string()).collect(),reasons,
         scope:"private diagnostic trial; exact frozen inputs/rules preserved; project unknowns retained; no skill switch, industry promotion or publication".into()};
     dto.validate()
         .map_err(|_| anyhow::anyhow!("experience_assessment_contract"))?;
-    Ok(
-        json!({"schema":"oev2.experience-assessment/1","assessment":dto,"model":contract.model,"repetitions":contract.repetitions,"budget_max_checks":contract.budget_max_checks,"goal_sha256":m["goal_sha256"],"evaluator_sha256":m["evaluator_sha256"],
+    let mut record = json!({"schema":"oev2.experience-assessment/1","assessment":dto,"model":contract.model,"repetitions":contract.repetitions,"budget_max_checks":contract.budget_max_checks,"goal_sha256":m["goal_sha256"],"evaluator_sha256":m["evaluator_sha256"],
         "critic":{"status":if critics.is_empty(){"bounded_plan_checks_clear"}else{"rejected"},"findings":critics,"scope":"closed declarative plans plus exact inputs/evaluator identity; arbitrary code critique not implemented"},
-        "baseline":baseline_runs,"candidate":candidate_runs,"engineering_cost":{"status":"unknown"},"model_calls":0,"transfer":"development_replay","engineering_acceptance":"not_established","executable_sha256":crate::executable_digest()?}),
-    )
+        "baseline":baseline_runs,"candidate":candidate_runs,"engineering_cost":{"status":"unknown"},"model_calls":0,"transfer":"development_replay","engineering_acceptance":"not_established","executable_sha256":crate::executable_digest()?});
+    if diagnostic_four {
+        record["comparison"] = json!({"schema":"oev2.diagnostic-comparison/1",
+            "baseline_matches":before,"candidate_matches":after,"denominator":baseline_runs.len(),
+            "retrieval_improved":retrieval_improved,"retrieval_regressed":retrieval_regressed,
+            "diagnosis_regressed":diagnosis_regressed,"evaluation_contract":contract.schema,
+            "live_agent_task_benefit":"not_measured","independent_transfer":"not_measured",
+            "cost_scope":"native review and frozen retrieval selection only; actual model, source reading and whole-task costs unmeasured",
+            "engineering_adoption":"not_granted"});
+    }
+    Ok(record)
 }
 pub fn assess(root: &SkillRoot, path: &Path, output: &Path) -> Result<Value> {
-    let (_, _, c, _) = checked(root, path)?;
+    let (dir, m, c, _) = checked(root, path)?;
+    let _workspace_guard = candidate_workspace_guard(root, &dir, &m)?;
     let writer = HistoryWriter::acquire(root, &c.candidate_id)?;
     ensure!(
         writer.old.last().is_some_and(|e| e["state"] == "frozen"),
@@ -1273,7 +1557,8 @@ pub fn decide(root: &SkillRoot, path: &Path, action: &str, reason: &str) -> Resu
         !reason.trim().is_empty(),
         "experience_decision_reason_missing"
     );
-    let (_, m, c, _) = checked(root, path)?;
+    let (dir, m, c, _) = checked(root, path)?;
+    let _workspace_guard = candidate_workspace_guard(root, &dir, &m)?;
     let writer = HistoryWriter::acquire(root, &c.candidate_id)?;
     let last = writer.old.last().context("experience_history_missing")?;
     ensure!(last["state"] == "assessed", "experience_not_assessed");
@@ -1311,6 +1596,7 @@ pub fn decide(root: &SkillRoot, path: &Path, action: &str, reason: &str) -> Resu
 /// Baseline selection grants no improvement claim. Candidates need actual gain.
 pub fn registered_plan(root: &SkillRoot, path: &Path, role: &str) -> Result<Value> {
     let (dir, m, c, _) = checked(root, path)?;
+    let _workspace_guard = candidate_workspace_guard(root, &dir, &m)?;
     ensure!(
         m["protocol"] == "oev2.experience-freeze/2",
         "registered_method_requires_protocol_two"
@@ -1443,6 +1729,7 @@ fn apply_selected(
     version_selection: Option<&oe_contracts::ArtifactReference>,
 ) -> Result<Value> {
     let (dir, m, c, mut contract) = checked(root, path)?;
+    let _workspace_guard = candidate_workspace_guard(root, &dir, &m)?;
     let writer = HistoryWriter::acquire(root, &c.candidate_id)?;
     let last = writer.old.last().context("experience_history_missing")?;
     ensure!(

@@ -4,7 +4,7 @@ use clap::Subcommand;
 use oe_core::{SkillRoot, read_regular_bytes, write_new, write_new_bytes};
 use serde_json::{Value, json};
 use std::collections::BTreeSet;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[path = "execution_directory.rs"]
 mod execution_directory;
@@ -522,6 +522,7 @@ pub enum ExperienceCommand {
     },
 }
 pub fn experience(root: &SkillRoot, command: ExperienceCommand) -> Result<Value> {
+    use oe_engineering::project_workspace;
     use oe_kernel::learning;
     if !matches!(&command, ExperienceCommand::List { .. }) {
         require_execution(root, "experience_evaluation_or_trial")?;
@@ -533,18 +534,32 @@ pub fn experience(root: &SkillRoot, command: ExperienceCommand) -> Result<Value>
                 input["schema"] == "oev2.experience-freeze/2",
                 "experience_new_freeze_requires_protocol_2"
             );
-            ("freeze", learning::freeze(root, &input, &output)?)
+            let frozen = if root.data_path() != root.path()
+                && root
+                    .private_path(Path::new("manifest.json"))?
+                    .try_exists()?
+            {
+                project_workspace::learning_freeze(root, &input, &output)?["result"].clone()
+            } else {
+                learning::freeze(root, &input, &output)?
+            };
+            ("freeze", frozen)
         }
-        ExperienceCommand::Assess { candidate, output } => {
-            ("assess", learning::assess(root, &candidate, &output)?)
-        }
+        ExperienceCommand::Assess { candidate, output } => (
+            "assess",
+            project_workspace::with_learning_candidate(root, &candidate, || {
+                learning::assess(root, &candidate, &output)
+            })?,
+        ),
         ExperienceCommand::Decide {
             candidate,
             action,
             reason,
             output,
         } => {
-            let r = learning::decide(root, &candidate, &action, &reason)?;
+            let r = project_workspace::with_learning_candidate(root, &candidate, || {
+                learning::decide(root, &candidate, &action, &reason)
+            })?;
             write_new(&root.private_path(&output)?, &r)?;
             ("decide", r)
         }
@@ -554,7 +569,9 @@ pub fn experience(root: &SkillRoot, command: ExperienceCommand) -> Result<Value>
             output,
         } => (
             "apply",
-            learning::apply(root, &candidate, &json_input(root, &input)?, &output)?,
+            project_workspace::with_learning_candidate(root, &candidate, || {
+                learning::apply(root, &candidate, &json_input(root, &input)?, &output)
+            })?,
         ),
         ExperienceCommand::Recover {
             candidate,

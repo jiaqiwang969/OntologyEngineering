@@ -3704,6 +3704,8 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("RouteUtterance", "kind", "String"),
     ("RouteUtterance", "source", "String"),
     ("RouteUtterance", "text", "String"),
+    ("RrsiCheckExpectation", "conclusion", "String"),
+    ("RrsiCheckExpectation", "id", "String"),
     ("SharedModelCallPolicy", "max_calls", "u64"),
     ("SharedModelCallState", "attempts", "u64"),
     ("SharedModelCallState", "known_input_tokens", "String"),
@@ -4964,7 +4966,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("EvolutionAssessment", "transfer", "not_run"),
     ("EvolutionAssessment", "verdict", "admissible_trial"),
     ("EvolutionAssessment", "verdict", "inconclusive"),
+    ("EvolutionAssessment", "verdict", "ineligible"),
     ("EvolutionAssessment", "verdict", "no_delta"),
+    ("EvolutionAssessment", "verdict", "regressed"),
     ("EvolutionAssessment", "verdict", "rejected"),
     ("ExperienceCandidate", "kind", "implementation_fix"),
     ("ExperienceCandidate", "kind", "ontology_knowledge"),
@@ -5501,6 +5505,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("RouteUtterance", "kind", "approval"),
     ("RouteUtterance", "kind", "correction"),
     ("RouteUtterance", "kind", "root"),
+    ("RrsiCheckExpectation", "conclusion", "pass"),
+    ("RrsiCheckExpectation", "conclusion", "unknown"),
+    ("RrsiCheckExpectation", "conclusion", "violated"),
     ("SheetReferencePersistenceIntent", "schema", "oev2.sheet-reference-persistence-intent/1"),
     ("SolidWorksEvidenceRequest", "schema", "oev2.solidworks-evidence/1"),
     ("SolidWorksNativeFace", "kind", "cylinder"),
@@ -17494,7 +17501,7 @@ impl EvolutionAssessment {
 
         if !["measured_execution_only","unknown",].contains(&self.cost_status.as_str()) { failures.push("EvolutionAssessment.cost_status:status".into()); }
         if !["development_replay","independent","not_run",].contains(&self.transfer.as_str()) { failures.push("EvolutionAssessment.transfer:status".into()); }
-        if !["admissible_trial","inconclusive","no_delta","rejected",].contains(&self.verdict.as_str()) { failures.push("EvolutionAssessment.verdict:status".into()); }
+        if !["admissible_trial","inconclusive","ineligible","no_delta","regressed","rejected",].contains(&self.verdict.as_str()) { failures.push("EvolutionAssessment.verdict:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -24050,6 +24057,27 @@ impl RouteUtterance {
         if self.text.trim().is_empty() { failures.push("RouteUtterance.text:required".into()); }
 
         if !["approval","correction","root",].contains(&self.kind.as_str()) { failures.push("RouteUtterance.kind:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Frozen diagnostic oracle for evaluation/4; matching a rejection never grants adoption
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RrsiCheckExpectation {
+    /// Expected diagnosis
+    pub conclusion: String,
+    /// Required native check
+    pub id: String,
+}
+impl RrsiCheckExpectation {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.conclusion.trim().is_empty() { failures.push("RrsiCheckExpectation.conclusion:required".into()); }
+        if self.id.trim().is_empty() { failures.push("RrsiCheckExpectation.id:required".into()); }
+
+        if !["pass","unknown","violated",].contains(&self.conclusion.as_str()) { failures.push("RrsiCheckExpectation.conclusion:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

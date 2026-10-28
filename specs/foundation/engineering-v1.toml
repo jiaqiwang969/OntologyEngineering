@@ -2176,7 +2176,6 @@ meaning = "真实过程凝练的有范围候选；项目事实与操作方法分
 identity = "不可变来源摘要、对象版本和适用条件；新事件保留旧历史"
 
 [[types.fields]]
-# @field candidate_id; @required; @write agent from natural-language intent and exact source bytes.
 name = "candidate_id"
 meaning = "冻结候选的稳定身份；评估引用同一身份"
 rust_type = "String"
@@ -2189,7 +2188,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field kind; @required; @write agent from natural-language intent and exact source bytes.
 name = "kind"
 meaning = "区分操作方法、本体知识和实现修复"
 rust_type = "String"
@@ -2203,7 +2201,6 @@ acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 allowed_values = ["operation_method","ontology_knowledge","implementation_fix"]
 
 [[types.fields]]
-# @field project_id; @required; @write agent from natural-language intent and exact source bytes.
 name = "project_id"
 meaning = "既有 Project 的稳定身份"
 rust_type = "String"
@@ -2216,7 +2213,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field object; @required; @write agent from natural-language intent and exact source bytes.
 name = "object"
 meaning = "工程对象及其修订、来源摘要和适用条件范围"
 rust_type = "ObjectIdentity"
@@ -2229,7 +2225,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field purpose; @required; @write agent from natural-language intent and exact source bytes.
 name = "purpose"
 meaning = "原目的及必要功能的自然语言绑定"
 rust_type = "String"
@@ -2242,7 +2237,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field function; @required; @write agent from natural-language intent and exact source bytes.
 name = "function"
 meaning = "所需功能及本候选承担的操作作用"
 rust_type = "String"
@@ -2255,7 +2249,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field mechanism; @required; @write agent from natural-language intent and exact source bytes.
 name = "mechanism"
 meaning = "说明工程机制；未证实的物理机制写明 unknown"
 rust_type = "String"
@@ -2268,7 +2261,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field applicability; @required; @write agent from natural-language intent and exact source bytes.
 name = "applicability"
 meaning = "有范围的适用条件，不写无条件行业结论"
 rust_type = "Vec<String>"
@@ -2281,7 +2273,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field sources; @required; @write agent from natural-language intent and exact source bytes.
 name = "sources"
 meaning = "原始过程、旧资产与提取身份的引用"
 rust_type = "Vec<SourceCitation>"
@@ -2294,7 +2285,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field counterexamples; @required; @write agent from natural-language intent and exact source bytes.
 name = "counterexamples"
 meaning = "不适用或已否定的情况"
 rust_type = "Vec<String>"
@@ -2307,7 +2297,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field unknowns; @required; @write agent from natural-language intent and exact source bytes.
 name = "unknowns"
 meaning = "工程与迁移未闭合项"
 rust_type = "Vec<String>"
@@ -2320,7 +2309,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field verification_requirements; @required; @write agent from natural-language intent and exact source bytes.
 name = "verification_requirements"
 meaning = "后续独立验证和必要工程验收"
 rust_type = "Vec<String>"
@@ -2333,7 +2321,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field existing_expression; @required; @write agent from natural-language intent and exact source bytes.
 name = "existing_expression"
 meaning = "已有本体表达、实例或缺口的精确归属"
 rust_type = "String"
@@ -2346,7 +2333,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field ontology_delta; @required; @write agent from natural-language intent and exact source bytes.
 name = "ontology_delta"
 meaning = "已有表达充分时保持 no_delta"
 rust_type = "String"
@@ -2360,7 +2346,6 @@ acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 allowed_values = ["no_delta","candidate"]
 
 [[types.fields]]
-# @field hypotheses; @required; @write agent from natural-language intent and exact source bytes.
 name = "hypotheses"
 meaning = "最多三个可检验假设；旧否定重试需新依据"
 rust_type = "Vec<String>"
@@ -2377,7 +2362,6 @@ meaning = "冻结合同下的候选评估；工程采用及治理权限不由总
 identity = "不可变来源摘要、对象版本和适用条件；新事件保留旧历史"
 
 [[types.fields]]
-# @field candidate_id; @required; @write agent from natural-language intent and exact source bytes.
 name = "candidate_id"
 meaning = "冻结候选的稳定身份；评估引用同一身份"
 rust_type = "String"
@@ -2390,7 +2374,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field verdict; @required; @write agent from natural-language intent and exact source bytes.
 name = "verdict"
 meaning = "诊断收益、试用和正式晋升各自区分"
 rust_type = "String"
@@ -2401,10 +2384,9 @@ precision = "完整摘要、对象版本与原状态；不补造缺失量"
 write = "agent 整理自然语言和已核对来源；不得手改生成区"
 applicability = "冻结候选、现有 project/harness、Rust 审查和私有试用反馈"
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
-allowed_values = ["admissible_trial","rejected","inconclusive","no_delta"]
+allowed_values = ["admissible_trial","rejected","inconclusive","no_delta","regressed","ineligible"]
 
 [[types.fields]]
-# @field baseline_sha256; @required; @write agent from natural-language intent and exact source bytes.
 name = "baseline_sha256"
 meaning = "评估前冻结的真实基线文件清单摘要"
 rust_type = "String"
@@ -2417,7 +2399,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field candidate_sha256; @required; @write agent from natural-language intent and exact source bytes.
 name = "candidate_sha256"
 meaning = "独立候选根冻结文件清单摘要"
 rust_type = "String"
@@ -2430,7 +2411,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field evaluation_sha256; @required; @write agent from natural-language intent and exact source bytes.
 name = "evaluation_sha256"
 meaning = "目标、来源族、规则、原预期、执行预算与判据的冻结身份"
 rust_type = "String"
@@ -2443,7 +2423,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field cost_status; @required; @write agent from natural-language intent and exact source bytes.
 name = "cost_status"
 meaning = "测得调用次数/时间；缺工程成本仍为 unknown"
 rust_type = "String"
@@ -2457,7 +2436,6 @@ acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 allowed_values = ["measured_execution_only","unknown"]
 
 [[types.fields]]
-# @field transfer; @required; @write agent from natural-language intent and exact source bytes.
 name = "transfer"
 meaning = "暴露过的历史和变体不当作独立任务"
 rust_type = "String"
@@ -2471,7 +2449,6 @@ acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 allowed_values = ["development_replay","independent","not_run"]
 
 [[types.fields]]
-# @field hard_conditions; @required; @write agent from natural-language intent and exact source bytes.
 name = "hard_conditions"
 meaning = "来源、单位、条件、身份、未知与必要验收逐项执行"
 rust_type = "Vec<String>"
@@ -2484,7 +2461,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field reasons; @required; @write agent from natural-language intent and exact source bytes.
 name = "reasons"
 meaning = "成功、失败、拒绝与待核结论依据"
 rust_type = "Vec<String>"
@@ -2497,7 +2473,6 @@ applicability = "冻结候选、现有 project/harness、Rust 审查和私有试
 acceptance = "来源/未知/必要验收各自检查；原预期和反例保留"
 
 [[types.fields]]
-# @field scope; @required; @write agent from natural-language intent and exact source bytes.
 name = "scope"
 meaning = "限定为私有诊断试用；不自动换技能版本或行业晋升"
 rust_type = "String"

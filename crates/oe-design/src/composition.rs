@@ -39,6 +39,8 @@ struct Body {
     contract_cases: Vec<ContractCase>,
     #[serde(default)]
     semantic_models: Vec<crate::schema_design::SemanticModelSpec>,
+    // Presence is versioned: obligations exist only in oev2.design-fragment/4.
+    obligations: Option<Vec<crate::obligations::Obligation>>,
 }
 impl Body {
     fn append(self, d: &mut Design) {
@@ -53,6 +55,7 @@ impl Body {
         d.errors.extend(self.errors);
         d.contract_cases.extend(self.contract_cases);
         d.semantic_models.extend(self.semantic_models);
+        d.obligations.extend(self.obligations.unwrap_or_default());
     }
 }
 pub struct Loaded {
@@ -179,6 +182,7 @@ pub fn load(base: &Path, path: &Path) -> Result<Loaded> {
         errors: vec![],
         contract_cases: vec![],
         semantic_models: vec![],
+        obligations: vec![],
     };
     let parent = base
         .join(&snapshot.root)
@@ -201,6 +205,10 @@ pub fn load(base: &Path, path: &Path) -> Result<Loaded> {
                     && d.purpose == m.purpose,
                 "design_composition_foundation_identity_mismatch"
             );
+            ensure!(
+                d.obligations.is_empty(),
+                "obligations_require_fragment_schema_4"
+            );
             Body {
                 schema: d.schema,
                 requirements: d.requirements,
@@ -215,12 +223,17 @@ pub fn load(base: &Path, path: &Path) -> Result<Loaded> {
                 errors: d.errors,
                 contract_cases: d.contract_cases,
                 semantic_models: d.semantic_models,
+                obligations: None,
             }
         } else {
             let body: Body = toml::from_str(std::str::from_utf8(bytes)?)?;
             ensure!(
                 body.schema == fragment.format,
                 "design_composition_fragment_schema_mismatch"
+            );
+            ensure!(
+                body.obligations.is_none() || body.schema == transport::OBLIGATION_FRAGMENT_SCHEMA,
+                "obligations_require_fragment_schema_4"
             );
             if body.schema == transport::GROUPED_FRAGMENT_SCHEMA {
                 ensure!(

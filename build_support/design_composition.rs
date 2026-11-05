@@ -21,6 +21,8 @@ pub fn is_composed(schema: &str) -> bool {
 }
 pub const FRAGMENT_SCHEMA: &str = "oev2.design-fragment/2";
 pub const GROUPED_FRAGMENT_SCHEMA: &str = "oev2.design-fragment/3";
+/// Fragment that may carry obligations; only under the extended root.
+pub const OBLIGATION_FRAGMENT_SCHEMA: &str = "oev2.design-fragment/4";
 pub const FILE_BYTES: usize = 4 * 1024 * 1024;
 pub const TOTAL_BYTES: usize = 8 * 1024 * 1024;
 pub const FILE_COUNT: usize = 32;
@@ -257,7 +259,9 @@ pub fn snapshot(base: &Path, path: &Path) -> Result<Snapshot, String> {
         )?;
         check(
             ["oev2.design/1", FRAGMENT_SCHEMA].contains(&fragment.format.as_str())
-                || (uses_groups(&manifest.schema) && fragment.format == GROUPED_FRAGMENT_SCHEMA),
+                || (uses_groups(&manifest.schema) && fragment.format == GROUPED_FRAGMENT_SCHEMA)
+                || (manifest.schema == EXTENDED_ROOT_SCHEMA
+                    && fragment.format == OBLIGATION_FRAGMENT_SCHEMA),
             "design_composition_nested_manifest_unsupported",
         )?;
         let p = parent.join(&fragment.path);

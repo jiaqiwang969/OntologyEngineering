@@ -493,3 +493,87 @@ fn a_single_changed_fact_fails_its_own_check() {
         assert!(!home.path.join(format!("check-{name}.json")).exists());
     }
 }
+
+#[test]
+fn the_route_receipts_discharge_the_drawing_obligations() {
+    let home = Home::new();
+    let output = home.oev2(&[
+        "drawing",
+        "route",
+        "--project",
+        "project.json",
+        "--object",
+        "object.json",
+        "--dxf",
+        "sources/source.dxf",
+        "--svg",
+        "sources/source.svg",
+        "--output-directory",
+        "route",
+        "--title",
+        "I1 stepped shaft",
+    ]);
+    assert_eq!(output.status.code(), Some(1));
+    let judged = Command::new(env!("CARGO_BIN_EXE_oev2"))
+        .env_clear()
+        .env("PATH", "/usr/bin:/bin")
+        .arg("--root")
+        .arg(root())
+        .args(["design", "evidence", "--run"])
+        .arg(home.path.join("route"))
+        .output()
+        .unwrap();
+    // Without a browser the page obligations lack their documents, so the command does not pass.
+    assert_eq!(
+        judged.status.code(),
+        Some(1),
+        "{}",
+        String::from_utf8_lossy(&judged.stderr)
+    );
+    let report: Value = serde_json::from_slice(&judged.stdout).unwrap();
+    assert_eq!(report["schema"], "oev2.design-obligation-evidence/1");
+    let status: std::collections::BTreeMap<String, String> = report["obligations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|o| o["id"].as_str().unwrap().starts_with("ob_drawing_"))
+        .map(|o| {
+            (
+                o["id"].as_str().unwrap().to_owned(),
+                o["status"].as_str().unwrap().to_owned(),
+            )
+        })
+        .collect();
+    let expected: std::collections::BTreeMap<String, String> = [
+        ("ob_drawing_converter_identity", "held"),
+        ("ob_drawing_faithful_page", "absent"),
+        ("ob_drawing_no_invented_target", "absent"),
+        ("ob_drawing_partial_intervals_on_lines", "held"),
+        ("ob_drawing_recorded_run", "held"),
+        ("ob_drawing_source_conservation", "held"),
+        ("ob_drawing_source_only_worker", "held"),
+        ("ob_drawing_structural_lines", "absent"),
+    ]
+    .into_iter()
+    .map(|(a, b)| (a.to_owned(), b.to_owned()))
+    .collect();
+    assert_eq!(status, expected, "{report:#}");
+    // Every absent obligation lacks exactly the browser reports, never another document.
+    for o in report["obligations"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|o| o["status"] == "absent")
+    {
+        for e in o["executors"].as_array().unwrap() {
+            for v in e["evidence"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .filter(|v| v["status"] == "absent")
+            {
+                assert_eq!(v["schema"], "oev2.drawing-review-page-check/1", "{o:#}");
+            }
+        }
+    }
+}

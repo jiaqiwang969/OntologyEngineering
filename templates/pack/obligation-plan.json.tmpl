@@ -1,0 +1,16 @@
+---
+to: out/obligation-plan.json
+sparql:
+  obligations: 'SELECT ?obligation ?statement ?constraint ?requirement WHERE { ?o <urn:oev2:design:kind> "Obligation" ; <urn:oev2:design:name> ?obligation ; <urn:oev2:design:statement> ?statement ; <urn:oev2:design:constraint> ?c . ?c <urn:oev2:design:name> ?constraint ; <urn:oev2:design:requirement> ?r . BIND(STRAFTER(STR(?r), "urn:oev2:design:") AS ?requirement) } ORDER BY ?obligation'
+  executors: 'SELECT ?obligation ?executor ?kind ?module ?entry WHERE { ?e <urn:oev2:design:kind> "ObligationExecutor" ; <urn:oev2:design:obligation> ?o ; <urn:oev2:design:ordinal> ?executor ; <urn:oev2:design:executorKind> ?kind ; <urn:oev2:design:module> ?m ; <urn:oev2:design:entry> ?entry . ?o <urn:oev2:design:name> ?obligation . ?m <urn:oev2:design:name> ?module } ORDER BY ?obligation ?executor'
+  symbols: 'SELECT ?obligation ?executor ?symbol WHERE { ?e <urn:oev2:design:kind> "ObligationExecutor" ; <urn:oev2:design:obligation> ?o ; <urn:oev2:design:ordinal> ?executor ; <urn:oev2:design:symbol> ?symbol . ?o <urn:oev2:design:name> ?obligation } ORDER BY ?obligation ?executor'
+  paths: 'SELECT ?obligation ?executor ?rustPath WHERE { ?e <urn:oev2:design:kind> "ObligationExecutor" ; <urn:oev2:design:obligation> ?o ; <urn:oev2:design:ordinal> ?executor ; <urn:oev2:design:rustPath> ?rustPath . ?o <urn:oev2:design:name> ?obligation } ORDER BY ?obligation ?executor'
+  evidence: 'SELECT ?obligation ?executor ?evidence ?contract ?documentSchema ?pointer ?op ?valueJson ?minDocuments WHERE { ?v <urn:oev2:design:kind> "ObligationEvidence" ; <urn:oev2:design:executor> ?e ; <urn:oev2:design:ordinal> ?evidence ; <urn:oev2:design:contract> ?contract ; <urn:oev2:design:documentSchema> ?documentSchema ; <urn:oev2:design:pointer> ?pointer ; <urn:oev2:design:op> ?op ; <urn:oev2:design:valueJson> ?valueJson ; <urn:oev2:design:minDocuments> ?minDocuments . ?e <urn:oev2:design:ordinal> ?executor ; <urn:oev2:design:obligation> ?o . ?o <urn:oev2:design:name> ?obligation } ORDER BY ?obligation ?executor ?evidence'
+  gaps: 'SELECT ?obligation ?gap WHERE { ?o <urn:oev2:design:kind> "Obligation" ; <urn:oev2:design:name> ?obligation ; <urn:oev2:design:gap> ?gap } ORDER BY ?obligation ?gap'
+---
+{"obligations": {{ obligations | json_encode(pretty=true) }},
+ "executors": {{ executors | json_encode(pretty=true) }},
+ "symbols": {{ symbols | json_encode(pretty=true) }},
+ "paths": {{ paths | json_encode(pretty=true) }},
+ "evidence": {{ evidence | json_encode(pretty=true) }},
+ "gaps": {{ gaps | json_encode(pretty=true) }}}

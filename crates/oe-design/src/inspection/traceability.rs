@@ -6,6 +6,39 @@ use serde_json::{Value, json};
 use std::collections::BTreeMap;
 use std::path::Path;
 
+/// One obligation with each executor's entry, symbol presence and evidence typing.
+fn obligation(
+    design: &Design,
+    files: &BTreeMap<&str, &CodeFile>,
+    o: &crate::obligations::Obligation,
+) -> Value {
+    let executors: Vec<Value> = o
+        .executors
+        .iter()
+        .map(|e| {
+            let code = crate::obligations::CODE_KINDS.contains(&e.kind.as_str());
+            let present = match (code, &e.rust_path, &e.symbol) {
+                (true, Some(path), Some(name)) => files
+                    .get(path.as_str())
+                    .is_some_and(|f| f.functions.contains(name) || f.public_types.contains(name)),
+                _ => true,
+            };
+            let evidence: Vec<Value> = e
+                .evidence
+                .iter()
+                .map(|v| {
+                    let untyped = crate::obligations::untyped(design, &v.contract, &v.pointer);
+                    json!({"contract":v.contract,"schema":v.schema,"pointer":v.pointer,"op":v.op,"value":v.value,
+                        "min_documents":v.min_documents,"typed":untyped.is_none(),"untyped":untyped})
+                })
+                .collect();
+            json!({"kind":e.kind,"module":e.module,"rust_path":e.rust_path,"symbol":e.symbol,
+                "symbol_present":present,"entry":e.entry,"run_observable":!e.evidence.is_empty(),"evidence":evidence})
+        })
+        .collect();
+    json!({"id":o.id,"statement":o.statement,"executors":executors,"gaps":o.gaps})
+}
+
 fn symbol(files: &BTreeMap<&str, &CodeFile>, path: &str, name: &str, test: bool) -> Value {
     let file = files.get(path);
     let present = file.is_some_and(|f| {
@@ -36,6 +69,13 @@ pub(super) fn traceability(root: &Path, design: &Design, code: &[CodeFile]) -> R
             "test":symbol(&files, &v.rust_path, &v.behavior, true)}),
         );
     }
+    let mut obligations_by_constraint: BTreeMap<&str, Vec<Value>> = BTreeMap::new();
+    for o in &design.obligations {
+        obligations_by_constraint
+            .entry(&o.constraint)
+            .or_default()
+            .push(obligation(&design, &files, o));
+    }
     let mut constraints_by_requirement: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
     let mut constraints = BTreeMap::new();
     for c in &design.constraints {
@@ -46,7 +86,8 @@ pub(super) fn traceability(root: &Path, design: &Design, code: &[CodeFile]) -> R
         constraints.insert(c.id.as_str(), json!({"id":c.id,"requirement":c.requirement,
             "module":c.module,"statement":c.statement,"severity":c.severity,
             "checker":symbol(&files, &c.rust_path, &c.check, false),
-            "validations":validations_by_constraint.get(c.id.as_str()).cloned().unwrap_or_default()}));
+            "validations":validations_by_constraint.get(c.id.as_str()).cloned().unwrap_or_default(),
+            "obligations":obligations_by_constraint.get(c.id.as_str()).cloned().unwrap_or_default()}));
     }
     let mut realizations: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
     let mut modules = BTreeMap::new();
@@ -103,6 +144,22 @@ pub(super) fn traceability(root: &Path, design: &Design, code: &[CodeFile]) -> R
                     gap("behavior_case_missing", case);
                 }
             }
+            for o in check["obligations"].as_array().into_iter().flatten() {
+                let id = o["id"].as_str().unwrap_or_default();
+                for e in o["executors"].as_array().into_iter().flatten() {
+                    if e["symbol_present"] != true {
+                        gap("obligation_executor_missing", id);
+                    }
+                    if e["evidence"]
+                        .as_array()
+                        .into_iter()
+                        .flatten()
+                        .any(|v| v["typed"] != true)
+                    {
+                        gap("obligation_evidence_untyped", id);
+                    }
+                }
+            }
         }
         if !gaps.is_empty() {
             with_gaps += 1;
@@ -116,11 +173,13 @@ pub(super) fn traceability(root: &Path, design: &Design, code: &[CodeFile]) -> R
         "design_sha256":oe_core::sha256(&design.canonical()?),
         "scope":"Declared requirement, realization, checker and validation relations with current parsed source bytes. Different roles may have different modules. No call-path, sufficiency, execution or engineering proof; undeclared relations remain outside this view.",
         "counts":{"requirements":requirements.len(),"requirements_with_static_gaps":with_gaps,
-            "modules":modules.len(),"constraints":constraints.len(),"validations":validations.len()},
+            "modules":modules.len(),"constraints":constraints.len(),"validations":validations.len(),
+            "obligations":design.obligations.len()},
         "requirements":requirements,"modules":modules.into_values().collect::<Vec<_>>(),
         "constraints":constraints.into_values().collect::<Vec<_>>(),
         "validations":validations.into_values().collect::<Vec<_>>(),"sources":design.sources,
         "evidence":{"generation":"not_run","behavior_execution":"not_run",
+            "run_evidence":"judged per run by oev2 design evidence against declared obligations",
             "oracle_independence":"not_assessed","engineering_acceptance":"not_established",
             "method_gain":"not_evaluated"}
     }))

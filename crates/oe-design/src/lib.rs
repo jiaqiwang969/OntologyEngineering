@@ -4,6 +4,7 @@ pub mod generation;
 pub mod inspection;
 pub mod migration;
 pub mod migration_ledger;
+pub mod obligations;
 pub mod provenance;
 pub mod schema_design;
 
@@ -157,6 +158,10 @@ pub struct Design {
     pub contract_cases: Vec<ContractCase>,
     #[serde(default)]
     pub semantic_models: Vec<schema_design::SemanticModelSpec>,
+    /// Executors, entries and run evidence of constraints (oev2.design-fragment/4 only). Absent from
+    /// the normalized form when empty, so designs without obligations keep their exact bytes.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub obligations: Vec<obligations::Obligation>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -827,6 +832,7 @@ impl Design {
             strict_json(c.input_json.as_bytes()).context("contract_case_json_invalid")?;
         }
         self.validate_contract_groups()?;
+        obligations::validate(self)?;
         Ok(())
     }
     pub fn normalize(mut self) -> Result<Self> {
@@ -841,6 +847,7 @@ impl Design {
         self.sources.sort_by(|a, b| a.id.cmp(&b.id));
         self.errors.sort_by(|a, b| a.code.cmp(&b.code));
         self.contract_cases.sort_by(|a, b| a.id.cmp(&b.id));
+        self.obligations.sort_by(|a, b| a.id.cmp(&b.id));
         for m in &mut self.modules {
             m.realizes.sort();
             m.depends_on.sort();
@@ -1042,6 +1049,7 @@ impl Design {
             triple(&c.id, "module", iri(&c.module));
             triple(&c.id, "requirement", iri(&c.requirement));
         }
+        obligations::rdf(self, &mut triple)?;
         for v in &self.validations {
             for (p, s) in [
                 ("kind", "Validation"),
@@ -1242,9 +1250,14 @@ pub fn load(path: &Path) -> Result<Design> {
         )?
         .design);
     }
-    toml::from_str::<Design>(std::str::from_utf8(&bytes)?)
-        .context("invalid_annotated_design")?
-        .normalize()
+    let design = toml::from_str::<Design>(std::str::from_utf8(&bytes)?)
+        .context("invalid_annotated_design")?;
+    // Obligations are versioned with oev2.design-fragment/4; a single oev2.design/1 file cannot carry them.
+    ensure!(
+        design.obligations.is_empty(),
+        "obligations_require_fragment_schema_4"
+    );
+    design.normalize()
 }
 
 /// Formal validation of editable input requires a matching executing implementation.
@@ -1308,6 +1321,9 @@ pub fn changes(before: &Design, after: &Design) -> Result<BTreeSet<String>> {
         }
         for c in &design.contract_cases {
             target.insert(format!("case_{}", c.id), serde_json::to_value(c)?);
+        }
+        for o in &design.obligations {
+            target.insert(format!("obligation_{}", o.id), serde_json::to_value(o)?);
         }
         target.insert(
             "model".into(),

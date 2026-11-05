@@ -66,6 +66,21 @@ oev2 --root ROOT --project-home HOME drawing route \
 
 [`examples/drawing-understanding/i1-stepped-shaft`](../examples/drawing-understanding/i1-stepped-shaft) 是原创合成三段阶梯轴的 DWG，以及锁定转换器得到的 DXF 与内置字体渲染；测试在其上运行完整路线（DXF 方式）、发现、独立复核及单项篡改反例。
 
+## 义务：谁执行、在哪个入口、凭什么成立
+
+规范 `specs/modules/drawing-understanding.toml` 为本模块声明八条义务（格式见[设计方法](../references/design-method.md#在四环之间保持含义和依据)）。`oev2 --root ROOT design evidence --run 运行目录` 按这些义务判定一次运行；不给 Chrome 时，三条页面义务缺证据而不是成立。
+
+| 义务 | 执行者与入口 | 运行证据 | 运行之外 |
+|---|---|---|---|
+| 源对象守恒 | 生成合同校验；分类程序 `check`（worker 输出）；独立复核 `check`（check-graph） | 复核通过且“源根对象完整”“类型/图层/所属”“原生成员存在”“源域覆盖到端”各有计数；review 状态为待复核候选 | — |
+| worker 只收源字节 | `review`（沙箱、只有 stdin）；路线 probe-sandbox 四个探针；独立复核 | review 记有沙箱配置与 worker 摘要；回执 probe-sandbox 通过；“实际 worker 是固定分类程序”计数 | — |
+| 部分区间只在合格直线上 | 分类程序 `check`；独立复核；检查页 `page` | 对应复核计数；回执 page 步通过 | — |
+| 不编造零件目标 | 独立复核；浏览器检查（7 种模式） | “无臆造零件目标”计数；7 份页面检查均通过 | — |
+| 结构线自洽 | 独立复核；浏览器检查 | 结构线身份与“恰好一根结构线”计数；7 份页面检查中每根线只画一次、推断区间端点在线上 | — |
+| 转换器身份 | `verify_cadcraft`（verify-runtime） | 回执 verify-runtime 通过、编译进程序的锁在回执中 | 转换保真由开发图纸上的资格验证确立 |
+| 页面如实显示 | `render`；浏览器检查 | 回执 page 步通过；7 份页面检查通过且各有断言 | — |
+| 运行可复核 | 路线回执 | 回执记有程序摘要；read-source、verify-source 通过 | 跨运行的逐字节复现由重复资格运行确立 |
+
 ## 资格与限制
 
 - 规则阈值与视图启发式在开发图纸上校准；对另一张图的结果需要独立评价，不能由这里的检查通过推出。

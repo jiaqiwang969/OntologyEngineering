@@ -1,4 +1,4 @@
-schema = "oev2.design-fragment/2"
+schema = "oev2.design-fragment/4"
 
 # Reading an existing engineering drawing (the reverse side of the CAD route): every source entity kept with its
 # native members; nonexclusive source uses with bounded intervals; complete expressions classified on four
@@ -3525,3 +3525,437 @@ behavior = "the_harness_carries_the_mode_focus_and_region_without_answers"
 rust_path = "crates/oe-drawing-check/tests/browser_result.rs"
 oracle = "Harness text composed for each mode; only the page path, mode, focus label and region are substituted"
 scope = "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+
+[[validations]]
+id = "md_drawing_route_the_route_receipts_discharge_the_drawing_obligations"
+module = "drawing_understanding"
+constraint = "md_drawing_route"
+behavior = "the_route_receipts_discharge_the_drawing_obligations"
+rust_path = "crates/oe-cli/tests/drawing_cli.rs"
+oracle = "The public I1 route run without a browser judged by oev2 design evidence: every obligation with run evidence held except the page obligations, which are absent"
+scope = "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+
+# ---------------------------------------------------------------- obligations: who executes, at which entry, by what
+
+[[obligations]]
+id = "ob_drawing_source_conservation"
+constraint = "md_engineering_expression"
+statement = "Every model-space graphic root of the source is kept with its native type, layer, owner and native members, and every source domain is covered by member intervals"
+gaps = []
+
+[[obligations.executors]]
+kind = "generated_validation"
+module = "drawing_understanding"
+symbol = "MdEngineeringExpressionGraph"
+entry = "Worker output deserialized into the generated contract and validated before it is checked"
+
+[[obligations.executors]]
+kind = "rust_check"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/engineering_expression.rs"
+symbol = "check"
+entry = "Worker output check before review.json is written: oev2 drawing discover; oev2 drawing route, step classify"
+
+[[obligations.executors.evidence]]
+contract = "MdUsageDiscoveryReview"
+schema = "oev2.drawing-discovery-review/1"
+pointer = "/status"
+op = "equals"
+value = "expression_candidates_for_review"
+
+[[obligations.executors]]
+kind = "independent_check"
+module = "drawing_understanding_check"
+rust_path = "crates/oe-drawing-check/src/graph.rs"
+symbol = "check"
+entry = "oev2 drawing check; oev2 drawing route, step check-graph"
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/Source bytes and identity unchanged"
+op = "at_least"
+value = 1
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/Every original model-space graphic root preserved exactly"
+op = "at_least"
+value = 1
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/Native type, layer and owner retained"
+op = "at_least"
+value = 1
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/Native member source exists"
+op = "at_least"
+value = 1
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/Source domain covered to its end"
+op = "at_least"
+value = 1
+
+[[obligations]]
+id = "ob_drawing_source_only_worker"
+constraint = "md_drawing_route"
+statement = "Classification sees only the DXF bytes: an isolated worker under a deny-default sandbox receives them on stdin with no path, Project, request, reference or answer, and the worker that ran is identified"
+gaps = []
+
+[[obligations.executors]]
+kind = "rust_check"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/review.rs"
+symbol = "review"
+entry = "oev2 drawing discover; oev2 drawing route, step classify"
+
+[[obligations.executors.evidence]]
+contract = "MdUsageDiscoveryReview"
+schema = "oev2.drawing-discovery-review/1"
+pointer = "/sandbox_profile"
+op = "present"
+
+[[obligations.executors.evidence]]
+contract = "MdUsageDiscoveryReview"
+schema = "oev2.drawing-discovery-review/1"
+pointer = "/worker_sha256"
+op = "present"
+
+[[obligations.executors]]
+kind = "runtime_receipt"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/route.rs"
+symbol = "route"
+entry = "oev2 drawing route, step probe-sandbox: synthetic bytes give a graph, file read and network denied, extra argument refused"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/2/id"
+op = "equals"
+value = "probe-sandbox"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/2/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors]]
+kind = "independent_check"
+module = "drawing_understanding_check"
+rust_path = "crates/oe-drawing-check/src/graph.rs"
+symbol = "check"
+entry = "oev2 drawing check; oev2 drawing route, step check-graph"
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/Actual worker is the pinned classifier under its deny-default sandbox"
+op = "at_least"
+value = 1
+
+[[obligations]]
+id = "ob_drawing_partial_intervals_on_lines"
+constraint = "md_engineering_expression"
+statement = "A member covers part of a source only when the source is a qualified LINE; every other source is used whole, in the graph and on the page"
+gaps = []
+
+[[obligations.executors]]
+kind = "rust_check"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/engineering_expression.rs"
+symbol = "check"
+entry = "Worker output check before review.json is written: oev2 drawing discover; oev2 drawing route, step classify"
+
+[[obligations.executors.evidence]]
+contract = "MdUsageDiscoveryReview"
+schema = "oev2.drawing-discovery-review/1"
+pointer = "/status"
+op = "equals"
+value = "expression_candidates_for_review"
+
+[[obligations.executors]]
+kind = "independent_check"
+module = "drawing_understanding_check"
+rust_path = "crates/oe-drawing-check/src/graph.rs"
+symbol = "check"
+entry = "oev2 drawing check; oev2 drawing route, step check-graph"
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/Partial intervals only on qualified LINE sources"
+op = "at_least"
+value = 1
+
+[[obligations.executors]]
+kind = "rust_check"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/page.rs"
+symbol = "page"
+entry = "oev2 drawing page; oev2 drawing route, step page"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/9/id"
+op = "equals"
+value = "page"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/9/status"
+op = "equals"
+value = "passed"
+
+[[obligations]]
+id = "ob_drawing_no_invented_target"
+constraint = "md_engineering_expression"
+statement = "No expression names a part feature, face or requirement target; targets stay unknown until separately supported"
+gaps = []
+
+[[obligations.executors]]
+kind = "independent_check"
+module = "drawing_understanding_check"
+rust_path = "crates/oe-drawing-check/src/graph.rs"
+symbol = "check"
+entry = "oev2 drawing check; oev2 drawing route, step check-graph"
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/No invented part target"
+op = "at_least"
+value = 1
+
+[[obligations.executors]]
+kind = "browser_check"
+module = "drawing_understanding_check"
+rust_path = "crates/oe-drawing-check/src/browser.rs"
+symbol = "check_page"
+entry = "oev2 drawing check-page; oev2 drawing route, step check-page in seven display modes"
+
+[[obligations.executors.evidence]]
+contract = "MdReviewPageCheck"
+schema = "oev2.drawing-review-page-check/1"
+pointer = "/status"
+op = "equals"
+value = "passed"
+min_documents = 7
+
+[[obligations]]
+id = "ob_drawing_structural_lines"
+constraint = "md_engineering_expression"
+statement = "Every outline member outside a section profile and every inferred span is in exactly one structural line of its own view and outline class, and each line is drawn once with inferred spans at their source end points"
+gaps = []
+
+[[obligations.executors]]
+kind = "independent_check"
+module = "drawing_understanding_check"
+rust_path = "crates/oe-drawing-check/src/graph.rs"
+symbol = "check"
+entry = "oev2 drawing check; oev2 drawing route, step check-graph"
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/Structural line identities distinct"
+op = "at_least"
+value = 1
+
+[[obligations.executors.evidence]]
+contract = "MdExpressionGraphCheck"
+schema = "oev2.drawing-expression-graph-check/1"
+pointer = "/by_kind/Every outline member outside a section profile and every inferred span in exactly one structural line"
+op = "at_least"
+value = 1
+
+[[obligations.executors]]
+kind = "browser_check"
+module = "drawing_understanding_check"
+rust_path = "crates/oe-drawing-check/src/browser.rs"
+symbol = "check_page"
+entry = "oev2 drawing check-page; oev2 drawing route, step check-page in seven display modes"
+
+[[obligations.executors.evidence]]
+contract = "MdReviewPageCheck"
+schema = "oev2.drawing-review-page-check/1"
+pointer = "/status"
+op = "equals"
+value = "passed"
+min_documents = 7
+
+[[obligations.executors.evidence]]
+contract = "MdReviewPageCheck"
+schema = "oev2.drawing-review-page-check/1"
+pointer = "/facts/structural_lines/drawn_once"
+op = "equals"
+value = true
+min_documents = 7
+
+[[obligations.executors.evidence]]
+contract = "MdReviewPageCheck"
+schema = "oev2.drawing-review-page-check/1"
+pointer = "/facts/structural_lines/inferred_endpoints_ok"
+op = "equals"
+value = true
+min_documents = 7
+
+[[obligations]]
+id = "ob_drawing_converter_identity"
+constraint = "md_drawing_route"
+statement = "Only the locked converter runs: its repository, commit and digest match the compiled lock and its local record and its reported version matches the lock before it runs, and the conversion runs without fonts"
+gaps = ["Conversion fidelity, that the DXF keeps everything the later steps read, is established by qualification on development drawings, not by one run"]
+
+[[obligations.executors]]
+kind = "external_tool"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/route.rs"
+symbol = "verify_cadcraft"
+entry = "oev2 drawing route, step verify-runtime"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/0/id"
+op = "equals"
+value = "verify-runtime"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/0/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/cadcraft_lock/commit"
+op = "present"
+
+[[obligations.executors]]
+kind = "qualification"
+module = "drawing_understanding"
+entry = "The route on a development drawing compared byte for byte with its recorded DXF and graph"
+
+[[obligations]]
+id = "ob_drawing_faithful_page"
+constraint = "md_review_page"
+statement = "The review page embeds the frozen graph and the neutral rendering unchanged, refuses active rendering content and passes its browser checks in every display mode"
+gaps = []
+
+[[obligations.executors]]
+kind = "rust_check"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/page.rs"
+symbol = "render"
+entry = "oev2 drawing page; oev2 drawing route, step page"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/9/id"
+op = "equals"
+value = "page"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/9/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors]]
+kind = "browser_check"
+module = "drawing_understanding_check"
+rust_path = "crates/oe-drawing-check/src/browser.rs"
+symbol = "check_page"
+entry = "oev2 drawing check-page; oev2 drawing route, step check-page in seven display modes"
+
+[[obligations.executors.evidence]]
+contract = "MdReviewPageCheck"
+schema = "oev2.drawing-review-page-check/1"
+pointer = "/status"
+op = "equals"
+value = "passed"
+min_documents = 7
+
+[[obligations.executors.evidence]]
+contract = "MdReviewPageCheck"
+schema = "oev2.drawing-review-page-check/1"
+pointer = "/count"
+op = "at_least"
+value = 1
+min_documents = 7
+
+[[obligations]]
+id = "ob_drawing_recorded_run"
+constraint = "md_drawing_route"
+statement = "Each run records the digests of its inputs and outputs, the executable, the converter lock and the fixed environment, stops at the first failure, and the drawing is unchanged at the end"
+gaps = ["Byte reproduction across runs is shown by repeating the route in qualification, not checked within one run"]
+
+[[obligations.executors]]
+kind = "runtime_receipt"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/route.rs"
+symbol = "route"
+entry = "oev2 drawing route"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/executable_sha256"
+op = "present"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/1/id"
+op = "equals"
+value = "read-source"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/1/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/11/id"
+op = "equals"
+value = "verify-source"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/11/status"
+op = "equals"
+value = "passed"
+
+[[obligations.executors]]
+kind = "qualification"
+module = "drawing_understanding"
+entry = "A second run on the same inputs compared byte for byte"

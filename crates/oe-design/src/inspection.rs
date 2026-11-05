@@ -462,6 +462,35 @@ pub fn inspect(root: &Path, design: &Design) -> Result<serde_json::Value> {
             );
         }
     }
+    for o in &design.obligations {
+        for (n, e) in o.executors.iter().enumerate() {
+            let subject = format!("obligation_{}_executor_{n:02}", o.id);
+            if let (true, Some(path), Some(symbol)) = (
+                crate::obligations::CODE_KINDS.contains(&e.kind.as_str()),
+                &e.rust_path,
+                &e.symbol,
+            ) && !code.iter().any(|f| {
+                f.path == *path && (f.functions.contains(symbol) || f.public_types.contains(symbol))
+            }) {
+                emit(
+                    "obligation_executor_missing",
+                    &subject,
+                    format!("{path}::{symbol}"),
+                    "implement the declared executor or correct its path and symbol",
+                );
+            }
+            for v in &e.evidence {
+                if let Some(why) = crate::obligations::untyped(design, &v.contract, &v.pointer) {
+                    emit(
+                        "obligation_evidence_untyped",
+                        &subject,
+                        why,
+                        "point the evidence at fields of the declared contract",
+                    );
+                }
+            }
+        }
+    }
     let declared: BTreeSet<_> = design
         .modules
         .iter()

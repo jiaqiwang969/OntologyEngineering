@@ -1,0 +1,77 @@
+schema = "oev2.design-fragment/2"
+
+# Obligations close the four rings: who executes a constraint, at which entry, by which run evidence. The language
+# (oev2.design-fragment/4), the static check in design inspect, the generated obligation plan and the run judgement
+# `oev2 design evidence` are constraints of the design module itself.
+
+[[constraints]]
+id = "design_obligations"
+requirement = "req_semantics"
+module = "design"
+check = "validate"
+rust_path = "crates/oe-design/src/obligations.rs"
+statement = "Obligations exist only in oev2.design-fragment/4 under an oev2.design/5 root; each names an existing constraint and executors of known kinds with existing modules, Rust paths inside the module and identifier symbols, generated validations name declared contracts, qualification and review executors carry no code or run evidence, and evidence predicates name declared contracts with valid JSON pointers and operations; missing executor symbols and pointers that do not resolve through the declared contract fields are static findings of design inspect"
+severity = "error"
+
+[[constraints]]
+id = "design_obligation_evidence"
+requirement = "req_semantics"
+module = "design"
+check = "evaluate"
+rust_path = "crates/oe-design/src/obligations.rs"
+statement = "A run is judged per obligation from the JSON documents of its directory selected by their schema field: held only when every executor with run evidence is satisfied by all documents of each cited schema, failed when one predicate is not, absent when a schema has too few documents, outside_run when no executor declares run evidence; nothing is inferred from file names or from executors without declared evidence"
+severity = "error"
+
+[[validations]]
+id = "design_obligations_obligations_exist_only_in_fragment_four_under_the_extend"
+module = "design"
+constraint = "design_obligations"
+behavior = "obligations_exist_only_in_fragment_four_under_the_extended_root"
+rust_path = "crates/oe-design/tests/obligations.rs"
+oracle = "Fragments with and without the new schema under oev2.design/4 and /5 roots, and a single oev2.design/1 file carrying obligations"
+scope = "Synthetic contracts and run documents on the composition foundation fixture; behaviour of the design language and run judgement, not of any engineering module"
+
+[[validations]]
+id = "design_obligations_a_design_without_obligations_keeps_its_normalized_bytes"
+module = "design"
+constraint = "design_obligations"
+behavior = "a_design_without_obligations_keeps_its_normalized_bytes"
+rust_path = "crates/oe-design/tests/obligations.rs"
+oracle = "Canonical bytes of the foundation design with and without the obligation machinery"
+scope = "Synthetic contracts and run documents on the composition foundation fixture; behaviour of the design language and run judgement, not of any engineering module"
+
+[[validations]]
+id = "design_obligations_each_malformed_obligation_is_refused_with_its_own_reason"
+module = "design"
+constraint = "design_obligations"
+behavior = "each_malformed_obligation_is_refused_with_its_own_reason"
+rust_path = "crates/oe-design/tests/obligations.rs"
+oracle = "Nineteen single changes to a valid obligation, each refused with its own reason"
+scope = "Synthetic contracts and run documents on the composition foundation fixture; behaviour of the design language and run judgement, not of any engineering module"
+
+[[validations]]
+id = "design_obligations_evidence_pointers_resolve_through_declared_contract_fiel"
+module = "design"
+constraint = "design_obligations"
+behavior = "evidence_pointers_resolve_through_declared_contract_fields"
+rust_path = "crates/oe-design/tests/obligations.rs"
+oracle = "Pointers through strings, vectors, string-keyed maps and untyped values of synthetic contracts, with wrong indices and missing fields"
+scope = "Synthetic contracts and run documents on the composition foundation fixture; behaviour of the design language and run judgement, not of any engineering module"
+
+[[validations]]
+id = "design_obligations_inspection_reports_missing_executors_and_untyped_evidenc"
+module = "design"
+constraint = "design_obligations"
+behavior = "inspection_reports_missing_executors_and_untyped_evidence"
+rust_path = "crates/oe-design/tests/obligations.rs"
+oracle = "design inspect on the real source tree with one missing executor symbol and one pointer that does not resolve"
+scope = "Synthetic contracts and run documents on the composition foundation fixture; behaviour of the design language and run judgement, not of any engineering module"
+
+[[validations]]
+id = "design_obligation_evidence_a_run_is_judged_per_obligation_and_one_changed_v"
+module = "design"
+constraint = "design_obligation_evidence"
+behavior = "a_run_is_judged_per_obligation_and_one_changed_value_fails_only_its_obligations"
+rust_path = "crates/oe-design/tests/obligations.rs"
+oracle = "Synthetic run documents: all held, one changed value per obligation, mixed documents, too few documents and review-only obligations"
+scope = "Synthetic contracts and run documents on the composition foundation fixture; behaviour of the design language and run judgement, not of any engineering module"

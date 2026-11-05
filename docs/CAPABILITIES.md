@@ -64,7 +64,7 @@
 | 如何形成施工图及检验依据 | 数值、孔列、原生图纸意图与 CAD handoff；[数值交付](../references/numeric-cad-delivery.md)、[图纸关联](../references/native-drawing-associations.md) | 尺寸、公差、基准、材料、工艺、装配与测量方法、覆盖及不确定度；几何参考页和视觉演示不替代制造图或实测 |
 | 哪个结论现在可以采用 | `kernel review --project`、工程前提/数值/制造检查及现有治理 owner | 当前对象/条件/来源、必要检查、失败/未知/覆盖与批准；语义支持、工具状态和工程采用分别保存 |
 | 如何检验并使用改进 | knowledge experience、既有 Rust learning/evolution/version owner；[有证据的改进](../references/regularized-evolution.md) | 冻结原目标、来源、判据、预算与完整拒绝历史；独立任务的质量/成本、实际下一使用反馈、精确恢复；无新增表达时实例或 no_delta |
-| 改代码如何保持与含义一致 | `specs/` → Rust 规范化 RDF → 锁定 ggen → 生成合同与手写算法；`design inspect` 与[四环承接](../references/design-method.md#在四环之间保持含义和依据) | 要求、功能承担者、约束与验证案例分别关联；生成清单保留检查者与原预期，缺口不丢弃；静态对应、实际行为、工程证据和方法收益分别验证 |
+| 改代码如何保持与含义一致 | `specs/` → Rust 规范化 RDF → 锁定 ggen → 生成合同与手写算法；`design inspect` 与[四环承接](../references/design-method.md#在四环之间保持含义和依据)；约束的执行者、入口与运行证据写成义务，`oev2 design evidence --run` 按一次运行逐条判定 | 要求、功能承担者、约束与验证案例分别关联；生成清单保留检查者与原预期，缺口不丢弃；静态对应、实际行为、工程证据和方法收益分别验证 |
 | 确定下一验证及探索路线 | [探索接续](ENGINEERING-EXPLORATION.md)、[设计尝试](DESIGN-ATTEMPT.md)、[方案比较](DESIGN-COMPARISON.md) | 参数优化与机制探索的前提分开；freeze/verify/run 与 advance 按实际合同接续，requires_host_agent 是等待，results_recorded 只说明结果记录；共同父目标与必要验收保持 |
 | Agent 组织任务、并行与回读 | [会话编排](AGENT-ORCHESTRATION.md)、[工具接入](TOOL-INTEGRATIONS.md) | 独立任务可并行，有依赖的步骤先回读；来源、失败与未知保持，实际方法收益另验 |
 | 保存过程与读取历史方法 | [Harness](../references/harness-context.md)、[来源接续](USAGE.md#旧来源和真实过程接续) | 完整条件、纠正、未知与必要验收保持；归档、not_run、来源匹配和实际使用效果分开；memory 可选 |

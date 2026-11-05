@@ -36,6 +36,16 @@ pub enum DesignCommand {
         #[arg(long)]
         output: Option<PathBuf>,
     },
+    /// Judge the declared obligations against the JSON documents of one run directory.
+    Evidence {
+        #[arg(long, default_value = "specs/engineering.toml")]
+        spec: PathBuf,
+        /// Run directory; absolute, or relative to the root.
+        #[arg(long)]
+        run: PathBuf,
+        #[arg(long)]
+        output: Option<PathBuf>,
+    },
     Generate {
         #[arg(long, default_value = "specs/engineering.toml")]
         spec: PathBuf,
@@ -1215,6 +1225,15 @@ pub fn design(root: &SkillRoot, command: DesignCommand) -> Result<u8> {
                 &oe_design::load(&root.expand(&spec)?)?,
             )?;
             let failed = v["status"] != "no_static_findings";
+            emit(root, v, output, failed)
+        }
+        DesignCommand::Evidence { spec, run, output } => {
+            let design = oe_design::load(&root.expand(&spec)?)?;
+            let v = oe_design::obligations::evaluate(&design, &root.data_expand(&run)?)?;
+            let failed = v["obligations"].as_array().is_some_and(|o| {
+                o.iter()
+                    .any(|x| x["status"] == "failed" || x["status"] == "absent")
+            });
             emit(root, v, output, failed)
         }
         DesignCommand::Generate { spec, ggen } => {

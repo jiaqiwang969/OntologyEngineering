@@ -47,6 +47,17 @@ impl FileIdentity {
         // symlink_metadata rejects a replaced pathname even when its target has matching bytes.
         Self::from_metadata(&fs::symlink_metadata(path)?)
     }
+
+    /// Whether a fixed snapshot read now is still the one captured. The device number is left
+    /// out: macOS numbers a volume again each time it is mounted, while the clone keeps its inode,
+    /// length, times and mode. Any change to the file itself still fails, and the selected
+    /// messages are checked by their SHA-256 when they are used.
+    fn same_snapshot(&self, current: &Self) -> bool {
+        Self {
+            device: current.device,
+            ..self.clone()
+        } == *current
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -93,7 +104,8 @@ impl Capture {
     pub fn verify(&self) -> Result<()> {
         self.validate()?;
         ensure!(
-            FileIdentity::at(Path::new(&self.snapshot_path))? == self.snapshot_identity,
+            self.snapshot_identity
+                .same_snapshot(&FileIdentity::at(Path::new(&self.snapshot_path))?),
             "snapshot_changed"
         );
         Ok(())
@@ -308,5 +320,77 @@ impl Store {
             capture.verify()?;
         }
         Ok(captures.iter().map(Capture::provenance).collect())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::FileIdentity;
+
+    fn captured() -> FileIdentity {
+        FileIdentity {
+            device: 16_777_230,
+            inode: 380_479_755,
+            length: 51_483_511_958,
+            modified_seconds: 1_776_272_109,
+            modified_ns: 101_399_131,
+            changed_seconds: 1_791_785_922,
+            changed_ns: 928_017_083,
+            mode: 0o100_400,
+        }
+    }
+
+    #[test]
+    fn a_remounted_volume_keeps_the_snapshot() {
+        // macOS renumbers a volume's device when it is mounted again; nothing in the file changed.
+        let now = FileIdentity {
+            device: 16_777_229,
+            ..captured()
+        };
+        assert!(captured().same_snapshot(&now));
+        assert!(captured().same_snapshot(&captured()));
+    }
+
+    #[test]
+    fn any_change_to_the_file_itself_is_a_changed_snapshot() {
+        let base = captured();
+        let changed = [
+            FileIdentity {
+                inode: base.inode + 1,
+                ..captured()
+            },
+            FileIdentity {
+                length: base.length + 1,
+                ..captured()
+            },
+            FileIdentity {
+                modified_seconds: base.modified_seconds + 1,
+                ..captured()
+            },
+            FileIdentity {
+                modified_ns: base.modified_ns + 1,
+                ..captured()
+            },
+            FileIdentity {
+                changed_seconds: base.changed_seconds + 1,
+                ..captured()
+            },
+            FileIdentity {
+                changed_ns: base.changed_ns + 1,
+                ..captured()
+            },
+            FileIdentity {
+                mode: 0o100_600,
+                ..captured()
+            },
+            FileIdentity {
+                device: 16_777_229,
+                inode: base.inode + 1,
+                ..captured()
+            },
+        ];
+        for now in changed {
+            assert!(!base.same_snapshot(&now), "{now:?}");
+        }
     }
 }

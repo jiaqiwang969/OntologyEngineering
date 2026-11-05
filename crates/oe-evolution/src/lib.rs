@@ -79,7 +79,7 @@ pub fn digest(value: &Value) -> Result<String> {
 pub fn public_manifest(root: &Path) -> Result<Value> {
     public_manifest_with_profile(
         root,
-        inventory::PublicManifestProfile::SourceReadmeDerived32,
+        inventory::PublicManifestProfile::SourceReadmeDerived64,
     )
 }
 fn public_manifest_with_profile(
@@ -90,10 +90,11 @@ fn public_manifest_with_profile(
     let first = inventory::manifest_with_profile(root, profile)?;
     let files = first["files"].as_object().context("code_manifest_files")?;
     match profile {
-        inventory::PublicManifestProfile::SourceReadmeDerived32 => {
+        inventory::PublicManifestProfile::SourceReadmeDerived64 => {
             public_source_checks::check_files(root, files)?
         }
-        inventory::PublicManifestProfile::CurrentDerived32
+        inventory::PublicManifestProfile::SourceReadmeDerived32
+        | inventory::PublicManifestProfile::CurrentDerived32
         | inventory::PublicManifestProfile::Legacy16 => {
             public_source_checks::check_files_with_profile(root, files, profile)?
         }
@@ -105,7 +106,9 @@ fn public_manifest_with_profile(
     Ok(first)
 }
 fn manifest_profile(expected: &Value) -> Result<inventory::PublicManifestProfile> {
-    use inventory::PublicManifestProfile::{CurrentDerived32, Legacy16, SourceReadmeDerived32};
+    use inventory::PublicManifestProfile::{
+        CurrentDerived32, Legacy16, SourceReadmeDerived32, SourceReadmeDerived64,
+    };
     let object = expected
         .as_object()
         .context("code_manifest_profile_unknown")?;
@@ -128,8 +131,14 @@ fn manifest_profile(expected: &Value) -> Result<inventory::PublicManifestProfile
     let public_sources = object.len() == base.len() + 3
         && derived
         && expected["public_sources"] == json!(["sources/README.md"]);
+    let application = object.len() == base.len() + 3
+        && base.iter().all(|k| object.contains_key(*k))
+        && expected["resource_profile"] == oe_core::source_limits::APPLICATION_PROFILE
+        && expected["file_byte_limits"]
+            == json!({"default":16*1024*1024,"generated/model.ttl":64*1024*1024})
+        && expected["public_sources"] == json!(["sources/README.md"]);
     ensure!(
-        legacy || previous_derived || public_sources,
+        legacy || previous_derived || public_sources || application,
         "code_manifest_profile_unknown"
     );
     ensure!(
@@ -148,8 +157,10 @@ fn manifest_profile(expected: &Value) -> Result<inventory::PublicManifestProfile
         Legacy16
     } else if previous_derived {
         CurrentDerived32
-    } else {
+    } else if public_sources {
         SourceReadmeDerived32
+    } else {
+        SourceReadmeDerived64
     };
     let files = expected["files"]
         .as_object()
@@ -203,11 +214,18 @@ pub fn public_manifest_matching(root: &Path, expected: &Value) -> Result<Value> 
     Ok(actual)
 }
 fn public_manifest_matching_digest(root: &Path, expected: &str) -> Result<Value> {
-    use inventory::PublicManifestProfile::{CurrentDerived32, Legacy16, SourceReadmeDerived32};
+    use inventory::PublicManifestProfile::{
+        CurrentDerived32, Legacy16, SourceReadmeDerived32, SourceReadmeDerived64,
+    };
     // Digest-only CodeBinaryRef has no profile field. Re-observe only these
-    // three frozen domains, each with its own real traversal and resource guards.
+    // four frozen domains, each with its own real traversal and resource guards.
     // A new public README can be invalid while remaining private in an old domain.
-    for profile in [SourceReadmeDerived32, CurrentDerived32, Legacy16] {
+    for profile in [
+        SourceReadmeDerived64,
+        SourceReadmeDerived32,
+        CurrentDerived32,
+        Legacy16,
+    ] {
         if let Ok(observed) = public_manifest_with_profile(root, profile)
             && digest(&observed)? == expected
         {

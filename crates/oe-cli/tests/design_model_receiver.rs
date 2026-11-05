@@ -1,4 +1,6 @@
-//! Real inventory/receiver owners keep one precise derived-model byte exception.
+//! Real inventory/receiver owners keep one precise derived-model byte exception: the
+//! current application profile (64 MiB). Historic 16 and 32 MiB profiles keep their
+//! limits and are checked in oe-evolution's public_manifest_profiles tests.
 //! These synthetic bytes establish transport identity, never RDF or design validity.
 use oe_dist::package::{FORMAT, PortableManifest, SCOPE, SourceFile};
 use serde_json::Value;
@@ -9,7 +11,7 @@ use std::{
 };
 
 const ORDINARY_BYTES: usize = 16 * 1024 * 1024;
-const MODEL_BYTES: usize = 32 * 1024 * 1024;
+const MODEL_BYTES: usize = oe_core::source_limits::APPLICATION_DERIVED_MODEL_BYTES as usize;
 const REQUIRED: [&str; 5] = ["AGENTS.md", "LICENSE", "README.md", "SKILL.md", "VERSION"];
 
 fn fixture() -> tempfile::TempDir {
@@ -98,7 +100,7 @@ fn evolution_public_identity_checks_the_complete_derived_model_and_detects_tail_
         .write(true)
         .open(root.join("generated/model.ttl"))
         .unwrap()
-        .set_len(33_554_433)
+        .set_len(MODEL_BYTES as u64 + 1)
         .unwrap();
     assert!(oe_evolution::public_manifest(&root).is_err());
 }

@@ -20,6 +20,7 @@ pub(super) fn verify(artifact: &CodeSourceArtifact) -> Result<()> {
                         | "oev2.generation/2"
                         | "oev2.generation/3"
                         | "oev2.generation/4"
+                        | "oev2.generation/5"
                 )
             ),
         "code_artifact_generation_unverified"
@@ -35,9 +36,11 @@ pub(super) fn verify(artifact: &CodeSourceArtifact) -> Result<()> {
     );
     if matches!(
         receipt["schema"].as_str(),
-        Some("oev2.generation/2" | "oev2.generation/3" | "oev2.generation/4")
+        Some("oev2.generation/2" | "oev2.generation/3" | "oev2.generation/4" | "oev2.generation/5")
     ) {
-        let drift_schema = if receipt["schema"] == "oev2.generation/4" {
+        let drift_schema = if receipt["schema"] == "oev2.generation/5" {
+            "oev2.generation-drift/5"
+        } else if receipt["schema"] == "oev2.generation/4" {
             "oev2.generation-drift/4"
         } else if receipt["schema"] == "oev2.generation/3" {
             "oev2.generation-drift/3"
@@ -63,7 +66,11 @@ fn verify_composed(root: &Path, receipt: &Value, manifest: &Value) -> Result<()>
         receipt["input_schema"]
             .as_str()
             .is_some_and(transport::is_composed)
-            && receipt["resource_profile"] == oe_design::generation::resource_profile()
+            // Each receipt keeps the resource profile of its own input version.
+            && receipt["resource_profile"]
+                == oe_design::generation::resource_profile_for_input(
+                    receipt["input_schema"].as_str().unwrap_or_default()
+                )?
             && receipt["composition_resource"]
                 == json!({"file_bytes":transport::FILE_BYTES,
             "total_bytes":transport::TOTAL_BYTES,"file_count":transport::FILE_COUNT}),
@@ -146,7 +153,10 @@ fn verify_composed(root: &Path, receipt: &Value, manifest: &Value) -> Result<()>
             )? == source,
         "code_artifact_composed_products_changed"
     );
-    let mut products = oe_design::generation::snapshot(&root.join("generated"))?;
+    let mut products = oe_design::generation::snapshot_for_input(
+        &root.join("generated"),
+        receipt["input_schema"].as_str().unwrap_or_default(),
+    )?;
     products.remove("generation.json");
     ensure!(
         serde_json::to_value(&products)? == receipt["products"],

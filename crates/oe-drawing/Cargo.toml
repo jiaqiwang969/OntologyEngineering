@@ -1,0 +1,21 @@
+[package]
+name = "oe-drawing"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+encoding_rs = "=0.8.35"
+quick-xml = "=0.37.5"
+oe-core.workspace = true
+oe-engineering.workspace = true
+oe-drawing-check.workspace = true
+oe-contracts = { path = "../oe-contracts" }
+oe-kernel = { path = "../oe-kernel" }
+
+[lints]
+workspace = true

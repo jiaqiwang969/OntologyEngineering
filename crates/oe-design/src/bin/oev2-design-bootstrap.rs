@@ -34,7 +34,16 @@ fn main() -> anyhow::Result<()> {
             let out = root.new_private_dir(std::path::Path::new(destination))?;
             oe_core::write_new_bytes(
                 &out.join("model.ttl"),
-                oe_design::model(root.path(), &d)?.0.as_bytes(),
+                oe_design::model_for_input(
+                    root.path(),
+                    &d,
+                    composition
+                        .as_ref()
+                        .map(|c| c.input_schema())
+                        .unwrap_or("oev2.design/1"),
+                )?
+                .0
+                .as_bytes(),
             )?;
             let normalized = match &composition {
                 Some(loaded) => loaded.normalized()?,

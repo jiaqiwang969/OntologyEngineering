@@ -110,6 +110,26 @@
     "status": "source_only"
   },
   {
+    "effects": "只读源字节与 Project；在新输出目录写关系图、复核、检查页与回执；不改源图、模型、Project 或 HEAD",
+    "failures": "第一步失败即停，后续步骤记为未运行；保留失败、未知与部分结果；结构校验不等于工程采用",
+    "kind": "pipeline",
+    "name": "drawing_understanding",
+    "platform": "Rust 1.95；只收源字节的隔离 worker 依赖 macOS sandbox-exec，其他平台的发现命令明确拒绝；DWG 转换经固定 CADCraft 提交",
+    "purpose": "读懂已有工程图纸：源对象守恒、带区间的非排他用途、完整工程表达（学科类别、几何线型、源图元、视图四个独立维度）、结构拓扑与结构线；只从源字节推导，零件目标保持未知；独立复核、检查页与逐次回执",
+    "rustPath": "crates/oe-drawing",
+    "status": "source_only"
+  },
+  {
+    "effects": "只读源字节、关系图、复核与页面；在新位置写检查报告、浏览器结果与截图",
+    "failures": "首个不符即停并给出该项名称；浏览器超时或失败如实记录；通过只说明源守恒与输出合同一致，不说明工程正确",
+    "kind": "calculation",
+    "name": "drawing_understanding_check",
+    "platform": "Rust 1.95；页面检查运行调用方给出的 Chrome（无头、独立用户目录、只读本地页面）",
+    "purpose": "独立复核读图结果：只从源 DXF 字节重新推导源对象、原生成员、线型节奏、端点、区间覆盖、表达族、视图与结构线并逐项核对；检查页在离线浏览器中按页面内嵌的关系图计算期望逐项检查；不调用分类程序代码，不产生分类",
+    "rustPath": "crates/oe-drawing-check",
+    "status": "source_only"
+  },
+  {
     "effects": "输入只读；显式输出与状态写 var；适配动作由任务授权",
     "failures": "保留失败、未知、局部结果与恢复身份",
     "kind": "pipeline",

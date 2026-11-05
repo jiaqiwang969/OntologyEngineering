@@ -10,7 +10,7 @@ fn only_the_exact_public_derived_model_path_has_the_larger_profile() {
     use oe_core::source_limits::public_file_bytes;
     assert_eq!(
         public_file_bytes(Path::new("generated/model.ttl")),
-        33_554_432
+        67_108_864
     );
     for path in [
         "model.ttl",
@@ -37,7 +37,7 @@ fn only_the_exact_public_derived_model_path_has_the_larger_profile() {
     #[cfg(windows)]
     assert_eq!(
         public_file_bytes(Path::new("generated\\model.ttl")),
-        33_554_432
+        67_108_864
     );
 }
 

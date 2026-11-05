@@ -6,6 +6,7 @@ mod cad;
 mod design_attempt;
 mod design_comparison;
 mod distribution;
+mod drawing;
 mod electronics;
 mod exploration;
 mod incad;
@@ -66,6 +67,11 @@ enum Command {
     Memory {
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<std::ffi::OsString>,
+    },
+    /// Read an existing engineering drawing under the current Project: the fixed route, source-only discovery, the independent check and the review page.
+    Drawing {
+        #[command(subcommand)]
+        command: drawing::DrawingCommand,
     },
     /// Source-bound finite-state engineering HTML/SVG presentation.
     Presentation {
@@ -1560,6 +1566,7 @@ fn execute(cli: Cli) -> Result<u8> {
                 | Command::Harness { .. }
                 | Command::Kernel { .. }
                 | Command::Memory { .. }
+                | Command::Drawing { .. }
         ) || matches!(&cli.command, Command::Knowledge { command } if matches!(command.as_ref(), KnowledgeCommand::Experience { .. }));
         ensure!(supported, "project_home_not_supported_for_command");
         if matches!(
@@ -1579,6 +1586,11 @@ fn execute(cli: Cli) -> Result<u8> {
     match cli.command {
         Command::Setup => return installation::execute(&root),
         Command::Memory { args } => return memory::execute(&root, args),
+        Command::Drawing { command } => {
+            let (value, code) = drawing::run(&root, command)?;
+            println!("{}", serde_json::to_string_pretty(&value)?);
+            return Ok(code);
+        }
         Command::Presentation { command } => {
             let value = presentation::run(&root, command)?;
             println!("{}", serde_json::to_string_pretty(&value)?);
@@ -2184,6 +2196,22 @@ fn maintenance_error(family: &str, code: &str) -> Value {
 
 fn main() -> ExitCode {
     let arguments = std::env::args_os().collect::<Vec<_>>();
+    // The drawing worker receives only source bytes on stdin, before any root or Project is opened.
+    if arguments
+        .get(1)
+        .is_some_and(|a| a == oe_drawing::review::WORKER_FLAG)
+    {
+        return match oe_drawing::review::worker(&arguments) {
+            Ok(graph) => {
+                println!("{graph}");
+                ExitCode::SUCCESS
+            }
+            Err(error) => {
+                eprintln!("Error: {error}");
+                ExitCode::from(1)
+            }
+        };
+    }
     let semantic_command = semantic_argument_command(&arguments);
     let knowledge_command = knowledge_argument_command(&arguments);
     let maintenance_family = maintenance_argument_family(&arguments);
@@ -2230,8 +2258,13 @@ fn main() -> ExitCode {
     let experience_command = matches!(&cli.command, Command::Knowledge { command }
         if matches!(command.as_ref(), KnowledgeCommand::Experience { .. }));
     let semantic_command = semantic_parsed_command(&cli);
+    let drawing_command = matches!(&cli.command, Command::Drawing { .. });
     match execute(cli) {
         Ok(code) => ExitCode::from(code),
+        Err(error) if drawing_command => {
+            eprintln!("{}", drawing::failure(&error));
+            ExitCode::from(2)
+        }
         Err(error) if v2_family.is_some() => {
             eprintln!("{}", v2::command_failure(v2_family.unwrap(), &error));
             ExitCode::from(2)

@@ -622,6 +622,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "252afb9ae5eaa683babdc6a068b3f5726eb19e05070c731f9b2a23a7c3e8ed34"
 
 [[package]]
+name = "encoding_rs"
+version = "0.8.35"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "75030f3c4f45dafd7586dd6780965a8c7e8e285a5ecb86713e63a79c5b2766f3"
+dependencies = [
+ "cfg-if",
+]
+
+[[package]]
 name = "engineering-memory-runtime"
 version = "2.0.0-rc.7"
 dependencies = [
@@ -1882,6 +1891,8 @@ dependencies = [
  "oe-design",
  "oe-dist",
  "oe-docs",
+ "oe-drawing",
+ "oe-drawing-check",
  "oe-engineering",
  "oe-evolution",
  "oe-geometry",
@@ -2006,6 +2017,34 @@ dependencies = [
  "serde_json",
  "sha2",
  "tempfile",
+]
+
+[[package]]
+name = "oe-drawing"
+version = "2.0.0-rc.7"
+dependencies = [
+ "anyhow",
+ "encoding_rs",
+ "oe-contracts",
+ "oe-core",
+ "oe-drawing-check",
+ "oe-engineering",
+ "oe-kernel",
+ "quick-xml",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "oe-drawing-check"
+version = "2.0.0-rc.7"
+dependencies = [
+ "anyhow",
+ "encoding_rs",
+ "oe-contracts",
+ "oe-core",
+ "quick-xml",
+ "serde_json",
 ]
 
 [[package]]

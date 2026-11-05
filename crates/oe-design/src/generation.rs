@@ -13,14 +13,40 @@ pub fn resource_profile() -> Value {
     json!({"schema":oe_core::source_limits::PROFILE,"derived_model_bytes":oe_core::source_limits::DERIVED_MODEL_BYTES,"other_artifact_bytes":oe_core::source_limits::PUBLIC_FILE_BYTES,"editable_spec_bytes":4*1024*1024,"template_file_bytes":4*1024*1024})
 }
 
+pub fn resource_profile_for_input(input_schema: &str) -> Result<Value> {
+    let mut profile = resource_profile();
+    profile["derived_model_bytes"] = json!(crate::derived_model_limit(input_schema)?);
+    if input_schema == "oev2.design/5" {
+        profile["schema"] = json!(oe_core::source_limits::APPLICATION_PROFILE);
+    }
+    Ok(profile)
+}
+
+fn file_limit(relative: &Path, input_schema: &str) -> Result<usize> {
+    Ok(
+        if relative.as_os_str() == std::ffi::OsStr::new("model.ttl") {
+            crate::derived_model_limit(input_schema)? as usize
+        } else {
+            oe_core::source_limits::PUBLIC_FILE_BYTES as usize
+        },
+    )
+}
+
 pub fn snapshot(directory: &Path) -> Result<BTreeMap<String, String>> {
+    snapshot_for_input(directory, "oev2.design/1")
+}
+pub fn snapshot_for_input(
+    directory: &Path,
+    input_schema: &str,
+) -> Result<BTreeMap<String, String>> {
+    crate::derived_model_limit(input_schema)?;
     let mut out = BTreeMap::new();
     for p in files(directory, directory)? {
         out.insert(
             p.strip_prefix(directory)?.to_string_lossy().into_owned(),
             sha256(&read_regular_bytes(
                 &p,
-                oe_core::source_limits::generated_file_bytes(p.strip_prefix(directory)?) as usize,
+                file_limit(p.strip_prefix(directory)?, input_schema)?,
             )?),
         );
     }
@@ -119,7 +145,7 @@ fn run_composed(root: &SkillRoot, spec: &Path, ggen: &Path) -> Result<(PathBuf, 
     let binding = crate::composition::binding(root, &loaded)?;
     // Diagnostic check may retain an unmatched producer; publication separately
     // requires current capture. Formal run_spec already requires code binding.
-    let (output, mut receipt) = run(root, &loaded.design, ggen)?;
+    let (output, mut receipt) = run_for_input(root, &loaded.design, ggen, loaded.input_schema())?;
     loaded.verify(root.path())?;
     let normalized = loaded.normalized()?;
     ensure!(
@@ -142,7 +168,7 @@ fn run_composed(root: &SkillRoot, spec: &Path, ggen: &Path) -> Result<(PathBuf, 
         receipt["source_inputs"][path] = json!(hash);
     }
     receipt["design_sha256"] = json!(sha256(&normalized));
-    let mut products = snapshot(&output)?;
+    let mut products = snapshot_for_input(&output, loaded.input_schema())?;
     products.remove("generation.json");
     receipt["products"] = serde_json::to_value(products)?;
     loaded.verify(root.path())?;
@@ -151,9 +177,17 @@ fn run_composed(root: &SkillRoot, spec: &Path, ggen: &Path) -> Result<(PathBuf, 
 }
 /// Diagnostic derivation may describe mismatched source, but cannot publish it.
 pub fn run(root: &SkillRoot, design: &Design, ggen: &Path) -> Result<(PathBuf, Value)> {
+    run_for_input(root, design, ggen, "oev2.design/1")
+}
+fn run_for_input(
+    root: &SkillRoot,
+    design: &Design,
+    ggen: &Path,
+    input_schema: &str,
+) -> Result<(PathBuf, Value)> {
     design.validate()?;
     let normalized = design.canonical()?;
-    let (model, code_hashes) = crate::model(root.path(), design)?;
+    let (model, code_hashes) = crate::model_for_input(root.path(), design, input_schema)?;
     let mut sources = source_snapshot(root)?;
     sources.extend(code_hashes);
     let tool = std::fs::canonicalize(ggen).context("ggen_binary_missing")?;
@@ -178,7 +212,7 @@ pub fn run(root: &SkillRoot, design: &Design, ggen: &Path) -> Result<(PathBuf, V
         &root.path().join("templates/pack"),
         &stage.join("templates"),
     )?;
-    let before = snapshot(&stage)?;
+    let before = snapshot_for_input(&stage, input_schema)?;
     let command = CommandSpec {
         executable: tool.clone(),
         arguments: vec!["sync".into(), "run".into()],
@@ -198,7 +232,7 @@ pub fn run(root: &SkillRoot, design: &Design, ggen: &Path) -> Result<(PathBuf, V
         ensure!(
             sha256(&read_regular_bytes(
                 &stage.join(path),
-                oe_core::source_limits::generated_file_bytes(Path::new(path)) as usize
+                file_limit(Path::new(path), input_schema)?
             )?) == *hash,
             "generation_input_changed:{path}"
         );
@@ -210,11 +244,11 @@ pub fn run(root: &SkillRoot, design: &Design, ggen: &Path) -> Result<(PathBuf, V
     let mut current = source_snapshot(root)?;
     // Recheck exactly the input closure used to build the model, including
     // the frozen migration scope and any declared original-API mappings.
-    current.extend(crate::model(root.path(), design)?.1);
+    current.extend(crate::model_for_input(root.path(), design, input_schema)?.1);
     ensure!(current == sources, "generation_source_set_changed");
     verify_sources(root, &sources)?;
     let output = stage.join("out");
-    let products = snapshot(&output)?;
+    let products = snapshot_for_input(&output, input_schema)?;
     for p in [
         "contracts.rs",
         "semantic-contracts.rs",
@@ -246,20 +280,23 @@ pub fn run(root: &SkillRoot, design: &Design, ggen: &Path) -> Result<(PathBuf, V
     );
     write_new_bytes(&output.join("model.ttl"), model.as_bytes())?;
     write_new_bytes(&output.join("normalized-design.json"), &normalized)?;
-    let products = snapshot(&output)?;
-    let receipt = json!({"schema":"oev2.generation/1","resource_profile":resource_profile(),"upstream":"ggen","upstream_version":"26.9.28","upstream_commit":lock["upstream_commit"],"binary_sha256":tool_hash,"model_sha256":sha256(model.as_bytes()),"design_sha256":sha256(&normalized),"source_inputs":sources,"inputs":before,"products":products,"normalizer_binding":crate::provenance::binding(root)?,"semantic_review":"not_run","engineering_acceptance":"not_run"});
+    let products = snapshot_for_input(&output, input_schema)?;
+    let receipt = json!({"schema":"oev2.generation/1","resource_profile":resource_profile_for_input(input_schema)?,"upstream":"ggen","upstream_version":"26.9.28","upstream_commit":lock["upstream_commit"],"binary_sha256":tool_hash,"model_sha256":sha256(model.as_bytes()),"design_sha256":sha256(&normalized),"source_inputs":sources,"inputs":before,"products":products,"normalizer_binding":crate::provenance::binding(root)?,"semantic_review":"not_run","engineering_acceptance":"not_run"});
     write_new_bytes(&output.join("generation.json"), &canonical_json(&receipt)?)?;
     Ok((output, receipt))
 }
 fn composition_envelope(receipt: &Value, normalized: &Value, has_source: bool) -> Result<bool> {
+    let fifth = receipt["schema"] == "oev2.generation/5";
     let fourth = receipt["schema"] == "oev2.generation/4";
     let third = receipt["schema"] == "oev2.generation/3";
-    let composed = fourth || third || receipt["schema"] == "oev2.generation/2";
+    let composed = fifth || fourth || third || receipt["schema"] == "oev2.generation/2";
     let normalized_third = normalized["schema"] == "oev2.normalized-design/3";
     ensure!(
-        fourth == (normalized["schema"] == "oev2.normalized-design/4")
+        fifth == (normalized["schema"] == "oev2.normalized-design/5")
+            && fourth == (normalized["schema"] == "oev2.normalized-design/4")
             && third == normalized_third
-            && (fourth
+            && (fifth
+                || fourth
                 || third
                 || ((normalized["schema"] == "oev2.normalized-design/2") == composed))
             && has_source == composed,
@@ -287,7 +324,8 @@ pub fn publish(root: &SkillRoot, output: &Path) -> Result<()> {
             "oev2.generation/1",
             "oev2.generation/2",
             "oev2.generation/3",
-            "oev2.generation/4"
+            "oev2.generation/4",
+            "oev2.generation/5"
         ]
         .contains(&receipt["schema"].as_str().unwrap_or("")),
         "generation_schema_unsupported"
@@ -308,7 +346,10 @@ pub fn publish(root: &SkillRoot, output: &Path) -> Result<()> {
         ensure!(composed, "current_composition_root_requires_generation2");
     }
     ensure!(
-        receipt["resource_profile"] == resource_profile(),
+        receipt["resource_profile"]
+            == resource_profile_for_input(
+                receipt["input_schema"].as_str().unwrap_or("oev2.design/1")
+            )?,
         "generation_resource_profile_mismatch"
     );
     if composed {
@@ -351,7 +392,10 @@ pub fn publish(root: &SkillRoot, output: &Path) -> Result<()> {
         &serde_json::from_value(receipt["source_inputs"].clone())?,
     )?;
     let products: BTreeMap<String, String> = serde_json::from_value(receipt["products"].clone())?;
-    let mut actual = snapshot(output)?;
+    let mut actual = snapshot_for_input(
+        output,
+        receipt["input_schema"].as_str().unwrap_or("oev2.design/1"),
+    )?;
     actual.remove("generation.json");
     ensure!(actual == products, "generation_staged_product_drift");
     crate::provenance::require(root)?;
@@ -450,8 +494,9 @@ pub fn check_spec(root: &SkillRoot, spec: &Path, ggen: &Path) -> Result<Value> {
     compare(root, &output, receipt)
 }
 fn compare(root: &SkillRoot, output: &Path, receipt: Value) -> Result<Value> {
-    let expected = snapshot(output)?;
-    let actual = snapshot(&root.path().join("generated"))?;
+    let input_schema = receipt["input_schema"].as_str().unwrap_or("oev2.design/1");
+    let expected = snapshot_for_input(output, input_schema)?;
+    let actual = snapshot_for_input(&root.path().join("generated"), input_schema)?;
     let drift: Vec<_> = expected
         .keys()
         .chain(actual.keys())
@@ -461,6 +506,6 @@ fn compare(root: &SkillRoot, output: &Path, receipt: Value) -> Result<Value> {
         .into_iter()
         .collect();
     Ok(
-        json!({"schema":match receipt["schema"].as_str(){Some("oev2.generation/4")=>"oev2.generation-drift/4",Some("oev2.generation/3")=>"oev2.generation-drift/3",Some("oev2.generation/2")=>"oev2.generation-drift/2",_=>"oev2.generation-drift/1"},"status":if drift.is_empty() && receipt["normalizer_binding"]["status"]=="matched" && (!matches!(receipt["schema"].as_str(), Some("oev2.generation/2" | "oev2.generation/3" | "oev2.generation/4")) || receipt["composition_binding"]["status"]=="matched"){"consistent"}else{"drift"},"drift":drift,"generation":receipt,"execution_role":"diagnostic_only","previous_working_version_preserved":true}),
+        json!({"schema":match receipt["schema"].as_str(){Some("oev2.generation/5")=>"oev2.generation-drift/5",Some("oev2.generation/4")=>"oev2.generation-drift/4",Some("oev2.generation/3")=>"oev2.generation-drift/3",Some("oev2.generation/2")=>"oev2.generation-drift/2",_=>"oev2.generation-drift/1"},"status":if drift.is_empty() && receipt["normalizer_binding"]["status"]=="matched" && (!matches!(receipt["schema"].as_str(), Some("oev2.generation/2" | "oev2.generation/3" | "oev2.generation/4" | "oev2.generation/5")) || receipt["composition_binding"]["status"]=="matched"){"consistent"}else{"drift"},"drift":drift,"generation":receipt,"execution_role":"diagnostic_only","previous_working_version_preserved":true}),
     )
 }

@@ -14,9 +14,10 @@ pub fn hash(bytes: impl AsRef<[u8]>) -> String {
     format!("{:x}", Sha256::digest(bytes.as_ref()))
 }
 /// Historical domains keep their exact traversal and serialized identity.
-/// New captures use SourceReadmeDerived32, never reinterpret CurrentDerived32.
+/// New captures use SourceReadmeDerived64; all earlier domains retain their limits.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PublicManifestProfile {
+    SourceReadmeDerived64,
     SourceReadmeDerived32,
     CurrentDerived32,
     Legacy16,
@@ -25,14 +26,15 @@ impl PublicManifestProfile {
     pub fn file_bytes(self, relative: &Path) -> u64 {
         match self {
             Self::SourceReadmeDerived32 | Self::CurrentDerived32 => {
-                source_limits::public_file_bytes(relative)
+                source_limits::public_file_bytes(relative).min(source_limits::DERIVED_MODEL_BYTES)
             }
+            Self::SourceReadmeDerived64 => source_limits::public_file_bytes(relative),
             Self::Legacy16 => 16 * 1024 * 1024,
         }
     }
 }
 pub fn manifest(root: &Path) -> io::Result<Value> {
-    manifest_with_profile(root, PublicManifestProfile::SourceReadmeDerived32)
+    manifest_with_profile(root, PublicManifestProfile::SourceReadmeDerived64)
 }
 pub fn manifest_with_profile(root: &Path, profile: PublicManifestProfile) -> io::Result<Value> {
     fn record(
@@ -95,8 +97,11 @@ pub fn manifest_with_profile(root: &Path, profile: PublicManifestProfile) -> io:
         for entry in std::fs::read_dir(path)? {
             let p = entry?.path();
             let rel = p.strip_prefix(root).map_err(io::Error::other)?;
-            if profile == PublicManifestProfile::SourceReadmeDerived32
-                && rel.components().count() == 1
+            if matches!(
+                profile,
+                PublicManifestProfile::SourceReadmeDerived32
+                    | PublicManifestProfile::SourceReadmeDerived64
+            ) && rel.components().count() == 1
                 && rel
                     .to_str()
                     .is_some_and(|s| s.eq_ignore_ascii_case("sources"))
@@ -147,7 +152,14 @@ pub fn manifest_with_profile(root: &Path, profile: PublicManifestProfile) -> io:
         result["resource_profile"] = json!(source_limits::PROFILE);
         result["file_byte_limits"] = json!({"default":source_limits::PUBLIC_FILE_BYTES,"generated/model.ttl":source_limits::DERIVED_MODEL_BYTES});
     }
-    if profile == PublicManifestProfile::SourceReadmeDerived32 {
+    if profile == PublicManifestProfile::SourceReadmeDerived64 {
+        result["resource_profile"] = json!(source_limits::APPLICATION_PROFILE);
+        result["file_byte_limits"] = json!({"default":source_limits::PUBLIC_FILE_BYTES,"generated/model.ttl":source_limits::APPLICATION_DERIVED_MODEL_BYTES});
+    }
+    if matches!(
+        profile,
+        PublicManifestProfile::SourceReadmeDerived32 | PublicManifestProfile::SourceReadmeDerived64
+    ) {
         result["public_sources"] = json!(["sources/README.md"]);
     }
     Ok(result)

@@ -1,0 +1,34 @@
+{
+ "schema": "oev2.drawing-example-provenance/1",
+ "subject": "Original synthetic I1 stepped shaft: three coaxial steps along +X, diameters 30/20/12 mm, lengths 20/40/20 mm, middle diameter deviations -0.01/+0.02 mm. Not taken from any customer drawing.",
+ "origin": "Modelled in SolidCraft 0.27.0 and drawn through CADCraft 0.15.1+aixcam.1 (saved and reopened) in the private development repository of the drawing route; the DWG is shipped here unchanged.",
+ "files": {
+  "drawing.dwg": {
+   "sha256": "1099528eaf1ead7111bd2cdda18d94255fd5766e79eb53e65989f82754ac5ca3",
+   "bytes": 25843
+  },
+  "source.dxf": {
+   "sha256": "d92067d1a6abe699507d175dde98aa7a1c7aa6cc010b24d78d7d9f5814d66982",
+   "bytes": 38756
+  },
+  "source.svg": {
+   "sha256": "7981df97024875761418e216046ecbad0458b571150d5399f4885d1b0ad68057",
+   "bytes": 31462
+  }
+ },
+ "converter": {
+  "lock": "integrations/runtime-locks/cadcraft-source.json",
+  "commit": "bfa06d49eaf1deb5a4c4098d29fa7d1849f7ab86",
+  "version": "cadcraft-cli 0.15.1-aixcam.5 (dev)",
+  "environment": [
+   "PATH",
+   "HOME",
+   "TMPDIR",
+   "CADCRAFT_CONFIG_DIR"
+  ],
+  "convert": "cadcraft-cli run drawing.dwg --cmd 'saveas {\"path\":\"source.dxf\",\"version\":2018}'",
+  "render": "cadcraft-cli run source.dxf --cmd 'reviewplot {\"path\":\"source-preview.png\"}' --export source.svg",
+  "fonts": "None: the conversion runs without SHX fonts and the rendering uses the converter's built-in stroke font."
+ },
+ "scope": "Public input of the drawing route and its tests. Passing route checks on it says nothing about engineering correctness or about other drawings."
+}

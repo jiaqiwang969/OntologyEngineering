@@ -67,11 +67,15 @@ impl Loaded {
     pub fn uses_source_reference(&self) -> bool {
         matches!(
             self.input_schema(),
-            transport::REFERENCE_ROOT_SCHEMA | transport::GROUPED_ROOT_SCHEMA
+            transport::REFERENCE_ROOT_SCHEMA
+                | transport::GROUPED_ROOT_SCHEMA
+                | transport::EXTENDED_ROOT_SCHEMA
         )
     }
     pub fn normalized_schema(&self) -> &'static str {
-        if self.input_schema() == transport::GROUPED_ROOT_SCHEMA {
+        if self.input_schema() == transport::EXTENDED_ROOT_SCHEMA {
+            "oev2.normalized-design/5"
+        } else if self.input_schema() == transport::GROUPED_ROOT_SCHEMA {
             "oev2.normalized-design/4"
         } else if self.uses_source_reference() {
             "oev2.normalized-design/3"
@@ -80,7 +84,9 @@ impl Loaded {
         }
     }
     pub fn generation_schema(&self) -> &'static str {
-        if self.input_schema() == transport::GROUPED_ROOT_SCHEMA {
+        if self.input_schema() == transport::EXTENDED_ROOT_SCHEMA {
+            "oev2.generation/5"
+        } else if self.input_schema() == transport::GROUPED_ROOT_SCHEMA {
             "oev2.generation/4"
         } else if self.uses_source_reference() {
             "oev2.generation/3"
@@ -154,7 +160,7 @@ pub fn load(base: &Path, path: &Path) -> Result<Loaded> {
     let base = transport::absolute(base).map_err(anyhow::Error::msg)?;
     let snapshot = transport::snapshot(&base, path).map_err(anyhow::Error::msg)?;
     let m = &snapshot.manifest;
-    let grouped = m.schema == transport::GROUPED_ROOT_SCHEMA;
+    let grouped = transport::uses_groups(&m.schema);
     let mut budget = groups::Budget::default();
     let mut origins = Vec::new();
     let mut design = Design {
@@ -248,7 +254,7 @@ pub fn load(base: &Path, path: &Path) -> Result<Loaded> {
     let design = design.normalize()?;
     let files=snapshot.files.iter().map(|(name,bytes)|Ok(json!({"path":name,"bytes":bytes.len(),"sha256":snapshot.hashes[name],"field_locators":locators(bytes)?}))).collect::<Result<Vec<_>>>()?;
     let mut evidence = json!({"schema":"oev2.design-composition-source/2","input_schema":snapshot.manifest.schema,"root":snapshot.root,
-        "file_byte_limit":transport::FILE_BYTES,"total_byte_limit":transport::TOTAL_BYTES,"file_count_limit":transport::FILE_COUNT,
+        "file_byte_limit":transport::FILE_BYTES,"total_byte_limit":transport::total_byte_limit(&snapshot.manifest.schema),"file_count_limit":transport::file_count_limit(&snapshot.manifest.schema),
         "actual_total_bytes":snapshot.total_bytes,"files":files,"scope":if snapshot.manifest.schema == transport::ROOT_SCHEMA {"Exact input2 root/fragment bytes and field positions; one original semantic entity store. No engineering acceptance or unlimited downstream artifacts."} else {"Exact input3 root/fragment bytes and field positions; complete source2 sidecar referenced by normalized3. Original semantic entity store and bounded artifacts; no engineering acceptance."}});
     if grouped {
         origins.sort_by(|a, b| a.validation_id.cmp(&b.validation_id));
@@ -259,6 +265,12 @@ pub fn load(base: &Path, path: &Path) -> Result<Loaded> {
             "json_byte_limit":groups::BYTE_LIMIT,"actual_rows":budget.rows,"actual_json_bytes":budget.bytes});
         evidence["scope"] = json!(
             "Exact input4 bytes, parser locations and grouped field origins; bounded expansion into the original Validation/Design owner. Complete source3 sidecar referenced by normalized4; no engineering acceptance."
+        );
+    }
+    if snapshot.manifest.schema == transport::EXTENDED_ROOT_SCHEMA {
+        evidence["schema"] = json!("oev2.design-composition-source/4");
+        evidence["scope"] = json!(
+            "Exact input5 root and up to 63 original fragments within 12MiB total; unchanged 4MiB per-file and validation-expansion limits. Same Design semantic owner and source-bound compiler; legacy2/3/4 retain 8MiB total and 32 files. No engineering acceptance."
         );
     }
     let loaded = Loaded {
@@ -289,7 +301,7 @@ pub fn binding(root: &oe_core::SkillRoot, loaded: &Loaded) -> Result<Value> {
     Ok(
         json!({"schema":"oev2.compiled-composition-binding/2","status":if matched{"matched"}else{"unmatched_or_uncaptured"},
         "root":loaded.snapshot.root,"input_schema":loaded.input_schema(),"current_files":current,"compiled_files":expected,
-        "source":loaded.source_identity()?,"scope":if loaded.input_schema() == transport::GROUPED_ROOT_SCHEMA {"Selected exact root4 and all fragments captured by current compiler; source3 binds original defaults/overrides. Original1/2/3 binding retained."} else if loaded.uses_source_reference() {"Selected exact root3 and all fragments captured by current compiler; source reference does not weaken legacy1/2 binding."} else {"Selected exact root2+all actual fragments captured by current normalizer compilation; legacy1 code binding remains independent."}}),
+        "source":loaded.source_identity()?,"scope":if loaded.input_schema() == transport::EXTENDED_ROOT_SCHEMA {"Selected exact root5 and every original fragment captured by current compiler; source4 retains locations, all limits and grouped origins. Legacy1/2/3/4 identities and limits unchanged."} else if loaded.input_schema() == transport::GROUPED_ROOT_SCHEMA {"Selected exact root4 and all fragments captured by current compiler; source3 binds original defaults/overrides. Original1/2/3 binding retained."} else if loaded.uses_source_reference() {"Selected exact root3 and all fragments captured by current compiler; source reference does not weaken legacy1/2 binding."} else {"Selected exact root2+all actual fragments captured by current normalizer compilation; legacy1 code binding remains independent."}}),
     )
 }
 pub fn require_current(root: &oe_core::SkillRoot, loaded: &Loaded) -> Result<Value> {

@@ -45,7 +45,7 @@ pub(crate) fn check_files(root: &Path, files: &Map<String, Value>) -> Result<()>
     check_files_with_profile(
         root,
         files,
-        crate::inventory::PublicManifestProfile::SourceReadmeDerived32,
+        crate::inventory::PublicManifestProfile::SourceReadmeDerived64,
     )
 }
 pub(crate) fn check_files_with_profile(

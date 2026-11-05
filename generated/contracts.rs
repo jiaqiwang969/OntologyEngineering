@@ -2744,6 +2744,257 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("LocalPdfSourceRegistrationIdentity", "path", "String"),
     ("LocalPdfSourceRegistrationIdentity", "sha256", "String"),
     ("LocalPdfSourceRegistrationIdentity", "title", "String"),
+    ("MdCadcraftRuntime", "fonts_directory", "Option<String>"),
+    ("MdCadcraftRuntime", "fonts_manifest_path", "Option<String>"),
+    ("MdCadcraftRuntime", "fonts_manifest_sha256", "Option<String>"),
+    ("MdCadcraftRuntime", "program_path", "String"),
+    ("MdCadcraftRuntime", "program_sha256", "String"),
+    ("MdCadcraftRuntime", "repository", "String"),
+    ("MdCadcraftRuntime", "schema", "String"),
+    ("MdCadcraftRuntime", "source_commit", "String"),
+    ("MdDiscoveredUse", "consumer_id", "String"),
+    ("MdDiscoveredUse", "engineering_target", "Option<String>"),
+    ("MdDiscoveredUse", "id", "String"),
+    ("MdDiscoveredUse", "interval", "Vec<f64>"),
+    ("MdDiscoveredUse", "occurrence_id", "String"),
+    ("MdDiscoveredUse", "relation_ids", "Vec<String>"),
+    ("MdDiscoveredUse", "role", "String"),
+    ("MdDiscoveredUse", "rule", "String"),
+    ("MdDiscoveredUse", "state", "String"),
+    ("MdDrawingRouteFile", "bytes", "u64"),
+    ("MdDrawingRouteFile", "path", "String"),
+    ("MdDrawingRouteFile", "sha256", "String"),
+    ("MdDrawingRouteReceipt", "cadcraft_lock", "serde_json::Value"),
+    ("MdDrawingRouteReceipt", "executable_sha256", "String"),
+    ("MdDrawingRouteReceipt", "failure", "Option<serde_json::Value>"),
+    ("MdDrawingRouteReceipt", "finished_at", "String"),
+    ("MdDrawingRouteReceipt", "request", "MdDrawingRouteRequest"),
+    ("MdDrawingRouteReceipt", "schema", "String"),
+    ("MdDrawingRouteReceipt", "scope", "String"),
+    ("MdDrawingRouteReceipt", "started_at", "String"),
+    ("MdDrawingRouteReceipt", "status", "String"),
+    ("MdDrawingRouteReceipt", "steps", "Vec<MdDrawingRouteStep>"),
+    ("MdDrawingRouteRequest", "cadcraft_runtime", "Option<String>"),
+    ("MdDrawingRouteRequest", "chrome", "Option<String>"),
+    ("MdDrawingRouteRequest", "dwg", "Option<String>"),
+    ("MdDrawingRouteRequest", "dxf", "Option<String>"),
+    ("MdDrawingRouteRequest", "object", "String"),
+    ("MdDrawingRouteRequest", "output_directory", "String"),
+    ("MdDrawingRouteRequest", "project", "String"),
+    ("MdDrawingRouteRequest", "schema", "String"),
+    ("MdDrawingRouteRequest", "svg", "Option<String>"),
+    ("MdDrawingRouteRequest", "title", "String"),
+    ("MdDrawingRouteStep", "external_processes", "Vec<serde_json::Value>"),
+    ("MdDrawingRouteStep", "facts", "serde_json::Value"),
+    ("MdDrawingRouteStep", "failure", "Option<String>"),
+    ("MdDrawingRouteStep", "id", "String"),
+    ("MdDrawingRouteStep", "inputs", "Vec<MdDrawingRouteFile>"),
+    ("MdDrawingRouteStep", "outputs", "Vec<MdDrawingRouteFile>"),
+    ("MdDrawingRouteStep", "seconds", "f64"),
+    ("MdDrawingRouteStep", "status", "String"),
+    ("MdDrawingView", "bbox", "Vec<f64>"),
+    ("MdDrawingView", "evidence_ids", "Vec<String>"),
+    ("MdDrawingView", "id", "String"),
+    ("MdDrawingView", "kind", "String"),
+    ("MdDrawingView", "label", "String"),
+    ("MdDrawingView", "label_source_ids", "Vec<String>"),
+    ("MdDrawingView", "scale_text", "Option<String>"),
+    ("MdDrawingView", "state", "String"),
+    ("MdDrawingView", "unknowns", "Vec<String>"),
+    ("MdEngineeringExpression", "engineering_target", "Option<String>"),
+    ("MdEngineeringExpression", "evidence_ids", "Vec<String>"),
+    ("MdEngineeringExpression", "family", "String"),
+    ("MdEngineeringExpression", "id", "String"),
+    ("MdEngineeringExpression", "kind", "String"),
+    ("MdEngineeringExpression", "knowledge_ids", "Vec<String>"),
+    ("MdEngineeringExpression", "label", "String"),
+    ("MdEngineeringExpression", "member_ids", "Vec<String>"),
+    ("MdEngineeringExpression", "qualifiers", "Vec<String>"),
+    ("MdEngineeringExpression", "rule", "String"),
+    ("MdEngineeringExpression", "state", "String"),
+    ("MdEngineeringExpression", "unknowns", "Vec<String>"),
+    ("MdEngineeringExpression", "view_id", "Option<String>"),
+    ("MdEngineeringExpressionGraph", "expressions", "Vec<MdEngineeringExpression>"),
+    ("MdEngineeringExpressionGraph", "implied_spans", "Vec<MdImpliedSpan>"),
+    ("MdEngineeringExpressionGraph", "layer_convention", "String"),
+    ("MdEngineeringExpressionGraph", "layer_convention_evidence", "Vec<String>"),
+    ("MdEngineeringExpressionGraph", "line_styles", "Vec<MdLineStyle>"),
+    ("MdEngineeringExpressionGraph", "members", "Vec<MdExpressionMember>"),
+    ("MdEngineeringExpressionGraph", "profile", "String"),
+    ("MdEngineeringExpressionGraph", "schema", "String"),
+    ("MdEngineeringExpressionGraph", "source", "MdUsageGraph"),
+    ("MdEngineeringExpressionGraph", "source_sha256", "String"),
+    ("MdEngineeringExpressionGraph", "structural_lines", "Vec<MdStructuralLine>"),
+    ("MdEngineeringExpressionGraph", "structure_ends", "Vec<MdStructuralEnd>"),
+    ("MdEngineeringExpressionGraph", "unknowns", "Vec<String>"),
+    ("MdEngineeringExpressionGraph", "views", "Vec<MdDrawingView>"),
+    ("MdExpressionGraphCheck", "by_kind", "std::collections::BTreeMap<String, u64>"),
+    ("MdExpressionGraphCheck", "count", "u64"),
+    ("MdExpressionGraphCheck", "graph_sha256", "String"),
+    ("MdExpressionGraphCheck", "schema", "String"),
+    ("MdExpressionGraphCheck", "scope", "String"),
+    ("MdExpressionGraphCheck", "source_derived_count", "u64"),
+    ("MdExpressionGraphCheck", "status", "String"),
+    ("MdExpressionGraphCheck", "worker_sha256", "String"),
+    ("MdExpressionGraphCheckRequest", "discovery_request", "String"),
+    ("MdExpressionGraphCheckRequest", "output", "String"),
+    ("MdExpressionGraphCheckRequest", "pinned", "Vec<MdPinnedFile>"),
+    ("MdExpressionGraphCheckRequest", "schema", "String"),
+    ("MdExpressionGraphCheckRequest", "svg", "String"),
+    ("MdExpressionGraphCheckRequest", "worker_executable", "String"),
+    ("MdExpressionMember", "evidence_ids", "Vec<String>"),
+    ("MdExpressionMember", "expression_id", "String"),
+    ("MdExpressionMember", "id", "String"),
+    ("MdExpressionMember", "interval", "Vec<f64>"),
+    ("MdExpressionMember", "line_type", "String"),
+    ("MdExpressionMember", "member_role", "String"),
+    ("MdExpressionMember", "native_member_id", "Option<String>"),
+    ("MdExpressionMember", "relation_ids", "Vec<String>"),
+    ("MdExpressionMember", "source_handle", "String"),
+    ("MdExpressionMember", "state", "String"),
+    ("MdExpressionMember", "unknowns", "Vec<String>"),
+    ("MdExpressionMember", "view_id", "Option<String>"),
+    ("MdImpliedSpan", "arc", "Option<Vec<f64>>"),
+    ("MdImpliedSpan", "cause", "String"),
+    ("MdImpliedSpan", "evidence_ids", "Vec<String>"),
+    ("MdImpliedSpan", "from_parameter", "f64"),
+    ("MdImpliedSpan", "from_source_handle", "String"),
+    ("MdImpliedSpan", "id", "String"),
+    ("MdImpliedSpan", "line_class", "String"),
+    ("MdImpliedSpan", "points", "Vec<f64>"),
+    ("MdImpliedSpan", "representation", "String"),
+    ("MdImpliedSpan", "state", "String"),
+    ("MdImpliedSpan", "to_parameter", "f64"),
+    ("MdImpliedSpan", "to_source_handle", "String"),
+    ("MdImpliedSpan", "unknowns", "Vec<String>"),
+    ("MdImpliedSpan", "view_id", "Option<String>"),
+    ("MdLineStyle", "basis", "String"),
+    ("MdLineStyle", "evidence_ids", "Vec<String>"),
+    ("MdLineStyle", "layer", "String"),
+    ("MdLineStyle", "layer_rule", "Option<String>"),
+    ("MdLineStyle", "line_type", "String"),
+    ("MdLineStyle", "pattern", "String"),
+    ("MdLineStyle", "primitive", "String"),
+    ("MdLineStyle", "source_handle", "String"),
+    ("MdNativeLayerMember", "block_path", "Vec<String>"),
+    ("MdNativeLayerMember", "handle", "String"),
+    ("MdNativeLayerMember", "id", "String"),
+    ("MdNativeLayerMember", "kind", "String"),
+    ("MdNativeLayerMember", "raw_text", "Option<String>"),
+    ("MdNativeLayerMember", "role", "String"),
+    ("MdNativeLayerMember", "source_layer", "String"),
+    ("MdPinnedFile", "name", "String"),
+    ("MdPinnedFile", "path", "String"),
+    ("MdPinnedFile", "sha256", "String"),
+    ("MdReviewPage", "expression_count", "u64"),
+    ("MdReviewPage", "graph_sha256", "String"),
+    ("MdReviewPage", "page", "MdDrawingRouteFile"),
+    ("MdReviewPage", "rendered_root_count", "u64"),
+    ("MdReviewPage", "root_count", "u64"),
+    ("MdReviewPage", "schema", "String"),
+    ("MdReviewPage", "svg_sha256", "String"),
+    ("MdReviewPageCheck", "browser", "String"),
+    ("MdReviewPageCheck", "count", "u64"),
+    ("MdReviewPageCheck", "facts", "serde_json::Value"),
+    ("MdReviewPageCheck", "mode", "String"),
+    ("MdReviewPageCheck", "page", "MdDrawingRouteFile"),
+    ("MdReviewPageCheck", "result", "MdDrawingRouteFile"),
+    ("MdReviewPageCheck", "schema", "String"),
+    ("MdReviewPageCheck", "screenshot", "MdDrawingRouteFile"),
+    ("MdReviewPageCheck", "status", "String"),
+    ("MdReviewPageCheckRequest", "chrome", "String"),
+    ("MdReviewPageCheckRequest", "focus_label", "Option<String>"),
+    ("MdReviewPageCheckRequest", "mode", "String"),
+    ("MdReviewPageCheckRequest", "output_directory", "String"),
+    ("MdReviewPageCheckRequest", "page", "String"),
+    ("MdReviewPageCheckRequest", "region", "Option<Vec<f64>>"),
+    ("MdReviewPageCheckRequest", "schema", "String"),
+    ("MdReviewPageRequest", "candidate", "String"),
+    ("MdReviewPageRequest", "graph", "String"),
+    ("MdReviewPageRequest", "output", "String"),
+    ("MdReviewPageRequest", "schema", "String"),
+    ("MdReviewPageRequest", "source_note", "String"),
+    ("MdReviewPageRequest", "status_note", "String"),
+    ("MdReviewPageRequest", "svg", "String"),
+    ("MdReviewPageRequest", "title", "String"),
+    ("MdReviewPageRequest", "version", "String"),
+    ("MdStructuralEnd", "cause", "String"),
+    ("MdStructuralEnd", "evidence_ids", "Vec<String>"),
+    ("MdStructuralEnd", "id", "String"),
+    ("MdStructuralEnd", "line_class", "String"),
+    ("MdStructuralEnd", "parameter", "f64"),
+    ("MdStructuralEnd", "partner_end_id", "Option<String>"),
+    ("MdStructuralEnd", "point", "Vec<f64>"),
+    ("MdStructuralEnd", "source_handle", "String"),
+    ("MdStructuralEnd", "state", "String"),
+    ("MdStructuralEnd", "unknowns", "Vec<String>"),
+    ("MdStructuralEnd", "view_id", "Option<String>"),
+    ("MdStructuralLine", "arc", "Option<Vec<f64>>"),
+    ("MdStructuralLine", "coincident", "Vec<String>"),
+    ("MdStructuralLine", "evidence_ids", "Vec<String>"),
+    ("MdStructuralLine", "geometry", "String"),
+    ("MdStructuralLine", "id", "String"),
+    ("MdStructuralLine", "line_class", "String"),
+    ("MdStructuralLine", "line_type", "String"),
+    ("MdStructuralLine", "pieces", "Vec<String>"),
+    ("MdStructuralLine", "points", "Vec<f64>"),
+    ("MdStructuralLine", "state", "String"),
+    ("MdStructuralLine", "trimmed", "Vec<String>"),
+    ("MdStructuralLine", "unknowns", "Vec<String>"),
+    ("MdStructuralLine", "view_id", "Option<String>"),
+    ("MdUsageDiscoveryRequest", "output_directory", "String"),
+    ("MdUsageDiscoveryRequest", "profile", "String"),
+    ("MdUsageDiscoveryRequest", "project_context", "ProjectReviewContext"),
+    ("MdUsageDiscoveryRequest", "schema", "String"),
+    ("MdUsageDiscoveryRequest", "source", "ArtifactReference"),
+    ("MdUsageDiscoveryRequest", "subject", "ObjectIdentity"),
+    ("MdUsageDiscoveryReview", "graph", "ArtifactReference"),
+    ("MdUsageDiscoveryReview", "project_context", "ProjectReviewContext"),
+    ("MdUsageDiscoveryReview", "request", "ArtifactReference"),
+    ("MdUsageDiscoveryReview", "sandbox_profile", "String"),
+    ("MdUsageDiscoveryReview", "schema", "String"),
+    ("MdUsageDiscoveryReview", "source", "ArtifactReference"),
+    ("MdUsageDiscoveryReview", "status", "String"),
+    ("MdUsageDiscoveryReview", "subject", "ObjectIdentity"),
+    ("MdUsageDiscoveryReview", "unknowns", "Vec<String>"),
+    ("MdUsageDiscoveryReview", "worker_sha256", "String"),
+    ("MdUsageEntity", "coordinates", "Vec<f64>"),
+    ("MdUsageEntity", "geometry_kind", "String"),
+    ("MdUsageEntity", "geometry_limit", "Option<String>"),
+    ("MdUsageEntity", "handle", "String"),
+    ("MdUsageEntity", "id", "String"),
+    ("MdUsageEntity", "kind", "String"),
+    ("MdUsageEntity", "layer", "String"),
+    ("MdUsageEntity", "line_type", "String"),
+    ("MdUsageEntity", "member_ids", "Vec<String>"),
+    ("MdUsageEntity", "native_owner", "Option<String>"),
+    ("MdUsageEntity", "text", "Option<String>"),
+    ("MdUsageGraph", "entities", "Vec<MdUsageEntity>"),
+    ("MdUsageGraph", "epsilon_drawing_units", "f64"),
+    ("MdUsageGraph", "members", "Vec<MdNativeLayerMember>"),
+    ("MdUsageGraph", "profile", "String"),
+    ("MdUsageGraph", "relations", "Vec<MdUsageRelation>"),
+    ("MdUsageGraph", "schema", "String"),
+    ("MdUsageGraph", "segments", "Vec<MdUsageSegment>"),
+    ("MdUsageGraph", "source_sha256", "String"),
+    ("MdUsageGraph", "unknowns", "Vec<String>"),
+    ("MdUsageGraph", "uses", "Vec<MdDiscoveredUse>"),
+    ("MdUsageRelation", "from_id", "String"),
+    ("MdUsageRelation", "from_parameter", "Option<f64>"),
+    ("MdUsageRelation", "id", "String"),
+    ("MdUsageRelation", "kind", "String"),
+    ("MdUsageRelation", "points", "Vec<f64>"),
+    ("MdUsageRelation", "residual", "Option<f64>"),
+    ("MdUsageRelation", "rule", "String"),
+    ("MdUsageRelation", "source_interval", "Vec<f64>"),
+    ("MdUsageRelation", "state", "String"),
+    ("MdUsageRelation", "to_id", "Option<String>"),
+    ("MdUsageRelation", "to_parameter", "Option<f64>"),
+    ("MdUsageSegment", "coordinates", "Vec<f64>"),
+    ("MdUsageSegment", "id", "String"),
+    ("MdUsageSegment", "interval", "Vec<f64>"),
+    ("MdUsageSegment", "occurrence_id", "String"),
+    ("MdUsageSegment", "use_ids", "Vec<String>"),
     ("MechanismAssessment", "condition_values", "serde_json::Value"),
     ("MechanismAssessment", "drive", "DriveContract"),
     ("MechanismAssessment", "schema", "String"),
@@ -5221,6 +5472,243 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("LocalPdfRegistrationUpdate", "mode", "merge"),
     ("LocalPdfRegistrationUpdate", "mode", "replace"),
     ("LocalPdfSourceRegistrationBinding", "schema", "ontology-engineering.local-pdf-source-binding/v1"),
+    ("MdDiscoveredUse", "role", "axis_candidate"),
+    ("MdDiscoveredUse", "role", "block_unresolved"),
+    ("MdDiscoveredUse", "role", "construction_native"),
+    ("MdDiscoveredUse", "role", "dimension_angle"),
+    ("MdDiscoveredUse", "role", "dimension_diameter"),
+    ("MdDiscoveredUse", "role", "dimension_linear"),
+    ("MdDiscoveredUse", "role", "dimension_other"),
+    ("MdDiscoveredUse", "role", "dimension_radius"),
+    ("MdDiscoveredUse", "role", "fill_unresolved"),
+    ("MdDiscoveredUse", "role", "geometry_candidate"),
+    ("MdDiscoveredUse", "role", "hatch_native"),
+    ("MdDiscoveredUse", "role", "hidden_candidate"),
+    ("MdDiscoveredUse", "role", "leader_native"),
+    ("MdDiscoveredUse", "role", "other_unresolved"),
+    ("MdDiscoveredUse", "role", "text_native"),
+    ("MdDiscoveredUse", "role", "tolerance_native"),
+    ("MdDiscoveredUse", "state", "candidate"),
+    ("MdDiscoveredUse", "state", "observed"),
+    ("MdDiscoveredUse", "state", "unknown"),
+    ("MdDrawingRouteReceipt", "status", "failed"),
+    ("MdDrawingRouteReceipt", "status", "page_not_checked"),
+    ("MdDrawingRouteReceipt", "status", "passed"),
+    ("MdDrawingRouteStep", "id", "check-graph"),
+    ("MdDrawingRouteStep", "id", "check-page"),
+    ("MdDrawingRouteStep", "id", "classify"),
+    ("MdDrawingRouteStep", "id", "context"),
+    ("MdDrawingRouteStep", "id", "convert"),
+    ("MdDrawingRouteStep", "id", "page"),
+    ("MdDrawingRouteStep", "id", "probe-sandbox"),
+    ("MdDrawingRouteStep", "id", "read-source"),
+    ("MdDrawingRouteStep", "id", "render"),
+    ("MdDrawingRouteStep", "id", "request"),
+    ("MdDrawingRouteStep", "id", "verify-runtime"),
+    ("MdDrawingRouteStep", "id", "verify-source"),
+    ("MdDrawingRouteStep", "status", "failed"),
+    ("MdDrawingRouteStep", "status", "not_applicable"),
+    ("MdDrawingRouteStep", "status", "not_run"),
+    ("MdDrawingRouteStep", "status", "passed"),
+    ("MdDrawingRouteStep", "status", "skipped"),
+    ("MdDrawingView", "kind", "detail_view"),
+    ("MdDrawingView", "kind", "direction_view"),
+    ("MdDrawingView", "kind", "partial_view"),
+    ("MdDrawingView", "kind", "principal"),
+    ("MdDrawingView", "kind", "sheet"),
+    ("MdDrawingView", "state", "candidate"),
+    ("MdDrawingView", "state", "observed"),
+    ("MdDrawingView", "state", "unknown"),
+    ("MdEngineeringExpression", "family", "construction"),
+    ("MdEngineeringExpression", "family", "dimension"),
+    ("MdEngineeringExpression", "family", "geometry"),
+    ("MdEngineeringExpression", "family", "note"),
+    ("MdEngineeringExpression", "family", "sheet"),
+    ("MdEngineeringExpression", "family", "surface"),
+    ("MdEngineeringExpression", "family", "tolerance"),
+    ("MdEngineeringExpression", "family", "unresolved"),
+    ("MdEngineeringExpression", "family", "view"),
+    ("MdEngineeringExpression", "kind", "break_line"),
+    ("MdEngineeringExpression", "kind", "center_axis"),
+    ("MdEngineeringExpression", "kind", "construction_reference"),
+    ("MdEngineeringExpression", "kind", "datum_symbol"),
+    ("MdEngineeringExpression", "kind", "dimension_angle"),
+    ("MdEngineeringExpression", "kind", "dimension_chamfer"),
+    ("MdEngineeringExpression", "kind", "dimension_diameter"),
+    ("MdEngineeringExpression", "kind", "dimension_linear"),
+    ("MdEngineeringExpression", "kind", "dimension_radius"),
+    ("MdEngineeringExpression", "kind", "geometric_tolerance"),
+    ("MdEngineeringExpression", "kind", "gps_direction"),
+    ("MdEngineeringExpression", "kind", "gps_parallelism"),
+    ("MdEngineeringExpression", "kind", "gps_perpendicularity"),
+    ("MdEngineeringExpression", "kind", "gps_position"),
+    ("MdEngineeringExpression", "kind", "gps_runout"),
+    ("MdEngineeringExpression", "kind", "gps_symmetry"),
+    ("MdEngineeringExpression", "kind", "hidden_contour"),
+    ("MdEngineeringExpression", "kind", "leader"),
+    ("MdEngineeringExpression", "kind", "material_heat"),
+    ("MdEngineeringExpression", "kind", "phantom_line"),
+    ("MdEngineeringExpression", "kind", "process_requirement"),
+    ("MdEngineeringExpression", "kind", "protection_requirement"),
+    ("MdEngineeringExpression", "kind", "section_hatch"),
+    ("MdEngineeringExpression", "kind", "sheet_frame"),
+    ("MdEngineeringExpression", "kind", "surface_roughness"),
+    ("MdEngineeringExpression", "kind", "technical_general"),
+    ("MdEngineeringExpression", "kind", "thread_convention"),
+    ("MdEngineeringExpression", "kind", "thread_note"),
+    ("MdEngineeringExpression", "kind", "title_block"),
+    ("MdEngineeringExpression", "kind", "unresolved"),
+    ("MdEngineeringExpression", "kind", "view_callout"),
+    ("MdEngineeringExpression", "kind", "visible_contour"),
+    ("MdEngineeringExpression", "state", "candidate"),
+    ("MdEngineeringExpression", "state", "observed"),
+    ("MdEngineeringExpression", "state", "unknown"),
+    ("MdEngineeringExpressionGraph", "layer_convention", "gbt14665_2012_table6_consistent"),
+    ("MdEngineeringExpressionGraph", "layer_convention", "not_qualified"),
+    ("MdEngineeringExpressionGraph", "profile", "dxf-expression-rules/1"),
+    ("MdEngineeringExpressionGraph", "schema", "oev2.drawing-expression-graph/1"),
+    ("MdExpressionGraphCheck", "status", "passed"),
+    ("MdExpressionMember", "line_type", "block"),
+    ("MdExpressionMember", "line_type", "continuous"),
+    ("MdExpressionMember", "line_type", "dimension"),
+    ("MdExpressionMember", "line_type", "double_break"),
+    ("MdExpressionMember", "line_type", "fill"),
+    ("MdExpressionMember", "line_type", "point"),
+    ("MdExpressionMember", "line_type", "text"),
+    ("MdExpressionMember", "line_type", "thick_continuous"),
+    ("MdExpressionMember", "line_type", "thick_dash_dot"),
+    ("MdExpressionMember", "line_type", "thick_dashed"),
+    ("MdExpressionMember", "line_type", "thin_continuous"),
+    ("MdExpressionMember", "line_type", "thin_dash_dot"),
+    ("MdExpressionMember", "line_type", "thin_dash_double_dot"),
+    ("MdExpressionMember", "line_type", "thin_dashed"),
+    ("MdExpressionMember", "line_type", "unknown"),
+    ("MdExpressionMember", "line_type", "wavy"),
+    ("MdExpressionMember", "member_role", "arrowhead"),
+    ("MdExpressionMember", "member_role", "break_curve"),
+    ("MdExpressionMember", "member_role", "center_line"),
+    ("MdExpressionMember", "member_role", "coincident_source"),
+    ("MdExpressionMember", "member_role", "contour_segment"),
+    ("MdExpressionMember", "member_role", "datum_frame"),
+    ("MdExpressionMember", "member_role", "datum_letter"),
+    ("MdExpressionMember", "member_role", "datum_reference"),
+    ("MdExpressionMember", "member_role", "definition_point"),
+    ("MdExpressionMember", "member_role", "detail_circle"),
+    ("MdExpressionMember", "member_role", "dimension_line"),
+    ("MdExpressionMember", "member_role", "dimension_text"),
+    ("MdExpressionMember", "member_role", "extension_line"),
+    ("MdExpressionMember", "member_role", "extension_origin"),
+    ("MdExpressionMember", "member_role", "frame_border"),
+    ("MdExpressionMember", "member_role", "frame_cell"),
+    ("MdExpressionMember", "member_role", "hatch_fill"),
+    ("MdExpressionMember", "member_role", "hidden_segment"),
+    ("MdExpressionMember", "member_role", "leader_line"),
+    ("MdExpressionMember", "member_role", "native_block"),
+    ("MdExpressionMember", "member_role", "native_dimension"),
+    ("MdExpressionMember", "member_role", "native_member"),
+    ("MdExpressionMember", "member_role", "note_text"),
+    ("MdExpressionMember", "member_role", "phantom_segment"),
+    ("MdExpressionMember", "member_role", "roughness_symbol"),
+    ("MdExpressionMember", "member_role", "roughness_value"),
+    ("MdExpressionMember", "member_role", "scale_text"),
+    ("MdExpressionMember", "member_role", "symbol_glyph"),
+    ("MdExpressionMember", "member_role", "table_line"),
+    ("MdExpressionMember", "member_role", "table_text"),
+    ("MdExpressionMember", "member_role", "thread_line"),
+    ("MdExpressionMember", "member_role", "tolerance_text"),
+    ("MdExpressionMember", "member_role", "tolerance_value"),
+    ("MdExpressionMember", "member_role", "unresolved_source"),
+    ("MdExpressionMember", "member_role", "view_arrow"),
+    ("MdExpressionMember", "member_role", "view_letter"),
+    ("MdExpressionMember", "member_role", "view_title"),
+    ("MdExpressionMember", "state", "candidate"),
+    ("MdExpressionMember", "state", "observed"),
+    ("MdExpressionMember", "state", "unknown"),
+    ("MdImpliedSpan", "cause", "local_section"),
+    ("MdImpliedSpan", "cause", "text_break"),
+    ("MdImpliedSpan", "line_class", "hidden_outline"),
+    ("MdImpliedSpan", "line_class", "visible_outline"),
+    ("MdImpliedSpan", "representation", "complete_structure"),
+    ("MdImpliedSpan", "state", "candidate"),
+    ("MdLineStyle", "basis", "geometry_shape"),
+    ("MdLineStyle", "basis", "layer_convention"),
+    ("MdLineStyle", "basis", "native_kind"),
+    ("MdLineStyle", "basis", "observed_pattern"),
+    ("MdLineStyle", "basis", "role_rule"),
+    ("MdLineStyle", "basis", "unknown"),
+    ("MdLineStyle", "line_type", "block"),
+    ("MdLineStyle", "line_type", "continuous"),
+    ("MdLineStyle", "line_type", "dimension"),
+    ("MdLineStyle", "line_type", "double_break"),
+    ("MdLineStyle", "line_type", "fill"),
+    ("MdLineStyle", "line_type", "point"),
+    ("MdLineStyle", "line_type", "text"),
+    ("MdLineStyle", "line_type", "thick_continuous"),
+    ("MdLineStyle", "line_type", "thick_dash_dot"),
+    ("MdLineStyle", "line_type", "thick_dashed"),
+    ("MdLineStyle", "line_type", "thin_continuous"),
+    ("MdLineStyle", "line_type", "thin_dash_dot"),
+    ("MdLineStyle", "line_type", "thin_dash_double_dot"),
+    ("MdLineStyle", "line_type", "thin_dashed"),
+    ("MdLineStyle", "line_type", "unknown"),
+    ("MdLineStyle", "line_type", "wavy"),
+    ("MdLineStyle", "pattern", "byblock_unresolved"),
+    ("MdLineStyle", "pattern", "continuous"),
+    ("MdLineStyle", "pattern", "dash_dot"),
+    ("MdLineStyle", "pattern", "dash_double_dot"),
+    ("MdLineStyle", "pattern", "dashed"),
+    ("MdLineStyle", "pattern", "not_curve"),
+    ("MdLineStyle", "pattern", "unknown"),
+    ("MdReviewPageCheck", "mode", "asdrawn"),
+    ("MdReviewPageCheck", "mode", "complete"),
+    ("MdReviewPageCheck", "mode", "focus"),
+    ("MdReviewPageCheck", "mode", "geometry"),
+    ("MdReviewPageCheck", "mode", "kind"),
+    ("MdReviewPageCheck", "mode", "line"),
+    ("MdReviewPageCheck", "mode", "view"),
+    ("MdReviewPageCheck", "status", "passed"),
+    ("MdReviewPageCheckRequest", "mode", "asdrawn"),
+    ("MdReviewPageCheckRequest", "mode", "complete"),
+    ("MdReviewPageCheckRequest", "mode", "focus"),
+    ("MdReviewPageCheckRequest", "mode", "geometry"),
+    ("MdReviewPageCheckRequest", "mode", "kind"),
+    ("MdReviewPageCheckRequest", "mode", "line"),
+    ("MdReviewPageCheckRequest", "mode", "view"),
+    ("MdStructuralEnd", "cause", "drafting_gap"),
+    ("MdStructuralEnd", "cause", "local_section"),
+    ("MdStructuralEnd", "cause", "text_break"),
+    ("MdStructuralEnd", "cause", "unexplained"),
+    ("MdStructuralEnd", "line_class", "hidden_outline"),
+    ("MdStructuralEnd", "line_class", "visible_outline"),
+    ("MdStructuralEnd", "state", "candidate"),
+    ("MdStructuralEnd", "state", "unknown"),
+    ("MdStructuralLine", "geometry", "arc"),
+    ("MdStructuralLine", "geometry", "circle"),
+    ("MdStructuralLine", "geometry", "line"),
+    ("MdStructuralLine", "geometry", "polyline"),
+    ("MdStructuralLine", "line_class", "hidden_outline"),
+    ("MdStructuralLine", "line_class", "visible_outline"),
+    ("MdStructuralLine", "line_type", "block"),
+    ("MdStructuralLine", "line_type", "continuous"),
+    ("MdStructuralLine", "line_type", "dimension"),
+    ("MdStructuralLine", "line_type", "double_break"),
+    ("MdStructuralLine", "line_type", "fill"),
+    ("MdStructuralLine", "line_type", "point"),
+    ("MdStructuralLine", "line_type", "text"),
+    ("MdStructuralLine", "line_type", "thick_continuous"),
+    ("MdStructuralLine", "line_type", "thick_dash_dot"),
+    ("MdStructuralLine", "line_type", "thick_dashed"),
+    ("MdStructuralLine", "line_type", "thin_continuous"),
+    ("MdStructuralLine", "line_type", "thin_dash_dot"),
+    ("MdStructuralLine", "line_type", "thin_dash_double_dot"),
+    ("MdStructuralLine", "line_type", "thin_dashed"),
+    ("MdStructuralLine", "line_type", "unknown"),
+    ("MdStructuralLine", "line_type", "wavy"),
+    ("MdStructuralLine", "state", "candidate"),
+    ("MdStructuralLine", "state", "observed"),
+    ("MdUsageRelation", "state", "candidate"),
+    ("MdUsageRelation", "state", "observed"),
+    ("MdUsageRelation", "state", "unknown"),
     ("MechanismAssessment", "schema", "oev2.mechanism-assessment/1"),
     ("MemoryCandidateCheck", "project_binding", "condition_changed"),
     ("MemoryCandidateCheck", "project_binding", "matched"),
@@ -19484,6 +19972,1076 @@ impl LocalPdfSourceRegistrationIdentity {
     }
 }
 
+/// Local record of the pinned DWG converter: the executable, the fork commit it was built from and the fonts used for rendering
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdCadcraftRuntime {
+    /// SHX font directory used only for rendering; conversion runs without fonts
+    pub fonts_directory: Option<String>,
+    /// Manifest of those font files with their digests
+    pub fonts_manifest_path: Option<String>,
+    /// SHA-256 of that manifest
+    pub fonts_manifest_sha256: Option<String>,
+    /// Absolute path of the local CADCraft executable
+    pub program_path: String,
+    /// SHA-256 of that executable, recorded when it was built
+    pub program_sha256: String,
+    /// Fork repository the executable was built from; must equal the locked repository
+    pub repository: String,
+    /// oev2.cadcraft-runtime/1
+    pub schema: String,
+    /// Fork commit the executable was built from; must equal the locked commit
+    pub source_commit: String,
+}
+impl MdCadcraftRuntime {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.program_path.trim().is_empty() { failures.push("MdCadcraftRuntime.program_path:required".into()); }
+        if self.program_sha256.trim().is_empty() { failures.push("MdCadcraftRuntime.program_sha256:required".into()); }
+        if self.repository.trim().is_empty() { failures.push("MdCadcraftRuntime.repository:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdCadcraftRuntime.schema:required".into()); }
+        if self.source_commit.trim().is_empty() { failures.push("MdCadcraftRuntime.source_commit:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Evidence-bound usage; physical ownership and competing uses are retained
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDiscoveredUse {
+    /// Native annotation or unresolved geometric consumer
+    pub consumer_id: String,
+    /// Part feature, face or requirement target; absent unless separately and uniquely supported
+    pub engineering_target: Option<String>,
+    /// Unique derived use
+    pub id: String,
+    /// Normalized source parameter interval within [0, 1]; [0, 1] is the whole occurrence
+    pub interval: Vec<f64>,
+    /// Source root appearance
+    pub occurrence_id: String,
+    /// Source relations used as evidence
+    pub relation_ids: Vec<String>,
+    /// Allowed native or candidate purpose
+    pub role: String,
+    /// Generic derivation rule identity
+    pub rule: String,
+    /// observed, candidate or unknown
+    pub state: String,
+}
+impl MdDiscoveredUse {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.consumer_id.trim().is_empty() { failures.push("MdDiscoveredUse.consumer_id:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdDiscoveredUse.id:required".into()); }
+        if self.occurrence_id.trim().is_empty() { failures.push("MdDiscoveredUse.occurrence_id:required".into()); }
+        if self.role.trim().is_empty() { failures.push("MdDiscoveredUse.role:required".into()); }
+        if self.rule.trim().is_empty() { failures.push("MdDiscoveredUse.rule:required".into()); }
+        if self.state.trim().is_empty() { failures.push("MdDiscoveredUse.state:required".into()); }
+
+        if !["axis_candidate","block_unresolved","construction_native","dimension_angle","dimension_diameter","dimension_linear","dimension_other","dimension_radius","fill_unresolved","geometry_candidate","hatch_native","hidden_candidate","leader_native","other_unresolved","text_native","tolerance_native",].contains(&self.role.as_str()) { failures.push("MdDiscoveredUse.role:allowed_values".into()); }
+        if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdDiscoveredUse.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One file read or written by a route step, by path and content digest
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingRouteFile {
+    /// Size in bytes
+    pub bytes: u64,
+    /// Path relative to the project home when inside it, otherwise absolute
+    pub path: String,
+    /// SHA-256 of the bytes
+    pub sha256: String,
+}
+impl MdDrawingRouteFile {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.path.trim().is_empty() { failures.push("MdDrawingRouteFile.path:required".into()); }
+        if self.sha256.trim().is_empty() { failures.push("MdDrawingRouteFile.sha256:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Receipt of one route run: what ran on which bytes, every step and the first failure
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingRouteReceipt {
+    /// The CADCraft source lock compiled into this executable
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub cadcraft_lock: serde_json::Value,
+    /// SHA-256 of the oev2 executable that ran the route and its worker
+    pub executable_sha256: String,
+    /// First failing step and its message
+    #[serde(default, deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub failure: Option<serde_json::Value>,
+    /// 结束时间 UTC
+    pub finished_at: String,
+    /// The request as given
+    pub request: MdDrawingRouteRequest,
+    /// oev2.drawing-route-receipt/1
+    pub schema: String,
+    /// What a passing run says and does not say
+    pub scope: String,
+    /// 开始时间 UTC
+    pub started_at: String,
+    /// Route outcome
+    pub status: String,
+    /// Every step in order
+    pub steps: Vec<MdDrawingRouteStep>,
+}
+impl MdDrawingRouteReceipt {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.executable_sha256.trim().is_empty() { failures.push("MdDrawingRouteReceipt.executable_sha256:required".into()); }
+        if self.finished_at.trim().is_empty() { failures.push("MdDrawingRouteReceipt.finished_at:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdDrawingRouteReceipt.schema:required".into()); }
+        if self.scope.trim().is_empty() { failures.push("MdDrawingRouteReceipt.scope:required".into()); }
+        if self.started_at.trim().is_empty() { failures.push("MdDrawingRouteReceipt.started_at:required".into()); }
+        if self.status.trim().is_empty() { failures.push("MdDrawingRouteReceipt.status:required".into()); }
+
+        if !["failed","page_not_checked","passed",].contains(&self.status.as_str()) { failures.push("MdDrawingRouteReceipt.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One run of the drawing route: the current Project and object, one DWG (or a DXF with its rendering), the converter record and a new output directory
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingRouteRequest {
+    /// Local record of the pinned converter; required with a DWG
+    pub cadcraft_runtime: Option<String>,
+    /// Chrome executable for the offline page checks, run headless with a fresh profile; without it the page is not checked
+    pub chrome: Option<String>,
+    /// DWG converted by the pinned CADCraft
+    pub dwg: Option<String>,
+    /// DXF read directly when no DWG is given
+    pub dxf: Option<String>,
+    /// Project object identity the drawing is read under
+    pub object: String,
+    /// New directory inside the project home
+    pub output_directory: String,
+    /// Current Project file inside the project home
+    pub project: String,
+    /// oev2.drawing-route-request/1
+    pub schema: String,
+    /// Neutral SVG rendering of the same DXF
+    pub svg: Option<String>,
+    /// Drawing named on the review page
+    pub title: String,
+}
+impl MdDrawingRouteRequest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.object.trim().is_empty() { failures.push("MdDrawingRouteRequest.object:required".into()); }
+        if self.output_directory.trim().is_empty() { failures.push("MdDrawingRouteRequest.output_directory:required".into()); }
+        if self.project.trim().is_empty() { failures.push("MdDrawingRouteRequest.project:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdDrawingRouteRequest.schema:required".into()); }
+        if self.title.trim().is_empty() { failures.push("MdDrawingRouteRequest.title:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One step of the drawing route with its inputs, outputs, process observations and facts
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingRouteStep {
+    /// Bounded process observations of the external programs this step ran
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub external_processes: Vec<serde_json::Value>,
+    /// Step observations such as entity counts, sandbox probes, assertion counts and browser runs
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub facts: serde_json::Value,
+    /// Why the step failed
+    pub failure: Option<String>,
+    /// Route step
+    pub id: String,
+    /// Files read
+    pub inputs: Vec<MdDrawingRouteFile>,
+    /// Files written
+    pub outputs: Vec<MdDrawingRouteFile>,
+    /// Wall time of the step
+    pub seconds: f64,
+    /// Step outcome; after a failure every later step is not_run
+    pub status: String,
+}
+impl MdDrawingRouteStep {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("MdDrawingRouteStep.id:required".into()); }
+        if !self.seconds.is_finite() { failures.push("MdDrawingRouteStep.seconds:finite".into()); }
+        if self.status.trim().is_empty() { failures.push("MdDrawingRouteStep.status:required".into()); }
+
+        if !["check-graph","check-page","classify","context","convert","page","probe-sandbox","read-source","render","request","verify-runtime","verify-source",].contains(&self.id.as_str()) { failures.push("MdDrawingRouteStep.id:allowed_values".into()); }
+        if !["failed","not_applicable","not_run","passed","skipped",].contains(&self.status.as_str()) { failures.push("MdDrawingRouteStep.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// View or sheet region of a drawing with its title evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingView {
+    /// Region [xmin, ymin, xmax, ymax] in drawing units
+    pub bbox: Vec<f64>,
+    /// Evidence supporting the view region and title
+    pub evidence_ids: Vec<String>,
+    /// View identity
+    pub id: String,
+    /// View kind
+    pub kind: String,
+    /// Displayed view name or principal-view designation
+    pub label: String,
+    /// Source handles of the view title or callout
+    pub label_source_ids: Vec<String>,
+    /// Scale text of a detail view when present
+    pub scale_text: Option<String>,
+    /// Evidence state
+    pub state: String,
+    /// Unresolved view limitations
+    pub unknowns: Vec<String>,
+}
+impl MdDrawingView {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("MdDrawingView.id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("MdDrawingView.kind:required".into()); }
+        if self.label.trim().is_empty() { failures.push("MdDrawingView.label:required".into()); }
+        if self.state.trim().is_empty() { failures.push("MdDrawingView.state:required".into()); }
+
+        if !["detail_view","direction_view","partial_view","principal","sheet",].contains(&self.kind.as_str()) { failures.push("MdDrawingView.kind:allowed_values".into()); }
+        if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdDrawingView.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Complete mechanical drawing expression independent of native primitive type
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdEngineeringExpression {
+    /// Part feature, face or requirement target; absent unless separately and uniquely supported
+    pub engineering_target: Option<String>,
+    /// Evidence for the composition
+    pub evidence_ids: Vec<String>,
+    /// Expression family
+    pub family: String,
+    /// Expression identity
+    pub id: String,
+    /// Discipline expression kind
+    pub kind: String,
+    /// Knowledge units bound to this kind
+    pub knowledge_ids: Vec<String>,
+    /// Displayed value or short description
+    pub label: String,
+    /// Complete list of the identifiers of its members
+    pub member_ids: Vec<String>,
+    /// Qualifiers such as key characteristic, reference, toleranced or general requirement
+    pub qualifiers: Vec<String>,
+    /// Generic rule that formed the expression
+    pub rule: String,
+    /// Evidence state
+    pub state: String,
+    /// Expression limitations and unresolved links
+    pub unknowns: Vec<String>,
+    /// View that contains it, when established
+    pub view_id: Option<String>,
+}
+impl MdEngineeringExpression {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.family.trim().is_empty() { failures.push("MdEngineeringExpression.family:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdEngineeringExpression.id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("MdEngineeringExpression.kind:required".into()); }
+        if self.label.trim().is_empty() { failures.push("MdEngineeringExpression.label:required".into()); }
+        if self.rule.trim().is_empty() { failures.push("MdEngineeringExpression.rule:required".into()); }
+        if self.state.trim().is_empty() { failures.push("MdEngineeringExpression.state:required".into()); }
+
+        if !["construction","dimension","geometry","note","sheet","surface","tolerance","unresolved","view",].contains(&self.family.as_str()) { failures.push("MdEngineeringExpression.family:allowed_values".into()); }
+        if !["break_line","center_axis","construction_reference","datum_symbol","dimension_angle","dimension_chamfer","dimension_diameter","dimension_linear","dimension_radius","geometric_tolerance","gps_direction","gps_parallelism","gps_perpendicularity","gps_position","gps_runout","gps_symmetry","hidden_contour","leader","material_heat","phantom_line","process_requirement","protection_requirement","section_hatch","sheet_frame","surface_roughness","technical_general","thread_convention","thread_note","title_block","unresolved","view_callout","visible_contour",].contains(&self.kind.as_str()) { failures.push("MdEngineeringExpression.kind:allowed_values".into()); }
+        if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdEngineeringExpression.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source graph plus views, line styles, complete expressions and bounded members
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdEngineeringExpressionGraph {
+    /// All expressions
+    pub expressions: Vec<MdEngineeringExpression>,
+    /// Outline inferred across explained interruptions (complete structure only)
+    pub implied_spans: Vec<MdImpliedSpan>,
+    /// Whether GB/T 14665-2012 Table 6 layer identifiers are consistent with the drawing
+    pub layer_convention: String,
+    /// Per-layer consistency evidence
+    pub layer_convention_evidence: Vec<String>,
+    /// Line style of each source root
+    pub line_styles: Vec<MdLineStyle>,
+    /// All expression members
+    pub members: Vec<MdExpressionMember>,
+    /// Rule profile
+    pub profile: String,
+    /// Graph schema
+    pub schema: String,
+    /// Lossless native source graph
+    pub source: MdUsageGraph,
+    /// Exact source digest
+    pub source_sha256: String,
+    /// Structural lines of the complete structure
+    pub structural_lines: Vec<MdStructuralLine>,
+    /// Free ends of visible and hidden outline spans with typed causes
+    pub structure_ends: Vec<MdStructuralEnd>,
+    /// Graph-level limitations
+    pub unknowns: Vec<String>,
+    /// Views and sheet region
+    pub views: Vec<MdDrawingView>,
+}
+impl MdEngineeringExpressionGraph {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.layer_convention.trim().is_empty() { failures.push("MdEngineeringExpressionGraph.layer_convention:required".into()); }
+        if self.profile.trim().is_empty() { failures.push("MdEngineeringExpressionGraph.profile:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdEngineeringExpressionGraph.schema:required".into()); }
+        if self.source_sha256.trim().is_empty() { failures.push("MdEngineeringExpressionGraph.source_sha256:required".into()); }
+
+        if !["gbt14665_2012_table6_consistent","not_qualified",].contains(&self.layer_convention.as_str()) { failures.push("MdEngineeringExpressionGraph.layer_convention:allowed_values".into()); }
+        if !["dxf-expression-rules/1",].contains(&self.profile.as_str()) { failures.push("MdEngineeringExpressionGraph.profile:allowed_values".into()); }
+        if !["oev2.drawing-expression-graph/1",].contains(&self.schema.as_str()) { failures.push("MdEngineeringExpressionGraph.schema:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Result of the independent check: every assertion re-derived from the source bytes passed
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdExpressionGraphCheck {
+    /// Assertions per kind
+    pub by_kind: std::collections::BTreeMap<String, u64>,
+    /// Assertions checked
+    pub count: u64,
+    /// SHA-256 of the expression graph file
+    pub graph_sha256: String,
+    /// oev2.drawing-expression-graph-check/1
+    pub schema: String,
+    /// What the check says and does not say
+    pub scope: String,
+    /// Assertions re-derived from the source bytes, excluding identity assertions
+    pub source_derived_count: u64,
+    /// Check outcome; a failing assertion stops the check with its label
+    pub status: String,
+    /// Actual executable identity
+    pub worker_sha256: String,
+}
+impl MdExpressionGraphCheck {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.graph_sha256.trim().is_empty() { failures.push("MdExpressionGraphCheck.graph_sha256:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdExpressionGraphCheck.schema:required".into()); }
+        if self.scope.trim().is_empty() { failures.push("MdExpressionGraphCheck.scope:required".into()); }
+        if self.status.trim().is_empty() { failures.push("MdExpressionGraphCheck.status:required".into()); }
+        if self.worker_sha256.trim().is_empty() { failures.push("MdExpressionGraphCheck.worker_sha256:required".into()); }
+
+        if !["passed",].contains(&self.status.as_str()) { failures.push("MdExpressionGraphCheck.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Independent check of one expression graph against the bytes of its source
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdExpressionGraphCheckRequest {
+    /// Discovery request inside the project home; its output directory holds graph.json and review.json
+    pub discovery_request: String,
+    /// New check report file
+    pub output: String,
+    /// Files whose digests must be unchanged
+    pub pinned: Vec<MdPinnedFile>,
+    /// oev2.drawing-expression-graph-check-request/1
+    pub schema: String,
+    /// Neutral SVG rendering of the same DXF
+    pub svg: String,
+    /// Executable expected to have run the sandboxed worker
+    pub worker_executable: String,
+}
+impl MdExpressionGraphCheckRequest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.discovery_request.trim().is_empty() { failures.push("MdExpressionGraphCheckRequest.discovery_request:required".into()); }
+        if self.output.trim().is_empty() { failures.push("MdExpressionGraphCheckRequest.output:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdExpressionGraphCheckRequest.schema:required".into()); }
+        if self.svg.trim().is_empty() { failures.push("MdExpressionGraphCheckRequest.svg:required".into()); }
+        if self.worker_executable.trim().is_empty() { failures.push("MdExpressionGraphCheckRequest.worker_executable:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One source occurrence, nested native member or bounded curve interval inside an expression
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdExpressionMember {
+    /// Evidence for this assignment
+    pub evidence_ids: Vec<String>,
+    /// Owning expression
+    pub expression_id: String,
+    /// Member identity
+    pub id: String,
+    /// Normalized source parameter interval within [0, 1]; [0, 1] is the whole occurrence
+    pub interval: Vec<f64>,
+    /// Geometric line type of the member
+    pub line_type: String,
+    /// Role of the member in the expression
+    pub member_role: String,
+    /// Nested native member path inside a DIMENSION or INSERT root
+    pub native_member_id: Option<String>,
+    /// Source relations used as evidence
+    pub relation_ids: Vec<String>,
+    /// Root source handle
+    pub source_handle: String,
+    /// Evidence state
+    pub state: String,
+    /// Member-specific limitations
+    pub unknowns: Vec<String>,
+    /// View that contains it, when established
+    pub view_id: Option<String>,
+}
+impl MdExpressionMember {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.expression_id.trim().is_empty() { failures.push("MdExpressionMember.expression_id:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdExpressionMember.id:required".into()); }
+        if self.line_type.trim().is_empty() { failures.push("MdExpressionMember.line_type:required".into()); }
+        if self.member_role.trim().is_empty() { failures.push("MdExpressionMember.member_role:required".into()); }
+        if self.source_handle.trim().is_empty() { failures.push("MdExpressionMember.source_handle:required".into()); }
+        if self.state.trim().is_empty() { failures.push("MdExpressionMember.state:required".into()); }
+
+        if !["block","continuous","dimension","double_break","fill","point","text","thick_continuous","thick_dash_dot","thick_dashed","thin_continuous","thin_dash_dot","thin_dash_double_dot","thin_dashed","unknown","wavy",].contains(&self.line_type.as_str()) { failures.push("MdExpressionMember.line_type:allowed_values".into()); }
+        if !["arrowhead","break_curve","center_line","coincident_source","contour_segment","datum_frame","datum_letter","datum_reference","definition_point","detail_circle","dimension_line","dimension_text","extension_line","extension_origin","frame_border","frame_cell","hatch_fill","hidden_segment","leader_line","native_block","native_dimension","native_member","note_text","phantom_segment","roughness_symbol","roughness_value","scale_text","symbol_glyph","table_line","table_text","thread_line","tolerance_text","tolerance_value","unresolved_source","view_arrow","view_letter","view_title",].contains(&self.member_role.as_str()) { failures.push("MdExpressionMember.member_role:allowed_values".into()); }
+        if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdExpressionMember.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Outline inferred across an explained interruption between two collinear source spans; complete-structure representation only, never a source member or new source line
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdImpliedSpan {
+    /// Circular carrier (centre x, centre y, radius, start angle, sweep) of an arc or circle; absent for straight geometry
+    pub arc: Option<Vec<f64>>,
+    /// Interruption cause: a dimension or note text the line is broken for (GB/T 4458.4), a local section region, a drafting gap to other outline (imprecise joint, reported and never bridged), or unexplained
+    pub cause: String,
+    /// Cause evidence and mirror-counterpart evidence
+    pub evidence_ids: Vec<String>,
+    /// Normalized curve parameter on the first source, when defined
+    pub from_parameter: f64,
+    /// Source root at the first end
+    pub from_source_handle: String,
+    /// Stable span identifier
+    pub id: String,
+    /// Outline class: visible or hidden outline
+    pub line_class: String,
+    /// End points in drawing coordinates (x0, y0, x1, y1)
+    pub points: Vec<f64>,
+    /// Representation that shows the span
+    pub representation: String,
+    /// Evidence state
+    pub state: String,
+    /// Normalized curve parameter on the second source, when defined
+    pub to_parameter: f64,
+    /// Source root at the second end
+    pub to_source_handle: String,
+    /// Open questions about this span
+    pub unknowns: Vec<String>,
+    /// View that contains it, when established
+    pub view_id: Option<String>,
+}
+impl MdImpliedSpan {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.cause.trim().is_empty() { failures.push("MdImpliedSpan.cause:required".into()); }
+        if !self.from_parameter.is_finite() { failures.push("MdImpliedSpan.from_parameter:finite".into()); }
+        if self.from_source_handle.trim().is_empty() { failures.push("MdImpliedSpan.from_source_handle:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdImpliedSpan.id:required".into()); }
+        if self.line_class.trim().is_empty() { failures.push("MdImpliedSpan.line_class:required".into()); }
+        if self.representation.trim().is_empty() { failures.push("MdImpliedSpan.representation:required".into()); }
+        if self.state.trim().is_empty() { failures.push("MdImpliedSpan.state:required".into()); }
+        if !self.to_parameter.is_finite() { failures.push("MdImpliedSpan.to_parameter:finite".into()); }
+        if self.to_source_handle.trim().is_empty() { failures.push("MdImpliedSpan.to_source_handle:required".into()); }
+
+        if !["local_section","text_break",].contains(&self.cause.as_str()) { failures.push("MdImpliedSpan.cause:allowed_values".into()); }
+        if !["hidden_outline","visible_outline",].contains(&self.line_class.as_str()) { failures.push("MdImpliedSpan.line_class:allowed_values".into()); }
+        if !["complete_structure",].contains(&self.representation.as_str()) { failures.push("MdImpliedSpan.representation:allowed_values".into()); }
+        if !["candidate",].contains(&self.state.as_str()) { failures.push("MdImpliedSpan.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Observed line style and derived geometric line type of one source root
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdLineStyle {
+    /// Basis of the line type
+    pub basis: String,
+    /// Pattern, layer and geometry evidence
+    pub evidence_ids: Vec<String>,
+    /// Original native layer name, not an inferred engineering category
+    pub layer: String,
+    /// GB/T 14665-2012 Table 6 description when the convention is consistent with this drawing
+    pub layer_rule: Option<String>,
+    /// Geometric line type used for review
+    pub line_type: String,
+    /// Pattern class from actual LTYPE dash elements
+    pub pattern: String,
+    /// Native entity kind
+    pub primitive: String,
+    /// Root source handle
+    pub source_handle: String,
+}
+impl MdLineStyle {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.basis.trim().is_empty() { failures.push("MdLineStyle.basis:required".into()); }
+        if self.layer.trim().is_empty() { failures.push("MdLineStyle.layer:required".into()); }
+        if self.line_type.trim().is_empty() { failures.push("MdLineStyle.line_type:required".into()); }
+        if self.pattern.trim().is_empty() { failures.push("MdLineStyle.pattern:required".into()); }
+        if self.primitive.trim().is_empty() { failures.push("MdLineStyle.primitive:required".into()); }
+        if self.source_handle.trim().is_empty() { failures.push("MdLineStyle.source_handle:required".into()); }
+
+        if !["geometry_shape","layer_convention","native_kind","observed_pattern","role_rule","unknown",].contains(&self.basis.as_str()) { failures.push("MdLineStyle.basis:allowed_values".into()); }
+        if !["block","continuous","dimension","double_break","fill","point","text","thick_continuous","thick_dash_dot","thick_dashed","thin_continuous","thin_dash_dot","thin_dash_double_dot","thin_dashed","unknown","wavy",].contains(&self.line_type.as_str()) { failures.push("MdLineStyle.line_type:allowed_values".into()); }
+        if !["byblock_unresolved","continuous","dash_dot","dash_double_dot","dashed","not_curve","unknown",].contains(&self.pattern.as_str()) { failures.push("MdLineStyle.pattern:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Native entity occurrence, including dimension block and nested insert ownership
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdNativeLayerMember {
+    /// block path
+    pub block_path: Vec<String>,
+    /// Original native handle
+    pub handle: String,
+    /// id
+    pub id: String,
+    /// kind
+    pub kind: String,
+    /// raw text
+    pub raw_text: Option<String>,
+    /// role
+    pub role: String,
+    /// source layer
+    pub source_layer: String,
+}
+impl MdNativeLayerMember {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.handle.trim().is_empty() { failures.push("MdNativeLayerMember.handle:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdNativeLayerMember.id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("MdNativeLayerMember.kind:required".into()); }
+        if self.role.trim().is_empty() { failures.push("MdNativeLayerMember.role:required".into()); }
+        if self.source_layer.trim().is_empty() { failures.push("MdNativeLayerMember.source_layer:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// A file whose digest must be unchanged when a result is checked
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdPinnedFile {
+    /// What the file is
+    pub name: String,
+    /// Absolute path
+    pub path: String,
+    /// Expected SHA-256
+    pub sha256: String,
+}
+impl MdPinnedFile {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.name.trim().is_empty() { failures.push("MdPinnedFile.name:required".into()); }
+        if self.path.trim().is_empty() { failures.push("MdPinnedFile.path:required".into()); }
+        if self.sha256.trim().is_empty() { failures.push("MdPinnedFile.sha256:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// A written review page with the identities it embeds
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdReviewPage {
+    /// Expressions in the graph
+    pub expression_count: u64,
+    /// SHA-256 of the expression graph file
+    pub graph_sha256: String,
+    /// The page
+    pub page: MdDrawingRouteFile,
+    /// Source roots with visible strokes in the rendering
+    pub rendered_root_count: u64,
+    /// Source roots in the graph
+    pub root_count: u64,
+    /// oev2.drawing-review-page/1
+    pub schema: String,
+    /// SHA-256 of the embedded rendering
+    pub svg_sha256: String,
+}
+impl MdReviewPage {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.graph_sha256.trim().is_empty() { failures.push("MdReviewPage.graph_sha256:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdReviewPage.schema:required".into()); }
+        if self.svg_sha256.trim().is_empty() { failures.push("MdReviewPage.svg_sha256:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Result of the browser checks: every expectation computed from the graph embedded in the page held
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdReviewPageCheck {
+    /// Browser version
+    pub browser: String,
+    /// Assertions checked
+    pub count: u64,
+    /// Facts observed in the page, including checks not applicable to this drawing
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub facts: serde_json::Value,
+    /// Display mode
+    pub mode: String,
+    /// The checked page
+    pub page: MdDrawingRouteFile,
+    /// Browser result with every assertion and fact
+    pub result: MdDrawingRouteFile,
+    /// oev2.drawing-review-page-check/1
+    pub schema: String,
+    /// Screenshot in the requested mode
+    pub screenshot: MdDrawingRouteFile,
+    /// Check outcome
+    pub status: String,
+}
+impl MdReviewPageCheck {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.browser.trim().is_empty() { failures.push("MdReviewPageCheck.browser:required".into()); }
+        if self.mode.trim().is_empty() { failures.push("MdReviewPageCheck.mode:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdReviewPageCheck.schema:required".into()); }
+        if self.status.trim().is_empty() { failures.push("MdReviewPageCheck.status:required".into()); }
+
+        if !["asdrawn","complete","focus","geometry","kind","line","view",].contains(&self.mode.as_str()) { failures.push("MdReviewPageCheck.mode:allowed_values".into()); }
+        if !["passed",].contains(&self.status.as_str()) { failures.push("MdReviewPageCheck.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Offline browser check of one review page in one display mode
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdReviewPageCheckRequest {
+    /// Chrome executable for the offline page checks, run headless with a fresh profile; without it the page is not checked
+    pub chrome: String,
+    /// Label text of the expression focused in focus mode
+    pub focus_label: Option<String>,
+    /// Display mode left on screen for the screenshot
+    pub mode: String,
+    /// New directory for the browser result and screenshot
+    pub output_directory: String,
+    /// Review page file
+    pub page: String,
+    /// Drawing-coordinate box x0, y0, x1, y1 for the screenshot
+    pub region: Option<Vec<f64>>,
+    /// oev2.drawing-review-page-check-request/1
+    pub schema: String,
+}
+impl MdReviewPageCheckRequest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.chrome.trim().is_empty() { failures.push("MdReviewPageCheckRequest.chrome:required".into()); }
+        if self.mode.trim().is_empty() { failures.push("MdReviewPageCheckRequest.mode:required".into()); }
+        if self.output_directory.trim().is_empty() { failures.push("MdReviewPageCheckRequest.output_directory:required".into()); }
+        if self.page.trim().is_empty() { failures.push("MdReviewPageCheckRequest.page:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdReviewPageCheckRequest.schema:required".into()); }
+
+        if !["asdrawn","complete","focus","geometry","kind","line","view",].contains(&self.mode.as_str()) { failures.push("MdReviewPageCheckRequest.mode:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Review page of a frozen expression graph over its neutral rendering
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdReviewPageRequest {
+    /// Name of the classification shown
+    pub candidate: String,
+    /// Expression graph file
+    pub graph: String,
+    /// New page file
+    pub output: String,
+    /// oev2.drawing-review-page-request/1
+    pub schema: String,
+    /// How the source DXF was obtained, shown verbatim
+    pub source_note: String,
+    /// Review status shown verbatim
+    pub status_note: String,
+    /// Neutral SVG rendering of the same DXF
+    pub svg: String,
+    /// Drawing named in the page subtitle
+    pub title: String,
+    /// Route or rule version shown
+    pub version: String,
+}
+impl MdReviewPageRequest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.candidate.trim().is_empty() { failures.push("MdReviewPageRequest.candidate:required".into()); }
+        if self.graph.trim().is_empty() { failures.push("MdReviewPageRequest.graph:required".into()); }
+        if self.output.trim().is_empty() { failures.push("MdReviewPageRequest.output:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdReviewPageRequest.schema:required".into()); }
+        if self.source_note.trim().is_empty() { failures.push("MdReviewPageRequest.source_note:required".into()); }
+        if self.status_note.trim().is_empty() { failures.push("MdReviewPageRequest.status_note:required".into()); }
+        if self.svg.trim().is_empty() { failures.push("MdReviewPageRequest.svg:required".into()); }
+        if self.title.trim().is_empty() { failures.push("MdReviewPageRequest.title:required".into()); }
+        if self.version.trim().is_empty() { failures.push("MdReviewPageRequest.version:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Free end of a visible or hidden outline span with its typed interruption cause; an obligation of the structure topology audit
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdStructuralEnd {
+    /// Interruption cause: a dimension or note text the line is broken for (GB/T 4458.4), a local section region, a drafting gap to other outline (imprecise joint, reported and never bridged), or unexplained
+    pub cause: String,
+    /// Covering texts and annotation lines, section hatch or boundary sources
+    pub evidence_ids: Vec<String>,
+    /// Stable end identifier
+    pub id: String,
+    /// Outline class: visible or hidden outline
+    pub line_class: String,
+    /// Normalized curve parameter of the end on its source
+    pub parameter: f64,
+    /// Facing free end across the same interruption
+    pub partner_end_id: Option<String>,
+    /// End point in drawing coordinates (x, y)
+    pub point: Vec<f64>,
+    /// Root source handle
+    pub source_handle: String,
+    /// Evidence state
+    pub state: String,
+    /// Open questions about this end
+    pub unknowns: Vec<String>,
+    /// View that contains it, when established
+    pub view_id: Option<String>,
+}
+impl MdStructuralEnd {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.cause.trim().is_empty() { failures.push("MdStructuralEnd.cause:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdStructuralEnd.id:required".into()); }
+        if self.line_class.trim().is_empty() { failures.push("MdStructuralEnd.line_class:required".into()); }
+        if !self.parameter.is_finite() { failures.push("MdStructuralEnd.parameter:finite".into()); }
+        if self.source_handle.trim().is_empty() { failures.push("MdStructuralEnd.source_handle:required".into()); }
+        if self.state.trim().is_empty() { failures.push("MdStructuralEnd.state:required".into()); }
+
+        if !["drafting_gap","local_section","text_break","unexplained",].contains(&self.cause.as_str()) { failures.push("MdStructuralEnd.cause:allowed_values".into()); }
+        if !["hidden_outline","visible_outline",].contains(&self.line_class.as_str()) { failures.push("MdStructuralEnd.line_class:allowed_values".into()); }
+        if !["candidate","unknown",].contains(&self.state.as_str()) { failures.push("MdStructuralEnd.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One structural line: within one view and outline class, the collinear (or co-circular) connected source pieces and evidenced inferred spans of one drawn line, however the source split it; its line type follows the structure
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdStructuralLine {
+    /// Circular carrier (centre x, centre y, radius, start angle, sweep) of an arc or circle; absent for straight geometry
+    pub arc: Option<Vec<f64>>,
+    /// Members lying on the line and covered by its pieces (drawn again)
+    pub coincident: Vec<String>,
+    /// Merge evidence
+    pub evidence_ids: Vec<String>,
+    /// Carrier geometry
+    pub geometry: String,
+    /// Stable structural line identifier
+    pub id: String,
+    /// Outline class: visible or hidden outline
+    pub line_class: String,
+    /// Line type of the structure (visible outline solid, hidden outline dashed)
+    pub line_type: String,
+    /// Ordered contributing pieces: member:<id> for source spans, implied:<id> for inferred spans
+    pub pieces: Vec<String>,
+    /// Ordered points of the line in drawing coordinates (x0, y0, x1, y1, ...)
+    pub points: Vec<f64>,
+    /// Evidence state
+    pub state: String,
+    /// Portions cut off inside a local section: member:<id>:<t0>:<t1>
+    pub trimmed: Vec<String>,
+    /// Open questions about this line
+    pub unknowns: Vec<String>,
+    /// View that contains it, when established
+    pub view_id: Option<String>,
+}
+impl MdStructuralLine {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.geometry.trim().is_empty() { failures.push("MdStructuralLine.geometry:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdStructuralLine.id:required".into()); }
+        if self.line_class.trim().is_empty() { failures.push("MdStructuralLine.line_class:required".into()); }
+        if self.line_type.trim().is_empty() { failures.push("MdStructuralLine.line_type:required".into()); }
+        if self.state.trim().is_empty() { failures.push("MdStructuralLine.state:required".into()); }
+
+        if !["arc","circle","line","polyline",].contains(&self.geometry.as_str()) { failures.push("MdStructuralLine.geometry:allowed_values".into()); }
+        if !["hidden_outline","visible_outline",].contains(&self.line_class.as_str()) { failures.push("MdStructuralLine.line_class:allowed_values".into()); }
+        if !["block","continuous","dimension","double_break","fill","point","text","thick_continuous","thick_dash_dot","thick_dashed","thin_continuous","thin_dash_dot","thin_dash_double_dot","thin_dashed","unknown","wavy",].contains(&self.line_type.as_str()) { failures.push("MdStructuralLine.line_type:allowed_values".into()); }
+        if !["candidate","observed",].contains(&self.state.as_str()) { failures.push("MdStructuralLine.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-only discovery supervised by the current native owner
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdUsageDiscoveryRequest {
+    /// New private output directory
+    pub output_directory: String,
+    /// Executor-qualified profile: native-usage requires dxf-usage-rules/1; discipline requires dxf-discipline-rules/1; neither executor accepts an arbitrary profile
+    pub profile: String,
+    /// Current owner identity; not passed to worker
+    pub project_context: ProjectReviewContext,
+    /// oev2.drawing-discovery-request/1
+    pub schema: String,
+    /// Unclassified immutable source DXF
+    pub source: ArtifactReference,
+    /// Engineering evaluation object, not a model input
+    pub subject: ObjectIdentity,
+}
+impl MdUsageDiscoveryRequest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.output_directory.trim().is_empty() { failures.push("MdUsageDiscoveryRequest.output_directory:required".into()); }
+        if self.profile.trim().is_empty() { failures.push("MdUsageDiscoveryRequest.profile:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdUsageDiscoveryRequest.schema:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Current owner wrapper for an isolated bytes-only usage graph
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdUsageDiscoveryReview {
+    /// New typed graph from isolated worker
+    pub graph: ArtifactReference,
+    /// Current owner binding
+    pub project_context: ProjectReviewContext,
+    /// Exact source-only request
+    pub request: ArtifactReference,
+    /// Actual filesystem/network isolation rules
+    pub sandbox_profile: String,
+    /// oev2.drawing-discovery-review/1
+    pub schema: String,
+    /// Only source data fed to worker
+    pub source: ArtifactReference,
+    /// source_only_usage_candidates
+    pub status: String,
+    /// Same engineering evaluation object
+    pub subject: ObjectIdentity,
+    /// Engineering qualification remains separate
+    pub unknowns: Vec<String>,
+    /// Actual executable identity
+    pub worker_sha256: String,
+}
+impl MdUsageDiscoveryReview {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.sandbox_profile.trim().is_empty() { failures.push("MdUsageDiscoveryReview.sandbox_profile:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdUsageDiscoveryReview.schema:required".into()); }
+        if self.status.trim().is_empty() { failures.push("MdUsageDiscoveryReview.status:required".into()); }
+        if self.worker_sha256.trim().is_empty() { failures.push("MdUsageDiscoveryReview.worker_sha256:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Immutable source root with geometric qualification, not a classified part feature
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdUsageEntity {
+    /// Original drawing-unit curve coordinates
+    pub coordinates: Vec<f64>,
+    /// line, arc, circle or unqualified
+    pub geometry_kind: String,
+    /// Reason geometry is not qualified for topology
+    pub geometry_limit: Option<String>,
+    /// Original native handle
+    pub handle: String,
+    /// Source root occurrence identity
+    pub id: String,
+    /// Native DXF entity kind
+    pub kind: String,
+    /// Original native layer name, not an inferred engineering category
+    pub layer: String,
+    /// Effective source linetype
+    pub line_type: String,
+    /// Complete list of the identifiers of its members
+    pub member_ids: Vec<String>,
+    /// DXF 330 owner if present
+    pub native_owner: Option<String>,
+    /// Uninterpreted native text
+    pub text: Option<String>,
+}
+impl MdUsageEntity {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.geometry_kind.trim().is_empty() { failures.push("MdUsageEntity.geometry_kind:required".into()); }
+        if self.handle.trim().is_empty() { failures.push("MdUsageEntity.handle:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdUsageEntity.id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("MdUsageEntity.kind:required".into()); }
+        if self.layer.trim().is_empty() { failures.push("MdUsageEntity.layer:required".into()); }
+        if self.line_type.trim().is_empty() { failures.push("MdUsageEntity.line_type:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source-only discovery result; no paired model or historic answers consumed
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdUsageGraph {
+    /// All native model-space roots
+    pub entities: Vec<MdUsageEntity>,
+    /// Fixed numerical threshold, no mm claim
+    pub epsilon_drawing_units: f64,
+    /// All native expanded occurrences
+    pub members: Vec<MdNativeLayerMember>,
+    /// dxf-usage-rules/1
+    pub profile: String,
+    /// Retained source relations, not inferred physical topology
+    pub relations: Vec<MdUsageRelation>,
+    /// oev2.drawing-usage-graph/1
+    pub schema: String,
+    /// Full partitions of eligible LINE support
+    pub segments: Vec<MdUsageSegment>,
+    /// Exact input bytes
+    pub source_sha256: String,
+    /// Unqualified semantics and geometry
+    pub unknowns: Vec<String>,
+    /// Non-exclusive source uses with status
+    pub uses: Vec<MdDiscoveredUse>,
+}
+impl MdUsageGraph {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if !self.epsilon_drawing_units.is_finite() { failures.push("MdUsageGraph.epsilon_drawing_units:finite".into()); }
+        if self.profile.trim().is_empty() { failures.push("MdUsageGraph.profile:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdUsageGraph.schema:required".into()); }
+        if self.source_sha256.trim().is_empty() { failures.push("MdUsageGraph.source_sha256:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Source containment or drawing geometry relation with explicit epistemic status
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdUsageRelation {
+    /// Source occurrence path
+    pub from_id: String,
+    /// Normalized curve parameter on the first source, when defined
+    pub from_parameter: Option<f64>,
+    /// Derived relation identity
+    pub id: String,
+    /// Containment, geometric incidence, construction overlap or unresolved endpoint
+    pub kind: String,
+    /// Zero, one or two source XY points
+    pub points: Vec<f64>,
+    /// Source coordinate distance, not engineering tolerance
+    pub residual: Option<f64>,
+    /// Generic rule, not an instance answer
+    pub rule: String,
+    /// Interval on from occurrence when relation is interval-valued
+    pub source_interval: Vec<f64>,
+    /// observed, candidate or unknown
+    pub state: String,
+    /// Target source occurrence, absent for unresolved endpoint
+    pub to_id: Option<String>,
+    /// Normalized curve parameter on the second source, when defined
+    pub to_parameter: Option<f64>,
+}
+impl MdUsageRelation {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.from_id.trim().is_empty() { failures.push("MdUsageRelation.from_id:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdUsageRelation.id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("MdUsageRelation.kind:required".into()); }
+        if self.rule.trim().is_empty() { failures.push("MdUsageRelation.rule:required".into()); }
+        if self.state.trim().is_empty() { failures.push("MdUsageRelation.state:required".into()); }
+
+        if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdUsageRelation.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Atomic existing LINE interval with all covering uses
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdUsageSegment {
+    /// Existing support endpoints, no extrapolation
+    pub coordinates: Vec<f64>,
+    /// Derived segment identity
+    pub id: String,
+    /// Normalized source parameter interval within [0, 1]; [0, 1] is the whole occurrence
+    pub interval: Vec<f64>,
+    /// Immutable parent source occurrence
+    pub occurrence_id: String,
+    /// Complete set of covering roles
+    pub use_ids: Vec<String>,
+}
+impl MdUsageSegment {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("MdUsageSegment.id:required".into()); }
+        if self.occurrence_id.trim().is_empty() { failures.push("MdUsageSegment.occurrence_id:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
 /// 当前 Project 中有范围的机制检查；不另建状态机或采用决定
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -26699,6 +28257,26 @@ pub trait EngineeringWorkPort {
 
 pub trait FixedCodeComparisonPort {
     fn compare(&self, input: &CodeComparisonRequest) -> Result<CodeComparison, CodeEvolutionFailure>;
+}
+
+pub trait MdDrawingRoutePort {
+    fn run_route(&self, input: &MdDrawingRouteRequest) -> Result<MdDrawingRouteReceipt, FailureRecord>;
+}
+
+pub trait MdEngineeringExpressionPort {
+    fn discover_expressions(&self, input: &MdUsageDiscoveryRequest) -> Result<MdUsageDiscoveryReview, FailureRecord>;
+}
+
+pub trait MdExpressionGraphCheckPort {
+    fn check_graph(&self, input: &MdExpressionGraphCheckRequest) -> Result<MdExpressionGraphCheck, FailureRecord>;
+}
+
+pub trait MdReviewPageCheckPort {
+    fn check_page(&self, input: &MdReviewPageCheckRequest) -> Result<MdReviewPageCheck, FailureRecord>;
+}
+
+pub trait MdReviewPagePort {
+    fn render_page(&self, input: &MdReviewPageRequest) -> Result<MdReviewPage, FailureRecord>;
 }
 
 pub trait ModelPageRunPort {

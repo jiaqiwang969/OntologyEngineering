@@ -58,6 +58,11 @@ pub fn inputs(root: &Path) -> std::io::Result<Vec<PathBuf>> {
         "crates/oe-cad/tests/fixtures/correspondence/plate-reopened-v1.synthetic-observation.json",
         "crates/oe-cad/tests/fixtures/correspondence/plate-partial-v1.synthetic-observation.json",
         "crates/oe-cad/tests/fixtures/correspondence/selectors.json",
+        // The review page template, its browser checks and the converter lock are compiled into the
+        // drawing route.
+        "crates/oe-drawing/assets/expression-review.html",
+        "crates/oe-drawing-check/assets/review-page-checks.js",
+        "integrations/runtime-locks/cadcraft-source.json",
     ] {
         if root.join(p).is_file() {
             out.insert(PathBuf::from(p));

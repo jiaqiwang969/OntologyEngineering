@@ -19,6 +19,17 @@ const MIGRATION_MAPPING_PREFIX: &str =
 
 /// One deterministic project model from the editable design and derived source facts.
 pub fn model(root: &Path, design: &Design) -> Result<(String, BTreeMap<String, String>)> {
+    model_for_input(root, design, "oev2.design/1")
+}
+
+/// The /5 application composition has an explicit larger derived artifact.
+/// Existing standalone and /2-/4 normalization retain their 32 MiB cap.
+pub fn model_for_input(
+    root: &Path,
+    design: &Design,
+    input_schema: &str,
+) -> Result<(String, BTreeMap<String, String>)> {
+    let limit = derived_model_limit(input_schema)?;
     let (source, mut inputs) = inspection::rdf(root, design)?;
     let mut model = design.rdf()?;
     model.push_str(&source);
@@ -87,10 +98,29 @@ pub fn model(root: &Path, design: &Design) -> Result<(String, BTreeMap<String, S
         }
     }
     ensure!(
-        model.len() as u64 <= oe_core::source_limits::DERIVED_MODEL_BYTES,
+        model.len() as u64 <= limit,
         "derived_design_model_byte_limit"
     );
     Ok((model, inputs))
+}
+
+pub fn derived_model_limit(input_schema: &str) -> Result<u64> {
+    ensure!(
+        [
+            "oev2.design/1",
+            "oev2.design/2",
+            "oev2.design/3",
+            "oev2.design/4",
+            "oev2.design/5"
+        ]
+        .contains(&input_schema),
+        "derived_model_input_schema"
+    );
+    Ok(if input_schema == "oev2.design/5" {
+        oe_core::source_limits::APPLICATION_DERIVED_MODEL_BYTES
+    } else {
+        oe_core::source_limits::DERIVED_MODEL_BYTES
+    })
 }
 
 fn migration_asset(model: &mut String, path: &str, hash: &str) -> Result<()> {

@@ -60,6 +60,7 @@
 | 长资料、图片和上下文判断 | 当前 Agent 按[协作编排](AGENT-ORCHESTRATION.md)处理；已有登记页、OCR/typed 和明确专用工具按各自合同使用 | 读到和未读到的范围、必要条件、原问题、反例、双预算、模型身份、实际 usage/费用、失败恢复；仍交由同 Project 正式审查 |
 | 米思米案例及零件如何进入设计 | `knowledge library incad` [资料图谱](MISUMI-SOURCE-LIBRARY.md)、[三层选型审查](MISUMI-SELECTION.md)、supplier 与 `project incad`；[来源接入](CAD-INCAD-INTEGRATION.md)、[CAD 暂存](INCAD-CAD-STAGING.md) | inCAD 只作机构参考，目录/手册提供系列与参数依据，官网当前页面提供具体配置；`supplier selection-review` 只核离线回执，实际网页、CAD、计算和工程适用性分别验收 |
 | NX/SolidWorks/SolidCraft 如何执行设计 | NX 协议/controller/worker、有限 SW Rust worker、SolidCraft 原生 CLI/MCP；[独立执行](CAD-INDEPENDENT-EXECUTION.md)、[SolidCraft 工作流](SOLIDCRAFT-CAD.md)、[工程交付](ENGINEERING-DELIVERY.md)、[SW 范围](SOLIDWORKS-NATIVE-WORKER.md) | 按原生交付物选后端；原生动作、单位/变换、保存及独立进程重开各自取证。SolidCraft 经通用 Rust tool-result 回交，不伪装为 NX/SW observation；模型、交换文件、图纸/BOM/工艺/实物分别验收 |
+| 已有图纸上画了什么 | `oev2 drawing route` 固定读图路线：锁定 CADCraft 转换、隔离 worker 分类、独立复核、检查页与浏览器检查；[读懂已有图纸](DRAWING-UNDERSTANDING.md) | 源对象守恒、带区间成员、四维分类与结构线；零件要素目标保持未知，阈值在开发图纸上校准，另一张图需独立评价，检查通过不等于工程正确 |
 | 如何形成施工图及检验依据 | 数值、孔列、原生图纸意图与 CAD handoff；[数值交付](../references/numeric-cad-delivery.md)、[图纸关联](../references/native-drawing-associations.md) | 尺寸、公差、基准、材料、工艺、装配与测量方法、覆盖及不确定度；几何参考页和视觉演示不替代制造图或实测 |
 | 哪个结论现在可以采用 | `kernel review --project`、工程前提/数值/制造检查及现有治理 owner | 当前对象/条件/来源、必要检查、失败/未知/覆盖与批准；语义支持、工具状态和工程采用分别保存 |
 | 如何检验并使用改进 | knowledge experience、既有 Rust learning/evolution/version owner；[有证据的改进](../references/regularized-evolution.md) | 冻结原目标、来源、判据、预算与完整拒绝历史；独立任务的质量/成本、实际下一使用反馈、精确恢复；无新增表达时实例或 no_delta |

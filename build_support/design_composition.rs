@@ -11,11 +11,12 @@ use std::{
 pub const ROOT_SCHEMA: &str = "oev2.design/2";
 pub const REFERENCE_ROOT_SCHEMA: &str = "oev2.design/3";
 pub const GROUPED_ROOT_SCHEMA: &str = "oev2.design/4";
+pub const EXTENDED_ROOT_SCHEMA: &str = "oev2.design/5";
 pub const VALIDATION_ENCODING: &str = "oev2.validation-groups/1";
 pub fn is_composed(schema: &str) -> bool {
     matches!(
         schema,
-        ROOT_SCHEMA | REFERENCE_ROOT_SCHEMA | GROUPED_ROOT_SCHEMA
+        ROOT_SCHEMA | REFERENCE_ROOT_SCHEMA | GROUPED_ROOT_SCHEMA | EXTENDED_ROOT_SCHEMA
     )
 }
 pub const FRAGMENT_SCHEMA: &str = "oev2.design-fragment/2";
@@ -23,6 +24,25 @@ pub const GROUPED_FRAGMENT_SCHEMA: &str = "oev2.design-fragment/3";
 pub const FILE_BYTES: usize = 4 * 1024 * 1024;
 pub const TOTAL_BYTES: usize = 8 * 1024 * 1024;
 pub const FILE_COUNT: usize = 32;
+pub const EXTENDED_FILE_COUNT: usize = 64;
+pub const EXTENDED_TOTAL_BYTES: usize = 12 * 1024 * 1024;
+pub fn file_count_limit(schema: &str) -> usize {
+    if schema == EXTENDED_ROOT_SCHEMA {
+        EXTENDED_FILE_COUNT
+    } else {
+        FILE_COUNT
+    }
+}
+pub fn uses_groups(schema: &str) -> bool {
+    matches!(schema, GROUPED_ROOT_SCHEMA | EXTENDED_ROOT_SCHEMA)
+}
+pub fn total_byte_limit(schema: &str) -> usize {
+    if schema == EXTENDED_ROOT_SCHEMA {
+        EXTENDED_TOTAL_BYTES
+    } else {
+        TOTAL_BYTES
+    }
+}
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Fragment {
@@ -204,7 +224,7 @@ pub fn snapshot(base: &Path, path: &Path) -> Result<Snapshot, String> {
         "design_composition_schema_unsupported",
     )?;
     check(
-        if manifest.schema == GROUPED_ROOT_SCHEMA {
+        if uses_groups(&manifest.schema) {
             manifest.validation_encoding.as_deref() == Some(VALIDATION_ENCODING)
         } else {
             manifest.validation_encoding.is_none()
@@ -212,7 +232,8 @@ pub fn snapshot(base: &Path, path: &Path) -> Result<Snapshot, String> {
         "design_composition_validation_encoding_unsupported",
     )?;
     check(
-        !manifest.fragments.is_empty() && manifest.fragments.len() < FILE_COUNT,
+        !manifest.fragments.is_empty()
+            && manifest.fragments.len() < file_count_limit(&manifest.schema),
         "design_composition_file_count_budget",
     )?;
     let parent = path.parent().ok_or("design_composition_parent_missing")?;
@@ -236,8 +257,7 @@ pub fn snapshot(base: &Path, path: &Path) -> Result<Snapshot, String> {
         )?;
         check(
             ["oev2.design/1", FRAGMENT_SCHEMA].contains(&fragment.format.as_str())
-                || (manifest.schema == GROUPED_ROOT_SCHEMA
-                    && fragment.format == GROUPED_FRAGMENT_SCHEMA),
+                || (uses_groups(&manifest.schema) && fragment.format == GROUPED_FRAGMENT_SCHEMA),
             "design_composition_nested_manifest_unsupported",
         )?;
         let p = parent.join(&fragment.path);
@@ -251,7 +271,10 @@ pub fn snapshot(base: &Path, path: &Path) -> Result<Snapshot, String> {
         total = total
             .checked_add(bytes.len())
             .ok_or("design_composition_total_byte_budget")?;
-        check(total <= TOTAL_BYTES, "design_composition_total_byte_budget")?;
+        check(
+            total <= total_byte_limit(&manifest.schema),
+            "design_composition_total_byte_budget",
+        )?;
         check(
             format!("{:x}", Sha256::digest(&bytes)) == fragment.sha256,
             "design_composition_source_sha_mismatch",

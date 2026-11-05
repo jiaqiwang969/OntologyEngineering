@@ -41,6 +41,12 @@ fn derived(mut original: Value) -> Value {
     original["file_byte_limits"] = json!({"default":16777216,"generated/model.ttl":33554432});
     original
 }
+fn application(mut original: Value) -> Value {
+    original["resource_profile"] = json!("oev2.derived-design-model-resource/3");
+    original["file_byte_limits"] = json!({"default":16777216,"generated/model.ttl":67108864});
+    original["public_sources"] = json!(["sources/README.md"]);
+    original
+}
 fn sample(root: &Path) -> Value {
     legacy(BTreeMap::from([(
         "value.rs".into(),
@@ -85,7 +91,12 @@ fn legacy_manifest_exact_identity_and_current_capture_remain_distinct() {
     verify_binary(&reference(&root, &previous_derived)).unwrap();
     let mut expected_current = previous_derived.clone();
     expected_current["public_sources"] = json!(["sources/README.md"]);
-    assert_eq!(current, expected_current);
+    assert_eq!(
+        public_manifest_matching(&root, &expected_current).unwrap(),
+        expected_current
+    );
+    verify_binary(&reference(&root, &expected_current)).unwrap();
+    assert_eq!(current, application(original.clone()));
     assert_eq!(current.as_object().unwrap().len(), 10);
     assert_ne!(
         digest(&current).unwrap(),
@@ -239,6 +250,13 @@ fn sources_readme_is_public_only_in_new_profile_and_private_bytes_stay_excluded(
     files.insert("sources/README.md".into(), readme);
     let mut expected = derived(legacy(files));
     expected["public_sources"] = json!(["sources/README.md"]);
+    assert_eq!(
+        public_manifest_matching(&root, &expected).unwrap(),
+        expected
+    );
+    let historic_readme = reference(&root, &expected);
+    verify_binary(&historic_readme).unwrap();
+    let expected = application(expected);
     assert_eq!(public_manifest(&root).unwrap(), expected);
     let current = reference(&root, &expected);
     verify_binary(&current).unwrap();
@@ -302,7 +320,7 @@ fn source_readme_exception_requires_exact_name_and_regular_file() {
 }
 
 #[test]
-fn actual_model_boundary_keeps_legacy_sixteen_and_current_thirty_two_mebibytes() {
+fn actual_model_boundaries_keep_historic_sixteen_thirty_two_and_new_sixty_four() {
     let (_temp, root) = root();
     let sixteen = vec![b'x'; 16 * 1024 * 1024];
     let original = legacy(BTreeMap::from([(
@@ -331,6 +349,28 @@ fn actual_model_boundary_keeps_legacy_sixteen_and_current_thirty_two_mebibytes()
     let current = public_manifest(&root).unwrap();
     assert_eq!(current["files"]["generated/model.ttl"]["bytes"], 33554432);
     verify_binary(&reference(&root, &current)).unwrap();
+    larger.push(b'!');
+    let files = BTreeMap::from([(
+        "generated/model.ttl".into(),
+        file(&root, "generated/model.ttl", &larger),
+    )]);
+    let previous = derived(legacy(files.clone()));
+    assert!(public_manifest_matching(&root, &previous).is_err());
+    assert!(verify_binary(&reference(&root, &previous)).is_err());
+    let mut previous_readme = previous;
+    previous_readme["public_sources"] = json!(["sources/README.md"]);
+    assert!(public_manifest_matching(&root, &previous_readme).is_err());
+    assert!(verify_binary(&reference(&root, &previous_readme)).is_err());
+    let current = application(legacy(files));
+    assert_eq!(public_manifest(&root).unwrap(), current);
+    verify_binary(&reference(&root, &current)).unwrap();
+    *larger.last_mut().unwrap() = b'?';
+    file(&root, "generated/model.ttl", &larger);
+    assert!(public_manifest_matching(&root, &current).is_err());
+    larger.resize(64 * 1024 * 1024, b'w');
+    file(&root, "generated/model.ttl", &larger);
+    let at_limit = public_manifest(&root).unwrap();
+    verify_binary(&reference(&root, &at_limit)).unwrap();
     larger.push(b'!');
     file(&root, "generated/model.ttl", &larger);
     assert!(public_manifest(&root).is_err());

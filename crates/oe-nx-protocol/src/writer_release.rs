@@ -11,6 +11,7 @@ pub const DISPATCH_WRITER_REVIEW_SCHEMA_V3: &str = "cad-agent.nx-dispatch-writer
 pub const DISPATCH_WRITER_REVIEW_SCHEMA_V4: &str = "cad-agent.nx-dispatch-writer-release-review/v4";
 pub const DISPATCH_WRITER_REVIEW_SCHEMA_V5: &str = "cad-agent.nx-dispatch-writer-release-review/v5";
 pub const DISPATCH_WRITER_REVIEW_SCHEMA_V6: &str = "cad-agent.nx-dispatch-writer-release-review/v6";
+pub const DISPATCH_WRITER_REVIEW_SCHEMA_V7: &str = "cad-agent.nx-dispatch-writer-release-review/v7";
 pub const DISPATCH_WRITER_REVIEW_SET_SCHEMA: &str = "cad-agent.nx-dispatch-writer-release-set/v1";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -35,6 +36,7 @@ pub enum ReviewedPreNativeFailure {
     LegacyStepBodiesBudgetGuardBeforeNativeLoad,
     WorkerRoleIdentityGuardBeforeNativeLoad,
     CylinderWorkerRoleIdentityGuardBeforeNativeLoad,
+    WidthWorkerRoleIdentityGuardBeforeNativeLoad,
     SheetDimensionParameterSchemaGuardBeforeNativeLoad,
 }
 
@@ -202,7 +204,8 @@ impl DispatchWriterReleaseReview {
                 DISPATCH_WRITER_REVIEW_SCHEMA_V3,
                 DISPATCH_WRITER_REVIEW_SCHEMA_V4,
                 DISPATCH_WRITER_REVIEW_SCHEMA_V5,
-                DISPATCH_WRITER_REVIEW_SCHEMA_V6
+                DISPATCH_WRITER_REVIEW_SCHEMA_V6,
+                DISPATCH_WRITER_REVIEW_SCHEMA_V7
             ]
             .contains(&self.schema.as_str())
                 && self.root == *root,
@@ -274,6 +277,25 @@ impl DispatchWriterReleaseReview {
             }
             .validate()
             .map_err(|_| anyhow::anyhow!("cylinder role guard requires exact new review scope"))?;
+        }
+        ensure!(self.schema != DISPATCH_WRITER_REVIEW_SCHEMA_V7 || self.failure == ReviewedPreNativeFailure::WidthWorkerRoleIdentityGuardBeforeNativeLoad, "width review cannot reinterpret another failure");
+        if self.failure == ReviewedPreNativeFailure::WidthWorkerRoleIdentityGuardBeforeNativeLoad
+        {
+            ensure!(self.schema == DISPATCH_WRITER_REVIEW_SCHEMA_V7, "width failure requires its own review version");
+            oe_contracts::NxNativeWorkerRoleGuardScope {
+                schema: "oev2.nx-native-worker-role-guard-scope/1".into(),
+                review_schema: self.schema.clone(),
+                failure_kind: "width_worker_role_identity_guard_before_native_load".into(),
+                expected_worker_id: "oe-nx-native-acceptance".into(),
+                original_declared_worker_id: "oe-nx-width-variant-task".into(),
+                original_job_state: "UNKNOWN_AFTER_DISPATCH".into(),
+                native_execution: "not_started".into(),
+                launch_receipt_phase: "persisted_after_worker_exit".into(),
+                recovery_scope: "new_job_writer_admission_only".into(),
+                engineering_adoption: "not_assessed".into(),
+            }
+            .validate()
+            .map_err(|_| anyhow::anyhow!("width role guard requires exact new review scope"))?;
         }
         if self.failure == ReviewedPreNativeFailure::WorkerRoleIdentityGuardBeforeNativeLoad {
             oe_contracts::NxNativeWorkerRoleGuardScope {
@@ -548,6 +570,7 @@ impl VerifiedDispatchWriterReview {
             | ReviewedPreNativeFailure::LegacyStepBodiesBudgetGuardBeforeNativeLoad
             | ReviewedPreNativeFailure::WorkerRoleIdentityGuardBeforeNativeLoad
             | ReviewedPreNativeFailure::CylinderWorkerRoleIdentityGuardBeforeNativeLoad
+            | ReviewedPreNativeFailure::WidthWorkerRoleIdentityGuardBeforeNativeLoad
             | ReviewedPreNativeFailure::SheetDimensionParameterSchemaGuardBeforeNativeLoad => {
                 ensure!(
                     !facts
@@ -563,6 +586,7 @@ impl VerifiedDispatchWriterReview {
                     ReviewedPreNativeFailure::LegacyStepBodiesBudgetGuardBeforeNativeLoad
                     | ReviewedPreNativeFailure::WorkerRoleIdentityGuardBeforeNativeLoad
                     | ReviewedPreNativeFailure::CylinderWorkerRoleIdentityGuardBeforeNativeLoad
+            | ReviewedPreNativeFailure::WidthWorkerRoleIdentityGuardBeforeNativeLoad
                     | ReviewedPreNativeFailure::SheetDimensionParameterSchemaGuardBeforeNativeLoad =>
                         "worker child PATH only; parent unchanged; NXBIN variable inherited; persisted after worker exit to retain the closed initial-receipt contract",
                     _ => unreachable!(),
@@ -586,6 +610,7 @@ impl VerifiedDispatchWriterReview {
                 if matches!(review.failure, ReviewedPreNativeFailure::LegacyStepBodiesBudgetGuardBeforeNativeLoad
                     | ReviewedPreNativeFailure::WorkerRoleIdentityGuardBeforeNativeLoad
                     | ReviewedPreNativeFailure::CylinderWorkerRoleIdentityGuardBeforeNativeLoad
+            | ReviewedPreNativeFailure::WidthWorkerRoleIdentityGuardBeforeNativeLoad
                     | ReviewedPreNativeFailure::SheetDimensionParameterSchemaGuardBeforeNativeLoad) {
                     ensure!(launch["job_id"] == job.job_id.as_str()
                         && launch["dispatch_id"] == intent.dispatch_id.as_str(),
@@ -652,6 +677,20 @@ impl VerifiedDispatchWriterReview {
                             && parameters["action"] == job.action,
                         "cylinder role guard is not the exact original cylinder role failure"
                     );
+                }                if review.failure
+                    == ReviewedPreNativeFailure::WidthWorkerRoleIdentityGuardBeforeNativeLoad
+                {
+                    let parameters: serde_json::Value = decode(bytes("params.json")?)?;
+                    ensure!(
+                        job.worker.worker_id == "oe-nx-width-variant-task"
+                            && job.worker.target == "x86_64-pc-windows-msvc"
+                            && job.worker.executable.path.as_str() == "worker/oe-nx-worker.exe"
+                            && job.action == "maintain_width_variant"
+                            && job.params_schema == "oev2.nx-width-variant-params/1"
+                            && parameters["schema"] == job.params_schema
+                            && parameters["action"] == job.action,
+                        "width role guard is not the exact original width role failure"
+                    );
                 }
             }
         }
@@ -671,7 +710,8 @@ impl VerifiedDispatchWriterReview {
                 ReviewedPreNativeFailure::LegacyStepBodiesBudgetGuardBeforeNativeLoad =>
                     "native_worker_failed:step_bodies_observation_scope_invalid",
                 ReviewedPreNativeFailure::WorkerRoleIdentityGuardBeforeNativeLoad
-                | ReviewedPreNativeFailure::CylinderWorkerRoleIdentityGuardBeforeNativeLoad =>
+                | ReviewedPreNativeFailure::CylinderWorkerRoleIdentityGuardBeforeNativeLoad
+            | ReviewedPreNativeFailure::WidthWorkerRoleIdentityGuardBeforeNativeLoad =>
                     "native_worker_failed:native_worker_identity_contract_differs",
             },
             "failure is not the independently reviewed pre-native loader error"
@@ -711,6 +751,7 @@ impl VerifiedDispatchWriterReview {
                     | ReviewedPreNativeFailure::LegacyStepBodiesBudgetGuardBeforeNativeLoad
                     | ReviewedPreNativeFailure::WorkerRoleIdentityGuardBeforeNativeLoad
                     | ReviewedPreNativeFailure::CylinderWorkerRoleIdentityGuardBeforeNativeLoad
+            | ReviewedPreNativeFailure::WidthWorkerRoleIdentityGuardBeforeNativeLoad
             | ReviewedPreNativeFailure::SheetDimensionParameterSchemaGuardBeforeNativeLoad => {
                         *name != "receipts/0001-source_and_dispatch_verified.json"
                     }

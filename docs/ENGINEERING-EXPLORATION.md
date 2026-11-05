@@ -14,6 +14,25 @@ Rust 回读保存实际数值/单位、原模型适用性、失败、部分结�
 
 匹配唯一有效分支后，结果只更新限定来源或模型范围的未采用决定，记录候选保留、限定否定或重审。原因假设仍为 unknown；数值匹配可以说明模型预测符合该判据，不能独自证明物理原因。没有匹配、比较失败或多个匹配，相关决定保持 unknown。原事实、条件、对象与必要验收不改；原 Project 字节保留，新副本添加结果证据。现有 owner 再派生任务视图和真实 Harness 检查点；Harness 失败保留原输出与 partial_or_failed，不冒称工程通过。
 
+## 同一工程关系支持下一步
+
+`project explore reasoning` 只读派生 `oev2.engineering-reasoning-view/2`，连接原目标/验收、对象/条件、功能/机制、缺口、假设、动作、前提、分支、来源和受影响决定。原有工程检查同时映射到主张、条件和动作义务，调查就绪仍不代表约束满足。各角色保留原件摘要与 JSON 位置；关系含义和状态边界见[工程关系](../references/engineering-reasoning.md)。
+
+输入为 `oev2.engineering-reasoning-input/1`：`project`、`frozen` 为既有 ArtifactReference；执行前 `project` 等于冻结的原 Project，`state` 为 null；执行后 `state` 指 host 输出的 `completed.json`，`project` 必须精确等于其 `run.project`。不能把新结果绑定回旧 Project 或另一个同名对象。输入文件由 Agent 根据实际原件准备。
+
+```sh
+"$OEV2_BIN" --root "$ONTOLOGY_ENGINEERING_ROOT" --project-home "$OEV2_PROJECT_HOME" \
+  project explore reasoning --input inputs/reasoning.json --output views/reasoning-001.json
+"$OEV2_BIN" --root "$ONTOLOGY_ENGINEERING_ROOT" --project-home "$OEV2_PROJECT_HOME" \
+  project explore verify-reasoning --input views/reasoning-001.json
+```
+
+输出路径须为新的私有路径；文件保存完整视图，标准输出另含执行身份。验证从当前全部绑定原件重建并比较完整视图，源、Project、关系、推荐动作或完整验收被改写均不能沿用。`recommended_action` 优先接续当前待回读动作，其余按原冻结顺序、实际前置结果和动作预算选择，不额外优化排序。`unresolved_premises` 明列未知前提，调查就绪不表示模型适用；`affected_decisions` 复用原 Project impact，只表示潜在复核范围。
+
+CLI `advance` 在 host 输出目录保存 `reasoning.json`，标准输出的 `reasoning` 为其 ArtifactReference；原 `completed.json` 的 host 协议保持。workspace 接收与恢复时重建该视图，不信任手工修改的阅读副本。`complete_acceptance` 保留全部原验收，`uncovered_acceptance` 说明尚无探索动作直接关联的验收；自动派发和工程采用均不因此授予。
+
+派生与验证 owner 不改工程原件；CLI 仍按既有执行规则保存身份审计，派生命令另写显式指定的新视图。拒绝复用不能改变 Project、HEAD 或旧结果。
+
 ## 当前会话接替判断后的实际接续
 
 候选新增 `project explore advance --input <请求>`，使用显式 `oev2.exploration-host-input/1`；合同由真实 ggen 生成，原 freeze/verify/run 的含义保留。当前会话整理计划和工具输入，Rust 检查并维护可追溯状态。当前正式安装是否具备该入口，仍以安装回执为准。
@@ -26,6 +45,14 @@ Rust 回读保存实际数值/单位、原模型适用性、失败、部分结�
 当前有两个明确回读范围：`project_work` 验证既有无检索/CAD handoff的计算work实际输出，重跑原Rust计算与工程前提检查，核Project内容/对象/完整验收及结果；`source_statement` 接收带原件的会话观察，只能支持对应来源陈述，不能证明模型预测或物理原因。后者使用生成的 `oev2.host-source-observation/1`，明确声明来源、局限、冻结任务和当前对象。源摘要一致仅证明内容身份，不证明会话解释正确。原生CAD、测量、仿真及供应商执行仍须对应owner自己的验证适配，不能填一个completed标志获得认证。
 
 新状态为 `oev2.exploration-host-state/1`，引用旧owner的共享执行产物；内部结果与评估显式使用 `/2`。前态由请求、累积回读和原计算重建，原工程事实、验收与失败不改。等待结果时评估为 pending_verification；开发回放不证明方法收益。记录的零模型调用仅属于该Rust owner，当前会话、engineering-memory、外部工具及全任务费用仍分别核算。
+
+### 回交统一工作区
+
+完整 host 结果可经 workspace 的 `owner=exploration` 阶段回执回交，详见[项目工作区](PROJECT-WORKSPACE.md)。引用 host 输出目录的 `completed.json`，原 owner 只读核冻结输入、完整历史、结果、任务视图、评估与 Harness 归档，不再次执行探索或派发工具。当前 Project 必须精确绑定最终 `run.project`，阶段 ID 与验收原文须匹配冻结场景；待执行动作不能记为已回读。
+
+原件完整的失败、partial 或 unknown 可以继续保存和恢复，仍需当前会话决定下一步，不能由回执接收推定工程采用。Harness 归档本身缺失或无法复核时继续保留缺项。回读保留时间测量与外部报告，不能独立证明报告真实或方法收益。
+
+使用独立 `--project-home` 时，软件规范仍从安装根读取并与编译内置字节核对，冻结记录保存 `owner_schema_sha256`；项目来源继续限定在项目根。旧同根冻结记录按原有闭包兼容，不从项目中的同名规范回退。
 
 ## 参数优化和机制探索
 

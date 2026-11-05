@@ -2184,6 +2184,18 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("EngineeringCalculation", "object", "ObjectIdentity"),
     ("EngineeringCalculation", "source_refs", "Vec<String>"),
     ("EngineeringCalculation", "validity_conditions", "Vec<String>"),
+    ("EngineeringCheckAlternatives", "alternatives", "Vec<EngineeringCheckReference>"),
+    ("EngineeringCheckReference", "assertion_id", "String"),
+    ("EngineeringCheckReference", "object", "ObjectIdentity"),
+    ("EngineeringClaimComposition", "all_of", "Vec<EngineeringCheckReference>"),
+    ("EngineeringClaimComposition", "any_of", "Vec<EngineeringCheckAlternatives>"),
+    ("EngineeringClaimComposition", "coverage", "String"),
+    ("EngineeringClaimComposition", "criterion", "String"),
+    ("EngineeringClaimComposition", "decision_id", "String"),
+    ("EngineeringClaimComposition", "interfaces", "Vec<EngineeringCheckReference>"),
+    ("EngineeringClaimComposition", "object", "ObjectIdentity"),
+    ("EngineeringClaimComposition", "schema", "String"),
+    ("EngineeringClaimComposition", "scope", "String"),
     ("EngineeringDesignAttemptRecordRequest", "artifacts", "Vec<DesignAttemptArtifact>"),
     ("EngineeringDesignAttemptRecordRequest", "attempt", "ArtifactReference"),
     ("EngineeringDesignAttemptRecordRequest", "notes", "Vec<String>"),
@@ -2241,6 +2253,13 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("EngineeringFact", "source_refs", "Vec<String>"),
     ("EngineeringFact", "status", "String"),
     ("EngineeringFact", "value", "serde_json::Value"),
+    ("EngineeringFunctionRealization", "function_id", "String"),
+    ("EngineeringFunctionRealization", "inventory_scope", "String"),
+    ("EngineeringFunctionRealization", "mechanism_assertion", "Option<String>"),
+    ("EngineeringFunctionRealization", "realization", "Option<ObjectIdentity>"),
+    ("EngineeringFunctionRealization", "schema", "String"),
+    ("EngineeringFunctionRealization", "state", "String"),
+    ("EngineeringFunctionRealization", "verification_assertions", "Vec<String>"),
     ("EngineeringGap", "gap_id", "String"),
     ("EngineeringGap", "necessary_function", "String"),
     ("EngineeringGap", "needed_evidence", "Vec<String>"),
@@ -2313,6 +2332,49 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("EngineeringPromotedAdoptionVerifyResult2", "review", "TypedPromotedProjectReviewReceipt1"),
     ("EngineeringPromotedAdoptionVerifyResult2", "schema", "String"),
     ("EngineeringPromotedAdoptionVerifyResult2", "status", "String"),
+    ("EngineeringReasoningAction", "action_id", "String"),
+    ("EngineeringReasoningAction", "affected_decisions", "Vec<String>"),
+    ("EngineeringReasoningAction", "engineering_obligations", "Option<Vec<String>>"),
+    ("EngineeringReasoningAction", "next_step", "String"),
+    ("EngineeringReasoningAction", "requirement", "String"),
+    ("EngineeringReasoningAction", "status", "String"),
+    ("EngineeringReasoningAction", "unresolved_premises", "Vec<String>"),
+    ("EngineeringReasoningAction", "waiting_outcomes", "Vec<String>"),
+    ("EngineeringReasoningCheck", "check_id", "String"),
+    ("EngineeringReasoningCheck", "conclusion", "String"),
+    ("EngineeringReasoningCheck", "execution", "String"),
+    ("EngineeringReasoningCheck", "failures", "Vec<String>"),
+    ("EngineeringReasoningCheck", "node_id", "String"),
+    ("EngineeringReasoningCheck", "object", "ObjectIdentity"),
+    ("EngineeringReasoningCheck", "result", "serde_json::Value"),
+    ("EngineeringReasoningInput", "frozen", "ArtifactReference"),
+    ("EngineeringReasoningInput", "project", "ArtifactReference"),
+    ("EngineeringReasoningInput", "schema", "String"),
+    ("EngineeringReasoningInput", "state", "Option<ArtifactReference>"),
+    ("EngineeringReasoningNode", "embedded_pointer", "Option<String>"),
+    ("EngineeringReasoningNode", "id", "String"),
+    ("EngineeringReasoningNode", "kind", "String"),
+    ("EngineeringReasoningNode", "pointer", "String"),
+    ("EngineeringReasoningNode", "source", "ArtifactReference"),
+    ("EngineeringReasoningNode", "status", "String"),
+    ("EngineeringReasoningNode", "value", "serde_json::Value"),
+    ("EngineeringReasoningRelation", "from", "String"),
+    ("EngineeringReasoningRelation", "kind", "String"),
+    ("EngineeringReasoningRelation", "pointer", "String"),
+    ("EngineeringReasoningRelation", "source", "ArtifactReference"),
+    ("EngineeringReasoningRelation", "to", "String"),
+    ("EngineeringReasoningView", "actions", "Vec<EngineeringReasoningAction>"),
+    ("EngineeringReasoningView", "automatic_dispatch", "bool"),
+    ("EngineeringReasoningView", "checks", "Option<Vec<EngineeringReasoningCheck>>"),
+    ("EngineeringReasoningView", "complete_acceptance", "Vec<String>"),
+    ("EngineeringReasoningView", "engineering_adoption", "String"),
+    ("EngineeringReasoningView", "input", "EngineeringReasoningInput"),
+    ("EngineeringReasoningView", "nodes", "Vec<EngineeringReasoningNode>"),
+    ("EngineeringReasoningView", "recommended_action", "Option<String>"),
+    ("EngineeringReasoningView", "relations", "Vec<EngineeringReasoningRelation>"),
+    ("EngineeringReasoningView", "schema", "String"),
+    ("EngineeringReasoningView", "sources", "Vec<ArtifactReference>"),
+    ("EngineeringReasoningView", "uncovered_acceptance", "Vec<String>"),
     ("EngineeringSourceRequest", "document_id", "String"),
     ("EngineeringSourceRequest", "gap_id", "String"),
     ("EngineeringSourceRequest", "maximum_pages", "u64"),
@@ -3509,6 +3571,8 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("ProjectCheckObservation1", "failures", "Vec<String>"),
     ("ProjectCheckObservation1", "id", "String"),
     ("ProjectCheckObservation1", "result", "serde_json::Value"),
+    ("ProjectEntityRef", "id", "String"),
+    ("ProjectEntityRef", "kind", "String"),
     ("ProjectReviewContext", "condition_scope", "String"),
     ("ProjectReviewContext", "condition_sha256", "String"),
     ("ProjectReviewContext", "object_id", "String"),
@@ -4912,6 +4976,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("EngineeringAssertion", "kind", "cad_native_motion"),
     ("EngineeringAssertion", "kind", "cad_row_intent"),
     ("EngineeringAssertion", "kind", "cad_sheet_reference_persistence"),
+    ("EngineeringAssertion", "kind", "claim_composition"),
     ("EngineeringAssertion", "kind", "counterexample"),
     ("EngineeringAssertion", "kind", "function_continuity"),
     ("EngineeringAssertion", "kind", "mechanism_motion"),
@@ -4921,6 +4986,11 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("EngineeringAssertion", "kind", "source_applicability"),
     ("EngineeringBasis", "schema", "oev2.engineering-basis/1"),
     ("EngineeringBasisV2", "schema", "oev2.engineering-basis/2"),
+    ("EngineeringClaimComposition", "coverage", "declared_complete"),
+    ("EngineeringClaimComposition", "coverage", "partial"),
+    ("EngineeringClaimComposition", "schema", "oev2.claim-composition/1"),
+    ("EngineeringClaimComposition", "scope", "component"),
+    ("EngineeringClaimComposition", "scope", "system"),
     ("EngineeringDesignAttemptRecordRequest", "schema", "oev2.design-attempt-record/1"),
     ("EngineeringDesignAttemptRecordRequest2", "schema", "oev2.design-attempt-record/2"),
     ("EngineeringDesignAttemptRecordResult2", "engineering_conclusion", "unknown"),
@@ -4933,6 +5003,12 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("EngineeringFact", "status", "assumed"),
     ("EngineeringFact", "status", "declared"),
     ("EngineeringFact", "status", "unknown"),
+    ("EngineeringFunctionRealization", "inventory_scope", "declared_complete"),
+    ("EngineeringFunctionRealization", "inventory_scope", "partial"),
+    ("EngineeringFunctionRealization", "schema", "oev2.function-realization/1"),
+    ("EngineeringFunctionRealization", "state", "assigned"),
+    ("EngineeringFunctionRealization", "state", "candidate"),
+    ("EngineeringFunctionRealization", "state", "unresolved"),
     ("EngineeringGoalSupport", "claim_scope", "local_obligation_only"),
     ("EngineeringGoalSupport", "schema", "oev2.engineering-goal-support/1"),
     ("EngineeringPromotedAdoptionApproval2", "schema", "oev2.engineering-adoption-approval/2"),
@@ -4946,6 +5022,33 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("EngineeringPromotedAdoptionVerifyResult2", "execution", "completed"),
     ("EngineeringPromotedAdoptionVerifyResult2", "schema", "oev2.engineering-promoted-adoption-verify-result/2"),
     ("EngineeringPromotedAdoptionVerifyResult2", "status", "current_scope_bound"),
+    ("EngineeringReasoningAction", "status", "awaiting_host"),
+    ("EngineeringReasoningAction", "status", "blocked_by_outcome"),
+    ("EngineeringReasoningAction", "status", "blocked_by_pending_result"),
+    ("EngineeringReasoningAction", "status", "budget_exhausted"),
+    ("EngineeringReasoningAction", "status", "needs_review"),
+    ("EngineeringReasoningAction", "status", "ready"),
+    ("EngineeringReasoningAction", "status", "recorded"),
+    ("EngineeringReasoningInput", "schema", "oev2.engineering-reasoning-input/1"),
+    ("EngineeringReasoningNode", "kind", "action"),
+    ("EngineeringReasoningNode", "kind", "assertion"),
+    ("EngineeringReasoningNode", "kind", "candidate"),
+    ("EngineeringReasoningNode", "kind", "check_basis"),
+    ("EngineeringReasoningNode", "kind", "condition"),
+    ("EngineeringReasoningNode", "kind", "decision"),
+    ("EngineeringReasoningNode", "kind", "function"),
+    ("EngineeringReasoningNode", "kind", "gap"),
+    ("EngineeringReasoningNode", "kind", "goal"),
+    ("EngineeringReasoningNode", "kind", "hypothesis"),
+    ("EngineeringReasoningNode", "kind", "mechanism"),
+    ("EngineeringReasoningNode", "kind", "object"),
+    ("EngineeringReasoningNode", "kind", "outcome"),
+    ("EngineeringReasoningNode", "kind", "premise"),
+    ("EngineeringReasoningNode", "kind", "requirement"),
+    ("EngineeringReasoningNode", "kind", "source"),
+    ("EngineeringReasoningView", "engineering_adoption", "not_granted"),
+    ("EngineeringReasoningView", "schema", "oev2.engineering-reasoning-view/1"),
+    ("EngineeringReasoningView", "schema", "oev2.engineering-reasoning-view/2"),
     ("EngineeringSourceRequest", "provider", "local-pdf"),
     ("EngineeringSourceRequest", "provider", "misumi"),
     ("EngineeringSourceRequest", "source_role", "dfma"),
@@ -5343,13 +5446,16 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("NxNativeParameterGuardScope", "schema", "oev2.nx-native-parameter-guard-scope/1"),
     ("NxNativeWorkerRoleGuardScope", "engineering_adoption", "not_assessed"),
     ("NxNativeWorkerRoleGuardScope", "expected_worker_id", "oe-nx-native-acceptance"),
+    ("NxNativeWorkerRoleGuardScope", "failure_kind", "width_worker_role_identity_guard_before_native_load"),
     ("NxNativeWorkerRoleGuardScope", "failure_kind", "worker_role_identity_guard_before_native_load"),
     ("NxNativeWorkerRoleGuardScope", "launch_receipt_phase", "persisted_after_worker_exit"),
     ("NxNativeWorkerRoleGuardScope", "native_execution", "not_started"),
     ("NxNativeWorkerRoleGuardScope", "original_declared_worker_id", "oe-nx-native-assembly"),
+    ("NxNativeWorkerRoleGuardScope", "original_declared_worker_id", "oe-nx-width-variant-task"),
     ("NxNativeWorkerRoleGuardScope", "original_job_state", "UNKNOWN_AFTER_DISPATCH"),
     ("NxNativeWorkerRoleGuardScope", "recovery_scope", "new_job_writer_admission_only"),
     ("NxNativeWorkerRoleGuardScope", "review_schema", "cad-agent.nx-dispatch-writer-release-review/v4"),
+    ("NxNativeWorkerRoleGuardScope", "review_schema", "cad-agent.nx-dispatch-writer-release-review/v7"),
     ("NxNativeWorkerRoleGuardScope", "schema", "oev2.nx-native-worker-role-guard-scope/1"),
     ("NxSheetDimensionParameterGuardScope", "engineering_adoption", "not_assessed"),
     ("NxSheetDimensionParameterGuardScope", "expected_worker_id", "oe-nx-native-acceptance"),
@@ -5452,6 +5558,13 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("ProjectCheckObservation1", "execution", "failed"),
     ("ProjectCheckObservation1", "execution", "not_run"),
     ("ProjectCheckObservation1", "execution", "unsupported"),
+    ("ProjectEntityRef", "kind", "condition"),
+    ("ProjectEntityRef", "kind", "decision"),
+    ("ProjectEntityRef", "kind", "dependency"),
+    ("ProjectEntityRef", "kind", "evidence"),
+    ("ProjectEntityRef", "kind", "object"),
+    ("ProjectEntityRef", "kind", "purpose"),
+    ("ProjectEntityRef", "kind", "source_digest"),
     ("RdfObjectFocus", "schema", "oev2.rdf-object-focus/1"),
     ("RegisteredCapability", "status", "qualified"),
     ("RegisteredCapability", "status", "registered_unqualified"),
@@ -16642,7 +16755,7 @@ impl EngineeringAssertion {
         if self.kind.trim().is_empty() { failures.push("EngineeringAssertion.kind:required".into()); }
         if self.subject.trim().is_empty() { failures.push("EngineeringAssertion.subject:required".into()); }
 
-        if !["cad_drafting_sheet","cad_drawing_reference","cad_native_motion","cad_row_intent","cad_sheet_reference_persistence","counterexample","function_continuity","mechanism_motion","model_boundary","numeric_acceptance","scope_transfer","source_applicability",].contains(&self.kind.as_str()) { failures.push("EngineeringAssertion.kind:status".into()); }
+        if !["cad_drafting_sheet","cad_drawing_reference","cad_native_motion","cad_row_intent","cad_sheet_reference_persistence","claim_composition","counterexample","function_continuity","mechanism_motion","model_boundary","numeric_acceptance","scope_transfer","source_applicability",].contains(&self.kind.as_str()) { failures.push("EngineeringAssertion.kind:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -16744,6 +16857,81 @@ impl EngineeringCalculation {
         if self.calculation_id.trim().is_empty() { failures.push("EngineeringCalculation.calculation_id:required".into()); }
         if self.method.trim().is_empty() { failures.push("EngineeringCalculation.method:required".into()); }
 
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Explicit alternatives: at least one predicate must pass; unknown does not equal false
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringCheckAlternatives {
+    /// Nonempty bounded alternatives
+    pub alternatives: Vec<EngineeringCheckReference>,
+}
+impl EngineeringCheckAlternatives {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// A predicate owned by an existing engineering checker, with its full current object identity
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringCheckReference {
+    /// Exact assertion in that condition
+    pub assertion_id: String,
+    /// Current checked object and condition
+    pub object: ObjectIdentity,
+}
+impl EngineeringCheckReference {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.assertion_id.trim().is_empty() { failures.push("EngineeringCheckReference.assertion_id:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Explicit claim and component/interface obligations; checks establish only the declared composition, not sufficiency of a physical model
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringClaimComposition {
+    /// Every required component/predicate must pass
+    pub all_of: Vec<EngineeringCheckReference>,
+    /// Each alternative group requires at least one pass
+    pub any_of: Vec<EngineeringCheckAlternatives>,
+    /// Whether decomposition is declared complete
+    pub coverage: String,
+    /// Exact acceptance item in the same engineering basis
+    pub criterion: String,
+    /// Decision assessing this exact criterion
+    pub decision_id: String,
+    /// Required interface or aggregate checks; nonempty for system claims
+    pub interfaces: Vec<EngineeringCheckReference>,
+    /// Claim subject, revision, condition and source
+    pub object: ObjectIdentity,
+    /// Explicit requirement protocol
+    pub schema: String,
+    /// Component or system decomposition
+    pub scope: String,
+}
+impl EngineeringClaimComposition {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.coverage.trim().is_empty() { failures.push("EngineeringClaimComposition.coverage:required".into()); }
+        if self.criterion.trim().is_empty() { failures.push("EngineeringClaimComposition.criterion:required".into()); }
+        if self.decision_id.trim().is_empty() { failures.push("EngineeringClaimComposition.decision_id:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("EngineeringClaimComposition.schema:required".into()); }
+        if self.scope.trim().is_empty() { failures.push("EngineeringClaimComposition.scope:required".into()); }
+
+        if !["declared_complete","partial",].contains(&self.coverage.as_str()) { failures.push("EngineeringClaimComposition.coverage:status".into()); }
+        if !["oev2.claim-composition/1",].contains(&self.schema.as_str()) { failures.push("EngineeringClaimComposition.schema:status".into()); }
+        if !["component","system",].contains(&self.scope.as_str()) { failures.push("EngineeringClaimComposition.scope:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -17016,6 +17204,41 @@ impl EngineeringFact {
         if self.status.trim().is_empty() { failures.push("EngineeringFact.status:required".into()); }
 
         if !["assumed","declared","unknown",].contains(&self.status.as_str()) { failures.push("EngineeringFact.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Function allocation to a current structure, mechanism and verification assertions; candidate is not assigned
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringFunctionRealization {
+    /// Necessary function identity
+    pub function_id: String,
+    /// Function inventory completeness
+    pub inventory_scope: String,
+    /// Mechanism/model assertion in realization condition
+    pub mechanism_assertion: Option<String>,
+    /// Actual or candidate structure in the same Project
+    pub realization: Option<ObjectIdentity>,
+    /// Explicit requirement protocol
+    pub schema: String,
+    /// Allocation state
+    pub state: String,
+    /// Predicate checks in realization condition; no self or relation-only evidence
+    pub verification_assertions: Vec<String>,
+}
+impl EngineeringFunctionRealization {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.function_id.trim().is_empty() { failures.push("EngineeringFunctionRealization.function_id:required".into()); }
+        if self.inventory_scope.trim().is_empty() { failures.push("EngineeringFunctionRealization.inventory_scope:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("EngineeringFunctionRealization.schema:required".into()); }
+        if self.state.trim().is_empty() { failures.push("EngineeringFunctionRealization.state:required".into()); }
+
+        if !["declared_complete","partial",].contains(&self.inventory_scope.as_str()) { failures.push("EngineeringFunctionRealization.inventory_scope:status".into()); }
+        if !["oev2.function-realization/1",].contains(&self.schema.as_str()) { failures.push("EngineeringFunctionRealization.schema:status".into()); }
+        if !["assigned","candidate","unresolved",].contains(&self.state.as_str()) { failures.push("EngineeringFunctionRealization.state:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -17387,6 +17610,202 @@ impl EngineeringPromotedAdoptionVerifyResult2 {
         if !["completed",].contains(&self.execution.as_str()) { failures.push("EngineeringPromotedAdoptionVerifyResult2.execution:allowed_values".into()); }
         if !["oev2.engineering-promoted-adoption-verify-result/2",].contains(&self.schema.as_str()) { failures.push("EngineeringPromotedAdoptionVerifyResult2.schema:allowed_values".into()); }
         if !["current_scope_bound",].contains(&self.status.as_str()) { failures.push("EngineeringPromotedAdoptionVerifyResult2.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Next-work explanation derived from frozen dependencies and original result owners
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringReasoningAction {
+    /// Frozen action
+    pub action_id: String,
+    /// Potential review scope from existing Project impact owner
+    pub affected_decisions: Vec<String>,
+    /// Native check node identities for the candidate conditions; does not block investigation
+    pub engineering_obligations: Option<Vec<String>>,
+    /// Bounded instruction appropriate to observed state
+    pub next_step: String,
+    /// Original complete-task criterion advanced
+    pub requirement: String,
+    /// Continuation state
+    pub status: String,
+    /// Required facts not currently declared with a value
+    pub unresolved_premises: Vec<String>,
+    /// Required outcomes not uniquely established
+    pub waiting_outcomes: Vec<String>,
+}
+impl EngineeringReasoningAction {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.action_id.trim().is_empty() { failures.push("EngineeringReasoningAction.action_id:required".into()); }
+        if self.next_step.trim().is_empty() { failures.push("EngineeringReasoningAction.next_step:required".into()); }
+        if self.requirement.trim().is_empty() { failures.push("EngineeringReasoningAction.requirement:required".into()); }
+        if self.status.trim().is_empty() { failures.push("EngineeringReasoningAction.status:required".into()); }
+
+        if !["awaiting_host","blocked_by_outcome","blocked_by_pending_result","budget_exhausted","needs_review","ready","recorded",].contains(&self.status.as_str()) { failures.push("EngineeringReasoningAction.status:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Result recomputed by the original engineering owner and linked to source-located assertions
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringReasoningCheck {
+    /// Original check identity
+    pub check_id: String,
+    /// Original owner conclusion
+    pub conclusion: String,
+    /// Original owner execution state
+    pub execution: String,
+    /// Unchanged diagnostic reasons
+    pub failures: Vec<String>,
+    /// Source role node for assertion or basis-wide check
+    pub node_id: String,
+    /// Current checked object
+    pub object: ObjectIdentity,
+    /// Original scoped result; not a new evidence owner
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub result: serde_json::Value,
+}
+impl EngineeringReasoningCheck {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.check_id.trim().is_empty() { failures.push("EngineeringReasoningCheck.check_id:required".into()); }
+        if self.conclusion.trim().is_empty() { failures.push("EngineeringReasoningCheck.conclusion:required".into()); }
+        if self.execution.trim().is_empty() { failures.push("EngineeringReasoningCheck.execution:required".into()); }
+        if self.node_id.trim().is_empty() { failures.push("EngineeringReasoningCheck.node_id:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Current engineering inquiry whose declared relations and verified observations explain the next work
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringReasoningInput {
+    /// Complete frozen inquiry
+    pub frozen: ArtifactReference,
+    /// Exact current Project
+    pub project: ArtifactReference,
+    /// Version
+    pub schema: String,
+    /// Optional current host history
+    pub state: Option<ArtifactReference>,
+}
+impl EngineeringReasoningInput {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.schema.trim().is_empty() { failures.push("EngineeringReasoningInput.schema:required".into()); }
+
+        if !["oev2.engineering-reasoning-input/1",].contains(&self.schema.as_str()) { failures.push("EngineeringReasoningInput.schema:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// A scoped role of original engineering content in the current inquiry
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringReasoningNode {
+    /// Optional pointer inside a JSON-encoded condition string
+    pub embedded_pointer: Option<String>,
+    /// Unique role identity
+    pub id: String,
+    /// Role in this inquiry
+    pub kind: String,
+    /// JSON pointer in original file
+    pub pointer: String,
+    /// Original file
+    pub source: ArtifactReference,
+    /// Declared or verified observation state
+    pub status: String,
+    /// Original content at the bound location
+    #[serde(deserialize_with = "semantica_contracts::json::deserialize_preserved")]
+    pub value: serde_json::Value,
+}
+impl EngineeringReasoningNode {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("EngineeringReasoningNode.id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("EngineeringReasoningNode.kind:required".into()); }
+        if self.pointer.trim().is_empty() { failures.push("EngineeringReasoningNode.pointer:required".into()); }
+        if self.status.trim().is_empty() { failures.push("EngineeringReasoningNode.status:required".into()); }
+
+        if !["action","assertion","candidate","check_basis","condition","decision","function","gap","goal","hypothesis","mechanism","object","outcome","premise","requirement","source",].contains(&self.kind.as_str()) { failures.push("EngineeringReasoningNode.kind:status".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Declared relationship or explicitly bounded native impact between source roles
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringReasoningRelation {
+    /// Origin node
+    pub from: String,
+    /// Relation meaning; context, requirement, test, branch or declared dependency
+    pub kind: String,
+    /// Source location establishing the relation
+    pub pointer: String,
+    /// Relation source
+    pub source: ArtifactReference,
+    /// Target node
+    pub to: String,
+}
+impl EngineeringReasoningRelation {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.from.trim().is_empty() { failures.push("EngineeringReasoningRelation.from:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("EngineeringReasoningRelation.kind:required".into()); }
+        if self.pointer.trim().is_empty() { failures.push("EngineeringReasoningRelation.pointer:required".into()); }
+        if self.to.trim().is_empty() { failures.push("EngineeringReasoningRelation.to:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Rebuildable engineering relation view used by inquiry, execution handoff and workspace recovery
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngineeringReasoningView {
+    /// Frozen order with current continuation reasons
+    pub actions: Vec<EngineeringReasoningAction>,
+    /// Always false
+    pub automatic_dispatch: bool,
+    /// Recomputed existing engineering checks; mandatory for view /2
+    pub checks: Option<Vec<EngineeringReasoningCheck>>,
+    /// Entire parent acceptance
+    pub complete_acceptance: Vec<String>,
+    /// Authority boundary
+    pub engineering_adoption: String,
+    /// Original binding
+    pub input: EngineeringReasoningInput,
+    /// Source roles
+    pub nodes: Vec<EngineeringReasoningNode>,
+    /// Current pending action or first eligible frozen action
+    pub recommended_action: Option<String>,
+    /// Declared engineering and inquiry links
+    pub relations: Vec<EngineeringReasoningRelation>,
+    /// Version
+    pub schema: String,
+    /// Complete verified artifact closure
+    pub sources: Vec<ArtifactReference>,
+    /// Criteria with no declared exploration action
+    pub uncovered_acceptance: Vec<String>,
+}
+impl EngineeringReasoningView {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.engineering_adoption.trim().is_empty() { failures.push("EngineeringReasoningView.engineering_adoption:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("EngineeringReasoningView.schema:required".into()); }
+
+        if !["not_granted",].contains(&self.engineering_adoption.as_str()) { failures.push("EngineeringReasoningView.engineering_adoption:status".into()); }
+        if !["oev2.engineering-reasoning-view/1","oev2.engineering-reasoning-view/2",].contains(&self.schema.as_str()) { failures.push("EngineeringReasoningView.schema:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -22151,7 +22570,7 @@ pub struct NxNativeWorkerRoleGuardScope {
     pub original_job_state: String,
     /// 只准入不同的新任务写者
     pub recovery_scope: String,
-    /// 只接受新增/4独立审查，不映射旧/1-/3
+    /// /4装配与/7宽度分别核验，不互换
     pub review_schema: String,
     /// 作用域合同版本
     pub schema: String,
@@ -22173,13 +22592,13 @@ impl NxNativeWorkerRoleGuardScope {
 
         if !["not_assessed",].contains(&self.engineering_adoption.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.engineering_adoption:allowed_values".into()); }
         if !["oe-nx-native-acceptance",].contains(&self.expected_worker_id.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.expected_worker_id:allowed_values".into()); }
-        if !["worker_role_identity_guard_before_native_load",].contains(&self.failure_kind.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.failure_kind:allowed_values".into()); }
+        if !["width_worker_role_identity_guard_before_native_load","worker_role_identity_guard_before_native_load",].contains(&self.failure_kind.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.failure_kind:allowed_values".into()); }
         if !["persisted_after_worker_exit",].contains(&self.launch_receipt_phase.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.launch_receipt_phase:allowed_values".into()); }
         if !["not_started",].contains(&self.native_execution.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.native_execution:allowed_values".into()); }
-        if !["oe-nx-native-assembly",].contains(&self.original_declared_worker_id.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.original_declared_worker_id:allowed_values".into()); }
+        if !["oe-nx-native-assembly","oe-nx-width-variant-task",].contains(&self.original_declared_worker_id.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.original_declared_worker_id:allowed_values".into()); }
         if !["UNKNOWN_AFTER_DISPATCH",].contains(&self.original_job_state.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.original_job_state:allowed_values".into()); }
         if !["new_job_writer_admission_only",].contains(&self.recovery_scope.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.recovery_scope:allowed_values".into()); }
-        if !["cad-agent.nx-dispatch-writer-release-review/v4",].contains(&self.review_schema.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.review_schema:allowed_values".into()); }
+        if !["cad-agent.nx-dispatch-writer-release-review/v4","cad-agent.nx-dispatch-writer-release-review/v7",].contains(&self.review_schema.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.review_schema:allowed_values".into()); }
         if !["oev2.nx-native-worker-role-guard-scope/1",].contains(&self.schema.as_str()) { failures.push("NxNativeWorkerRoleGuardScope.schema:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -23072,6 +23491,27 @@ impl ProjectCheckObservation1 {
 
         if !["pass","unknown","violated",].contains(&self.conclusion.as_str()) { failures.push("ProjectCheckObservation1.conclusion:allowed_values".into()); }
         if !["completed","failed","not_run","unsupported",].contains(&self.execution.as_str()) { failures.push("ProjectCheckObservation1.execution:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Category-qualified endpoint; equal spelling across categories is not identity
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProjectEntityRef {
+    /// Original exact identity; purpose uses project:purpose
+    pub id: String,
+    /// Entity category
+    pub kind: String,
+}
+impl ProjectEntityRef {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.id.trim().is_empty() { failures.push("ProjectEntityRef.id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("ProjectEntityRef.kind:required".into()); }
+
+        if !["condition","decision","dependency","evidence","object","purpose","source_digest",].contains(&self.kind.as_str()) { failures.push("ProjectEntityRef.kind:status".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -25931,13 +26371,13 @@ impl WorkspaceStage {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct WorkspaceStageReceipt {
-    /// Exact original tool-result or Harness checkpoint artifact
+    /// Exact original tool-result, Harness checkpoint or exploration host-state artifact
     pub artifact: ArtifactReference,
-    /// Existing readback owner; exploration explicitly unsupported until a read-only verifier exists
+    /// Existing readback owner; exploration verifies frozen host history without dispatch
     pub owner: String,
     /// Exact Project snapshot at execution; current applicability separately checked
     pub project: ArtifactReference,
-    /// Exact current tool registry required for tool_result; absent for Harness
+    /// Exact current tool registry required for tool_result; absent for Harness and exploration
     pub registry: Option<ArtifactReference>,
     /// Explicit stage receipt wrapper
     pub schema: String,
@@ -26247,6 +26687,10 @@ pub trait EngineeringPromotedAdoptionPort2 {
 
 pub trait EngineeringPromotedAdoptionVerifyPort2 {
     fn verify(&self, input: &EngineeringPromotedAdoptionVerifyRequest2) -> Result<EngineeringPromotedAdoptionVerifyResult2, FailureRecord>;
+}
+
+pub trait EngineeringReasoningPort {
+    fn derive(&self, input: &EngineeringReasoningInput) -> Result<EngineeringReasoningView, FailureRecord>;
 }
 
 pub trait EngineeringWorkPort {

@@ -6,7 +6,20 @@ ontology-engineering-v2 承担 CAD 执行，不依赖原 ontology-engineering �
 
 - NX：本根 `oev2 cad nx` → `oe-cad::nx` → 显式 Fleet/SSH 传输 → 按摘要核验的 `oe-windows-controller` → 任务绑定的 `oe-nx-worker` 与 NX 原生 SDK。控制器、worker、原生运行库和输入各按实际身份取证；旧 schema 名称不指定可执行程序。
 - SolidWorks：本根 `oe-sw-worker` 与 `oe-sw-session-host` 实现受控原生 COM 操作；`oev2 cad solidworks` 核验原始记录和独立重开证据。可执行范围及实际资格见 [SolidWorks 原生 worker](SOLIDWORKS-NATIVE-WORKER.md)，不能把记录核验当成已执行 CAD。
+- SolidCraft：固定上游 `solidcraft-cli` 的原生 CLI/MCP 执行，当前 Agent 调用、读取原件和解释结果，v2 既有 Rust `project tool-result verify/register`、`project decide` 与 workspace 接收来源和状态。见 [SolidCraft CAD](SOLIDCRAFT-CAD.md)。`.sc`、参数时间线、测量、导出、独立重开和截图各自取证；没有新增 v2 CAD worker、`oev2 cad solidcraft` 命令或 NX observation 兼容承诺。
 - CAD 证据、工艺衔接与设计依赖分别由 `oe-cad`、`oe-engineering` 和同一 Project 的既有语义审查承担。缺少图纸、装配、运动或其他原生动作时，在 v2 的实现与合同中补齐并验证，不退回旧工具执行。
+
+## 选择后端
+
+用户指定的软件、原生文件、既有模型与下游接口先决定候选；再核实际程序和本轮所需操作。三种入口不是互相等价的资格：
+
+| 当前需求 | 入口 | 必须保留的边界 |
+|---|---|---|
+| NX 原生 `.prt`、现有 NX 装配/图纸、已绑定的 NX 原生检查 | `oev2 cad nx` 与 NX controller/worker | 沿原 NX 对象、occurrence、变换、保存及独立重开合同 |
+| SolidWorks 原生零件/装配与已支持 COM 动作 | SW worker/session host 及 `oev2 cad solidworks` | 沿 SW 原件与实际 worker 资格，不由转换文件推定原生特征完整 |
+| 开放源码参数建模、本机 `.sc`、MCP 交互或几何交换 | SolidCraft 原生 MCP/CLI | 当前 `.sc` 时间线与具体命令回读；STEP 是交换表示，目标 CAD 导入另验 |
+
+跨后端时保留源模型、交换文件和目标原生文件各自摘要、单位、坐标、对象映射与损失。SolidCraft 的 body/face 名称不自动成为 NX 或 SW 身份。同一内核的多个入口不是独立算法证据；解析值、其他真正独立的计算或实测另列来源。
 
 ## 历史兼容边界
 

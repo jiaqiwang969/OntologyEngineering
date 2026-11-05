@@ -217,24 +217,43 @@ pub fn derive(root: &SkillRoot, input: &CurrentTaskViewInput) -> Result<CurrentT
     let source_observations = observations(root, &current, prior, &input.sources)?;
     let reconciliation = project::reconcile(prior.unwrap_or(&current), &current)?;
     let mut affected = ids(&reconciliation["affected"])?;
-    let mut source_seeds = BTreeSet::new();
+    let mut affected_decision_ids: BTreeSet<String> = reconciliation["decisions"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|d| d["decision_id"].as_str().map(str::to_owned))
+        .collect();
+    let mut source_seeds = Vec::new();
     for source in &source_observations {
         if source.status != "matched" {
-            source_seeds.insert(source.reference.sha256.clone());
-            source_seeds.extend(source.evidence_ids.iter().cloned());
+            source_seeds.push(project::entity("source_digest", &source.reference.sha256));
+            source_seeds.extend(
+                source
+                    .evidence_ids
+                    .iter()
+                    .map(|id| project::entity("evidence", id)),
+            );
             if let Some(prior) = prior {
                 source_seeds.extend(
                     prior
                         .evidence
                         .iter()
                         .filter(|(_, s)| *s == &source.reference.sha256)
-                        .map(|(id, _)| id.clone()),
+                        .map(|(id, _)| project::entity("evidence", id)),
                 );
             }
         }
     }
     for p in prior.into_iter().chain(std::iter::once(&current)) {
-        affected.extend(ids(&project::impact(p, &source_seeds)?["affected"])?);
+        let impact = project::impact_typed(p, &source_seeds)?;
+        affected.extend(ids(&impact["affected"])?);
+        affected_decision_ids.extend(
+            impact["decisions"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .filter_map(|d| d["decision_id"].as_str().map(str::to_owned)),
+        );
     }
     let mut conditions = Vec::new();
     let scopes: BTreeSet<_> = current
@@ -321,10 +340,16 @@ pub fn derive(root: &SkillRoot, input: &CurrentTaskViewInput) -> Result<CurrentT
         let mut downstream = BTreeSet::new();
         let seed = BTreeSet::from([name.clone()]);
         for p in prior.into_iter().chain(std::iter::once(&current)) {
-            downstream.extend(ids(&project::impact(p, &seed)?["affected"])?);
+            downstream.extend(
+                project::decision_impact(p, &seed)?["decisions"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .filter_map(|d| d["decision_id"].as_str().map(str::to_owned)),
+            );
         }
         downstream.remove(name);
-        let mut needs_review = affected.contains(name);
+        let mut needs_review = affected_decision_ids.contains(name);
         if let Some(d) = after {
             needs_review |= current.objects.get(&d.object_id) != Some(&d.object_revision)
                 || !current.conditions.contains_key(&d.condition_scope)

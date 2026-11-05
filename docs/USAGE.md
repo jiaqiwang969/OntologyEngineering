@@ -97,6 +97,8 @@ PDF 投放后先运行 `knowledge library audit-pdf --directory sources/books`�
 
 `specs/` 是正本。先冻结待改来源，按根 AGENTS 的复现、修正与回归合同工作。当前生成条件由 `runtime/ggen-lock.json` 固定；普通用户构建使用随仓库提供的已生成合同。
 
+维护时可用当前构建的 `oev2 --root <真实根> design inspect --output var/maintenance/design-inspection-001.json` 查看规范与源码。原 `findings` / 退出状态保持；新增 `traceability` 完整保留要求、功能承担模块、约束检查、验证案例、原预期/范围和静态缺口。`counts` 是声明范围的计数，不能作工程通过率；`evidence` 明确本命令未执行生成、行为或方法评估。生成的 `validation-plan.json` 保留原五字段，并增加 `module`、`constraint`、`requirement`、`checkerModule`、`checker`、`checkerPath`，供实际回归结果按案例身份追溯。没有静态发现也不证明实际调用或工程通过。
+
 维护者修改规范时，需要真实锁定的 ggen：官方版本 `26.9.28`，提交 `ff96f04e8c7b851e5cca53f3faf5ce1d5f43ce6e`。原构建工具链为 `nightly-2026-06-22`；新平台的生成器身份需要独立建立，不能仅改摘要绕过核验。
 
 ```sh

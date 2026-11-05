@@ -1,6 +1,12 @@
 # 工程本体 v2：按工程问题选择能力
 
-项目长期接续见[项目文件体系与会话恢复](PROJECT-WORKSPACE.md)：源码候选新增显式 `--project-home` 与 `project workspace init/commit/resume/begin`，保留当前提交、完整根请求和验收、纠正义务、因果来源、待复核影响及未知动作。原工具/Harness owner 回读结果；RRSI goal/freeze 绑定同一完整根目标。安装根、项目数据根和 memory home 分开；没有自动压缩 hook 或全局派发拦截，实际构建、安装与恢复验证范围按本轮回执报告。
+项目长期接续见[项目文件体系与会话恢复](PROJECT-WORKSPACE.md)：显式 `--project-home` 与 `project workspace init/commit/resume/begin` 保留当前提交、完整根请求和验收、纠正义务、因果来源、待复核影响及未知动作。原工具/Harness owner 回读结果；探索 host 结果也可只读回交，须核完整历史及归档、当前 Project 与原验收，不重复执行动作。RRSI goal/freeze 绑定同一完整根目标。安装根、项目数据根和 memory home 分开；没有自动压缩 hook 或全局派发拦截，实际构建、安装与恢复验证范围按本轮回执报告。
+
+跨多轮实施按[连续工程工作](../references/continuous-work.md)选择完整使用场景，在已有授权内连续执行、分层检查并从实际失败修正下一步。当前说明从原 Project/workspace 派生；文字方法与已验证程序能力分别核对。
+
+[工程关系视图](../references/engineering-reasoning.md)把已有目标、功能、机制、条件、缺口、假设和检查连到原来源与决定。`project explore reasoning / verify-reasoning` 派生及重核冻结探索，`advance` 和探索阶段 `resume` 使用同一实现，保留完整验收、未决前提、分支与已声明依赖的影响范围。它解释原计划，不自动生成领域关系、工具授权或工程采用。
+
+当前 `/2` 视图接入原生工程检查。功能实现可以绑定实际结构、机制和验证主张；组合主张可以声明必要项、替代项和接口检查，并约束 `project decide` 的验收范围及结论方向。影响分析提供带类别端点，旧无类型依赖歧义明确报告。具体合同及一层组合的边界见工程关系说明。
 
 工具结果回交见[专业能力](../references/professional-capabilities.md)：`project tool-result verify/register/compare/registry` 核 Project 绑定、本机登记的工具身份与程序字节、原始记录、结论依据与覆盖；登记只写新的 Project 副本，不改结论或采用；性能比较只接受先基线后候选的两份已登记结果。
 
@@ -53,11 +59,11 @@
 | 聊天中的经验依据何在 | task-view 的显式 `/2`、原 `oe-knowledge::conversation`；[原消息与方法使用](CONVERSATION-METHOD-USE.md) | 选定原消息的角色、时间、文本、位置与当前方法事实绑定；缺失/伪造/漂移及恢复；来源一致、原因解释、实际使用与收益分开 |
 | 长资料、图片和上下文判断 | 当前 Agent 按[协作编排](AGENT-ORCHESTRATION.md)处理；已有登记页、OCR/typed 和明确专用工具按各自合同使用 | 读到和未读到的范围、必要条件、原问题、反例、双预算、模型身份、实际 usage/费用、失败恢复；仍交由同 Project 正式审查 |
 | 米思米案例及零件如何进入设计 | `knowledge library incad` [资料图谱](MISUMI-SOURCE-LIBRARY.md)、[三层选型审查](MISUMI-SELECTION.md)、supplier 与 `project incad`；[来源接入](CAD-INCAD-INTEGRATION.md)、[CAD 暂存](INCAD-CAD-STAGING.md) | inCAD 只作机构参考，目录/手册提供系列与参数依据，官网当前页面提供具体配置；`supplier selection-review` 只核离线回执，实际网页、CAD、计算和工程适用性分别验收 |
-| NX/SolidWorks 如何执行设计 | `oe-cad`、NX 协议/controller/worker、有限 SW Rust worker；[独立执行](CAD-INDEPENDENT-EXECUTION.md)、[工程交付](ENGINEERING-DELIVERY.md)、[SW 范围](SOLIDWORKS-NATIVE-WORKER.md) | 原生动作、完整对象与装配、单位与变换、设计意图、保存及独立进程重开、模型/图纸/BOM/工艺/检验依赖；各后端按其当前源独立取证 |
+| NX/SolidWorks/SolidCraft 如何执行设计 | NX 协议/controller/worker、有限 SW Rust worker、SolidCraft 原生 CLI/MCP；[独立执行](CAD-INDEPENDENT-EXECUTION.md)、[SolidCraft 工作流](SOLIDCRAFT-CAD.md)、[工程交付](ENGINEERING-DELIVERY.md)、[SW 范围](SOLIDWORKS-NATIVE-WORKER.md) | 按原生交付物选后端；原生动作、单位/变换、保存及独立进程重开各自取证。SolidCraft 经通用 Rust tool-result 回交，不伪装为 NX/SW observation；模型、交换文件、图纸/BOM/工艺/实物分别验收 |
 | 如何形成施工图及检验依据 | 数值、孔列、原生图纸意图与 CAD handoff；[数值交付](../references/numeric-cad-delivery.md)、[图纸关联](../references/native-drawing-associations.md) | 尺寸、公差、基准、材料、工艺、装配与测量方法、覆盖及不确定度；几何参考页和视觉演示不替代制造图或实测 |
 | 哪个结论现在可以采用 | `kernel review --project`、工程前提/数值/制造检查及现有治理 owner | 当前对象/条件/来源、必要检查、失败/未知/覆盖与批准；语义支持、工具状态和工程采用分别保存 |
 | 如何检验并使用改进 | knowledge experience、既有 Rust learning/evolution/version owner；[有证据的改进](../references/regularized-evolution.md) | 冻结原目标、来源、判据、预算与完整拒绝历史；独立任务的质量/成本、实际下一使用反馈、精确恢复；无新增表达时实例或 no_delta |
-| 改代码如何保持与含义一致 | `specs/` → Rust 规范化 RDF → 锁定 ggen → 生成合同与手写算法；[设计方法](../references/design-method.md) | 功能、输入输出、副作用、错误、状态、来源、平台及检查对应；真实生成、漂移、当前构建和独立接收 |
+| 改代码如何保持与含义一致 | `specs/` → Rust 规范化 RDF → 锁定 ggen → 生成合同与手写算法；`design inspect` 与[四环承接](../references/design-method.md#在四环之间保持含义和依据) | 要求、功能承担者、约束与验证案例分别关联；生成清单保留检查者与原预期，缺口不丢弃；静态对应、实际行为、工程证据和方法收益分别验证 |
 | 确定下一验证及探索路线 | [探索接续](ENGINEERING-EXPLORATION.md)、[设计尝试](DESIGN-ATTEMPT.md)、[方案比较](DESIGN-COMPARISON.md) | 参数优化与机制探索的前提分开；freeze/verify/run 与 advance 按实际合同接续，requires_host_agent 是等待，results_recorded 只说明结果记录；共同父目标与必要验收保持 |
 | Agent 组织任务、并行与回读 | [会话编排](AGENT-ORCHESTRATION.md)、[工具接入](TOOL-INTEGRATIONS.md) | 独立任务可并行，有依赖的步骤先回读；来源、失败与未知保持，实际方法收益另验 |
 | 保存过程与读取历史方法 | [Harness](../references/harness-context.md)、[来源接续](USAGE.md#旧来源和真实过程接续) | 完整条件、纠正、未知与必要验收保持；归档、not_run、来源匹配和实际使用效果分开；memory 可选 |

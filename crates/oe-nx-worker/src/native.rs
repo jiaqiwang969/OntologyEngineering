@@ -22,6 +22,7 @@ mod feature_delete;
 mod mass_probe;
 mod motion;
 mod motion_capture2;
+mod width_variant;
 
 type Handle = *mut c_void;
 type Tag = u32;
@@ -619,6 +620,7 @@ functions! {
     set_work:unsafe extern "C" fn(Tag)->i32="UF_ASSEM_set_work_part",
     object_delete:unsafe extern "C" fn(Tag)->i32="UF_OBJ_delete_object",
     cylinder:unsafe extern "C" fn(i32,*mut f64,*mut c_char,*mut c_char,*mut f64,*mut Tag)->i32="UF_MODL_create_cyl1",
+    cone:unsafe extern "C" fn(i32,*mut f64,*mut c_char,*mut *mut c_char,*mut f64,*mut Tag)->i32="UF_MODL_create_cone1",
     feature_body:unsafe extern "C" fn(Tag,*mut Tag)->i32="UF_MODL_ask_feat_body",
     body_features:unsafe extern "C" fn(Tag,*mut List)->i32="UF_MODL_ask_body_feats",
     feature_faces:unsafe extern "C" fn(Tag,*mut List)->i32="UF_MODL_ask_feat_faces",
@@ -2399,7 +2401,7 @@ impl Native {
             unsafe { (self.uf.part_name)(part, name.as_mut_ptr()) },
             "UF_PART_ask_part_name",
         )?;
-        buffer_text(&name)
+        self.uf_text_utf8(&name)
     }
     fn list(
         &self,
@@ -2940,6 +2942,27 @@ impl NativeApi for Native {
         role: &str,
     ) -> Result<oe_contracts::NxAssemblyObservation> {
         self.observe_assembly(root, namespace, budget, role)
+    }
+    fn width_export_precise(&mut self,input:&Path,output:&Path,tolerance_mm:f64)->Result<()> {
+        self.width_export_precise_native(input,output,tolerance_mm)
+    }
+    fn width_check_pairs(&mut self,root:u32,observed:&oe_contracts::NxAssemblyObservation,pairs:&[crate::geometry::width_variant::BodyPair],record:&mut dyn FnMut(Value)->Result<()>)->Result<Value> {
+        self.width_check_pairs_native(root,observed,pairs,record)
+    }
+    fn width_exact_body_bounds(&mut self, body:u32)->Result<[f64;6]> {
+        self.width_body_bounds_native(body)
+    }
+    fn width_face_inventory(&mut self, body: u32) -> Result<Vec<crate::geometry::width_variant::Face>> {
+        self.width_faces_native(body)
+    }
+    fn width_move_faces(&mut self, part: u32, faces: &[u32], delta: [f64; 3]) -> Result<Value> {
+        self.width_move_native(part, faces, delta)
+    }
+    fn width_place_instance(&mut self, instance: u32, origin: [f64; 3], csys: &[f64]) -> Result<Value> {
+        self.width_place_native(instance, origin, csys)
+    }
+    fn width_translate_body(&mut self, part:u32, body:u32, delta:[f64;3])->Result<Value> {
+        self.width_translate_native(part,body,delta)
     }
     fn assembly_reference_sets(
         &mut self,
@@ -4006,6 +4029,90 @@ impl NativeApi for Native {
             "UF_MODL_create_cyl1",
         )?;
         ensure!(feature != 0, "native_cylinder_feature_null");
+        Ok(feature)
+    }
+    fn create_subtractive_block(
+        &mut self,
+        mut corner: [f64; 3],
+        lengths: [String; 3],
+    ) -> Result<Tag> {
+        let abi = self.extension()?;
+        let mut buffers: Vec<Vec<c_char>> = lengths
+            .iter()
+            .map(|x| {
+                text(x).map(|s| {
+                    s.into_bytes_with_nul()
+                        .into_iter()
+                        .map(|b| b as c_char)
+                        .collect()
+                })
+            })
+            .collect::<Result<_>>()?;
+        let mut pointers: Vec<_> = buffers.iter_mut().map(|s| s.as_mut_ptr()).collect();
+        let mut feature = 0;
+        self.check(
+            unsafe {
+                (self.uf.block)(
+                    abi.negative_sign,
+                    corner.as_mut_ptr(),
+                    pointers.as_mut_ptr(),
+                    &mut feature,
+                )
+            },
+            "UF_MODL_create_block1_subtractive",
+        )?;
+        ensure!(feature != 0, "subtractive_block_feature_null");
+        Ok(feature)
+    }
+    fn create_additive_cone(
+        &mut self,
+        mut origin: [f64; 3],
+        height: f64,
+        diameters: [f64; 2],
+    ) -> Result<Tag> {
+        ensure!(
+            origin.iter().all(|v| v.is_finite())
+                && height.is_finite()
+                && height > 0.0
+                && diameters.iter().all(|v| v.is_finite() && *v > 0.0),
+            "native_cone_dimensions_invalid"
+        );
+        let mut h = text(&height.to_string())?
+            .into_bytes_with_nul()
+            .into_iter()
+            .map(|b| b as c_char)
+            .collect::<Vec<_>>();
+        let mut diameter_buffers = diameters
+            .iter()
+            .map(|v| {
+                text(&v.to_string()).map(|s| {
+                    s.into_bytes_with_nul()
+                        .into_iter()
+                        .map(|b| b as c_char)
+                        .collect::<Vec<_>>()
+                })
+            })
+            .collect::<Result<Vec<_>>>()?;
+        let mut diameter_ptrs: Vec<*mut c_char> = diameter_buffers
+            .iter_mut()
+            .map(|buffer| buffer.as_mut_ptr())
+            .collect();
+        let mut direction = [0.0, 0.0, 1.0];
+        let mut feature = 0;
+        self.check(
+            unsafe {
+                (self.uf.cone)(
+                    self.abi.null_sign,
+                    origin.as_mut_ptr(),
+                    h.as_mut_ptr(),
+                    diameter_ptrs.as_mut_ptr(),
+                    direction.as_mut_ptr(),
+                    &mut feature,
+                )
+            },
+            "UF_MODL_create_cone1_new_body",
+        )?;
+        ensure!(feature != 0, "native_cone_feature_null");
         Ok(feature)
     }
     fn add_hole_feature(

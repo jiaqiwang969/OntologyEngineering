@@ -12,6 +12,7 @@ fn runtime() -> RuntimeIdentity {
             "libnxopencpp.dll",
             "libnxopencpp_assemblies.dll",
             "libnxopencpp_annotations.dll",
+            "libnxopencpp_features.dll",
         ]
         .into_iter()
         .map(|name| {

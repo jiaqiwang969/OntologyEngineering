@@ -56,31 +56,27 @@ fn declaration(
     }
     ensure!(
         !intent.reference.source_refs.is_empty()
-            && intent
-                .reference
-                .source_refs
-                .iter()
-                .all(|id| {
-                    project.evidence.contains_key(id)
-                        && a.source_refs.contains(id)
-                        && refs.iter().all(|r| {
-                            id.as_str() != *r && project.evidence[id] != project.evidence[*r]
-                        })
-                }),
+            && intent.reference.source_refs.iter().all(|id| {
+                project.evidence.contains_key(id)
+                    && a.source_refs.contains(id)
+                    && refs
+                        .iter()
+                        .all(|r| id.as_str() != *r && project.evidence[id] != project.evidence[*r])
+            }),
         "sheet_persistence_independent_source_unbound"
     );
     // A source check must actually invalidate its declared dependent decisions.
     for id in &a.source_refs {
         let impact =
-            crate::project::impact(project, &std::collections::BTreeSet::from([id.clone()]))?;
-        let affected = impact["affected"]
+            crate::project::impact_typed(project, &[crate::project::entity("evidence", id)])?;
+        let affected = impact["decisions"]
             .as_array()
             .context("sheet_persistence_impact_missing")?;
         ensure!(
             !a.affected_decisions.is_empty()
                 && a.affected_decisions
                     .iter()
-                    .all(|d| affected.contains(&json!(d))),
+                    .all(|d| affected.iter().any(|row| row["decision_id"] == *d)),
             "sheet_persistence_dependency_closure_missing"
         );
     }

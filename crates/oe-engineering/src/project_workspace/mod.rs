@@ -5,16 +5,16 @@ pub mod receipts;
 pub mod semantics;
 
 use crate::{artifacts, current_task_view, harness, reviewed_reconciliation};
-use anyhow::{Context, Result, bail, ensure};
+use anyhow::{bail, ensure, Context, Result};
 use oe_contracts::{
     ArtifactReference, CurrentTaskViewInput, WorkspaceCommit, WorkspaceCommitRequest,
     WorkspaceGoal, WorkspaceHead, WorkspaceLearningBinding, WorkspaceManifest,
 };
 use oe_core::{
-    AdvisoryFileLock, SkillRoot, read_regular_bytes, sha256, write_new, write_new_bytes,
+    read_regular_bytes, sha256, write_new, write_new_bytes, AdvisoryFileLock, SkillRoot,
 };
-use oe_kernel::project::{self, Project, route};
-use serde_json::{Value, json};
+use oe_kernel::project::{self, route, Project};
+use serde_json::{json, Value};
 use std::{
     collections::{BTreeMap, BTreeSet},
     path::Path,
@@ -152,6 +152,7 @@ struct Checked {
     bytes: BTreeMap<String, Vec<u8>>,
     refs: BTreeMap<String, ArtifactReference>,
     total: usize,
+    stage_reasoning: Option<Value>,
 }
 impl Checked {
     fn new() -> Self {
@@ -159,6 +160,7 @@ impl Checked {
             bytes: BTreeMap::new(),
             refs: BTreeMap::new(),
             total: 0,
+            stage_reasoning: None,
         }
     }
     fn read(&mut self, root: &SkillRoot, r: &ArtifactReference) -> Result<Vec<u8>> {
@@ -444,7 +446,8 @@ fn semantic_inputs(
             "workspace_stage_receipt_required"
         );
         if stage.execution == "results_recorded" {
-            let verified = receipts::verify(root, stage, &p, &q.project)?;
+            let verified = receipts::verify_bound(root, stage, &p, &q.project, &a)?;
+            checked.stage_reasoning = verified["native"].get("reasoning").cloned();
             for reference in verified["references"]
                 .as_array()
                 .context("workspace_receipt_sources_missing")?
@@ -795,12 +798,14 @@ pub fn resume(root: &SkillRoot) -> Result<Value> {
         head(root, &m)?.as_ref() == Some(&h),
         "workspace_head_changed_during_resume"
     );
-    Ok(
-        json!({"schema":"oev2.workspace-resume/1","status":status,"head":h,"project":c.proposal.project,"root_anchor":c.proposal.anchor,
+    let mut result = json!({"schema":"oev2.workspace-resume/1","status":status,"head":h,"project":c.proposal.project,"root_anchor":c.proposal.anchor,
         "root_requests":a["requests"],"root_object":a["root_object"],"deliverable":a["deliverable"],"acceptance":a["acceptance"],
         "corrections":c.proposal.corrections,"pending_decisions":c.pending_decisions,"stage":c.proposal.stage,"events":c.proposal.events,"causal_claims":c.proposal.causal_claims,
-        "route":route,"task_view":view,"effects_require_readback":effect_unknown,"automatic_dispatch":false,"engineering_adoption":"not_granted"}),
-    )
+        "route":route,"task_view":view,"effects_require_readback":effect_unknown,"automatic_dispatch":false,"engineering_adoption":"not_granted"});
+    if let Some(reasoning) = checked.stage_reasoning {
+        result["reasoning"] = reasoning;
+    }
+    Ok(result)
 }
 
 pub fn render_resume(root: &SkillRoot, output: &Path) -> Result<Value> {
@@ -822,6 +827,12 @@ pub fn render_resume(root: &SkillRoot, output: &Path) -> Result<Value> {
         text.push_str(&format!(
             "## {label}\n\n```json\n{}\n```\n\n",
             serde_json::to_string_pretty(&r[key])?
+        ));
+    }
+    if let Some(reasoning) = r.get("reasoning") {
+        text.push_str(&format!(
+            "## Engineering relations and next work\n\n```json\n{}\n```\n\n",
+            serde_json::to_string_pretty(reasoning)?
         ));
     }
     text.push_str("This is a derived view. Re-run workspace resume before continuing. Recorded results do not grant engineering adoption; dispatched actions require readback before retry.\n");

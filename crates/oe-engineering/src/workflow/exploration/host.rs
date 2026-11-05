@@ -4,6 +4,9 @@ use super::*;
 use oe_contracts::{
     HostExplorationInput, HostExplorationReceipt, HostExplorationState, HostSourceObservation,
 };
+mod readback;
+pub(super) use readback::checked_recorded;
+pub use readback::verify_recorded;
 
 fn pending(c: &Checked, e: &Evaluation, receipts: &[HostExplorationReceipt]) -> Vec<Value> {
     c.plan.actions.iter().filter(|a| {

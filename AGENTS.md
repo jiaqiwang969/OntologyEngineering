@@ -50,6 +50,8 @@ python3 scripts/check_tool_skills.py --skill-root "$HOME/.codex/skills" --skill-
 - 新会话、压缩接续及新阶段前，读取当前项目 HEAD 并执行 `project workspace resume`。先核根请求、全部验收、纠正义务、`pending_decisions` 与动作状态；`incomplete` 补原件，`effect_unknown` 先回读。旧派发记录不等于本次重试授权，`ready` 不表示工程通过。
 - 用 workspace commit 保存来源、修订、因果依据与阶段状态；核 expected parent，冲突保留候选并重新对账，不手改 HEAD。工具执行前记录意图和派发，结果经实际 owner 回读；纠正解决需要当前复核，失败、延后和未知不得被阶段摘要抹除。细节、命令与预算以 `docs/PROJECT-WORKSPACE.md` 为准。
 - 用同一 Project 的对象、修订、条件与验收组织工作。经验经 `memory session prepare/handoff` 与 `project memory-candidate verify/register` 接续，仅为待核候选。
+- 跨多轮任务沿 `references/continuous-work.md` 以完整使用场景组织当前动作，从原 Project/anchor/workspace 派生前置、检查和下一步，在既有授权内持续迭代；保持完整验收，不另建竞争状态正本。
+- 任务从 `references/engineering-reasoning.md` 的工程关系缺口产生。已有冻结探索用 `project explore reasoning` 核动作的验收、假设、前提、分支及决定影响；`advance` 和探索阶段 `resume` 接续同一派生依据。旧视图先 `verify-reasoning`；未知结果不打开后续分支，未覆盖验收和未声明关系仍需接续。
 - 专业结果保留输入、版本、来源、原始输出、覆盖和未知，经 `project tool-result` 登记。执行状态、检查覆盖、决定、工程采用分别保存。
 - 经 `project memory-feedback` 与 `memory session feedback` 保存实际使用反馈。曝光、未用、无帮助和返工如实记录；模型答复或工具成功不能代替工程通过。
 - 历史 session 与回执是资料，不赋予当前执行授权。来源、条件或版本改变后重审受影响结论，不继承旧通过。
@@ -61,9 +63,10 @@ python3 scripts/check_tool_skills.py --skill-root "$HOME/.codex/skills" --skill-
 - `specs/` 为编辑正本，派生 RDF 与 `generated/` 只能经锁定真实 ggen 产生；不手改派生物，不自造渲染器替代 ggen。memory 的合同生成入口见模块文档。
 - 自有业务、规范化、检查和正式语义执行均用 Rust。工程与 memory 共用根 Cargo.lock 和语义实现；专业工具沿自己的原生入口执行。
 - 复杂算法在手写区；共享类型、接口、错误、状态与可表达约束从规范生成。修改模块时补齐设计功能、检查、案例、来源与平台映射。
+- 四环维护沿 `references/design-method.md` 核要求、模型、规范、承担者与独立证据。用 `design inspect` 的 `traceability` 和生成验证清单追查已声明关联，缺口保留；静态符号与生成注释不能计作执行。反馈按 `references/regularized-evolution.md` 回到相应层次，项目实例修订与共享方法收益分别记录。
 - 先复现、分析影响，再修正规范/模板/实现，回归与独立验证。保留失败、未知、未执行和反例，不放宽判据取得通过。
 - 构建用锁定工具链与 Cargo.lock；生成失败不切换工作版本，漂移检查比较重新实际生成的字节。源码、程序、安装、工具执行与工程采用分别取证。
-- CAD 使用 v2 自有 Rust、NX controller/worker 或 SW worker 与显式原生 SDK。不得调用旧 cad-agent 脚本、环境、MCP、Journal runner 或默认配置作为入口/备用；Fusion 不执行。详见 `docs/CAD-INDEPENDENT-EXECUTION.md`。
+- CAD 按 `docs/CAD-INDEPENDENT-EXECUTION.md` 选择后端。NX/SW 使用 v2 自有 Rust controller/worker 与显式原生 SDK；SolidCraft 使用固定上游原生 CLI/MCP，按 `docs/SOLIDCRAFT-CAD.md` 经既有 Rust Project 合同回交。后端声明、实际安装、原生能力与工程采用分别取证，不将 STEP 或截图升级为 NX/SW 原生交付。不得调用旧 cad-agent 脚本、环境、MCP、Journal runner 或默认配置作为入口/备用；Fusion 不执行。
 - `var/` 保存私有任务、项目、记忆、运行及维护记录，`sources/` 保存工程资料原件、处理成果与私有索引。私人内容不进入分发，`sources/` 只允许公开精确路径 `sources/README.md`；不要强制 git add 原件、提取文本、私人清单或导航笔记。凭据、账号、设备配置、私人 session 不发布。公开案例必须可独立取得。
 - 外部工具升级时核上游身份，从干净副本重查 diff，再更新模块及锁内摘要，重跑受影响案例；查宿主同名副本，避免上游 setup/upgrade 又生成顶层 Skill。安装成功不等于结果合同或工程能力通过。
 

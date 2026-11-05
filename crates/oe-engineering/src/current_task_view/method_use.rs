@@ -456,14 +456,14 @@ fn binding_observation(
             reasons: entry_reasons,
         });
     }
-    let seeds = BTreeSet::from([
-        binding.object.object_id.clone(),
-        binding.object.condition_scope.clone(),
-        binding.fact_property.clone(),
-        binding.source_id.clone(),
-        binding.intake.sha256.clone(),
-    ]);
-    let impact = project::impact(project, &seeds)?;
+    let seeds = [
+        project::entity("object", &binding.object.object_id),
+        project::entity("condition", &binding.object.condition_scope),
+        project::entity("dependency", &binding.fact_property),
+        project::entity("evidence", &binding.source_id),
+        project::entity("source_digest", &binding.intake.sha256),
+    ];
+    let impact = project::impact_typed(project, &seeds)?;
     reasons.sort();
     reasons.dedup();
     let intake_statistics_verification = if intake_scope.is_some() {

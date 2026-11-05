@@ -5,11 +5,12 @@ use std::collections::BTreeSet;
 
 /// Explicit dependencies of the current SDK shim, including ComputedSize.
 /// Old three-library workers keep their own historical executable identity.
-pub const NATIVE_RUNTIME_PATHS: [&str; 4] = [
+pub const NATIVE_RUNTIME_PATHS: [&str; 5] = [
     "NXBIN/libufun.dll",
     "NXBIN/libnxopencpp.dll",
     "NXBIN/libnxopencpp_assemblies.dll",
     "NXBIN/libnxopencpp_annotations.dll",
+    "NXBIN/libnxopencpp_features.dll",
 ];
 pub fn validate_native_runtime(runtime: &RuntimeIdentity) -> Result<()> {
     runtime.validate()?;

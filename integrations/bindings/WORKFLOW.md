@@ -1,6 +1,6 @@
 # 专业工具的可移植 Project 接续
 
-这份流程保留当前六个外部工具以及 `electronics-design`、`anatomy` 的本地接续行为。运行程序从固定上游安装；此目录的 Python 代码只核传输字节、绑定显式输入并监督进程。Project 语义审查、依赖传播、记忆检索与核验仍由同一安装中的 Rust 程序执行。工具完成、原件核验、决定与工程采用分别记录。模块原始输出、投影和回执的共同边界见 [MODULE-ADAPTERS.md](MODULE-ADAPTERS.md)。Anatomy 的 CAD、电子、源/制品、Jacobian 与性能投影已有专用 Rust bridge；这些 bridge 不替代外部工具执行或工程采用审查。
+这份流程保留当前六个外部工具以及 `electronics-design`、`anatomy` 的本地接续行为；[SolidCraft CAD](../../docs/SOLIDCRAFT-CAD.md) 复用同一 tool-result 交接。运行程序从固定上游安装；此目录的 Python 代码只核传输字节、绑定显式输入并监督进程。Project 语义审查、依赖传播、记忆检索与核验仍由同一安装中的 Rust 程序执行。工具完成、原件核验、决定与工程采用分别记录。模块原始输出、投影和回执的共同边界见 [MODULE-ADAPTERS.md](MODULE-ADAPTERS.md)。Anatomy 的 CAD、电子、源/制品、Jacobian 与性能投影已有专用 Rust bridge；这些 bridge 不替代外部工具执行或工程采用审查。现有 CAD presentation 只接收其声明的 NX 观察，SolidCraft 结果不能直接套用。
 
 ## 安装选择
 

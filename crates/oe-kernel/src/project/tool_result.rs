@@ -6,7 +6,7 @@
 //! changes a conclusion or grants adoption. Comparisons accept two registered
 //! results measured under the same tool, metric, environment and input set,
 //! with the baseline finished before the candidate started.
-use super::{Project, impact, validate};
+use super::{Project, entity, impact_typed, validate};
 use anyhow::{Context, Result, ensure};
 use oe_contracts::{
     ArtifactReference, CapabilityRegistry, RegisteredCapability, ToolComparisonReport,
@@ -609,7 +609,7 @@ pub fn register(
         }
     }
     validate(&next)?;
-    let affected = impact(&next, &BTreeSet::from([anchor.clone()]))?;
+    let affected = impact_typed(&next, &[entity("evidence", &anchor)])?;
     let affected_decisions: Vec<String> = affected["decisions"]
         .as_array()
         .map(|a| {

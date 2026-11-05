@@ -9,7 +9,7 @@ use serde_json::{Value, json};
 use std::{fs, path::Path};
 
 fn pin(root: &SkillRoot, name: &str, value: &Value) -> ArtifactReference {
-    let p = root.path().join(name);
+    let p = root.data_path().join(name);
     fs::create_dir_all(p.parent().unwrap()).unwrap();
     let raw = serde_json::to_vec_pretty(value).unwrap();
     fs::write(&p, &raw).unwrap();
@@ -41,7 +41,7 @@ fn host_input(
 fn host_reference(f: &Fixture, name: &str) -> ArtifactReference {
     let path = format!("var/{name}/completed.json");
     ArtifactReference {
-        sha256: sha256(fs::read(f.root.path().join(&path)).unwrap()),
+        sha256: sha256(fs::read(f.root.data_path().join(&path)).unwrap()),
         path,
     }
 }
@@ -228,6 +228,7 @@ fn host_failed_partial_and_causal_observations_keep_unknown() {
 }
 struct Fixture {
     _dir: tempfile::TempDir,
+    _data: Option<tempfile::TempDir>,
     root: SkillRoot,
     project: Project,
     work: Value,
@@ -238,13 +239,19 @@ impl Fixture {
         Self::source(json!({"registered":false,"metric":q(0.03,"mm")}))
     }
     fn source(source_value: Value) -> Self {
+        Self::with_store(source_value, false)
+    }
+    fn separate() -> Self {
+        Self::with_store(json!({"registered":false,"metric":q(0.03,"mm")}), true)
+    }
+    fn with_store(source_value: Value, separate: bool) -> Self {
         let dir = tempfile::tempdir().unwrap();
         fs::write(
             dir.path().join("SKILL.md"),
             "synthetic engineering inquiry test",
         )
         .unwrap();
-        let root = SkillRoot::new(dir.path().canonicalize().unwrap()).unwrap();
+        let mut root = SkillRoot::new(dir.path().canonicalize().unwrap()).unwrap();
         fs::create_dir_all(root.path().join("specs/owner-schemas")).unwrap();
         fs::write(
             root.path()
@@ -252,6 +259,12 @@ impl Fixture {
             include_bytes!("../../../specs/owner-schemas/engineering-exploration.json"),
         )
         .unwrap();
+        let data = separate.then(|| tempfile::tempdir().unwrap());
+        if let Some(data) = &data {
+            root = root
+                .with_project_data_root(data.path().canonicalize().unwrap())
+                .unwrap();
+        }
         let source = pin(&root, "var/source.json", &source_value);
         let purpose = "Diagnose source registration while retaining complete software and physical engineering obligations";
         let acceptance = json!([
@@ -305,6 +318,7 @@ impl Fixture {
             "independent_expected":expected,"exposure":"development_replay"});
         Self {
             _dir: dir,
+            _data: data,
             root,
             project,
             work,
@@ -330,7 +344,7 @@ impl Fixture {
     }
     fn freeze(&self) -> ArtifactReference {
         exploration::freeze(&self.root, &self.input(), Path::new("var/frozen")).unwrap();
-        let raw = fs::read(self.root.path().join("var/frozen/completed.json")).unwrap();
+        let raw = fs::read(self.root.data_path().join("var/frozen/completed.json")).unwrap();
         ArtifactReference {
             path: "var/frozen/completed.json".into(),
             sha256: sha256(raw),
@@ -347,7 +361,7 @@ impl Fixture {
         .unwrap()
     }
     fn read(&self, name: &str) -> Value {
-        serde_json::from_slice(&fs::read(self.root.path().join(name)).unwrap()).unwrap()
+        serde_json::from_slice(&fs::read(self.root.data_path().join(name)).unwrap()).unwrap()
     }
     fn basis(&self) -> Value {
         serde_json::from_str(&self.project.conditions["inquiry"]).unwrap()
@@ -388,6 +402,516 @@ impl Fixture {
         self.plan["outcomes"][1]["operator"] = json!("ge");
         self.plan["outcomes"][1]["value"] = q(0.03, "mm");
     }
+}
+
+#[test]
+fn separate_project_store_uses_installed_owner_schema() {
+    let f = Fixture::separate();
+    assert!(!f.root.data_path().join("specs").exists());
+    let run = f.run();
+    assert_eq!(
+        f.read(&run.result.path)["decision_conclusions"]["registration"],
+        "supported"
+    );
+    assert!(!run.adopted);
+    // A project-local shadow cannot replace a missing or changed installed schema.
+    fs::create_dir_all(f.root.data_path().join("specs/owner-schemas")).unwrap();
+    fs::write(
+        f.root
+            .data_path()
+            .join("specs/owner-schemas/engineering-exploration.json"),
+        include_bytes!("../../../specs/owner-schemas/engineering-exploration.json"),
+    )
+    .unwrap();
+    fs::write(
+        f.root
+            .path()
+            .join("specs/owner-schemas/engineering-exploration.json"),
+        b"{}",
+    )
+    .unwrap();
+    let frozen = ArtifactReference {
+        path: "var/frozen/completed.json".into(),
+        sha256: sha256(fs::read(f.root.data_path().join("var/frozen/completed.json")).unwrap()),
+    };
+    assert!(exploration::verify(&f.root, &frozen).is_err());
+}
+
+fn external_result(execution: &str) -> (Fixture, ArtifactReference) {
+    let mut f = Fixture::separate();
+    f.plan["actions"][0]["kind"] = json!("external");
+    f.plan["actions"][0]["source"] = Value::Null;
+    let frozen = f.freeze();
+    exploration::host::advance(
+        &f.root,
+        &host_input(&f, &frozen, None, Value::Null, "start"),
+    )
+    .unwrap();
+    let previous = host_reference(&f, "start");
+    let observation = host_observation(&f, &frozen, "inspect", execution, "observed");
+    exploration::host::advance(
+        &f.root,
+        &host_input(&f, &frozen, Some(&previous), observation, "end"),
+    )
+    .unwrap();
+    let reference = host_reference(&f, "end");
+    (f, reference)
+}
+
+fn tree_identity(root: &Path) -> std::collections::BTreeMap<String, String> {
+    fn walk(base: &Path, path: &Path, out: &mut std::collections::BTreeMap<String, String>) {
+        for entry in fs::read_dir(path).unwrap() {
+            let p = entry.unwrap().path();
+            if p.is_dir() {
+                walk(base, &p, out);
+            } else {
+                out.insert(
+                    p.strip_prefix(base).unwrap().to_string_lossy().into(),
+                    sha256(fs::read(p).unwrap()),
+                );
+            }
+        }
+    }
+    let mut out = std::collections::BTreeMap::new();
+    walk(root, root, &mut out);
+    out
+}
+
+#[test]
+fn host_result_readback_is_read_only_and_retains_failed_observations() {
+    for execution in ["completed", "failed", "partial", "unknown"] {
+        let (f, artifact) = external_result(execution);
+        let before = tree_identity(f.root.data_path());
+        let (state, refs) = exploration::host::verify_recorded(&f.root, &artifact).unwrap();
+        assert_eq!(
+            state.status,
+            if execution == "completed" {
+                "results_recorded"
+            } else {
+                "needs_review"
+            }
+        );
+        assert_eq!(state.method_benefit, "unknown");
+        assert!(!state.adopted);
+        assert!(refs.iter().any(|r| r.path == "var/source.json"));
+        assert!(refs.iter().any(|r| r.path == "var/start/completed.json"));
+        assert!(
+            refs.iter()
+                .any(|r| r.path == "var/end/run/harness/feedback.json")
+        );
+        assert!(refs.iter().all(|r| !r.path.starts_with("specs/")));
+        exploration::host::verify_recorded(&f.root, &artifact).unwrap();
+        assert_eq!(tree_identity(f.root.data_path()), before);
+    }
+}
+
+#[test]
+fn host_readback_rejects_rehashed_views_harness_and_assessments() {
+    for (file, field, altered) in [
+        ("task-view.json", Some("task_view"), "view"),
+        ("harness.json", Some("harness"), "harness"),
+        ("assessment.json", None, "assessment"),
+        ("results.json", Some("result"), "result"),
+    ] {
+        let (f, _) = external_result("completed");
+        let path = format!("var/end/run/{file}");
+        let mut value = f.read(&path);
+        match altered {
+            "view" => value["input"]["previous"] = Value::Null,
+            "harness" => value["model_calls"] = json!(1),
+            "assessment" => value["method_benefit"] = json!("proven"),
+            _ => value["physical_truth"] = json!("established"),
+        }
+        let changed = pin(&f.root, &path, &value);
+        let mut state = f.read("var/end/completed.json");
+        if let Some(field) = field {
+            state["run"][field] = json!(changed);
+        }
+        pin(&f.root, "var/end/run/completed.json", &state["run"]);
+        let artifact = pin(&f.root, "var/end/completed.json", &state);
+        let before = tree_identity(f.root.data_path());
+        assert!(
+            exploration::host::verify_recorded(&f.root, &artifact).is_err(),
+            "accepted changed {file}"
+        );
+        assert_eq!(tree_identity(f.root.data_path()), before);
+    }
+    let (f, artifact) = external_result("completed");
+    fs::write(f.root.data_path().join("var/source.json"), b"{}").unwrap();
+    assert!(exploration::host::verify_recorded(&f.root, &artifact).is_err());
+}
+
+#[test]
+fn workspace_receives_exploration_and_resumes_complete_obligations() {
+    use oe_contracts::WorkspaceCommitRequest;
+    use oe_engineering::project_workspace as workspace;
+    let (f, artifact) = external_result("partial");
+    workspace::initialize(&f.root, "inquiry-workspace", &f.project.project_id).unwrap();
+    let request =
+        "Synthetic request: investigate registration and retain every original obligation.";
+    fs::write(f.root.data_path().join("request.txt"), request).unwrap();
+    let request_ref = json!({"path":"request.txt","sha256":sha256(request.as_bytes())});
+    let acceptance: Vec<_> = f.work["acceptance"].as_array().unwrap().iter().enumerate().map(|(i, text)|
+        json!({"id":format!("A{}", i+1),"statement":text,"functions":["F1"],"status":"open","decisions":[],"evidence":[]})
+    ).collect();
+    let anchor = json!({"schema":"oev2.route-anchor/2","project_id":f.project.project_id,"root_object":"query-owner",
+        "deliverable":"Retain source inquiry, unresolved results and complete obligations",
+        "requests":[{"id":"U1","kind":"root","text":request,"source":"request.txt","affects":[]}],
+        "functions":[{"id":"F1","statement":"Investigate source registration","structures":["query-owner"]}],
+        "acceptance":acceptance,"stages":[{"id":"registration-probe","object_id":"query-owner","relation":"root",
+            "relation_target":"query-owner","advances":["A1"],"outcome":"pending"}],"reviews":[],
+        "policy":{"off_root_stage_limit":2,"no_progress_stage_limit":2,"review_interval":5}});
+    let anchor_ref = pin(&f.root, "anchor.json", &anchor);
+    let mut q: WorkspaceCommitRequest = serde_json::from_value(json!({
+        "schema":"oev2.workspace-commit-request/1","workspace_id":"inquiry-workspace","commit_id":"planned","expected_parent":null,
+        "project":f.work["project"],"anchor":anchor_ref,"requests":[{"request_id":"U1","source":request_ref}],
+        "corrections":[],"causal_claims":[],"events":[],"sources":f.plan["observations"],"work":f.plan["parent_work"],"checkpoint":null,
+        "stage":{"id":"registration-probe","acceptance_ids":["A1"],"intent":"Read current source and preserve unresolved conditions","execution":"planned","receipt":null},"reviews":[]
+    })).unwrap();
+    let planned = workspace::commit(&f.root, &q).unwrap();
+    q.expected_parent = Some(serde_json::from_value(planned["head"]["commit"].clone()).unwrap());
+    workspace::begin(
+        &f.root,
+        q.expected_parent.as_ref().unwrap(),
+        "registration-probe",
+    )
+    .unwrap();
+    q.commit_id = "dispatched".into();
+    q.stage.as_mut().unwrap().execution = "dispatched".into();
+    let dispatched = workspace::commit(&f.root, &q).unwrap();
+    assert_eq!(
+        workspace::resume(&f.root).unwrap()["status"],
+        "effect_unknown"
+    );
+    q.expected_parent = Some(serde_json::from_value(dispatched["head"]["commit"].clone()).unwrap());
+    let state = f.read(&artifact.path);
+    let receipt = json!({"schema":"oev2.workspace-stage-receipt/1","stage_id":"registration-probe","owner":"exploration",
+        "artifact":artifact,"registry":null,"project":f.work["project"]});
+    q.stage.as_mut().unwrap().receipt = Some(pin(&f.root, "receipt.json", &receipt));
+    q.stage.as_mut().unwrap().execution = "results_recorded".into();
+    q.project = serde_json::from_value(state["run"]["project"].clone()).unwrap();
+    q.work = Some(serde_json::from_value(state["run"]["work"].clone()).unwrap());
+    q.commit_id = "recorded".into();
+    let waiting = f.read("var/start/completed.json");
+    let mut pending = q.clone();
+    pending.commit_id = "pending-result".into();
+    pending.project = serde_json::from_value(waiting["run"]["project"].clone()).unwrap();
+    pending.work = Some(serde_json::from_value(waiting["run"]["work"].clone()).unwrap());
+    let mut pending_receipt = receipt.clone();
+    pending_receipt["artifact"] = json!(host_reference(&f, "start"));
+    pending.stage.as_mut().unwrap().receipt =
+        Some(pin(&f.root, "pending-receipt.json", &pending_receipt));
+    assert!(
+        format!("{:#}", workspace::commit(&f.root, &pending).unwrap_err())
+            .contains("workspace_stage_exploration_pending_actions")
+    );
+    let mut unrelated = q.clone();
+    unrelated.commit_id = "unrelated-criterion".into();
+    let mut changed_anchor = anchor.clone();
+    changed_anchor["acceptance"][0]["statement"] =
+        json!("An unrelated criterion absent from the frozen work");
+    unrelated.anchor = pin(&f.root, "unrelated-anchor.json", &changed_anchor);
+    assert!(
+        format!("{:#}", workspace::commit(&f.root, &unrelated).unwrap_err())
+            .contains("workspace_stage_exploration_acceptance_mismatch")
+    );
+    q.sources
+        .push(serde_json::from_value(state["run"]["result"].clone()).unwrap());
+    workspace::commit(&f.root, &q).unwrap();
+    let reopened = SkillRoot::new(f.root.path())
+        .unwrap()
+        .with_project_data_root(f.root.data_path())
+        .unwrap();
+    let resumed = workspace::resume(&reopened).unwrap();
+    assert_eq!(resumed["status"], "ready");
+    let (_, _, reasoning) = exploration::reasoning::inspect_recorded(&f.root, &artifact).unwrap();
+    assert_eq!(resumed["reasoning"], json!(reasoning));
+    assert_eq!(
+        workspace::render_resume(&reopened, Path::new("views/resume.md")).unwrap(),
+        resumed
+    );
+    assert!(
+        fs::read_to_string(f.root.data_path().join("views/resume.md"))
+            .unwrap()
+            .contains(&serde_json::to_string_pretty(&reasoning).unwrap())
+    );
+    assert_eq!(resumed["stage"]["execution"], "results_recorded");
+    assert_eq!(resumed["acceptance"].as_array().unwrap().len(), 3);
+    assert!(
+        resumed["acceptance"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|a| a["status"] == "open")
+    );
+    assert_eq!(resumed["automatic_dispatch"], false);
+    assert_eq!(resumed["engineering_adoption"], "not_granted");
+    assert_eq!(
+        f.read(&q.project.path)["decisions"][0]["conclusion"],
+        "unknown"
+    );
+    // Freshly rehashed wrappers cannot bind a valid result to another Project.
+    let mut changed_project = f.read(&q.project.path);
+    changed_project["conditions"]["inquiry"] = json!("changed without changing revision");
+    q.project = pin(&f.root, "changed-project.json", &changed_project);
+    q.commit_id = "changed".into();
+    q.expected_parent = Some(serde_json::from_value(resumed["head"]["commit"].clone()).unwrap());
+    q.work = None;
+    assert!(workspace::commit(&f.root, &q).is_err());
+    fs::write(f.root.data_path().join("var/observed.json"), b"{}").unwrap();
+    assert!(workspace::resume(&reopened).is_err());
+}
+
+fn reasoning_input(
+    f: &Fixture,
+    frozen: &ArtifactReference,
+    state: Option<ArtifactReference>,
+) -> oe_contracts::EngineeringReasoningInput {
+    let project = state
+        .as_ref()
+        .map(|r| f.read(&r.path)["run"]["project"].clone())
+        .unwrap_or_else(|| f.work["project"].clone());
+    serde_json::from_value(json!({"schema":"oev2.engineering-reasoning-input/1", "project":project, "frozen":frozen,"state":state})).unwrap()
+}
+
+#[test]
+fn reasoning_connects_existing_failed_checks_without_blocking_investigation() {
+    let mut f = Fixture::separate();
+    let mut b = f.basis();
+    b["assertions"] = json!([{"assertion_id":"binding","kind":"function_continuity","subject":"registration",
+        "requirements":{"function_id":"retain-source-identity","inventory_scope":"declared_complete","current_realization":null,
+            "mechanism":"source inventory","verification_plan":"read back source"},"source_refs":["source"],"affected_decisions":["registration"]}]);
+    f.set_basis(b);
+    let frozen = f.freeze();
+    let view =
+        exploration::reasoning::derive(&f.root, &reasoning_input(&f, &frozen, None)).unwrap();
+    let c = view
+        .checks
+        .as_ref()
+        .unwrap()
+        .iter()
+        .find(|c| c.check_id == "engineering:binding")
+        .unwrap();
+    assert_eq!(c.conclusion, "violated");
+    assert!(
+        c.failures
+            .contains(&"engineering_necessary_function_unassigned".into())
+    );
+    let node = view.nodes.iter().find(|n| n.id == c.node_id).unwrap();
+    assert_eq!(node.embedded_pointer.as_deref(), Some("/assertions/0"));
+    assert_eq!(view.actions[0].status, "ready");
+    assert!(
+        view.actions[0]
+            .engineering_obligations
+            .as_ref()
+            .unwrap()
+            .contains(&c.node_id)
+    );
+    assert!(
+        view.relations
+            .iter()
+            .any(|r| r.from == c.node_id && r.kind == "requires_review_before_adoption")
+    );
+    exploration::reasoning::verify(&f.root, &view).unwrap();
+    let mut tampered = view;
+    tampered
+        .checks
+        .as_mut()
+        .unwrap()
+        .iter_mut()
+        .find(|c| c.check_id == "engineering:binding")
+        .unwrap()
+        .conclusion = "pass".into();
+    assert!(exploration::reasoning::verify(&f.root, &tampered).is_err());
+}
+
+#[test]
+fn reasoning_retains_complete_source_relations_and_unknown_premises() {
+    let mut f = Fixture::separate();
+    let mut basis = f.basis();
+    basis["facts"] =
+        json!([{"property":"support","value":null,"status":"unknown","source_refs":["source"]}]);
+    f.set_basis(basis);
+    f.plan["actions"][0]["required_facts"] = json!(["support"]);
+    let frozen = f.freeze();
+    let input = reasoning_input(&f, &frozen, None);
+    let before = tree_identity(f.root.data_path());
+    let view = exploration::reasoning::derive(&f.root, &input).unwrap();
+    assert_eq!(json!(view.complete_acceptance), f.work["acceptance"]);
+    assert_eq!(view.uncovered_acceptance.len(), 2);
+    assert_eq!(view.recommended_action.as_deref(), Some("inspect"));
+    assert_eq!(view.actions[0].unresolved_premises, ["support"]);
+    assert_eq!(view.actions[0].status, "ready");
+    assert!(!view.automatic_dispatch);
+    assert_eq!(view.engineering_adoption, "not_granted");
+    for node in &view.nodes {
+        let source = f.read(&node.source.path);
+        let value = source.pointer(&node.pointer).unwrap();
+        let actual = match &node.embedded_pointer {
+            Some(pointer) => serde_json::from_str::<Value>(value.as_str().unwrap())
+                .unwrap()
+                .pointer(pointer)
+                .unwrap()
+                .clone(),
+            None => value.clone(),
+        };
+        assert_eq!(node.value, actual, "{}", node.id);
+    }
+    for (from, to, kind) in [
+        ("goal", "requirement:0", "requires"),
+        ("action:inspect", "requirement:0", "advances_requirement"),
+        ("action:inspect", "hypothesis:missing", "discriminates"),
+        (
+            "hypothesis:missing",
+            "decision:registration",
+            "tests_scoped_claim",
+        ),
+        (
+            "action:inspect",
+            "premise:explicit-inventory:0",
+            "requires_premise",
+        ),
+    ] {
+        assert!(
+            view.relations
+                .iter()
+                .any(|e| e.from == from && e.to == to && e.kind == kind)
+        );
+    }
+    assert_eq!(
+        view.nodes
+            .iter()
+            .find(|n| n.kind == "premise")
+            .unwrap()
+            .status,
+        "unknown"
+    );
+    exploration::reasoning::verify(&f.root, &view).unwrap();
+    assert_eq!(tree_identity(f.root.data_path()), before);
+    assert_eq!(
+        f.read("var/project.json")["decisions"][0]["conclusion"],
+        "unknown"
+    );
+}
+
+#[test]
+fn reasoning_branches_follow_verified_outcomes_and_declared_impact() {
+    for (execution, budget) in [
+        ("completed", 2),
+        ("completed", 1),
+        ("failed", 2),
+        ("partial", 2),
+        ("unknown", 2),
+    ] {
+        let mut f = Fixture::separate();
+        let mut dependent = f.project.decisions[0].clone();
+        dependent.id = "assembly".into();
+        let mut unrelated = dependent.clone();
+        unrelated.id = "finish".into();
+        f.project.decisions.extend([dependent, unrelated]);
+        f.project.dependencies.insert(
+            "assembly".into(),
+            std::collections::BTreeSet::from(["registration".into()]),
+        );
+        f.sync();
+        let mut expected = f.read(f.plan["independent_expected"]["path"].as_str().unwrap());
+        expected["cost"]["maximum_actions"] = json!(budget);
+        f.plan["independent_expected"] = json!(pin(&f.root, "var/expected.json", &expected));
+        f.plan["actions"][0]["kind"] = json!("external");
+        f.plan["actions"][0]["source"] = Value::Null;
+        let mut second = f.plan["actions"][0].clone();
+        second["action_id"] = json!("confirm");
+        second["when_outcomes"] = json!(["absent-registration"]);
+        f.plan["actions"].as_array_mut().unwrap().push(second);
+        for (i, mut o) in f.plan["outcomes"]
+            .as_array()
+            .unwrap()
+            .clone()
+            .into_iter()
+            .enumerate()
+        {
+            o["action_id"] = json!("confirm");
+            o["outcome_id"] = json!(format!("confirmation-{i}"));
+            f.plan["outcomes"].as_array_mut().unwrap().push(o);
+        }
+        let frozen = f.freeze();
+        let original =
+            exploration::reasoning::derive(&f.root, &reasoning_input(&f, &frozen, None)).unwrap();
+        assert_eq!(original.actions[1].status, "blocked_by_outcome");
+        assert_eq!(
+            original.actions[0].affected_decisions,
+            ["registration", "assembly"]
+        );
+        assert!(
+            !original.actions[0]
+                .affected_decisions
+                .contains(&"finish".into())
+        );
+        exploration::host::advance(
+            &f.root,
+            &host_input(&f, &frozen, None, Value::Null, "start"),
+        )
+        .unwrap();
+        let previous = host_reference(&f, "start");
+        let pending = exploration::reasoning::derive(
+            &f.root,
+            &reasoning_input(&f, &frozen, Some(previous.clone())),
+        )
+        .unwrap();
+        assert_eq!(pending.recommended_action.as_deref(), Some("inspect"));
+        assert_eq!(pending.actions[0].status, "awaiting_host");
+        let observation = host_observation(&f, &frozen, "inspect", execution, "observed");
+        exploration::host::advance(
+            &f.root,
+            &host_input(&f, &frozen, Some(&previous), observation, "end"),
+        )
+        .unwrap();
+        let (_, _, after) =
+            exploration::reasoning::inspect_recorded(&f.root, &host_reference(&f, "end")).unwrap();
+        if execution == "completed" && budget == 2 {
+            assert_eq!(after.recommended_action.as_deref(), Some("confirm"));
+            assert_eq!(after.actions[0].status, "recorded");
+            assert_eq!(after.actions[1].status, "awaiting_host");
+        } else if execution == "completed" {
+            assert_eq!(after.recommended_action, None);
+            assert_eq!(after.actions[0].status, "recorded");
+            assert_eq!(after.actions[1].status, "budget_exhausted");
+        } else {
+            assert_eq!(after.recommended_action, None);
+            assert_eq!(after.actions[0].status, "needs_review");
+            assert_eq!(after.actions[1].status, "blocked_by_outcome");
+        }
+        assert_eq!(after.complete_acceptance, original.complete_acceptance);
+        assert_eq!(
+            f.read("var/project.json")["decisions"][1]["conclusion"],
+            "unknown"
+        );
+    }
+}
+
+#[test]
+fn reasoning_rejects_changed_views_projects_and_sources() {
+    let (f, reference) = external_result("partial");
+    let (_, _, view) = exploration::reasoning::inspect_recorded(&f.root, &reference).unwrap();
+    let before = tree_identity(f.root.data_path());
+    for change in ["edge", "next", "coverage", "authority"] {
+        let mut changed = view.clone();
+        match change {
+            "edge" => changed.relations[0].kind = "physically_proves".into(),
+            "next" => changed.recommended_action = Some("inspect".into()),
+            "coverage" => {
+                changed.complete_acceptance.pop();
+            }
+            _ => changed.automatic_dispatch = true,
+        }
+        assert!(exploration::reasoning::verify(&f.root, &changed).is_err());
+    }
+    assert_eq!(tree_identity(f.root.data_path()), before);
+    let mut request = view.input.clone();
+    request.project = serde_json::from_value(f.work["project"].clone()).unwrap();
+    assert!(exploration::reasoning::derive(&f.root, &request).is_err());
+    fs::write(f.root.data_path().join("var/source.json"), b"{}").unwrap();
+    assert!(exploration::reasoning::verify(&f.root, &view).is_err());
 }
 
 #[test]

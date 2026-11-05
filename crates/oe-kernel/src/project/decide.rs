@@ -4,7 +4,7 @@
 //! supported/refuted only on registered results that target it and carry
 //! observed findings; adoption is never changed here.
 use super::tool_result;
-use super::{Project, impact, validate};
+use super::{Project, decision_impact, validate};
 use anyhow::Result;
 use oe_contracts::{CapabilityRegistry, DecisionUpdate, DecisionUpdateReceipt};
 use oe_core::{SkillRoot, sha256};
@@ -50,6 +50,67 @@ pub fn decide(
     if request.rationale.trim().is_empty() || request.claim_scope.trim().is_empty() {
         fail.push("rationale_or_scope_missing".into());
     }
+    // New declarations bind a decision to an exact acceptance and current
+    // predicate owners. Historical unbound decisions retain caller judgment;
+    // that narrower scope is stated in the receipt rather than silently upgraded.
+    let mut claim_bound = false;
+    if let Some(d) = decision {
+        let object = oe_contracts::ObjectIdentity {
+            object_id: d.object_id.clone(),
+            revision: d.object_revision.clone(),
+            condition_scope: d.condition_scope.clone(),
+            source_sha256: d.source_sha256.clone(),
+        };
+        match crate::engineering::basis(&project, &object) {
+            Ok(Some(b)) => {
+                let claims: Vec<_> = b
+                    .assertions
+                    .iter()
+                    .filter(|a| {
+                        a.kind == "claim_composition"
+                            && (a.subject == d.id || a.requirements["decision_id"] == d.id)
+                    })
+                    .collect();
+                if !claims.is_empty() {
+                    claim_bound = true;
+                    if claims.len() != 1 {
+                        fail.push("decision_claim_ambiguous".into());
+                    }
+                    let checks = crate::engineering::checks_current(root, &project, &object);
+                    for a in claims {
+                        if a.requirements["criterion"] != request.claim_scope {
+                            fail.push("decision_claim_scope_mismatch".into());
+                        }
+                        let expected = match request.conclusion.as_str() {
+                            "supported" => Some("pass"),
+                            "refuted" => Some("violated"),
+                            _ => None,
+                        };
+                        if let Some(expected) = expected {
+                            if !checks.iter().any(|c| {
+                                c.id == format!("engineering:{}", a.assertion_id)
+                                    && c.execution == "completed"
+                                    && c.conclusion == expected
+                            }) {
+                                fail.push("decision_claim_checks_disagree".into());
+                            }
+                        }
+                    }
+                }
+            }
+            Ok(None) => (),
+            Err(e) => fail.push(format!("decision_engineering_basis_invalid:{e}")),
+        }
+    }
+    let scope = if claim_bound {
+        format!(
+            "{SCOPE} Exact acceptance and declared check composition rechecked; decomposition sufficiency and physical truth remain engineering-review responsibilities."
+        )
+    } else {
+        format!(
+            "{SCOPE} Legacy claim is caller-evaluated; no structured proposition entailment was checked."
+        )
+    };
     // Re-verify every cited result and confirm it is the registered evidence.
     let mut basis = BTreeSet::new();
     let mut findings: BTreeMap<String, String> = BTreeMap::new();
@@ -130,7 +191,7 @@ pub fn decide(
         project_sha256: previous.clone(),
         affected_decisions: vec![],
         failures: fail,
-        scope: SCOPE.into(),
+        scope: scope.clone(),
     };
     if !fail.is_empty() {
         return Ok((None, refused(fail)));
@@ -151,7 +212,7 @@ pub fn decide(
         d.source_sha256 = src;
     }
     validate(&next)?;
-    let affected = impact(&next, &BTreeSet::from([request.decision_id.clone()]))?;
+    let affected = decision_impact(&next, &BTreeSet::from([request.decision_id.clone()]))?;
     let affected_decisions: Vec<String> = affected["decisions"]
         .as_array()
         .map(|a| {
@@ -177,7 +238,7 @@ pub fn decide(
         project_sha256: sha256(&bytes),
         affected_decisions,
         failures: vec![],
-        scope: SCOPE.into(),
+        scope,
     };
     receipt
         .validate()

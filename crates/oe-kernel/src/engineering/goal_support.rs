@@ -19,31 +19,55 @@ fn scope_affected(
     support: Option<&EngineeringGoalSupport>,
     global: bool,
 ) -> Vec<String> {
-    let mut seeds = BTreeSet::from([object.object_id.clone(), object.condition_scope.clone()]);
+    let mut seeds = vec![
+        crate::project::entity("object", &object.object_id),
+        crate::project::entity("condition", &object.condition_scope),
+    ];
     for assertion in &current.assertions {
-        seeds.extend(assertion.affected_decisions.iter().cloned());
+        seeds.extend(
+            assertion
+                .affected_decisions
+                .iter()
+                .map(|id| crate::project::entity("decision", id)),
+        );
     }
     if global {
-        seeds.extend(crate::project::purpose_changes(&[project]));
+        seeds.extend(
+            crate::project::purpose_changes(&[project])
+                .iter()
+                .map(|id| {
+                    if matches!(id.as_str(), "purpose" | "project:purpose") {
+                        crate::project::entity("purpose", "project:purpose")
+                    } else {
+                        crate::project::entity("decision", id)
+                    }
+                }),
+        );
     }
     if let Some(support) = support {
-        seeds.extend(support.affected_decisions.iter().cloned());
-        seeds.insert(support.parent_object.object_id.clone());
-        seeds.insert(support.parent_object.condition_scope.clone());
+        seeds.extend(
+            support
+                .affected_decisions
+                .iter()
+                .map(|id| crate::project::entity("decision", id)),
+        );
+        seeds.push(crate::project::entity(
+            "object",
+            &support.parent_object.object_id,
+        ));
+        seeds.push(crate::project::entity(
+            "condition",
+            &support.parent_object.condition_scope,
+        ));
         seeds.extend(
             support
                 .sources
                 .iter()
-                .map(|source| source.source_ref.clone()),
+                .map(|source| crate::project::entity("evidence", &source.source_ref)),
         );
     }
-    let mut affected: BTreeSet<String> = project
-        .decisions
-        .iter()
-        .filter(|d| seeds.contains(&d.id))
-        .map(|d| d.id.clone())
-        .collect();
-    if let Ok(impact) = crate::project::impact(project, &seeds) {
+    let mut affected = BTreeSet::new();
+    if let Ok(impact) = crate::project::impact_typed(project, &seeds) {
         affected.extend(
             impact["decisions"]
                 .as_array()

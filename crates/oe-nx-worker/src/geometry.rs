@@ -25,6 +25,7 @@ pub mod sheet_dimensions;
 pub mod source_assembly;
 pub mod stepped_profile;
 pub mod stepped_shaft;
+pub mod width_variant;
 
 pub const PARAMS_SCHEMA: &str = "cad-agent.nx-native-acceptance-params/v2";
 pub const CONTROLLED_REFSET: &str = "OE_CONTROLLED_BODY";
@@ -39,6 +40,11 @@ fn deserialize_capture_flag<'de, D: serde::Deserializer<'de>>(
 #[derive(Debug, Clone, Deserialize)]
 #[serde(tag = "action", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Parameters {
+    MaintainWidthVariant {
+        schema: String,
+        intent: oe_contracts::ArtifactReference,
+        budget: oe_contracts::NxAssemblyBudget,
+    },
     ExportDisplayDrawingPdf {
         schema: String,
         part: String,
@@ -247,6 +253,7 @@ fn spacing() -> f64 {
 impl Parameters {
     pub fn action(&self) -> &'static str {
         match self {
+            Self::MaintainWidthVariant { .. } => width_variant::ACTION,
             Self::AddHoleFeature { .. } => feature_add::ACTION,
             Self::DeleteHoleFeature { .. } => feature_delete::ACTION,
             Self::ProbeAssemblyMassProperties { .. } => "probe_assembly_mass_properties",
@@ -283,6 +290,11 @@ impl Parameters {
     }
     pub fn validate(&self) -> Result<()> {
         match self {
+            Self::MaintainWidthVariant { schema, intent, budget } => {
+                ensure!(schema == width_variant::PARAMS_SCHEMA, "width_params_schema_mismatch");
+                motion_task::reference_valid(intent)?;
+                return crate::assembly::budget_valid(budget);
+            }
             Self::ExportDisplayDrawingPdf {
                 schema,
                 part,
@@ -636,7 +648,8 @@ impl Parameters {
             _ => {}
         }
         let schema = match self {
-            Self::AddHoleFeature { .. }
+            Self::MaintainWidthVariant { .. }
+            | Self::AddHoleFeature { .. }
             | Self::DeleteHoleFeature { .. }
             | Self::ProbeAssemblyMassProperties { .. }
             | Self::ProbeComponentCopyMassProperties { .. }
@@ -671,7 +684,8 @@ impl Parameters {
         };
         ensure!(schema == PARAMS_SCHEMA, "native_params_schema_mismatch");
         match self {
-            Self::AddHoleFeature { .. }
+            Self::MaintainWidthVariant { .. }
+            | Self::AddHoleFeature { .. }
             | Self::DeleteHoleFeature { .. }
             | Self::ProbeAssemblyMassProperties { .. }
             | Self::ProbeComponentCopyMassProperties { .. }
@@ -934,6 +948,7 @@ impl Parameters {
     }
     pub fn parameter_schema(&self) -> &'static str {
         match self {
+            Self::MaintainWidthVariant { .. } => width_variant::PARAMS_SCHEMA,
             Self::AddHoleFeature { .. } => feature_add::PARAMS_SCHEMA,
             Self::DeleteHoleFeature { .. } => feature_delete::PARAMS_SCHEMA,
             Self::ProbeAssemblyMassProperties { .. } => mass_probe::PARAMS_SCHEMA,
@@ -1326,6 +1341,27 @@ pub trait NativeApi {
     ) -> Result<oe_contracts::NxAssemblyObservation> {
         bail!("native_full_assembly_read_unsupported")
     }
+    fn width_export_precise(&mut self, _input:&Path, _output:&Path, _tolerance_mm:f64)->Result<()> {
+        bail!("native_width_precise_export_unsupported")
+    }
+    fn width_check_pairs(&mut self, _root:u32, _observed:&oe_contracts::NxAssemblyObservation, _pairs:&[width_variant::BodyPair], _record:&mut dyn FnMut(Value)->Result<()>)->Result<Value> {
+        bail!("native_width_pair_check_unsupported")
+    }
+    fn width_exact_body_bounds(&mut self, _body:u32)->Result<[f64;6]> {
+        bail!("native_width_exact_bounds_unsupported")
+    }
+    fn width_face_inventory(&mut self, _body: u32) -> Result<Vec<width_variant::Face>> {
+        bail!("native_width_face_inventory_unsupported")
+    }
+    fn width_move_faces(&mut self, _part: u32, _faces: &[u32], _delta: [f64; 3]) -> Result<Value> {
+        bail!("native_width_move_faces_unsupported")
+    }
+    fn width_place_instance(&mut self, _instance: u32, _origin: [f64; 3], _csys: &[f64]) -> Result<Value> {
+        bail!("native_width_place_instance_unsupported")
+    }
+    fn width_translate_body(&mut self, _part:u32, _body:u32, _delta:[f64;3])->Result<Value> {
+        bail!("native_width_translate_body_unsupported")
+    }
     fn assembly_reference_sets(
         &mut self,
         _assembly: &oe_contracts::NxAssemblyObservation,
@@ -1361,6 +1397,21 @@ pub trait NativeApi {
         _diameter: f64,
     ) -> Result<u32> {
         bail!("native_hole_creation_unsupported")
+    }
+    fn create_subtractive_block(
+        &mut self,
+        _corner: [f64; 3],
+        _lengths: [String; 3],
+    ) -> Result<u32> {
+        bail!("native_slot_creation_unsupported")
+    }
+    fn create_additive_cone(
+        &mut self,
+        _origin: [f64; 3],
+        _height: f64,
+        _diameters: [f64; 2],
+    ) -> Result<u32> {
+        bail!("native_cone_creation_unsupported")
     }
     fn add_hole_feature(
         &mut self,
@@ -1687,6 +1738,7 @@ pub fn execute(
     };
     api.ensure_empty_session()?;
     match params {
+        Parameters::MaintainWidthVariant { intent, budget, .. } => width_variant::execute(api, workspace, intent, budget),
         Parameters::AddHoleFeature { intent, budget, .. } => {
             feature_add::execute(api, workspace, intent, add_source.as_ref().unwrap(), budget)
         }

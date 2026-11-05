@@ -2,13 +2,14 @@
 //! Frozen branches change scoped, unadopted decisions in a new Project copy.
 pub mod host;
 mod plan;
-use super::{Reference, WorkInput, read_reference, verify_project_binding};
-use anyhow::{Context, Result, ensure};
+pub mod reasoning;
+use super::{read_reference, verify_project_binding, Reference, WorkInput};
+use anyhow::{ensure, Context, Result};
 use oe_contracts::{
     ArtifactReference, CurrentTaskViewInput, EngineeringExplorationPort,
     EngineeringExplorationRunRequest, EngineeringExplorationRunResult, FailureRecord,
 };
-use oe_core::{SkillRoot, json::strict_json, sha256, write_new, write_new_bytes};
+use oe_core::{json::strict_json, sha256, write_new, write_new_bytes, SkillRoot};
 use oe_kernel::{
     engineering,
     project::{self, Project},
@@ -16,7 +17,7 @@ use oe_kernel::{
 use plan::{
     EngineeringExplorationAction, EngineeringExplorationOutcome, EngineeringExplorationPlan,
 };
-use serde_json::{Value, json};
+use serde_json::{json, Value};
 use std::{
     collections::{BTreeMap, BTreeSet},
     path::Path,
@@ -25,6 +26,19 @@ use std::{
 
 const LIMIT: usize = 16 * 1024 * 1024;
 const TOTAL: usize = 64 * 1024 * 1024;
+fn verify_owner_schema(root: &SkillRoot) -> Result<()> {
+    ensure!(
+        sha256(plan::FIELD_SOURCE) == plan::FIELD_SHA256
+            && oe_core::read_regular_bytes(
+                &root
+                    .path()
+                    .join("specs/owner-schemas/engineering-exploration.json"),
+                LIMIT,
+            )? == plan::FIELD_SOURCE,
+        "exploration_owner_field_source_drift"
+    );
+    Ok(())
+}
 fn valid_id(s: &str) -> bool {
     !s.is_empty()
         && s.len() <= 96
@@ -99,6 +113,7 @@ impl Inputs {
         Ok(())
     }
     fn current(&self, root: &SkillRoot) -> Result<()> {
+        verify_owner_schema(root)?;
         for (p, b) in &self.bytes {
             ensure!(
                 read(
@@ -123,18 +138,20 @@ struct Checked {
     expected: Value,
 }
 fn checked(root: &SkillRoot, input: &ArtifactReference) -> Result<Checked> {
-    ensure!(
-        sha256(plan::FIELD_SOURCE) == plan::FIELD_SHA256,
-        "exploration_owner_field_source_drift"
-    );
+    verify_owner_schema(root)?;
     let mut inputs = Inputs::new();
-    inputs.get(
-        root,
-        &ArtifactReference {
-            path: "specs/owner-schemas/engineering-exploration.json".into(),
-            sha256: plan::FIELD_SHA256.into(),
-        },
-    )?;
+    // Software identity belongs to the installation. Keep the original /1
+    // source closure when both roots coincide; a separate Project never needs
+    // a shadow copy of the installed owner schema.
+    if root.data_path() == root.path() {
+        inputs.get(
+            root,
+            &ArtifactReference {
+                path: "specs/owner-schemas/engineering-exploration.json".into(),
+                sha256: plan::FIELD_SHA256.into(),
+            },
+        )?;
+    }
     let plan: EngineeringExplorationPlan =
         serde_json::from_value(strict_json(&inputs.get(root, input)?)?)?;
     dto(plan.validate())?;
@@ -530,6 +547,7 @@ pub fn freeze(root: &SkillRoot, input: &ArtifactReference, output: &Path) -> Res
     let terminal = json!({"schema":"oev2.exploration-frozen/1","plan":reference(root,&dir.join("plan.json"))?,
         "source_input":input,"sources":files,"exposure":c.plan.exposure,"acceptance":c.parent.acceptance,
         "criteria_sha256":oe_core::json::canonical_digest(&json!(c.plan.outcomes))?,
+        "owner_schema_sha256":plan::FIELD_SHA256,
         "execution":"not_run","adopted":false,"method_benefit":"unknown"});
     write_new(&dir.join("completed.json"), &terminal)?;
     Ok(terminal)
@@ -539,6 +557,11 @@ fn frozen(root: &SkillRoot, input: &ArtifactReference) -> Result<Checked> {
     ensure!(
         terminal["schema"] == "oev2.exploration-frozen/1",
         "exploration_frozen_schema"
+    );
+    ensure!(
+        terminal["owner_schema_sha256"] == plan::FIELD_SHA256
+            || (terminal["owner_schema_sha256"].is_null() && root.data_path() == root.path()),
+        "exploration_frozen_owner_schema_changed"
     );
     let plan_ref: ArtifactReference = serde_json::from_value(terminal["plan"].clone())?;
     let mut c = checked(root, &plan_ref)?;
@@ -938,6 +961,56 @@ pub fn execute(
 ) -> Result<EngineeringExplorationRunResult> {
     execute_with(root, input, None)
 }
+
+fn result_value(c: &Checked, e: &Evaluation, host: bool, elapsed: &str) -> Result<Value> {
+    let conclusions: BTreeMap<_, _> = c
+        .plan
+        .hypotheses
+        .iter()
+        .map(|h| {
+            (
+                &h.decision_id,
+                &e.updated
+                    .decisions
+                    .iter()
+                    .find(|d| d.id == h.decision_id)
+                    .unwrap()
+                    .conclusion,
+            )
+        })
+        .collect();
+    Ok(
+        json!({"schema":if host{"oev2.exploration-results/2"}else{"oev2.exploration-results/1"},"exploration_id":c.plan.exploration_id,"exposure":c.plan.exposure,
+        "object":c.parent.object,"project_before":c.parent.project,"acceptance":c.parent.acceptance,
+        "complete_acceptance_preserved":true,"observations":c.plan.observations,"unknowns":c.plan.unknowns,
+        "hypotheses":c.plan.hypotheses,"candidates":c.plan.candidates,"criteria":c.plan.outcomes,
+        "criteria_sha256":oe_core::json::canonical_digest(&json!(c.plan.outcomes))?,
+        "actions":e.actions,"decision_conclusions":conclusions,
+        "candidate_routes":e.routes,"facts_mutated":false,"adopted":false,"physical_truth":"not_established",
+        "cost":{"local_elapsed_ns":elapsed,"model_calls":0,"tokens":0,
+            "external_cost":"unknown","scope":"actual inquiry owner only; host session, memory, original source creation, CAD, factory and complete task costs separate"}}),
+    )
+}
+
+fn harness_input_value(
+    c: &Checked,
+    frozen: &ArtifactReference,
+    result: &ArtifactReference,
+    project_ref: &ArtifactReference,
+    project: &Project,
+    work: &WorkInput,
+) -> Value {
+    json!({"schema":crate::harness::CHECKPOINT_INPUT_SCHEMA,"task_id":c.plan.exploration_id,
+        "context":{"frozen_exploration":frozen,"result":result},"request":"Retain the actual inquiry, unresolved engineering checks and scoped decision changes.",
+        "harness":{"project_id":project.project_id,"decision_id":c.plan.hypotheses[0].decision_id,"object_id":work.object.object_id,
+            "revision":work.object.revision,"problem_class":"engineering_inquiry","goal":project.purpose,
+            "conditions":[project.conditions[&work.object.condition_scope]],"constraints":work.acceptance,"unknowns":c.plan.unknowns,
+            "current_project":project_ref,"project_context":work.project_context,
+            "observations":[{"kind":"observed","statement":"Bound verification results and scoped decision changes; physical truth and method gain remain unestablished.","evidence":[result]}],
+            "checkpoint_policy":{"schema":"oev2.harness-checkpoint-policy/1","mode":"verified_no_model","byte_budget":16777216,
+                "reason":"Actual no-model inquiry checkpoint; complete constraints retained."}}})
+}
+
 fn execute_with(
     root: &SkillRoot,
     input: &EngineeringExplorationRunRequest,
@@ -947,37 +1020,16 @@ fn execute_with(
     let c = frozen(root, &input.frozen)?;
     let dir = root.new_private_dir(Path::new(&input.output))?;
     let started = Instant::now();
-    let Evaluation {
-        mut updated,
-        actions,
-        routes,
-    } = evaluate(root, &c, external)?;
+    let e = evaluate(root, &c, external)?;
     let result_id = format!("exploration:{}", c.plan.exploration_id);
     c.inputs.current(root)?;
-    let conclusions: BTreeMap<_, _> = c
-        .plan
-        .hypotheses
-        .iter()
-        .map(|h| {
-            (
-                &h.decision_id,
-                &updated
-                    .decisions
-                    .iter()
-                    .find(|d| d.id == h.decision_id)
-                    .unwrap()
-                    .conclusion,
-            )
-        })
-        .collect();
-    let result = json!({"schema":if external.is_some(){"oev2.exploration-results/2"}else{"oev2.exploration-results/1"},"exploration_id":c.plan.exploration_id,"exposure":c.plan.exposure,
-        "object":c.parent.object,"project_before":c.parent.project,"acceptance":c.parent.acceptance,
-        "complete_acceptance_preserved":true,"observations":c.plan.observations,"unknowns":c.plan.unknowns,
-        "hypotheses":c.plan.hypotheses,"candidates":c.plan.candidates,"criteria":c.plan.outcomes,
-        "criteria_sha256":oe_core::json::canonical_digest(&json!(c.plan.outcomes))?,"actions":actions,"decision_conclusions":conclusions,
-        "candidate_routes":routes,"facts_mutated":false,"adopted":false,"physical_truth":"not_established",
-        "cost":{"local_elapsed_ns":started.elapsed().as_nanos().to_string(),"model_calls":0,"tokens":0,
-            "external_cost":"unknown","scope":"actual inquiry owner only; host session, memory, original source creation, CAD, factory and complete task costs separate"}});
+    let result = result_value(
+        &c,
+        &e,
+        external.is_some(),
+        &started.elapsed().as_nanos().to_string(),
+    )?;
+    let mut updated = e.updated;
     write_new(&dir.join("results.json"), &result)?;
     let result_ref = reference(root, &dir.join("results.json"))?;
     updated
@@ -1012,15 +1064,14 @@ fn execute_with(
     };
     let view = crate::current_task_view::derive(root, &view_input)?;
     write_new(&dir.join("task-view.json"), &json!(view))?;
-    let harness_input = json!({"schema":crate::harness::CHECKPOINT_INPUT_SCHEMA,"task_id":c.plan.exploration_id,
-        "context":{"frozen_exploration":input.frozen,"result":result_ref},"request":"Retain the actual inquiry, unresolved engineering checks and scoped decision changes.",
-        "harness":{"project_id":updated.project_id,"decision_id":c.plan.hypotheses[0].decision_id,"object_id":work.object.object_id,
-            "revision":work.object.revision,"problem_class":"engineering_inquiry","goal":updated.purpose,
-            "conditions":[updated.conditions[&work.object.condition_scope]],"constraints":work.acceptance,"unknowns":c.plan.unknowns,
-            "current_project":project_ref,"project_context":work.project_context,
-            "observations":[{"kind":"observed","statement":"Bound verification results and scoped decision changes; physical truth and method gain remain unestablished.","evidence":[result_ref]}],
-            "checkpoint_policy":{"schema":"oev2.harness-checkpoint-policy/1","mode":"verified_no_model","byte_budget":16777216,
-                "reason":"Actual no-model inquiry checkpoint; complete constraints retained."}}});
+    let harness_input = harness_input_value(
+        &c,
+        &input.frozen,
+        &result_ref,
+        &project_ref,
+        &updated,
+        &work,
+    );
     write_new(&dir.join("harness-input.json"), &harness_input)?;
     let harness = match crate::harness::step(root, &harness_input, &dir.join("harness")) {
         Ok(v) => v,

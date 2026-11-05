@@ -14,6 +14,29 @@ pub struct BoundMotionBody {
     pub observed: QueriedBody,
 }
 impl Native {
+    pub(super) fn width_check_pairs_native(&mut self,root:Tag,observation:&NxAssemblyObservation,pairs:&[crate::geometry::width_variant::BodyPair],record:&mut dyn FnMut(Value)->Result<()>)->Result<Value> {
+        ensure!(pairs.len()<=10000,"width_candidate_pair_budget");
+        let mut counts=[0usize;3];let mut missing_contacts=0usize;
+        for pair in pairs {
+            let mut placements=Vec::new();
+            for (id,index) in [(&pair.a_occurrence,pair.a_body),(&pair.b_occurrence,pair.b_body)] {
+                let n=observation.occurrences.iter().find(|n|&n.occurrence_id==id).context("width_pair_occurrence_missing")?;
+                let p=observation.prototypes.iter().find(|p|p.prototype_id==n.prototype_id).context("width_pair_prototype_missing")?;
+                let b=p.solids.get(index).context("width_pair_body_missing")?;
+                placements.push(PlacedBody{occurrence_id:Some(id.clone()),prototype_id:p.prototype_id.clone(),prototype_body_tag:b.body_tag});
+            }
+            let bodies=self.bind_motion_bodies(root,observation,placements)?;
+            for b in &bodies{self.verify_motion_binding(b)?;}
+            let (_,status)=assembly_motion::execution::check_pair(&mut NativeInterference(self),bodies[0].observed.body,bodies[1].observed.body,|e|{
+                use assembly_motion::execution::PairEvent;
+                record(match e{PairEvent::Pending{a,b}=>json!({"phase":"pending","pair":pair,"body_occurrences":[a,b]}),PairEvent::Returned(r)=>json!({"phase":"returned","pair":pair,"query_code":r.query_code,"result_raw":r.result_raw,"cleanup_code":r.cleanup_code})})
+            })?;
+            for b in &bodies{self.verify_motion_binding(b)?;}
+            if pair.expected_touch&&status!=assembly_motion::InterferenceStatus::Touching{missing_contacts+=1;}
+            match status{assembly_motion::InterferenceStatus::Interference=>counts[0]+=1,assembly_motion::InterferenceStatus::Touching=>counts[1]+=1,assembly_motion::InterferenceStatus::NoInterference=>counts[2]+=1};
+        }
+        Ok(json!({"checked_pairs":pairs.len(),"interference_pairs":counts[0],"touching_pairs":counts[1],"clear_pairs":counts[2],"missing_contacts":missing_contacts,"scope":"Only adapter pairs selected by conservative world AABB overlap at this saved pose; not a continuous motion sweep"}))
+    }
     fn motion_solid_owner(&self, body: Tag) -> Result<Tag> {
         ensure!(body != 0, "native_motion_body_missing");
         let (mut kind, mut subtype, mut body_kind, mut owner) = (-1, -1, -1, 0);

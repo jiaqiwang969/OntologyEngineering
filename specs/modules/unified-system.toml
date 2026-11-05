@@ -749,11 +749,29 @@ identity="Stage identity plus exact execution Project and artifact; recorded is 
 fields=[
 {name="schema",meaning="Explicit stage receipt wrapper",rust_type="String",required=true,format="status",unit="Identity",precision="Exact",write="Agent supplies references; Rust rechecks native owner",applicability="Project workspace stages",acceptance="Replayed native check and exact stage binding",allowed_values=["oev2.workspace-stage-receipt/1"]},
 {name="stage_id",meaning="Existing current stage identity",rust_type="String",required=true,format="id",unit="Identity",precision="Exact",write="Agent",applicability="Project workspace stages",acceptance="Must equal stage id"},
-{name="owner",meaning="Existing readback owner; exploration explicitly unsupported until a read-only verifier exists",rust_type="String",required=true,format="status",unit="Identity",precision="Exact",write="Agent",applicability="Project workspace stages",acceptance="No substitute completed flags",allowed_values=["tool_result","harness","exploration"]},
-{name="artifact",meaning="Exact original tool-result or Harness checkpoint artifact",rust_type="ArtifactReference",required=true,format="object",unit="Original bytes",precision="SHA256",write="Agent",applicability="Project workspace stages",acceptance="Native owner rereads complete declared sources"},
-{name="registry",meaning="Exact current tool registry required for tool_result; absent for Harness",rust_type="Option<ArtifactReference>",required=false,format="object",unit="Original bytes",precision="SHA256",write="Agent",applicability="Tool results",acceptance="Actual executable and version verified"},
-{name="project",meaning="Exact Project snapshot at execution; current applicability separately checked",rust_type="ArtifactReference",required=true,format="object",unit="Original bytes",precision="SHA256",write="Agent",applicability="Project workspace stages",acceptance="Same project, objects, conditions and source; Harness requires exact current snapshot"}
+{name="owner",meaning="Existing readback owner; exploration verifies frozen host history without dispatch",rust_type="String",required=true,format="status",unit="Identity",precision="Exact",write="Agent",applicability="Project workspace stages",acceptance="No substitute completed flags; exploration stage and root criterion statements match frozen work",allowed_values=["tool_result","harness","exploration"]},
+{name="artifact",meaning="Exact original tool-result, Harness checkpoint or exploration host-state artifact",rust_type="ArtifactReference",required=true,format="object",unit="Original bytes",precision="SHA256",write="Agent",applicability="Project workspace stages",acceptance="Native owner rereads complete declared sources, task view and Harness archive; pending external actions cannot close a stage"},
+{name="registry",meaning="Exact current tool registry required for tool_result; absent for Harness and exploration",rust_type="Option<ArtifactReference>",required=false,format="object",unit="Original bytes",precision="SHA256",write="Agent",applicability="Tool results",acceptance="Actual executable and version verified"},
+{name="project",meaning="Exact Project snapshot at execution; current applicability separately checked",rust_type="ArtifactReference",required=true,format="object",unit="Original bytes",precision="SHA256",write="Agent",applicability="Project workspace stages",acceptance="Harness requires exact current snapshot; exploration binds original execution Project and exact derived current Project"}
 ]
+
+[[constraints]]
+id="workspace_exploration_readback"
+requirement="req_delivery"
+module="engineering"
+check="verify_bound"
+rust_path="crates/oe-engineering/src/project_workspace/receipts.rs"
+statement="Exploration host-state results enter the same Project workspace only after read-only native reconstruction, complete source closure, exact original/derived Project binding and matching stage/criterion scope. Failed and partial observations remain unresolved; pending actions, changed sources and invented completion are rejected without redispatch."
+severity="error"
+
+[[validations]]
+id="workspace_exploration_complete_continuation"
+module="engineering"
+constraint="workspace_exploration_readback"
+behavior="workspace_receives_exploration_and_resumes_complete_obligations"
+rust_path="crates/oe-engineering/tests/exploration.rs"
+oracle="Separate software/project roots retain dispatched uncertainty, then receive a verified partial exploration; reopened workspace preserves all three original obligations and unknown decision. Pending actions, unrelated criterion, changed Project and changed receipt cannot obtain continuation. No engineering adoption."
+scope="Deterministic macOS software continuation; native tools, physical acceptance and method benefit remain separately verified"
 
 [[types]]
 name="WorkspaceRequestSource"

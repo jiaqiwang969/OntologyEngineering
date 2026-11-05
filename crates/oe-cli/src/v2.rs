@@ -437,8 +437,10 @@ pub enum ProjectCommand {
     Impact {
         #[arg(long)]
         input: PathBuf,
-        #[arg(long)]
+        #[arg(long, conflicts_with = "typed_changes")]
         changed: Vec<String>,
+        #[arg(long)]
+        typed_changes: Option<PathBuf>,
         #[arg(long)]
         output: Option<PathBuf>,
     },
@@ -1855,12 +1857,21 @@ pub fn project(root: &SkillRoot, command: ProjectCommand) -> Result<u8> {
         ProjectCommand::Impact {
             input,
             changed,
+            typed_changes,
             output,
         } => {
             let p = serde_json::from_value(json_input(root, &input)?)?;
             emit(
                 root,
-                oe_kernel::project::impact(&p, &changed.into_iter().collect())?,
+                match typed_changes {
+                    Some(path) => oe_kernel::project::impact_typed(
+                        &p,
+                        &serde_json::from_value::<Vec<oe_contracts::ProjectEntityRef>>(
+                            json_input(root, &path)?,
+                        )?,
+                    )?,
+                    None => oe_kernel::project::impact(&p, &changed.into_iter().collect())?,
+                },
                 output,
                 false,
             )

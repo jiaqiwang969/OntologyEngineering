@@ -85,14 +85,22 @@ export OEV2_BIN="$ONTOLOGY_ENGINEERING_ROOT/var/install/bin/oev2"
 
 核验通过不会启动工具。Agent 通过新 commit 记录 `dispatched` 后，在当前授权范围内调用专业工具；回读实际结果并提交下一状态。恢复遇到 `dispatched` 也按效果未知处理，避免执行已经发生却尚未来得及写结果的动作。失败和部分结果可以保存，仍须分别说明验收是否推进。
 
-`results_recorded` 需要 `WorkspaceStageReceipt` 包装的实际原件。本版支持两种 owner：
+`results_recorded` 需要 `WorkspaceStageReceipt` 包装的实际原件。本版支持以下 owner：
 
 - `tool_result`：核原 registry、实际程序与原始记录，分别绑定执行前 Project 和当前 Project；原结果的 `route_stage` 与验收须对应本阶段。登记后新增证据或修订可被识别，对象、条件、来源和目的仍需核对。失败/partial 的真实记录保留其执行状态。
 
 米思米选型回执也沿这条 workspace 边界保存。`supplier selection-review` 的输出是阶段回执和候选/决定的来源证据；Agent 将其完整字节作为 ArtifactReference 绑定当前 Project/work、对象和验收，再由 `workspace commit` 保存。不要在安装根或项目旁建立第二张选型状态表。原件、官网配置、工况、接口或型号变化时，经 `reconcile` 将受影响决定置为 `pending_decisions`；旧回执保留其历史身份，不能继续作为当前选型依据。
 - `harness`：用既有 `load_step` 核完整附件、真实 task ID 与当前完整 Project 快照。`recorded` 不替代工程验收。
 
-`exploration` 的阶段回执目前明确返回 `workspace_stage_exploration_readback_unsupported`。既有探索功能仍按自身合同工作，本入口不调用 `advance` 重复副作用，也不把任意 completed JSON 当作其接收证明。
+`exploration` 阶段接收 `project explore advance` 保存的 `oev2.exploration-host-state/1`。原探索 owner 只读重建冻结输入、请求与回读历史，并核结果、Project/work、当前任务视图、评估及完整 Harness 归档；接收不调用 `advance`，不写新运行或派发工具。
+
+阶段 `id` 须等于 `exploration_id`；该阶段每个验收 ID 对应的当前 anchor 原文须在冻结 work 的完整验收中。回执 `project` 绑定原始执行 Project，当前 workspace 提交的 Project 则须精确等于 `state.run.project`，work 接续 `state.run.work`。提交的 `sources` 保留原来源并追加 `state.run.result`，以供当前任务视图核对新增证据；只有回执归档而未声明当前证据时，恢复仍可返回 `incomplete`。`registry` 为 `null`，`artifact` 引用 host 输出目录的 `completed.json`，不是 CLI 标准输出、`run/completed.json` 或直接 `explore run` 的结果。
+
+存在待执行动作或 `requires_host_agent` 时不能记为 `results_recorded`。原件齐全的 `needs_review` 可记录，失败、partial、unknown 和全部剩余验收继续保留，不因此授予工程采用。Harness 未形成可核完整归档时保留缺项，不伪造通过回执。时间与外部报告保留其声明身份，回读不独立认证工具或物理结果。
+
+探索阶段的 `resume` 另含 `reasoning`，由原 owner 从同一 Project、冻结关系及完整历史重新派生，与 `project explore reasoning` / `advance` 使用相同实现。它保留动作对应的验收、假设、未决前提、前置结果与潜在决定影响；其 `needs_review` 可以与 workspace 的恢复 `ready` 同时存在，前者说明结果尚需研究，后者只说明恢复检查完整。其他 owner 的原恢复结构保持。保存的视图不是新增项目正本，也不自动触发动作或更新决定。
+
+独立项目目录下，探索的 owner schema 从软件安装根核对，冻结记录以 `owner_schema_sha256` 固定其身份；项目不用复制 `specs/`，同名项目文件不能覆盖软件规范。旧版安装根与项目根相同的冻结记录继续核其原有来源闭包。
 
 ## 派生阅读入口与宿主接续
 

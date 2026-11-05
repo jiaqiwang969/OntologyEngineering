@@ -1073,3 +1073,5 @@ int32_t oe_nx_sheet_diameter_v1(uint32_t edge,uint32_t view,const double drawing
         if(!*dimension)throw std::runtime_error("sheet_diameter_null");
     },error,error_capacity);
 }
+
+#include "width_variant.inc"

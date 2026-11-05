@@ -56,15 +56,15 @@ fn declaration(
             project.evidence.contains_key(id),
             "native_motion_source_unbound"
         );
-        let impact = project::impact(project, &BTreeSet::from([id.clone()]))?;
-        let affected = impact["affected"]
+        let impact = project::impact_typed(project, &[project::entity("evidence", id)])?;
+        let affected = impact["decisions"]
             .as_array()
             .context("native_motion_impact_missing")?;
         ensure!(
             a.affected_decisions
                 .iter()
                 .all(|d| project.decisions.iter().any(|v| &v.id == d)
-                    && affected.contains(&json!(d))),
+                    && affected.iter().any(|row| row["decision_id"] == *d)),
             "native_motion_dependency_missing"
         );
     }
@@ -177,10 +177,14 @@ fn result(
     );
     // A claim outcome is not a change of the source or the entire object.
     // Source/object changes still use Project::reconcile and its full graph.
-    let mut seeds: BTreeSet<_> = a.affected_decisions.iter().cloned().collect();
-    seeds.insert(a.assertion_id.clone());
+    let mut seeds: Vec<_> = a
+        .affected_decisions
+        .iter()
+        .map(|id| project::entity("decision", id))
+        .collect();
+    seeds.push(project::entity("dependency", &a.assertion_id));
     let mut affected: BTreeSet<_> = a.affected_decisions.iter().cloned().collect();
-    if let Ok(impact) = project::impact(project, &seeds) {
+    if let Ok(impact) = project::impact_typed(project, &seeds) {
         for row in impact["decisions"].as_array().into_iter().flatten() {
             if let Some(id) = row["decision_id"].as_str() {
                 affected.insert(id.to_owned());

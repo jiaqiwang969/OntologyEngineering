@@ -6,6 +6,63 @@ use serde_json::{Value, json};
 use std::fs;
 use std::path::Path;
 
+#[path = "common/relations_fixture.rs"]
+mod relations_fixture;
+
+#[test]
+fn bound_claim_refuses_unrelated_scope_or_wrong_direction() {
+    for (criterion, value, conclusion, expected) in [
+        ("fixture scope", 0.01, "supported", None),
+        (
+            "different scope",
+            0.01,
+            "supported",
+            Some("decision_claim_scope_mismatch"),
+        ),
+        (
+            "fixture scope",
+            0.04,
+            "supported",
+            Some("decision_claim_checks_disagree"),
+        ),
+        (
+            "fixture scope",
+            0.01,
+            "refuted",
+            Some("decision_claim_checks_disagree"),
+        ),
+        ("fixture scope", 0.04, "refuted", None),
+    ] {
+        let mut f = fixture();
+        let o = ObjectIdentity {
+            object_id: "obj".into(),
+            revision: "rev-1".into(),
+            condition_scope: "cond".into(),
+            source_sha256: sha256(b"source"),
+        };
+        let mut b = relations_fixture::basis(&o, "src", "decide fixture", "D1", criterion);
+        b["assertions"][3]["requirements"]["observation"]["values"][0]["value"] = json!(value);
+        b["assertions"]
+            .as_array_mut()
+            .unwrap()
+            .push(relations_fixture::composition(&o, "src", "D1", criterion));
+        f.project["conditions"]["cond"] = json!(b.to_string());
+        let (art, bytes) = result(&f, "R1", &["D1"]);
+        register(&mut f, &bytes, "r2");
+        let (out, r) = update(&f, "D1", conclusion, vec![art], &["R1#F1"], "r3");
+        match expected {
+            Some(code) => {
+                assert!(out.is_none());
+                assert!(r.failures.iter().any(|e| e == code), "{:?}", r.failures);
+            }
+            None => {
+                assert_eq!(r.status, "updated", "{:?}", r.failures);
+                assert!(r.scope.contains("declared check composition"));
+            }
+        }
+    }
+}
+
 struct Fixture {
     _dir: tempfile::TempDir,
     _tools: tempfile::TempDir,

@@ -101,12 +101,23 @@ fn actual_ggen_validation_plan_preserves_complete_ordered_cases() {
     let expected: Vec<_> = validations
         .into_iter()
         .map(|v| {
+            let constraint = design
+                .constraints
+                .iter()
+                .find(|c| c.id == v.constraint)
+                .unwrap();
             serde_json::json!({
                 "name": v.id,
                 "behavior": v.behavior,
                 "rustPath": v.rust_path,
                 "oracle": v.oracle,
                 "scope": v.scope,
+                "module": v.module,
+                "constraint": constraint.id,
+                "requirement": constraint.requirement,
+                "checkerModule": constraint.module,
+                "checker": constraint.check,
+                "checkerPath": constraint.rust_path,
             })
         })
         .collect();

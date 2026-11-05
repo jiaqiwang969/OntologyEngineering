@@ -1,0 +1,15 @@
+{
+  "commands": [
+    {"command": "parameters.add", "params": {"name": "L", "expression": "40 mm"}},
+    {"command": "parameters.add", "params": {"name": "W", "expression": "30 mm"}},
+    {"command": "parameters.add", "params": {"name": "H", "expression": "12 mm"}},
+    {"command": "sketch.create", "params": {"plane": "XY", "name": "PlateProfile"}},
+    {"command": "sketch.draw.dimensioned", "params": {
+      "command": "sketch.rectangle.center", "params": {"center": [0, 0], "corner": [20, 15]},
+      "dimensions": {"width": "L", "height": "W"}
+    }},
+    {"command": "sketch.circle.center", "params": {"center": [0, 0], "radius": 3}},
+    {"command": "sketch.finish", "params": {}},
+    {"command": "solid.extrude", "params": {"distance": "H", "name": "Plate"}}
+  ]
+}

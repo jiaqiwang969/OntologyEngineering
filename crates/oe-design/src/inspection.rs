@@ -7,6 +7,8 @@ use std::path::{Path, PathBuf};
 use syn::parse::Parser;
 use syn::visit::Visit;
 
+mod traceability;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Finding {
     pub code: String,
@@ -491,8 +493,9 @@ pub fn inspect(root: &Path, design: &Design) -> Result<serde_json::Value> {
             );
         }
     }
+    let traceability = traceability::traceability(root, design, &code)?;
     Ok(
-        serde_json::json!({"schema":"oev2.design-inspection/1","status":if findings.is_empty(){"no_static_findings"}else{"findings"},"scope":"declared design and parsed Rust symbols; no behavior pass implied","files":code,"findings":findings}),
+        serde_json::json!({"schema":"oev2.design-inspection/1","status":if findings.is_empty(){"no_static_findings"}else{"findings"},"scope":"declared design and parsed Rust symbols; no behavior pass implied","files":code,"findings":findings,"traceability":traceability}),
     )
 }
 

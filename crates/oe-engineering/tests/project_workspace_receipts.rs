@@ -2,10 +2,10 @@
 //! tool records test integrity and scope, not physical measurement authenticity.
 
 use oe_contracts::{ArtifactReference, ObjectIdentity, WorkspaceStage, WorkspaceStageReceipt};
-use oe_core::{SkillRoot, sha256};
+use oe_core::{sha256, SkillRoot};
 use oe_engineering::{harness, project_workspace::receipts};
 use oe_kernel::project::{self, Project};
-use serde_json::{Value, json};
+use serde_json::{json, Value};
 use std::{fs, path::Path};
 
 struct Fixture {
@@ -68,18 +68,16 @@ impl Fixture {
     }
 
     fn context(&self) -> Value {
-        json!(
-            project::context(
-                &self.project,
-                &ObjectIdentity {
-                    object_id: "object".into(),
-                    revision: "r1".into(),
-                    condition_scope: "service".into(),
-                    source_sha256: sha256(b"source")
-                }
-            )
-            .unwrap()
+        json!(project::context(
+            &self.project,
+            &ObjectIdentity {
+                object_id: "object".into(),
+                revision: "r1".into(),
+                condition_scope: "service".into(),
+                source_sha256: sha256(b"source")
+            }
         )
+        .unwrap())
     }
 
     fn tool_result(&self) -> (Value, ArtifactReference) {
@@ -189,13 +187,11 @@ fn tool_owner_rechecks_original_records_and_registered_followup_project() {
     let report = receipts::verify(&f.root, &f.stage, &f.project, &f.project_ref).unwrap();
     assert_eq!(report["status"], "records_verified");
     assert_eq!(report["engineering_adoption"], "not_granted");
-    assert!(
-        report["references"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .any(|r| r["path"] == "runs/raw.txt")
-    );
+    assert!(report["references"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|r| r["path"] == "runs/raw.txt"));
     let mut current = f.project.clone();
     current.revision = "r2".into();
     current
@@ -338,7 +334,7 @@ fn harness_snapshot_is_not_rebound_to_an_advanced_project() {
 }
 
 #[test]
-fn unsupported_exploration_never_reexecutes_or_dispatches_a_stage() {
+fn unbound_exploration_never_reexecutes_or_dispatches_a_stage() {
     let mut f = Fixture::new();
     let artifact = write(
         &f.root,
@@ -349,7 +345,7 @@ fn unsupported_exploration_never_reexecutes_or_dispatches_a_stage() {
     let before = fs::read(f.root.data_path().join("exploration.json")).unwrap();
     rejects(
         receipts::verify(&f.root, &f.stage, &f.project, &f.project_ref),
-        "workspace_stage_exploration_readback_unsupported",
+        "workspace_stage_exploration_anchor_required",
     );
     assert_eq!(
         fs::read(f.root.data_path().join("exploration.json")).unwrap(),

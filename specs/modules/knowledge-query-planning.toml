@@ -1,4 +1,16 @@
-schema="oev2.design-fragment/2"
+schema="oev2.design-fragment/3"
+
+[[constraints]]
+id="exploration_readonly_host_history"
+requirement="req_engineering"
+module="engineering"
+check="verify_recorded"
+rust_path="crates/oe-engineering/src/workflow/exploration/host/readback.rs"
+statement="Reconstruct frozen host action/receipt history and recheck results, task views, assessments and complete Harness archives without writing, advancing or dispatching. Software owner schema is checked at the installation root and pinned separately from Project artifacts; old same-root frozen source bindings remain valid. Retained durations and host statements are not independently authenticated measurements."
+severity="error"
+
+
+
 
 # @constraint knowledge internal retrieval planning; same owner and same Project
 [[constraints]]
@@ -10,23 +22,7 @@ rust_path="crates/oe-knowledge/src/query.rs"
 statement="Retain complete original object name, Project/context, source conditions, Work acceptance and user query. Only internal explicit-name fragments with an empty existing text::match_expression are omitted before the six-fragment limit; later useful fragments remain in the original retrieval pools. Full query/topic/chapter requests and required review remain. The existing external Provider Body double-empty-token rejection remains unchanged; local execution does not dispatch a model or establish applicability/adoption."
 severity="error"
 
-[[validations]]
-id="knowledge_searchable_object_label_original_context"
-module="knowledge"
-constraint="knowledge_searchable_object_label_plan"
-behavior="local_query_preserves_names_while_skipping_unsearchable_internal_fragments"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Valid names with numeric/symbol fragments and seven leading numeric fragments followed by a useful name retain exact raw name/context/question/unknowns. Actual retrieval replay contains the useful explicit_object pool and no unsearchable name pool. Required review remains pending/not_run; model/network calls zero. Real reference-part failed request and name-absence diagnostic control stay frozen; final replay uses original full name and all Work8."
-scope="macOS local software/source continuation; Windows and engineering/physical adoption unverified"
 
-[[validations]]
-id="knowledge_external_empty_body_rejection_unchanged"
-module="knowledge"
-constraint="knowledge_searchable_object_label_plan"
-behavior="external_body_search_still_rejects_empty_tokenizer_terms"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Existing Provider rejects numeric/symbol-only anchor plus empty terms with body_query_no_search_terms; useful anchor still returns its source pool. No weakened external guard or new retrieval owner."
-scope="macOS local source/guard regression, zero HTTP"
 
 
 # 通用工程查证接续：既有engineering owner；原字段/合同/预算保持。
@@ -246,131 +242,19 @@ rust_path="crates/oe-engineering/src/workflow/exploration.rs"
 statement="开发回放记录实际动作与实测局部成本，局部指标/可行性/工程达成/方法收益分开；旧experience审查/检索评估不等于通用探索收益。"
 severity="error"
 
-[[validations]]
-id="verify_frozen_sources_and_same_revision_changes_are_rejected"
-module="engineering"
-constraint="exploration_source_goal"
-behavior="frozen_sources_and_same_revision_changes_are_rejected"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_complete_acceptance_and_parent_load_cannot_be_removed"
-module="engineering"
-constraint="exploration_source_goal"
-behavior="complete_acceptance_and_parent_load_cannot_be_removed"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_hypotheses_do_not_change_facts_or_adopt_decisions"
-module="engineering"
-constraint="exploration_hypothesis_scope"
-behavior="hypotheses_do_not_change_facts_or_adopt_decisions"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_adopted_or_foreign_scope_hypothesis_is_rejected"
-module="engineering"
-constraint="exploration_hypothesis_scope"
-behavior="adopted_or_foreign_scope_hypothesis_is_rejected"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_criteria_and_discriminating_branches_are_required_before_execution"
-module="engineering"
-constraint="exploration_discriminating_action"
-behavior="criteria_and_discriminating_branches_are_required_before_execution"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_conditional_next_action_follows_actual_outcome"
-module="engineering"
-constraint="exploration_discriminating_action"
-behavior="conditional_next_action_follows_actual_outcome"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_parameter_comparison_reuses_original_model_identity_guard"
-module="engineering"
-constraint="exploration_parameter_mechanism"
-behavior="parameter_comparison_reuses_original_model_identity_guard"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_mechanism_change_uses_new_contract_and_preserves_old_comparison"
-module="engineering"
-constraint="exploration_parameter_mechanism"
-behavior="mechanism_change_uses_new_contract_and_preserves_old_comparison"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_real_calculation_readback_changes_only_bounded_prediction"
-module="engineering"
-constraint="exploration_result_readback"
-behavior="real_calculation_readback_changes_only_bounded_prediction"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_missing_partial_ambiguous_and_failure_remain_unknown"
-module="engineering"
-constraint="exploration_result_readback"
-behavior="missing_partial_ambiguous_and_failure_remain_unknown"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_units_and_strict_thresholds_remain_exact"
-module="engineering"
-constraint="exploration_result_readback"
-behavior="units_and_strict_thresholds_remain_exact"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_actual_source_task_updates_project_view_and_harness"
-module="engineering"
-constraint="exploration_decision_harness"
-behavior="actual_source_task_updates_project_view_and_harness"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_frozen_copy_drift_and_original_history_are_preserved"
-module="engineering"
-constraint="exploration_decision_harness"
-behavior="frozen_copy_drift_and_original_history_are_preserved"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
-[[validations]]
-id="verify_method_assessment_separates_replay_behavior_from_benefit"
-module="engineering"
-constraint="exploration_method_evaluation"
-behavior="method_assessment_separates_replay_behavior_from_benefit"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
-scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
 
 [[sources]]
 id="engineering_exploration_owner_fields"
@@ -378,14 +262,6 @@ identity="specs/owner-schemas/engineering-exploration.json sha256:ed999b9cae1e7c
 role="完整通用探索计划字段规范；原workflow owner严格解析，接口/约束/验证仍经真实ggen"
 applicability="显式engineering-exploration/1，参数与机制、原因假设、动作、结果分支及剩余义务；原work/Project/experience协议不改"
 
-[[validations]]
-id="verify_owner_fields_and_wire_types_match_pinned_source"
-module="engineering"
-constraint="exploration_source_goal"
-behavior="owner_fields_and_wire_types_match_pinned_source"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="Pinned full owner field definitions match strict serialized bodies; source drift and unknown nested fields reject before execution."
-scope="development_replay wire identity; no independent receiving or full engineering qualification"
 
 # Explicit host continuation of frozen inquiry; API provider is not the workflow owner.
 
@@ -749,14 +625,6 @@ rust_path="crates/oe-engineering/src/workflow/exploration/host.rs"
 statement="当前会话提交原工具结果，Rust重建冻结动作/前态/结果分支；未执行保持待办，失败/部分/来源变化不能跳步、丢历史或获得工程采用。原Project/work/计算/Harness owner不变。"
 severity="error"
 
-[[validations]]
-id="verify_host_exploration_protocol"
-module="engineering"
-constraint="exploration_host_continuation"
-behavior="host_chain_keeps_pending_results_history_and_original_guards"
-rust_path="crates/oe-engineering/tests/exploration.rs"
-oracle="独立冻结两步与分支；缺结果pending；来源陈述只支持来源范围；真实计算回读触发原判据；跳步、旧来源变化、篡改结果和删历史拒绝。原所有假设/条件/单位与采用反例保留。"
-scope="development_replay；无API，不认证原生/物理或泛化收益"
 
 [[validations]]
 id="verify_host_exploration_actual_cli"
@@ -924,158 +792,22 @@ rust_path="crates/oe-cli/src/main.rs"
 statement="Default build-index writes sources/.indexes/misumi, same as the supplier reader and Rust BuildOptions. Explicit custom targets retain meaning. Legacy misumi-native is never silently selected, moved or overwritten."
 severity="error"
 
-[[validations]]
-id="merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations"
-module="knowledge"
-constraint="local_pdf_explicit_incremental_registration"
-behavior="merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Actual small PDFs plus native invocation counter: adding one source preserves old rows and extraction observations; changing only navigation/edition reuses native text without invoking Poppler; resulting FTS page identities remain bound."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source"
-module="knowledge"
-constraint="local_pdf_explicit_incremental_registration"
-behavior="merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Identical partial merge with unusable Poppler returns unchanged, keeps omitted source and exact registration/index bytes."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals"
-module="knowledge"
-constraint="local_pdf_explicit_incremental_registration"
-behavior="registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Preview checks SHA and prior binding without Poppler/publishing; lists merge additions and replacement removals; unknown new page count remains unknown."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair"
-module="knowledge"
-constraint="local_pdf_explicit_incremental_registration"
-behavior="merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Changed retained original and corrupt/rebound index refuse with previous pair retained."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="merge_budgets_apply_to_complete_retained_plus_incoming_catalog"
-module="knowledge"
-constraint="local_pdf_explicit_incremental_registration"
-behavior="merge_budgets_apply_to_complete_retained_plus_incoming_catalog"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="The complete merged catalog obeys source/chapter/page limits, not only the newly supplied subset."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="merge_failure_and_conflicting_modes_leave_original_registration_intact"
-module="knowledge"
-constraint="local_pdf_explicit_incremental_registration"
-behavior="merge_failure_and_conflicting_modes_leave_original_registration_intact"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Conflicting merge/replace and extraction failure preserve old pair and no partial new catalog is adopted."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="same_basename_nested_import_and_existing_fetch_are_unambiguous"
-module="knowledge"
-constraint="source_delivery_precise_paths_and_guard"
-behavior="same_basename_nested_import_and_existing_fetch_are_unambiguous"
-rust_path="crates/oe-knowledge/tests/source_library.rs"
-oracle="Separate source directories with equal basename import successfully; existing verified originals do not trigger fetch."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="mixed_nested_and_flat_same_basename_uses_distinct_inputs"
-module="knowledge"
-constraint="source_delivery_precise_paths_and_guard"
-behavior="mixed_nested_and_flat_same_basename_uses_distinct_inputs"
-rust_path="crates/oe-knowledge/tests/source_library.rs"
-oracle="Mixed nested and flat source resolution succeeds when actual input paths differ."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="shared_flat_input_is_rejected_before_any_original_is_published"
-module="knowledge"
-constraint="source_delivery_precise_paths_and_guard"
-behavior="shared_flat_input_is_rejected_before_any_original_is_published"
-rust_path="crates/oe-knowledge/tests/source_library.rs"
-oracle="Two declarations sharing one actual flat input reject before either destination is published, including nested-versus-flat alias."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="same_basename_fetch_uses_distinct_drive_ids"
-module="knowledge"
-constraint="source_delivery_precise_paths_and_guard"
-behavior="same_basename_fetch_uses_distinct_drive_ids"
-rust_path="crates/oe-knowledge/tests/source_library.rs"
-oracle="Synthetic local gws fixture uses separate declared file IDs despite equal basenames; no real network."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="delivery_selected_merge_preserves_previous_books_and_preview_is_read_only"
-module="knowledge"
-constraint="source_delivery_precise_paths_and_guard"
-behavior="delivery_selected_merge_preserves_previous_books_and_preview_is_read_only"
-rust_path="crates/oe-knowledge/tests/source_library.rs"
-oracle="Selecting one book with merge preserves other sources; preview/no-op keep old bytes and have no extraction."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="delivery_change_during_extraction_blocks_new_replace_and_merge_publication"
-module="knowledge"
-constraint="source_delivery_precise_paths_and_guard"
-behavior="delivery_change_during_extraction_blocks_new_replace_and_merge_publication"
-rust_path="crates/oe-knowledge/tests/source_library.rs"
-oracle="Actual Poppler wrapper changes original delivery during extraction: create publishes nothing; replace/merge restore exact prior index and registration."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="registration_merge_preview_and_noop_preserve_prior_sources_without_path"
-module="knowledge"
-constraint="local_pdf_explicit_incremental_registration"
-behavior="registration_merge_preview_and_noop_preserve_prior_sources_without_path"
-rust_path="crates/oe-cli/tests/knowledge_cli.rs"
-oracle="Actual CLI with empty PATH previews, merges only new source with explicit Poppler, reports unchanged without tools, preserves old book, exposes replace removals, and refuses mode conflict."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="source_delivery_merge_preview_and_unchanged_are_successful_cli_results"
-module="knowledge"
-constraint="source_delivery_precise_paths_and_guard"
-behavior="source_delivery_merge_preview_and_unchanged_are_successful_cli_results"
-rust_path="crates/oe-cli/tests/knowledge_cli.rs"
-oracle="Actual selected delivery CLI supports merge/dry-run and exits zero for truthful preview/unchanged without claiming registered."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="supplier_default_build_index_is_readable_by_default_status_and_query"
-module="cli"
-constraint="supplier_default_index_matches_reader"
-behavior="supplier_default_build_index_is_readable_by_default_status_and_query"
-rust_path="crates/oe-cli/tests/knowledge_cli.rs"
-oracle="Actual tiny supplier archive build without --index produces default reader directory; default status and query return source-bound pages; no legacy misumi-native fallback."
-scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
 
-[[validations]]
-id="preview_and_noop_run_final_intake_guard_and_preserve_index_bytes"
-module="knowledge"
-constraint="local_pdf_explicit_incremental_registration"
-behavior="preview_and_noop_run_final_intake_guard_and_preserve_index_bytes"
-rust_path="crates/oe-knowledge/src/registration/incremental.rs"
-oracle="Preview and no-op both invoke the original intake owner guard; rejection leaves existing index pair exact."
-scope="Actual local bounded fixtures; no engineering adoption or full concurrent filesystem guarantee"
 
-[[validations]]
-id="final_publication_rechecks_original_after_owner_guard_and_rolls_back"
-module="knowledge"
-constraint="local_pdf_explicit_incremental_registration"
-behavior="final_publication_rechecks_original_after_owner_guard_and_rolls_back"
-rust_path="crates/oe-knowledge/src/registration/incremental.rs"
-oracle="Deterministic final guard mutates original source; post-guard source recheck blocks publication and replacement restores old registration/index."
-scope="Actual local bounded fixtures; no engineering adoption or full concurrent filesystem guarantee"
 
 # Per-source registration currentness, independent of historical integrity.
 
@@ -1319,59 +1051,11 @@ rust_path="crates/oe-cli/src/main.rs"
 statement="Explicit verify-packet --require-current-registration writes failure report and returns nonzero unless registration audit is current; preserve historical_verification_status and original packet bytes. Feedback forwards the explicit requirement. Default verification retains historical status independently from registration currentness."
 severity="error"
 
-[[validations]]
-id="local_source_currentness_survives_unrelated_incremental_addition"
-module="knowledge"
-constraint="local_pdf_source_registration_currentness"
-behavior="local_source_currentness_survives_unrelated_incremental_addition"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Unrelated addition changes the index snapshot while unchanged book evidence stays current."
-scope="Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
 
-[[validations]]
-id="local_source_currentness_distinguishes_metadata_and_navigation_changes"
-module="knowledge"
-constraint="local_pdf_source_registration_currentness"
-behavior="local_source_currentness_distinguishes_metadata_and_navigation_changes"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Title, edition and full chapter navigation changes produce exact changed_fields with historical packet still readable."
-scope="Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
 
-[[validations]]
-id="local_source_currentness_preserves_old_version_and_historical_feedback"
-module="knowledge"
-constraint="local_pdf_source_registration_currentness"
-behavior="local_source_currentness_preserves_old_version_and_historical_feedback"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Same ID new PDF leaves old original and feedback bytes intact; old registration is changed and historical feedback remains readable."
-scope="Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
 
-[[validations]]
-id="local_source_currentness_distinguishes_removed_from_unavailable_index"
-module="knowledge"
-constraint="local_pdf_source_registration_currentness"
-behavior="local_source_currentness_distinguishes_removed_from_unavailable_index"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Replacement removing ID differs from an unavailable explicit index; neither claims current."
-scope="Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
 
-[[validations]]
-id="local_source_currentness_legacy_packet_is_not_bound"
-module="knowledge"
-constraint="local_pdf_source_registration_currentness"
-behavior="local_source_currentness_legacy_packet_is_not_bound"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Historical local-PDF packet without binding stays readable and explicitly not_bound."
-scope="Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
 
-[[validations]]
-id="local_source_currentness_rejects_corrupt_binding_and_candidate_identity"
-module="knowledge"
-constraint="local_pdf_source_registration_currentness"
-behavior="local_source_currentness_rejects_corrupt_binding_and_candidate_identity"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Bad schema/hash/ID/path/candidate associations are rejected; no fallback guesses."
-scope="Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
 
 [[validations]]
 id="explicit_current_registration_requirement_rejects_unbound_and_invalid_boolean_without_writes"
@@ -1382,32 +1066,8 @@ rust_path="crates/oe-knowledge/tests/packet_feedback.rs"
 oracle="Invalid bool and strict unsupported generic-packet feedback leave no file; explicit false retains historical recording with observed not_applicable status."
 scope="Rust synthetic packet metadata without native PDF parsing; no engineering adoption or other-platform claim"
 
-[[validations]]
-id="packet_current_registration_option_and_feedback_distinguish_history"
-module="cli"
-constraint="knowledge_cli_current_registration_requirement"
-behavior="packet_current_registration_option_and_feedback_distinguish_history"
-rust_path="crates/oe-cli/tests/knowledge_cli.rs"
-oracle="Real CLI register/query/strict verify/feedback passes current; updated title remains historically ready, strict verify fails with preserved historical status and strict feedback creates no file; legacy packet is not_bound."
-scope="Bounded macOS synthetic source fixtures and real CLI; no engineering adoption or other-platform claim"
 
-[[validations]]
-id="legacy_packets_above_query_limit_keep_unknown_registration_without_index_reads"
-module="knowledge"
-constraint="local_pdf_source_registration_currentness"
-behavior="legacy_packets_above_query_limit_keep_unknown_registration_without_index_reads"
-rust_path="crates/oe-knowledge/src/registration_freshness.rs"
-oracle="128 unbound historical local-PDF or supplier candidates remain not_bound or not_applicable without index reads; a later malformed binding is still rejected. Provider budget does not retroactively impose the native query candidate cap on historical packets."
-scope="Rust synthetic metadata guard; no source file, index, network or engineering decisions"
 
-[[validations]]
-id="root_relative_paths_use_portable_separators_and_preserve_names"
-module="knowledge"
-constraint="local_pdf_source_registration_currentness"
-behavior="root_relative_paths_use_portable_separators_and_preserve_names"
-rust_path="crates/oe-knowledge/src/registration_freshness.rs"
-oracle="Normal path components use slash-separated root-relative binding paths; Unicode and spaces remain exact, parent components reject, and Unix colon names are not narrowed."
-scope="Portable path construction exercised on macOS; Windows native execution not verified"
 
 # Read-only intake reconciliation and native text coverage for explicit PDF directories.
 
@@ -1545,68 +1205,12 @@ rust_path="crates/oe-cli/src/main.rs"
 statement="knowledge library audit-pdf requires an explicit source directory, uses an explicit/default current local-PDF index, optionally publishes a new private report only. Audited means the read-only examination completed, not all sources are registered/readable/current or adopted. Invalid directories/arguments fail with structured output; no tools or model required."
 severity="error"
 
-[[validations]]
-id="library_audit_reports_unregistered_duplicates_and_per_source_native_coverage"
-module="knowledge"
-constraint="pdf_library_readonly_intake_audit"
-behavior="library_audit_reports_unregistered_duplicates_and_per_source_native_coverage"
-rust_path="crates/oe-knowledge/tests/library_audit.rs"
-oracle="Actual two-page native/empty fixture plus new PDF, duplicate bytes and non-PDF: per-source coverage, unseen PDFs and duplicate paths reported; all source/index bytes unchanged."
-scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
 
-[[validations]]
-id="library_audit_distinguishes_missing_and_changed_registered_originals"
-module="knowledge"
-constraint="pdf_library_readonly_intake_audit"
-behavior="library_audit_distinguishes_missing_and_changed_registered_originals"
-rust_path="crates/oe-knowledge/tests/library_audit.rs"
-oracle="Missing and same-size changed registered original are diagnosed independently from the stored index coverage; no repair or publication occurs."
-scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
 
-[[validations]]
-id="library_audit_missing_or_invalid_index_preserves_unknown_registration"
-module="knowledge"
-constraint="pdf_library_readonly_intake_audit"
-behavior="library_audit_missing_or_invalid_index_preserves_unknown_registration"
-rust_path="crates/oe-knowledge/tests/library_audit.rs"
-oracle="Missing or corrupt index yields unavailable and PDF registration unknown, never falsely unregistered."
-scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
 
-[[validations]]
-id="library_audit_explicit_scope_does_not_inspect_outside_registered_originals"
-module="knowledge"
-constraint="pdf_library_readonly_intake_audit"
-behavior="library_audit_explicit_scope_does_not_inspect_outside_registered_originals"
-rust_path="crates/oe-knowledge/tests/library_audit.rs"
-oracle="Explicit child directory excludes outside registered originals and other files, without inspecting the out-of-scope source bytes."
-scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
 
-[[validations]]
-id="library_audit_does_not_follow_symlinked_files_or_directories"
-module="knowledge"
-constraint="pdf_library_readonly_intake_audit"
-behavior="library_audit_does_not_follow_symlinked_files_or_directories"
-rust_path="crates/oe-knowledge/tests/library_audit.rs"
-oracle="File/directory links remain unvisited and are never reported as verified original contents."
-scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
 
-[[validations]]
-id="library_audit_bounded_scan_does_not_claim_complete_coverage"
-module="knowledge"
-constraint="pdf_library_readonly_intake_audit"
-behavior="library_audit_bounded_scan_does_not_claim_complete_coverage"
-rust_path="crates/oe-knowledge/tests/library_audit.rs"
-oracle="Depth budget exhaustion yields partial plus issue and does not claim unseen entries processed; source tree remains unchanged."
-scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
 
-[[validations]]
-id="pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output"
-module="cli"
-constraint="pdf_library_audit_cli"
-behavior="pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output"
-rust_path="crates/oe-cli/tests/knowledge_cli.rs"
-oracle="Real CLI requires explicit directory, accepts audit without PATH or native tool arguments, finds a new PDF, stores a new private report, rejects overwrite and source-directory output, rejects whole source/index/private scope, preserves unknown when index absent and original/index bytes unchanged."
-scope="Synthetic macOS CLI fixture; no real Project or all-platform acceptance"
 
 # Same-original descriptive/navigation updates preserve verified extraction identity.
 
@@ -1628,104 +1232,16 @@ rust_path="crates/oe-knowledge/src/registration/incremental.rs"
 statement="Metadata/navigation-only merge reuses verified native text only for identical stable ID, resolved path, SHA256, bytes and page count. Validate old chapters and complete old rows against the prior declaration before building new chapter associations, titles and FTS from the current declaration. Validate new ranges in preview and publication. Preserve original extraction observations and prior index/registration identity; record old and new chapter digests. A changed declaration publishes updated even when no extraction is needed, and old packet registration comparison remains changed. Repeating identical input is unchanged. New IDs, changed original identity and replace still need native extraction. No OCR repair, source adoption or silent index repair."
 severity="error"
 
-[[validations]]
-id="registration_rejects_unreadable_original_paths_before_publish_in_all_modes"
-module="knowledge"
-constraint="local_pdf_registration_paths_roundtrip_before_publication"
-behavior="registration_rejects_unreadable_original_paths_before_publish_in_all_modes"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Backslash and control characters in original filenames or directory components reject before extraction/publication in create, merge, replace and dry-run, preserving originals and existing index pair."
-scope="Synthetic macOS files; no real library mutation or engineering adoption"
 
-[[validations]]
-id="registration_rejects_unreadable_index_paths_before_publish_in_all_modes"
-module="knowledge"
-constraint="local_pdf_registration_paths_roundtrip_before_publication"
-behavior="registration_rejects_unreadable_index_paths_before_publish_in_all_modes"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Custom index directory containing backslash, control characters or Unix non-UTF8 rejects without panic or publication in every registration mode; existing snapshots and originals remain exact."
-scope="Synthetic macOS files; non-UTF8 remains a rejection regression, not a claimed baseline CLI defect"
 
-[[validations]]
-id="local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse"
-module="knowledge"
-constraint="local_pdf_registration_paths_roundtrip_before_publication"
-behavior="local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Normal Unicode, spaces and Unix colons in source and custom index paths survive native registration, query bindings, metadata/navigation merge with unavailable extraction tools, repeated-input no-op and historical packet verification."
-scope="Synthetic macOS native PDF and query fixtures; Windows native execution not verified"
 
-[[validations]]
-id="local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip"
-module="knowledge"
-constraint="local_pdf_registration_paths_roundtrip_before_publication"
-behavior="local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip"
-rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
-oracle="Component-based slash encoding preserves valid source names and round-trips stored parent-relative paths to the exact original."
-scope="Pure synthetic path representation; no sources, network or engineering decisions"
 
-[[validations]]
-id="local_pdf_paths_do_not_blacklist_installation_root_names"
-module="knowledge"
-constraint="local_pdf_registration_paths_roundtrip_before_publication"
-behavior="local_pdf_paths_do_not_blacklist_installation_root_names"
-rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
-oracle="A synthetic Unix installation root containing backslash, control characters, colon and Unicode does not invalidate otherwise valid source and index names below it; stored references still round-trip exactly."
-scope="Private synthetic Unix root fixture; no actual library or other-platform acceptance"
 
-[[validations]]
-id="local_pdf_paths_reject_unreadable_components_and_non_utf8"
-module="knowledge"
-constraint="local_pdf_registration_paths_roundtrip_before_publication"
-behavior="local_pdf_paths_reject_unreadable_components_and_non_utf8"
-rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
-oracle="Unrepresentable path components reject rather than renaming, normalizing or using lossy replacement; existing containment and no-symlink rules remain authoritative."
-scope="Synthetic path guard, including Unix invalid bytes; no other-platform execution claim"
 
-[[validations]]
-id="local_pdf_path_limits_count_characters_and_check_final_relative_form"
-module="knowledge"
-constraint="local_pdf_registration_paths_roundtrip_before_publication"
-behavior="local_pdf_path_limits_count_characters_and_check_final_relative_form"
-rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
-oracle="Each final persisted path respects the existing 2000-character reader limit, including a long index-relative traversal even when root-relative forms individually fit; UTF-8 bytes are not counted as characters."
-scope="Synthetic path strings independent of filesystem path-length limits"
 
-[[validations]]
-id="metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search"
-module="knowledge"
-constraint="local_pdf_navigation_reuses_verified_native_text"
-behavior="metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Actual native fixture then unavailable tool paths: preview and merge preserve original/native row/tool identities, retain omitted source, publish updated navigation with known page/chapter counts, new alias matches and old alias is removed for the changed source; repeated input leaves index bytes unchanged."
-scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
 
-[[validations]]
-id="metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply"
-module="knowledge"
-constraint="local_pdf_navigation_reuses_verified_native_text"
-behavior="metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="New chapter end beyond verified page count fails both preview and apply with unchanged prior index pair."
-scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
 
-[[validations]]
-id="changed_original_identity_and_replace_still_require_native_extraction"
-module="knowledge"
-constraint="local_pdf_navigation_reuses_verified_native_text"
-behavior="changed_original_identity_and_replace_still_require_native_extraction"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Path-only change, changed PDF bytes and replacement require extraction in preview, refuse absent tools without publishing, then invoke actual counted tools and publish extracted IDs."
-scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
 
-[[validations]]
-id="metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration"
-module="knowledge"
-constraint="local_pdf_navigation_reuses_verified_native_text"
-behavior="metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration"
-rust_path="crates/oe-knowledge/tests/source_io.rs"
-oracle="Alter old chapter or old page navigation, rebind the outer index SHA, then metadata merge preview and apply must reject disagreement with the old declaration and leave the prior pair byte-exact."
-scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
 
 # Explicit packet maintenance diagnostics remain separate from verification.
 
@@ -1756,41 +1272,9 @@ rust_path="crates/oe-cli/src/main.rs"
 statement="knowledge audit-packet accepts one explicit rooted packet and optional new private output directory, requires neither current context nor native tools, and emits only a source-audit.json diagnostic with status audited. Malformed input remains blocked with no output artifact. Normal and require-current-registration verify/feedback semantics and errors remain unchanged; no automatic history scan, repair, source write or engineering adoption."
 severity="error"
 
-[[validations]]
-id="packet_source_audit_separates_old_original_failure_from_current_registration"
-module="knowledge"
-constraint="packet_source_audit_separates_structure_originals_and_registration"
-behavior="packet_source_audit_separates_old_original_failure_from_current_registration"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Actual two-source query packet: changed or missing old original retains its registration comparison and the healthy candidate remains observable; strict verification and feedback continue rejecting and packet/index bytes remain unchanged."
-scope="Synthetic macOS native PDF fixture; diagnostic itself uses no native tools; no real library mutation"
 
-[[validations]]
-id="packet_source_audit_preserves_legacy_unknown_and_nonlocal_scope"
-module="knowledge"
-constraint="packet_source_audit_separates_structure_originals_and_registration"
-behavior="packet_source_audit_preserves_legacy_unknown_and_nonlocal_scope"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="Legacy local evidence without binding stays not_bound, nonlocal registration remains not_applicable, and unavailable indexes do not imply removed or current. Original byte identity is not native-page or source-pack verification."
-scope="Synthetic packet variants; no engineering applicability or platform-wide claim"
 
-[[validations]]
-id="packet_source_audit_rejects_late_structural_damage_after_missing_original"
-module="knowledge"
-constraint="packet_source_audit_separates_structure_originals_and_registration"
-behavior="packet_source_audit_rejects_late_structural_damage_after_missing_original"
-rust_path="crates/oe-knowledge/tests/query_e2e.rs"
-oracle="An earlier missing original does not hide later corrupt text/span/locator/binding/context/review declarations; malformed packet is rejected before observations can be presented as valid diagnosis."
-scope="Synthetic corrupt metadata; no source or index mutations"
 
-[[validations]]
-id="packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification_refusal"
-module="cli"
-constraint="knowledge_cli_packet_source_audit"
-behavior="packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification_refusal"
-rust_path="crates/oe-cli/tests/knowledge_cli.rs"
-oracle="Real CLI diagnoses source failures with empty PATH, writes an optional new private source-audit.json, retains byte-exact inputs and rejects malformed packets without an artifact; ordinary/strict verification and feedback still reject unusable originals."
-scope="Synthetic macOS CLI fixture; no current Project or native-page validity from diagnosis"
 
 [[types]]
 name="PacketOriginalBytesAudit"
@@ -1949,23 +1433,7 @@ rust_path="crates/oe-knowledge/tests/packet_feedback.rs"
 oracle="Empty and generic packets preserve no_candidates or actual original-byte state; registration remains not_applicable and full verification remains not_run."
 scope="Synthetic local software fixtures; no real library mutation or engineering adoption"
 
-[[validations]]
-id="packet_original_recheck_rejects_changed_deleted_and_newly_present_files"
-module="knowledge"
-constraint="packet_source_audit_bounded_read_only_observation"
-behavior="packet_original_recheck_rejects_changed_deleted_and_newly_present_files"
-rust_path="crates/oe-knowledge/src/packet/source_audit.rs"
-oracle="Original replacement, deletion and appearance after initial observation are unavailable; reserved recheck reads are conservatively charged including read headroom."
-scope="Synthetic local software fixtures; no real library mutation or engineering adoption"
 
-[[validations]]
-id="packet_original_hash_budget_reserves_recheck_without_reading_large_sparse_file"
-module="knowledge"
-constraint="packet_source_audit_bounded_read_only_observation"
-behavior="packet_original_hash_budget_reserves_recheck_without_reading_large_sparse_file"
-rust_path="crates/oe-knowledge/src/packet/source_audit.rs"
-oracle="A sparse original whose two reads plus headroom exceed 4 GiB is unavailable without any hash read; final verification budget is reserved before initial read."
-scope="Synthetic local software fixtures; no real library mutation or engineering adoption"
 
 
 # knowledge-incad-library
@@ -2492,78 +1960,14 @@ write="Rust verifies fixed sources and emits derived immutable records"
 applicability="Explicit source library only; no current Project or native engineering authority"
 acceptance="Rebuild claims from originals, reject corruption and preserve missing/unknown state"
 
-[[validations]]
-id="incad_library_builds_source_bound_graph_without_project_adoption"
-module="knowledge"
-constraint="incad_library_source_graph"
-behavior="incad_library_builds_source_bound_graph_without_project_adoption"
-rust_path="crates/oe-knowledge/tests/incad_library.rs"
-oracle="Synthetic projection/HTML/case/BOM/CAD closure produces retained statement/source/BOM/model/member relationships, preserves declared missing coverage and creates no Project or engineering adoption."
-scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
-
-[[validations]]
-id="incad_library_rejects_changed_sources_and_rebound_graph"
-module="knowledge"
-constraint="incad_library_rebuilds_claims_and_portable_paths"
-behavior="incad_library_rejects_changed_sources_and_rebound_graph"
-rust_path="crates/oe-knowledge/tests/incad_library.rs"
-oracle="Alter original or derived graph and re-sign its outer SHA; verify/search/view reject rather than trust author-controlled graph claims."
-scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
-
-[[validations]]
-id="incad_library_rejects_unsafe_or_incomplete_source_closure"
-module="knowledge"
-constraint="incad_library_source_graph"
-behavior="incad_library_rejects_unsafe_or_incomplete_source_closure"
-rust_path="crates/oe-knowledge/tests/incad_library.rs"
-oracle="Missing member, malformed source identity, duplicate cases, wrong BOM association and unsafe paths fail without publishing a library."
-scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
-
-[[validations]]
-id="incad_library_copies_portably_with_relative_source_bindings"
-module="knowledge"
-constraint="incad_library_rebuilds_claims_and_portable_paths"
-behavior="incad_library_copies_portably_with_relative_source_bindings"
-rust_path="crates/oe-knowledge/tests/incad_library.rs"
-oracle="Copy the complete selected archive/index to a different real root, remove the old archive and still verify/retrieve by portable references."
-scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
-
-[[validations]]
-id="incad_library_reads_large_cad_members_beyond_intake_limit"
-module="knowledge"
-constraint="incad_library_bounded_reads_and_retrieval"
-behavior="incad_library_reads_large_cad_members_beyond_intake_limit"
-rust_path="crates/oe-knowledge/tests/incad_library.rs"
-oracle="A17MiB synthetic member and ZIP use the explicit library streaming profile while old16MiB staging semantics remain unchanged; originals remain byte-exact."
-scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
-
-[[validations]]
-id="incad_library_cli_requires_explicit_paths_and_preserves_boundaries"
-module="knowledge"
-constraint="incad_library_source_graph"
-behavior="incad_library_cli_requires_explicit_paths_and_preserves_boundaries"
-rust_path="crates/oe-cli/tests/knowledge_cli.rs"
-oracle="Actual CLI requires explicit archive/index/query/case, creates source-library reports and preserves error/adoption boundaries."
-scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
 
 
-[[validations]]
-id="incad_library_search_only_rehashes_returned_case_payloads"
-module="knowledge"
-constraint="incad_library_bounded_reads_and_retrieval"
-behavior="incad_library_search_only_rehashes_returned_case_payloads"
-rust_path="crates/oe-knowledge/tests/incad_library.rs"
-oracle="A healthy returned case succeeds despite a nonreturned CAD payload change; explicit coverage leaves nonreturned CAD unchecked, while full verify and retrieval of the changed case reject."
-scope="Synthetic source fixtures; no CAD execution or adoption"
 
-[[validations]]
-id="incad_library_preserves_missing_purpose_without_inventing_it"
-module="knowledge"
-constraint="incad_library_source_graph"
-behavior="incad_library_preserves_missing_purpose_without_inventing_it"
-rust_path="crates/oe-knowledge/tests/incad_library.rs"
-oracle="An empty source purpose remains empty and is explicitly missing after build and view, without invented engineering text."
-scope="Synthetic source fixtures; no CAD execution or adoption"
+
+
+
+
+
 
 
 # knowledge-incad-delivery
@@ -2662,47 +2066,854 @@ rust_path="crates/oe-knowledge/src/incad/bundle.rs"
 statement="Import requires an explicit new real directory below this skill's sources/misumi. Do not replace an existing destination. Copy verified members into one private stage, validate all shards before publication, recheck the staged bytes and input descriptor/archive identities, then publish the entire tree with the shared exclusive directory rename. Late malformed or changed input leaves no partial target and temporary staged files are cleaned. Current originals, old receipts, configuration and Projects are not modified; no symlink fallback, download, browser or model execution."
 severity="error"
 
-[[validations]]
-id="incad_bundle_selected_transport_round_trip"
+
+
+
+
+
+# Exploration checks share explicit defaults; all case-specific criteria remain.
+[[validation_groups]]
+[validation_groups.defaults]
+module="engineering"
+constraint="exploration_readonly_host_history"
+rust_path="crates/oe-engineering/tests/exploration.rs"
+oracle="预先冻结独立数值/来源预期与反例；实际既有owner执行、输入原件和输出重新核；开发者自验不冒称独立接收"
+scope="development_replay有界工程查证；不证明独立任务收益、物理实机、平台全范围或全63release"
+
+[[validation_groups.cases]]
+id="exploration_readback_no_side_effects"
+behavior="host_result_readback_is_read_only_and_retains_failed_observations"
+oracle="Complete, failed, partial and unknown observations keep their original states and full source closure; repeated readback leaves every project file unchanged, never adopts and never declares method benefit."
+scope="Bounded host-result readback; elapsed time, host observations and engineering truth retain their original evidence limits"
+
+[[validation_groups.cases]]
+id="exploration_readback_rejects_rewritten_artifacts"
+behavior="host_readback_rejects_rehashed_views_harness_and_assessments"
+oracle="Rehashed task view, Harness summary, assessment and result changes reject through native replay; changed original evidence also rejects, without writing any project file."
+scope="Software consistency and source identity; not authentication of a host's original statements"
+
+[[validation_groups.cases]]
+id="exploration_separate_software_identity"
+behavior="separate_project_store_uses_installed_owner_schema"
+oracle="A separate project with no specs directory executes using the installed exact owner schema; a project-local copy cannot replace a changed installed schema."
+scope="Explicit software/project root separation; no implicit fallback"
+
+[[validation_groups.cases]]
+id="verify_frozen_sources_and_same_revision_changes_are_rejected"
+constraint="exploration_source_goal"
+behavior="frozen_sources_and_same_revision_changes_are_rejected"
+
+[[validation_groups.cases]]
+id="verify_complete_acceptance_and_parent_load_cannot_be_removed"
+constraint="exploration_source_goal"
+behavior="complete_acceptance_and_parent_load_cannot_be_removed"
+
+[[validation_groups.cases]]
+id="verify_hypotheses_do_not_change_facts_or_adopt_decisions"
+constraint="exploration_hypothesis_scope"
+behavior="hypotheses_do_not_change_facts_or_adopt_decisions"
+
+[[validation_groups.cases]]
+id="verify_adopted_or_foreign_scope_hypothesis_is_rejected"
+constraint="exploration_hypothesis_scope"
+behavior="adopted_or_foreign_scope_hypothesis_is_rejected"
+
+[[validation_groups.cases]]
+id="verify_criteria_and_discriminating_branches_are_required_before_execution"
+constraint="exploration_discriminating_action"
+behavior="criteria_and_discriminating_branches_are_required_before_execution"
+
+[[validation_groups.cases]]
+id="verify_conditional_next_action_follows_actual_outcome"
+constraint="exploration_discriminating_action"
+behavior="conditional_next_action_follows_actual_outcome"
+
+[[validation_groups.cases]]
+id="verify_parameter_comparison_reuses_original_model_identity_guard"
+constraint="exploration_parameter_mechanism"
+behavior="parameter_comparison_reuses_original_model_identity_guard"
+
+[[validation_groups.cases]]
+id="verify_mechanism_change_uses_new_contract_and_preserves_old_comparison"
+constraint="exploration_parameter_mechanism"
+behavior="mechanism_change_uses_new_contract_and_preserves_old_comparison"
+
+[[validation_groups.cases]]
+id="verify_real_calculation_readback_changes_only_bounded_prediction"
+constraint="exploration_result_readback"
+behavior="real_calculation_readback_changes_only_bounded_prediction"
+
+[[validation_groups.cases]]
+id="verify_missing_partial_ambiguous_and_failure_remain_unknown"
+constraint="exploration_result_readback"
+behavior="missing_partial_ambiguous_and_failure_remain_unknown"
+
+[[validation_groups.cases]]
+id="verify_units_and_strict_thresholds_remain_exact"
+constraint="exploration_result_readback"
+behavior="units_and_strict_thresholds_remain_exact"
+
+[[validation_groups.cases]]
+id="verify_actual_source_task_updates_project_view_and_harness"
+constraint="exploration_decision_harness"
+behavior="actual_source_task_updates_project_view_and_harness"
+
+[[validation_groups.cases]]
+id="verify_frozen_copy_drift_and_original_history_are_preserved"
+constraint="exploration_decision_harness"
+behavior="frozen_copy_drift_and_original_history_are_preserved"
+
+[[validation_groups.cases]]
+id="verify_method_assessment_separates_replay_behavior_from_benefit"
+constraint="exploration_method_evaluation"
+behavior="method_assessment_separates_replay_behavior_from_benefit"
+
+[[validation_groups.cases]]
+id="verify_owner_fields_and_wire_types_match_pinned_source"
+constraint="exploration_source_goal"
+behavior="owner_fields_and_wire_types_match_pinned_source"
+oracle="Pinned full owner field definitions match strict serialized bodies; source drift and unknown nested fields reject before execution."
+scope="development_replay wire identity; no independent receiving or full engineering qualification"
+
+[[validation_groups.cases]]
+id="verify_host_exploration_protocol"
+constraint="exploration_host_continuation"
+behavior="host_chain_keeps_pending_results_history_and_original_guards"
+oracle="独立冻结两步与分支；缺结果pending；来源陈述只支持来源范围；真实计算回读触发原判据；跳步、旧来源变化、篡改结果和删历史拒绝。原所有假设/条件/单位与采用反例保留。"
+scope="development_replay；无API，不认证原生/物理或泛化收益"
+
+[[validation_groups]]
+[validation_groups.defaults]
 module="knowledge"
-constraint="incad_source_bundle_preserves_selected_source_identity"
-behavior="bundle_restores_exact_selected_files_without_rewriting_upstream"
+constraint="local_pdf_source_registration_currentness"
+rust_path="crates/oe-knowledge/tests/query_e2e.rs"
+oracle="Valid names with numeric/symbol fragments and seven leading numeric fragments followed by a useful name retain exact raw name/context/question/unknowns. Actual retrieval replay contains the useful explicit_object pool and no unsearchable name pool. Required review remains pending/not_run; model/network calls zero. Real reference-part failed request and name-absence diagnostic control stay frozen; final replay uses original full name and all Work8."
+scope="Bounded synthetic macOS native PDF fixtures; actual sources, indexes, Drive, Projects and decisions unchanged"
+
+[[validation_groups.cases]]
+id="knowledge_searchable_object_label_original_context"
+constraint="knowledge_searchable_object_label_plan"
+behavior="local_query_preserves_names_while_skipping_unsearchable_internal_fragments"
+scope="macOS local software/source continuation; Windows and engineering/physical adoption unverified"
+
+[[validation_groups.cases]]
+id="knowledge_external_empty_body_rejection_unchanged"
+constraint="knowledge_searchable_object_label_plan"
+behavior="external_body_search_still_rejects_empty_tokenizer_terms"
+oracle="Existing Provider rejects numeric/symbol-only anchor plus empty terms with body_query_no_search_terms; useful anchor still returns its source pool. No weakened external guard or new retrieval owner."
+scope="macOS local source/guard regression, zero HTTP"
+
+[[validation_groups.cases]]
+id="local_source_currentness_survives_unrelated_incremental_addition"
+behavior="local_source_currentness_survives_unrelated_incremental_addition"
+oracle="Unrelated addition changes the index snapshot while unchanged book evidence stays current."
+
+[[validation_groups.cases]]
+id="local_source_currentness_distinguishes_metadata_and_navigation_changes"
+behavior="local_source_currentness_distinguishes_metadata_and_navigation_changes"
+oracle="Title, edition and full chapter navigation changes produce exact changed_fields with historical packet still readable."
+
+[[validation_groups.cases]]
+id="local_source_currentness_preserves_old_version_and_historical_feedback"
+behavior="local_source_currentness_preserves_old_version_and_historical_feedback"
+oracle="Same ID new PDF leaves old original and feedback bytes intact; old registration is changed and historical feedback remains readable."
+
+[[validation_groups.cases]]
+id="local_source_currentness_distinguishes_removed_from_unavailable_index"
+behavior="local_source_currentness_distinguishes_removed_from_unavailable_index"
+oracle="Replacement removing ID differs from an unavailable explicit index; neither claims current."
+
+[[validation_groups.cases]]
+id="local_source_currentness_legacy_packet_is_not_bound"
+behavior="local_source_currentness_legacy_packet_is_not_bound"
+oracle="Historical local-PDF packet without binding stays readable and explicitly not_bound."
+
+[[validation_groups.cases]]
+id="local_source_currentness_rejects_corrupt_binding_and_candidate_identity"
+behavior="local_source_currentness_rejects_corrupt_binding_and_candidate_identity"
+oracle="Bad schema/hash/ID/path/candidate associations are rejected; no fallback guesses."
+
+[[validation_groups.cases]]
+id="local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="local_source_unicode_space_colon_paths_survive_query_and_metadata_reuse"
+oracle="Normal Unicode, spaces and Unix colons in source and custom index paths survive native registration, query bindings, metadata/navigation merge with unavailable extraction tools, repeated-input no-op and historical packet verification."
+scope="Synthetic macOS native PDF and query fixtures; Windows native execution not verified"
+
+[[validation_groups.cases]]
+id="packet_source_audit_separates_old_original_failure_from_current_registration"
+constraint="packet_source_audit_separates_structure_originals_and_registration"
+behavior="packet_source_audit_separates_old_original_failure_from_current_registration"
+oracle="Actual two-source query packet: changed or missing old original retains its registration comparison and the healthy candidate remains observable; strict verification and feedback continue rejecting and packet/index bytes remain unchanged."
+scope="Synthetic macOS native PDF fixture; diagnostic itself uses no native tools; no real library mutation"
+
+[[validation_groups.cases]]
+id="packet_source_audit_preserves_legacy_unknown_and_nonlocal_scope"
+constraint="packet_source_audit_separates_structure_originals_and_registration"
+behavior="packet_source_audit_preserves_legacy_unknown_and_nonlocal_scope"
+oracle="Legacy local evidence without binding stays not_bound, nonlocal registration remains not_applicable, and unavailable indexes do not imply removed or current. Original byte identity is not native-page or source-pack verification."
+scope="Synthetic packet variants; no engineering applicability or platform-wide claim"
+
+[[validation_groups.cases]]
+id="packet_source_audit_rejects_late_structural_damage_after_missing_original"
+constraint="packet_source_audit_separates_structure_originals_and_registration"
+behavior="packet_source_audit_rejects_late_structural_damage_after_missing_original"
+oracle="An earlier missing original does not hide later corrupt text/span/locator/binding/context/review declarations; malformed packet is rejected before observations can be presented as valid diagnosis."
+scope="Synthetic corrupt metadata; no source or index mutations"
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+rust_path="crates/oe-knowledge/tests/source_io.rs"
+oracle="Actual small PDFs plus native invocation counter: adding one source preserves old rows and extraction observations; changing only navigation/edition reuses native text without invoking Poppler; resulting FTS page identities remain bound."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validation_groups.cases]]
+id="merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations"
+behavior="merge_adds_and_updates_one_source_reusing_verified_pages_and_tool_observations"
+
+[[validation_groups.cases]]
+id="merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source"
+behavior="merge_noop_preserves_pair_without_poppler_and_retains_unspecified_source"
+oracle="Identical partial merge with unusable Poppler returns unchanged, keeps omitted source and exact registration/index bytes."
+
+[[validation_groups.cases]]
+id="registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals"
+behavior="registration_preview_hashes_inputs_without_poppler_or_publication_and_lists_removals"
+oracle="Preview checks SHA and prior binding without Poppler/publishing; lists merge additions and replacement removals; unknown new page count remains unknown."
+
+[[validation_groups.cases]]
+id="merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair"
+behavior="merge_rejects_retained_original_and_bound_index_drift_preserving_existing_pair"
+oracle="Changed retained original and corrupt/rebound index refuse with previous pair retained."
+
+[[validation_groups.cases]]
+id="merge_budgets_apply_to_complete_retained_plus_incoming_catalog"
+behavior="merge_budgets_apply_to_complete_retained_plus_incoming_catalog"
+oracle="The complete merged catalog obeys source/chapter/page limits, not only the newly supplied subset."
+
+[[validation_groups.cases]]
+id="merge_failure_and_conflicting_modes_leave_original_registration_intact"
+behavior="merge_failure_and_conflicting_modes_leave_original_registration_intact"
+oracle="Conflicting merge/replace and extraction failure preserve old pair and no partial new catalog is adopted."
+
+[[validation_groups.cases]]
+id="registration_rejects_unreadable_original_paths_before_publish_in_all_modes"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="registration_rejects_unreadable_original_paths_before_publish_in_all_modes"
+oracle="Backslash and control characters in original filenames or directory components reject before extraction/publication in create, merge, replace and dry-run, preserving originals and existing index pair."
+scope="Synthetic macOS files; no real library mutation or engineering adoption"
+
+[[validation_groups.cases]]
+id="registration_rejects_unreadable_index_paths_before_publish_in_all_modes"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+behavior="registration_rejects_unreadable_index_paths_before_publish_in_all_modes"
+oracle="Custom index directory containing backslash, control characters or Unix non-UTF8 rejects without panic or publication in every registration mode; existing snapshots and originals remain exact."
+scope="Synthetic macOS files; non-UTF8 remains a rejection regression, not a claimed baseline CLI defect"
+
+[[validation_groups.cases]]
+id="metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search"
+constraint="local_pdf_navigation_reuses_verified_native_text"
+behavior="metadata_navigation_merge_reuses_native_text_without_tools_and_rebuilds_search"
+oracle="Actual native fixture then unavailable tool paths: preview and merge preserve original/native row/tool identities, retain omitted source, publish updated navigation with known page/chapter counts, new alias matches and old alias is removed for the changed source; repeated input leaves index bytes unchanged."
+scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
+
+[[validation_groups.cases]]
+id="metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply"
+constraint="local_pdf_navigation_reuses_verified_native_text"
+behavior="metadata_navigation_merge_rejects_out_of_document_chapters_in_preview_and_apply"
+oracle="New chapter end beyond verified page count fails both preview and apply with unchanged prior index pair."
+scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
+
+[[validation_groups.cases]]
+id="changed_original_identity_and_replace_still_require_native_extraction"
+constraint="local_pdf_navigation_reuses_verified_native_text"
+behavior="changed_original_identity_and_replace_still_require_native_extraction"
+oracle="Path-only change, changed PDF bytes and replacement require extraction in preview, refuse absent tools without publishing, then invoke actual counted tools and publish extracted IDs."
+scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
+
+[[validation_groups.cases]]
+id="metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration"
+constraint="local_pdf_navigation_reuses_verified_native_text"
+behavior="metadata_navigation_merge_rejects_rebound_rows_that_disagree_with_old_declaration"
+oracle="Alter old chapter or old page navigation, rebind the outer index SHA, then metadata merge preview and apply must reject disagreement with the old declaration and leave the prior pair byte-exact."
+scope="Synthetic macOS native software fixtures; no real library mutation, OCR or engineering adoption"
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="knowledge"
+constraint="source_delivery_precise_paths_and_guard"
+rust_path="crates/oe-knowledge/tests/source_library.rs"
+oracle="Separate source directories with equal basename import successfully; existing verified originals do not trigger fetch."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validation_groups.cases]]
+id="same_basename_nested_import_and_existing_fetch_are_unambiguous"
+behavior="same_basename_nested_import_and_existing_fetch_are_unambiguous"
+
+[[validation_groups.cases]]
+id="mixed_nested_and_flat_same_basename_uses_distinct_inputs"
+behavior="mixed_nested_and_flat_same_basename_uses_distinct_inputs"
+oracle="Mixed nested and flat source resolution succeeds when actual input paths differ."
+
+[[validation_groups.cases]]
+id="shared_flat_input_is_rejected_before_any_original_is_published"
+behavior="shared_flat_input_is_rejected_before_any_original_is_published"
+oracle="Two declarations sharing one actual flat input reject before either destination is published, including nested-versus-flat alias."
+
+[[validation_groups.cases]]
+id="same_basename_fetch_uses_distinct_drive_ids"
+behavior="same_basename_fetch_uses_distinct_drive_ids"
+oracle="Synthetic local gws fixture uses separate declared file IDs despite equal basenames; no real network."
+
+[[validation_groups.cases]]
+id="delivery_selected_merge_preserves_previous_books_and_preview_is_read_only"
+behavior="delivery_selected_merge_preserves_previous_books_and_preview_is_read_only"
+oracle="Selecting one book with merge preserves other sources; preview/no-op keep old bytes and have no extraction."
+
+[[validation_groups.cases]]
+id="delivery_change_during_extraction_blocks_new_replace_and_merge_publication"
+behavior="delivery_change_during_extraction_blocks_new_replace_and_merge_publication"
+oracle="Actual Poppler wrapper changes original delivery during extraction: create publishes nothing; replace/merge restore exact prior index and registration."
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="cli"
+constraint="local_pdf_explicit_incremental_registration"
+rust_path="crates/oe-cli/tests/knowledge_cli.rs"
+oracle="Actual CLI with empty PATH previews, merges only new source with explicit Poppler, reports unchanged without tools, preserves old book, exposes replace removals, and refuses mode conflict."
+scope="Bounded macOS native software fixtures; no OCR, network, engineering applicability or adoption; other platforms unverified"
+
+[[validation_groups.cases]]
+id="registration_merge_preview_and_noop_preserve_prior_sources_without_path"
+module="knowledge"
+behavior="registration_merge_preview_and_noop_preserve_prior_sources_without_path"
+
+[[validation_groups.cases]]
+id="source_delivery_merge_preview_and_unchanged_are_successful_cli_results"
+module="knowledge"
+constraint="source_delivery_precise_paths_and_guard"
+behavior="source_delivery_merge_preview_and_unchanged_are_successful_cli_results"
+oracle="Actual selected delivery CLI supports merge/dry-run and exits zero for truthful preview/unchanged without claiming registered."
+
+[[validation_groups.cases]]
+id="supplier_default_build_index_is_readable_by_default_status_and_query"
+constraint="supplier_default_index_matches_reader"
+behavior="supplier_default_build_index_is_readable_by_default_status_and_query"
+oracle="Actual tiny supplier archive build without --index produces default reader directory; default status and query return source-bound pages; no legacy misumi-native fallback."
+
+[[validation_groups.cases]]
+id="packet_current_registration_option_and_feedback_distinguish_history"
+constraint="knowledge_cli_current_registration_requirement"
+behavior="packet_current_registration_option_and_feedback_distinguish_history"
+oracle="Real CLI register/query/strict verify/feedback passes current; updated title remains historically ready, strict verify fails with preserved historical status and strict feedback creates no file; legacy packet is not_bound."
+scope="Bounded macOS synthetic source fixtures and real CLI; no engineering adoption or other-platform claim"
+
+[[validation_groups.cases]]
+id="pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output"
+constraint="pdf_library_audit_cli"
+behavior="pdf_library_audit_cli_requires_scope_and_preserves_sources_and_private_output"
+oracle="Real CLI requires explicit directory, accepts audit without PATH or native tool arguments, finds a new PDF, stores a new private report, rejects overwrite and source-directory output, rejects whole source/index/private scope, preserves unknown when index absent and original/index bytes unchanged."
+scope="Synthetic macOS CLI fixture; no real Project or all-platform acceptance"
+
+[[validation_groups.cases]]
+id="packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification_refusal"
+constraint="knowledge_cli_packet_source_audit"
+behavior="packet_source_audit_cli_is_read_only_without_tools_and_preserves_verification_refusal"
+oracle="Real CLI diagnoses source failures with empty PATH, writes an optional new private source-audit.json, retains byte-exact inputs and rejects malformed packets without an artifact; ordinary/strict verification and feedback still reject unusable originals."
+scope="Synthetic macOS CLI fixture; no current Project or native-page validity from diagnosis"
+
+[[validation_groups.cases]]
+id="incad_library_cli_requires_explicit_paths_and_preserves_boundaries"
+module="knowledge"
+constraint="incad_library_source_graph"
+behavior="incad_library_cli_requires_explicit_paths_and_preserves_boundaries"
+oracle="Actual CLI requires explicit archive/index/query/case, creates source-library reports and preserves error/adoption boundaries."
+scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="knowledge"
+constraint="local_pdf_explicit_incremental_registration"
+rust_path="crates/oe-knowledge/src/registration/incremental.rs"
+oracle="Preview and no-op both invoke the original intake owner guard; rejection leaves existing index pair exact."
+scope="Actual local bounded fixtures; no engineering adoption or full concurrent filesystem guarantee"
+
+[[validation_groups.cases]]
+id="preview_and_noop_run_final_intake_guard_and_preserve_index_bytes"
+behavior="preview_and_noop_run_final_intake_guard_and_preserve_index_bytes"
+
+[[validation_groups.cases]]
+id="final_publication_rechecks_original_after_owner_guard_and_rolls_back"
+behavior="final_publication_rechecks_original_after_owner_guard_and_rolls_back"
+oracle="Deterministic final guard mutates original source; post-guard source recheck blocks publication and replacement restores old registration/index."
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="knowledge"
+constraint="local_pdf_source_registration_currentness"
+rust_path="crates/oe-knowledge/src/registration_freshness.rs"
+oracle="128 unbound historical local-PDF or supplier candidates remain not_bound or not_applicable without index reads; a later malformed binding is still rejected. Provider budget does not retroactively impose the native query candidate cap on historical packets."
+scope="Rust synthetic metadata guard; no source file, index, network or engineering decisions"
+
+[[validation_groups.cases]]
+id="legacy_packets_above_query_limit_keep_unknown_registration_without_index_reads"
+behavior="legacy_packets_above_query_limit_keep_unknown_registration_without_index_reads"
+
+[[validation_groups.cases]]
+id="root_relative_paths_use_portable_separators_and_preserve_names"
+behavior="root_relative_paths_use_portable_separators_and_preserve_names"
+oracle="Normal path components use slash-separated root-relative binding paths; Unicode and spaces remain exact, parent components reject, and Unix colon names are not narrowed."
+scope="Portable path construction exercised on macOS; Windows native execution not verified"
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="knowledge"
+constraint="pdf_library_readonly_intake_audit"
+rust_path="crates/oe-knowledge/tests/library_audit.rs"
+oracle="Actual two-page native/empty fixture plus new PDF, duplicate bytes and non-PDF: per-source coverage, unseen PDFs and duplicate paths reported; all source/index bytes unchanged."
+scope="Synthetic macOS source fixtures with actual Poppler registration; audit uses no native tools, OCR, network or adoption"
+
+[[validation_groups.cases]]
+id="library_audit_reports_unregistered_duplicates_and_per_source_native_coverage"
+behavior="library_audit_reports_unregistered_duplicates_and_per_source_native_coverage"
+
+[[validation_groups.cases]]
+id="library_audit_distinguishes_missing_and_changed_registered_originals"
+behavior="library_audit_distinguishes_missing_and_changed_registered_originals"
+oracle="Missing and same-size changed registered original are diagnosed independently from the stored index coverage; no repair or publication occurs."
+
+[[validation_groups.cases]]
+id="library_audit_missing_or_invalid_index_preserves_unknown_registration"
+behavior="library_audit_missing_or_invalid_index_preserves_unknown_registration"
+oracle="Missing or corrupt index yields unavailable and PDF registration unknown, never falsely unregistered."
+
+[[validation_groups.cases]]
+id="library_audit_explicit_scope_does_not_inspect_outside_registered_originals"
+behavior="library_audit_explicit_scope_does_not_inspect_outside_registered_originals"
+oracle="Explicit child directory excludes outside registered originals and other files, without inspecting the out-of-scope source bytes."
+
+[[validation_groups.cases]]
+id="library_audit_does_not_follow_symlinked_files_or_directories"
+behavior="library_audit_does_not_follow_symlinked_files_or_directories"
+oracle="File/directory links remain unvisited and are never reported as verified original contents."
+
+[[validation_groups.cases]]
+id="library_audit_bounded_scan_does_not_claim_complete_coverage"
+behavior="library_audit_bounded_scan_does_not_claim_complete_coverage"
+oracle="Depth budget exhaustion yields partial plus issue and does not claim unseen entries processed; source tree remains unchanged."
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="knowledge"
+constraint="local_pdf_registration_paths_roundtrip_before_publication"
+rust_path="crates/oe-knowledge/src/local_pdf_paths.rs"
+oracle="Component-based slash encoding preserves valid source names and round-trips stored parent-relative paths to the exact original."
+scope="Pure synthetic path representation; no sources, network or engineering decisions"
+
+[[validation_groups.cases]]
+id="local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip"
+behavior="local_pdf_paths_preserve_unicode_spaces_and_index_relative_roundtrip"
+
+[[validation_groups.cases]]
+id="local_pdf_paths_do_not_blacklist_installation_root_names"
+behavior="local_pdf_paths_do_not_blacklist_installation_root_names"
+oracle="A synthetic Unix installation root containing backslash, control characters, colon and Unicode does not invalidate otherwise valid source and index names below it; stored references still round-trip exactly."
+scope="Private synthetic Unix root fixture; no actual library or other-platform acceptance"
+
+[[validation_groups.cases]]
+id="local_pdf_paths_reject_unreadable_components_and_non_utf8"
+behavior="local_pdf_paths_reject_unreadable_components_and_non_utf8"
+oracle="Unrepresentable path components reject rather than renaming, normalizing or using lossy replacement; existing containment and no-symlink rules remain authoritative."
+scope="Synthetic path guard, including Unix invalid bytes; no other-platform execution claim"
+
+[[validation_groups.cases]]
+id="local_pdf_path_limits_count_characters_and_check_final_relative_form"
+behavior="local_pdf_path_limits_count_characters_and_check_final_relative_form"
+oracle="Each final persisted path respects the existing 2000-character reader limit, including a long index-relative traversal even when root-relative forms individually fit; UTF-8 bytes are not counted as characters."
+scope="Synthetic path strings independent of filesystem path-length limits"
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="knowledge"
+constraint="packet_source_audit_bounded_read_only_observation"
+rust_path="crates/oe-knowledge/src/packet/source_audit.rs"
+oracle="Original replacement, deletion and appearance after initial observation are unavailable; reserved recheck reads are conservatively charged including read headroom."
+scope="Synthetic local software fixtures; no real library mutation or engineering adoption"
+
+[[validation_groups.cases]]
+id="packet_original_recheck_rejects_changed_deleted_and_newly_present_files"
+behavior="packet_original_recheck_rejects_changed_deleted_and_newly_present_files"
+
+[[validation_groups.cases]]
+id="packet_original_hash_budget_reserves_recheck_without_reading_large_sparse_file"
+behavior="packet_original_hash_budget_reserves_recheck_without_reading_large_sparse_file"
+oracle="A sparse original whose two reads plus headroom exceed 4 GiB is unavailable without any hash read; final verification budget is reserved before initial read."
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="knowledge"
+constraint="incad_library_source_graph"
+rust_path="crates/oe-knowledge/tests/incad_library.rs"
+oracle="Synthetic projection/HTML/case/BOM/CAD closure produces retained statement/source/BOM/model/member relationships, preserves declared missing coverage and creates no Project or engineering adoption."
+scope="Synthetic native macOS source fixtures; no CAD execution, real Project adoption or unseen transfer claim"
+
+[[validation_groups.cases]]
+id="incad_library_builds_source_bound_graph_without_project_adoption"
+behavior="incad_library_builds_source_bound_graph_without_project_adoption"
+
+[[validation_groups.cases]]
+id="incad_library_rejects_changed_sources_and_rebound_graph"
+constraint="incad_library_rebuilds_claims_and_portable_paths"
+behavior="incad_library_rejects_changed_sources_and_rebound_graph"
+oracle="Alter original or derived graph and re-sign its outer SHA; verify/search/view reject rather than trust author-controlled graph claims."
+
+[[validation_groups.cases]]
+id="incad_library_rejects_unsafe_or_incomplete_source_closure"
+behavior="incad_library_rejects_unsafe_or_incomplete_source_closure"
+oracle="Missing member, malformed source identity, duplicate cases, wrong BOM association and unsafe paths fail without publishing a library."
+
+[[validation_groups.cases]]
+id="incad_library_copies_portably_with_relative_source_bindings"
+constraint="incad_library_rebuilds_claims_and_portable_paths"
+behavior="incad_library_copies_portably_with_relative_source_bindings"
+oracle="Copy the complete selected archive/index to a different real root, remove the old archive and still verify/retrieve by portable references."
+
+[[validation_groups.cases]]
+id="incad_library_reads_large_cad_members_beyond_intake_limit"
+constraint="incad_library_bounded_reads_and_retrieval"
+behavior="incad_library_reads_large_cad_members_beyond_intake_limit"
+oracle="A17MiB synthetic member and ZIP use the explicit library streaming profile while old16MiB staging semantics remain unchanged; originals remain byte-exact."
+
+[[validation_groups.cases]]
+id="incad_library_search_only_rehashes_returned_case_payloads"
+constraint="incad_library_bounded_reads_and_retrieval"
+behavior="incad_library_search_only_rehashes_returned_case_payloads"
+oracle="A healthy returned case succeeds despite a nonreturned CAD payload change; explicit coverage leaves nonreturned CAD unchecked, while full verify and retrieval of the changed case reject."
+scope="Synthetic source fixtures; no CAD execution or adoption"
+
+[[validation_groups.cases]]
+id="incad_library_preserves_missing_purpose_without_inventing_it"
+behavior="incad_library_preserves_missing_purpose_without_inventing_it"
+oracle="An empty source purpose remains empty and is explicitly missing after build and view, without invented engineering text."
+scope="Synthetic source fixtures; no CAD execution or adoption"
+
+[[validation_groups]]
+[validation_groups.defaults]
+module="knowledge"
+constraint="incad_source_bundle_bounded_safe_archive_recovery"
 rust_path="crates/oe-knowledge/src/incad/bundle.rs"
 oracle="Verify two synthetic shards without creating a target; import restores exact selected pointer/CAD/upstream-manifest bytes, including the old path declaration inside the original manifest. Omitted browser capture remains absent; repeat import refuses overwrite; source bundle bytes stay unchanged and report retains source-closure not_run/engineering not_granted."
 scope="Synthetic transport fixture; no real CAD, source graph, Project or platform-wide qualification"
 
-[[validations]]
+[[validation_groups.cases]]
+id="incad_bundle_selected_transport_round_trip"
+constraint="incad_source_bundle_preserves_selected_source_identity"
+behavior="bundle_restores_exact_selected_files_without_rewriting_upstream"
+
+[[validation_groups.cases]]
 id="incad_bundle_cross_shard_path_preflight"
-module="knowledge"
-constraint="incad_source_bundle_bounded_safe_archive_recovery"
 behavior="bundle_rejects_cross_shard_duplicates_and_file_directory_conflicts_before_staging"
-rust_path="crates/oe-knowledge/src/incad/bundle.rs"
 oracle="A duplicate member across shards and a child member below another declared file are rejected before creating an import stage or target."
 scope="Synthetic adversarial inventories"
 
-[[validations]]
+[[validation_groups.cases]]
 id="incad_bundle_late_shard_failure_is_transactional"
-module="knowledge"
 constraint="incad_source_bundle_publishes_only_complete_new_tree"
 behavior="bundle_late_invalid_shard_leaves_no_published_target"
-rust_path="crates/oe-knowledge/src/incad/bundle.rs"
 oracle="A valid first shard followed by an archive with a correctly bound outer identity but wrong declared member hash fails; no target is published and temporary stages are removed."
 scope="Synthetic late payload failure; no original source mutation"
 
-[[validations]]
+[[validation_groups.cases]]
 id="incad_bundle_excluded_and_untrusted_input_rejection"
-module="knowledge"
-constraint="incad_source_bundle_bounded_safe_archive_recovery"
 behavior="bundle_rejects_private_paths_symlink_members_and_unbound_descriptors"
-rust_path="crates/oe-knowledge/src/incad/bundle.rs"
 oracle="Browser capture, jobs, capture root, watcher log and root configuration member paths are rejected, including nested captures/jobs/runtime/private_projects/browser_capture components under otherwise allowed prefixes. A symlink tar member with an otherwise declared path is rejected. Changing a shard JSON without updating its bound identity is rejected; no restored target appears."
 scope="Synthetic excluded metadata and archive type fixtures"
 
-[[validations]]
+[[validation_groups.cases]]
 id="incad_bundle_file_budget_and_target_scope"
-module="knowledge"
 constraint="incad_source_bundle_publishes_only_complete_new_tree"
 behavior="bundle_declared_budgets_and_target_containment_are_enforced"
-rust_path="crates/oe-knowledge/src/incad/bundle.rs"
 oracle="A declared file larger than 256 MiB fails preflight; an import destination outside sources/misumi is rejected without creating it. Other bounded values remain explicit implementation limits, not empirically exercised by this test."
 scope="Synthetic representative limit and destination tests"
+
+[[types]]
+name="EngineeringReasoningInput"
+meaning="Current engineering inquiry whose declared relations and verified observations explain the next work"
+identity="Exact Project, frozen inquiry and optional verified host state; no second Project"
+fields=[
+{name="schema",rust_type="String",required=true,format="status",meaning="Version",unit="identity",precision="exact",write="Agent",applicability="Reasoning projection",acceptance="Explicit version",allowed_values=["oev2.engineering-reasoning-input/1"]},
+{name="project",rust_type="ArtifactReference",required=true,format="typed",meaning="Exact current Project",unit="bytes",precision="SHA256",write="Agent",applicability="Same inquiry",acceptance="Original Project or verified host result Project"},
+{name="frozen",rust_type="ArtifactReference",required=true,format="typed",meaning="Complete frozen inquiry",unit="bytes",precision="SHA256",write="Agent",applicability="Same inquiry",acceptance="Original source closure and complete acceptance"},
+{name="state",rust_type="Option<ArtifactReference>",required=false,format="typed",meaning="Optional current host history",unit="bytes",precision="SHA256",write="Agent",applicability="Recorded inquiry",acceptance="Native readback of every retained state; no invented completion"}
+]
+
+[[types]]
+name="EngineeringReasoningNode"
+meaning="A scoped role of original engineering content in the current inquiry"
+identity="Derived node id plus exact source and JSON location; same words do not imply same object"
+fields=[
+{name="id",rust_type="String",required=true,format="typed",meaning="Unique role identity",unit="identity",precision="exact",write="Rust",applicability="This view",acceptance="Unique within projection"},
+{name="kind",rust_type="String",required=true,format="status",meaning="Role in this inquiry",unit="category",precision="explicit",write="Rust",applicability="Declared relation",acceptance="Roles preserve original authority",allowed_values=["goal","requirement","object","condition","function","mechanism","candidate","gap","hypothesis","action","outcome","premise","decision","source","assertion","check_basis"]},
+{name="value",rust_type="serde_json::Value",required=true,format="typed",meaning="Original content at the bound location",unit="source units",precision="original value",write="Rust",applicability="Source-bound role",acceptance="No inferred physical facts"},
+{name="status",rust_type="String",required=true,format="typed",meaning="Declared or verified observation state",unit="state",precision="explicit",write="Rust",applicability="This source and scope",acceptance="Unknown, hypothesis and failure preserved"},
+{name="source",rust_type="ArtifactReference",required=true,format="typed",meaning="Original file",unit="bytes",precision="SHA256",write="Rust",applicability="Same Project",acceptance="Read current bytes"},
+{name="pointer",rust_type="String",required=true,format="typed",meaning="JSON pointer in original file",unit="location",precision="exact",write="Rust",applicability="Original JSON",acceptance="Resolve source value"},
+{name="embedded_pointer",rust_type="Option<String>",required=false,format="typed",meaning="Optional pointer inside a JSON-encoded condition string",unit="location",precision="exact",write="Rust",applicability="Engineering basis",acceptance="Decode original condition without changing its identity"}
+]
+
+[[types]]
+name="EngineeringReasoningRelation"
+meaning="Declared relationship or explicitly bounded native impact between source roles"
+identity="Two node identities and a source location supporting this relationship"
+fields=[
+{name="from",rust_type="String",required=true,format="typed",meaning="Origin node",unit="identity",precision="exact",write="Rust",applicability="This view",acceptance="Existing node"},
+{name="to",rust_type="String",required=true,format="typed",meaning="Target node",unit="identity",precision="exact",write="Rust",applicability="This view",acceptance="Existing node"},
+{name="kind",rust_type="String",required=true,format="typed",meaning="Relation meaning; context, requirement, test, branch or declared dependency",unit="relation",precision="explicit",write="Rust",applicability="Original declared links",acceptance="Context and impact are not physical causation"},
+{name="source",rust_type="ArtifactReference",required=true,format="typed",meaning="Relation source",unit="bytes",precision="SHA256",write="Rust",applicability="Same inquiry",acceptance="Original source retained"},
+{name="pointer",rust_type="String",required=true,format="typed",meaning="Source location establishing the relation",unit="location",precision="exact",write="Rust",applicability="Original JSON",acceptance="Resolve original declaration"}
+]
+
+[[types]]
+name="EngineeringReasoningAction"
+meaning="Next-work explanation derived from frozen dependencies and original result owners"
+identity="Original action; selection does not dispatch or authorize a tool"
+fields=[
+{name="action_id",rust_type="String",required=true,format="typed",meaning="Frozen action",unit="identity",precision="exact",write="Rust",applicability="Same inquiry",acceptance="Bound action"},
+{name="status",rust_type="String",required=true,format="status",meaning="Continuation state",unit="state",precision="explicit",write="Rust",applicability="Current verified history",acceptance="No future or unknown outcome unlocks a branch",allowed_values=["ready","awaiting_host","blocked_by_pending_result","blocked_by_outcome","budget_exhausted","recorded","needs_review"]},
+{name="requirement",rust_type="String",required=true,format="typed",meaning="Original complete-task criterion advanced",unit="criterion",precision="exact text",write="Rust",applicability="Parent acceptance",acceptance="No reduced threshold"},
+{name="unresolved_premises",rust_type="Vec<String>",required=true,format="typed",meaning="Required facts not currently declared with a value",unit="property identities",precision="original status",write="Rust",applicability="Candidate basis",acceptance="Investigable unknown does not grant model applicability"},
+{name="waiting_outcomes",rust_type="Vec<String>",required=true,format="typed",meaning="Required outcomes not uniquely established",unit="outcome identities",precision="exact",write="Rust",applicability="Frozen branch graph",acceptance="Failed and ambiguous results cannot satisfy dependencies"},
+{name="affected_decisions",rust_type="Vec<String>",required=true,format="typed",meaning="Potential review scope from existing Project impact owner",unit="decision identities",precision="declared links only",write="Rust",applicability="If tested claim changes",acceptance="Hypothetical impact is not actual invalidation or causation"},
+{name="engineering_obligations",rust_type="Option<Vec<String>>",required=false,format="typed",meaning="Native check node identities for the candidate conditions; does not block investigation",unit="node identities",precision="exact",write="Rust",applicability="View /2",acceptance="All failed and unknown checks retained and linked"},
+{name="next_step",rust_type="String",required=true,format="typed",meaning="Bounded instruction appropriate to observed state",unit="instruction",precision="scope explicit",write="Rust",applicability="Current host action",acceptance="No blind retry, automatic dispatch or adoption"}
+]
+
+[[types]]
+name="EngineeringReasoningView"
+meaning="Rebuildable engineering relation view used by inquiry, execution handoff and workspace recovery"
+identity="Same input and original bytes yield the same nodes, relations and continuation reasons"
+fields=[
+{name="schema",rust_type="String",required=true,format="status",meaning="Version",unit="identity",precision="exact",write="Rust",applicability="Reasoning view",acceptance="Explicit schema",allowed_values=["oev2.engineering-reasoning-view/1","oev2.engineering-reasoning-view/2"]},
+{name="input",rust_type="EngineeringReasoningInput",required=true,format="typed",meaning="Original binding",unit="identity",precision="exact",write="Rust",applicability="Same inquiry",acceptance="Full current input rechecked"},
+{name="nodes",rust_type="Vec<EngineeringReasoningNode>",required=true,format="typed",meaning="Source roles",unit="nodes",precision="original values",write="Rust",applicability="Current inquiry",acceptance="Complete acceptance retained; bounded inventory"},
+{name="relations",rust_type="Vec<EngineeringReasoningRelation>",required=true,format="typed",meaning="Declared engineering and inquiry links",unit="relations",precision="source-bound",write="Rust",applicability="Same nodes",acceptance="No invented linkage"},
+{name="actions",rust_type="Vec<EngineeringReasoningAction>",required=true,format="typed",meaning="Frozen order with current continuation reasons",unit="actions",precision="original order",write="Rust",applicability="Current inquiry",acceptance="No hidden scheduling policy"},
+{name="recommended_action",rust_type="Option<String>",required=false,format="typed",meaning="Current pending action or first eligible frozen action",unit="action identity",precision="deterministic",write="Rust",applicability="Declared plan only",acceptance="Suggestion needs existing execution authorization"},
+{name="complete_acceptance",rust_type="Vec<String>",required=true,format="typed",meaning="Entire parent acceptance",unit="criteria",precision="exact text and order",write="Rust",applicability="Complete work",acceptance="No omitted obligations"},
+{name="uncovered_acceptance",rust_type="Vec<String>",required=true,format="typed",meaning="Criteria with no declared exploration action",unit="criteria",precision="exact text",write="Rust",applicability="This exploration only",acceptance="Uncovered remains open; no inferred coverage"},
+{name="sources",rust_type="Vec<ArtifactReference>",required=true,format="typed",meaning="Complete verified artifact closure",unit="bytes",precision="SHA256",write="Rust",applicability="Same current sources",acceptance="Changes reject reuse"},
+{name="checks",rust_type="Option<Vec<EngineeringReasoningCheck>>",required=false,format="typed",meaning="Recomputed existing engineering checks; mandatory for view /2",unit="scoped check results",precision="original owner",write="Rust",applicability="Same current conditions",acceptance="Original status and failure details; verify replays current owners"},
+{name="automatic_dispatch",rust_type="bool",required=true,format="typed",meaning="Always false",unit="boolean",precision="exact",write="Rust",applicability="Derived view",acceptance="No tools dispatched"},
+{name="engineering_adoption",rust_type="String",required=true,format="status",meaning="Authority boundary",unit="state",precision="exact",write="Rust",applicability="Derived reasoning",acceptance="Original adoption owner retained",allowed_values=["not_granted"]}
+]
+
+[[interfaces]]
+name="EngineeringReasoningPort"
+rust_path="crates/oe-engineering/src/workflow/exploration/reasoning.rs"
+implementation="ReasoningExecutor"
+module="engineering"
+method="derive"
+input="EngineeringReasoningInput"
+output="EngineeringReasoningView"
+error="FailureRecord"
+effects="Read frozen Project/work and optional verified host history; derive original role/relationship graph, branch readiness and bounded impact. No tool dispatch, second Project, factual promotion or engineering adoption."
+
+[[constraints]]
+id="engineering_reasoning_same_relations"
+requirement="req_engineering"
+module="engineering"
+check="derive"
+rust_path="crates/oe-engineering/src/workflow/exploration/reasoning.rs"
+statement="Build source-located goal/function/mechanism/object/premise/assertion/hypothesis/action/outcome/decision relations from the same frozen engineering work. View /2 reuses current engineering checks with exact conclusions, failures and scoped evidence; investigation readiness does not discharge adoption obligations. Preserve all acceptance and distinguish declared context from physical truth. Verified results determine branch readiness; hypothetical downstream review uses the existing Project impact owner. Inquiry handoff and workspace recovery consume this same projection."
+severity="error"
+
+[[validations]]
+id="reasoning_original_relations"
+module="engineering"
+constraint="engineering_reasoning_same_relations"
+behavior="reasoning_retains_complete_source_relations_and_unknown_premises"
+rust_path="crates/oe-engineering/tests/exploration.rs"
+oracle="Every node resolves to its original value; full acceptance and unplanned criteria remain; unknown premises and scoped hypotheses cannot become engineering facts. Original files unchanged."
+scope="Bounded declared engineering relations; no physical certification"
+
+[[validations]]
+id="reasoning_branch_and_impact"
+module="engineering"
+constraint="engineering_reasoning_same_relations"
+behavior="reasoning_branches_follow_verified_outcomes_and_declared_impact"
+rust_path="crates/oe-engineering/tests/exploration.rs"
+oracle="Only a uniquely observed outcome opens its dependent action. Pending and failed observations remain unresolved; declared dependent decisions appear in potential review while unrelated decisions remain outside."
+scope="Original Project impact semantics and frozen order; no causal diagnosis"
+
+[[validations]]
+id="reasoning_drift_and_resume"
+module="engineering"
+constraint="engineering_reasoning_same_relations"
+behavior="reasoning_rejects_changed_views_projects_and_sources"
+rust_path="crates/oe-engineering/tests/exploration.rs"
+oracle="Rewritten derived relations, current Project or source bytes reject; workspace resumes exactly the same verified reasoning and complete obligations."
+scope="Same source-bound explanation across native consumers"
+
+[[validations]]
+id="reasoning_existing_engineering_checks"
+module="engineering"
+constraint="engineering_reasoning_same_relations"
+behavior="reasoning_connects_existing_failed_checks_without_blocking_investigation"
+rust_path="crates/oe-engineering/tests/exploration.rs"
+oracle="Native violated function check is source-located and linked to action and adoption obligations; investigation remains ready; edited check result rejects on replay."
+scope="Current native owners and source declarations, not physical truth"
+
+# Shared engineering identity and predicate relations on the existing owners.
+[[types]]
+name="ProjectEntityRef"
+meaning="Category-qualified endpoint; equal spelling across categories is not identity"
+identity="Same Project, current object revisions, condition contents and declared sources"
+fields=[
+{name="kind",rust_type="String",required=true,format="status",meaning="Entity category",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained",allowed_values=["object", "condition", "evidence", "decision", "source_digest", "dependency", "purpose"]},
+{name="id",rust_type="String",required=true,format="typed",meaning="Original exact identity; purpose uses project:purpose",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+]
+
+[[types]]
+name="EngineeringFunctionRealization"
+meaning="Function allocation to a current structure, mechanism and verification assertions; candidate is not assigned"
+identity="Same Project, current object revisions, condition contents and declared sources"
+fields=[
+{name="schema",rust_type="String",required=true,format="status",meaning="Explicit requirement protocol",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained",allowed_values=["oev2.function-realization/1"]},
+{name="function_id",rust_type="String",required=true,format="typed",meaning="Necessary function identity",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="inventory_scope",rust_type="String",required=true,format="status",meaning="Function inventory completeness",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained",allowed_values=["declared_complete", "partial"]},
+{name="state",rust_type="String",required=true,format="status",meaning="Allocation state",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained",allowed_values=["assigned", "candidate", "unresolved"]},
+{name="realization",rust_type="Option<ObjectIdentity>",required=false,format="typed",meaning="Actual or candidate structure in the same Project",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="mechanism_assertion",rust_type="Option<String>",required=false,format="typed",meaning="Mechanism/model assertion in realization condition",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="verification_assertions",rust_type="Vec<String>",required=true,format="typed",meaning="Predicate checks in realization condition; no self or relation-only evidence",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+]
+
+[[types]]
+name="EngineeringCheckReference"
+meaning="A predicate owned by an existing engineering checker, with its full current object identity"
+identity="Same Project, current object revisions, condition contents and declared sources"
+fields=[
+{name="object",rust_type="ObjectIdentity",required=true,format="typed",meaning="Current checked object and condition",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="assertion_id",rust_type="String",required=true,format="typed",meaning="Exact assertion in that condition",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+]
+
+[[types]]
+name="EngineeringCheckAlternatives"
+meaning="Explicit alternatives: at least one predicate must pass; unknown does not equal false"
+identity="Same Project, current object revisions, condition contents and declared sources"
+fields=[
+{name="alternatives",rust_type="Vec<EngineeringCheckReference>",required=true,format="typed",meaning="Nonempty bounded alternatives",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+]
+
+[[types]]
+name="EngineeringClaimComposition"
+meaning="Explicit claim and component/interface obligations; checks establish only the declared composition, not sufficiency of a physical model"
+identity="Same Project, current object revisions, condition contents and declared sources"
+fields=[
+{name="schema",rust_type="String",required=true,format="status",meaning="Explicit requirement protocol",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained",allowed_values=["oev2.claim-composition/1"]},
+{name="decision_id",rust_type="String",required=true,format="typed",meaning="Decision assessing this exact criterion",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="object",rust_type="ObjectIdentity",required=true,format="typed",meaning="Claim subject, revision, condition and source",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="criterion",rust_type="String",required=true,format="typed",meaning="Exact acceptance item in the same engineering basis",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="scope",rust_type="String",required=true,format="status",meaning="Component or system decomposition",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained",allowed_values=["component", "system"]},
+{name="coverage",rust_type="String",required=true,format="status",meaning="Whether decomposition is declared complete",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained",allowed_values=["declared_complete", "partial"]},
+{name="all_of",rust_type="Vec<EngineeringCheckReference>",required=true,format="typed",meaning="Every required component/predicate must pass",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="any_of",rust_type="Vec<EngineeringCheckAlternatives>",required=true,format="typed",meaning="Each alternative group requires at least one pass",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="interfaces",rust_type="Vec<EngineeringCheckReference>",required=true,format="typed",meaning="Required interface or aggregate checks; nonempty for system claims",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+]
+
+[[types]]
+name="EngineeringReasoningCheck"
+meaning="Result recomputed by the original engineering owner and linked to source-located assertions"
+identity="Same Project, current object revisions, condition contents and declared sources"
+fields=[
+{name="node_id",rust_type="String",required=true,format="typed",meaning="Source role node for assertion or basis-wide check",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="object",rust_type="ObjectIdentity",required=true,format="typed",meaning="Current checked object",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="check_id",rust_type="String",required=true,format="typed",meaning="Original check identity",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="execution",rust_type="String",required=true,format="typed",meaning="Original owner execution state",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="conclusion",rust_type="String",required=true,format="typed",meaning="Original owner conclusion",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="failures",rust_type="Vec<String>",required=true,format="typed",meaning="Unchanged diagnostic reasons",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+{name="result",rust_type="serde_json::Value",required=true,format="typed",meaning="Original scoped result; not a new evidence owner",unit="identity or original engineering units",precision="exact identity; no inferred physical truth",write="Agent declares; existing Rust owners verify",applicability="Current source-bound engineering relation",acceptance="Bound references and scoped results; failures and unknown retained"},
+]
+
+[[constraints]]
+id="engineering_typed_change_identity"
+requirement="req_engineering"
+module="kernel"
+check="impact_typed"
+rust_path="crates/oe-kernel/src/project/impact.rs"
+statement="Changes preserve endpoint category through propagation. Reconciliation uses both baselines. Untyped legacy edge ambiguity remains explicit; display names never drive decision eligibility."
+severity="error"
+
+[[constraints]]
+id="engineering_realization_and_claim_bindings"
+requirement="req_engineering"
+module="kernel"
+check="check"
+rust_path="crates/oe-kernel/src/engineering/relations.rs"
+statement="Function realization binds current Project structure, mechanism and predicate checks. Claims bind one exact acceptance and decision with AND, OR and interface obligations. Reference-only consistency never proves physical sufficiency. Missing, stale, unsupported or partial relations remain unknown or violated."
+severity="error"
+
+[[constraints]]
+id="engineering_claim_decision_guard"
+requirement="req_engineering"
+module="kernel"
+check="decide"
+rust_path="crates/oe-kernel/src/project/decide.rs"
+statement="When a composition binds a decision, supplied claim scope must equal its criterion and the native current checks must agree with conclusion direction. Unbound legacy decisions retain explicitly caller-reviewed scope; registration and adoption remain separate."
+severity="error"
+
+[[validations]]
+id="typed_impact_name_collision"
+module="kernel"
+constraint="engineering_typed_change_identity"
+behavior="typed_changes_keep_namespaces_separate"
+rust_path="crates/oe-kernel/tests/engineering_relations.rs"
+oracle="Evidence/object/decision names may coincide without typed source changes invalidating unrelated decisions; legacy ambiguous calls report ambiguity."
+scope="Synthetic behavioral regression; no physical certification or method gain"
+
+[[validations]]
+id="function_bound_realization"
+module="kernel"
+constraint="engineering_realization_and_claim_bindings"
+behavior="function_requires_current_structure_and_owned_checks"
+rust_path="crates/oe-kernel/tests/engineering_relations.rs"
+oracle="Text-only legacy declarations cannot pass current binding; candidate, absent structure, stale revision and missing checks stay unresolved; valid assigned links run original checks."
+scope="Synthetic behavioral regression; no physical certification or method gain"
+
+[[validations]]
+id="composed_claim_obligations"
+module="kernel"
+constraint="engineering_realization_and_claim_bindings"
+behavior="system_claim_requires_interfaces_and_preserves_unknown"
+rust_path="crates/oe-kernel/tests/engineering_relations.rs"
+oracle="Component checks passing with missing/failed interface cannot satisfy system declaration; OR groups, partial coverage and stale references retain exact outcomes."
+scope="Synthetic behavioral regression; no physical certification or method gain"
+
+[[validations]]
+id="bound_claim_decision"
+module="kernel"
+constraint="engineering_claim_decision_guard"
+behavior="bound_claim_refuses_unrelated_scope_or_wrong_direction"
+rust_path="crates/oe-kernel/tests/decide.rs"
+oracle="Registered source identity alone cannot support a bound claim with a failed predicate or a different acceptance scope."
+scope="Synthetic behavioral regression; no physical certification or method gain"
+
+
+[[validations]]
+id="composition_child_change"
+module="kernel"
+constraint="engineering_typed_change_identity"
+behavior="child_object_changes_reopen_composed_claim_without_manual_dependency"
+rust_path="crates/oe-kernel/tests/engineering_relations.rs"
+oracle="Changing a referenced child object revision reopens the composed decision without duplicate manual graph edges; stale check reference remains unknown."
+scope="Declared relation dependency only"
+
+[[validations]]
+id="composed_claim_changed_goal"
+module="kernel"
+constraint="engineering_realization_and_claim_bindings"
+behavior="changed_goal_cannot_reuse_passing_local_predicates"
+rust_path="crates/oe-kernel/tests/engineering_relations.rs"
+oracle="Local numeric predicates may pass after a goal change, but the same original purpose/goal owner prevents using their old composition for the new goal."
+scope="Current purpose and predicate reuse; physical sufficiency remains unproved"

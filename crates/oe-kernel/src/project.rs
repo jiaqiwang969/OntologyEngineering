@@ -5,6 +5,8 @@ use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 
 pub mod cad_focus;
+mod impact;
+pub use impact::{decision_impact, entity, impact, impact_typed};
 pub mod decide;
 pub mod memory;
 pub mod route;
@@ -285,34 +287,6 @@ pub fn validate(p: &Project) -> Result<()> {
     }
     Ok(())
 }
-pub fn impact(p: &Project, changes: &BTreeSet<String>) -> Result<Value> {
-    validate(p)?;
-    let mut affected = changes.clone();
-    loop {
-        let before = affected.len();
-        for (target, deps) in &p.dependencies {
-            if deps.iter().any(|s| affected.contains(s)) {
-                affected.insert(target.clone());
-            }
-        }
-        for d in &p.decisions {
-            if affected.contains(&d.object_id)
-                || affected.contains(&d.condition_scope)
-                || affected.contains(&d.source_sha256)
-                || d.basis.iter().any(|s| affected.contains(s))
-            {
-                affected.insert(d.id.clone());
-            }
-        }
-        if affected.len() == before {
-            break;
-        }
-    }
-    let decisions:Vec<_>=p.decisions.iter().filter(|d|affected.contains(&d.id)||affected.contains(&d.object_id)||d.basis.iter().any(|s|affected.contains(s))).map(|d|json!({"decision_id":d.id,"prior_conclusion":d.conclusion,"current_status":"requires_review","reason":"linked object/source/condition changed; previous history retained"})).collect();
-    Ok(
-        json!({"schema":"oev2.project-impact/1","project_id":p.project_id,"affected":affected,"decisions":decisions,"unknown_dependencies":"unlisted links remain unverified"}),
-    )
-}
 /// The same declared purpose dependency is used by current premise checks and
 /// before/after reconciliation. Absent dependency declarations require a
 /// conservative review; explicit unrelated dependencies remain unrelated.
@@ -347,93 +321,14 @@ pub fn reconcile(previous: &Project, current: &Project) -> Result<Value> {
         previous.project_id == current.project_id,
         "project_identity_cannot_change"
     );
-    let mut changes = BTreeSet::new();
-    // Purpose is an engineering input, including when object/source/scope names
-    // stay unchanged. Honor declared purpose dependencies; if none exist the
-    // boundary is unknown and all decisions require review conservatively.
-    if previous.purpose != current.purpose {
-        changes.extend(purpose_changes(&[previous, current]));
-    }
-    for (before, after) in [
-        (&previous.objects, &current.objects),
-        (&previous.conditions, &current.conditions),
-    ] {
-        for key in before.keys().chain(after.keys()) {
-            if before.get(key) != after.get(key) {
-                changes.insert(key.clone());
-            }
-        }
-    }
-    for key in previous.evidence.keys().chain(current.evidence.keys()) {
-        if previous.evidence.get(key) != current.evidence.get(key) {
-            changes.insert(key.clone());
-            // Dependencies name source IDs, but decisions bind source content.
-            // Seed both identities only for an actual evidence mapping change;
-            // generic impact callers may name unchanged supporting sources.
-            changes.extend(previous.evidence.get(key).cloned());
-            changes.extend(current.evidence.get(key).cloned());
-        }
-    }
-    let old: BTreeMap<_, _> = previous.decisions.iter().map(|d| (&d.id, d)).collect();
-    for d in &current.decisions {
-        if old.get(&d.id).is_some_and(|p| {
-            p.object_id != d.object_id
-                || p.object_revision != d.object_revision
-                || p.condition_scope != d.condition_scope
-                || p.source_sha256 != d.source_sha256
-                || p.basis != d.basis
-                || p.conclusion != d.conclusion
-                || p.adopted != d.adopted
-        }) {
-            changes.insert(d.id.clone());
-        }
-    }
-    let current_ids: BTreeSet<_> = current.decisions.iter().map(|d| &d.id).collect();
-    changes.extend(
-        previous
-            .decisions
-            .iter()
-            .filter(|d| !current_ids.contains(&d.id))
-            .map(|d| d.id.clone()),
-    );
-    for target in previous
-        .dependencies
-        .keys()
-        .chain(current.dependencies.keys())
-    {
-        if previous.dependencies.get(target) != current.dependencies.get(target) {
-            changes.insert(target.clone());
-        }
-    }
-    // Use both dependency baselines: removing a link cannot erase the old impact.
-    let prior = impact(previous, &changes)?;
-    let mut report = impact(current, &changes)?;
-    let affected: BTreeSet<String> = prior["affected"]
+    let mut report = impact::reconcile_impact(previous, current)?;
+    let affected_decisions: BTreeSet<String> = report["decisions"]
         .as_array()
-        .context("impact_affected_missing")?
+        .context("impact_decisions_missing")?
         .iter()
-        .chain(
-            report["affected"]
-                .as_array()
-                .context("impact_affected_missing")?,
-        )
-        .map(|v| {
-            v.as_str()
-                .map(str::to_owned)
-                .context("impact_identity_invalid")
-        })
-        .collect::<Result<_>>()?;
-    let affected_decisions: BTreeSet<_> = previous
-        .decisions
-        .iter()
-        .chain(&current.decisions)
-        .filter(|d| {
-            affected.contains(&d.id)
-                || affected.contains(&d.object_id)
-                || d.basis.iter().any(|s| affected.contains(s))
-        })
-        .map(|d| d.id.clone())
+        .filter_map(|d| d["decision_id"].as_str().map(str::to_owned))
         .collect();
+    let old: BTreeMap<_, _> = previous.decisions.iter().map(|d| (&d.id, d)).collect();
     let decisions:Vec<_>=current.decisions.iter().filter(|d|affected_decisions.contains(&d.id)).map(|d|json!({"decision_id":d.id,"prior_conclusion":old.get(&d.id).map(|p|&p.conclusion),"current_conclusion":d.conclusion,"current_status":"requires_review","reason":"linked object/source/condition changed; previous history retained"})).collect();
     let mut stale = Vec::new();
     for d in &current.decisions {
@@ -452,7 +347,6 @@ pub fn reconcile(previous: &Project, current: &Project) -> Result<Value> {
         }
     }
     stale.sort();
-    report["affected"] = json!(affected);
     report["decisions"] = json!(decisions);
     report["stale_adoptions"] = json!(stale);
     report["adoption_validation"] = json!(

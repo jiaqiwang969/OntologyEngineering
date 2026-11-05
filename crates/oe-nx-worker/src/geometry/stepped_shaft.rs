@@ -6,6 +6,99 @@ use oe_core::{json::strict_json, read_regular_bytes, sha256};
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+struct DrawingAxialHole {
+    id: String,
+    origin_mm: [f64; 3],
+    height_mm: f64,
+    diameter_mm: f64,
+}
+
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+struct DrawingRectangularSlot {
+    id: String,
+    corner_mm: [f64; 3],
+    lengths_mm: [f64; 3],
+}
+
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
+struct DrawingAdditiveCone {
+    id: String,
+    origin_mm: [f64; 3],
+    height_mm: f64,
+    diameters_mm: [f64; 2],
+}
+
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, Default)]
+struct DrawingPostFeatures {
+    #[serde(default)]
+    schema: String,
+    #[serde(default)]
+    additive_cones: Vec<DrawingAdditiveCone>,
+    #[serde(default)]
+    axial_holes: Vec<DrawingAxialHole>,
+    #[serde(default)]
+    rectangular_slots: Vec<DrawingRectangularSlot>,
+}
+
+fn post_features(raw: &[u8]) -> Result<DrawingPostFeatures> {
+    let value: Value = serde_json::from_slice(raw).context("drawing_post_features_json")?;
+    let Some(value) = value.get("post_features") else {
+        return Ok(DrawingPostFeatures::default());
+    };
+    let features: DrawingPostFeatures = serde_json::from_value(value.clone())
+        .context("drawing_post_features_decode")?;
+    ensure!(
+        features.schema == "oev2.nx-drawing-shaft-post-features/1",
+        "drawing_post_features_schema"
+    );
+    ensure!(
+        features.additive_cones.len() <= 32
+            && features.axial_holes.len() <= 128
+            && features.rectangular_slots.len() <= 32,
+        "drawing_post_features_budget"
+    );
+    for cone in &features.additive_cones {
+        ensure!(
+            !cone.id.is_empty()
+                && cone.id.len() <= 64
+                && cone.id.bytes().all(|b| b.is_ascii_alphanumeric() || b"_-".contains(&b))
+                && cone.origin_mm.iter().all(|v| v.is_finite())
+                && cone.height_mm.is_finite()
+                && cone.height_mm > 0.0
+                && cone.height_mm <= 100_000.0
+                && cone.diameters_mm.iter().all(|v| v.is_finite() && *v > 0.0 && *v <= 100_000.0),
+            "drawing_additive_cone_invalid"
+        );
+    }
+    for hole in &features.axial_holes {
+        ensure!(
+            !hole.id.is_empty()
+                && hole.id.len() <= 64
+                && hole.id.bytes().all(|b| b.is_ascii_alphanumeric() || b"_-".contains(&b))
+                && hole.origin_mm.iter().all(|v| v.is_finite())
+                && hole.height_mm.is_finite()
+                && hole.height_mm > 0.0
+                && hole.height_mm <= 100_000.0
+                && hole.diameter_mm.is_finite()
+                && hole.diameter_mm > 0.0
+                && hole.diameter_mm <= 100_000.0,
+            "drawing_axial_hole_invalid"
+        );
+    }
+    for slot in &features.rectangular_slots {
+        ensure!(
+            !slot.id.is_empty()
+                && slot.id.len() <= 64
+                && slot.id.bytes().all(|b| b.is_ascii_alphanumeric() || b"_-".contains(&b))
+                && slot.corner_mm.iter().all(|v| v.is_finite())
+                && slot.lengths_mm.iter().all(|v| v.is_finite() && *v > 0.0 && *v <= 100_000.0),
+            "drawing_rectangular_slot_invalid"
+        );
+    }
+    Ok(features)
+}
+
 pub const PARAMS_SCHEMA: &str = "oev2.nx-stepped-shaft-params/1";
 pub const INTENT_BYTES: usize = 128 * 1024;
 
@@ -102,7 +195,12 @@ fn axial(v: [f64; 3]) -> bool {
 pub fn check(intent: &NxSteppedShaftIntent, observed: &Value) -> Result<Value> {
     let profile = validate(intent)?;
     let info: super::PartInfo = serde_json::from_value(observed.clone())?;
-    super::require_controlled_refset(&info)?;
+    // The outer profile is checked before drawing-specific subtractive features
+    // are applied. A newly created part has no controlled reference set yet;
+    // reopened legacy stepped shafts still carry and validate that set.
+    if info.controlled_reference_set.found {
+        super::require_controlled_refset(&info)?;
+    }
     ensure!(
         info.units == "mm"
             && info.solid_count == 1
@@ -329,6 +427,7 @@ pub fn create(
     raw: &[u8],
 ) -> Result<Value> {
     let profile = validate(intent)?;
+    let post = post_features(raw)?;
     let output = workspace.output("stepped-shaft.prt")?;
     let part = api.create_mm_part(&output)?;
     api.set_work_part(part)?;
@@ -351,15 +450,90 @@ pub fn create(
         }
         features.push(feature);
     }
-    api.prepare_controlled_representation(part)?;
     let before = api.stepped_part_info(part)?;
     workspace.record("stepped_before_save", before.clone())?;
     let checked = check(intent, &before)?;
+    let mut post_feature_tags = Vec::new();
+    for cone in &post.additive_cones {
+        let feature = api.create_additive_cone(
+            cone.origin_mm,
+            cone.height_mm,
+            cone.diameters_mm,
+        )?;
+        ensure!(feature != 0, "drawing_additive_cone_feature_null");
+        let body = api.feature_body(feature)?;
+        ensure!(body != 0, "drawing_additive_cone_body_null");
+        if let Some(target) = target {
+            ensure!(target != body, "drawing_additive_cone_new_body_not_distinct");
+            api.unite_bodies(target, body)?;
+        } else {
+            target = Some(body);
+        }
+        post_feature_tags.push(json!({
+            "id": cone.id,
+            "kind": "additive_cone",
+            "feature_tag": feature,
+            "origin_mm": cone.origin_mm,
+            "height_mm": cone.height_mm,
+            "diameters_mm": cone.diameters_mm,
+            "tag_scope": "this_process_only"
+        }));
+    }
+    for hole in &post.axial_holes {
+        let feature = api.create_subtractive_cylinder(
+            hole.origin_mm,
+            hole.height_mm,
+            hole.diameter_mm,
+        )?;
+        ensure!(feature != 0, "drawing_axial_hole_feature_null");
+        post_feature_tags.push(json!({
+            "id": hole.id,
+            "kind": "axial_hole",
+            "feature_tag": feature,
+            "origin_mm": hole.origin_mm,
+            "height_mm": hole.height_mm,
+            "diameter_mm": hole.diameter_mm,
+            "tag_scope": "this_process_only"
+        }));
+    }
+    for slot in &post.rectangular_slots {
+        let lengths = slot
+            .lengths_mm
+            .map(|v| v.to_string());
+        let feature = api.create_subtractive_block(slot.corner_mm, lengths)?;
+        ensure!(feature != 0, "drawing_rectangular_slot_feature_null");
+        post_feature_tags.push(json!({
+            "id": slot.id,
+            "kind": "rectangular_slot",
+            "feature_tag": feature,
+            "corner_mm": slot.corner_mm,
+            "lengths_mm": slot.lengths_mm,
+            "tag_scope": "this_process_only"
+        }));
+    }
+    // The controlled reference set is created only after all geometry is in
+    // place, so the saved JT/representation belongs to the final solid.
+    api.prepare_controlled_representation(part)?;
     api.save_work_part()?;
     let saved = workspace.require_regular_output("stepped-shaft.prt")?;
-    let after = api.stepped_part_info(part)?;
+    let after = if post_feature_tags.is_empty() {
+        api.stepped_part_info(part)?
+    } else {
+        api.rotating_part_info(part)?
+    };
     workspace.record("stepped_after_save", after.clone())?;
-    check(intent, &after)?;
+    if post_feature_tags.is_empty() {
+        check(intent, &after)?;
+    } else {
+        let final_info: super::PartInfo = serde_json::from_value(after.clone())?;
+        super::require_controlled_refset(&final_info)?;
+        ensure!(
+            final_info.units == "mm"
+                && final_info.solid_count == 1
+                && final_info.sheet_count == 0,
+            "drawing_shaft_final_solid_invalid"
+        );
+    }
     ensure!(
         source(workspace, reference)?.1 == raw,
         "stepped_source_changed_during_creation"
@@ -367,6 +541,7 @@ pub fn create(
     Ok(
         json!({"action":"create_stepped_shaft","intent_reference":reference,"intent":intent,
         "intent_bytes_sha256":sha256(raw),"native_feature_tags":features,"tag_scope":"this process only",
+        "post_features":post,"post_feature_tags":post_feature_tags,
         "before_save":before,"after_save":after,"geometry_check":checked,
         "saved_part":{"member":"out/stepped-shaft.prt","sha256":sha256(&saved),"bytes":saved.len()},
         "process_id":std::process::id(),"independent_reopen":"required_distinct_process","engineering_adoption":false}),
@@ -383,11 +558,37 @@ pub fn inspect(
 ) -> Result<Value> {
     let path = workspace.input(&input_relative(member)?)?;
     let original = read_regular_bytes(&path, 128 * 1024 * 1024)?;
+    let post = post_features(raw)?;
     let part = api.open_part(&path)?;
     api.set_work_part(part)?;
-    let observed = api.stepped_part_info(part)?;
+    let observed = if post.additive_cones.is_empty()
+        && post.axial_holes.is_empty()
+        && post.rectangular_slots.is_empty()
+    {
+        api.stepped_part_info(part)?
+    } else {
+        api.rotating_part_info(part)?
+    };
     workspace.record("stepped_independent_inspection", observed.clone())?;
-    let checked = check(intent, &observed)?;
+    let checked = if post.additive_cones.is_empty()
+        && post.axial_holes.is_empty()
+        && post.rectangular_slots.is_empty()
+    {
+        check(intent, &observed)?
+    } else {
+        let info: super::PartInfo = serde_json::from_value(observed.clone())?;
+        super::require_controlled_refset(&info)?;
+        ensure!(
+            info.units == "mm" && info.solid_count == 1 && info.sheet_count == 0,
+            "drawing_shaft_inspection_solid_invalid"
+        );
+        json!({
+            "schema": "oev2.nx-drawing-shaft-geometry-check/1",
+            "conclusion": "single_final_solid_reopened",
+            "post_features": post,
+            "outer_profile": "declared_by_stepped_shaft_intent; detailed feature topology is outside the legacy stepped checker"
+        })
+    };
     ensure!(
         read_regular_bytes(&path, 128 * 1024 * 1024)? == original
             && source(workspace, reference)?.1 == raw,

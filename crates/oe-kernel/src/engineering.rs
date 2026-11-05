@@ -7,6 +7,7 @@ use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
 
 mod goal_support;
+mod relations;
 
 pub const SCHEMA: &str = "oev2.engineering-basis/1";
 pub const SCHEMA_V2: &str = "oev2.engineering-basis/2";
@@ -197,13 +198,23 @@ fn comparable(value: &Value) -> Result<Value> {
     Ok(value.clone())
 }
 pub(crate) fn affected(project: &Project, assertion: &EngineeringAssertion) -> Vec<String> {
-    let mut changes = BTreeSet::from([assertion.assertion_id.clone(), assertion.subject.clone()]);
-    changes.extend(assertion.source_refs.iter().cloned());
-    // Explicitly affected decisions are seeds, not merely labels appended
-    // after traversing the dependency graph. Their downstream outputs must
-    // also reopen even when the claim has no separate dependency edge.
-    changes.extend(assertion.affected_decisions.iter().cloned());
-    let closure = crate::project::impact(project, &changes).ok();
+    let mut changes = vec![
+        crate::project::entity("dependency", &assertion.assertion_id),
+        crate::project::entity("dependency", &assertion.subject),
+    ];
+    changes.extend(
+        assertion
+            .source_refs
+            .iter()
+            .map(|s| crate::project::entity("evidence", s)),
+    );
+    changes.extend(
+        assertion
+            .affected_decisions
+            .iter()
+            .map(|s| crate::project::entity("decision", s)),
+    );
+    let closure = crate::project::impact_typed(project, &changes).ok();
     let mut ids: BTreeSet<_> = assertion.affected_decisions.iter().cloned().collect();
     if let Some(value) = closure {
         for d in value["decisions"].as_array().into_iter().flatten() {
@@ -405,6 +416,12 @@ fn assertion_check(
     assertion: &EngineeringAssertion,
     object: &ObjectIdentity,
 ) -> CheckResult {
+    if matches!(
+        assertion.kind.as_str(),
+        "function_continuity" | "claim_composition"
+    ) {
+        return relations::check(None, project, basis, assertion, object);
+    }
     if assertion.kind == "cad_native_motion" {
         return crate::motion::declared(project, object, assertion);
     }
@@ -442,33 +459,6 @@ fn assertion_check(
             "scope_transfer" => {
                 let (m, u) = applicability(basis, req, true)?;
                 (m, u, "engineering_evidence_scope_exceeded")
-            }
-            "function_continuity" => {
-                let function = req["function_id"]
-                    .as_str()
-                    .context("engineering_function_identity_missing")?;
-                let complete = req["inventory_scope"] == "declared_complete";
-                let realization = req["current_realization"]
-                    .as_str()
-                    .filter(|s| !s.trim().is_empty());
-                let mechanism = req["mechanism"].as_str().filter(|s| !s.trim().is_empty());
-                let verification = req["verification_plan"]
-                    .as_str()
-                    .filter(|s| !s.trim().is_empty());
-                if realization.is_none() || mechanism.is_none() || verification.is_none() {
-                    let detail = json!({"function_id":function,"current_realization":realization,"mechanism":mechanism,"verification_plan":verification,"inventory_scope":req["inventory_scope"]});
-                    (
-                        if complete {
-                            vec![detail.clone()]
-                        } else {
-                            vec![]
-                        },
-                        if complete { vec![] } else { vec![detail] },
-                        "engineering_necessary_function_unassigned",
-                    )
-                } else {
-                    (vec![], vec![], "engineering_function_continuity")
-                }
             }
             "counterexample" => {
                 let state = req["status"]
@@ -537,6 +527,39 @@ fn assertion_check(
     })
 }
 
+/// The original purpose/goal owner also guards cross-object predicate reuse.
+fn basis_support(
+    project: &Project,
+    object: &ObjectIdentity,
+    basis: &EngineeringBasisView,
+) -> CheckResult {
+    if basis.protocol() == SCHEMA_V2 {
+        return goal_support::check(project, object, basis, basis.original_value());
+    }
+    let purpose_affected = if basis.purpose == project.purpose {
+        vec![]
+    } else {
+        let impact = crate::project::impact(project, &crate::project::purpose_changes(&[project]));
+        impact
+            .ok()
+            .and_then(|v| v["decisions"].as_array().cloned())
+            .unwrap_or_default()
+            .into_iter()
+            .filter_map(|v| v["decision_id"].as_str().map(str::to_owned))
+            .collect::<Vec<_>>()
+    };
+    result(
+        "engineering_purpose",
+        if basis.purpose == project.purpose {
+            "pass"
+        } else {
+            "violated"
+        },
+        (basis.purpose != project.purpose).then(|| "engineering_purpose_changed".into()),
+        json!({"model_purpose":basis.purpose,"current_purpose":project.purpose,"affected_decisions":purpose_affected}),
+    )
+}
+
 /// Appended after the original RDF/query/shape diagnostics in current review.
 pub fn checks(project: &Project, object: &ObjectIdentity) -> Vec<CheckResult> {
     match basis(project, object) {
@@ -548,52 +571,7 @@ pub fn checks(project: &Project, object: &ObjectIdentity) -> Vec<CheckResult> {
             json!({"current_use":"requires_review"}),
         )],
         Ok(Some(basis)) => {
-            if basis.protocol() == SCHEMA_V2 {
-                let mut out = vec![goal_support::check(
-                    project,
-                    object,
-                    &basis,
-                    basis.original_value(),
-                )];
-                out.extend(
-                    basis
-                        .assertions
-                        .iter()
-                        .map(|a| assertion_check(project, &basis, a, object)),
-                );
-                if basis.assertions.is_empty() {
-                    out.push(result(
-                        "engineering_assertions",
-                        "unknown",
-                        Some("engineering_assertions_missing".into()),
-                        json!({}),
-                    ));
-                }
-                return out;
-            }
-            let purpose_affected = if basis.purpose == project.purpose {
-                vec![]
-            } else {
-                let impact =
-                    crate::project::impact(project, &crate::project::purpose_changes(&[project]));
-                impact
-                    .ok()
-                    .and_then(|v| v["decisions"].as_array().cloned())
-                    .unwrap_or_default()
-                    .into_iter()
-                    .filter_map(|v| v["decision_id"].as_str().map(str::to_owned))
-                    .collect::<Vec<_>>()
-            };
-            let mut out = vec![result(
-                "engineering_purpose",
-                if basis.purpose == project.purpose {
-                    "pass"
-                } else {
-                    "violated"
-                },
-                (basis.purpose != project.purpose).then(|| "engineering_purpose_changed".into()),
-                json!({"model_purpose":basis.purpose,"current_purpose":project.purpose,"affected_decisions":purpose_affected}),
-            )];
+            let mut out = vec![basis_support(project, object, &basis)];
             out.extend(
                 basis
                     .assertions
@@ -622,38 +600,49 @@ pub fn checks_current(
 ) -> Vec<CheckResult> {
     let mut out = checks(project, object);
     if let Ok(Some(basis)) = basis(project, object) {
-        // This new kind has no affirmative in-memory proof. Historical kinds
-        // retain their existing declared/current separation unchanged.
-        for a in basis
-            .assertions
-            .iter()
-            .filter(|a| a.kind == "cad_native_motion")
-        {
+        for a in &basis.assertions {
             if let Some(slot) = out
                 .iter_mut()
                 .find(|c| c.id == format!("engineering:{}", a.assertion_id))
             {
-                *slot = crate::motion::current(root, project, object, a);
+                if matches!(a.kind.as_str(), "function_continuity" | "claim_composition") {
+                    *slot = relations::check(Some(root), project, &basis, a, object);
+                } else {
+                    let mut checks = assertion_checks_current(root, project, &basis, a, object);
+                    *slot = checks.remove(0);
+                    out.extend(checks);
+                }
             }
         }
-        out.extend(
-            basis
-                .assertions
-                .iter()
-                .filter_map(|a| match a.kind.as_str() {
-                    "cad_drawing_reference" => Some(crate::drawing_intent::source_assertion(
-                        root, project, object, a,
-                    )),
-                    "cad_sheet_reference_persistence" => {
-                        Some(crate::sheet_persistence::current(root, project, object, a))
-                    }
-                    "cad_drafting_sheet" => {
-                        Some(crate::drafting::source_assertion(root, project, object, a))
-                    }
-                    _ => None,
-                }),
-        );
     }
+    out
+}
+
+/// Reuse the same native/source owners for referenced predicates and top-level checks.
+fn assertion_checks_current(
+    root: &oe_core::SkillRoot,
+    project: &Project,
+    basis: &EngineeringBasis,
+    a: &EngineeringAssertion,
+    object: &ObjectIdentity,
+) -> Vec<CheckResult> {
+    let first = if a.kind == "cad_native_motion" {
+        crate::motion::current(root, project, object, a)
+    } else {
+        assertion_check(project, basis, a, object)
+    };
+    let mut out = vec![first];
+    let extra = match a.kind.as_str() {
+        "cad_drawing_reference" => Some(crate::drawing_intent::source_assertion(
+            root, project, object, a,
+        )),
+        "cad_sheet_reference_persistence" => {
+            Some(crate::sheet_persistence::current(root, project, object, a))
+        }
+        "cad_drafting_sheet" => Some(crate::drafting::source_assertion(root, project, object, a)),
+        _ => None,
+    };
+    out.extend(extra);
     out
 }
 

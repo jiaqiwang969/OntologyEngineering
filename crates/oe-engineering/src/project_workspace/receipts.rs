@@ -2,11 +2,11 @@
 //! failed/partial/unknown observations and never grants engineering acceptance.
 
 use crate::{artifacts, harness};
-use anyhow::{Context, Result, ensure};
+use anyhow::{ensure, Context, Result};
 use oe_contracts::{ArtifactReference, CapabilityRegistry, WorkspaceStage, WorkspaceStageReceipt};
-use oe_core::{SkillRoot, sha256};
-use oe_kernel::project::{self, Project, tool_result};
-use serde_json::{Value, json};
+use oe_core::{sha256, SkillRoot};
+use oe_kernel::project::{self, tool_result, Project};
+use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::path::Path;
 
@@ -66,6 +66,26 @@ pub fn verify(
     stage: &WorkspaceStage,
     current: &Project,
     current_ref: &ArtifactReference,
+) -> Result<Value> {
+    verify_inner(root, stage, current, current_ref, None)
+}
+
+pub(super) fn verify_bound(
+    root: &SkillRoot,
+    stage: &WorkspaceStage,
+    current: &Project,
+    current_ref: &ArtifactReference,
+    anchor: &Value,
+) -> Result<Value> {
+    verify_inner(root, stage, current, current_ref, Some(anchor))
+}
+
+fn verify_inner(
+    root: &SkillRoot,
+    stage: &WorkspaceStage,
+    current: &Project,
+    current_ref: &ArtifactReference,
+    anchor: Option<&Value>,
 ) -> Result<Value> {
     dto(stage.validate())?;
     project::validate(current)?;
@@ -227,7 +247,52 @@ pub fn verify(
                 "engineering_acceptance":checkpoint["engineering_acceptance"],
                 "scope":"Existing Harness owner checked complete stored sources and internal consistency; recorded is not engineering acceptance"})
         }
-        "exploration" => anyhow::bail!("workspace_stage_exploration_readback_unsupported"),
+        "exploration" => {
+            let anchor = anchor.context("workspace_stage_exploration_anchor_required")?;
+            ensure!(
+                receipt.registry.is_none(),
+                "workspace_stage_exploration_registry_unexpected"
+            );
+            read(root, &receipt.artifact, &mut originals)?;
+            let (state, references, reasoning) =
+                crate::workflow::exploration::reasoning::inspect_recorded(root, &receipt.artifact)?;
+            ensure!(
+                state.pending.is_empty() && state.status != "requires_host_agent",
+                "workspace_stage_exploration_pending_actions"
+            );
+            ensure!(
+                same_reference(current_ref, &state.run.project),
+                "workspace_stage_exploration_project_changed"
+            );
+            for r in references {
+                read(root, &r, &mut originals)?;
+            }
+            let result = json_read(root, &state.run.result, &mut originals)?;
+            ensure!(
+                result["exploration_id"] == stage.id
+                    && result["project_before"] == json!(receipt.project),
+                "workspace_stage_exploration_binding_mismatch"
+            );
+            let criteria = anchor["acceptance"]
+                .as_array()
+                .context("workspace_stage_exploration_acceptance_missing")?;
+            let complete = result["acceptance"]
+                .as_array()
+                .context("workspace_stage_exploration_acceptance_missing")?;
+            ensure!(
+                !stage.acceptance_ids.is_empty()
+                    && stage.acceptance_ids.iter().all(|id| criteria
+                        .iter()
+                        .any(|a| a["id"] == *id
+                            && a["statement"].is_string()
+                            && complete.contains(&a["statement"]))),
+                "workspace_stage_exploration_acceptance_mismatch"
+            );
+            json!({"owner":"exploration", "status":state.status,"pending":state.pending,
+                "execution_project":receipt.project,"result_project":state.run.project,
+                "complete_acceptance":result["acceptance"],"method_benefit":"unknown","reasoning":reasoning,
+                "scope":"Frozen host history, deterministic result, task view and Harness archives rechecked without writing or dispatch; retained timing and host statements are not independently authenticated; recorded is not engineering acceptance"})
+        }
         _ => anyhow::bail!("workspace_stage_receipt_owner_unsupported"),
     };
     for (reference, original) in originals.values() {

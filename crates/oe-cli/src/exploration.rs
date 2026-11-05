@@ -1,12 +1,24 @@
-use anyhow::{Result, ensure};
+use anyhow::{ensure, Result};
 use clap::Subcommand;
 use oe_contracts::{EngineeringExplorationPort, EngineeringExplorationRunRequest};
-use oe_core::{SkillRoot, read_regular_bytes, sha256};
-use serde_json::{Value, json};
+use oe_core::{read_regular_bytes, sha256, SkillRoot};
+use serde_json::{json, Value};
 use std::path::{Path, PathBuf};
 
 #[derive(Subcommand)]
 pub enum ExplorationCommand {
+    /// Derive source-bound engineering relations and explain current next work.
+    Reasoning {
+        #[arg(long)]
+        input: PathBuf,
+        #[arg(long)]
+        output: PathBuf,
+    },
+    /// Rebuild a prior reasoning view from its current original sources.
+    VerifyReasoning {
+        #[arg(long)]
+        input: PathBuf,
+    },
     /// Expose the next frozen action or submit its source-bound host result.
     Advance {
         #[arg(long)]
@@ -48,11 +60,56 @@ fn input_reference(
     };
     Ok((path, raw, reference))
 }
+fn recheck_execution(root: &SkillRoot, binding: &Value) -> Result<Value> {
+    let recheck = crate::v2::require_execution(root, "engineering_exploration_completion")?;
+    for key in [
+        "normalizer",
+        "cli",
+        "semantic_contracts_sha256",
+        "executable_sha256",
+    ] {
+        ensure!(
+            binding[key] == recheck[key],
+            "exploration_cli_execution_identity_changed"
+        );
+    }
+    Ok(recheck)
+}
 pub fn run(root: &SkillRoot, command: ExplorationCommand) -> Result<Value> {
     let binding = crate::v2::require_execution(root, "engineering_exploration")?;
+    if let ExplorationCommand::Reasoning { input, output } = &command {
+        let (path, raw, _) = input_reference(root, input)?;
+        let request = serde_json::from_value(oe_core::json::strict_json(&raw)?)?;
+        let view = oe_engineering::workflow::exploration::reasoning::derive(root, &request)?;
+        ensure!(
+            read_regular_bytes(&path, 16 * 1024 * 1024)? == raw,
+            "reasoning_cli_input_changed"
+        );
+        recheck_execution(root, &binding)?;
+        oe_core::write_new(&root.private_path(output)?, &serde_json::to_value(&view)?)?;
+        return Ok(
+            json!({"schema":"oev2.engineering-reasoning-cli/1","status":"derived","view":view,"execution_binding":binding}),
+        );
+    }
+    if let ExplorationCommand::VerifyReasoning { input } = &command {
+        let (path, raw, _) = input_reference(root, input)?;
+        let view = serde_json::from_value(oe_core::json::strict_json(&raw)?)?;
+        oe_engineering::workflow::exploration::reasoning::verify(root, &view)?;
+        ensure!(
+            read_regular_bytes(&path, 16 * 1024 * 1024)? == raw,
+            "reasoning_cli_input_changed"
+        );
+        recheck_execution(root, &binding)?;
+        return Ok(
+            json!({"schema":"oev2.engineering-reasoning-verification/1","status":"current_reasoning_verified","execution_binding":binding}),
+        );
+    }
     let path = match &command {
         ExplorationCommand::Freeze { input, .. } | ExplorationCommand::Advance { input } => input,
         ExplorationCommand::Verify { frozen } | ExplorationCommand::Run { frozen, .. } => frozen,
+        ExplorationCommand::Reasoning { .. } | ExplorationCommand::VerifyReasoning { .. } => {
+            unreachable!()
+        }
     };
     let (path, raw, reference) = input_reference(root, path)?;
     let output = match &command {
@@ -89,24 +146,25 @@ pub fn run(root: &SkillRoot, command: ExplorationCommand) -> Result<Value> {
                     })?,
             )?
         }
+        ExplorationCommand::Reasoning { .. } | ExplorationCommand::VerifyReasoning { .. } => {
+            unreachable!()
+        }
     };
     ensure!(
         read_regular_bytes(&path, 16 * 1024 * 1024)? == raw,
         "exploration_cli_input_changed"
     );
-    let recheck = crate::v2::require_execution(root, "engineering_exploration_completion")?;
-    for key in [
-        "normalizer",
-        "cli",
-        "semantic_contracts_sha256",
-        "executable_sha256",
-    ] {
-        ensure!(
-            binding[key] == recheck[key],
-            "exploration_cli_execution_identity_changed"
-        );
-    }
+    let recheck = recheck_execution(root, &binding)?;
     if let Some(dir) = output {
+        if result["schema"] == "oev2.exploration-host-state/1" {
+            let (_, _, reference) = input_reference(root, &dir.join("completed.json"))?;
+            let (_, _, view) = oe_engineering::workflow::exploration::reasoning::inspect_recorded(
+                root, &reference,
+            )?;
+            oe_core::write_new(&dir.join("reasoning.json"), &serde_json::to_value(&view)?)?;
+            let (_, _, reference) = input_reference(root, &dir.join("reasoning.json"))?;
+            result["reasoning"] = json!(reference);
+        }
         oe_core::write_new_bytes(&dir.join("cli-input.json"), &raw)?;
         oe_core::write_new(&dir.join("execution-binding.json"), &binding)?;
         oe_core::write_new(&dir.join("execution-recheck.json"), &recheck)?;

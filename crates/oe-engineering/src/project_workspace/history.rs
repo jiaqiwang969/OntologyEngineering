@@ -123,7 +123,7 @@ fn impacted(before: &Project, current: &Project) -> Result<(Value, BTreeSet<Stri
 /// An individually reviewed downstream decision remains pending while a
 /// currently declared prerequisite still lacks its own qualifying review.
 pub fn propagate_pending(project: &Project, pending: &mut BTreeSet<String>) -> Result<()> {
-    let impact = project::impact(project, pending)?;
+    let impact = project::decision_impact(project, pending)?;
     for decision in impact["decisions"]
         .as_array()
         .context("workspace_pending_impact_missing")?

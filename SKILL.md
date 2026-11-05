@@ -1,6 +1,6 @@
 ---
 name: ontology-engineering-v2
-description: Manage engineering projects, professional-tool evidence and source-bound experience in one system. Use for engineering reasoning, project decisions, Codex/Claude history and memory, and maintaining ontology, generated contracts, Rust execution or RRSI methods.
+description: Manage engineering projects, CAD with NX/SolidWorks/SolidCraft, professional-tool evidence and source-bound experience in one system. Use for engineering reasoning, project decisions, Codex/Claude history and memory, and maintaining ontology, generated contracts, Rust execution or RRSI methods.
 metadata:
   version: "2.0.0-rc.7"
 ---
@@ -27,6 +27,8 @@ metadata:
 
 ## 从当前问题辨析作用
 
+以[同一组工程关系](references/engineering-reasoning.md)连接内层理解与外层行动：根验收要求什么功能，哪个对象或结构承担它，候选机制依赖哪些条件，哪些解释尚未成立，什么观察能区分解释，以及结果影响哪些决定。当前任务从这些关系的缺口产生。Agent 根据工程原件建立和修订关系，软件检查已经表达的关系；不把工具清单当成工程分解。
+
 先明确本轮问题、完整目标和已授权范围。辨认影响判断的对象、表示或模型、方法、实现、主张与证据：它们分别指什么，在当前活动中承担什么作用，为什么与下一步有关。角色由当前问题决定，同一工具或产物可以用于探索、实现或检验；名称相同不保证含义、用途和证据能力相同。
 
 遇到“模型”“正确”“验证”“完成”等词，说明它此刻针对的对象、条件和范围。判断哪些关系已有依据，哪些仍是假设或未知，以及已有依据足以支持什么行动；据此选择能补足缺口的研究、表达、执行或检验。用户明确的依赖关系贯穿后续工作，后取得的依据保留真实取得时间。需要探索才能取得依据时，按探索目的和范围推进。
@@ -37,18 +39,30 @@ metadata:
 
 本 Skill 承担可跨项目复用的方法：怎样发现前提、辨析层次、选择验证和接续影响；具体工程内容由各 Project 的来源与证据建立。共享概念或方法的缺陷应回到整个四环检查，不能只在当前实例打补丁；影响闭包仅覆盖已声明依赖，未识别的关系仍需调查。触发、分流及稳定采用条件见[设计方法](references/design-method.md)。这些问题按本轮需要展开，无须每次输出固定表单。
 
+## 以完整场景推进当前工作
+
+跨多轮实现、专业工具接续或恢复的任务，按[连续工程工作](references/continuous-work.md)组织。选择能推进根验收的最小完整使用场景，明确输入、动作、可观察结果和失败情形，尽早贯通相关环节；完整根目标与剩余义务继续保留。
+
+从同一 Project、anchor、work 与 workspace 派生当前工作说明：当前结果、已成立前置、待辨假设、下一检查、授权边界和恢复位置。当前会话在已有授权内连续执行、回读和修正；一般实现选择无需逐项重复确认。目标、关键工程前提、验收或外部动作超出授权时再对齐。每次重试须有输入、诊断、实现或条件上的新依据；失败、partial 与 unknown 进入下一步判断。
+
+按问题选择局部、场景集成与工程验收，关注完整使用行为及条件变化后的影响。派生说明不成为第二份状态正本；已有实例能解决的问题直接修正，共享方法的收益另按 RRSI 比较。
+
+已冻结的探索使用 `project explore reasoning` 核下一动作的验收关联、未决前提、结果分支和受影响决定；`advance` 与探索阶段的 workspace `resume` 接续同一派生视图。`ready` 可以带待调查前提，不表示模型已适用；旧视图复用先 `verify-reasoning`。完整验收、尚无动作覆盖的验收和失败继续保留，Agent 仍须调查未声明的关系。
+
+功能分配、主张和整体验收需要软件承接时，沿[工程关系](references/engineering-reasoning.md#身份功能实现与主张成立条件)绑定实际对象、当前条件及原检查。候选实现与已分配实现分开；局部结果按必要项、替代项和接口条件组合。新关系视图同时呈现原有检查与行动依据；待调查缺口可以继续推进，失败检查不能据此转成采用通过。变更传播保留对象、资料和决定的类别，旧同名依赖的歧义须核原关系。
+
 ## 贯通四个环节
 
-**工程本体论 → ggen → Rust 工程模块 → RRSI。** 各环节围绕同一对象、版本、条件和来源承接工作；根据任务选择所需环节和阅读深度。
+**工程本体论 → ggen → Rust 工程模块 → RRSI。** 四环围绕真实任务往返：本体与领域模型先整理为明确规范，实际执行经独立验证和使用反馈，再回到需要修订的环节。各环节保留同一对象、版本、条件、主张和来源；按当前缺口展开，不要求每项任务遍历四环。
 
 | 环节 | 需要明确的关系 |
 |---|---|
-| 工程本体论 | 当前讨论什么，其表示、功能、条件与主张分别是什么，哪些依据支持哪些判断。模型假设、来源陈述和实际观察保留各自身份。 |
-| ggen | 将需要软件承接的含义表达为规范与合同，保留身份、条件、依赖、未知及验收要求；核对生成能力实际覆盖什么。生成成功只支持相应的一致性结论。 |
-| Rust 工程模块 | 将合同落实为实际行为，按当前缺口组织专业能力；说明执行和检查实际完成了什么，其结果能支持到哪里。Rust Semantica、工程合同、领域规则和编排各承担明确职责。 |
-| RRSI | 从真实反馈定位前提、表示、理解、实现或使用中的偏差；辨析项目修订与共享方法改进，提出有限候选，在固定目标与判据下比较，再决定试用或保留基线。更深前提改变时重建比较，保留原记录。 |
+| 工程本体论 | 说明对象、功能、条件、主张和证据关系；领域模型进一步说明行为、假设与求解依据。模型假设、来源陈述和实际观察保留各自身份。 |
+| ggen | 将已明确且受支持的规范生成合同；逐项核对哪些要求由生成校验、手写检查、专业工具或工程评审承担。未表达、仅有注释和未执行分别保留。 |
+| Rust 工程模块 | 将合同落实为实际行为，按缺口组织专业能力；将当前结果接回原要求及独立验证。功能实现、检查和验证案例可由不同模块承担，各有明确来源。 |
+| RRSI | 用真实反馈区分实例、模型、规范、实现或使用方法的偏差；按证据修正相应层次。共享方法候选在固定目标与判据下比较，试用后接续实际反馈与恢复；前提或判据改变时另建基线。 |
 
-工具可能参与多个环节，其作用随活动改变。工程对象与软件结构之间要说明谁承担功能、谁执行约束、什么独立依据检验行为。ggen 保持受支持的规范到生成物的一致性，Rust 执行明确规则；规则和结果的正确性仍需相应工程来源与独立验证。尚未表达或检验的关系保留未决状态。
+工具可能参与多个环节，其作用随活动改变。按[四环承接](references/design-method.md#在四环之间保持含义和依据)从要求追到承担者与证据，从结果追回原条件与决定；缺口沿既有 Project 或软件维护路径接续。软件维护可用 `design inspect` 的要求关系视图及生成的验证清单核已声明关联。静态映射、生成一致、行为验证和工程采用分别说明；反馈修订按[有证据的改进](references/regularized-evolution.md#反馈如何回到对应层次)。
 
 ## 按缺口选择能力并接续
 
@@ -103,7 +117,9 @@ Flameox 使用 `oev2 project performance project` 保留性能观测、基线、
 
 需要执行 v2 程序、维护软件或声明当前能力时，按[使用说明](docs/USAGE.md)核发行 manifest、实际程序、根目录及维护回执；统一源码安装从 `var/install/INSTALLATION.json` 核实际根与八程序身份，初次配置读 [AGENTS.md](AGENTS.md)。旧维护状态只接续对应的历史发行，不覆盖新安装。源码候选版本、已安装程序、历史回执和当前任务各保留身份，能力范围见[发布范围](docs/RELEASE-SCOPE.md)。
 
-CAD 使用 v2 自有 Rust 模块及显式原生 SDK；调用前读[独立执行合同](docs/CAD-INDEPENDENT-EXECUTION.md)。不调用原 cad-agent 的脚本、环境、MCP、Journal runner 或旧默认配置，缺项在 v2 内补齐并验证。Fusion 已退出执行范围。原生工具结果按对应合同回读、保存及独立重开；浏览器遵守当前用户的不抢焦点规则。
+CAD 按原生交付物和当前能力选择 NX、SolidWorks 或 SolidCraft，调用前读[独立执行合同](docs/CAD-INDEPENDENT-EXECUTION.md)。NX/SolidWorks 沿 v2 自有 Rust worker 与显式原生 SDK；本机开放源码参数建模、`.sc` 设计及 MCP 交互进入 [SolidCraft 工作流](docs/SOLIDCRAFT-CAD.md)，由固定上游 CLI/MCP 执行、既有 Rust `project tool-result` 接收。用户指定后端或原生文件要求优先，STEP 不能替代 `.prt`/`.sldprt` 的原生特征与装配验收。SolidCraft 是 CAD 执行后端，不另建 Project 或第九套专业模块；当前没有 `oev2 cad solidcraft` 命令或 SolidCraft→NX 专用投影。
+
+不调用原 cad-agent 的脚本、环境、MCP、Journal runner 或旧默认配置，缺项在当前后端的合同内补齐并验证。Fusion 已退出执行范围。原生工具结果按对应合同回读、保存及独立进程重开；截图、同一内核的 GUI/无窗口结果、STEP 回读与独立工程依据分别记录。浏览器遵守当前用户的不抢焦点规则。
 
 工程采用前，由当前 Rust 内核审查真实 Project、对象、条件与来源，并核必要的独立批准。生成、编译、语义答复、工具完成、审查覆盖和工程采用分别取证，未实现、未执行及部分失败保留具体状态。局部验收说明对父目标的贡献和剩余义务，不扩大为整体完成。
 

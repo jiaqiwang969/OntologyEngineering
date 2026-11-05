@@ -303,7 +303,9 @@ impl Workspace for TaskWorkspace<'_, '_> {
         let job_dir = self.job_dir;
         let owned =
             crate::motion_source::windows::copy_owned_source(self.out, closure, |name, bound| {
-                let path = geometry::input_relative(name)?;
+                // This is a UTF-16 filesystem copy, not a narrow vendor path call.
+                // Preserve STEP-imported Unicode filenames and their references.
+                let path = p::RelativePath::new(format!("inputs/{name}"))?;
                 ensure!(
                     allowed.contains_key(path.as_str()),
                     "motion_source_not_in_job_inputs"

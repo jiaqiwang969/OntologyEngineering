@@ -615,23 +615,7 @@ impl Native {
         let scale = assembly::unit_to_m(unit)?;
         let mut solids = Vec::new();
         let mut sheets = 0;
-        let mut body_tags = Vec::new();
-        let mut body = 0;
-        let mut seen = BTreeSet::new();
-        loop {
-            self.check(
-                unsafe { (self.uf.cycle)(part, self.abi.solid_type, &mut body) },
-                "UF_OBJ_cycle_objs_in_part_assembly",
-            )?;
-            if body == 0 {
-                break;
-            }
-            ensure!(
-                seen.insert(body) && body_tags.len() < 100_000,
-                "native_body_cycle_or_budget"
-            );
-            body_tags.push(body);
-        }
+        let body_tags = self.owned_body_tags_native(part)?;
         for body in body_tags {
             let (mut object_type, mut subtype, mut owner) = (-1, -1, 0);
             let type_code = unsafe { (self.uf.object_type)(body, &mut object_type, &mut subtype) };
@@ -890,8 +874,8 @@ impl Native {
                     prototype_id: prototypes[&proto].prototype_id.clone(),
                     part_occurrence_tag: occ as u64,
                     instance_tag: instance as u64,
-                    name: buffer_text(&name)?,
-                    reference_set: buffer_text(&refset)?,
+                    name: self.uf_text_utf8(&name)?,
+                    reference_set: self.uf_text_utf8(&refset)?,
                     raw_parent_origin: origin.to_vec(),
                     raw_parent_csys: csys.to_vec(),
                     raw_parent_transform: transform.to_vec(),

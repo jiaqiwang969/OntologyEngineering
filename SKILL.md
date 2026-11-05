@@ -1,6 +1,6 @@
 ---
 name: ontology-engineering-v2
-description: Manage engineering projects, CAD with NX/SolidWorks/SolidCraft, professional-tool evidence and source-bound experience in one system. Use for engineering reasoning, project decisions, Codex/Claude history and memory, and maintaining ontology, generated contracts, Rust execution or RRSI methods.
+description: Manage engineering projects, read existing engineering drawings (DWG/DXF decomposed by discipline and process, 图纸按学科工艺分解元素), CAD with NX/SolidWorks/SolidCraft, professional-tool evidence and source-bound experience in one system. Use for engineering reasoning, drawing understanding, project decisions, Codex/Claude history and engineering memory, and maintaining ontology, generated contracts, Rust execution or RRSI methods.
 metadata:
   version: "2.0.0-rc.7"
 ---

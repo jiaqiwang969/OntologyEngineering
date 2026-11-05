@@ -119,7 +119,7 @@ Flameox 使用 `oev2 project performance project` 保留性能观测、基线、
 
 CAD 按原生交付物和当前能力选择 NX、SolidWorks 或 SolidCraft，调用前读[独立执行合同](docs/CAD-INDEPENDENT-EXECUTION.md)。NX/SolidWorks 沿 v2 自有 Rust worker 与显式原生 SDK；本机开放源码参数建模、`.sc` 设计及 MCP 交互进入 [SolidCraft 工作流](docs/SOLIDCRAFT-CAD.md)，由固定上游 CLI/MCP 执行、既有 Rust `project tool-result` 接收。用户指定后端或原生文件要求优先，STEP 不能替代 `.prt`/`.sldprt` 的原生特征与装配验收。SolidCraft 是 CAD 执行后端，不另建 Project 或第九套专业模块；当前没有 `oev2 cad solidcraft` 命令或 SolidCraft→NX 专用投影。
 
-读一张已有图纸时，沿[读懂已有图纸](docs/DRAWING-UNDERSTANDING.md)用 `oev2 drawing route`：DWG 只经锁定的 CADCraft fork 提交转换（不给字体），分类只在只收字节的沙箱 worker 中进行，独立复核从源字节重推，检查页经离线浏览器检查。参照答案、手工区域和配对模型不进入输入；零件要素目标保持未知，结果是待复核候选。正向出图与反向读图的建设、外部工具的固定与保真资格按 [CAD 路线](references/cad-route.md) 进行。
+读一张已有图纸时，先用任务原话经 `oev2 memory session prepare` 查读图经验（先看不含原文的候选摘要，需要时再 `get`/`verify`），按其条件与未知判断是否适用；再沿[读懂已有图纸](docs/DRAWING-UNDERSTANDING.md)用 `oev2 drawing route`：DWG 只经锁定的 CADCraft fork 提交转换（不给字体），分类只在只收字节的沙箱 worker 中进行，独立复核从源字节重推，检查页经离线浏览器检查。参照答案、手工区域和配对模型不进入输入；零件要素目标保持未知，结果是待复核候选。结束时用 `oev2 memory session feedback` 记录经验实际用、拒绝或未用。正向出图与反向读图的建设、外部工具的固定与保真资格按 [CAD 路线](references/cad-route.md) 进行。
 
 不调用原 cad-agent 的脚本、环境、MCP、Journal runner 或旧默认配置，缺项在当前后端的合同内补齐并验证。Fusion 已退出执行范围。原生工具结果按对应合同回读、保存及独立进程重开；截图、同一内核的 GUI/无窗口结果、STEP 回读与独立工程依据分别记录。浏览器遵守当前用户的不抢焦点规则。
 

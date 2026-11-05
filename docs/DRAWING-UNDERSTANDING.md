@@ -19,6 +19,18 @@
 4. **结构拓扑与结构线**：可见/不可见轮廓的每个自由端给出类型化原因（文字让位、局部剖视、绘图缝隙、未解释）；只在有依据的断口推断区间，推断区间永不成为源成员；同一视图同类轮廓中共线（或同圆）相连的片段与推断区间合成一根结构线，线型随结构。
 5. **零件目标未知**：`engineering_target` 恒为空；把表达绑定到零件要素需要另外的有源工作。
 
+## 先查经验
+
+读图任务开始前，用任务原话查工程记忆中的读图经验（整条路线、转换保真、断线与结构线、评价参照等）：
+
+```
+oev2 --root ROOT memory session prepare --input request.json
+```
+
+请求按 [`session-request.json` 模板](../modules/engineering-memory/skill/templates/session-request.json)填写：`task` 与 `query` 用用户原话；`provider` 与 `session_id` 取当前客户端（Claude Code 的 `CLAUDE_CODE_SESSION_ID`，Codex 的 `CODEX_THREAD_ID`）；`project` 与 `conditions` 按实际任务填写，不从目录或 profile 推断。返回的候选只含摘要与来源引用，不含原文；需要时再用 `memory get --id …` 读全文、`memory verify` 核来源。按候选的 `conditions` 与 `unknowns` 判断是否适用：经验是待核候选，不代替本次的冻结判据与独立评价。用 `session activate` 绑定所用上下文，结束时用 `session feedback` 记录实际用、拒绝或未用。
+
+不加 `--home` 时用本安装根的私有库 `var/memory`（不进 Git），同一安装根下的各客户端共用；需要别的私有库时显式给 `--home`。经验原文可能含开发图纸的数值与专家纠错：在已用于开发的同一张图上做评价时，被评价的 Agent 不读这些来源原文，否则结果按受污染计。
+
 ## 固定路线
 
 ```

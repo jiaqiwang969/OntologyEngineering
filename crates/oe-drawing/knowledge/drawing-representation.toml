@@ -1,0 +1,545 @@
+# Drawing representation knowledge (图形表达知识).
+#
+# One card per drafting concept: what it means, which parts it is drawn with, the ways it is
+# drawn (standard editions, block or loose entities, written inside a text or apart), the
+# geometric relations between the parts, what it must not be confused with, and where the
+# knowledge comes from. Recognition reads these cards when it runs (oe-drawing
+# `representation` module); every expression a card produces names the card. Parameters are
+# drawing-domain ratios (to a text height, a circle radius or an arm length), never product
+# tolerances. Expert corrections named here are the source of the knowledge, not an input of
+# recognition: no handle, coordinate or label of a real drawing appears in this file.
+schema = "oev2.drawing-representation-knowledge/1"
+profile = "dxf-expression-rules/2"
+
+[[cards]]
+id = "datum_feature_symbol"
+expression_kind = "datum_symbol"
+title = "基准要素符号"
+meaning = "指认基准要素的符号：基准字母写在圆圈（旧版）或方框（现行）中，细实线连线把它接到贴在被测要素轮廓、其延长线或尺寸线上的终端。终端在旧版是粗短横线，在现行标准是涂黑或空白的基准三角形。符号表示“这里是基准要素”，字母本身不是基准。"
+sources = [
+  "GB/T 1182-2018 表4 基准要素标识（方框字母与基准三角形），引 GB/T 17851",
+  "GB/T 17851-2022 基准和基准体系",
+  "专家纠正 E-2026-11-06-2：旧版基准符号由粗短横线、连线、圆圈与字母构成，粗短横线不是可见轮廓",
+  "专家纠正 E-2026-11-06-10：需要理解构成基准符号的要素",
+]
+knowledge_units = ["K24", "K25"]
+recognition = "以单个大写字母为锚：字母居中于一个大小与字高相称的圆圈或方框；一条细线一端落在边框上、向外伸出；另一端是终端——旧版为与连线垂直、连线落在其中部的粗短横线，现行为三角形。四部分齐全才成立；图块与散线同样处理。"
+markers = []
+
+[[cards.components]]
+role = "datum_letter"
+primitives = ["TEXT", "MTEXT"]
+requirement = "一个大写拉丁字母"
+[[cards.components]]
+role = "datum_frame"
+primitives = ["CIRCLE", "LWPOLYLINE"]
+requirement = "圆圈（旧版）或闭合方框（现行），字母中心在边框中心附近"
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE"]
+requirement = "细实线连线，一端在边框上，沿离开字母的方向伸出"
+[[cards.components]]
+role = "datum_terminal"
+primitives = ["LINE", "LWPOLYLINE", "SOLID"]
+requirement = "旧版：粗短横线，垂直于连线，连线端点在其中部；现行：基准三角形，连线端点在其顶点或底边中点"
+
+[[cards.variants]]
+id = "old_circle_bar"
+title = "旧版：圆圈字母 + 连线 + 粗短横线"
+distinguishing = "边框是圆，终端是与连线垂直的短线（常画在粗实线层）"
+encodings = ["loose", "block"]
+tests = ["datum_old_circle_bar_loose_is_one_symbol", "datum_old_circle_bar_block_is_one_symbol"]
+[[cards.variants]]
+id = "new_square_triangle"
+title = "现行：方框字母 + 连线 + 基准三角形"
+distinguishing = "边框是方框，终端是三角形"
+encodings = ["loose"]
+tests = ["datum_new_square_triangle_loose_is_one_symbol"]
+
+[[cards.counter_examples]]
+statement = "圆圈里的字母没有连线和终端，不是基准符号（可能是视图或放大标识）"
+test = "circled_letter_without_connector_is_not_a_datum"
+[[cards.counter_examples]]
+statement = "几何公差框格中写基准字母的格子与框格指引线箭头不是基准符号"
+test = "datum_letter_cell_of_a_frame_is_not_a_datum_symbol"
+[[cards.counter_examples]]
+statement = "单独的粗短横线不接到带字母的边框时，不是基准终端，仍按轮廓等其他规则判断"
+test = "short_thick_line_without_datum_letter_stays_outline"
+
+[[cards.parameters]]
+name = "letter_offset_max"
+value = 0.75
+meaning = "字母中心到边框中心的距离 ≤ 该值 × 边框半径（方框取半边长）"
+[[cards.parameters]]
+name = "boundary_to_text_height_min"
+value = 0.6
+meaning = "边框半径（半边长）≥ 该值 × 字高"
+[[cards.parameters]]
+name = "boundary_to_text_height_max"
+value = 1.8
+meaning = "边框半径（半边长）≤ 该值 × 字高"
+[[cards.parameters]]
+name = "connector_on_boundary"
+value = 0.12
+meaning = "连线端点到边框的距离 ≤ 该值 × 边框半径"
+[[cards.parameters]]
+name = "connector_length_max"
+value = 6.0
+meaning = "连线长度 ≤ 该值 × 边框半径"
+[[cards.parameters]]
+name = "terminal_length_min"
+value = 0.9
+meaning = "粗短横线长度 ≥ 该值 × 边框半径"
+[[cards.parameters]]
+name = "terminal_length_max"
+value = 3.5
+meaning = "粗短横线长度 ≤ 该值 × 边框半径"
+[[cards.parameters]]
+name = "terminal_mid_offset"
+value = 0.25
+meaning = "连线端点到粗短横线中点的距离 ≤ 该值 × 横线长度"
+[[cards.parameters]]
+name = "perpendicular_cos_max"
+value = 0.08
+meaning = "粗短横线与连线夹角余弦的绝对值上限"
+[[cards.parameters]]
+name = "triangle_touch"
+value = 0.25
+meaning = "连线端点到三角形顶点或底边中点的距离 ≤ 该值 × 边框半径"
+[[cards.parameters]]
+name = "triangle_aspect_max"
+value = 1.6
+meaning = "基准三角形最长边与最短边之比上限（细长的箭头不是基准三角形）"
+
+[[cards]]
+id = "center_hole_symbol"
+expression_kind = "center_hole"
+title = "中心孔符号与标记"
+meaning = "在不需要画出中心孔形状时，用符号表示完工零件上是否保留中心孔，并用标记写出型式与尺寸（如 GB/T 4459.5-B2.5/8，旧图写作“中心孔 B4 GB145-85”，“2-”表示两端）。要求保留：在轴线端部画开口向外的 60° 折线（<）；不允许保留：折线顶点处加一短竖线；可以保留：不画符号，只引出标记。符号线不是零件轮廓。"
+sources = [
+  "GB/T 4459.5-1999 机械制图 中心孔表示法 第3章与表1（符号）、第4章（标记）",
+  "GB/T 145 中心孔",
+  "专家纠正 E-2026-11-06-3：中心孔符号被当成可见轮廓线",
+]
+knowledge_units = ["K39"]
+recognition = "两条短直线共一个顶点，夹角约 60°；顶点在端面线与一条中心线的交点上，角平分线与中心线重合；开口朝向零件以外。附近沿轴线的细线上下写有中心孔标记时一并归入。"
+markers = ["中心孔", "4459.5", "GB145", "GB/T145", "GB/T 145"]
+
+[[cards.components]]
+role = "symbol_glyph"
+primitives = ["LINE"]
+requirement = "两条等长短线组成 60° 折线，顶点在轴线与端面的交点"
+[[cards.components]]
+role = "note_text"
+primitives = ["TEXT", "MTEXT"]
+requirement = "中心孔标记：标准编号或“中心孔”字样，型式 R/A/B/C 与尺寸"
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE"]
+requirement = "沿轴线引出的细线，标记文字写在其上下"
+
+[[cards.variants]]
+id = "keep"
+title = "要求保留中心孔：开口向外的 60° 折线"
+distinguishing = "只有折线"
+encodings = ["loose"]
+tests = ["center_hole_keep_symbol_with_designation"]
+[[cards.variants]]
+id = "not_allowed"
+title = "不允许保留中心孔：折线加顶点处短竖线"
+distinguishing = "顶点外侧另有一条垂直于轴线的短线"
+encodings = ["loose"]
+tests = ["center_hole_not_allowed_symbol"]
+
+[[cards.counter_examples]]
+statement = "两线夹角约 60° 但顶点不在中心线上（如倒角线、锥面线），不是中心孔符号"
+test = "v_lines_off_axis_are_not_a_center_hole"
+[[cards.counter_examples]]
+statement = "开口朝向零件内部的 60° 折线（如剖视中的钻尖锥面）不是中心孔符号"
+test = "v_lines_opening_into_the_part_are_not_a_center_hole"
+
+[[cards.parameters]]
+name = "included_angle_deg"
+value = 60.0
+meaning = "折线两臂夹角"
+[[cards.parameters]]
+name = "angle_tolerance_deg"
+value = 12.0
+meaning = "夹角允许偏差"
+[[cards.parameters]]
+name = "arm_length_min"
+value = 0.6
+meaning = "臂长 ≥ 该值 × 图中常用字高"
+[[cards.parameters]]
+name = "arm_length_max"
+value = 4.0
+meaning = "臂长 ≤ 该值 × 图中常用字高"
+[[cards.parameters]]
+name = "arm_ratio_max"
+value = 1.5
+meaning = "两臂长度之比上限"
+[[cards.parameters]]
+name = "apex_tolerance"
+value = 0.05
+meaning = "顶点重合、顶点在中心线或端面上的距离容差 × 字高"
+[[cards.parameters]]
+name = "axis_cross_max"
+value = 0.06
+meaning = "角平分线与中心线方向叉积绝对值上限"
+[[cards.parameters]]
+name = "note_reach"
+value = 4.0
+meaning = "引出细线近端到折线远端的距离 ≤ 该值 × 臂长"
+[[cards.parameters]]
+name = "note_offset_max"
+value = 1.8
+meaning = "标记文字中心到引出细线的距离 ≤ 该值 × 字高"
+
+[[cards]]
+id = "gdt_frame_symbol"
+expression_kind = "geometric_tolerance"
+title = "几何公差框格与特征符号"
+meaning = "几何公差写在矩形框格中：第一格是几何特征符号，第二格是公差值（可带公差带形状符号），其后各格是基准字母；框格用指引线连到被测要素。框格与符号可以是图块，也可以是炸开后的直线、圆与文字；特征符号由其笔画构成决定（如位置度＝圆加十字）。"
+sources = [
+  "GB/T 1182-2018 第5章符号（表2 几何特征符号）与第8章几何公差规范标注",
+  "专家纠正 E-2026-11-06-7：位置度框格用散线画出时须按框格读出",
+]
+knowledge_units = ["K23", "K25", "K26"]
+recognition = "一串等高相邻的矩形格；第一格内只有组成特征符号的笔画（块内或散线），由笔画构成判定特征；第二格文字为公差值，其后为基准字母；从框格边线伸出的细线为指引线。"
+markers = []
+
+[[cards.components]]
+role = "symbol_glyph"
+primitives = ["INSERT", "LINE", "CIRCLE", "LWPOLYLINE"]
+requirement = "第一格内的特征符号笔画"
+[[cards.components]]
+role = "frame_cell"
+primitives = ["LWPOLYLINE", "LINE", "INSERT"]
+requirement = "等高相邻矩形格"
+[[cards.components]]
+role = "tolerance_value"
+primitives = ["TEXT", "MTEXT"]
+requirement = "第二格文字"
+[[cards.components]]
+role = "datum_reference"
+primitives = ["TEXT", "MTEXT"]
+requirement = "第三格起的基准字母"
+
+[[cards.variants]]
+id = "block_glyph"
+title = "符号为图块"
+distinguishing = "第一格内是一个符号图块"
+encodings = ["block"]
+tests = ["frame_with_block_glyph_is_read"]
+[[cards.variants]]
+id = "loose_glyph"
+title = "符号为散线（圆、直线）"
+distinguishing = "第一格内是若干未归属的直线与圆，按笔画构成判定特征"
+encodings = ["loose"]
+tests = ["frame_with_loose_position_glyph_is_read"]
+
+[[cards.counter_examples]]
+statement = "一排相邻方格第一格内没有特征符号笔画（如表格、理论正确尺寸框）不是几何公差框格"
+test = "cells_without_a_glyph_are_not_a_frame"
+
+[[cards.parameters]]
+name = "cell_inset"
+value = 0.06
+meaning = "判定笔画在第一格内时向内收缩的距离 × 格高"
+
+[[cards]]
+id = "tolerance_zone_modifier"
+expression_kind = "geometric_tolerance"
+title = "公差带形状符号 φ / Sφ"
+meaning = "几何公差框格第二格中公差值前的 φ 表示公差带为圆柱形或圆形，Sφ 表示球形。它修饰公差带，不是直径尺寸里的直径符号；框格内的 φ 值不得读成直径尺寸。"
+sources = [
+  "GB/T 1182-2018 7.4 圆柱形或球形公差带：公差值前有“φ”则公差带为圆柱形或圆形，有“Sφ”则为球形",
+  "专家纠正 E-2026-11-06-7：同轴度（位置度）里的“Φ”代表公差带是圆柱形的，不要识别成直径尺寸",
+]
+knowledge_units = ["K25"]
+recognition = "公差值文字以 φ/Φ/Ø/⌀ 开头时给框格加“公差带：圆柱或圆形”限定；以 Sφ 开头时为球形。该文字只作框格成员。"
+markers = ["Ø", "ø", "φ", "Φ", "⌀"]
+parameters = []
+
+[[cards.components]]
+role = "tolerance_value"
+primitives = ["TEXT", "MTEXT"]
+requirement = "以公差带形状符号开头的公差值"
+
+[[cards.variants]]
+id = "cylindrical"
+title = "φ：圆柱形或圆形公差带"
+distinguishing = "公差值前为 φ"
+encodings = ["text"]
+tests = ["phi_in_frame_value_is_a_cylindrical_zone"]
+[[cards.variants]]
+id = "spherical"
+title = "Sφ：球形公差带"
+distinguishing = "公差值前为 Sφ"
+encodings = ["text"]
+tests = ["sphi_in_frame_value_is_a_spherical_zone"]
+
+[[cards.counter_examples]]
+statement = "框格以外、带尺寸线和终端的 φ 文字仍是直径尺寸"
+test = "phi_text_with_dimension_lines_stays_a_diameter"
+
+
+[[cards]]
+id = "special_characteristic_mark"
+expression_kind = "dimension"
+title = "尺寸前的特殊标记（☆ 等）"
+meaning = "写在尺寸数值前的特殊标记（如 ☆、★）按企业规定表示关键或重要特性，属于该尺寸，须随尺寸保留。它可以写在尺寸文字里，也可以作为单独文字放在数值前方、与数值同一方向。"
+sources = [
+  "专家纠正 E-2026-11-06-5：线性尺寸前的特殊标记应保留",
+  "专家纠正 E-2026-11-06-6：直径尺寸前的特殊标记未保留",
+  "标记含义由企业标准或技术要求规定；本卡只保留标记与尺寸的归属，不判定含义",
+]
+knowledge_units = ["K17"]
+recognition = "只含标记字符的文字，若与某个尺寸的数值文字同方向，位于其数值起点之前约一个字宽以内、且在同一行，即为该尺寸的成员；尺寸加“关键特性”限定，标签前加标记。"
+markers = ["☆", "★"]
+
+[[cards.components]]
+role = "special_mark"
+primitives = ["TEXT", "MTEXT"]
+requirement = "只含标记字符，紧靠尺寸数值起点"
+
+[[cards.variants]]
+id = "inline"
+title = "标记写在尺寸文字里"
+distinguishing = "尺寸文字以标记开头"
+encodings = ["text"]
+tests = ["star_inside_dimension_text_is_kept"]
+[[cards.variants]]
+id = "standalone"
+title = "标记为单独文字，放在数值前"
+distinguishing = "单独文字，方向与尺寸数值相同，在数值起点前"
+encodings = ["loose"]
+tests = ["standalone_star_before_linear_dimension_joins_it", "standalone_star_before_rotated_diameter_text_joins_it"]
+
+[[cards.counter_examples]]
+statement = "远离任何尺寸数值或方向不一致的标记不并入尺寸"
+test = "star_far_from_any_dimension_is_not_attached"
+
+[[cards.parameters]]
+name = "before_max"
+value = 2.2
+meaning = "标记中心到数值起点（沿阅读方向向前）的距离 ≤ 该值 × 标记字高"
+[[cards.parameters]]
+name = "after_max"
+value = 0.6
+meaning = "标记中心越过数值起点的距离 ≤ 该值 × 标记字高"
+[[cards.parameters]]
+name = "line_offset_max"
+value = 0.8
+meaning = "标记中心到数值所在行的距离 ≤ 该值 × 标记字高"
+[[cards.parameters]]
+name = "direction_cos_min"
+value = 0.98
+meaning = "标记方向与数值方向夹角余弦下限"
+
+[[cards]]
+id = "angle_unit"
+expression_kind = "dimension_angle"
+title = "角度数值的单位"
+meaning = "角度尺寸的数值必须注写单位（°、′、″）。图上角度尺寸只写了数字时，识别后在数值后补“°”，并记录这是补写的单位、保留原文。"
+sources = [
+  "GB/T 4458.4-2003 尺寸注法：角度数字注写单位",
+  "专家纠正 E-2026-11-06-8：任何图纸识别角度后，数值后面未加角度符号“°”时补充“°”",
+]
+knowledge_units = ["K17", "K20"]
+recognition = "类别为角度尺寸、标签是纯数字且不含 °′″ 时，标签补“°”，限定“单位为补写”，证据保留原文。带公差或其他文字的角度不自动改写。"
+markers = ["°", "′", "″"]
+parameters = []
+
+[[cards.components]]
+role = "dimension_text"
+primitives = ["DIMENSION", "TEXT", "MTEXT"]
+requirement = "角度尺寸的数值"
+
+[[cards.variants]]
+id = "unit_missing"
+title = "只写数字：补 °"
+distinguishing = "纯数字"
+encodings = ["text"]
+tests = ["angle_without_unit_gets_a_degree_sign"]
+[[cards.variants]]
+id = "unit_present"
+title = "已写单位：不变"
+distinguishing = "含 °、′ 或 ″"
+encodings = ["text"]
+tests = ["angle_with_unit_is_unchanged"]
+
+[[cards.counter_examples]]
+statement = "线性尺寸的纯数字不补角度单位"
+test = "linear_number_gets_no_degree_sign"
+
+
+[[cards]]
+id = "gdt_leader_extension"
+expression_kind = "geometric_tolerance"
+title = "几何公差指引线指向轮廓或其延长线"
+meaning = "被测要素是组成要素时，指引线终止在要素的轮廓上或轮廓的延长线上（与尺寸线明显错开），以箭头终止。指引线不直接落在轮廓上时，箭头所在的那条细线是被测轮廓的延长线；图上没有画出延长线时，须按被测轮廓构造延长线，使指引线指向它。"
+sources = [
+  "GB/T 1182-2018 第6章 被测要素：二维标注中指引线终止在要素的轮廓上或轮廓的延长线上",
+  "专家纠正 E-2026-11-06-9：任何几何公差的指引线不能指向被测轮廓线时，需构造被测轮廓线的延长线",
+]
+knowledge_units = ["K23", "K25"]
+recognition = "框格指引线箭头尖端不在轮廓上时：找经过尖端、与箭头方向垂直、并与一段可见轮廓共线的细线，作为延长线并入框格；找不到画出的细线但有共线轮廓时，构造从尖端到轮廓端点的延长线并记为推断。"
+markers = []
+
+[[cards.components]]
+role = "extension_line"
+primitives = ["LINE"]
+requirement = "经过箭头尖端、与被测轮廓共线的细线"
+
+[[cards.variants]]
+id = "drawn"
+title = "延长线已画出"
+distinguishing = "尖端在一条与轮廓共线的细线上"
+encodings = ["loose"]
+tests = ["frame_leader_to_a_drawn_extension_line"]
+[[cards.variants]]
+id = "constructed"
+title = "未画延长线：构造"
+distinguishing = "尖端落在轮廓的延长方向上，中间无线"
+encodings = ["inferred"]
+tests = ["frame_leader_without_extension_gets_a_constructed_one"]
+
+[[cards.counter_examples]]
+statement = "箭头直接落在轮廓上时不另加延长线"
+test = "frame_leader_on_the_outline_needs_no_extension"
+
+[[cards.parameters]]
+name = "tip_tolerance"
+value = 0.1
+meaning = "尖端到细线端点或轮廓所在直线的距离 ≤ 该值 × 字高"
+[[cards.parameters]]
+name = "perpendicular_cos_max"
+value = 0.1
+meaning = "箭头方向与延长线夹角余弦的绝对值上限"
+[[cards.parameters]]
+name = "outline_gap_max"
+value = 3.0
+meaning = "延长线远端到轮廓端点的距离 ≤ 该值 × 字高"
+[[cards.parameters]]
+name = "constructed_reach_max"
+value = 15.0
+meaning = "构造延长线长度 ≤ 该值 × 字高"
+
+[[cards]]
+id = "section_line_region"
+expression_kind = "section_hatch"
+title = "剖面区域内的剖面线"
+meaning = "剖面线是画在剖面区域内的等距平行细实线（通常 45°），两端止于区域边界。区域内部、与剖面线方向平行、两端落在区域边界上的直线是剖面线，即使绘图者用了粗线或轮廓图层；轮廓线是区域的边界，不在区域内部穿过。"
+sources = [
+  "GB/T 4457.5-2013 剖面区域的表示法",
+  "GB/T 4457.4-2002 图线（剖面线为细实线）",
+  "专家纠正 E-2026-11-06-1：剖面线跟可见轮廓线识别不清，需要增加对两者区分度的理解",
+]
+knowledge_units = ["K12", "K03"]
+recognition = "对每个填充区域取其边界与图案角度；区域内部、与图案方向平行、两端在边界上、且不沿边界的直线并入该剖面。"
+markers = []
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE"]
+requirement = "填充区域或区域内平行于图案方向的直线"
+
+[[cards.variants]]
+id = "drawn_as_line"
+title = "剖面线单独画成直线（线宽不论）"
+distinguishing = "在填充区域内、平行于图案方向"
+encodings = ["loose"]
+tests = ["thick_line_inside_hatch_parallel_to_pattern_is_a_section_line"]
+
+[[cards.counter_examples]]
+statement = "沿填充区域边界的粗线是轮廓，不是剖面线"
+test = "thick_line_on_the_hatch_boundary_stays_outline"
+[[cards.counter_examples]]
+statement = "区域内与图案方向不平行的线不按剖面线并入"
+test = "line_inside_hatch_not_parallel_to_pattern_is_not_a_section_line"
+
+[[cards.parameters]]
+name = "angle_tolerance_deg"
+value = 6.0
+meaning = "与图案方向的夹角容差"
+[[cards.parameters]]
+name = "boundary_tolerance"
+value = 0.05
+meaning = "端点在边界上的距离容差 × 字高"
+
+[[cards]]
+id = "detail_circle_interruption"
+expression_kind = "visible_contour"
+title = "被局部放大圈打断的结构线"
+meaning = "局部放大图的细实线圈只标出被放大的部位，不改变零件结构。绘图者在圈处把轮廓线剪断时，圈两侧共线的两段仍是同一条结构线，按完整结构连起来；补出的部分是推断，不是来源线。"
+sources = [
+  "GB/T 4458.1-2002 局部放大图：用细实线圈出被放大的部位",
+  "专家纠正 E-2026-11-06-4：局部放大图的细实线圈和尺寸轮廓线遮挡，造成可见轮廓线缺失（开发图上曾有同类纠正，被遮挡段补全当时延后）",
+]
+knowledge_units = ["K13", "K11"]
+recognition = "一段轮廓的端点落在放大圈上，另一段共线轮廓在圈的另一处交点开始，两端之间的间隙在圈内：原因记为“放大圈打断”，按推断连成一条结构线。"
+markers = []
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE"]
+requirement = "圈两侧共线的轮廓段"
+[[cards.components]]
+role = "detail_circle"
+primitives = ["CIRCLE"]
+requirement = "带罗马数字的细实线圈"
+
+[[cards.variants]]
+id = "cut_at_circle"
+title = "轮廓在圈处剪断"
+distinguishing = "两段间隙的两端都在同一圈上"
+encodings = ["loose"]
+tests = ["outline_cut_by_a_detail_circle_is_one_line"]
+
+[[cards.counter_examples]]
+statement = "间隙端点不都在同一放大圈上时不按此原因连接"
+test = "pieces_ending_on_different_circles_are_not_joined"
+
+[[cards.parameters]]
+name = "on_circle_tolerance"
+value = 0.02
+meaning = "端点到圈的距离容差 × 字高"
+
+[[cards]]
+id = "visible_edge_line"
+expression_kind = "visible_contour"
+title = "可见棱边线（如倒角棱线）"
+meaning = "两表面的可见交线（棱边）用粗实线画出，如轴端倒角与圆柱面的交线在主视图中是连接两侧倒角角点、横跨零件的直线。它的两端都是轮廓的角点、整段在零件内；绘图者误用细线颜色或图层时，几何关系优先于颜色。被放大圈剪断的棱线按两段合起来判断。"
+sources = [
+  "GB/T 4457.4-2002 图线：粗实线用于可见棱边线、可见轮廓线",
+  "专家纠正 E-2026-11-06-4：放大圈处可见轮廓线缺失（端面倒角棱线被当作引出线和未解释线）",
+]
+knowledge_units = ["K03", "K09"]
+recognition = "实线（不论颜色）或其被放大圈剪断的共线几段，合起来的两个端点都是两条以上轮廓线相交的角点，且不与已有轮廓重叠：按可见轮廓读出。尺寸界线只有一端在轮廓上，不满足。"
+markers = []
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE"]
+requirement = "两端为轮廓角点的直线（或其被放大圈剪断的几段）"
+
+[[cards.variants]]
+id = "edge_in_annotation_colour"
+title = "棱线用了细线颜色"
+distinguishing = "两端为轮廓角点"
+encodings = ["loose"]
+tests = ["chamfer_edge_line_in_thin_colour_is_visible_outline"]
+
+[[cards.counter_examples]]
+statement = "从倒角角点引出、另一端不在轮廓角点上的细线（尺寸界线）不是棱线"
+test = "extension_line_from_a_chamfer_corner_stays_annotation"
+
+[[cards.parameters]]
+name = "vertex_tolerance"
+value = 0.02
+meaning = "端点与轮廓角点重合的距离容差 × 字高"
+[[cards.parameters]]
+name = "min_length"
+value = 0.8
+meaning = "棱线长度 ≥ 该值 × 字高"

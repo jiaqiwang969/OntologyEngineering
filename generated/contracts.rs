@@ -2886,6 +2886,34 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdPinnedFile", "name", "String"),
     ("MdPinnedFile", "path", "String"),
     ("MdPinnedFile", "sha256", "String"),
+    ("MdRepresentationCard", "components", "Vec<MdRepresentationComponent>"),
+    ("MdRepresentationCard", "counter_examples", "Vec<MdRepresentationCounterExample>"),
+    ("MdRepresentationCard", "expression_kind", "String"),
+    ("MdRepresentationCard", "id", "String"),
+    ("MdRepresentationCard", "knowledge_units", "Vec<String>"),
+    ("MdRepresentationCard", "markers", "Vec<String>"),
+    ("MdRepresentationCard", "meaning", "String"),
+    ("MdRepresentationCard", "parameters", "Vec<MdRepresentationParameter>"),
+    ("MdRepresentationCard", "recognition", "String"),
+    ("MdRepresentationCard", "sources", "Vec<String>"),
+    ("MdRepresentationCard", "title", "String"),
+    ("MdRepresentationCard", "variants", "Vec<MdRepresentationVariant>"),
+    ("MdRepresentationComponent", "primitives", "Vec<String>"),
+    ("MdRepresentationComponent", "requirement", "String"),
+    ("MdRepresentationComponent", "role", "String"),
+    ("MdRepresentationCounterExample", "statement", "String"),
+    ("MdRepresentationCounterExample", "test", "String"),
+    ("MdRepresentationKnowledge", "cards", "Vec<MdRepresentationCard>"),
+    ("MdRepresentationKnowledge", "profile", "String"),
+    ("MdRepresentationKnowledge", "schema", "String"),
+    ("MdRepresentationParameter", "meaning", "String"),
+    ("MdRepresentationParameter", "name", "String"),
+    ("MdRepresentationParameter", "value", "f64"),
+    ("MdRepresentationVariant", "distinguishing", "String"),
+    ("MdRepresentationVariant", "encodings", "Vec<String>"),
+    ("MdRepresentationVariant", "id", "String"),
+    ("MdRepresentationVariant", "tests", "Vec<String>"),
+    ("MdRepresentationVariant", "title", "String"),
     ("MdReviewPage", "expression_count", "u64"),
     ("MdReviewPage", "graph_sha256", "String"),
     ("MdReviewPage", "page", "MdDrawingRouteFile"),
@@ -5538,6 +5566,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpression", "family", "view"),
     ("MdEngineeringExpression", "kind", "break_line"),
     ("MdEngineeringExpression", "kind", "center_axis"),
+    ("MdEngineeringExpression", "kind", "center_hole"),
     ("MdEngineeringExpression", "kind", "construction_reference"),
     ("MdEngineeringExpression", "kind", "datum_symbol"),
     ("MdEngineeringExpression", "kind", "dimension_angle"),
@@ -5573,7 +5602,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpression", "state", "unknown"),
     ("MdEngineeringExpressionGraph", "layer_convention", "gbt14665_2012_table6_consistent"),
     ("MdEngineeringExpressionGraph", "layer_convention", "not_qualified"),
-    ("MdEngineeringExpressionGraph", "profile", "dxf-expression-rules/1"),
+    ("MdEngineeringExpressionGraph", "profile", "dxf-expression-rules/2"),
     ("MdEngineeringExpressionGraph", "schema", "oev2.drawing-expression-graph/1"),
     ("MdExpressionGraphCheck", "status", "passed"),
     ("MdExpressionMember", "line_type", "block"),
@@ -5600,6 +5629,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdExpressionMember", "member_role", "datum_frame"),
     ("MdExpressionMember", "member_role", "datum_letter"),
     ("MdExpressionMember", "member_role", "datum_reference"),
+    ("MdExpressionMember", "member_role", "datum_terminal"),
     ("MdExpressionMember", "member_role", "definition_point"),
     ("MdExpressionMember", "member_role", "detail_circle"),
     ("MdExpressionMember", "member_role", "dimension_line"),
@@ -5619,6 +5649,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdExpressionMember", "member_role", "roughness_symbol"),
     ("MdExpressionMember", "member_role", "roughness_value"),
     ("MdExpressionMember", "member_role", "scale_text"),
+    ("MdExpressionMember", "member_role", "special_mark"),
     ("MdExpressionMember", "member_role", "symbol_glyph"),
     ("MdExpressionMember", "member_role", "table_line"),
     ("MdExpressionMember", "member_role", "table_text"),
@@ -5632,6 +5663,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdExpressionMember", "state", "candidate"),
     ("MdExpressionMember", "state", "observed"),
     ("MdExpressionMember", "state", "unknown"),
+    ("MdImpliedSpan", "cause", "detail_circle_crossing"),
     ("MdImpliedSpan", "cause", "local_section"),
     ("MdImpliedSpan", "cause", "text_break"),
     ("MdImpliedSpan", "line_class", "hidden_outline"),
@@ -5682,6 +5714,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdReviewPageCheckRequest", "mode", "kind"),
     ("MdReviewPageCheckRequest", "mode", "line"),
     ("MdReviewPageCheckRequest", "mode", "view"),
+    ("MdStructuralEnd", "cause", "detail_circle_crossing"),
     ("MdStructuralEnd", "cause", "drafting_gap"),
     ("MdStructuralEnd", "cause", "local_section"),
     ("MdStructuralEnd", "cause", "text_break"),
@@ -20287,7 +20320,7 @@ impl MdEngineeringExpression {
         if self.state.trim().is_empty() { failures.push("MdEngineeringExpression.state:required".into()); }
 
         if !["construction","dimension","geometry","note","sheet","surface","tolerance","unresolved","view",].contains(&self.family.as_str()) { failures.push("MdEngineeringExpression.family:allowed_values".into()); }
-        if !["break_line","center_axis","construction_reference","datum_symbol","dimension_angle","dimension_chamfer","dimension_diameter","dimension_linear","dimension_radius","geometric_tolerance","gps_direction","gps_parallelism","gps_perpendicularity","gps_position","gps_runout","gps_symmetry","hidden_contour","leader","material_heat","phantom_line","process_requirement","protection_requirement","section_hatch","sheet_frame","surface_roughness","technical_general","thread_convention","thread_note","title_block","unresolved","view_callout","visible_contour",].contains(&self.kind.as_str()) { failures.push("MdEngineeringExpression.kind:allowed_values".into()); }
+        if !["break_line","center_axis","center_hole","construction_reference","datum_symbol","dimension_angle","dimension_chamfer","dimension_diameter","dimension_linear","dimension_radius","geometric_tolerance","gps_direction","gps_parallelism","gps_perpendicularity","gps_position","gps_runout","gps_symmetry","hidden_contour","leader","material_heat","phantom_line","process_requirement","protection_requirement","section_hatch","sheet_frame","surface_roughness","technical_general","thread_convention","thread_note","title_block","unresolved","view_callout","visible_contour",].contains(&self.kind.as_str()) { failures.push("MdEngineeringExpression.kind:allowed_values".into()); }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdEngineeringExpression.state:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20336,7 +20369,7 @@ impl MdEngineeringExpressionGraph {
         if self.source_sha256.trim().is_empty() { failures.push("MdEngineeringExpressionGraph.source_sha256:required".into()); }
 
         if !["gbt14665_2012_table6_consistent","not_qualified",].contains(&self.layer_convention.as_str()) { failures.push("MdEngineeringExpressionGraph.layer_convention:allowed_values".into()); }
-        if !["dxf-expression-rules/1",].contains(&self.profile.as_str()) { failures.push("MdEngineeringExpressionGraph.profile:allowed_values".into()); }
+        if !["dxf-expression-rules/2",].contains(&self.profile.as_str()) { failures.push("MdEngineeringExpressionGraph.profile:allowed_values".into()); }
         if !["oev2.drawing-expression-graph/1",].contains(&self.schema.as_str()) { failures.push("MdEngineeringExpressionGraph.schema:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20450,7 +20483,7 @@ impl MdExpressionMember {
         if self.state.trim().is_empty() { failures.push("MdExpressionMember.state:required".into()); }
 
         if !["block","continuous","dimension","double_break","fill","point","text","thick_continuous","thick_dash_dot","thick_dashed","thin_continuous","thin_dash_dot","thin_dash_double_dot","thin_dashed","unknown","wavy",].contains(&self.line_type.as_str()) { failures.push("MdExpressionMember.line_type:allowed_values".into()); }
-        if !["arrowhead","break_curve","center_line","coincident_source","contour_segment","datum_frame","datum_letter","datum_reference","definition_point","detail_circle","dimension_line","dimension_text","extension_line","extension_origin","frame_border","frame_cell","hatch_fill","hidden_segment","leader_line","native_block","native_dimension","native_member","note_text","phantom_segment","roughness_symbol","roughness_value","scale_text","symbol_glyph","table_line","table_text","thread_line","tolerance_text","tolerance_value","unresolved_source","view_arrow","view_letter","view_title",].contains(&self.member_role.as_str()) { failures.push("MdExpressionMember.member_role:allowed_values".into()); }
+        if !["arrowhead","break_curve","center_line","coincident_source","contour_segment","datum_frame","datum_letter","datum_reference","datum_terminal","definition_point","detail_circle","dimension_line","dimension_text","extension_line","extension_origin","frame_border","frame_cell","hatch_fill","hidden_segment","leader_line","native_block","native_dimension","native_member","note_text","phantom_segment","roughness_symbol","roughness_value","scale_text","special_mark","symbol_glyph","table_line","table_text","thread_line","tolerance_text","tolerance_value","unresolved_source","view_arrow","view_letter","view_title",].contains(&self.member_role.as_str()) { failures.push("MdExpressionMember.member_role:allowed_values".into()); }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdExpressionMember.state:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20503,7 +20536,7 @@ impl MdImpliedSpan {
         if !self.to_parameter.is_finite() { failures.push("MdImpliedSpan.to_parameter:finite".into()); }
         if self.to_source_handle.trim().is_empty() { failures.push("MdImpliedSpan.to_source_handle:required".into()); }
 
-        if !["local_section","text_break",].contains(&self.cause.as_str()) { failures.push("MdImpliedSpan.cause:allowed_values".into()); }
+        if !["detail_circle_crossing","local_section","text_break",].contains(&self.cause.as_str()) { failures.push("MdImpliedSpan.cause:allowed_values".into()); }
         if !["hidden_outline","visible_outline",].contains(&self.line_class.as_str()) { failures.push("MdImpliedSpan.line_class:allowed_values".into()); }
         if !["complete_structure",].contains(&self.representation.as_str()) { failures.push("MdImpliedSpan.representation:allowed_values".into()); }
         if !["candidate",].contains(&self.state.as_str()) { failures.push("MdImpliedSpan.state:allowed_values".into()); }
@@ -20601,6 +20634,163 @@ impl MdPinnedFile {
         if self.name.trim().is_empty() { failures.push("MdPinnedFile.name:required".into()); }
         if self.path.trim().is_empty() { failures.push("MdPinnedFile.path:required".into()); }
         if self.sha256.trim().is_empty() { failures.push("MdPinnedFile.sha256:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Drafting concept: meaning, parts, drawing variants, relations as parameters, counter-examples and sources
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdRepresentationCard {
+    /// Parts the concept is drawn with
+    pub components: Vec<MdRepresentationComponent>,
+    /// What the concept must not be confused with
+    pub counter_examples: Vec<MdRepresentationCounterExample>,
+    /// Expression kind or family the card produces or qualifies
+    pub expression_kind: String,
+    /// Stable card identifier named by the expressions it produces
+    pub id: String,
+    /// Knowledge-system units for reading
+    pub knowledge_units: Vec<String>,
+    /// Characters or words that identify the concept in text
+    pub markers: Vec<String>,
+    /// What the representation means in the drawing
+    pub meaning: String,
+    /// Geometric relations as drawing-domain ratios
+    pub parameters: Vec<MdRepresentationParameter>,
+    /// Decision rule in words
+    pub recognition: String,
+    /// Standard clauses and expert corrections the knowledge comes from
+    pub sources: Vec<String>,
+    /// Concept name
+    pub title: String,
+    /// Ways the concept is drawn
+    pub variants: Vec<MdRepresentationVariant>,
+}
+impl MdRepresentationCard {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.expression_kind.trim().is_empty() { failures.push("MdRepresentationCard.expression_kind:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdRepresentationCard.id:required".into()); }
+        if self.meaning.trim().is_empty() { failures.push("MdRepresentationCard.meaning:required".into()); }
+        if self.recognition.trim().is_empty() { failures.push("MdRepresentationCard.recognition:required".into()); }
+        if self.title.trim().is_empty() { failures.push("MdRepresentationCard.title:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Part of a drafting representation
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdRepresentationComponent {
+    /// Native primitives the part may be drawn with
+    pub primitives: Vec<String>,
+    /// Condition the part must meet
+    pub requirement: String,
+    /// Member role the part takes
+    pub role: String,
+}
+impl MdRepresentationComponent {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.requirement.trim().is_empty() { failures.push("MdRepresentationComponent.requirement:required".into()); }
+        if self.role.trim().is_empty() { failures.push("MdRepresentationComponent.role:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Representation that must not be read as the concept
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdRepresentationCounterExample {
+    /// What is not the concept and why
+    pub statement: String,
+    /// Synthetic test of the counter-example
+    pub test: String,
+}
+impl MdRepresentationCounterExample {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.statement.trim().is_empty() { failures.push("MdRepresentationCounterExample.statement:required".into()); }
+        if self.test.trim().is_empty() { failures.push("MdRepresentationCounterExample.test:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Drafting representation knowledge read by recognition: one card per concept
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdRepresentationKnowledge {
+    /// Concept cards
+    pub cards: Vec<MdRepresentationCard>,
+    /// Expression rules profile that reads the cards
+    pub profile: String,
+    /// Knowledge schema
+    pub schema: String,
+}
+impl MdRepresentationKnowledge {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.profile.trim().is_empty() { failures.push("MdRepresentationKnowledge.profile:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdRepresentationKnowledge.schema:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Geometric relation of a card as a drawing-domain ratio
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdRepresentationParameter {
+    /// What the ratio bounds
+    pub meaning: String,
+    /// Parameter name used by recognition
+    pub name: String,
+    /// Ratio or angle in degrees
+    pub value: f64,
+}
+impl MdRepresentationParameter {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.meaning.trim().is_empty() { failures.push("MdRepresentationParameter.meaning:required".into()); }
+        if self.name.trim().is_empty() { failures.push("MdRepresentationParameter.name:required".into()); }
+        if !self.value.is_finite() { failures.push("MdRepresentationParameter.value:finite".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One way a concept is drawn (standard edition, block or loose entities, inside a text or apart)
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdRepresentationVariant {
+    /// What tells the variant apart
+    pub distinguishing: String,
+    /// Encodings covered: block, loose, text or inferred
+    pub encodings: Vec<String>,
+    /// Variant identifier
+    pub id: String,
+    /// Synthetic tests of the variant
+    pub tests: Vec<String>,
+    /// Variant name
+    pub title: String,
+}
+impl MdRepresentationVariant {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.distinguishing.trim().is_empty() { failures.push("MdRepresentationVariant.distinguishing:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdRepresentationVariant.id:required".into()); }
+        if self.title.trim().is_empty() { failures.push("MdRepresentationVariant.title:required".into()); }
 
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20789,7 +20979,7 @@ impl MdStructuralEnd {
         if self.source_handle.trim().is_empty() { failures.push("MdStructuralEnd.source_handle:required".into()); }
         if self.state.trim().is_empty() { failures.push("MdStructuralEnd.state:required".into()); }
 
-        if !["drafting_gap","local_section","text_break","unexplained",].contains(&self.cause.as_str()) { failures.push("MdStructuralEnd.cause:allowed_values".into()); }
+        if !["detail_circle_crossing","drafting_gap","local_section","text_break","unexplained",].contains(&self.cause.as_str()) { failures.push("MdStructuralEnd.cause:allowed_values".into()); }
         if !["hidden_outline","visible_outline",].contains(&self.line_class.as_str()) { failures.push("MdStructuralEnd.line_class:allowed_values".into()); }
         if !["candidate","unknown",].contains(&self.state.as_str()) { failures.push("MdStructuralEnd.state:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }

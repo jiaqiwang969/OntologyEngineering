@@ -1,4 +1,4 @@
-//! Complete engineering-expression assembly (profile `dxf-expression-rules/1`).
+//! Complete engineering-expression assembly (profile `dxf-expression-rules/2`).
 //!
 //! The layer sits above the lossless [`MdUsageGraph`]. A native DXF entity is
 //! evidence for one or more expression members; it is not the expression kind.
@@ -17,6 +17,9 @@
 //! * terminator / dimension-line / extension-line / text composition for
 //!   exploded dimensions (GB/T 4458.4, GB/T 14665-2012 clause 6).
 //!
+//! * drafting representation knowledge cards (`knowledge/drawing-representation.toml`),
+//!   read when recognition runs; the rules that use a card name it in what they produce.
+//!
 //! No old labels, repaired intervals, manual regions or paired models are read.
 use crate::{
     discipline_discovery as dd,
@@ -31,7 +34,11 @@ use std::collections::{BTreeMap, BTreeSet};
 #[path = "structure_topology.rs"]
 mod topology;
 
-pub const PROFILE: &str = "dxf-expression-rules/1";
+#[path = "representation.rs"]
+mod representation;
+pub use representation::{USED_CARDS, representation_knowledge};
+
+pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
 type P = [f64; 2];
 
@@ -701,7 +708,7 @@ fn family(kind: &str) -> &'static str {
     match kind {
         "visible_contour" | "hidden_contour" | "center_axis" | "phantom_line"
         | "thread_convention" | "break_line" | "section_hatch" => "geometry",
-        "thread_note" | "leader" => "dimension",
+        "thread_note" | "leader" | "center_hole" => "dimension",
         k if k.starts_with("dimension_") => "dimension",
         "geometric_tolerance" | "datum_symbol" => "tolerance",
         k if k.starts_with("gps_") => "tolerance",
@@ -739,6 +746,7 @@ fn knowledge(kind: &str) -> Vec<String> {
         | "gps_symmetry"
         | "geometric_tolerance" => &["K23", "K24", "K25"],
         "datum_symbol" => &["K24"],
+        "center_hole" => &["K39"],
         "surface_roughness" => &["K31", "K32"],
         "view_callout" => &["K11", "K13"],
         "technical_general" => &["K14", "K21"],
@@ -1478,7 +1486,9 @@ fn native_dimensions(
 
 /// Member roles that consume a source exclusively for annotation; such sources
 /// are not visible-outline evidence.
-const EXCLUSIVE: [&str; 14] = [
+const EXCLUSIVE: [&str; 16] = [
+    "datum_terminal",
+    "hatch_fill",
     "dimension_line",
     "leader_line",
     "frame_cell",
@@ -2518,7 +2528,14 @@ fn add_leader(cx: &Ctx, b: &mut Builder, e: usize, segs: &[String], arrows: &[St
     }
 }
 
-fn exploded_frames(cx: &Ctx, b: &mut Builder, def: &Deferred, anchors: &mut BTreeMap<usize, P>) {
+#[allow(clippy::type_complexity)]
+fn exploded_frames(
+    cx: &Ctx,
+    b: &mut Builder,
+    def: &Deferred,
+    anchors: &mut BTreeMap<usize, P>,
+    loose: &[(Vec<String>, &'static str, [f64; 4])],
+) {
     let mut cells: Vec<(Vec<String>, [f64; 4])> = def.cells.clone();
     for (h, (pts, _, bulged)) in &cx.polys {
         if !*bulged
@@ -2529,7 +2546,22 @@ fn exploded_frames(cx: &Ctx, b: &mut Builder, def: &Deferred, anchors: &mut BTre
         }
     }
     cells.extend(line_rectangles(cx, b));
-    for (gid, kind, gb) in &def.glyphs {
+    // Cells drawn partly with lines next to a polyline cell (card gdt_frame_symbol).
+    for (ids, r) in representation::frame_rectangles(cx, b) {
+        if !cells.iter().any(|c| c.1 == r) {
+            cells.push((ids, r));
+        }
+    }
+    let glyphs: Vec<(Vec<String>, &'static str, [f64; 4], bool)> = def
+        .glyphs
+        .iter()
+        .map(|(g, k, r)| (vec![g.clone()], *k, *r, false))
+        .chain(loose.iter().map(|(g, k, r)| (g.clone(), *k, *r, true)))
+        .collect();
+    for (gids, kind, gb, is_loose) in &glyphs {
+        if gids.iter().any(|g| b.used(g)) {
+            continue;
+        }
         let gc = mid([gb[0], gb[1]], [gb[2], gb[3]]);
         let gsize = (gb[2] - gb[0]).max(gb[3] - gb[1]).max(1e-6);
         let Some(first) = cells
@@ -2599,20 +2631,27 @@ fn exploded_frames(cx: &Ctx, b: &mut Builder, def: &Deferred, anchors: &mut BTre
             "exploded_tolerance_frame_glyph_cells_fields",
             "candidate",
             vec![],
-            vec![format!("glyph:{gid}"), format!("cells:{}", chain.len())],
+            vec![
+                format!("glyph:{}", gids.join("+")),
+                format!("cells:{}", chain.len()),
+                "card:gdt_frame_symbol".into(),
+                format!("variant:{}", if *is_loose { "loose_glyph" } else { "block_glyph" }),
+            ],
             vec!["Toleranced feature requires the leader target".into()],
         );
-        b.member(
-            e,
-            gid,
-            None,
-            [0., 1.],
-            "symbol_glyph",
-            "block",
-            "candidate",
-            vec![],
-            vec![],
-        );
+        for gid in gids {
+            b.member(
+                e,
+                gid,
+                None,
+                [0., 1.],
+                "symbol_glyph",
+                if *is_loose { member_line_type(cx.lt(gid), "symbol_glyph") } else { "block" },
+                "candidate",
+                vec![],
+                vec![],
+            );
+        }
         for (ids, _) in &chain {
             for id in ids {
                 b.member(
@@ -6484,15 +6523,22 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     let mut anchors = BTreeMap::new();
     native_dimensions(&cx, &mut b, &mut text_anchor, &mut native_texts);
     blocks(&cx, &mut b, &mut def);
+    representation::datum_symbols(&cx, &mut b)?;
+    representation::center_holes(&cx, &mut b)?;
     hatch_and_points(&cx, &mut b);
+    representation::section_lines(&cx, &mut b)?;
     exploded_dimensions(&cx, &mut b, &mut anchors);
     exploded_angles(&cx, &mut b);
-    exploded_frames(&cx, &mut b, &def, &mut anchors);
+    let loose = representation::loose_glyphs(&cx, &b)?;
+    exploded_frames(&cx, &mut b, &def, &mut anchors, &loose);
     extended_pair_dimensions(&cx, &mut b, &mut anchors);
     let titles = view_titles(&cx, &mut b);
+    representation::visible_edges(&cx, &mut b)?;
     leader_annotations(&cx, &mut b, &text_anchor, &mut anchors);
     thread_texts(&cx, &mut b);
     boxed_values(&cx, &mut b, &native_texts);
+    representation::special_marks(&cx, &mut b, &native_texts)?;
+    representation::angle_units(&mut b)?;
     detail_circles(&cx, &mut b);
     unlabeled_view_arrows(&cx, &mut b, &mut anchors);
     technical_notes(&cx, &mut b);
@@ -6505,6 +6551,8 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     let cover = topology::cover(&cx, &b);
     structure(&cx, &mut b, &cover);
     duplicate_spans(&cx, &mut b);
+    representation::leader_extensions(&cx, &mut b)?;
+    representation::frame_cards(&mut b)?;
     let (regions, vmap, refs) = views(&cx, &b, &titles, &anchors);
     let mut nb = finalize(&b, &vmap, &regions, &refs);
     unresolved(&cx, &mut nb, &regions);

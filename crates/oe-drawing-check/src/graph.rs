@@ -161,7 +161,7 @@ fn family(kind: &str) -> Option<&'static str> {
     Some(match kind {
         "visible_contour" | "hidden_contour" | "center_axis" | "phantom_line"
         | "thread_convention" | "break_line" | "section_hatch" => "geometry",
-        "thread_note" | "leader" => "dimension",
+        "thread_note" | "leader" | "center_hole" => "dimension",
         "geometric_tolerance" | "datum_symbol" => "tolerance",
         "surface_roughness" => "surface",
         "view_callout" => "view",
@@ -490,7 +490,13 @@ pub fn check(
         let h = text(e, "source_handle")?;
         c.ok(
             roots.contains_key(h)
-                && ["text_break", "local_section", "drafting_gap", "unexplained"]
+                && [
+                    "text_break",
+                    "local_section",
+                    "detail_circle_crossing",
+                    "drafting_gap",
+                    "unexplained",
+                ]
                     .contains(&text(e, "cause")?)
                 && ["visible_outline", "hidden_outline"].contains(&text(e, "line_class")?),
             format!("Structural end typed: {id}"),

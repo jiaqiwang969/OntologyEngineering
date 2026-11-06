@@ -15,7 +15,7 @@ const SOURCE: &str = include_str!("../knowledge/drawing-representation.toml");
 const SCHEMA_K: &str = "oev2.drawing-representation-knowledge/1";
 
 /// Cards that recognition uses; a test checks this list against the file both ways.
-pub const USED_CARDS: [&str; 10] = [
+pub const USED_CARDS: [&str; 18] = [
     "datum_feature_symbol",
     "center_hole_symbol",
     "gdt_frame_symbol",
@@ -26,6 +26,14 @@ pub const USED_CARDS: [&str; 10] = [
     "section_line_region",
     "detail_circle_interruption",
     "visible_edge_line",
+    "dimension_text",
+    "technical_note",
+    "title_block_field",
+    "series_table",
+    "gdt_characteristic",
+    "gdt_frame_content",
+    "surface_texture_symbol",
+    "view_callout",
 ];
 
 /// Concept catalogue: one card per drafting representation concept, by group.
@@ -73,8 +81,10 @@ pub fn drawing_concepts() -> Result<&'static Vec<oe_contracts::MdDrawingConceptG
                 for r in &c.recognition_cards {
                     linked.entry(r.clone()).or_default().insert(c.id.clone());
                 }
-                if (c.recognizer == "card") != !c.recognition_cards.is_empty() {
-                    bad.push(format!("recognizer_status:{}", c.id));
+                match super::coverage::concept_status(&c.id, !c.recognition_cards.is_empty()) {
+                    Ok(s) if s == c.recognizer => {}
+                    Ok(s) => bad.push(format!("recognizer_status:{}:{}!={s}", c.id, c.recognizer)),
+                    Err(e) => bad.push(format!("coverage:{e}")),
                 }
             }
             groups.push(grp);
@@ -155,6 +165,11 @@ pub fn representation_knowledge() -> Result<&'static MdRepresentationKnowledge> 
     .map_err(|e| anyhow::anyhow!(e.clone()))
 }
 
+/// A card by id, for the sibling rule modules.
+pub(super) fn card_ref(id: &str) -> Result<&'static MdRepresentationCard> {
+    card(id)
+}
+
 fn card(id: &str) -> Result<&'static MdRepresentationCard> {
     representation_knowledge()?
         .cards
@@ -163,7 +178,7 @@ fn card(id: &str) -> Result<&'static MdRepresentationCard> {
         .ok_or_else(|| anyhow::anyhow!("drawing_representation_card_missing: {id}"))
 }
 
-fn param(c: &MdRepresentationCard, name: &str) -> Result<f64> {
+pub(super) fn param(c: &MdRepresentationCard, name: &str) -> Result<f64> {
     c.parameters
         .iter()
         .find(|p| p.name == name)
@@ -646,7 +661,7 @@ pub(super) fn loose_glyphs(cx: &Ctx, b: &Builder) -> Result<Vec<(Vec<String>, &'
             continue;
         }
         let mut ids = Vec::new();
-        let mut shape = dd::Shape { lines: vec![], circles: vec![], texts: vec![], paths: vec![], curved: false };
+        let mut shape = dd::Shape::default();
         for (id, (p, q)) in &cx.lines {
             if !b.used(id) && inside(*p, shrink, 0.) && inside(*q, shrink, 0.) {
                 ids.push(id.clone());
@@ -728,6 +743,8 @@ pub(super) fn frame_cards(b: &mut Builder) -> Result<()> {
             e.qualifiers.push(q.into());
             e.evidence_ids.push(tag(zc));
             e.evidence_ids.push(variant_tag(v));
+            // the card names two concepts; the variant decides which one this frame shows
+            e.evidence_ids.push(format!("concept:{}", if v == "spherical" { "DC-G5-087" } else { "DC-G5-088" }));
         }
     }
     Ok(())
@@ -999,6 +1016,9 @@ pub(super) fn section_lines(cx: &Ctx, b: &mut Builder) -> Result<()> {
             if !b.exprs[e].evidence_ids.contains(&tag(c)) {
                 b.exprs[e].evidence_ids.push(tag(c));
                 b.exprs[e].evidence_ids.push(variant_tag("drawn_as_line"));
+                for k in &c.concepts {
+                    b.exprs[e].evidence_ids.push(format!("concept:{k}"));
+                }
             }
         }
     }

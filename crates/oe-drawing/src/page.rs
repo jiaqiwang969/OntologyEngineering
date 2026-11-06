@@ -181,7 +181,20 @@ pub fn page(graph: &[u8], svg: &str, q: &MdReviewPageRequest) -> Result<(String,
     let nonrendered: Vec<&String> = roots.difference(&shown.entities).collect();
     let graph_sha256 = sha256(graph);
     let svg_sha256 = sha256(svg.as_bytes());
-    let payload = json!({"graph":Value::Object(subset),"candidate":q.candidate,"version":q.version,"title":q.title,
+    // Names of the drafting concepts the expressions are instances of (catalogue cards).
+    let used: BTreeSet<&str> = g["expressions"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .flat_map(|e| e["concept_ids"].as_array().into_iter().flatten().filter_map(Value::as_str))
+        .collect();
+    let mut concepts = serde_json::Map::new();
+    for c in crate::engineering_expression::drawing_concepts()?.iter().flat_map(|x| x.concepts.iter()) {
+        if used.contains(c.id.as_str()) {
+            concepts.insert(c.id.clone(), json!(c.name));
+        }
+    }
+    let payload = json!({"graph":Value::Object(subset),"concepts":Value::Object(concepts),"candidate":q.candidate,"version":q.version,"title":q.title,
         "source_note":q.source_note,"status_note":q.status_note,"graph_sha256":graph_sha256,"svg_sha256":svg_sha256,
         "rendered_roots":shown.entities.len(),"nonrendered_roots":nonrendered});
     let data = serde_json::to_string(&payload)?.replace('<', "\\u003c");

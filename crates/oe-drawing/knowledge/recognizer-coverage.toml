@@ -1,0 +1,1325 @@
+# Recognition coverage of the drafting concept catalogue (audited).
+#
+# Every rule the recognizer emits (expression builder calls in oe-drawing; line-piece rules are kept as rule evidence of the
+# grouped expression), the expression kinds it produces and the catalogue concepts its expressions are instances of; the
+# drawing-wide conventions applied to members and line styles; and a verdict per concept: full when its ordinary drawing
+# forms are recognised, partial with what is missing. A concept status in concepts/G*.toml follows from this table and the
+# recognition cards (card / rule / partial / none) and is checked by a test.
+schema = "oev2.drawing-recognizer-coverage/1"
+profile = "dxf-expression-rules/2"
+
+[[rules]]
+rule = "native_dimension_display_text_and_construction"
+function = "native_dimensions"
+piece = false
+kinds = ["dimension_linear", "dimension_diameter", "dimension_radius", "dimension_angle", "dimension_chamfer", "thread_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-059", "DC-G4-058"]
+[[rules.concepts]]
+kind = "dimension_diameter"
+ids = ["DC-G4-030"]
+[[rules.concepts]]
+kind = "dimension_radius"
+ids = ["DC-G4-006"]
+[[rules.concepts]]
+kind = "dimension_angle"
+ids = ["DC-G4-032"]
+[[rules.concepts]]
+kind = "dimension_chamfer"
+ids = ["DC-G4-040"]
+[[rules.concepts]]
+kind = "thread_note"
+ids = ["DC-G3-088"]
+
+[[rules]]
+rule = "basic_texture_symbol_with_value"
+function = "blocks"
+piece = false
+kinds = ["surface_roughness"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G6-071", "DC-G6-045"]
+
+[[rules]]
+rule = "circled_letter_with_connector"
+function = "blocks"
+piece = false
+kinds = ["datum_symbol"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G5-009"]
+
+[[rules]]
+rule = "tolerance_frame_block_glyph_and_fields"
+function = "blocks"
+piece = false
+kinds = ["geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_parallelism", "gps_runout", "gps_symmetry", "gps_position", "gps_straightness", "gps_flatness", "gps_circularity", "gps_cylindricity", "gps_line_profile", "gps_surface_profile", "gps_angularity", "gps_coaxiality", "gps_total_runout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G5-090"]
+
+[[rules]]
+rule = "binding_margin_registration_table"
+function = "blocks"
+piece = false
+kinds = ["sheet_frame"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-085"]
+
+[[rules]]
+rule = "table_grid_with_title_vocabulary"
+function = "blocks"
+piece = false
+kinds = ["title_block"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G9-028"]
+
+[[rules]]
+rule = "sheet_size_rectangular_border"
+function = "blocks"
+piece = false
+kinds = ["sheet_frame"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-085"]
+
+[[rules]]
+rule = "native_hatch_pattern"
+function = "hatch_and_points"
+piece = false
+kinds = ["section_hatch"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-010", "DC-G2-019"]
+
+[[rules]]
+rule = "native_point_not_printed_construction"
+function = "hatch_and_points"
+piece = false
+kinds = ["construction_reference"]
+concepts = []
+
+[[rules]]
+rule = "exploded_tolerance_frame_glyph_cells_fields"
+function = "exploded_frames"
+piece = false
+kinds = ["geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_parallelism", "gps_runout", "gps_symmetry", "gps_position", "gps_straightness", "gps_flatness", "gps_circularity", "gps_cylindricity", "gps_line_profile", "gps_surface_profile", "gps_angularity", "gps_coaxiality", "gps_total_runout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G5-090"]
+
+[[rules]]
+rule = "opposed_terminators_dimension_line_and_text"
+function = "exploded_dimensions"
+piece = false
+kinds = ["dimension_linear", "dimension_diameter", "dimension_radius", "dimension_angle", "dimension_chamfer", "thread_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-059", "DC-G4-058", "DC-G4-019"]
+[[rules.concepts]]
+kind = "dimension_diameter"
+ids = ["DC-G4-030"]
+[[rules.concepts]]
+kind = "dimension_radius"
+ids = ["DC-G4-006"]
+[[rules.concepts]]
+kind = "dimension_angle"
+ids = ["DC-G4-032"]
+[[rules.concepts]]
+kind = "dimension_chamfer"
+ids = ["DC-G4-040"]
+[[rules.concepts]]
+kind = "thread_note"
+ids = ["DC-G3-088"]
+
+[[rules]]
+rule = "terminators_across_feature_with_leader_to_text"
+function = "extended_pair_dimensions"
+piece = false
+kinds = ["dimension_linear", "dimension_diameter", "dimension_radius", "dimension_angle", "dimension_chamfer", "thread_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-059", "DC-G4-019", "DC-G4-023"]
+[[rules.concepts]]
+kind = "dimension_diameter"
+ids = ["DC-G4-030"]
+[[rules.concepts]]
+kind = "dimension_radius"
+ids = ["DC-G4-006"]
+[[rules.concepts]]
+kind = "dimension_angle"
+ids = ["DC-G4-032"]
+[[rules.concepts]]
+kind = "dimension_chamfer"
+ids = ["DC-G4-040"]
+[[rules.concepts]]
+kind = "thread_note"
+ids = ["DC-G3-088"]
+
+[[rules]]
+rule = "dimension_line_of_feature_of_size_with_attached_frame"
+function = "attached_dimension"
+piece = false
+kinds = ["dimension_linear", "dimension_diameter", "dimension_radius", "dimension_angle", "dimension_chamfer", "thread_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-059", "DC-G4-019"]
+[[rules.concepts]]
+kind = "dimension_diameter"
+ids = ["DC-G4-030"]
+[[rules.concepts]]
+kind = "dimension_radius"
+ids = ["DC-G4-006"]
+[[rules.concepts]]
+kind = "dimension_angle"
+ids = ["DC-G4-032"]
+[[rules.concepts]]
+kind = "dimension_chamfer"
+ids = ["DC-G4-040"]
+[[rules.concepts]]
+kind = "thread_note"
+ids = ["DC-G3-088"]
+
+[[rules]]
+rule = "concentric_arc_tangent_terminators_and_text"
+function = "exploded_angles"
+piece = false
+kinds = ["dimension_angle"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-032", "DC-G4-059", "DC-G4-058", "DC-G4-019"]
+
+[[rules]]
+rule = "viewing_direction_arrow_and_letter"
+function = "leader_annotations"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-072"]
+
+[[rules]]
+rule = "one_terminator_dimension_line_and_text"
+function = "leader_annotations"
+piece = false
+kinds = ["dimension_linear", "dimension_diameter", "dimension_radius"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-059", "DC-G4-019"]
+[[rules.concepts]]
+kind = "dimension_diameter"
+ids = ["DC-G4-030", "DC-G4-015"]
+[[rules.concepts]]
+kind = "dimension_linear"
+ids = ["DC-G4-015"]
+[[rules.concepts]]
+kind = "dimension_radius"
+ids = ["DC-G4-006"]
+
+[[rules]]
+rule = "single_terminator_leader_and_text"
+function = "leader_annotations"
+piece = false
+kinds = ["thread_note", "dimension_chamfer", "dimension_angle"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-028", "DC-G1-096", "DC-G4-023"]
+[[rules.concepts]]
+kind = "thread_note"
+ids = ["DC-G3-088"]
+[[rules.concepts]]
+kind = "dimension_chamfer"
+ids = ["DC-G4-040"]
+[[rules.concepts]]
+kind = "dimension_angle"
+ids = ["DC-G4-032"]
+
+[[rules]]
+rule = "detail_circle_leader_and_numeral"
+function = "leader_annotations"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-075"]
+
+[[rules]]
+rule = "text_on_leader_shoulder"
+function = "leader_annotations"
+piece = false
+kinds = ["dimension_linear", "dimension_diameter", "dimension_radius", "dimension_angle", "dimension_chamfer", "thread_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-028", "DC-G1-018"]
+[[rules.concepts]]
+kind = "dimension_diameter"
+ids = ["DC-G4-030"]
+[[rules.concepts]]
+kind = "dimension_radius"
+ids = ["DC-G4-006"]
+[[rules.concepts]]
+kind = "dimension_angle"
+ids = ["DC-G4-032"]
+[[rules.concepts]]
+kind = "dimension_chamfer"
+ids = ["DC-G4-040"]
+[[rules.concepts]]
+kind = "thread_note"
+ids = ["DC-G3-088"]
+
+[[rules]]
+rule = "thread_designation_text_block"
+function = "thread_texts"
+piece = false
+kinds = ["thread_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G3-088"]
+
+[[rules]]
+rule = "uniform_parallel_thin_oblique_lines"
+function = "hatch_lines"
+piece = false
+kinds = ["section_hatch"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-010", "DC-G2-061"]
+
+[[rules]]
+rule = "arrow_with_short_shaft_at_outline_without_letter"
+function = "unlabeled_view_arrows"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-066"]
+
+[[rules]]
+rule = "view_letter_with_direction_suffix"
+function = "view_titles"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-072"]
+
+[[rules]]
+rule = "detail_numeral_over_scale"
+function = "view_titles"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-075"]
+
+[[rules]]
+rule = "detail_circle_with_numeral"
+function = "detail_circles"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-075"]
+
+[[rules]]
+rule = "technical_requirement_heading"
+function = "technical_notes"
+piece = false
+kinds = ["technical_general"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G9-002"]
+
+[[rules]]
+rule = "numbered_technical_requirement_item"
+function = "technical_notes"
+piece = false
+kinds = ["technical_general", "material_heat", "process_requirement", "protection_requirement"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G9-002"]
+
+[[rules]]
+rule = "repeated_document_number"
+function = "sheet_texts"
+piece = false
+kinds = ["title_block"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G9-018"]
+
+[[rules]]
+rule = "box_on_frame_around_repeated_document_number"
+function = "sheet_texts"
+piece = false
+kinds = ["sheet_frame"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G9-018"]
+
+[[rules]]
+rule = "grouped_line_type_pieces_by_view"
+function = "finalize"
+piece = false
+kinds = ["visible_contour", "hidden_contour", "center_axis", "phantom_line", "thread_convention", "break_line"]
+[[rules.concepts]]
+kind = "visible_contour"
+ids = ["DC-G1-015", "DC-G1-038"]
+[[rules.concepts]]
+kind = "hidden_contour"
+ids = ["DC-G1-002", "DC-G1-045"]
+[[rules.concepts]]
+kind = "center_axis"
+ids = ["DC-G1-044"]
+[[rules.concepts]]
+kind = "phantom_line"
+ids = ["DC-G1-042"]
+[[rules.concepts]]
+kind = "break_line"
+ids = ["DC-G1-029"]
+
+[[rules]]
+rule = "uncovered_source_remainder"
+function = "unresolved"
+piece = false
+kinds = ["unresolved"]
+concepts = []
+
+[[rules]]
+rule = "card:datum_feature_symbol/old_circle_bar"
+function = "representation::datum_symbols"
+piece = false
+kinds = ["datum_symbol"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G5-009"]
+
+[[rules]]
+rule = "card:datum_feature_symbol/new_square_triangle"
+function = "representation::datum_symbols"
+piece = false
+kinds = ["datum_symbol"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G5-009"]
+
+[[rules]]
+rule = "card:center_hole_symbol/keep"
+function = "representation::center_holes"
+piece = false
+kinds = ["center_hole"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G3-144", "DC-G3-003"]
+
+[[rules]]
+rule = "card:center_hole_symbol/not_allowed"
+function = "representation::center_holes"
+piece = false
+kinds = ["center_hole"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G3-003"]
+
+[[rules]]
+rule = "card:visible_edge_line"
+function = "representation::visible_edges"
+piece = false
+kinds = ["visible_contour"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-014", "DC-G1-015"]
+
+[[rules]]
+rule = "piece:actual_linetype_pattern"
+function = "line_kinds"
+piece = true
+kinds = ["visible_contour", "hidden_contour", "center_axis", "phantom_line"]
+[[rules.concepts]]
+kind = "visible_contour"
+ids = ["DC-G1-015"]
+[[rules.concepts]]
+kind = "hidden_contour"
+ids = ["DC-G1-002", "DC-G1-045"]
+[[rules.concepts]]
+kind = "center_axis"
+ids = ["DC-G1-044", "DC-G1-052", "DC-G1-021"]
+[[rules.concepts]]
+kind = "phantom_line"
+ids = ["DC-G1-042"]
+
+[[rules]]
+rule = "piece:three_quarter_thin_circle_concentric_with_full_circle"
+function = "thread_arcs"
+piece = true
+kinds = ["thread_convention"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G3-024", "DC-G3-005", "DC-G1-048"]
+
+[[rules]]
+rule = "piece:full_circle_of_three_quarter_thread_convention"
+function = "thread_arcs"
+piece = true
+kinds = ["thread_convention"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G3-024", "DC-G3-005", "DC-G1-049"]
+
+[[rules]]
+rule = "piece:coaxial_hidden_major_minor_pairs_with_thread_end"
+function = "thread_lines"
+piece = true
+kinds = ["thread_convention"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G3-001", "DC-G3-094"]
+
+[[rules]]
+rule = "piece:alternating_turns_close_to_chord"
+function = "break_lines"
+piece = true
+kinds = ["break_line"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-032", "DC-G1-029"]
+
+[[rules]]
+rule = "piece:chained_short_segments_alternating_turns"
+function = "break_lines"
+piece = true
+kinds = ["break_line"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-032", "DC-G1-029"]
+
+[[rules]]
+rule = "piece:freehand_curve_on_layer_of_recognised_wavy_lines"
+function = "break_lines"
+piece = true
+kinds = ["break_line"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-032", "DC-G1-029"]
+
+[[rules]]
+rule = "piece:free_curve_bounding_hatched_local_section"
+function = "break_lines"
+piece = true
+kinds = ["break_line"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-032", "DC-G1-029", "DC-G2-023"]
+
+[[rules]]
+rule = "piece:thin_line_between_structural_junctions"
+function = "structure"
+piece = true
+kinds = ["visible_contour"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-015"]
+
+[[rules]]
+rule = "piece:bounded_span_between_structural_junctions"
+function = "structure"
+piece = true
+kinds = ["visible_contour"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-015", "DC-G1-014"]
+
+[[rules]]
+rule = "piece:closed_or_connected_curve"
+function = "structure"
+piece = true
+kinds = ["visible_contour"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-015"]
+
+[[rules]]
+rule = "card:series_table/variables_named_by_dimensions"
+function = "notation::series_tables"
+piece = false
+kinds = ["series_table"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-098"]
+
+[[rules]]
+rule = "card:series_table/header_words_and_numeric_rows"
+function = "notation::series_tables"
+piece = false
+kinds = ["series_table"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-098"]
+
+[[rules]]
+rule = "card:surface_texture_symbol/block_with_parameter_value"
+function = "blocks"
+piece = false
+kinds = ["surface_roughness"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G6-071"]
+
+[[rules]]
+rule = "card:surface_texture_symbol/block_value_apart"
+function = "symbols::surface_textures"
+piece = false
+kinds = ["surface_roughness"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G6-071"]
+
+[[rules]]
+rule = "card:surface_texture_symbol/loose_strokes"
+function = "symbols::surface_textures"
+piece = false
+kinds = ["surface_roughness"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G6-071"]
+
+[[rules]]
+rule = "card:view_callout/section_name"
+function = "symbols::section_titles"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-065"]
+
+[[conventions]]
+name = "coincident_line_precedence"
+applies_to = "member evidence coincident_higher_precedence; line type of shared source intervals (GB/T 14665-2012 4.3)"
+ids = ["DC-G1-055"]
+
+[[conventions]]
+name = "layer_convention_table6"
+applies_to = "graph field layer_convention and layer_convention_evidence (GB/T 14665-2012 table 6)"
+ids = ["DC-G1-101"]
+
+[[conventions]]
+name = "line_pattern_from_ltype"
+applies_to = "line_styles pattern from LTYPE dash elements (continuous, dashed, dash-dot, dash-double-dot)"
+ids = ["DC-G1-019"]
+
+[[conventions]]
+name = "member_line_width_class"
+applies_to = "member line_type thick or thin from the layer convention and the member role"
+ids = ["DC-G1-016", "DC-G1-043"]
+
+[[concepts]]
+id = "DC-G1-002"
+level = "full"
+by = ["grouped_line_type_pieces_by_view", "piece:actual_linetype_pattern"]
+
+[[concepts]]
+id = "DC-G1-007"
+level = "partial"
+by = ["card:view_callout"]
+missing = "同上：转折处剖切线与连接用的细点画线未识别"
+
+[[concepts]]
+id = "DC-G1-010"
+level = "full"
+by = ["card:section_line_region", "native_hatch_pattern", "uniform_parallel_thin_oblique_lines"]
+
+[[concepts]]
+id = "DC-G1-014"
+level = "full"
+by = ["card:visible_edge_line", "piece:bounded_span_between_structural_junctions"]
+
+[[concepts]]
+id = "DC-G1-015"
+level = "full"
+by = ["card:visible_edge_line", "grouped_line_type_pieces_by_view", "piece:actual_linetype_pattern", "piece:bounded_span_between_structural_junctions", "piece:closed_or_connected_curve", "piece:thin_line_between_structural_junctions"]
+
+[[concepts]]
+id = "DC-G1-016"
+level = "partial"
+by = ["convention:member_line_width_class"]
+missing = "粗细由图层约定与成员作用推出，未读取实际线宽值"
+
+[[concepts]]
+id = "DC-G1-018"
+level = "full"
+by = ["text_on_leader_shoulder"]
+
+[[concepts]]
+id = "DC-G1-019"
+level = "partial"
+by = ["convention:line_pattern_from_ltype"]
+missing = "只分出实线、虚线、点画线、双点画线；点线、长画短画等其他基本线型未区分"
+
+[[concepts]]
+id = "DC-G1-021"
+level = "partial"
+by = ["piece:actual_linetype_pattern"]
+missing = "对称中心线与轴线归在一起，未单独判断对称"
+
+[[concepts]]
+id = "DC-G1-028"
+level = "partial"
+by = ["single_terminator_leader_and_text", "text_on_leader_shoulder"]
+missing = "只在注写规则用到时识别指引线；圆点终端、无终端的指引线及序号指引线未区分"
+
+[[concepts]]
+id = "DC-G1-029"
+level = "partial"
+by = ["grouped_line_type_pieces_by_view", "piece:alternating_turns_close_to_chord", "piece:chained_short_segments_alternating_turns", "piece:free_curve_bounding_hatched_local_section", "piece:freehand_curve_on_layer_of_recognised_wavy_lines"]
+missing = "波浪线和折线串作为断裂边界识别；双折线未单独识别"
+
+[[concepts]]
+id = "DC-G1-032"
+level = "full"
+by = ["piece:alternating_turns_close_to_chord", "piece:chained_short_segments_alternating_turns", "piece:free_curve_bounding_hatched_local_section", "piece:freehand_curve_on_layer_of_recognised_wavy_lines"]
+
+[[concepts]]
+id = "DC-G1-038"
+level = "full"
+by = ["grouped_line_type_pieces_by_view"]
+
+[[concepts]]
+id = "DC-G1-042"
+level = "partial"
+by = ["grouped_line_type_pieces_by_view", "piece:actual_linetype_pattern"]
+missing = "按线型识别细双点画线，未判断它表示相邻零件、极限位置还是成形前轮廓"
+
+[[concepts]]
+id = "DC-G1-043"
+level = "partial"
+by = ["convention:member_line_width_class"]
+missing = "细实线由图层约定与成员作用推出，未读取实际线宽值"
+
+[[concepts]]
+id = "DC-G1-044"
+level = "full"
+by = ["grouped_line_type_pieces_by_view", "piece:actual_linetype_pattern"]
+
+[[concepts]]
+id = "DC-G1-045"
+level = "full"
+by = ["grouped_line_type_pieces_by_view", "piece:actual_linetype_pattern"]
+
+[[concepts]]
+id = "DC-G1-048"
+level = "partial"
+by = ["piece:three_quarter_thin_circle_concentric_with_full_circle"]
+missing = "只在端视图的 3/4 圆中识别牙底线；侧视图的牙底细实线未识别"
+
+[[concepts]]
+id = "DC-G1-049"
+level = "partial"
+by = ["piece:full_circle_of_three_quarter_thread_convention"]
+missing = "只在端视图中识别牙顶圆；侧视图的牙顶粗实线未单独识别"
+
+[[concepts]]
+id = "DC-G1-052"
+level = "partial"
+by = ["piece:actual_linetype_pattern"]
+missing = "轴线与本视图的中心线归在一起，未与对称中心线、孔系中心线分开"
+
+[[concepts]]
+id = "DC-G1-055"
+level = "full"
+by = ["convention:coincident_line_precedence"]
+
+[[concepts]]
+id = "DC-G1-070"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G1-071"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G1-085"
+level = "partial"
+by = ["binding_margin_registration_table", "sheet_size_rectangular_border"]
+missing = "只识别整块的图框图块（矩形边框或装订边登记栏）；散线画的图框、纸边界线与对中符号未区分"
+
+[[concepts]]
+id = "DC-G1-096"
+level = "partial"
+by = ["single_terminator_leader_and_text"]
+missing = "实心箭头终端只在单箭头指引线规则中识别；其他终端形式未区分"
+
+[[concepts]]
+id = "DC-G1-101"
+level = "full"
+by = ["convention:layer_convention_table6"]
+
+[[concepts]]
+id = "DC-G1-114"
+level = "full"
+by = ["card:title_block_field"]
+
+[[concepts]]
+id = "DC-G1-115"
+level = "full"
+by = ["card:view_callout"]
+
+[[concepts]]
+id = "DC-G2-019"
+level = "partial"
+by = ["native_hatch_pattern"]
+missing = "识别原生填充图案，但不把图案对应到材料类别"
+
+[[concepts]]
+id = "DC-G2-023"
+level = "partial"
+by = ["piece:free_curve_bounding_hatched_local_section"]
+missing = "只通过包围剖面线的波浪线发现局部剖，局部剖视图本身未分类"
+
+[[concepts]]
+id = "DC-G2-043"
+level = "partial"
+by = ["card:view_callout"]
+missing = "阶梯剖、旋转剖转折处的短画及无箭头的短画未识别"
+
+[[concepts]]
+id = "DC-G2-061"
+level = "full"
+by = ["card:section_line_region", "uniform_parallel_thin_oblique_lines"]
+
+[[concepts]]
+id = "DC-G2-065"
+level = "full"
+by = ["card:view_callout", "card:view_callout/section_name"]
+
+[[concepts]]
+id = "DC-G2-066"
+level = "partial"
+by = ["arrow_with_short_shaft_at_outline_without_letter"]
+missing = "识别轮廓处无字母的投射箭头；整个剖切标注省略的情形未判断"
+
+[[concepts]]
+id = "DC-G2-068"
+level = "full"
+by = ["card:view_callout"]
+
+[[concepts]]
+id = "DC-G2-072"
+level = "full"
+by = ["card:view_callout", "view_letter_with_direction_suffix", "viewing_direction_arrow_and_letter"]
+
+[[concepts]]
+id = "DC-G2-075"
+level = "full"
+by = ["card:detail_circle_interruption", "detail_circle_leader_and_numeral", "detail_circle_with_numeral", "detail_numeral_over_scale"]
+
+[[concepts]]
+id = "DC-G3-001"
+level = "partial"
+by = ["piece:coaxial_hidden_major_minor_pairs_with_thread_end"]
+missing = "只识别成对的虚线大小径与螺纹端；不可见螺纹终止线未单独识别"
+
+[[concepts]]
+id = "DC-G3-003"
+level = "partial"
+by = ["card:center_hole_symbol", "card:center_hole_symbol/keep", "card:center_hole_symbol/not_allowed"]
+missing = "“可以保留”（只注标记不画符号）的中心孔未识别"
+
+[[concepts]]
+id = "DC-G3-005"
+level = "partial"
+by = ["piece:full_circle_of_three_quarter_thread_convention", "piece:three_quarter_thin_circle_concentric_with_full_circle"]
+missing = "同上：内螺纹的剖视画法（大径细实线、小径粗实线）未单独识别"
+
+[[concepts]]
+id = "DC-G3-024"
+level = "partial"
+by = ["piece:full_circle_of_three_quarter_thread_convention", "piece:three_quarter_thin_circle_concentric_with_full_circle"]
+missing = "端视图的 3/4 细圆与虚线螺纹对能识别；侧视图的大小径线与螺纹终止线未按内外螺纹分开"
+
+[[concepts]]
+id = "DC-G3-080"
+level = "partial"
+by = ["card:dimension_text"]
+missing = "仅凭文字不能区分倒圆与其他圆弧的半径"
+
+[[concepts]]
+id = "DC-G3-088"
+level = "full"
+by = ["card:dimension_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "opposed_terminators_dimension_line_and_text", "single_terminator_leader_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder", "thread_designation_text_block"]
+
+[[concepts]]
+id = "DC-G3-089"
+level = "partial"
+by = ["card:dimension_text"]
+missing = "以普通线性尺寸注出的螺纹长度未与其他长度区分"
+
+[[concepts]]
+id = "DC-G3-091"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G3-094"
+level = "partial"
+by = ["piece:coaxial_hidden_major_minor_pairs_with_thread_end"]
+missing = "只作为不可见螺纹对的端部识别；可见螺纹终止线未识别"
+
+[[concepts]]
+id = "DC-G3-112"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G3-144"
+level = "full"
+by = ["card:center_hole_symbol", "card:center_hole_symbol/keep"]
+
+[[concepts]]
+id = "DC-G3-218"
+level = "partial"
+by = ["card:center_hole_symbol"]
+missing = "中心孔标记只作为符号标签的一部分读出；单独注写的标记未识别为表达"
+
+[[concepts]]
+id = "DC-G3-223"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G3-232"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-006"
+level = "full"
+by = ["card:dimension_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder"]
+
+[[concepts]]
+id = "DC-G4-015"
+level = "partial"
+by = ["one_terminator_dimension_line_and_text"]
+missing = "一端箭头的尺寸能识别，但不检查它是否越过对称线；对称机件只画一半的情形未判断"
+
+[[concepts]]
+id = "DC-G4-017"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-019"
+level = "full"
+by = ["concentric_arc_tangent_terminators_and_text", "dimension_line_of_feature_of_size_with_attached_frame", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text"]
+
+[[concepts]]
+id = "DC-G4-023"
+level = "full"
+by = ["single_terminator_leader_and_text", "terminators_across_feature_with_leader_to_text"]
+
+[[concepts]]
+id = "DC-G4-030"
+level = "full"
+by = ["card:dimension_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder"]
+
+[[concepts]]
+id = "DC-G4-032"
+level = "full"
+by = ["card:angle_unit", "card:dimension_text", "concentric_arc_tangent_terminators_and_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "opposed_terminators_dimension_line_and_text", "single_terminator_leader_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder"]
+
+[[concepts]]
+id = "DC-G4-040"
+level = "full"
+by = ["card:dimension_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "opposed_terminators_dimension_line_and_text", "single_terminator_leader_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder"]
+
+[[concepts]]
+id = "DC-G4-041"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-055"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-058"
+level = "full"
+by = ["concentric_arc_tangent_terminators_and_text", "native_dimension_display_text_and_construction", "opposed_terminators_dimension_line_and_text"]
+
+[[concepts]]
+id = "DC-G4-059"
+level = "full"
+by = ["concentric_arc_tangent_terminators_and_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "one_terminator_dimension_line_and_text", "opposed_terminators_dimension_line_and_text", "terminators_across_feature_with_leader_to_text"]
+
+[[concepts]]
+id = "DC-G4-061"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G4-068"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G4-070"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G4-088"
+level = "partial"
+by = ["card:dimension_text"]
+missing = "旧式旁注（无深度、沉孔符号的“n-Ø”）未与“数量-直径”尺寸区分"
+
+[[concepts]]
+id = "DC-G4-094"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-098"
+level = "full"
+by = ["card:series_table", "card:series_table/header_words_and_numeric_rows", "card:series_table/variables_named_by_dimensions"]
+
+[[concepts]]
+id = "DC-G4-099"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-103"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-113"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-114"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-126"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-132"
+level = "full"
+by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G5-002"
+level = "full"
+by = ["card:gdt_frame_content"]
+
+[[concepts]]
+id = "DC-G5-003"
+level = "full"
+by = ["card:gdt_frame_content"]
+
+[[concepts]]
+id = "DC-G5-004"
+level = "full"
+by = ["card:gdt_frame_content"]
+
+[[concepts]]
+id = "DC-G5-009"
+level = "full"
+by = ["card:datum_feature_symbol", "card:datum_feature_symbol/new_square_triangle", "card:datum_feature_symbol/old_circle_bar", "circled_letter_with_connector"]
+
+[[concepts]]
+id = "DC-G5-025"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G5-026"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G5-041"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-042"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-045"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-054"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-055"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-056"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-057"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-058"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-059"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-060"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-061"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-076"
+level = "full"
+by = ["card:gdt_characteristic"]
+
+[[concepts]]
+id = "DC-G5-077"
+level = "partial"
+by = ["card:gdt_characteristic"]
+missing = "图块与文字形式能识别；框格内用散线圆弧画的符号未识别"
+
+[[concepts]]
+id = "DC-G5-082"
+level = "partial"
+by = ["card:gdt_characteristic"]
+missing = "图块与文字形式能识别；框格内用散线圆弧加弦画的符号未识别"
+
+[[concepts]]
+id = "DC-G5-087"
+level = "full"
+by = ["card:tolerance_zone_modifier"]
+
+[[concepts]]
+id = "DC-G5-088"
+level = "full"
+by = ["card:tolerance_zone_modifier"]
+
+[[concepts]]
+id = "DC-G5-089"
+level = "full"
+by = ["card:gdt_frame_content"]
+
+[[concepts]]
+id = "DC-G5-090"
+level = "full"
+by = ["card:gdt_frame_content", "card:gdt_frame_symbol", "exploded_tolerance_frame_glyph_cells_fields", "tolerance_frame_block_glyph_and_fields"]
+
+[[concepts]]
+id = "DC-G5-091"
+level = "full"
+by = ["card:gdt_frame_content"]
+
+[[concepts]]
+id = "DC-G5-107"
+level = "full"
+by = ["card:gdt_frame_content"]
+
+[[concepts]]
+id = "DC-G5-108"
+level = "partial"
+by = ["card:gdt_frame_content"]
+missing = "一条指引线多个箭头、折向表面的指引线未区分"
+
+[[concepts]]
+id = "DC-G5-110"
+level = "full"
+by = ["card:gdt_leader_extension"]
+
+[[concepts]]
+id = "DC-G6-001"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G6-006"
+level = "partial"
+by = ["card:surface_texture_symbol"]
+missing = "统一注法后括号中的基本符号未读出"
+
+[[concepts]]
+id = "DC-G6-027"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-032"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-045"
+level = "full"
+by = ["basic_texture_symbol_with_value", "card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-046"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-049"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-051"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-052"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-053"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-063"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-069"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-071"
+level = "full"
+by = ["basic_texture_symbol_with_value", "card:surface_texture_symbol", "card:surface_texture_symbol/block_value_apart", "card:surface_texture_symbol/block_with_parameter_value", "card:surface_texture_symbol/loose_strokes"]
+
+[[concepts]]
+id = "DC-G6-072"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G6-075"
+level = "full"
+by = ["card:surface_texture_symbol"]
+
+[[concepts]]
+id = "DC-G7-025"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G7-026"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G7-089"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G9-002"
+level = "full"
+by = ["card:technical_note", "numbered_technical_requirement_item", "technical_requirement_heading"]
+
+[[concepts]]
+id = "DC-G9-003"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G9-004"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G9-008"
+level = "full"
+by = ["card:special_characteristic_mark"]
+
+[[concepts]]
+id = "DC-G9-009"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G9-010"
+level = "full"
+by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G9-017"
+level = "partial"
+by = ["card:title_block_field"]
+missing = "不含公司、厂等机构词的单位名称未识别"
+
+[[concepts]]
+id = "DC-G9-018"
+level = "full"
+by = ["box_on_frame_around_repeated_document_number", "card:title_block_field", "repeated_document_number"]
+
+[[concepts]]
+id = "DC-G9-019"
+level = "partial"
+by = ["card:title_block_field"]
+missing = "图样名称按“不带栏目名的短中文”识别；外文或中外混合名称未识别"
+
+[[concepts]]
+id = "DC-G9-022"
+level = "partial"
+by = ["card:title_block_field"]
+missing = "列出前缀以外的铝合金、铜合金等牌号（如 2A12、6061）未识别"
+
+[[concepts]]
+id = "DC-G9-023"
+level = "full"
+by = ["card:title_block_field"]
+
+[[concepts]]
+id = "DC-G9-024"
+level = "full"
+by = ["card:title_block_field"]
+
+[[concepts]]
+id = "DC-G9-025"
+level = "full"
+by = ["card:title_block_field"]
+
+[[concepts]]
+id = "DC-G9-028"
+level = "full"
+by = ["card:title_block_field", "table_grid_with_title_vocabulary"]

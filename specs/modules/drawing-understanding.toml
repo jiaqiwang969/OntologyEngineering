@@ -957,7 +957,7 @@ precision="Exact source identity; numeric incidence uses fixed drawing-domain to
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["principal", "direction_view", "partial_view", "detail_view", "sheet"]
+allowed_values=["principal", "direction_view", "section_view", "partial_view", "detail_view", "sheet"]
 
 [[types.fields]]
 name="label"
@@ -1226,7 +1226,7 @@ precision="Exact source identity; numeric incidence uses fixed drawing-domain to
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["native_dimension", "dimension_line", "extension_line", "extension_origin", "arrowhead", "dimension_text", "tolerance_text", "definition_point", "leader_line", "note_text", "contour_segment", "hidden_segment", "center_line", "phantom_segment", "thread_line", "break_curve", "hatch_fill", "symbol_glyph", "frame_cell", "tolerance_value", "datum_reference", "datum_letter", "datum_frame", "datum_terminal", "special_mark", "roughness_symbol", "roughness_value", "view_arrow", "view_letter", "detail_circle", "view_title", "scale_text", "table_line", "table_text", "frame_border", "native_block", "native_member", "coincident_source", "unresolved_source"]
+allowed_values=["native_dimension", "dimension_line", "extension_line", "extension_origin", "arrowhead", "dimension_text", "tolerance_text", "definition_point", "leader_line", "note_text", "contour_segment", "hidden_segment", "center_line", "phantom_segment", "thread_line", "break_curve", "hatch_fill", "symbol_glyph", "frame_cell", "tolerance_value", "datum_reference", "datum_letter", "datum_frame", "datum_terminal", "special_mark", "roughness_symbol", "roughness_value", "view_arrow", "view_letter", "detail_circle", "view_title", "scale_text", "cutting_stroke", "table_line", "table_text", "frame_border", "native_block", "native_member", "coincident_source", "unresolved_source"]
 
 [[types.fields]]
 name="line_type"
@@ -1331,7 +1331,7 @@ precision="Exact source identity; numeric incidence uses fixed drawing-domain to
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["visible_contour", "hidden_contour", "center_axis", "phantom_line", "thread_convention", "break_line", "section_hatch", "dimension_linear", "dimension_diameter", "dimension_radius", "dimension_angle", "dimension_chamfer", "thread_note", "geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_parallelism", "gps_runout", "gps_symmetry", "gps_position", "datum_symbol", "center_hole", "surface_roughness", "view_callout", "technical_general", "material_heat", "process_requirement", "protection_requirement", "sheet_frame", "title_block", "construction_reference", "leader", "unresolved"]
+allowed_values=["visible_contour", "hidden_contour", "center_axis", "phantom_line", "thread_convention", "break_line", "section_hatch", "dimension_linear", "dimension_diameter", "dimension_radius", "dimension_angle", "dimension_chamfer", "thread_note", "geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_parallelism", "gps_runout", "gps_symmetry", "gps_position", "gps_straightness", "gps_flatness", "gps_circularity", "gps_cylindricity", "gps_line_profile", "gps_surface_profile", "gps_angularity", "gps_coaxiality", "gps_total_runout", "datum_symbol", "center_hole", "surface_roughness", "view_callout", "technical_general", "material_heat", "process_requirement", "protection_requirement", "sheet_frame", "title_block", "series_table", "construction_reference", "leader", "unresolved"]
 
 [[types.fields]]
 name="family"
@@ -1418,6 +1418,18 @@ write="ggen contract; Rust expression assembler from source bytes only; no old a
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
+
+[[types.fields]]
+name="concept_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Drafting concept ids of the catalogue this expression is an instance of"
+unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
+acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 [[types.fields]]
 name="state"
 rust_type="String"
@@ -1886,7 +1898,7 @@ precision="Exact card identity; text is a paraphrase of the cited sources"
 write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
 applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
 acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
-allowed_values=["none", "partial", "card"]
+allowed_values=["none", "partial", "rule", "card"]
 
 [[types.fields]]
 name="seen_on_drawing"
@@ -2170,6 +2182,30 @@ write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run
 applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
 acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
 
+
+[[types.fields]]
+name="lexicon"
+rust_type="Option<Vec<MdRepresentationLexeme>>"
+required=false
+format="typed"
+meaning="Words, glyphs, patterns and layouts of the concept in text and symbol form, each tied to a catalogue concept"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="outside_forms"
+rust_type="Option<Vec<MdOutsideForm>>"
+required=false
+format="typed"
+meaning="Written forms of the concept cards that this card does not recognise from text alone, with the reason"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
 [[types]]
 name="MdRepresentationComponent"
 contract_group="engineering"
@@ -4821,3 +4857,358 @@ value = "passed"
 kind = "qualification"
 module = "drawing_understanding"
 entry = "A second run on the same inputs compared byte for byte"
+
+[[types]]
+name="MdRepresentationLexeme"
+contract_group="engineering"
+meaning="One lexical or symbolic entry of a recognition card: a concept and the forms that indicate it"
+identity="Card, concept and entry kind"
+
+[[types.fields]]
+name="concept"
+rust_type="String"
+required=true
+format="typed"
+meaning="Catalogue concept id the entry indicates"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="entry"
+rust_type="String"
+required=true
+format="typed"
+meaning="Kind of entry: word, prefix, pattern, glyph, label, value_form, stroke_signature or layout"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="values"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="The forms (words, characters, regular-expression-free patterns or signature names)"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="What the entry means and where it comes from"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types]]
+name="MdOutsideForm"
+contract_group="engineering"
+meaning="A written form of a concept card that the recognition card does not recognise from text alone"
+identity="Concept and form"
+
+[[types.fields]]
+name="concept"
+rust_type="String"
+required=true
+format="typed"
+meaning="Catalogue concept id"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="form"
+rust_type="String"
+required=true
+format="typed"
+meaning="The written form as given on the concept card"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="reason"
+rust_type="String"
+required=true
+format="typed"
+meaning="Why the form is outside the text grammar"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types]]
+name="MdRecognizerCoverage"
+contract_group="engineering"
+meaning="Audited coverage of the drafting concept catalogue by the recognizer rules and recognition cards"
+identity="Schema and rules profile"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="Coverage schema"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="profile"
+rust_type="String"
+required=true
+format="typed"
+meaning="Expression rules profile"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="rules"
+rust_type="Vec<MdCoverageRule>"
+required=true
+format="typed"
+meaning="Every rule the recognizer emits"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="concepts"
+rust_type="Vec<MdCoverageConcept>"
+required=true
+format="typed"
+meaning="Coverage verdict of every recognised concept"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+
+[[types.fields]]
+name="conventions"
+rust_type="Vec<MdCoverageConvention>"
+required=true
+format="typed"
+meaning="Drawing-wide conventions applied to members and line styles rather than as expressions"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+[[types]]
+name="MdCoverageRule"
+contract_group="engineering"
+meaning="One recognizer rule: the expression kinds it emits and the concepts it names"
+identity="Rule name"
+
+[[types.fields]]
+name="rule"
+rust_type="String"
+required=true
+format="typed"
+meaning="Rule name as written in the expression (piece rules as rule evidence)"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="function"
+rust_type="String"
+required=true
+format="typed"
+meaning="Recognizer function that emits it"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="piece"
+rust_type="bool"
+required=true
+format="typed"
+meaning="Whether the rule recognises line pieces later grouped by view"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="kinds"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Expression kinds it emits"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="concepts"
+rust_type="Vec<MdCoverageKindConcepts>"
+required=true
+format="typed"
+meaning="Concepts named by its expressions, per kind"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types]]
+name="MdCoverageKindConcepts"
+contract_group="engineering"
+meaning="Concepts a rule names for one expression kind (empty kind: every kind of the rule)"
+identity="Rule and kind"
+
+[[types.fields]]
+name="kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="Expression kind, or empty for every kind of the rule"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Catalogue concept ids"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types]]
+name="MdCoverageConcept"
+contract_group="engineering"
+meaning="Coverage verdict of one concept"
+identity="Concept id"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="Catalogue concept id"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="level"
+rust_type="String"
+required=true
+format="typed"
+meaning="full: its ordinary drawing forms are recognised; partial: some are missing"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+allowed_values=["full", "partial"]
+
+[[types.fields]]
+name="by"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Rules and cards (card:<id>) that name it"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="missing"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="What is not recognised yet"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types]]
+name="MdCoverageConvention"
+contract_group="engineering"
+meaning="A drawing-wide convention the recognizer applies to members or line styles, and the concepts it implements"
+identity="Convention name"
+
+[[types.fields]]
+name="name"
+rust_type="String"
+required=true
+format="typed"
+meaning="Convention name"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="applies_to"
+rust_type="String"
+required=true
+format="typed"
+meaning="Where the convention shows in the expression graph"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Catalogue concept ids"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"

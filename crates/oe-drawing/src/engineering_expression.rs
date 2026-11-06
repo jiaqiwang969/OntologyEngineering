@@ -38,6 +38,17 @@ mod topology;
 mod representation;
 pub use representation::{USED_CARDS, drawing_concepts, representation_knowledge};
 
+#[path = "notation.rs"]
+mod notation;
+pub use notation::text_concepts;
+
+#[path = "symbols.rs"]
+mod symbols;
+
+#[path = "coverage.rs"]
+mod coverage;
+pub use coverage::{concept_status, recognizer_coverage};
+
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
 type P = [f64; 2];
@@ -708,7 +719,7 @@ fn family(kind: &str) -> &'static str {
     match kind {
         "visible_contour" | "hidden_contour" | "center_axis" | "phantom_line"
         | "thread_convention" | "break_line" | "section_hatch" => "geometry",
-        "thread_note" | "leader" | "center_hole" => "dimension",
+        "thread_note" | "leader" | "center_hole" | "series_table" => "dimension",
         k if k.starts_with("dimension_") => "dimension",
         "geometric_tolerance" | "datum_symbol" => "tolerance",
         k if k.starts_with("gps_") => "tolerance",
@@ -739,12 +750,9 @@ fn knowledge(kind: &str) -> Vec<String> {
         "dimension_chamfer" => &["K17", "K39"],
         "thread_note" => &["K17", "K34", "K39"],
         "gps_position" => &["K23", "K24", "K26"],
-        "gps_direction"
-        | "gps_perpendicularity"
-        | "gps_parallelism"
-        | "gps_runout"
-        | "gps_symmetry"
-        | "geometric_tolerance" => &["K23", "K24", "K25"],
+        "series_table" => &["K17", "K55"],
+        k if k.starts_with("gps_") => &["K23", "K24", "K25"],
+        "geometric_tolerance" => &["K23", "K24", "K25"],
         "datum_symbol" => &["K24"],
         "center_hole" => &["K39"],
         "surface_roughness" => &["K31", "K32"],
@@ -824,6 +832,7 @@ impl Builder {
             engineering_target: None,
             qualifiers,
             knowledge_ids: knowledge(kind),
+            concept_ids: vec![],
             state: state.into(),
             rule: rule.into(),
             evidence_ids: evidence,
@@ -1891,100 +1900,10 @@ fn ray_hits_structure(cx: &Ctx, b: &Builder, p: P, dir: P, reach: f64) -> bool {
 
 /// Tolerance-characteristic glyph from symbol geometry only (GB/T 1182 symbols).
 fn glyph_kind(s: &dd::Shape) -> Option<&'static str> {
-    if !s.texts.is_empty() {
-        return None;
-    }
-    let lines: Vec<(P, P)> = s
-        .lines
-        .iter()
-        .copied()
-        .filter(|(a, b)| dist(*a, *b) > 1e-9)
-        .collect();
-    let lens: Vec<f64> = lines.iter().map(|(a, b)| dist(*a, *b)).collect();
-    let maxl = lens.iter().copied().fold(0., f64::max);
-    if s.circles.len() == 2
-        && lines.is_empty()
-        && dist(s.circles[0].0, s.circles[1].0) < 0.05 * s.circles[0].1.max(s.circles[1].1)
-    {
-        return Some("geometric_tolerance");
-    }
-    if s.circles.len() == 1 && lines.len() == 2 {
-        let (c, r) = s.circles[0];
-        let (u, v) = (
-            unit(sub(lines[0].1, lines[0].0)),
-            unit(sub(lines[1].1, lines[1].0)),
-        );
-        if dot(u, v).abs() < 0.05
-            && lines
-                .iter()
-                .all(|(a, b)| dist(mid(*a, *b), c) < 0.15 * r && dist(*a, *b) > r)
-        {
-            return Some("gps_position");
-        }
-    }
-    if !s.circles.is_empty() {
-        return None;
-    }
-    if lines.len() == 2 {
-        let (a, b) = lines[0];
-        let (c, d) = lines[1];
-        let (u, v) = (unit(sub(b, a)), unit(sub(d, c)));
-        if dot(u, v).abs() < 0.05 {
-            let touches = |p: P, q: (P, P)| dist(p, mid(q.0, q.1)) < 0.08 * dist(q.0, q.1);
-            if touches(c, (a, b)) || touches(d, (a, b)) || touches(a, (c, d)) || touches(b, (c, d))
-            {
-                return Some("gps_perpendicularity");
-            }
-        }
-        if dot(u, v).abs() > 0.995 && project(c, a, b).1 > 0.1 * maxl {
-            return Some("gps_parallelism");
-        }
-    }
-    if lines.len() == 3 {
-        let u = unit(sub(lines[0].1, lines[0].0));
-        if lines
-            .iter()
-            .all(|(a, b)| cross(u, unit(sub(*b, *a))).abs() < 0.02)
-            && lens.iter().copied().fold(f64::INFINITY, f64::min) < 0.85 * maxl
-        {
-            return Some("gps_symmetry");
-        }
-    }
-    // Runout: one long oblique line whose end carries a triangular arrowhead
-    // (a closed three-vertex path) pointing along the line.
-    if lines.len() >= 2 {
-        let (i, &l) = lens.iter().enumerate().max_by(|a, b| a.1.total_cmp(b.1))?;
-        let (a, c) = lines[i];
-        let u = unit(sub(c, a));
-        let oblique = u[0].abs() > 0.2 && u[1].abs() > 0.2;
-        let triangle = s.paths.iter().find_map(|p| {
-            let mut q: Vec<P> = Vec::new();
-            for v in p {
-                if q.last().is_none_or(|w| dist(*w, *v) > 1e-9) {
-                    q.push(*v);
-                }
-            }
-            if q.len() == 4 && dist(q[0], q[3]) < 1e-9 {
-                q.pop();
-            }
-            (q.len() == 3).then_some(q)
-        });
-        if let (true, Some(t)) = (oblique, triangle) {
-            let centroid = [
-                (t[0][0] + t[1][0] + t[2][0]) / 3.,
-                (t[0][1] + t[1][1] + t[2][1]) / 3.,
-            ];
-            for (tip, other) in [(a, c), (c, a)] {
-                if t.iter().any(|v| dist(*v, tip) < 0.05 * l)
-                    && dist(centroid, tip) < 0.8 * l
-                    && dot(unit(sub(centroid, tip)), unit(sub(other, tip))) > 0.7
-                {
-                    return Some("gps_runout");
-                }
-            }
-        }
-    }
-    None
+    // Signature tests in `symbols`; the characteristic of each signature comes from card
+    // gdt_characteristic (GB/T 1182-2018 table 1). Arcs of a block are only flagged.
+    let sig = symbols::signature(s, s.arcs.len())?;
+    symbols::characteristic_kind(sig).ok().flatten()
 }
 
 /// Complete tolerance frame inside one block: adjacent rectangular cells, glyph
@@ -1992,6 +1911,10 @@ fn glyph_kind(s: &dd::Shape) -> Option<&'static str> {
 #[allow(clippy::type_complexity)]
 fn frame_of(s: &dd::Shape) -> Option<(&'static str, Vec<[f64; 4]>, Vec<String>)> {
     let mut cells: Vec<[f64; 4]> = s.paths.iter().filter_map(|p| cell_rect(p)).collect();
+    if cells.len() < 2 {
+        // one outline divided by lines (card gdt_frame_content, variant outline_dividers)
+        cells = symbols::block_divided_cells(s);
+    }
     cells.sort_by(|a, b| a[0].total_cmp(&b[0]));
     cells.dedup_by(|a, b| (0..4).all(|i| (a[i] - b[i]).abs() < 1e-6));
     if cells.len() < 2 {
@@ -2035,6 +1958,7 @@ fn frame_of(s: &dd::Shape) -> Option<(&'static str, Vec<[f64; 4]>, Vec<String>)>
         texts: vec![],
         paths: vec![],
         curved: false,
+        arcs: s.arcs.iter().filter(|a| a.iter().all(|p| inside(*p, shrink, 0.))).cloned().collect(),
     };
     let kind = glyph_kind(&glyph)?;
     let fields = chain[1..]
@@ -2058,6 +1982,8 @@ struct Deferred {
     boxes: Vec<String>,
     titles: Vec<(usize, [f64; 4])>,
     roughness: Vec<(usize, String)>,
+    /// Surface texture symbol blocks without their own value (card surface_texture_symbol).
+    textures: Vec<String>,
 }
 
 fn blocks(cx: &Ctx, b: &mut Builder, def: &mut Deferred) {
@@ -2122,6 +2048,19 @@ fn blocks(cx: &Ctx, b: &mut Builder, def: &mut Deferred) {
                 vec![],
             );
             def.roughness.push((e, h.clone()));
+        } else if let Some(value) = symbols::texture_block_text(s) {
+            // A surface texture symbol block whose text is a parameter value such as `Ra 3.2`
+            // (card surface_texture_symbol, variant block_with_parameter_value).
+            let e = b.expr(
+                "surface_roughness",
+                &value,
+                "card:surface_texture_symbol/block_with_parameter_value",
+                "candidate",
+                vec![],
+                vec![format!("source:{h}"), "card:surface_texture_symbol".into(), "variant:block_with_parameter_value".into()],
+                vec!["Controlled surface requires the indicated feature".into()],
+            );
+            b.member(e, h, None, [0., 1.], "roughness_symbol", "block", "candidate", vec![], vec![]);
         } else if dd::datum(s) {
             let e = b.expr(
                 "datum_symbol",
@@ -2236,9 +2175,18 @@ fn blocks(cx: &Ctx, b: &mut Builder, def: &mut Deferred) {
                 vec![],
                 vec![],
             );
+        } else if symbols::texture_block(s) {
+            def.textures.push(h.clone());
         } else if let Some(kind) = glyph_kind(s) {
-            if let Some(bb) = cx.bbox(h) {
+            // a glyph drawn only with arcs has no line geometry: place it by its arc points
+            if let Some(bb) = cx.bbox(h).or_else(|| bbox_of(&s.arcs.concat())) {
                 def.glyphs.push((h.clone(), kind, bb));
+            }
+            // A glyph that is also a plain box or cell stays available to the frame-box rules.
+            if s.texts.is_empty() && rects.len() == 1 && s.lines.len() <= 5 {
+                def.cells.push((vec![h.clone()], rects[0]));
+            } else if s.texts.is_empty() && s.lines.len() <= 6 && matches!(kind, "gps_straightness" | "gps_circularity") {
+                def.boxes.push(h.clone());
             }
         } else if s.texts.is_empty() && rects.len() == 1 && s.lines.len() <= 5 {
             def.cells.push((vec![h.clone()], rects[0]));
@@ -2248,16 +2196,22 @@ fn blocks(cx: &Ctx, b: &mut Builder, def: &mut Deferred) {
     }
 }
 
+/// Glyph of a characteristic kind, from card gdt_characteristic.
 fn glyph_label(kind: &str) -> &'static str {
-    match kind {
-        "gps_position" => "⌖",
-        "gps_symmetry" => "⌯",
-        "gps_runout" => "↗",
-        "gps_perpendicularity" => "⊥",
-        "gps_parallelism" => "∥",
-        "gps_direction" => "⊥/∥",
-        _ => "GPS",
+    if kind == "gps_direction" {
+        return "⊥/∥";
     }
+    representation::card_ref("gdt_characteristic")
+        .ok()
+        .and_then(|c| {
+            let lex = c.lexicon.as_ref()?;
+            let concept = lex.iter().find(|l| l.entry == "kind" && l.values.iter().any(|v| v == kind))?;
+            lex.iter()
+                .find(|l| l.entry == "glyph" && l.concept == concept.concept)
+                .and_then(|l| l.values.first())
+                .map(String::as_str)
+        })
+        .unwrap_or("GPS")
 }
 
 fn hatch_and_points(cx: &Ctx, b: &mut Builder) {
@@ -2535,6 +2489,7 @@ fn exploded_frames(
     def: &Deferred,
     anchors: &mut BTreeMap<usize, P>,
     loose: &[(Vec<String>, &'static str, [f64; 4])],
+    divided: &[(Vec<String>, [f64; 4])],
 ) {
     let mut cells: Vec<(Vec<String>, [f64; 4])> = def.cells.clone();
     for (h, (pts, _, bulged)) in &cx.polys {
@@ -2550,6 +2505,12 @@ fn exploded_frames(
     for (ids, r) in representation::frame_rectangles(cx, b) {
         if !cells.iter().any(|c| c.1 == r) {
             cells.push((ids, r));
+        }
+    }
+    // One outline divided by full-height lines (card gdt_frame_content).
+    for (ids, r) in divided {
+        if !cells.iter().any(|c| c.1 == *r) {
+            cells.push((ids.clone(), *r));
         }
     }
     let glyphs: Vec<(Vec<String>, &'static str, [f64; 4], bool)> = def
@@ -2636,6 +2597,11 @@ fn exploded_frames(
                 format!("cells:{}", chain.len()),
                 "card:gdt_frame_symbol".into(),
                 format!("variant:{}", if *is_loose { "loose_glyph" } else { "block_glyph" }),
+                if chain.iter().any(|c| divided.iter().any(|d| d.0 == c.0)) {
+                    "variant:outline_dividers".into()
+                } else {
+                    "cells:separate".into()
+                },
             ],
             vec!["Toleranced feature requires the leader target".into()],
         );
@@ -4616,7 +4582,7 @@ fn detail_circles(cx: &Ctx, b: &mut Builder) {
     }
 }
 
-fn technical_notes(cx: &Ctx, b: &mut Builder) {
+fn technical_notes(cx: &Ctx, b: &mut Builder, topics: &oe_contracts::MdRepresentationCard) {
     let heads: Vec<TextFact> = cx
         .texts
         .values()
@@ -4694,7 +4660,7 @@ fn technical_notes(cx: &Ctx, b: &mut Builder) {
                 .map(|t| t.dec.text.as_str())
                 .collect::<Vec<_>>()
                 .join("");
-            let kind = tx::note_kind(&text);
+            let kind = notation::note_topic(topics, &text);
             let e = b.expr(
                 kind,
                 &text,
@@ -4758,7 +4724,14 @@ fn technical_notes(cx: &Ctx, b: &mut Builder) {
     }
 }
 
-fn sheet_texts(cx: &Ctx, b: &mut Builder, def: &Deferred) {
+fn sheet_texts(cx: &Ctx, b: &mut Builder, def: &Deferred, range_seps: &[&str]) {
+    let norm = |s: &str| -> String {
+        let mut t: String = s.chars().filter(|c| !c.is_whitespace()).collect();
+        for r in range_seps {
+            t = t.replace(r, "~");
+        }
+        t
+    };
     let margin = 0.3 * cx.scale;
     for (e, bb) in &def.titles {
         let ids: Vec<String> = cx
@@ -4795,11 +4768,12 @@ fn sheet_texts(cx: &Ctx, b: &mut Builder, def: &Deferred) {
         })
         .filter_map(|s| cx.texts.get(&s).map(|t| t.dec.text.clone()))
         .filter(|s| s.chars().count() >= 6 && s.chars().any(|c| c.is_ascii_digit()))
+        .map(|s| norm(&s))
         .collect();
     for t in cx
         .texts
         .values()
-        .filter(|t| !b.used(&t.id) && titled.contains(&t.dec.text))
+        .filter(|t| !b.used(&t.id) && titled.contains(&norm(&t.dec.text)))
         .cloned()
         .collect::<Vec<_>>()
     {
@@ -5999,8 +5973,8 @@ fn views(
         let (id, kind, label, scale, sources, state, evidence) = if let Some(&ti) = title_of.get(&i)
         {
             let t = &titles[ti];
-            let kind = if t.kind == "detail_view" {
-                "detail_view"
+            let kind = if t.kind == "detail_view" || t.kind == "section_view" {
+                t.kind
             } else if has_break {
                 "partial_view"
             } else {
@@ -6516,6 +6490,9 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
         thin_colors,
         extent,
     };
+    // The knowledge read below must parse and validate before any rule runs.
+    representation::representation_knowledge()?;
+    coverage::recognizer_coverage()?;
     let mut b = Builder::default();
     let mut def = Deferred::default();
     let mut text_anchor = BTreeMap::new();
@@ -6529,10 +6506,13 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     representation::section_lines(&cx, &mut b)?;
     exploded_dimensions(&cx, &mut b, &mut anchors);
     exploded_angles(&cx, &mut b);
-    let loose = representation::loose_glyphs(&cx, &b)?;
-    exploded_frames(&cx, &mut b, &def, &mut anchors, &loose);
+    let mut loose = representation::loose_glyphs(&cx, &b)?;
+    loose.extend(symbols::text_glyphs(&cx, &b)?);
+    let divided = symbols::divided_frames(&cx, &b)?;
+    exploded_frames(&cx, &mut b, &def, &mut anchors, &loose, &divided);
     extended_pair_dimensions(&cx, &mut b, &mut anchors);
-    let titles = view_titles(&cx, &mut b);
+    let mut titles = view_titles(&cx, &mut b);
+    titles.extend(symbols::section_titles(&cx, &mut b)?);
     representation::visible_edges(&cx, &mut b)?;
     leader_annotations(&cx, &mut b, &text_anchor, &mut anchors);
     thread_texts(&cx, &mut b);
@@ -6541,8 +6521,18 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     representation::angle_units(&mut b)?;
     detail_circles(&cx, &mut b);
     unlabeled_view_arrows(&cx, &mut b, &mut anchors);
-    technical_notes(&cx, &mut b);
-    sheet_texts(&cx, &mut b, &def);
+    technical_notes(&cx, &mut b, representation::card_ref("technical_note")?);
+    let seps = representation::card_ref("title_block_field")?
+        .lexicon
+        .iter()
+        .flatten()
+        .filter(|l| l.entry == "code_range_separator")
+        .flat_map(|l| l.values.iter().map(String::as_str))
+        .collect::<Vec<_>>();
+    sheet_texts(&cx, &mut b, &def, &seps);
+    notation::series_tables(&cx, &mut b)?;
+    symbols::surface_textures(&cx, &mut b, &def.textures)?;
+    symbols::cutting_strokes(&cx, &mut b)?;
     line_kinds(&cx, &mut b);
     thread_arcs(&cx, &mut b);
     thread_lines(&cx, &mut b);
@@ -6553,9 +6543,16 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     duplicate_spans(&cx, &mut b);
     representation::leader_extensions(&cx, &mut b)?;
     representation::frame_cards(&mut b)?;
+    notation::dimension_texts(&mut b)?;
+    notation::technical_items(&mut b)?;
+    notation::title_block_fields(&cx, &mut b)?;
+    symbols::frame_content(&mut b)?;
+    symbols::texture_concepts(&cx, &mut b)?;
+    symbols::callout_concepts(&mut b)?;
     let (regions, vmap, refs) = views(&cx, &b, &titles, &anchors);
     let mut nb = finalize(&b, &vmap, &regions, &refs);
     unresolved(&cx, &mut nb, &regions);
+    coverage::assign(&mut nb)?;
     let view_of: BTreeMap<String, Option<String>> = nb
         .exprs
         .iter()

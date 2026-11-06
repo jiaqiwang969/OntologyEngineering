@@ -13,7 +13,24 @@ use oe_contracts::{
 };
 use oe_kernel::project::{self, Project};
 use serde_json::Value;
+use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
+
+/// Material already checked by the owner; every access still verifies its digest.
+/// The map implementation preserves the existing callers. Operation-local cached
+/// material can decode one source at a time instead of expanding the entire set.
+pub trait SourceMaterial {
+    fn source_bytes(&self, reference: &ArtifactReference) -> Result<Cow<'_, [u8]>>;
+}
+
+impl SourceMaterial for BTreeMap<String, Vec<u8>> {
+    fn source_bytes(&self, reference: &ArtifactReference) -> Result<Cow<'_, [u8]>> {
+        Ok(Cow::Borrowed(
+            self.get(&reference.path)
+                .context("workspace_source_material_missing")?,
+        ))
+    }
+}
 
 const CAUSAL_LEVELS: [&str; 4] = [
     "sequence",
@@ -34,26 +51,23 @@ fn reference_value(value: &Value, expected: &ArtifactReference) -> Result<bool> 
 
 fn source<'a>(
     reference: &ArtifactReference,
-    sources: &'a BTreeMap<String, Vec<u8>>,
-) -> Result<&'a [u8]> {
+    sources: &'a impl SourceMaterial,
+) -> Result<Cow<'a, [u8]>> {
     reference
         .validate()
         .map_err(|_| anyhow::anyhow!("workspace_source_reference_invalid"))?;
-    let bytes = sources
-        .get(&reference.path)
-        .context("workspace_source_material_missing")?;
+    let bytes = sources.source_bytes(reference)?;
     ensure!(
-        oe_core::sha256(bytes) == reference.sha256,
+        oe_core::sha256(bytes.as_ref()) == reference.sha256,
         "workspace_source_material_changed"
     );
     Ok(bytes)
 }
 
-fn json_source(
-    reference: &ArtifactReference,
-    sources: &BTreeMap<String, Vec<u8>>,
-) -> Result<Value> {
-    Ok(oe_core::json::strict_json(source(reference, sources)?)?)
+fn json_source(reference: &ArtifactReference, sources: &impl SourceMaterial) -> Result<Value> {
+    Ok(oe_core::json::strict_json(
+        source(reference, sources)?.as_ref(),
+    )?)
 }
 
 fn identity(value: &Value) -> Result<&str> {
@@ -110,7 +124,7 @@ pub fn validate_semantics(
     requests: &[WorkspaceRequestSource],
     obligations: &[WorkspaceCorrectionObligation],
     causal_claims: &[WorkspaceCausalClaim],
-    source_bytes: &BTreeMap<String, Vec<u8>>,
+    source_bytes: &impl SourceMaterial,
     replayed_reviews: &BTreeMap<String, Value>,
 ) -> Result<()> {
     project::validate(project)?;
@@ -325,7 +339,7 @@ fn validate_resolution(
     project: &Project,
     project_ref: &ArtifactReference,
     resolution: &WorkspaceResolution,
-    source_bytes: &BTreeMap<String, Vec<u8>>,
+    source_bytes: &impl SourceMaterial,
     replayed_reviews: &BTreeMap<String, Value>,
 ) -> Result<BTreeSet<String>> {
     let request = json_source(&resolution.request, source_bytes)?;

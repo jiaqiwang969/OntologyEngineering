@@ -730,6 +730,10 @@ pub fn command_failure(family: &str, error: &anyhow::Error) -> Value {
         "workspace_no_committed_state",
         "workspace_head_identity",
         "workspace_commit_identity",
+        "workspace_history_byte_budget",
+        "workspace_history_byte_limit",
+        "workspace_history_archive_budget",
+        "workspace_history_chain_budget_or_cycle",
         "workspace_commit_location",
         "workspace_archive_changed",
         "workspace_invalid_route",
@@ -2221,5 +2225,34 @@ mod cad_failure_tests {
             "input_or_output_contract_unavailable"
         );
         assert!(!result.to_string().contains("/private/"));
+    }
+}
+
+#[cfg(test)]
+mod history_failure_tests {
+    #[test]
+    fn history_budget_failures_name_their_reason_and_others_stay_closed() {
+        for reason in [
+            "workspace_history_byte_budget",
+            "workspace_history_byte_limit",
+            "workspace_history_archive_budget",
+            "workspace_history_chain_budget_or_cycle",
+        ] {
+            let value = super::command_failure("project", &anyhow::anyhow!(reason));
+            assert_eq!(value["error"]["reason"], reason);
+            assert_eq!(value["error"]["code"], "invalid_contract");
+            assert_eq!(value["engineering_adoption"], "blocked");
+            assert_eq!(value["retryable"], false);
+        }
+        for hidden in [
+            "workspace_history_commit_invalid",
+            "workspace_history_pending_decisions_changed",
+        ] {
+            let value = super::command_failure("project", &anyhow::anyhow!(hidden));
+            assert_eq!(
+                value["error"]["reason"],
+                "input_or_output_contract_unavailable"
+            );
+        }
     }
 }

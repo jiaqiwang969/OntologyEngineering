@@ -90,6 +90,573 @@ fn rejects<T: std::fmt::Debug>(result: anyhow::Result<T>, reason: &str) {
     );
 }
 
+// These files deliberately share bytes but have distinct paths: the budget is
+// a path budget, not a digest budget. Their digest is existing Project evidence.
+fn source_capacity_request(f: &Fixture, schema: &str, paths: usize) -> WorkspaceCommitRequest {
+    let mut q = f.request("initial-commit.json");
+    q.schema = schema.into();
+    let raw = fs::read(f.home.join("measurement.txt")).unwrap();
+    // Project, anchor, original request and measurement are four distinct paths.
+    for i in 4..paths {
+        q.sources
+            .push(f.put_bytes(&format!("capacity/source-{i}.txt"), &raw));
+    }
+    q
+}
+
+#[test]
+fn versioned_source_capacity_checks_exact_path_boundaries_and_cold_resume() {
+    for (schema, boundary) in [
+        ("oev2.workspace-commit-request/1", 256),
+        ("oev2.workspace-commit-request/2", 1024),
+        ("oev2.workspace-commit-request/3", 1024),
+        ("oev2.workspace-commit-request/4", 2048),
+        ("oev2.workspace-commit-request/5", 4096),
+    ] {
+        for count in [boundary, boundary + 1] {
+            let f = Fixture::new();
+            f.initialize();
+            let q = source_capacity_request(&f, schema, count);
+            if count > boundary {
+                rejects(
+                    workspace::commit(&f.open(), &q),
+                    "workspace_source_count_limit",
+                );
+                assert!(!f.home.join("HEAD.json").exists());
+                continue;
+            }
+            let committed = workspace::commit(&f.open(), &q).unwrap();
+            assert_eq!(committed["status"], "committed");
+            let resumed = workspace::resume(&f.open()).unwrap();
+            assert_eq!(resumed["status"], "ready");
+            assert_eq!(resumed["acceptance"][0]["status"], "open");
+            assert_eq!(resumed["engineering_adoption"], "not_granted");
+            assert_eq!(resumed["root_requests"].as_array().unwrap().len(), 1);
+        }
+    }
+}
+
+fn cached_request(f: &Fixture, raw: &[u8], count: usize) -> WorkspaceCommitRequest {
+    let mut q = f.request("initial-commit.json");
+    q.schema = "oev2.workspace-commit-request/3".into();
+    let mut p = f.value("project.json");
+    p["evidence"]["cache-probe"] = json!(oe_core::sha256(raw));
+    q.project = f.put("cache-project.json", &p);
+    for i in 0..count {
+        q.sources.push(f.put_bytes(&format!("cache-{i}.bin"), raw));
+    }
+    q
+}
+
+#[test]
+fn cached_profile_cold_resume_preserves_original_bytes_and_legacy_raw_limit() {
+    let f = Fixture::new();
+    f.initialize();
+    let raw = vec![b'Q'; 16 * 1024 * 1024];
+    let mut q = cached_request(&f, &raw, 5);
+    q.schema = "oev2.workspace-commit-request/2".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    assert!(!f.home.join("HEAD.json").exists());
+    q.schema = "oev2.workspace-commit-request/3".into();
+    let committed = workspace::commit(&f.open(), &q).unwrap();
+    assert_eq!(committed["status"], "committed");
+    let c = f.value(committed["head"]["commit"]["path"].as_str().unwrap());
+    assert_eq!(c["schema"], "oev2.workspace-commit/3");
+    let fresh = workspace::resume(&f.open()).unwrap();
+    assert_eq!(fresh["status"], "ready");
+    assert_eq!(fresh["task_view"]["schema"], "oev2.current-task-view/4");
+    assert!(fresh["source_budget"]["logical_bytes"].as_u64().unwrap() > 80 * 1024 * 1024);
+    assert!(
+        fresh["source_budget"]["retained_payload_bytes"]
+            .as_u64()
+            .unwrap()
+            < 1024 * 1024
+    );
+    assert_eq!(
+        fresh["task_view"]["source_observations"]
+            .as_array()
+            .unwrap()
+            .len(),
+        q.sources.len()
+    );
+    assert_eq!(fresh["acceptance"][0]["status"], "open");
+    assert_eq!(fresh["events"], json!(q.events));
+    assert_eq!(fresh["corrections"], json!(q.corrections));
+    assert_eq!(
+        fs::read(f.home.join(format!("artifacts/{}", oe_core::sha256(&raw)))).unwrap(),
+        raw
+    );
+    assert_eq!(fs::read(f.home.join("cache-4.bin")).unwrap(), raw);
+    let parent = serde_json::from_value(committed["head"]["commit"].clone()).unwrap();
+    q.expected_parent = Some(parent);
+    q.commit_id = "explicit-downgrade".into();
+    q.schema = "oev2.workspace-commit-request/2".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    assert_eq!(f.value("HEAD.json"), committed["head"]);
+    // Archived copies never stand in for missing or modified original sources.
+    fs::write(f.home.join("cache-4.bin"), b"drift").unwrap();
+    assert!(workspace::resume(&f.open()).is_err());
+    fs::remove_file(f.home.join("cache-4.bin")).unwrap();
+    assert!(workspace::resume(&f.open()).is_err());
+}
+
+#[test]
+fn cached_profile_rejects_incompressible_aggregate_and_oversize_originals() {
+    let f = Fixture::new();
+    f.initialize();
+    let mut state = 0x5eeda5beef123456u64;
+    let raw: Vec<u8> = (0..16 * 1024 * 1024)
+        .map(|_| {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            state as u8
+        })
+        .collect();
+    let q = cached_request(&f, &raw, 5);
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    assert!(!f.home.join("HEAD.json").exists());
+    let q = cached_request(&f, &vec![0; 16 * 1024 * 1024 + 1], 1);
+    assert!(workspace::commit(&f.open(), &q).is_err());
+    assert!(!f.home.join("HEAD.json").exists());
+}
+
+#[test]
+fn cached_profile_preserves_conflict_archive_dispatch_and_stale_parent_guards() {
+    let f = Fixture::new();
+    let (_, parent) = f.initial();
+    let mut q = cached_request(&f, &vec![8; 1024 * 1024], 2);
+    q.expected_parent = Some(parent);
+    q.commit_id = "cache-dispatch".into();
+    q.stage.as_mut().unwrap().execution = "dispatched".into();
+    let c = workspace::commit(&f.open(), &q).unwrap();
+    assert_eq!(c["status"], "committed");
+    assert_eq!(
+        workspace::resume(&f.open()).unwrap()["status"],
+        "effect_unknown"
+    );
+    q.commit_id = "stale-cache".into();
+    assert_eq!(
+        workspace::commit(&f.open(), &q).unwrap()["status"],
+        "conflict"
+    );
+    assert_eq!(f.value("HEAD.json"), c["head"]);
+    let r = q.sources.last().unwrap().clone();
+    fs::write(f.home.join(format!("artifacts/{}", r.sha256)), b"corrupt").unwrap();
+    q.expected_parent = Some(serde_json::from_value(c["head"]["commit"].clone()).unwrap());
+    q.commit_id = "bad-cache-archive".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_archive_changed",
+    );
+    assert_eq!(f.value("HEAD.json"), c["head"]);
+    let mut conflict = r;
+    conflict.sha256 = "0".repeat(64);
+    q.sources.push(conflict);
+    q.commit_id = "conflicting-cache-path".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_conflicting_reference",
+    );
+}
+
+#[test]
+fn extended_cache_preserves_large_material_and_rejects_downgrade_and_overflow() {
+    let f = Fixture::new();
+    let (_, parent) = f.initial();
+    let initial_head = f.value("HEAD.json");
+    let mut state = 0x4a17b9e3f251c68du64;
+    let raw: Vec<u8> = (0..16 * 1024 * 1024)
+        .map(|_| {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            state as u8
+        })
+        .collect();
+    let mut q = cached_request(&f, &raw, 7);
+    q.expected_parent = Some(parent);
+    q.commit_id = "extended-dispatch".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    assert_eq!(f.value("HEAD.json"), initial_head);
+    q.schema = "oev2.workspace-commit-request/4".into();
+    q.stage.as_mut().unwrap().execution = "dispatched".into();
+    let committed = workspace::commit(&f.open(), &q).unwrap();
+    let fresh = workspace::resume(&f.open()).unwrap();
+    assert_eq!(fresh["status"], "effect_unknown");
+    assert_eq!(fresh["task_view"]["schema"], "oev2.current-task-view/5");
+    assert_eq!(
+        fresh["source_budget"]["profile"],
+        "oev2.workspace-source-cache/2"
+    );
+    assert_eq!(fresh["source_budget"]["path_limit"], 2048);
+    assert_eq!(
+        fresh["source_budget"]["payload_limit_bytes"],
+        128 * 1024 * 1024
+    );
+    assert_eq!(
+        fresh["source_budget"]["maximum_logical_bytes"],
+        32u64 * 1024 * 1024 * 1024
+    );
+    assert!(
+        fresh["source_budget"]["retained_payload_bytes"]
+            .as_u64()
+            .unwrap()
+            > 112 * 1024 * 1024
+    );
+    assert_eq!(fresh["acceptance"][0]["status"], "open");
+    assert_eq!(fresh["events"], json!(q.events));
+    assert_eq!(fresh["corrections"], json!(q.corrections));
+    assert_eq!(
+        fs::read(f.home.join(format!("artifacts/{}", oe_core::sha256(&raw)))).unwrap(),
+        raw
+    );
+    assert_eq!(fs::read(f.home.join("cache-6.bin")).unwrap(), raw);
+    q.commit_id = "stale-extended".into();
+    assert_eq!(
+        workspace::commit(&f.open(), &q).unwrap()["status"],
+        "conflict"
+    );
+    q.expected_parent = Some(serde_json::from_value(committed["head"]["commit"].clone()).unwrap());
+    q.commit_id = "extended-downgrade".into();
+    q.schema = "oev2.workspace-commit-request/3".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    q.schema = "oev2.workspace-commit-request/4".into();
+    q.commit_id = "extended-overflow".into();
+    q.sources.push(f.put_bytes("cache-7.bin", &raw));
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    assert_eq!(f.value("HEAD.json"), committed["head"]);
+    q.sources.pop();
+    let archive = f.home.join(format!("artifacts/{}", oe_core::sha256(&raw)));
+    fs::write(&archive, b"corrupt").unwrap();
+    q.commit_id = "extended-bad-archive".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_archive_changed",
+    );
+    assert_eq!(f.value("HEAD.json"), committed["head"]);
+    fs::write(&archive, &raw).unwrap();
+    fs::write(f.home.join("cache-6.bin"), b"changed").unwrap();
+    assert!(workspace::resume(&f.open()).is_err());
+    fs::remove_file(f.home.join("cache-6.bin")).unwrap();
+    assert!(workspace::resume(&f.open()).is_err());
+}
+
+#[test]
+fn extended_cache_keeps_original_file_limit_and_path_downgrade_guard() {
+    let f = Fixture::new();
+    f.initialize();
+    let mut q = cached_request(&f, &vec![0; 16 * 1024 * 1024 + 1], 1);
+    q.schema = "oev2.workspace-commit-request/4".into();
+    assert!(workspace::commit(&f.open(), &q).is_err());
+    assert!(!f.home.join("HEAD.json").exists());
+    let mut q = source_capacity_request(&f, "oev2.workspace-commit-request/4", 1025);
+    let committed = workspace::commit(&f.open(), &q).unwrap();
+    q.expected_parent = Some(serde_json::from_value(committed["head"]["commit"].clone()).unwrap());
+    q.commit_id = "path-downgrade".into();
+    q.schema = "oev2.workspace-commit-request/3".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_count_limit",
+    );
+    assert_eq!(f.value("HEAD.json"), committed["head"]);
+}
+
+#[test]
+fn large_extended_cache_preserves_material_and_rejects_downgrade_and_overflow() {
+    let f = Fixture::new();
+    let (_, parent) = f.initial();
+    let initial_head = f.value("HEAD.json");
+    let mut state = 0x6c8e9cf570932bd5u64;
+    let raw: Vec<u8> = (0..16 * 1024 * 1024)
+        .map(|_| {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            state as u8
+        })
+        .collect();
+    // Fifteen incompressible 16 MiB originals exceed /4 but fit /5 with the Project files.
+    let mut q = cached_request(&f, &raw, 15);
+    q.schema = "oev2.workspace-commit-request/4".into();
+    q.expected_parent = Some(parent);
+    q.commit_id = "large-extended-dispatch".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    assert_eq!(f.value("HEAD.json"), initial_head);
+    q.schema = "oev2.workspace-commit-request/5".into();
+    q.stage.as_mut().unwrap().execution = "dispatched".into();
+    let committed = workspace::commit(&f.open(), &q).unwrap();
+    let c = f.value(committed["head"]["commit"]["path"].as_str().unwrap());
+    assert_eq!(c["schema"], "oev2.workspace-commit/5");
+    let fresh = workspace::resume(&f.open()).unwrap();
+    assert_eq!(fresh["status"], "effect_unknown");
+    assert_eq!(fresh["task_view"]["schema"], "oev2.current-task-view/6");
+    assert_eq!(
+        fresh["source_budget"]["profile"],
+        "oev2.workspace-source-cache/3"
+    );
+    assert_eq!(fresh["source_budget"]["path_limit"], 4096);
+    assert_eq!(
+        fresh["source_budget"]["payload_limit_bytes"],
+        256 * 1024 * 1024
+    );
+    assert_eq!(
+        fresh["source_budget"]["maximum_logical_bytes"],
+        64u64 * 1024 * 1024 * 1024
+    );
+    assert!(
+        fresh["source_budget"]["retained_payload_bytes"]
+            .as_u64()
+            .unwrap()
+            > 240 * 1024 * 1024
+    );
+    assert_eq!(fresh["acceptance"][0]["status"], "open");
+    assert_eq!(fresh["events"], json!(q.events));
+    assert_eq!(fresh["corrections"], json!(q.corrections));
+    assert_eq!(
+        fs::read(f.home.join(format!("artifacts/{}", oe_core::sha256(&raw)))).unwrap(),
+        raw
+    );
+    assert_eq!(fs::read(f.home.join("cache-14.bin")).unwrap(), raw);
+    q.commit_id = "stale-large-extended".into();
+    assert_eq!(
+        workspace::commit(&f.open(), &q).unwrap()["status"],
+        "conflict"
+    );
+    q.expected_parent = Some(serde_json::from_value(committed["head"]["commit"].clone()).unwrap());
+    q.commit_id = "large-extended-downgrade".into();
+    q.schema = "oev2.workspace-commit-request/4".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    q.schema = "oev2.workspace-commit-request/5".into();
+    q.commit_id = "large-extended-overflow".into();
+    q.sources.push(f.put_bytes("cache-15.bin", &raw));
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    assert_eq!(f.value("HEAD.json"), committed["head"]);
+    q.sources.pop();
+    let archive = f.home.join(format!("artifacts/{}", oe_core::sha256(&raw)));
+    fs::write(&archive, b"corrupt").unwrap();
+    q.commit_id = "large-extended-bad-archive".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_archive_changed",
+    );
+    assert_eq!(f.value("HEAD.json"), committed["head"]);
+    fs::write(&archive, &raw).unwrap();
+    fs::write(f.home.join("cache-14.bin"), b"changed").unwrap();
+    assert!(workspace::resume(&f.open()).is_err());
+    fs::remove_file(f.home.join("cache-14.bin")).unwrap();
+    assert!(workspace::resume(&f.open()).is_err());
+}
+
+#[test]
+fn large_extended_cache_keeps_original_file_limit_and_path_downgrade_guard() {
+    let f = Fixture::new();
+    f.initialize();
+    let mut q = cached_request(&f, &vec![0; 16 * 1024 * 1024 + 1], 1);
+    q.schema = "oev2.workspace-commit-request/5".into();
+    assert!(workspace::commit(&f.open(), &q).is_err());
+    assert!(!f.home.join("HEAD.json").exists());
+    let mut q = source_capacity_request(&f, "oev2.workspace-commit-request/5", 2049);
+    let committed = workspace::commit(&f.open(), &q).unwrap();
+    q.expected_parent = Some(serde_json::from_value(committed["head"]["commit"].clone()).unwrap());
+    q.commit_id = "large-path-downgrade".into();
+    q.schema = "oev2.workspace-commit-request/4".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_count_limit",
+    );
+    assert_eq!(f.value("HEAD.json"), committed["head"]);
+}
+
+// Fifteen MiB of event text per commit gives a real history over 64 MiB in a
+// few commits; each commit keeps its earlier events, so every file stays below
+// the 16 MiB artifact limit.
+#[test]
+fn versioned_history_capacity_crosses_the_legacy_budget_only_under_explicit_v6() {
+    let f = Fixture::new();
+    let (mut q, mut parent) = f.initial();
+    let mut large = serde_json::to_value(&q.events[0]).unwrap();
+    large["id"] = json!("E-LARGE-HISTORY");
+    large["description"] = json!("history ".repeat(15 * 1024 * 1024 / 8));
+    q.events.push(serde_json::from_value(large).unwrap());
+    q.schema = "oev2.workspace-commit-request/5".into();
+    for i in 0..4 {
+        q.expected_parent = Some(parent.clone());
+        q.commit_id = format!("legacy-history-{i}");
+        let committed = workspace::commit(&f.open(), &q).unwrap();
+        assert_eq!(committed["status"], "committed");
+        parent = serde_json::from_value(committed["head"]["commit"].clone()).unwrap();
+    }
+    let legacy = workspace::resume(&f.open()).unwrap();
+    assert_eq!(legacy["status"], "ready");
+    assert!(legacy.get("history_budget").is_none());
+    let head = f.value("HEAD.json");
+    q.expected_parent = Some(parent.clone());
+    q.commit_id = "legacy-history-over".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_history_byte_budget",
+    );
+    assert_eq!(f.value("HEAD.json"), head);
+    assert!(!f.home.join("commits/legacy-history-over").exists());
+    q.schema = "oev2.workspace-commit-request/6".into();
+    q.commit_id = "large-history".into();
+    let committed = workspace::commit(&f.open(), &q).unwrap();
+    let c = f.value(committed["head"]["commit"]["path"].as_str().unwrap());
+    assert_eq!(c["schema"], "oev2.workspace-commit/6");
+    let fresh = workspace::resume(&f.open()).unwrap();
+    assert_eq!(fresh["status"], "ready");
+    assert_eq!(fresh["events"], json!(q.events));
+    assert_eq!(fresh["acceptance"][0]["status"], "open");
+    assert_eq!(fresh["task_view"]["schema"], "oev2.current-task-view/6");
+    assert_eq!(
+        fresh["source_budget"]["profile"],
+        "oev2.workspace-source-cache/3"
+    );
+    let budget = &fresh["history_budget"];
+    assert_eq!(budget["profile"], "oev2.workspace-history/2");
+    assert_eq!(budget["commits"], 6);
+    assert_eq!(budget["commit_limit"], 1024);
+    assert_eq!(budget["commit_limit_bytes"], 256 * 1024 * 1024);
+    assert_eq!(budget["archive_limit_bytes"], 256 * 1024 * 1024);
+    let on_disk: u64 = fs::read_dir(f.home.join("commits"))
+        .unwrap()
+        .map(|d| {
+            fs::metadata(d.unwrap().path().join("commit.json"))
+                .unwrap()
+                .len()
+        })
+        .sum();
+    assert_eq!(budget["commit_bytes"], on_disk);
+    assert!(on_disk > 64 * 1024 * 1024);
+    let head = f.value("HEAD.json");
+    q.expected_parent = Some(serde_json::from_value(committed["head"]["commit"].clone()).unwrap());
+    q.commit_id = "large-history-downgrade".into();
+    q.schema = "oev2.workspace-commit-request/5".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_history_byte_budget",
+    );
+    assert_eq!(f.value("HEAD.json"), head);
+    assert!(!f.home.join("commits/large-history-downgrade").exists());
+}
+
+#[test]
+fn versioned_source_capacity_migration_preserves_dispatch_and_drift_guards() {
+    let f = Fixture::new();
+    let (_, parent) = f.initial();
+    let mut q = source_capacity_request(&f, "oev2.workspace-commit-request/2", 300);
+    q.commit_id = "expanded-dispatch".into();
+    q.expected_parent = Some(parent.clone());
+    q.stage.as_mut().unwrap().execution = "dispatched".into();
+    let result = workspace::commit(&f.open(), &q).unwrap();
+    assert_eq!(result["status"], "committed");
+    let next: ArtifactReference = serde_json::from_value(result["head"]["commit"].clone()).unwrap();
+    assert_eq!(f.value(&next.path)["schema"], "oev2.workspace-commit/2");
+    let recovered = workspace::resume(&f.open()).unwrap();
+    assert_eq!(recovered["status"], "effect_unknown");
+    rejects(
+        workspace::begin(&f.open(), &next, "S1"),
+        "workspace_not_ready_for_stage",
+    );
+    rejects(
+        workspace::begin(&f.open(), &parent, "S1"),
+        "workspace_stale_resume",
+    );
+    let head = fs::read(f.home.join("HEAD.json")).unwrap();
+    q.expected_parent = Some(next);
+    q.commit_id = "legacy-downgrade".into();
+    q.schema = "oev2.workspace-commit-request/1".into();
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_count_limit",
+    );
+    q.schema = "oev2.workspace-commit-request/2".into();
+    q.commit_id = "hide-expanded-dispatch".into();
+    q.stage = None;
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_unfinished_action_cannot_disappear",
+    );
+    fs::write(
+        f.home.join("capacity/source-299.txt"),
+        b"changed current evidence",
+    )
+    .unwrap();
+    rejects(workspace::resume(&f.open()), "artifact_source_changed");
+    assert_eq!(fs::read(f.home.join("HEAD.json")).unwrap(), head);
+}
+
+#[test]
+fn versioned_source_capacity_rejects_unknown_schema_and_mixed_envelope() {
+    for version in [2, 3, 4, 5] {
+        let f = Fixture::new();
+        f.initialize();
+        let mut q = source_capacity_request(&f, "oev2.workspace-commit-request/99", 4);
+        assert!(workspace::commit(&f.open(), &q).is_err());
+        assert!(!f.home.join("HEAD.json").exists());
+        q.schema = format!("oev2.workspace-commit-request/{version}");
+        let result = workspace::commit(&f.open(), &q).unwrap();
+        let mut head = result["head"].clone();
+        let path = head["commit"]["path"].as_str().unwrap().to_owned();
+        let mut commit = f.value(&path);
+        commit["schema"] = json!("oev2.workspace-commit/1");
+        head["commit"] = json!(f.put(&path, &commit));
+        f.put("HEAD.json", &head); // fault injection in this isolated synthetic store
+        rejects(
+            workspace::resume(&f.open()),
+            "workspace_commit_schema_mismatch",
+        );
+    }
+}
+
+#[test]
+fn versioned_source_capacity_retains_aggregate_and_single_file_budgets() {
+    let f = Fixture::new();
+    f.initialize();
+    let mut q = source_capacity_request(&f, "oev2.workspace-commit-request/2", 4);
+    let raw = vec![b'x'; 16 * 1024 * 1024];
+    for i in 0..4 {
+        q.sources.push(f.put_bytes(&format!("large-{i}.txt"), &raw));
+    }
+    rejects(
+        workspace::commit(&f.open(), &q),
+        "workspace_source_byte_limit",
+    );
+    q.sources.truncate(1);
+    q.sources
+        .push(f.put_bytes("oversize.txt", &vec![b'x'; raw.len() + 1]));
+    assert!(workspace::commit(&f.open(), &q).is_err());
+    assert!(!f.home.join("HEAD.json").exists());
+}
+
 #[test]
 fn independent_sessions_reopen_external_store_without_installing_a_skill_in_it() {
     let f = Fixture::new();

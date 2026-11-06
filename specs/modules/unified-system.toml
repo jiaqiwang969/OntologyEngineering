@@ -483,7 +483,7 @@ acceptance="Current parent, complete sources, replayed checks, failure and unkno
 name="WorkspaceCommitRequest"
 contract_group="engineering"
 identity="WorkspaceCommitRequest"
-meaning="Complete proposed state with explicit parent; does not overwrite Project facts"
+meaning="Complete proposed state with explicit parent; /1 permits 256 checked paths and /2 permits 1024, both with 16 MiB per source and 64 MiB raw aggregate. Explicit /3 retains 1024 paths and 16 MiB per source, charges a 64 MiB lossless operation-cache payload instead of raw aggregate, and preserves all original bytes, hashes and historical obligations. Logical source bytes for /3 are bounded by 1024 times 16 MiB. Explicit /4 uses 2048 paths and 128 MiB retained payload, with the same 16 MiB per file and exact original identities (maximum 32 GiB logical). Explicit /5 uses 4096 paths and 256 MiB retained payload, with the same 16 MiB per file and exact original identities (maximum 64 GiB logical). No profile is a total process memory guarantee. Explicit /6 keeps the /5 source profile and bounds the complete history read from the head on every resume and commit by 1024 commits, 256 MiB of commit bytes and 256 MiB of archived Project/review bytes; /1 through /5 keep 1024 commits and 64 MiB. A commit is refused before writing when its own head would exceed its profile history budget."
 
 [[types.fields]]
 name="schema"
@@ -496,7 +496,7 @@ precision="exact source bytes and references"
 write="Agent supplies source-bound inputs; Rust verifies and commits"
 applicability="Explicit project workspace; legacy root behavior preserved"
 acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
-allowed_values=["oev2.workspace-commit-request/1"]
+allowed_values=["oev2.workspace-commit-request/1","oev2.workspace-commit-request/2","oev2.workspace-commit-request/3","oev2.workspace-commit-request/4","oev2.workspace-commit-request/5","oev2.workspace-commit-request/6"]
 
 [[types.fields]]
 name="workspace_id"
@@ -671,7 +671,7 @@ acceptance="Old impacts persist until current native reviews satisfy them"
 name="WorkspaceCommit"
 contract_group="engineering"
 identity="WorkspaceCommit"
-meaning="Immutable commit records one complete proposed state and its sequence"
+meaning="Immutable commit records one complete proposed state and its sequence; envelope /1 requires request /1, /2 requires /2, and /3 requires /3; historical schemas retain original raw-source capacity. Cached /3 is explicit and never rewrites persistent artifacts or history"
 
 [[types.fields]]
 name="schema"
@@ -684,7 +684,8 @@ precision="exact source bytes and references"
 write="Agent supplies source-bound inputs; Rust verifies and commits"
 applicability="Explicit project workspace; legacy root behavior preserved"
 acceptance="Current parent, complete sources, replayed checks, failure and unknown retained"
-allowed_values=["oev2.workspace-commit/1"]
+allowed_values=["oev2.workspace-commit/1","oev2.workspace-commit/2","oev2.workspace-commit/3","oev2.workspace-commit/4","oev2.workspace-commit/5","oev2.workspace-commit/6"]
+
 
 [[types.fields]]
 name="sequence"
@@ -731,6 +732,42 @@ check="commit"
 rust_path="crates/oe-engineering/src/project_workspace/mod.rs"
 statement="Explicit project identity and expected parent, immutable records and atomic current pointer; source-bound recovery cannot turn history into execution or engineering adoption."
 severity="error"
+
+[[constraints]]
+id="project_workspace_versioned_source_capacity"
+requirement="req_delivery"
+module="engineering"
+check="commit"
+rust_path="crates/oe-engineering/src/project_workspace/mod.rs"
+statement="Request /1 retains 256 distinct checked source paths; explicit request /2 and commit /2 support at most 1024. Both retain 16 MiB per file and 64 MiB aggregate source budgets, 1024 history steps, history byte budgets, receipt-specific limits, hashes, no symlinks, immutable history, complete corrections and parent checks. Resume /2 selects current-task-view-input/3 (1024 inventory paths, 64 MiB); /1 and method-use /2 retain their original meanings. Unknown schemas, envelope mismatch, limit overflow and source drift reject; no silent profile upgrade or truncation."
+severity="error"
+
+[[validations]]
+id="workspace_versioned_source_capacity_boundaries"
+module="engineering"
+constraint="project_workspace_versioned_source_capacity"
+behavior="explicit_capacity_preserves_continuity"
+rust_path="crates/oe-engineering/tests/project_workspace.rs"
+oracle="Legacy 256/257 and explicit 1024/1025 path boundaries, byte limits, unknown schemas, downgrade, cold recovery, source drift and interrupted dispatch are checked without deleting history or closing acceptance."
+scope="Synthetic software boundary checks; not CAD or engineering acceptance"
+
+[[constraints]]
+id="project_workspace_lossless_source_cache"
+requirement="req_delivery"
+module="engineering"
+check="commit"
+rust_path="crates/oe-engineering/src/project_workspace/mod.rs"
+statement="Explicit request/commit /3 uses at most 1024 distinct paths, 16 MiB raw per file and 64 MiB retained cache payload. Encode zlib only when smaller, otherwise retain raw. Every decoded source is size-bounded and hash-checked; semantic readers decode one source at a time. Original paths and content-addressed archives stay raw and are rechecked before HEAD changes. Raw logical IO is bounded by the path and per-file limits (16 GiB); cache payload is not a whole-process memory limit. Old /1 and /2 retain raw 64 MiB semantics. History and receipt owners retain their separate limits. Resume /3 selects task-view-input/4 with the same lossless accounting and reports exact logical and retained byte counts. Unknown versions, malformed codecs, wrong references, missing originals, stale views and downgrade cannot bypass checks. No automatic profile upgrade, historical deletion, source substitution or engineering adoption."
+severity="error"
+
+[[validations]]
+id="workspace_lossless_source_cache_boundaries"
+module="engineering"
+constraint="project_workspace_lossless_source_cache"
+behavior="bounded_lossless_source_material"
+rust_path="crates/oe-engineering/tests/project_workspace.rs"
+oracle="Cold native commit/resume over more than 64 MiB raw sources preserves all material and open obligations; original profiles reject those sources. Incompressible overflow, 16 MiB per-file limit, 1024-path boundary, stale or missing originals, bad archive, conflicting paths, codec damage, stale proposals and mismatched schemas reject. Task-view/4 verifies exact original hashes and refuses downgrade."
+scope="Native source preservation and bounded software resource behavior only; no CAD geometry or manufacturing qualification"
 
 [[validations]]
 id="workspace_conflict_source_and_recovery"
@@ -841,3 +878,57 @@ fields=[
 {name="goal",meaning="Existing frozen goal wrapper bytes, checked by the caller",rust_type="ArtifactReference",required=true,format="object",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"},
 {name="acceptance_ids",meaning="Complete ordered acceptance identity list",rust_type="Vec<String>",required=true,format="list",unit="Identity, byte digest or declared status",precision="Exact original bytes and explicit state",write="Agent records actual sources; Rust checks relationships",applicability="Explicit project workspace continuity",acceptance="Source drift, omitted corrections, stale review and altered root-goal bindings reject"}
 ]
+
+[[constraints]]
+id="project_workspace_extended_lossless_capacity"
+requirement="req_delivery"
+module="engineering"
+check="commit"
+rust_path="crates/oe-engineering/src/project_workspace/mod.rs"
+statement="Explicit request/commit /4 and task-view-input/view /5 use 2048 distinct source paths and 128 MiB retained lossless payload; every original remains bounded by 16 MiB, exact hash and source-path checks, with at most 32 GiB logical IO. Raw archives, complete history and obligations are unchanged. Legacy /1 through /3 and task-view /1 through /4 keep original semantics and bounds. History and receipt budgets are independent and unchanged. Exact boundary, overflow, missing/corrupt source, bad archive, stale parent, interrupted action, unknown or mismatched schema and oversized downgrade must not grant truncation, source substitution, silent upgrade or engineering adoption. Source-budget diagnostics report the explicit /2 cache resource profile."
+severity="error"
+
+[[validations]]
+id="workspace_extended_lossless_capacity_boundaries"
+module="engineering"
+constraint="project_workspace_extended_lossless_capacity"
+behavior="bounded_explicit_source_growth"
+rust_path="crates/oe-engineering/tests/project_workspace.rs"
+oracle="Native commit/cold resume at 2048 paths succeeds while 2049 fails; legacy profiles retain 256/257 and 1024/1025 boundaries. Actual incompressible payload tests cross 64 MiB and 128 MiB with exact original/archived bytes, downgrade rejection, stale parent and unchanged HEAD on error. New task-view schema independently enforces its path and payload limits and detects drift/missing material."
+scope="Synthetic software resources and native source preservation only; no new CAD qualification or whole-page acceptance"
+
+[[constraints]]
+id="project_workspace_large_extended_lossless_capacity"
+requirement="req_delivery"
+module="engineering"
+check="commit"
+rust_path="crates/oe-engineering/src/project_workspace/mod.rs"
+statement="Explicit request/commit /5 and task-view-input/view /6 use 4096 distinct source paths and 256 MiB retained lossless payload; every original remains bounded by 16 MiB, exact hash and source-path checks, with at most 64 GiB logical IO. Raw archives, complete history and obligations are unchanged. Legacy /1 through /4 and task-view /1 through /5 keep original semantics and bounds. History and receipt budgets are independent and unchanged. Exact boundary, overflow, missing/corrupt source, bad archive, stale parent, interrupted action, unknown or mismatched schema and oversized downgrade must not grant truncation, source substitution, silent upgrade or engineering adoption. Source-budget diagnostics report the explicit /3 cache resource profile."
+severity="error"
+
+[[validations]]
+id="workspace_large_extended_lossless_capacity_boundaries"
+module="engineering"
+constraint="project_workspace_large_extended_lossless_capacity"
+behavior="bounded_explicit_source_growth"
+rust_path="crates/oe-engineering/tests/project_workspace.rs"
+oracle="Native commit/cold resume at 4096 paths succeeds while 4097 fails; earlier profiles retain 256/257, 1024/1025 and 2048/2049 boundaries. Actual incompressible payload tests cross 128 MiB and 256 MiB with exact original/archived bytes, downgrade rejection, stale parent and unchanged HEAD on error. New task-view schema independently enforces its path and payload limits and detects drift/missing material."
+scope="Synthetic software resources and native source preservation only; no new CAD qualification or whole-page acceptance"
+
+[[constraints]]
+id="project_workspace_versioned_history_capacity"
+requirement="req_delivery"
+module="engineering"
+check="commit"
+rust_path="crates/oe-engineering/src/project_workspace/mod.rs"
+statement="Explicit request/commit /6 keeps the /5 source profile and bounds the complete history read from the head on every resume and commit by 1024 commits, 256 MiB of commit bytes and 256 MiB of archived Project/review bytes; /1 through /5 keep 1024 commits and 64 MiB. Resume uses the head's own profile; commit validates the parent chain under the new request's profile, so a smaller profile cannot carry a larger history, and refuses before writing any file when the new head would exceed its budget. History budget failures are reported by name. Every commit, request, correction, source and obligation is preserved; nothing is compacted or rewritten."
+severity="error"
+
+[[validations]]
+id="workspace_versioned_history_capacity_boundaries"
+module="engineering"
+constraint="project_workspace_versioned_history_capacity"
+behavior="bounded_explicit_history_growth"
+rust_path="crates/oe-engineering/tests/project_workspace.rs"
+oracle="A real history over 64 MiB: /5 refuses the next commit before writing and keeps HEAD, /6 commits and cold-resumes with its history budget reported, and a /5 commit on that head is refused. Injected exact budgets pass at the counted bytes and refuse one byte, one archive byte or one commit less; legacy resume output carries no new field."
+scope="Synthetic software resources and native history preservation only; no new CAD qualification or whole-page acceptance"

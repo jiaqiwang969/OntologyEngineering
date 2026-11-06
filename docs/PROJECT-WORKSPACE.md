@@ -142,7 +142,9 @@ effect_unknown 先回读；历史记录和 ready 不扩大当前动作授权。
 
 ## 预算、迁移与验收边界
 
-本层每份来源最多 16 MiB、一次提交或回读最多 256 个不同引用路径、累计来源最多 64 MiB；恢复 Markdown 最多 16 MiB。当前提交向前核验最多 1024 步，历史提交原件累计最多 64 MiB，超限拒绝；尚无自动历史分段或压缩迁移。原 Harness、工具、reviewed-reconciliation 和 learning owner 仍保留自己的更细预算，重核可能多次读取同一原件。这些限制不是完整工程项目大小或全任务内存承诺；超限明确返回缺口，不截掉纠正、失败或必要验收取得通过。
+本层每份来源最多 16 MiB、累计来源最多 64 MiB；恢复 Markdown 最多 16 MiB。`workspace-commit-request/1` 保留一次提交或回读最多 256 个不同引用路径；显式 `/2` 支持最多 1024 个路径，提交封装也使用 `workspace-commit/2`。路径按真实引用计数，不按相同内容摘要合并；字节、哈希、链接、父提交及完整义务检查不变。旧合同不会自动采用新预算，新请求不能用旧封装保存；降回 `/1` 仍需满足旧预算。历史原件不改写。
+
+`/2` 的恢复使用 `current-task-view-input/3` 和对应 `/3` 阅读视图，支持最多 1024 个清单路径及 64 MiB 来源字节。原阅读输入 `/1` 的 256 路径边界与独立的方法来源封装 `/2` 保持原义；检查视图时重新派生并核对精确版本。当前提交向前核验最多 1024 步，历史提交原件累计最多 64 MiB，超限拒绝；尚无自动历史分段或压缩迁移。原 Harness、工具、reviewed-reconciliation 和 learning owner 仍保留自己的更细预算，重核可能多次读取同一原件。这些限制不是完整工程项目大小或全任务内存承诺；超限明确返回缺口，不截掉纠正、失败或必要验收取得通过。
 
 当前 workspace 的原子提交依赖 Unix 文件锁、目录同步与原子重命名，本轮实际验证平台为 macOS；Linux 需在目标机重跑公开案例，Windows 的提交路径明确返回 unsupported，尚不能计作可用。
 
@@ -151,3 +153,60 @@ effect_unknown 先回读；历史记录和 ready 不扩大当前动作授权。
 本轮应分别验证：完整冷恢复；遗漏纠正/验收拒绝；同修订条件变化及旧来源拒绝；并发 HEAD 冲突；派发后中断不重复动作；原生回执重读；旧 goal 不能绑定新根目标；新环境中独立显式命令可用。软件合成反例、真实新会话恢复、跨平台接收和未见任务 RRSI 收益分别报告。
 
 可复跑的公开完整案例见 [project-workspace 示例](../examples/project-workspace/README.md)。
+
+
+## Explicit extended lossless source profile
+
+Workspace request/commit `/4` explicitly selects 2048 checked source paths and
+128 MiB retained lossless payload. Each original remains limited to 16 MiB and
+read with its exact raw digest; at most 32 GiB logical source IO is possible.
+Raw archives and original paths stay unchanged. Payload accounting is operation
+local and is not a total process memory limit. Resume selects task-view input/view
+`/5` and reports `oev2.workspace-source-cache/2` with actual and maximum usage.
+
+Earlier request/commit `/1` (256 paths), `/2` (1024 paths, raw 64 MiB), and `/3`
+(1024 paths, cached 64 MiB), and all previous task-view profiles keep their exact
+semantics. History remains limited to 1024 commits and its existing 64 MiB budget;
+receipt budgets are independent. This is finite headroom, not indefinite growth.
+
+The operator opts in through a new native commit after validating old-state
+recovery with the candidate owner. Old executables are retained and must reject
+unknown new schemas. Downgrading cannot bypass smaller path or byte limits.
+This profile grants no CAD capability, scheduling authority or engineering adoption.
+
+
+## Explicit large extended lossless source profile
+
+Workspace request/commit `/5` explicitly selects 4096 checked source paths and
+256 MiB retained lossless payload. Each original remains limited to 16 MiB and
+read with its exact raw digest; at most 64 GiB logical source IO is possible.
+Resume selects task-view input/view `/6` and reports
+`oev2.workspace-source-cache/3` with actual and maximum usage.
+
+Request/commit `/1` through `/4` and task-view `/1` through `/5` keep their exact
+semantics and bounds. History remains limited to 1024 commits and its existing
+64 MiB budget; receipt budgets are independent. This is finite headroom.
+
+The operator opts in through a new native commit after the candidate owner
+recovers the unchanged live state identically to the previous owner. Old
+executables are retained and must reject the unknown `/5` schema. Downgrading
+cannot bypass smaller path or byte limits. No CAD capability, scheduling
+authority or engineering adoption is granted.
+
+## Explicit history capacity profile
+
+Workspace request/commit `/6` keeps the `/5` source profile and raises the
+history budget. Every resume and commit reads the complete history from the
+head: at most 1024 commits, 256 MiB of commit bytes and 256 MiB of archived
+Project and review bytes. Request/commit `/1` through `/5` keep 1024 commits and
+64 MiB. Resume reports `history_budget` for a `/6` head; legacy output is
+unchanged.
+
+Resume uses the head's own profile. Commit validates the parent chain under the
+new request's profile, so a `/6` request may follow a `/5` head whose history
+already exceeds 64 MiB, while a `/5` request cannot carry such a history. Commit
+refuses before writing any file when the new head would exceed its own budget,
+and history budget failures are reported by name. Each commit keeps the complete
+state, so history grows with every commit; this is finite headroom, not
+compaction. Old executables are retained and reject the unknown `/6` schema. No
+CAD capability, scheduling authority or engineering adoption is granted.

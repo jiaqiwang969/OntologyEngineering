@@ -3,7 +3,7 @@
 Edit the annotated design, then run `oev2 design generate` and drift verification.
 
 
-Design version: 2.0.0-rc.8.
+Design version: 2.0.0-rc.9.
 
 Problem: 工程需求、语义模型、Rust 实现与验证缺少统一关系，持续升级可能偏离目标、证据或适用条件.
 

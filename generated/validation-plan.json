@@ -79779,5 +79779,70 @@
     "requirement": "req_delivery",
     "rustPath": "crates/oe-engineering/tests/exploration.rs",
     "scope": "Deterministic macOS software continuation; native tools, physical acceptance and method benefit remain separately verified"
+  },
+  {
+    "behavior": "bounded_explicit_source_growth",
+    "checker": "commit",
+    "checkerModule": "engineering",
+    "checkerPath": "crates/oe-engineering/src/project_workspace/mod.rs",
+    "constraint": "project_workspace_extended_lossless_capacity",
+    "module": "engineering",
+    "name": "workspace_extended_lossless_capacity_boundaries",
+    "oracle": "Native commit/cold resume at 2048 paths succeeds while 2049 fails; legacy profiles retain 256/257 and 1024/1025 boundaries. Actual incompressible payload tests cross 64 MiB and 128 MiB with exact original/archived bytes, downgrade rejection, stale parent and unchanged HEAD on error. New task-view schema independently enforces its path and payload limits and detects drift/missing material.",
+    "requirement": "req_delivery",
+    "rustPath": "crates/oe-engineering/tests/project_workspace.rs",
+    "scope": "Synthetic software resources and native source preservation only; no new CAD qualification or whole-page acceptance"
+  },
+  {
+    "behavior": "bounded_explicit_source_growth",
+    "checker": "commit",
+    "checkerModule": "engineering",
+    "checkerPath": "crates/oe-engineering/src/project_workspace/mod.rs",
+    "constraint": "project_workspace_large_extended_lossless_capacity",
+    "module": "engineering",
+    "name": "workspace_large_extended_lossless_capacity_boundaries",
+    "oracle": "Native commit/cold resume at 4096 paths succeeds while 4097 fails; earlier profiles retain 256/257, 1024/1025 and 2048/2049 boundaries. Actual incompressible payload tests cross 128 MiB and 256 MiB with exact original/archived bytes, downgrade rejection, stale parent and unchanged HEAD on error. New task-view schema independently enforces its path and payload limits and detects drift/missing material.",
+    "requirement": "req_delivery",
+    "rustPath": "crates/oe-engineering/tests/project_workspace.rs",
+    "scope": "Synthetic software resources and native source preservation only; no new CAD qualification or whole-page acceptance"
+  },
+  {
+    "behavior": "bounded_lossless_source_material",
+    "checker": "commit",
+    "checkerModule": "engineering",
+    "checkerPath": "crates/oe-engineering/src/project_workspace/mod.rs",
+    "constraint": "project_workspace_lossless_source_cache",
+    "module": "engineering",
+    "name": "workspace_lossless_source_cache_boundaries",
+    "oracle": "Cold native commit/resume over more than 64 MiB raw sources preserves all material and open obligations; original profiles reject those sources. Incompressible overflow, 16 MiB per-file limit, 1024-path boundary, stale or missing originals, bad archive, conflicting paths, codec damage, stale proposals and mismatched schemas reject. Task-view/4 verifies exact original hashes and refuses downgrade.",
+    "requirement": "req_delivery",
+    "rustPath": "crates/oe-engineering/tests/project_workspace.rs",
+    "scope": "Native source preservation and bounded software resource behavior only; no CAD geometry or manufacturing qualification"
+  },
+  {
+    "behavior": "bounded_explicit_history_growth",
+    "checker": "commit",
+    "checkerModule": "engineering",
+    "checkerPath": "crates/oe-engineering/src/project_workspace/mod.rs",
+    "constraint": "project_workspace_versioned_history_capacity",
+    "module": "engineering",
+    "name": "workspace_versioned_history_capacity_boundaries",
+    "oracle": "A real history over 64 MiB: /5 refuses the next commit before writing and keeps HEAD, /6 commits and cold-resumes with its history budget reported, and a /5 commit on that head is refused. Injected exact budgets pass at the counted bytes and refuse one byte, one archive byte or one commit less; legacy resume output carries no new field.",
+    "requirement": "req_delivery",
+    "rustPath": "crates/oe-engineering/tests/project_workspace.rs",
+    "scope": "Synthetic software resources and native history preservation only; no new CAD qualification or whole-page acceptance"
+  },
+  {
+    "behavior": "explicit_capacity_preserves_continuity",
+    "checker": "commit",
+    "checkerModule": "engineering",
+    "checkerPath": "crates/oe-engineering/src/project_workspace/mod.rs",
+    "constraint": "project_workspace_versioned_source_capacity",
+    "module": "engineering",
+    "name": "workspace_versioned_source_capacity_boundaries",
+    "oracle": "Legacy 256/257 and explicit 1024/1025 path boundaries, byte limits, unknown schemas, downgrade, cold recovery, source drift and interrupted dispatch are checked without deleting history or closing acceptance.",
+    "requirement": "req_delivery",
+    "rustPath": "crates/oe-engineering/tests/project_workspace.rs",
+    "scope": "Synthetic software boundary checks; not CAD or engineering acceptance"
   }
 ]

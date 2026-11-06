@@ -199,6 +199,265 @@ fn frozen_same_project_cases_preserve_original_controls() {
         );
     }
 }
+
+#[test]
+fn versioned_inventory_capacity_keeps_old_boundary_and_rechecks_new_view() {
+    let (_dir, root, mut input, _) = setup("unchanged");
+    let reference = input.sources[0].clone();
+    let raw = std::fs::read(root.path().join(&reference.path)).unwrap();
+    input.sources.clear();
+    for i in 0..1025 {
+        let path = format!("var/case/inventory-{i}.txt");
+        std::fs::write(root.path().join(&path), &raw).unwrap();
+        input.sources.push(ArtifactReference {
+            path,
+            sha256: reference.sha256.clone(),
+        });
+    }
+    let all = input.sources.clone();
+    input.sources.truncate(256);
+    let legacy = derive(&root, &input).unwrap();
+    assert_eq!(legacy.schema, "oev2.current-task-view/1");
+    input.sources.push(all[256].clone());
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_inventory_limit")
+    );
+    input.schema = "oev2.current-task-view-input/3".into();
+    input.sources = all[..1024].to_vec();
+    let view = derive(&root, &input).unwrap();
+    assert_eq!(view.schema, "oev2.current-task-view/3");
+    assert_eq!(view.source_observations.len(), 1024);
+    verify_view(&root, &view).unwrap();
+    let mut downgraded = view.clone();
+    downgraded.schema = "oev2.current-task-view/1".into();
+    assert!(verify_view(&root, &downgraded).is_err());
+    input.sources.push(all[1024].clone());
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_inventory_limit")
+    );
+    std::fs::write(root.path().join(&all[1023].path), b"new bytes").unwrap();
+    assert!(verify_view(&root, &view).is_err());
+}
+
+#[test]
+fn extended_inventory_enforces_path_limit_schema_and_source_freshness() {
+    let (_dir, root, mut input, _) = setup("unchanged");
+    let reference = input.sources[0].clone();
+    let raw = std::fs::read(root.path().join(&reference.path)).unwrap();
+    input.sources.clear();
+    for i in 0..2049 {
+        let path = format!("var/case/extended-{i}.txt");
+        std::fs::write(root.path().join(&path), &raw).unwrap();
+        input.sources.push(ArtifactReference {
+            path,
+            sha256: reference.sha256.clone(),
+        });
+    }
+    input.schema = "oev2.current-task-view-input/5".into();
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_inventory_limit")
+    );
+    input.sources.pop();
+    let view = derive(&root, &input).unwrap();
+    assert_eq!(view.schema, "oev2.current-task-view/5");
+    assert_eq!(view.source_observations.len(), 2048);
+    verify_view(&root, &view).unwrap();
+    input.schema = "oev2.current-task-view-input/4".into();
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_inventory_limit")
+    );
+    let mut mismatched = view.clone();
+    mismatched.schema = "oev2.current-task-view/4".into();
+    assert!(verify_view(&root, &mismatched).is_err());
+    input.schema = "oev2.current-task-view-input/99".into();
+    assert!(derive(&root, &input).is_err());
+    input.schema = "oev2.current-task-view-input/5".into();
+    std::fs::write(root.path().join(&input.sources[2047].path), b"changed").unwrap();
+    assert!(verify_view(&root, &view).is_err());
+    assert!(
+        derive(&root, &input)
+            .unwrap()
+            .source_observations
+            .iter()
+            .any(|x| x.status == "drift")
+    );
+    std::fs::remove_file(root.path().join(&input.sources[2047].path)).unwrap();
+    assert!(
+        derive(&root, &input)
+            .unwrap()
+            .source_observations
+            .iter()
+            .any(|x| x.status == "unavailable")
+    );
+}
+
+#[test]
+fn extended_inventory_charges_incompressible_bytes_and_preserves_legacy_payload_limit() {
+    let (_dir, root, mut input, _) = setup("unchanged");
+    let mut state = 0x4a17b9e3f251c68du64;
+    let raw: Vec<u8> = (0..16 * 1024 * 1024)
+        .map(|_| {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            state as u8
+        })
+        .collect();
+    let project_path = root.path().join(&input.current.path);
+    let mut p = value(&project_path);
+    p["evidence"]["extended-probe"] = json!(oe_core::sha256(&raw));
+    p["evidence"]["extended-extra"] = json!(oe_core::sha256(b"x"));
+    std::fs::write(&project_path, serde_json::to_vec(&p).unwrap()).unwrap();
+    input.current.sha256 = oe_core::sha256(std::fs::read(&project_path).unwrap());
+    // Eight exactly 16 MiB sources reach the 128 MiB payload boundary.
+    input.sources.clear();
+    for i in 0..8 {
+        let path = format!("var/case/extended-payload-{i}.bin");
+        std::fs::write(root.path().join(&path), &raw).unwrap();
+        input.sources.push(ArtifactReference {
+            path,
+            sha256: oe_core::sha256(&raw),
+        });
+    }
+    input.schema = "oev2.current-task-view-input/4".into();
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_byte_limit")
+    );
+    input.schema = "oev2.current-task-view-input/5".into();
+    let view = derive(&root, &input).unwrap();
+    assert_eq!(view.source_observations.len(), 8);
+    assert!(
+        view.source_observations
+            .iter()
+            .all(|x| x.status == "matched")
+    );
+    verify_view(&root, &view).unwrap();
+    // Exactly one additional retained byte must fail.
+    let path = "var/case/extended-payload-extra.bin";
+    std::fs::write(root.path().join(path), b"x").unwrap();
+    input.sources.push(ArtifactReference {
+        path: path.into(),
+        sha256: oe_core::sha256(b"x"),
+    });
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_byte_limit")
+    );
+}
+#[test]
+fn large_extended_inventory_enforces_path_limit_schema_and_source_freshness() {
+    let (_dir, root, mut input, _) = setup("unchanged");
+    let reference = input.sources[0].clone();
+    let raw = std::fs::read(root.path().join(&reference.path)).unwrap();
+    input.sources.clear();
+    for i in 0..4097 {
+        let path = format!("var/case/large-extended-{i}.txt");
+        std::fs::write(root.path().join(&path), &raw).unwrap();
+        input.sources.push(ArtifactReference {
+            path,
+            sha256: reference.sha256.clone(),
+        });
+    }
+    input.schema = "oev2.current-task-view-input/6".into();
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_inventory_limit")
+    );
+    input.sources.pop();
+    let view = derive(&root, &input).unwrap();
+    assert_eq!(view.schema, "oev2.current-task-view/6");
+    assert_eq!(view.source_observations.len(), 4096);
+    verify_view(&root, &view).unwrap();
+    input.schema = "oev2.current-task-view-input/5".into();
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_inventory_limit")
+    );
+    let mut mismatched = view.clone();
+    mismatched.schema = "oev2.current-task-view/5".into();
+    assert!(verify_view(&root, &mismatched).is_err());
+    input.schema = "oev2.current-task-view-input/99".into();
+    assert!(derive(&root, &input).is_err());
+    input.schema = "oev2.current-task-view-input/6".into();
+    std::fs::write(root.path().join(&input.sources[4095].path), b"changed").unwrap();
+    assert!(verify_view(&root, &view).is_err());
+    assert!(
+        derive(&root, &input)
+            .unwrap()
+            .source_observations
+            .iter()
+            .any(|x| x.status == "drift")
+    );
+    std::fs::remove_file(root.path().join(&input.sources[4095].path)).unwrap();
+    assert!(
+        derive(&root, &input)
+            .unwrap()
+            .source_observations
+            .iter()
+            .any(|x| x.status == "unavailable")
+    );
+}
+
+#[test]
+fn large_extended_inventory_charges_incompressible_bytes_and_preserves_payload_limits() {
+    let (_dir, root, mut input, _) = setup("unchanged");
+    let mut state = 0x6c8e9cf570932bd5u64;
+    let raw: Vec<u8> = (0..16 * 1024 * 1024)
+        .map(|_| {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            state as u8
+        })
+        .collect();
+    let project_path = root.path().join(&input.current.path);
+    let mut p = value(&project_path);
+    p["evidence"]["large-extended-probe"] = json!(oe_core::sha256(&raw));
+    p["evidence"]["large-extended-extra"] = json!(oe_core::sha256(b"x"));
+    std::fs::write(&project_path, serde_json::to_vec(&p).unwrap()).unwrap();
+    input.current.sha256 = oe_core::sha256(std::fs::read(&project_path).unwrap());
+    // Sixteen exactly 16 MiB sources reach the 256 MiB payload boundary.
+    input.sources.clear();
+    for i in 0..16 {
+        let path = format!("var/case/large-extended-payload-{i}.bin");
+        std::fs::write(root.path().join(&path), &raw).unwrap();
+        input.sources.push(ArtifactReference {
+            path,
+            sha256: oe_core::sha256(&raw),
+        });
+    }
+    input.schema = "oev2.current-task-view-input/5".into();
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_byte_limit")
+    );
+    input.schema = "oev2.current-task-view-input/6".into();
+    let view = derive(&root, &input).unwrap();
+    assert_eq!(view.source_observations.len(), 16);
+    assert!(
+        view.source_observations
+            .iter()
+            .all(|x| x.status == "matched")
+    );
+    verify_view(&root, &view).unwrap();
+    // Exactly one additional retained byte must fail.
+    let path = "var/case/large-extended-payload-extra.bin";
+    std::fs::write(root.path().join(path), b"x").unwrap();
+    input.sources.push(ArtifactReference {
+        path: path.into(),
+        sha256: oe_core::sha256(b"x"),
+    });
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_byte_limit")
+    );
+}
+
 #[test]
 fn freshness_and_precise_refresh_are_separate() {
     for (name, file, bytes, review) in [
@@ -293,6 +552,63 @@ fn freshness_and_precise_refresh_are_separate() {
             json!({"schema":"independent-current-task-freshness-observation/1","case":name,"prior_reuse":"rejected","view":refreshed})
         );
     }
+}
+
+#[test]
+fn cached_inventory_preserves_all_sources_and_original_schema_limits() {
+    let (_dir, root, mut input, _) = setup("unchanged");
+    let raw = vec![b'R'; 16 * 1024 * 1024];
+    let path = root.path().join("var/case/cache-0.bin");
+    std::fs::write(&path, &raw).unwrap();
+    let reference = reference(&root, &path);
+    let project_path = root.path().join(&input.current.path);
+    let mut p = value(&project_path);
+    p["evidence"]["cache-probe"] = json!(reference.sha256);
+    std::fs::write(&project_path, serde_json::to_vec(&p).unwrap()).unwrap();
+    input.current.sha256 = oe_core::sha256(std::fs::read(&project_path).unwrap());
+    for i in 0..5 {
+        let p = format!("var/case/cache-{i}.bin");
+        std::fs::write(root.path().join(&p), &raw).unwrap();
+        input.sources.push(ArtifactReference {
+            path: p,
+            sha256: reference.sha256.clone(),
+        });
+    }
+    input.schema = "oev2.current-task-view-input/3".into();
+    assert!(
+        format!("{:#}", derive(&root, &input).unwrap_err())
+            .contains("current_task_source_byte_limit")
+    );
+    input.schema = "oev2.current-task-view-input/4".into();
+    let view = derive(&root, &input).unwrap();
+    assert_eq!(view.schema, "oev2.current-task-view/4");
+    assert_eq!(view.source_observations.len(), input.sources.len());
+    assert!(
+        view.source_observations
+            .iter()
+            .all(|x| x.status == "matched")
+    );
+    verify_view(&root, &view).unwrap();
+    let mut mismatch = view.clone();
+    mismatch.schema = "oev2.current-task-view/3".into();
+    assert!(verify_view(&root, &mismatch).is_err());
+    std::fs::write(root.path().join("var/case/cache-4.bin"), b"changed").unwrap();
+    assert!(verify_view(&root, &view).is_err());
+    let drift = derive(&root, &input).unwrap();
+    assert!(
+        drift
+            .source_observations
+            .iter()
+            .any(|x| x.status == "drift")
+    );
+    std::fs::remove_file(root.path().join("var/case/cache-4.bin")).unwrap();
+    let missing = derive(&root, &input).unwrap();
+    assert!(
+        missing
+            .source_observations
+            .iter()
+            .any(|x| x.status == "unavailable")
+    );
 }
 #[test]
 #[ignore = "requires explicitly bound current169 originals; never historical V262 as current"]

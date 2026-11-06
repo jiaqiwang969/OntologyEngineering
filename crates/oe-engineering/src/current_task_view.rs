@@ -16,6 +16,14 @@ use std::{
 
 const SCHEMA: &str = "oev2.current-task-view/1";
 const INPUT_SCHEMA: &str = "oev2.current-task-view-input/1";
+const LARGE_INPUT_SCHEMA: &str = "oev2.current-task-view-input/3";
+const LARGE_SCHEMA: &str = "oev2.current-task-view/3";
+const CACHED_INPUT_SCHEMA: &str = "oev2.current-task-view-input/4";
+const CACHED_SCHEMA: &str = "oev2.current-task-view/4";
+const EXTENDED_INPUT_SCHEMA: &str = "oev2.current-task-view-input/5";
+const EXTENDED_SCHEMA: &str = "oev2.current-task-view/5";
+const LARGE_EXTENDED_INPUT_SCHEMA: &str = "oev2.current-task-view-input/6";
+const LARGE_EXTENDED_SCHEMA: &str = "oev2.current-task-view/6";
 
 pub mod method_use;
 
@@ -101,10 +109,14 @@ fn observations(
     current: &Project,
     previous: Option<&Project>,
     refs: &[ArtifactReference],
+    limit: usize,
+    payload_limit: Option<usize>,
+    cached: bool,
 ) -> Result<Vec<CurrentTaskSourceObservation>> {
-    ensure!(refs.len() <= 256, "current_task_source_inventory_limit");
+    ensure!(refs.len() <= limit, "current_task_source_inventory_limit");
     let mut paths = BTreeSet::new();
     let mut result = Vec::new();
+    let mut total = 0usize;
     for reference in refs {
         reference
             .validate()
@@ -135,6 +147,18 @@ fn observations(
             );
             oe_core::read_regular_bytes(&path, oe_kernel::MAX_BYTES)
         })();
+        if let Some(payload_limit) = payload_limit {
+            if let Ok(bytes) = &attempt {
+                total = total
+                    .checked_add(if cached {
+                        crate::source_cache::Material::encode(bytes, true)?.retained_len()
+                    } else {
+                        bytes.len()
+                    })
+                    .context("current_task_source_byte_overflow")?;
+                ensure!(total <= payload_limit, "current_task_source_byte_limit");
+            }
+        }
         let (actual_sha256, status, reason) = match attempt {
             Ok(bytes) => {
                 let actual = sha256(bytes);
@@ -186,7 +210,37 @@ pub fn derive(root: &SkillRoot, input: &CurrentTaskViewInput) -> Result<CurrentT
     input
         .validate()
         .map_err(|_| anyhow::anyhow!("current_task_input_invalid"))?;
-    ensure!(input.schema == INPUT_SCHEMA, "current_task_input_schema");
+    ensure!(
+        matches!(
+            input.schema.as_str(),
+            INPUT_SCHEMA
+                | LARGE_INPUT_SCHEMA
+                | CACHED_INPUT_SCHEMA
+                | EXTENDED_INPUT_SCHEMA
+                | LARGE_EXTENDED_INPUT_SCHEMA
+        ),
+        "current_task_input_schema"
+    );
+    let large_extended = input.schema == LARGE_EXTENDED_INPUT_SCHEMA;
+    let extended = input.schema == EXTENDED_INPUT_SCHEMA;
+    let cached = input.schema == CACHED_INPUT_SCHEMA || extended || large_extended;
+    let large = input.schema == LARGE_INPUT_SCHEMA || cached;
+    let inventory_limit = if large_extended {
+        crate::source_cache::LARGE_EXTENDED_PATH_LIMIT
+    } else if extended {
+        crate::source_cache::EXTENDED_PATH_LIMIT
+    } else if large {
+        1024
+    } else {
+        256
+    };
+    let payload_limit = large.then_some(if large_extended {
+        crate::source_cache::LARGE_EXTENDED_CACHE_LIMIT
+    } else if extended {
+        crate::source_cache::EXTENDED_CACHE_LIMIT
+    } else {
+        crate::source_cache::CACHE_LIMIT
+    });
     let (current, current_raw) = load_project(root, &input.current)?;
     let previous = if let Some(reference) = &input.previous {
         Some(load_project(root, reference)?)
@@ -214,7 +268,15 @@ pub fn derive(root: &SkillRoot, input: &CurrentTaskViewInput) -> Result<CurrentT
     } else {
         None
     };
-    let source_observations = observations(root, &current, prior, &input.sources)?;
+    let source_observations = observations(
+        root,
+        &current,
+        prior,
+        &input.sources,
+        inventory_limit,
+        payload_limit,
+        cached,
+    )?;
     let reconciliation = project::reconcile(prior.unwrap_or(&current), &current)?;
     let mut affected = ids(&reconciliation["affected"])?;
     let mut affected_decision_ids: BTreeSet<String> = reconciliation["decisions"]
@@ -479,7 +541,7 @@ pub fn derive(root: &SkillRoot, input: &CurrentTaskViewInput) -> Result<CurrentT
             ))
     });
     let view=CurrentTaskView {
-        schema:SCHEMA.into(),input:input.clone(),input_sha256:sha256(canonical_json(&serde_json::to_value(input)?)?),
+        schema:if large_extended { LARGE_EXTENDED_SCHEMA } else if extended { EXTENDED_SCHEMA } else if cached { CACHED_SCHEMA } else if large { LARGE_SCHEMA } else { SCHEMA }.into(),input:input.clone(),input_sha256:sha256(canonical_json(&serde_json::to_value(input)?)?),
         project_id:current.project_id.clone(),project_revision:current.revision.clone(),project_raw_sha256:sha256(&current_raw),project_value_sha256:sha256(canonical_json(&serde_json::to_value(&current)?)?),
         requirements,necessary_functions,physical_mechanisms,objects:current.objects.clone(),conditions,changes,decisions,gaps,checks,source_observations,affected:affected.into_iter().collect(),
         unsupported:vec!["Project/1 has no task schedule, approval, execution timestamp or complete formal review history; every proposed action is candidate/unscheduled".into(),"Plain condition text is preserved as source data; no automatic extraction of authoritative new engineering facts or requirements; requirements shown are current purpose and explicitly bound WorkInput acceptance".into(),"Unsupplied source bodies, formal review coverage, physical evidence, cost and full engineering adoption remain unknown; a supported Project declaration is not fresh acceptance".into()],
@@ -504,7 +566,15 @@ pub fn derive(root: &SkillRoot, input: &CurrentTaskViewInput) -> Result<CurrentT
         );
     }
     ensure!(
-        observations(root, &current, prior, &input.sources)? == view.source_observations,
+        observations(
+            root,
+            &current,
+            prior,
+            &input.sources,
+            inventory_limit,
+            payload_limit,
+            cached
+        )? == view.source_observations,
         "current_task_source_changed_during_projection"
     );
     Ok(view)
@@ -514,7 +584,13 @@ pub fn derive(root: &SkillRoot, input: &CurrentTaskViewInput) -> Result<CurrentT
 pub fn verify_view(root: &SkillRoot, view: &CurrentTaskView) -> Result<()> {
     view.validate()
         .map_err(|_| anyhow::anyhow!("current_task_view_invalid"))?;
-    ensure!(view.schema == SCHEMA, "current_task_view_schema");
+    ensure!(
+        matches!(
+            view.schema.as_str(),
+            SCHEMA | LARGE_SCHEMA | CACHED_SCHEMA | EXTENDED_SCHEMA | LARGE_EXTENDED_SCHEMA
+        ),
+        "current_task_view_schema"
+    );
     ensure!(
         view.source_observations
             .iter()

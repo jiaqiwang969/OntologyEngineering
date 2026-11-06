@@ -22,23 +22,63 @@ use std::{
 };
 
 const FILE_LIMIT: usize = 16 * 1024 * 1024;
-const TOTAL_LIMIT: usize = 64 * 1024 * 1024;
-const HISTORY_LIMIT: usize = 1024;
+/// Request/commit /1 through /5: 1024 commits and 64 MiB.
+pub(crate) const LEGACY_HISTORY_BYTES: usize = 64 * 1024 * 1024;
+/// Explicit request/commit /6: 1024 commits and 256 MiB.
+pub(crate) const LARGE_HISTORY_BYTES: usize = 256 * 1024 * 1024;
+pub(crate) const HISTORY_LIMIT: usize = 1024;
 type ReviewCoverage = (BTreeSet<String>, BTreeSet<String>);
+
+/// Budget of one complete history read: commit files counted from the head
+/// itself and the archived Project and review bytes they bind. Older profiles
+/// never inherit a larger budget.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct HistoryBudget {
+    pub commits: usize,
+    pub commit_bytes: usize,
+    pub archive_bytes: usize,
+}
+
+/// What one complete history read used.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct HistoryUse {
+    pub commits: usize,
+    pub commit_bytes: usize,
+    pub archive_bytes: usize,
+}
+
+pub(crate) fn history_budget(schema: &str) -> Result<HistoryBudget> {
+    let bytes = match schema {
+        "oev2.workspace-commit-request/1"
+        | "oev2.workspace-commit-request/2"
+        | "oev2.workspace-commit-request/3"
+        | "oev2.workspace-commit-request/4"
+        | "oev2.workspace-commit-request/5" => LEGACY_HISTORY_BYTES,
+        "oev2.workspace-commit-request/6" => LARGE_HISTORY_BYTES,
+        _ => bail!("workspace_request_schema"),
+    };
+    Ok(HistoryBudget {
+        commits: HISTORY_LIMIT,
+        commit_bytes: bytes,
+        archive_bytes: bytes,
+    })
+}
 
 struct Archive<'a> {
     root: &'a SkillRoot,
     bytes: BTreeMap<String, Vec<u8>>,
     reviews: BTreeMap<(String, String), ReviewCoverage>,
     total: usize,
+    limit: usize,
 }
 impl<'a> Archive<'a> {
-    fn new(root: &'a SkillRoot) -> Self {
+    fn new(root: &'a SkillRoot, limit: usize) -> Self {
         Self {
             root,
             bytes: BTreeMap::new(),
             reviews: BTreeMap::new(),
             total: 0,
+            limit,
         }
     }
     fn read(&mut self, reference: &ArtifactReference) -> Result<Vec<u8>> {
@@ -61,10 +101,7 @@ impl<'a> Archive<'a> {
             .total
             .checked_add(raw.len())
             .context("workspace_history_archive_overflow")?;
-        ensure!(
-            self.total <= TOTAL_LIMIT,
-            "workspace_history_archive_budget"
-        );
+        ensure!(self.total <= self.limit, "workspace_history_archive_budget");
         self.bytes.insert(reference.sha256.clone(), raw.clone());
         Ok(raw)
     }
@@ -407,7 +444,11 @@ fn resolution(
     Ok(coverage)
 }
 
-pub fn validate_pending(root: &SkillRoot, head: &WorkspaceHead) -> Result<()> {
+pub(crate) fn validate_pending(
+    root: &SkillRoot,
+    head: &WorkspaceHead,
+    budget: HistoryBudget,
+) -> Result<HistoryUse> {
     let mut next = Some(head.commit.clone());
     let mut expected_sequence = head.sequence;
     let mut chain = Vec::new();
@@ -416,14 +457,17 @@ pub fn validate_pending(root: &SkillRoot, head: &WorkspaceHead) -> Result<()> {
     let mut total = 0usize;
     while let Some(reference) = next {
         ensure!(
-            chain.len() < HISTORY_LIMIT && seen.insert(reference.sha256.clone()),
+            chain.len() < budget.commits && seen.insert(reference.sha256.clone()),
             "workspace_history_chain_budget_or_cycle"
         );
         let raw = crate::artifacts::read(root, &reference)?;
         total = total
             .checked_add(raw.len())
             .context("workspace_history_byte_overflow")?;
-        ensure!(total <= TOTAL_LIMIT, "workspace_history_byte_budget");
+        ensure!(
+            total <= budget.commit_bytes,
+            "workspace_history_byte_budget"
+        );
         let commit: WorkspaceCommit = serde_json::from_value(oe_core::json::strict_json(&raw)?)?;
         commit
             .validate()
@@ -448,7 +492,7 @@ pub fn validate_pending(root: &SkillRoot, head: &WorkspaceHead) -> Result<()> {
         references.push(reference);
         chain.push(commit);
     }
-    let mut archive = Archive::new(root);
+    let mut archive = Archive::new(root, budget.archive_bytes);
     let mut previous: Option<Project> = None;
     let mut pending = BTreeSet::new();
     for commit in chain.iter().rev() {
@@ -495,8 +539,13 @@ pub fn validate_pending(root: &SkillRoot, head: &WorkspaceHead) -> Result<()> {
         previous = Some(current);
     }
     archive.recheck()?;
+    let used = HistoryUse {
+        commits: references.len(),
+        commit_bytes: total,
+        archive_bytes: archive.total,
+    };
     for reference in references {
         crate::artifacts::read(root, &reference)?;
     }
-    Ok(())
+    Ok(used)
 }

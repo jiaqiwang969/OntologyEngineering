@@ -5101,7 +5101,15 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("CurrentTaskView", "model_execution", "not_run"),
     ("CurrentTaskView", "project_update", "none"),
     ("CurrentTaskView", "schema", "oev2.current-task-view/1"),
+    ("CurrentTaskView", "schema", "oev2.current-task-view/3"),
+    ("CurrentTaskView", "schema", "oev2.current-task-view/4"),
+    ("CurrentTaskView", "schema", "oev2.current-task-view/5"),
+    ("CurrentTaskView", "schema", "oev2.current-task-view/6"),
     ("CurrentTaskViewInput", "schema", "oev2.current-task-view-input/1"),
+    ("CurrentTaskViewInput", "schema", "oev2.current-task-view-input/3"),
+    ("CurrentTaskViewInput", "schema", "oev2.current-task-view-input/4"),
+    ("CurrentTaskViewInput", "schema", "oev2.current-task-view-input/5"),
+    ("CurrentTaskViewInput", "schema", "oev2.current-task-view-input/6"),
     ("DecisionUpdate", "conclusion", "refuted"),
     ("DecisionUpdate", "conclusion", "supported"),
     ("DecisionUpdate", "conclusion", "unknown"),
@@ -6284,7 +6292,17 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("WorkspaceCausalClaim", "level", "mechanism"),
     ("WorkspaceCausalClaim", "level", "sequence"),
     ("WorkspaceCommit", "schema", "oev2.workspace-commit/1"),
+    ("WorkspaceCommit", "schema", "oev2.workspace-commit/2"),
+    ("WorkspaceCommit", "schema", "oev2.workspace-commit/3"),
+    ("WorkspaceCommit", "schema", "oev2.workspace-commit/4"),
+    ("WorkspaceCommit", "schema", "oev2.workspace-commit/5"),
+    ("WorkspaceCommit", "schema", "oev2.workspace-commit/6"),
     ("WorkspaceCommitRequest", "schema", "oev2.workspace-commit-request/1"),
+    ("WorkspaceCommitRequest", "schema", "oev2.workspace-commit-request/2"),
+    ("WorkspaceCommitRequest", "schema", "oev2.workspace-commit-request/3"),
+    ("WorkspaceCommitRequest", "schema", "oev2.workspace-commit-request/4"),
+    ("WorkspaceCommitRequest", "schema", "oev2.workspace-commit-request/5"),
+    ("WorkspaceCommitRequest", "schema", "oev2.workspace-commit-request/6"),
     ("WorkspaceCorrectionObligation", "status", "acknowledged"),
     ("WorkspaceCorrectionObligation", "status", "deferred"),
     ("WorkspaceCorrectionObligation", "status", "pending_review"),
@@ -16079,12 +16097,12 @@ impl CurrentTaskView {
         if !["not_established",].contains(&self.engineering_adoption.as_str()) { failures.push("CurrentTaskView.engineering_adoption:status".into()); }
         if !["not_run",].contains(&self.model_execution.as_str()) { failures.push("CurrentTaskView.model_execution:status".into()); }
         if !["none",].contains(&self.project_update.as_str()) { failures.push("CurrentTaskView.project_update:status".into()); }
-        if !["oev2.current-task-view/1",].contains(&self.schema.as_str()) { failures.push("CurrentTaskView.schema:allowed_values".into()); }
+        if !["oev2.current-task-view/1","oev2.current-task-view/3","oev2.current-task-view/4","oev2.current-task-view/5","oev2.current-task-view/6",].contains(&self.schema.as_str()) { failures.push("CurrentTaskView.schema:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
 
-/// Read-only existing Project derived task view: CurrentTaskViewInput
+/// Read-only existing Project derived task view; /1 retains 256 inventory paths; /3 supports 1024 paths with 64 MiB raw aggregate. Explicit /4 uses 1024 paths, 16 MiB raw per source and 64 MiB lossless cache-payload accounting (zlib only when smaller), reads every original source and checks each raw digest. Logical bytes for /4 bounded by 1024 times 16 MiB. Explicit /5 uses 2048 paths and 128 MiB lossless payload with unchanged 16 MiB original limit (maximum 32 GiB logical). Explicit /6 uses 4096 paths and 256 MiB lossless payload with unchanged 16 MiB original limit (maximum 64 GiB logical). No whole-process memory guarantee. /2 remains the separate method-use envelope; old profiles keep original bounds.
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct CurrentTaskViewInput {
@@ -16111,7 +16129,7 @@ impl CurrentTaskViewInput {
         if let Some(value) = &self.work { if let Err(errors) = value.validate() { failures.extend(errors); } }
 
 
-        if !["oev2.current-task-view-input/1",].contains(&self.schema.as_str()) { failures.push("CurrentTaskViewInput.schema:allowed_values".into()); }
+        if !["oev2.current-task-view-input/1","oev2.current-task-view-input/3","oev2.current-task-view-input/4","oev2.current-task-view-input/5","oev2.current-task-view-input/6",].contains(&self.schema.as_str()) { failures.push("CurrentTaskViewInput.schema:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -27598,7 +27616,7 @@ impl WorkspaceCausalClaim {
     }
 }
 
-/// Immutable commit records one complete proposed state and its sequence
+/// Immutable commit records one complete proposed state and its sequence; envelope /1 requires request /1, /2 requires /2, and /3 requires /3; historical schemas retain original raw-source capacity. Cached /3 is explicit and never rewrites persistent artifacts or history
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct WorkspaceCommit {
@@ -27617,12 +27635,12 @@ impl WorkspaceCommit {
         let mut failures = Vec::new();
         if self.schema.trim().is_empty() { failures.push("WorkspaceCommit.schema:required".into()); }
 
-        if !["oev2.workspace-commit/1",].contains(&self.schema.as_str()) { failures.push("WorkspaceCommit.schema:allowed_values".into()); }
+        if !["oev2.workspace-commit/1","oev2.workspace-commit/2","oev2.workspace-commit/3","oev2.workspace-commit/4","oev2.workspace-commit/5","oev2.workspace-commit/6",].contains(&self.schema.as_str()) { failures.push("WorkspaceCommit.schema:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
 
-/// Complete proposed state with explicit parent; does not overwrite Project facts
+/// Complete proposed state with explicit parent; /1 permits 256 checked paths and /2 permits 1024, both with 16 MiB per source and 64 MiB raw aggregate. Explicit /3 retains 1024 paths and 16 MiB per source, charges a 64 MiB lossless operation-cache payload instead of raw aggregate, and preserves all original bytes, hashes and historical obligations. Logical source bytes for /3 are bounded by 1024 times 16 MiB. Explicit /4 uses 2048 paths and 128 MiB retained payload, with the same 16 MiB per file and exact original identities (maximum 32 GiB logical). Explicit /5 uses 4096 paths and 256 MiB retained payload, with the same 16 MiB per file and exact original identities (maximum 64 GiB logical). No profile is a total process memory guarantee. Explicit /6 keeps the /5 source profile and bounds the complete history read from the head on every resume and commit by 1024 commits, 256 MiB of commit bytes and 256 MiB of archived Project/review bytes; /1 through /5 keep 1024 commits and 64 MiB. A commit is refused before writing when its own head would exceed its profile history budget.
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct WorkspaceCommitRequest {
@@ -27665,7 +27683,7 @@ impl WorkspaceCommitRequest {
         if self.schema.trim().is_empty() { failures.push("WorkspaceCommitRequest.schema:required".into()); }
         if self.workspace_id.trim().is_empty() { failures.push("WorkspaceCommitRequest.workspace_id:required".into()); }
 
-        if !["oev2.workspace-commit-request/1",].contains(&self.schema.as_str()) { failures.push("WorkspaceCommitRequest.schema:allowed_values".into()); }
+        if !["oev2.workspace-commit-request/1","oev2.workspace-commit-request/2","oev2.workspace-commit-request/3","oev2.workspace-commit-request/4","oev2.workspace-commit-request/5","oev2.workspace-commit-request/6",].contains(&self.schema.as_str()) { failures.push("WorkspaceCommitRequest.schema:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

@@ -4,6 +4,7 @@ mod history;
 pub mod receipts;
 pub mod semantics;
 
+use crate::source_cache::Material;
 use crate::{artifacts, current_task_view, harness, reviewed_reconciliation};
 use anyhow::{bail, ensure, Context, Result};
 use oe_contracts::{
@@ -14,14 +15,16 @@ use oe_core::{
     read_regular_bytes, sha256, write_new, write_new_bytes, AdvisoryFileLock, SkillRoot,
 };
 use oe_kernel::project::{self, route, Project};
+use semantics::SourceMaterial;
 use serde_json::{json, Value};
+use std::borrow::Cow;
 use std::{
     collections::{BTreeMap, BTreeSet},
     path::Path,
 };
 
-const LIMIT: usize = 16 * 1024 * 1024;
-const TOTAL_LIMIT: usize = 64 * 1024 * 1024;
+const LIMIT: usize = crate::source_cache::FILE_LIMIT;
+const TOTAL_LIMIT: usize = crate::source_cache::CACHE_LIMIT;
 
 fn dto<T>(r: std::result::Result<T, Vec<String>>) -> Result<T> {
     r.map_err(|e| anyhow::anyhow!("workspace_contract: {}", e.join(",")))
@@ -94,10 +97,17 @@ fn head(root: &SkillRoot, m: &WorkspaceManifest) -> Result<Option<WorkspaceHead>
     );
     Ok(Some(h))
 }
-fn load_commit(root: &SkillRoot, h: &WorkspaceHead) -> Result<WorkspaceCommit> {
+/// Load a commit and validate its complete history, under the given budget or
+/// else the head's own request profile.
+fn load_commit_within(
+    root: &SkillRoot,
+    h: &WorkspaceHead,
+    budget: Option<history::HistoryBudget>,
+) -> Result<(WorkspaceCommit, history::HistoryUse)> {
     let c: WorkspaceCommit = serde_json::from_value(artifacts::json(root, &h.commit)?)?;
     dto(c.validate())?;
     dto(c.proposal.validate())?;
+    check_commit_schema(&c)?;
     ensure!(
         c.sequence == h.sequence && c.proposal.workspace_id == h.workspace_id,
         "workspace_commit_identity"
@@ -106,15 +116,19 @@ fn load_commit(root: &SkillRoot, h: &WorkspaceHead) -> Result<WorkspaceCommit> {
         h.commit.path == format!("commits/{}/commit.json", c.proposal.commit_id),
         "workspace_commit_location"
     );
+    let budget = match budget {
+        Some(budget) => budget,
+        None => history::history_budget(&c.proposal.schema)?,
+    };
     let mut cursor = c.clone();
     let mut seen = BTreeSet::from([h.commit.sha256.clone()]);
     let mut total = 0usize;
-    for _ in 0..1024 {
+    for _ in 0..history::HISTORY_LIMIT {
         match &cursor.proposal.expected_parent {
             None => {
                 ensure!(cursor.sequence == 1, "workspace_parent_sequence");
-                history::validate_pending(root, h)?;
-                return Ok(c);
+                let used = history::validate_pending(root, h, budget)?;
+                return Ok((c, used));
             }
             Some(parent) => {
                 ensure!(seen.insert(parent.sha256.clone()), "workspace_parent_cycle");
@@ -122,10 +136,12 @@ fn load_commit(root: &SkillRoot, h: &WorkspaceHead) -> Result<WorkspaceCommit> {
                 total = total
                     .checked_add(raw.len())
                     .context("workspace_history_byte_overflow")?;
-                ensure!(total <= TOTAL_LIMIT, "workspace_history_byte_limit");
+                ensure!(total <= budget.commit_bytes, "workspace_history_byte_limit");
                 let before: WorkspaceCommit =
                     serde_json::from_value(oe_core::json::strict_json(&raw)?)?;
                 dto(before.validate())?;
+                dto(before.proposal.validate())?;
+                check_commit_schema(&before)?;
                 ensure!(
                     before.sequence.checked_add(1) == Some(cursor.sequence)
                         && before.proposal.workspace_id == h.workspace_id
@@ -148,66 +164,147 @@ fn archived(root: &SkillRoot, r: &ArtifactReference) -> Result<Vec<u8>> {
     Ok(bytes)
 }
 
+/// Explicit resource profiles; older requests never inherit the larger budget.
+fn source_limit(schema: &str) -> Result<usize> {
+    match schema {
+        "oev2.workspace-commit-request/1" => Ok(256),
+        "oev2.workspace-commit-request/2" => Ok(1024),
+        "oev2.workspace-commit-request/3" => Ok(1024),
+        "oev2.workspace-commit-request/4" => Ok(crate::source_cache::EXTENDED_PATH_LIMIT),
+        "oev2.workspace-commit-request/5" => Ok(crate::source_cache::LARGE_EXTENDED_PATH_LIMIT),
+        "oev2.workspace-commit-request/6" => Ok(crate::source_cache::LARGE_EXTENDED_PATH_LIMIT),
+        _ => bail!("workspace_request_schema"),
+    }
+}
+fn commit_schema(schema: &str) -> Result<&'static str> {
+    match schema {
+        "oev2.workspace-commit-request/1" => Ok("oev2.workspace-commit/1"),
+        "oev2.workspace-commit-request/2" => Ok("oev2.workspace-commit/2"),
+        "oev2.workspace-commit-request/3" => Ok("oev2.workspace-commit/3"),
+        "oev2.workspace-commit-request/4" => Ok("oev2.workspace-commit/4"),
+        "oev2.workspace-commit-request/5" => Ok("oev2.workspace-commit/5"),
+        "oev2.workspace-commit-request/6" => Ok("oev2.workspace-commit/6"),
+        _ => bail!("workspace_request_schema"),
+    }
+}
+fn check_commit_schema(commit: &WorkspaceCommit) -> Result<()> {
+    ensure!(
+        commit.schema == commit_schema(&commit.proposal.schema)?,
+        "workspace_commit_schema_mismatch"
+    );
+    Ok(())
+}
+
 struct Checked {
-    bytes: BTreeMap<String, Vec<u8>>,
+    bytes: BTreeMap<String, Material>,
     refs: BTreeMap<String, ArtifactReference>,
     total: usize,
     stage_reasoning: Option<Value>,
+    retained: usize,
+    compress: bool,
+    source_limit: usize,
+    payload_limit: usize,
 }
 impl Checked {
-    fn new() -> Self {
-        Self {
+    fn for_request(q: &WorkspaceCommitRequest) -> Result<Self> {
+        Ok(Self {
             bytes: BTreeMap::new(),
             refs: BTreeMap::new(),
             total: 0,
             stage_reasoning: None,
-        }
+            retained: 0,
+            compress: matches!(
+                q.schema.as_str(),
+                "oev2.workspace-commit-request/3"
+                    | "oev2.workspace-commit-request/4"
+                    | "oev2.workspace-commit-request/5"
+                    | "oev2.workspace-commit-request/6"
+            ),
+            payload_limit: match q.schema.as_str() {
+                "oev2.workspace-commit-request/5" | "oev2.workspace-commit-request/6" => {
+                    crate::source_cache::LARGE_EXTENDED_CACHE_LIMIT
+                }
+                "oev2.workspace-commit-request/4" => crate::source_cache::EXTENDED_CACHE_LIMIT,
+                _ => TOTAL_LIMIT,
+            },
+            source_limit: source_limit(&q.schema)?,
+        })
     }
     fn read(&mut self, root: &SkillRoot, r: &ArtifactReference) -> Result<Vec<u8>> {
         if let Some(existing) = self.refs.get(&r.path) {
             ensure!(existing == r, "workspace_conflicting_reference");
-            return Ok(self.bytes[&r.path].clone());
+            return Ok(self.source_bytes(r)?.into_owned());
         }
-        ensure!(self.refs.len() < 256, "workspace_source_count_limit");
+        ensure!(
+            self.refs.len() < self.source_limit,
+            "workspace_source_count_limit"
+        );
         let raw = artifacts::read(root, r)?;
         self.total = self
             .total
             .checked_add(raw.len())
             .context("workspace_byte_overflow")?;
-        ensure!(self.total <= TOTAL_LIMIT, "workspace_source_byte_limit");
+        let material = Material::encode(&raw, self.compress)?;
+        self.retained = self
+            .retained
+            .checked_add(material.retained_len())
+            .context("workspace_byte_overflow")?;
+        ensure!(
+            self.retained <= self.payload_limit,
+            "workspace_source_byte_limit"
+        );
         self.refs.insert(r.path.clone(), r.clone());
-        self.bytes.insert(r.path.clone(), raw.clone());
+        self.bytes.insert(r.path.clone(), material);
         Ok(raw)
     }
     fn json(&mut self, root: &SkillRoot, r: &ArtifactReference) -> Result<Value> {
         Ok(oe_core::json::strict_json(&self.read(root, r)?)?)
     }
     fn recheck(&self, root: &SkillRoot) -> Result<()> {
-        for (path, r) in &self.refs {
+        for r in self.refs.values() {
             ensure!(
-                artifacts::read(root, r)? == self.bytes[path],
+                artifacts::read(root, r)? == self.source_bytes(r)?.as_ref(),
                 "workspace_source_changed_during_operation"
             );
         }
         Ok(())
     }
     fn archive(&self, root: &SkillRoot) -> Result<()> {
-        for (path, r) in &self.refs {
+        for r in self.refs.values() {
+            let raw = self.source_bytes(r)?;
             let dest = root.private_path(Path::new(&format!("artifacts/{}", r.sha256)))?;
             if dest.try_exists()? {
                 ensure!(
-                    read_regular_bytes(&dest, LIMIT)? == self.bytes[path],
+                    read_regular_bytes(&dest, LIMIT)? == raw.as_ref(),
                     "workspace_archive_changed"
                 );
-            } else if let Err(error) = write_new_bytes(&dest, &self.bytes[path]) {
+            } else if let Err(error) = write_new_bytes(&dest, raw.as_ref()) {
                 // Another writer may have installed the identical content.
                 ensure!(
-                    read_regular_bytes(&dest, LIMIT).is_ok_and(|bytes| bytes == self.bytes[path]),
+                    read_regular_bytes(&dest, LIMIT).is_ok_and(|bytes| bytes == raw.as_ref()),
                     "workspace_archive_write: {error}"
                 );
             }
         }
         Ok(())
+    }
+}
+impl SourceMaterial for Checked {
+    fn source_bytes(&self, reference: &ArtifactReference) -> Result<Cow<'_, [u8]>> {
+        ensure!(
+            self.refs.get(&reference.path) == Some(reference),
+            "workspace_conflicting_reference"
+        );
+        let raw = self
+            .bytes
+            .get(&reference.path)
+            .context("workspace_source_material_missing")?
+            .decode()?;
+        ensure!(
+            sha256(raw.as_ref()) == reference.sha256,
+            "workspace_source_material_changed"
+        );
+        Ok(raw)
     }
 }
 fn route_report(
@@ -308,7 +405,7 @@ fn semantic_inputs(
         &q.requests,
         &q.corrections,
         &q.causal_claims,
-        &checked.bytes,
+        checked,
         &reviews,
     )?;
     for resolution in &q.reviews {
@@ -589,15 +686,28 @@ fn transition(
 }
 
 pub fn commit(root: &SkillRoot, q: &WorkspaceCommitRequest) -> Result<Value> {
+    commit_within(root, q, None)
+}
+fn commit_within(
+    root: &SkillRoot,
+    q: &WorkspaceCommitRequest,
+    budget: Option<history::HistoryBudget>,
+) -> Result<Value> {
     let m = manifest(root)?;
     ensure!(
         q.workspace_id == m.workspace_id,
         "workspace_identity_mismatch"
     );
     let initial_head = head(root, &m)?;
-    let old = if let Some(parent) = &q.expected_parent {
+    // The new request's profile bounds the complete history it carries, the
+    // parent chain included; a smaller profile cannot carry a larger history.
+    let budget = match budget {
+        Some(budget) => budget,
+        None => history::history_budget(&q.schema)?,
+    };
+    let (old, carried) = if let Some(parent) = &q.expected_parent {
         let raw: WorkspaceCommit = serde_json::from_value(artifacts::json(root, parent)?)?;
-        Some(load_commit(
+        let (old, used) = load_commit_within(
             root,
             &WorkspaceHead {
                 schema: "oev2.workspace-head/1".into(),
@@ -605,11 +715,13 @@ pub fn commit(root: &SkillRoot, q: &WorkspaceCommitRequest) -> Result<Value> {
                 sequence: raw.sequence,
                 commit: parent.clone(),
             },
-        )?)
+            Some(budget),
+        )?;
+        (Some(old), used.commit_bytes)
     } else {
-        None
+        (None, 0)
     };
-    let mut checked = Checked::new();
+    let mut checked = Checked::for_request(q)?;
     let (p, a, route, reviews) = semantic_inputs(root, q, &mut checked)?;
     ensure!(
         p.project_id == m.project_id,
@@ -694,17 +806,31 @@ pub fn commit(root: &SkillRoot, q: &WorkspaceCommitRequest) -> Result<Value> {
             .checked_add(1)
             .context("workspace_sequence_overflow")
     })?;
-    // Keep a complete candidate on conflict. It never becomes current merely
-    // because its files exist or its JSON says committed.
-    let folder = root.new_private_dir(Path::new(&format!("commits/{}", q.commit_id)))?;
     let c = WorkspaceCommit {
-        schema: "oev2.workspace-commit/1".into(),
+        schema: commit_schema(&q.schema)?.into(),
         sequence: next_sequence,
         proposal: q.clone(),
         pending_decisions: pending.into_iter().collect(),
     };
+    // The next read counts this commit too: refuse before writing anything when
+    // the new head could not be read back within its own profile.
+    let commit_value = json!(c);
+    let commit_bytes = serde_json::to_vec_pretty(&commit_value)?.len() + 1;
+    ensure!(
+        usize::try_from(next_sequence).is_ok_and(|n| n <= budget.commits),
+        "workspace_history_chain_budget_or_cycle"
+    );
+    ensure!(
+        carried
+            .checked_add(commit_bytes)
+            .is_some_and(|total| total <= budget.commit_bytes),
+        "workspace_history_byte_budget"
+    );
+    // Keep a complete candidate on conflict. It never becomes current merely
+    // because its files exist or its JSON says committed.
+    let folder = root.new_private_dir(Path::new(&format!("commits/{}", q.commit_id)))?;
     checked.archive(root)?;
-    write_new(&folder.join("commit.json"), &json!(c))?;
+    write_new(&folder.join("commit.json"), &commit_value)?;
     let commit_ref = artifacts::reference(root, &folder.join("commit.json"))?;
     let lock = match AdvisoryFileLock::acquire(
         &root.private_path(Path::new("workspace.lock"))?,
@@ -756,15 +882,24 @@ pub fn resume(root: &SkillRoot) -> Result<Value> {
     let m = manifest(root)?;
     let _lock = AdvisoryFileLock::acquire(&root.private_path(Path::new("workspace.lock"))?, false)?;
     let h = head(root, &m)?.context("workspace_no_committed_state")?;
-    let c = load_commit(root, &h)?;
-    let mut checked = Checked::new();
+    let (c, history_use) = load_commit_within(root, &h, None)?;
+    let mut checked = Checked::for_request(&c.proposal)?;
     let (p, a, route, _) = semantic_inputs(root, &c.proposal, &mut checked)?;
     ensure!(
         p.project_id == m.project_id,
         "workspace_project_identity_mismatch"
     );
     let input = CurrentTaskViewInput {
-        schema: "oev2.current-task-view-input/1".into(),
+        schema: match c.proposal.schema.as_str() {
+            "oev2.workspace-commit-request/5" | "oev2.workspace-commit-request/6" => {
+                "oev2.current-task-view-input/6"
+            }
+            "oev2.workspace-commit-request/4" => "oev2.current-task-view-input/5",
+            "oev2.workspace-commit-request/3" => "oev2.current-task-view-input/4",
+            "oev2.workspace-commit-request/2" => "oev2.current-task-view-input/3",
+            _ => "oev2.current-task-view-input/1",
+        }
+        .into(),
         current: c.proposal.project.clone(),
         previous: None,
         work: c.proposal.work.clone(),
@@ -802,6 +937,22 @@ pub fn resume(root: &SkillRoot) -> Result<Value> {
         "root_requests":a["requests"],"root_object":a["root_object"],"deliverable":a["deliverable"],"acceptance":a["acceptance"],
         "corrections":c.proposal.corrections,"pending_decisions":c.pending_decisions,"stage":c.proposal.stage,"events":c.proposal.events,"causal_claims":c.proposal.causal_claims,
         "route":route,"task_view":view,"effects_require_readback":effect_unknown,"automatic_dispatch":false,"engineering_adoption":"not_granted"});
+    if checked.compress {
+        result["source_budget"] = json!({"profile":match c.proposal.schema.as_str() { "oev2.workspace-commit-request/5" | "oev2.workspace-commit-request/6" => "oev2.workspace-source-cache/3", "oev2.workspace-commit-request/4" => "oev2.workspace-source-cache/2", _ => "oev2.workspace-source-cache/1" },
+            "paths":checked.refs.len(),"path_limit":checked.source_limit,
+            "logical_bytes":checked.total,"retained_payload_bytes":checked.retained,
+            "payload_limit_bytes":checked.payload_limit,"per_file_limit_bytes":LIMIT,
+            "maximum_logical_bytes":checked.source_limit as u64 * LIMIT as u64,
+            "scope":"Operation-local lossless payload, not total process memory; original files and archives unchanged"});
+    }
+    if c.proposal.schema == "oev2.workspace-commit-request/6" {
+        let budget = history::history_budget(&c.proposal.schema)?;
+        result["history_budget"] = json!({"profile":"oev2.workspace-history/2",
+            "commits":history_use.commits,"commit_limit":budget.commits,
+            "commit_bytes":history_use.commit_bytes,"commit_limit_bytes":budget.commit_bytes,
+            "archive_bytes":history_use.archive_bytes,"archive_limit_bytes":budget.archive_bytes,
+            "scope":"Complete history from the head is read on every resume and commit; finite headroom, not a process memory guarantee"});
+    }
     if let Some(reasoning) = checked.stage_reasoning {
         result["reasoning"] = reasoning;
     }
@@ -993,4 +1144,297 @@ pub fn learning_check(root: &SkillRoot, reference: &ArtifactReference) -> Result
     Ok(
         json!({"schema":"oev2.workspace-learning-check/1","status":"root_consistent","binding":reference,"head":restored["head"],"trial_validation":"requires_native_experience_owner","method_benefit":"not_measured","engineering_adoption":"not_granted"}),
     )
+}
+
+#[cfg(test)]
+mod source_capacity_tests {
+    use super::*;
+
+    #[test]
+    fn source_cache_exact_payload_boundaries_charge_distinct_paths() {
+        let mut state = 0x4a17b9e3f251c68du64;
+        let raw: Vec<u8> = (0..16 * 1024 * 1024)
+            .map(|_| {
+                state ^= state << 13;
+                state ^= state >> 7;
+                state ^= state << 17;
+                state as u8
+            })
+            .collect();
+        for (version, count) in [(3, 4), (4, 8), (5, 16)] {
+            let install = tempfile::tempdir().unwrap();
+            let home = tempfile::tempdir().unwrap();
+            std::fs::write(
+                install.path().join("SKILL.md"),
+                b"resource boundary fixture",
+            )
+            .unwrap();
+            // macOS /var is a symlink; resolve the owned temp roots before
+            // passing them to the production no-symlink source guard.
+            let install_path = std::fs::canonicalize(install.path()).unwrap();
+            let home_path = std::fs::canonicalize(home.path()).unwrap();
+            let root = SkillRoot::new(&install_path)
+                .unwrap()
+                .with_project_data_root(&home_path)
+                .unwrap();
+            let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../../examples/project-workspace/fixtures/initial-commit.json");
+            let mut q: WorkspaceCommitRequest =
+                serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
+            q.schema = format!("oev2.workspace-commit-request/{version}");
+            let mut checked = Checked::for_request(&q).unwrap();
+            let digest = sha256(&raw);
+            for i in 0..count {
+                let name = format!("payload-{i}.bin");
+                std::fs::write(home.path().join(&name), &raw).unwrap();
+                let reference = ArtifactReference {
+                    path: name,
+                    sha256: digest.clone(),
+                };
+                assert_eq!(checked.read(&root, &reference).unwrap(), raw);
+                // Re-reading the same path is not a second retained source.
+                assert_eq!(checked.read(&root, &reference).unwrap(), raw);
+            }
+            assert_eq!(checked.retained, count * 16 * 1024 * 1024);
+            assert_eq!(checked.total, count * 16 * 1024 * 1024);
+            std::fs::write(home.path().join("extra.bin"), b"x").unwrap();
+            let error = checked
+                .read(
+                    &root,
+                    &ArtifactReference {
+                        path: "extra.bin".into(),
+                        sha256: sha256(b"x"),
+                    },
+                )
+                .unwrap_err();
+            assert!(format!("{error:#}").contains("workspace_source_byte_limit"));
+        }
+    }
+}
+
+#[cfg(test)]
+mod history_capacity_tests {
+    use super::*;
+    use history::HistoryBudget;
+
+    const MIB: usize = 1024 * 1024;
+    const WIDE: HistoryBudget = HistoryBudget {
+        commits: 1024,
+        commit_bytes: usize::MAX,
+        archive_bytes: usize::MAX,
+    };
+
+    struct Home {
+        _install: tempfile::TempDir,
+        _store: tempfile::TempDir,
+        path: std::path::PathBuf,
+        root: SkillRoot,
+    }
+
+    fn home() -> Home {
+        let install = tempfile::tempdir().unwrap();
+        let store = tempfile::tempdir().unwrap();
+        std::fs::write(install.path().join("SKILL.md"), b"history boundary fixture").unwrap();
+        let install_path = std::fs::canonicalize(install.path()).unwrap();
+        let path = std::fs::canonicalize(store.path()).unwrap();
+        let fixtures =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../../examples/project-workspace/fixtures");
+        for file in std::fs::read_dir(fixtures).unwrap() {
+            let file = file.unwrap();
+            std::fs::copy(file.path(), path.join(file.file_name())).unwrap();
+        }
+        let root = SkillRoot::new(&install_path)
+            .unwrap()
+            .with_project_data_root(&path)
+            .unwrap();
+        initialize(&root, "bracket-demo", "bracket-continuation-demo").unwrap();
+        Home {
+            _install: install,
+            _store: store,
+            path,
+            root,
+        }
+    }
+
+    fn request(
+        home: &Home,
+        id: &str,
+        parent: Option<&ArtifactReference>,
+    ) -> WorkspaceCommitRequest {
+        let mut q: WorkspaceCommitRequest =
+            serde_json::from_slice(&std::fs::read(home.path.join("initial-commit.json")).unwrap())
+                .unwrap();
+        q.schema = "oev2.workspace-commit-request/6".into();
+        q.commit_id = id.into();
+        q.expected_parent = parent.cloned();
+        q
+    }
+
+    fn current(home: &Home) -> WorkspaceHead {
+        serde_json::from_slice(&std::fs::read(home.path.join("HEAD.json")).unwrap()).unwrap()
+    }
+
+    fn bytes(home: &Home, reference: &ArtifactReference) -> usize {
+        std::fs::metadata(home.path.join(&reference.path))
+            .unwrap()
+            .len() as usize
+    }
+
+    fn first(home: &Home) -> ArtifactReference {
+        let committed =
+            commit_within(&home.root, &request(home, "first", None), Some(WIDE)).unwrap();
+        assert_eq!(committed["status"], "committed");
+        serde_json::from_value(committed["head"]["commit"].clone()).unwrap()
+    }
+
+    fn refuses<T: std::fmt::Debug>(result: Result<T>, reason: &str) {
+        let error = format!("{:#}", result.unwrap_err());
+        assert!(error.contains(reason), "expected {reason}, got {error}");
+    }
+
+    #[test]
+    fn profiles_keep_the_legacy_history_budget_and_name_the_larger_one() {
+        for version in 1..=5 {
+            let schema = format!("oev2.workspace-commit-request/{version}");
+            assert_eq!(
+                history::history_budget(&schema).unwrap(),
+                HistoryBudget {
+                    commits: 1024,
+                    commit_bytes: 64 * MIB,
+                    archive_bytes: 64 * MIB
+                }
+            );
+        }
+        assert_eq!(
+            history::history_budget("oev2.workspace-commit-request/6").unwrap(),
+            HistoryBudget {
+                commits: 1024,
+                commit_bytes: 256 * MIB,
+                archive_bytes: 256 * MIB
+            }
+        );
+        refuses(
+            history::history_budget("oev2.workspace-commit-request/7"),
+            "workspace_request_schema",
+        );
+    }
+
+    #[test]
+    fn a_history_read_counts_every_commit_from_the_head_at_the_exact_boundary() {
+        let home = home();
+        let parent = first(&home);
+        commit_within(
+            &home.root,
+            &request(&home, "second", Some(&parent)),
+            Some(WIDE),
+        )
+        .unwrap();
+        let head = current(&home);
+        let total = bytes(&home, &parent) + bytes(&home, &head.commit);
+        let (_, used) = load_commit_within(&home.root, &head, Some(WIDE)).unwrap();
+        assert_eq!((used.commits, used.commit_bytes), (2, total));
+        assert!(used.archive_bytes > 0);
+        let exact = HistoryBudget {
+            commits: 2,
+            commit_bytes: total,
+            archive_bytes: used.archive_bytes,
+        };
+        assert_eq!(
+            load_commit_within(&home.root, &head, Some(exact))
+                .unwrap()
+                .1,
+            used
+        );
+        refuses(
+            load_commit_within(
+                &home.root,
+                &head,
+                Some(HistoryBudget {
+                    commit_bytes: total - 1,
+                    ..exact
+                }),
+            ),
+            "workspace_history_byte_budget",
+        );
+        refuses(
+            load_commit_within(
+                &home.root,
+                &head,
+                Some(HistoryBudget {
+                    archive_bytes: used.archive_bytes - 1,
+                    ..exact
+                }),
+            ),
+            "workspace_history_archive_budget",
+        );
+        refuses(
+            load_commit_within(
+                &home.root,
+                &head,
+                Some(HistoryBudget {
+                    commits: 1,
+                    ..exact
+                }),
+            ),
+            "workspace_history_chain_budget_or_cycle",
+        );
+    }
+
+    #[test]
+    fn a_commit_that_its_own_head_could_not_read_back_is_refused_before_writing() {
+        // Measure the exact two-commit history in one home, then replay the same
+        // deterministic requests in another with the counted and smaller budgets.
+        let measured = home();
+        let parent = first(&measured);
+        commit_within(
+            &measured.root,
+            &request(&measured, "second", Some(&parent)),
+            Some(WIDE),
+        )
+        .unwrap();
+        let total = bytes(&measured, &parent) + bytes(&measured, &current(&measured).commit);
+        let home = home();
+        assert_eq!(first(&home), parent);
+        let before = current(&home);
+        for (budget, reason) in [
+            (
+                HistoryBudget {
+                    commit_bytes: total - 1,
+                    ..WIDE
+                },
+                "workspace_history_byte_budget",
+            ),
+            (
+                HistoryBudget { commits: 1, ..WIDE },
+                "workspace_history_chain_budget_or_cycle",
+            ),
+        ] {
+            refuses(
+                commit_within(
+                    &home.root,
+                    &request(&home, "second", Some(&parent)),
+                    Some(budget),
+                ),
+                reason,
+            );
+            assert_eq!(current(&home), before);
+            assert!(!home.path.join("commits/second").exists());
+        }
+        let exact = HistoryBudget {
+            commits: 2,
+            commit_bytes: total,
+            ..WIDE
+        };
+        let committed = commit_within(
+            &home.root,
+            &request(&home, "second", Some(&parent)),
+            Some(exact),
+        )
+        .unwrap();
+        assert_eq!(committed["status"], "committed");
+        assert_eq!(
+            bytes(&home, &parent) + bytes(&home, &current(&home).commit),
+            total
+        );
+    }
 }

@@ -44,7 +44,7 @@ oev2 --root ROOT --project-home HOME drawing route \
 
 已有 DXF 及其渲染时用 `--dxf` 与 `--svg` 代替 `--dwg`，转换与渲染记为 `not_applicable`。单独的命令：`drawing discover`（在当前 Project 下发现）、`drawing check`（独立复核）、`drawing page`（检查页）、`drawing check-page`（单一模式的浏览器检查）。路径相对项目目录，或为绝对路径；输出目录必须是项目目录内的新目录。
 
-发现要求项目目录是已锚定的 workspace，且给出的 Project 就是其当前 Project（`native_current_project_changed` 拒绝其他修订）。本版本只读 `oev2.workspace-commit/1`；更新格式的 workspace 需先由对应 owner 迁移。
+发现要求项目目录是已锚定的 workspace，且给出的 Project 就是其当前 Project（`native_current_project_changed` 拒绝其他修订）。workspace 经同一管理程序打开，支持 `oev2.workspace-commit/1`–`/6`（见[项目文件体系](PROJECT-WORKSPACE.md)）；在大型 Project 上读图前，图纸须先登记为该 Project 的证据。
 
 ## 转换器锁定
 

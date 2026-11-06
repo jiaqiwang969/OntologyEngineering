@@ -2223,6 +2223,19 @@
     "scope": "Synthetic macOS native PDF and query fixtures; Windows native execution not verified"
   },
   {
+    "behavior": "every_concept_card_is_complete_and_linked",
+    "checker": "discover_expressions",
+    "checkerModule": "drawing_understanding",
+    "checkerPath": "crates/oe-drawing/src/review.rs",
+    "constraint": "md_engineering_expression",
+    "module": "drawing_understanding",
+    "name": "md_concepts_every_concept_card_is_complete_and_linked",
+    "oracle": "All concept card files parse into the generated types; ids unique; required fields non-empty; recognition cards and concept cards link both ways",
+    "requirement": "req_md_engineering_expression",
+    "rustPath": "crates/oe-drawing/tests/representation_knowledge.rs",
+    "scope": "Knowledge completeness and linkage; recognition quality is evaluated separately"
+  },
+  {
     "behavior": "a_converter_that_does_not_match_its_record_or_the_lock_is_refused",
     "checker": "route",
     "checkerModule": "drawing_understanding",

@@ -2471,6 +2471,10 @@
 <urn:oev2:design:drawing_annotation_layout_restore> <urn:oev2:design:requirement> <urn:oev2:design:req_engineering> .
 <urn:oev2:design:drawing_annotation_layout_restore> <urn:oev2:design:severity> "error" .
 <urn:oev2:design:drawing_annotation_layout_restore> <urn:oev2:design:statement> "display/4沿原/3只读观察捕获改动前、加注后、导出后、撤注后及最终原点/居中/原点关联；未知、非自有或关联原点在首改前拒绝。只按实际差异恢复已捕获的非关联原点状态，居中恢复后重申原点，未改变不盲设。一次恢复失败不阻断其余清理，最后仍须原完整尺寸签名与WCS/显示精确相同。原/1–3、几何父引用及原全部工程验收保持。" .
+<urn:oev2:design:drawing_concept_catalogue> <urn:oev2:design:applicability> "Planning and driving recognition of two-dimensional DXF drawings; knowledge candidates until reviewed by an expert" .
+<urn:oev2:design:drawing_concept_catalogue> <urn:oev2:design:identity> "crates/oe-drawing/knowledge/concepts/G1.toml ... G9.toml; national drafting standards (GB/T 4457, 4458, 4459, 1182, 17851, 131, 324, 14689-14692, 14665, 16675, 10609 and others) and two textbooks, cited per card by clause and page" .
+<urn:oev2:design:drawing_concept_catalogue> <urn:oev2:design:kind> "Source" .
+<urn:oev2:design:drawing_concept_catalogue> <urn:oev2:design:role> "Catalogue of every drafting representation concept with paraphrased meaning, parts, variants, DXF forms, recognition cues, confusions, relations, frequency, sources and coverage status; recognition cards link to it" .
 <urn:oev2:design:drawing_display_pdf_source> <urn:oev2:design:check> "execute" .
 <urn:oev2:design:drawing_display_pdf_source> <urn:oev2:design:checkerPath> "crates/oe-nx-worker/src/geometry/drawing_display.rs" .
 <urn:oev2:design:drawing_display_pdf_source> <urn:oev2:design:kind> "Constraint" .
@@ -2603,6 +2607,7 @@
 <urn:oev2:design:drawing_understanding> <urn:oev2:design:realizes> <urn:oev2:design:req_md_drawing_route> .
 <urn:oev2:design:drawing_understanding> <urn:oev2:design:realizes> <urn:oev2:design:req_md_engineering_expression> .
 <urn:oev2:design:drawing_understanding> <urn:oev2:design:rustPath> "crates/oe-drawing" .
+<urn:oev2:design:drawing_understanding> <urn:oev2:design:source> <urn:oev2:design:drawing_concept_catalogue> .
 <urn:oev2:design:drawing_understanding> <urn:oev2:design:source> <urn:oev2:design:drawing_representation_knowledge> .
 <urn:oev2:design:drawing_understanding> <urn:oev2:design:source> <urn:oev2:design:drawing_understanding_method> .
 <urn:oev2:design:drawing_understanding> <urn:oev2:design:source> <urn:oev2:design:md_engineering_expression_basis> .
@@ -43524,6 +43529,48 @@
 <urn:oev2:design:field_MdCadcraftRuntime_source_commit> <urn:oev2:design:rustType> "String" .
 <urn:oev2:design:field_MdCadcraftRuntime_source_commit> <urn:oev2:design:unit> "Files by path and SHA-256, byte counts, seconds and UTC times; drawing coordinates only inside the graph" .
 <urn:oev2:design:field_MdCadcraftRuntime_source_commit> <urn:oev2:design:write> "ggen contract; Rust route, page and independent checks; external programs only through the bounded process runner with retained evidence" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:meaning> "Clause, table or figure" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:name> "clause" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:owner> <urn:oev2:design:type_MdConceptSource> .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdConceptSource_clause> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:meaning> "Standard number or textbook" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:name> "document" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:owner> <urn:oev2:design:type_MdConceptSource> .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdConceptSource_document> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:meaning> "Physical page of the library copy" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:name> "page" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:owner> <urn:oev2:design:type_MdConceptSource> .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:rustType> "i64" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdConceptSource_page> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
 <urn:oev2:design:field_MdDiscoveredUse_consumer_id> <urn:oev2:design:acceptance> "Source conservation, interval union, provenance, explicit unknowns and isolated synthetic/actual checks; engineering role completeness separate" .
 <urn:oev2:design:field_MdDiscoveredUse_consumer_id> <urn:oev2:design:applicability> "No old assignments, corrected drawings, manually named source ranges, images or paired models in discovery input" .
 <urn:oev2:design:field_MdDiscoveredUse_consumer_id> <urn:oev2:design:format> "typed" .
@@ -43669,6 +43716,383 @@
 <urn:oev2:design:field_MdDiscoveredUse_state> <urn:oev2:design:rustType> "String" .
 <urn:oev2:design:field_MdDiscoveredUse_state> <urn:oev2:design:unit> "Original drawing coordinate units, normalized source parameters and unitless identities; no unverified mm conversion" .
 <urn:oev2:design:field_MdDiscoveredUse_state> <urn:oev2:design:write> "Formal spec through locked ggen; Rust derives generic source-only relations; presentation consumes results without inference" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:meaning> "Concept cards of the group" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:name> "concepts" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConceptGroup> .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:referencedType> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:rustType> "Vec<MdDrawingConcept>" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConceptGroup_concepts> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:allowedValueRust> "\"G1\"" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:allowedValueRust> "\"G2\"" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:allowedValueRust> "\"G3\"" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:allowedValueRust> "\"G4\"" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:allowedValueRust> "\"G5\"" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:allowedValueRust> "\"G6\"" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:allowedValueRust> "\"G7\"" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:allowedValueRust> "\"G8\"" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:allowedValueRust> "\"G9\"" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:meaning> "Group id" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:name> "group" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConceptGroup> .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConceptGroup_group> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:meaning> "Group name" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:name> "label" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConceptGroup> .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConceptGroup_label> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:meaning> "Catalogue schema" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:name> "schema" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConceptGroup> .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConceptGroup_schema> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:meaning> "Other names in the sources" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:name> "aliases" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_aliases> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:meaning> "Parts and their arrangement" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:name> "components" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_components> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:meaning> "What it is confused with" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:name> "confusions" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_confusions> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:meaning> "How it is stored in DXF" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:name> "dxf_forms" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_dxf_forms> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:meaning> "Whether an expert has reviewed the card" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:name> "expert_checked" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:rustType> "bool" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_expert_checked> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:allowedValueRust> "\"G1\"" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:allowedValueRust> "\"G2\"" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:allowedValueRust> "\"G3\"" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:allowedValueRust> "\"G4\"" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:allowedValueRust> "\"G5\"" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:allowedValueRust> "\"G6\"" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:allowedValueRust> "\"G7\"" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:allowedValueRust> "\"G8\"" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:allowedValueRust> "\"G9\"" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:meaning> "Group id" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:name> "group" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_group> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:meaning> "Stable concept id (DC-<group>-<number>)" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:name> "id" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_id> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:meaning> "Kind of representation" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:name> "kind" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_kind> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:meaning> "Knowledge-system units" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:name> "knowledge_units" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_knowledge_units> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:meaning> "What the representation means on a drawing" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:name> "meaning" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_meaning> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:meaning> "Standard term" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:name> "name" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_name> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:meaning> "Uncertainties and points from general practice, when there are any" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:name> "notes" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:rustType> "Option<String>" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_notes> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:allowedValueRust> "\"high\"" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:allowedValueRust> "\"low\"" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:allowedValueRust> "\"medium\"" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:allowedValueRust> "\"rare\"" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:meaning> "Frequency on ordinary mechanical drawings" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:name> "priority" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_priority> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:meaning> "Anchor and relations that identify it, and how to tell it from confusions" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:name> "recognition" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_recognition> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:meaning> "Recognition cards that implement it" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:name> "recognition_cards" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_recognition_cards> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:allowedValueRust> "\"card\"" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:allowedValueRust> "\"none\"" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:allowedValueRust> "\"partial\"" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:meaning> "Recognition coverage" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:name> "recognizer" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_recognizer> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:meaning> "Related concept ids" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:name> "related" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_related> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:meaning> "Evaluation drawings it was seen on" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:name> "seen_on_drawing" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:meaning> "Standard clauses and textbook pages" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:name> "sources" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:referencedType> <urn:oev2:design:type_MdConceptSource> .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:rustType> "Vec<MdConceptSource>" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_sources> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:meaning> "Typical written forms" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:name> "text_forms" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_text_forms> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:acceptance> "Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:applicability> "Drafting concept knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:meaning> "Editions and drawing forms" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:name> "variants" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingConcept> .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:precision> "Exact card identity; text is a paraphrase of the cited sources" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
+<urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
 <urn:oev2:design:field_MdDrawingRouteFile_bytes> <urn:oev2:design:acceptance> "Route execution, source conservation and output-contract checks only; not engineering acceptance of the classification" .
 <urn:oev2:design:field_MdDrawingRouteFile_bytes> <urn:oev2:design:applicability> "One drawing per run through the pinned converter and the current oev2 executable; no reference answers, regions, feedback or paired models as input" .
 <urn:oev2:design:field_MdDrawingRouteFile_bytes> <urn:oev2:design:format> "typed" .
@@ -45619,6 +46043,20 @@
 <urn:oev2:design:field_MdRepresentationCard_components> <urn:oev2:design:rustType> "Vec<MdRepresentationComponent>" .
 <urn:oev2:design:field_MdRepresentationCard_components> <urn:oev2:design:unit> "Card text and dimensionless drawing-domain ratios; no product tolerance" .
 <urn:oev2:design:field_MdRepresentationCard_components> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:acceptance> "Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:applicability> "Drafting representation knowledge of the dxf-expression-rules/2 profile" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:meaning> "Ids of the catalogue concepts the card implements" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:name> "concepts" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:owner> <urn:oev2:design:type_MdRepresentationCard> .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:precision> "Exact card identity; parameters are ratios to a text height, circle radius or arm length" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:unit> "Card text and dimensionless drawing-domain ratios; no product tolerance" .
+<urn:oev2:design:field_MdRepresentationCard_concepts> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing" .
 <urn:oev2:design:field_MdRepresentationCard_counter_examples> <urn:oev2:design:acceptance> "Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition" .
 <urn:oev2:design:field_MdRepresentationCard_counter_examples> <urn:oev2:design:applicability> "Drafting representation knowledge of the dxf-expression-rules/2 profile" .
 <urn:oev2:design:field_MdRepresentationCard_counter_examples> <urn:oev2:design:format> "typed" .
@@ -97075,6 +97513,14 @@
 <urn:oev2:design:mcp_reasoner_original_algorithm> <urn:oev2:design:requirement> <urn:oev2:design:req_semantic_platform> .
 <urn:oev2:design:mcp_reasoner_original_algorithm> <urn:oev2:design:severity> "error" .
 <urn:oev2:design:mcp_reasoner_original_algorithm> <urn:oev2:design:statement> "MCP高层Reasoner原50pass/同pass链式/重复变量/原替换顺序，不以Datalog改变原行为；原prefix-substitution缺陷原预期保留，有限资源条件拒绝不算推理完成。" .
+<urn:oev2:design:md_concepts_every_concept_card_is_complete_and_linked> <urn:oev2:design:behavior> "every_concept_card_is_complete_and_linked" .
+<urn:oev2:design:md_concepts_every_concept_card_is_complete_and_linked> <urn:oev2:design:kind> "Validation" .
+<urn:oev2:design:md_concepts_every_concept_card_is_complete_and_linked> <urn:oev2:design:module> <urn:oev2:design:drawing_understanding> .
+<urn:oev2:design:md_concepts_every_concept_card_is_complete_and_linked> <urn:oev2:design:name> "md_concepts_every_concept_card_is_complete_and_linked" .
+<urn:oev2:design:md_concepts_every_concept_card_is_complete_and_linked> <urn:oev2:design:oracle> "All concept card files parse into the generated types; ids unique; required fields non-empty; recognition cards and concept cards link both ways" .
+<urn:oev2:design:md_concepts_every_concept_card_is_complete_and_linked> <urn:oev2:design:rustPath> "crates/oe-drawing/tests/representation_knowledge.rs" .
+<urn:oev2:design:md_concepts_every_concept_card_is_complete_and_linked> <urn:oev2:design:scope> "Knowledge completeness and linkage; recognition quality is evaluated separately" .
+<urn:oev2:design:md_concepts_every_concept_card_is_complete_and_linked> <urn:oev2:design:validates> <urn:oev2:design:md_engineering_expression> .
 <urn:oev2:design:md_drawing_route> <urn:oev2:design:check> "route" .
 <urn:oev2:design:md_drawing_route> <urn:oev2:design:checkerPath> "crates/oe-drawing/src/route.rs" .
 <urn:oev2:design:md_drawing_route> <urn:oev2:design:kind> "Constraint" .
@@ -124230,6 +124676,14 @@
 <urn:oev2:design:type_MdCadcraftRuntime> <urn:oev2:design:kind> "Type" .
 <urn:oev2:design:type_MdCadcraftRuntime> <urn:oev2:design:meaning> "Local record of the pinned DWG converter: the executable, the fork commit it was built from and the fonts used for rendering" .
 <urn:oev2:design:type_MdCadcraftRuntime> <urn:oev2:design:name> "MdCadcraftRuntime" .
+<urn:oev2:design:type_MdConceptSource> <urn:oev2:design:contractGroup> "engineering" .
+<urn:oev2:design:type_MdConceptSource> <urn:oev2:design:field> <urn:oev2:design:field_MdConceptSource_clause> .
+<urn:oev2:design:type_MdConceptSource> <urn:oev2:design:field> <urn:oev2:design:field_MdConceptSource_document> .
+<urn:oev2:design:type_MdConceptSource> <urn:oev2:design:field> <urn:oev2:design:field_MdConceptSource_page> .
+<urn:oev2:design:type_MdConceptSource> <urn:oev2:design:identity> "Document, clause and page" .
+<urn:oev2:design:type_MdConceptSource> <urn:oev2:design:kind> "Type" .
+<urn:oev2:design:type_MdConceptSource> <urn:oev2:design:meaning> "Source locator of a concept card" .
+<urn:oev2:design:type_MdConceptSource> <urn:oev2:design:name> "MdConceptSource" .
 <urn:oev2:design:type_MdDiscoveredUse> <urn:oev2:design:contractGroup> "engineering" .
 <urn:oev2:design:type_MdDiscoveredUse> <urn:oev2:design:field> <urn:oev2:design:field_MdDiscoveredUse_consumer_id> .
 <urn:oev2:design:type_MdDiscoveredUse> <urn:oev2:design:field> <urn:oev2:design:field_MdDiscoveredUse_engineering_target> .
@@ -124244,6 +124698,41 @@
 <urn:oev2:design:type_MdDiscoveredUse> <urn:oev2:design:kind> "Type" .
 <urn:oev2:design:type_MdDiscoveredUse> <urn:oev2:design:meaning> "Evidence-bound usage; physical ownership and competing uses are retained" .
 <urn:oev2:design:type_MdDiscoveredUse> <urn:oev2:design:name> "MdDiscoveredUse" .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:contractGroup> "engineering" .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_aliases> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_components> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_confusions> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_dxf_forms> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_expert_checked> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_group> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_id> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_kind> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_knowledge_units> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_meaning> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_name> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_notes> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_priority> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_recognition> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_recognition_cards> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_recognizer> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_related> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_seen_on_drawing> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_sources> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_text_forms> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConcept_variants> .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:identity> "Concept id" .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:kind> "Type" .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:meaning> "Drafting concept card: meaning, parts, drawing variants, DXF forms, recognition cues, confusions, relations, frequency, sources and coverage status" .
+<urn:oev2:design:type_MdDrawingConcept> <urn:oev2:design:name> "MdDrawingConcept" .
+<urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:contractGroup> "engineering" .
+<urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConceptGroup_concepts> .
+<urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConceptGroup_group> .
+<urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConceptGroup_label> .
+<urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingConceptGroup_schema> .
+<urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:identity> "Group id" .
+<urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:kind> "Type" .
+<urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:meaning> "One group of the drafting concept catalogue: every representation concept a reader of two-dimensional mechanical drawings must recognise" .
+<urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:name> "MdDrawingConceptGroup" .
 <urn:oev2:design:type_MdDrawingRouteFile> <urn:oev2:design:contractGroup> "engineering" .
 <urn:oev2:design:type_MdDrawingRouteFile> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingRouteFile_bytes> .
 <urn:oev2:design:type_MdDrawingRouteFile> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingRouteFile_path> .
@@ -124441,6 +124930,7 @@
 <urn:oev2:design:type_MdPinnedFile> <urn:oev2:design:name> "MdPinnedFile" .
 <urn:oev2:design:type_MdRepresentationCard> <urn:oev2:design:contractGroup> "engineering" .
 <urn:oev2:design:type_MdRepresentationCard> <urn:oev2:design:field> <urn:oev2:design:field_MdRepresentationCard_components> .
+<urn:oev2:design:type_MdRepresentationCard> <urn:oev2:design:field> <urn:oev2:design:field_MdRepresentationCard_concepts> .
 <urn:oev2:design:type_MdRepresentationCard> <urn:oev2:design:field> <urn:oev2:design:field_MdRepresentationCard_counter_examples> .
 <urn:oev2:design:type_MdRepresentationCard> <urn:oev2:design:field> <urn:oev2:design:field_MdRepresentationCard_expression_kind> .
 <urn:oev2:design:type_MdRepresentationCard> <urn:oev2:design:field> <urn:oev2:design:field_MdRepresentationCard_id> .
@@ -169409,6 +169899,9 @@
 <urn:oev2:design:build_02536ac1bcb638a2b0ffb1720f8bbe37624b7469b3d60c0b49b9e7c3688ec1df> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_02536ac1bcb638a2b0ffb1720f8bbe37624b7469b3d60c0b49b9e7c3688ec1df> sp:path "crates/oe-drawing-check/assets/review-page-checks.js" .
 <urn:oev2:design:build_02536ac1bcb638a2b0ffb1720f8bbe37624b7469b3d60c0b49b9e7c3688ec1df> sp:sha256 "4e54302b7ec12fe546135d67d640c5a1a6c23e2ad736f295afd45333b11d9758" .
+<urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:kind "RustBuildInput" .
+<urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:path "crates/oe-drawing/knowledge/concepts/G1.toml" .
+<urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:sha256 "90c3844bcedf8461053cdc8eef8598460af8781d70dc59a179dc32c77501065d" .
 <urn:oev2:design:build_03a82ebf4993a6f43aa57f9a6f631e8eb70fc119eb631fbf1bb7b5ba8d2d7a02> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_03a82ebf4993a6f43aa57f9a6f631e8eb70fc119eb631fbf1bb7b5ba8d2d7a02> sp:path "vendor/spareval/src/tuple.rs" .
 <urn:oev2:design:build_03a82ebf4993a6f43aa57f9a6f631e8eb70fc119eb631fbf1bb7b5ba8d2d7a02> sp:sha256 "9a145508610766694b7f1689f69ceb7e8e700a303535aa47eadb261054c34452" .
@@ -169631,6 +170124,9 @@
 <urn:oev2:design:build_33c1e42ed880608fc15776b1d7278e08eb79202afe0ee5d29b9092b1cb70c37b> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_33c1e42ed880608fc15776b1d7278e08eb79202afe0ee5d29b9092b1cb70c37b> sp:path "vendor/spareval/src/eval/fixtures/source_mutable_set_cases.json" .
 <urn:oev2:design:build_33c1e42ed880608fc15776b1d7278e08eb79202afe0ee5d29b9092b1cb70c37b> sp:sha256 "c16de1cbf97c900d4335d3160bd92867b2f77cce9cc4efa840f55f5b4e9b16ec" .
+<urn:oev2:design:build_34147a57083bcc945b4deb63b88f0fa767516e08f333782b155a40394f2c7be5> sp:kind "RustBuildInput" .
+<urn:oev2:design:build_34147a57083bcc945b4deb63b88f0fa767516e08f333782b155a40394f2c7be5> sp:path "crates/oe-drawing/knowledge/concepts/G2.toml" .
+<urn:oev2:design:build_34147a57083bcc945b4deb63b88f0fa767516e08f333782b155a40394f2c7be5> sp:sha256 "1d900f38ec6065345e417e4f506b69e759d65812f9e4ba611ca0b3a95a99c5f5" .
 <urn:oev2:design:build_348c9211cc9b8826a9923c4d3b8aa9afc598e9d5b58a76baec4764ddb99815f0> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_348c9211cc9b8826a9923c4d3b8aa9afc598e9d5b58a76baec4764ddb99815f0> sp:path "crates/semantica-numeric/tests/fixtures/sum_avg_cases.json" .
 <urn:oev2:design:build_348c9211cc9b8826a9923c4d3b8aa9afc598e9d5b58a76baec4764ddb99815f0> sp:sha256 "e0549f69c1ee5f80f218cba125102488f62b8c8d6b6741f3fc51d6ebcde9d46e" .
@@ -169703,6 +170199,9 @@
 <urn:oev2:design:build_43daac805e0fb1cd01caab441bbce766c081d75fd8d160d3d148658cdc28af06> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_43daac805e0fb1cd01caab441bbce766c081d75fd8d160d3d148658cdc28af06> sp:path "vendor/oxrdfxml/UPSTREAM-PROVENANCE.json" .
 <urn:oev2:design:build_43daac805e0fb1cd01caab441bbce766c081d75fd8d160d3d148658cdc28af06> sp:sha256 "706b11e94fcb027706c8408ab676841c0ccff0a2da2b07bf7ec72ff6eeaf5098" .
+<urn:oev2:design:build_44ad6de17c13f92c7598a39fe1bd9ce605d0a88db758c10afcbcde9b2d3f18d9> sp:kind "RustBuildInput" .
+<urn:oev2:design:build_44ad6de17c13f92c7598a39fe1bd9ce605d0a88db758c10afcbcde9b2d3f18d9> sp:path "crates/oe-drawing/knowledge/concepts/G8.toml" .
+<urn:oev2:design:build_44ad6de17c13f92c7598a39fe1bd9ce605d0a88db758c10afcbcde9b2d3f18d9> sp:sha256 "aa6a9be76b2935652cebe47759c84c187989d07c3a5454360ad922582a328ddf" .
 <urn:oev2:design:build_451967229b5d61dbdd72f00e1d3c716b7a07ce0b11ce704358fccd30de54f087> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_451967229b5d61dbdd72f00e1d3c716b7a07ce0b11ce704358fccd30de54f087> sp:path "vendor/spareval/src/expression.rs" .
 <urn:oev2:design:build_451967229b5d61dbdd72f00e1d3c716b7a07ce0b11ce704358fccd30de54f087> sp:sha256 "9b854e37cf7d0ee364a7650665294b49f280577e01e0d3950e8e6d2ab53585ca" .
@@ -169868,6 +170367,9 @@
 <urn:oev2:design:build_6aaafe18ce8d9902d1dd495feb325b2def1e9e169a61b8bbe3efd030c238005a> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_6aaafe18ce8d9902d1dd495feb325b2def1e9e169a61b8bbe3efd030c238005a> sp:path "vendor/spareval/LICENSE-MIT" .
 <urn:oev2:design:build_6aaafe18ce8d9902d1dd495feb325b2def1e9e169a61b8bbe3efd030c238005a> sp:sha256 "1f4f6736adc52ebfda18bb84947e0ef492bd86a408c0e83872efb75ed5e02838" .
+<urn:oev2:design:build_6b359a22265f2dce01af855bfb7b79588491cfa66ce5d2349a6eb034f690a78f> sp:kind "RustBuildInput" .
+<urn:oev2:design:build_6b359a22265f2dce01af855bfb7b79588491cfa66ce5d2349a6eb034f690a78f> sp:path "crates/oe-drawing/knowledge/concepts/G5.toml" .
+<urn:oev2:design:build_6b359a22265f2dce01af855bfb7b79588491cfa66ce5d2349a6eb034f690a78f> sp:sha256 "cd61515f7178bd8532d78d36189373e37b9d692c7db22d90147843b540621ae1" .
 <urn:oev2:design:build_6b783e45b80cae1fa2d476e05c11e755bcbdf4a811a89b97d7cdca3b3297b990> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_6b783e45b80cae1fa2d476e05c11e755bcbdf4a811a89b97d7cdca3b3297b990> sp:path "vendor/spareval/NULLABLE-CHAIN-PROVENANCE.json" .
 <urn:oev2:design:build_6b783e45b80cae1fa2d476e05c11e755bcbdf4a811a89b97d7cdca3b3297b990> sp:sha256 "de2149c06ada9048c69292fc1deab42898c322c8b425a15a4cfc2e2562e67b6e" .
@@ -170027,6 +170529,9 @@
 <urn:oev2:design:build_8fc84d31de7bc955022c2f823c7d04345b6c3e18a9d35a422e897a479eb51182> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_8fc84d31de7bc955022c2f823c7d04345b6c3e18a9d35a422e897a479eb51182> sp:path "vendor/spareval/src/eval/fixtures/source_compvalue_protocols.json" .
 <urn:oev2:design:build_8fc84d31de7bc955022c2f823c7d04345b6c3e18a9d35a422e897a479eb51182> sp:sha256 "d4a28e64533328a421521360627a510207c6a56e0193cf7a2e788d441b2cca88" .
+<urn:oev2:design:build_904589ae3b72d8fbb8d3d144608f1586a8f4abfeb193c9150c83bb90ffa3f4d7> sp:kind "RustBuildInput" .
+<urn:oev2:design:build_904589ae3b72d8fbb8d3d144608f1586a8f4abfeb193c9150c83bb90ffa3f4d7> sp:path "crates/oe-drawing/knowledge/concepts/G9.toml" .
+<urn:oev2:design:build_904589ae3b72d8fbb8d3d144608f1586a8f4abfeb193c9150c83bb90ffa3f4d7> sp:sha256 "8987063c0092a84da6d6df7c44961039c3e05d2eef9e2153961212f7dd3a9eb9" .
 <urn:oev2:design:build_9078c6678a853b3e0c941b7786026279ebfeb0cd726fd0050c97c510a3272d03> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_9078c6678a853b3e0c941b7786026279ebfeb0cd726fd0050c97c510a3272d03> sp:path "vendor/oxttl/src/toolkit/error.rs" .
 <urn:oev2:design:build_9078c6678a853b3e0c941b7786026279ebfeb0cd726fd0050c97c510a3272d03> sp:sha256 "31dbc94aca1ba76ab7ccb7d6499d127ea5cabf735eb6424a37e43f52e2383b82" .
@@ -170117,6 +170622,9 @@
 <urn:oev2:design:build_a467aaa5c81d2f86588aee14fe7e9d83611ecbc7de536b636b1340b94b832930> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_a467aaa5c81d2f86588aee14fe7e9d83611ecbc7de536b636b1340b94b832930> sp:path "vendor/oxttl/Cargo.toml" .
 <urn:oev2:design:build_a467aaa5c81d2f86588aee14fe7e9d83611ecbc7de536b636b1340b94b832930> sp:sha256 "1b9b9b204a3c63d93e8e76ac3fce2c3b30f52fa1fdba7b49584ea88fa416860c" .
+<urn:oev2:design:build_a46c4216d60835a297a5bd6ed47a79d93bb34527c7b24ae3618e6de5c7bc09f4> sp:kind "RustBuildInput" .
+<urn:oev2:design:build_a46c4216d60835a297a5bd6ed47a79d93bb34527c7b24ae3618e6de5c7bc09f4> sp:path "crates/oe-drawing/knowledge/concepts/G4.toml" .
+<urn:oev2:design:build_a46c4216d60835a297a5bd6ed47a79d93bb34527c7b24ae3618e6de5c7bc09f4> sp:sha256 "85ae6d31676ce6b728a3b18e7ad3fb4bd31354ab71a16336836e62b04a98cfe4" .
 <urn:oev2:design:build_a4dfad4f8024f7e5f9fbfb240ac86a2468e3670ab8a308316a951dfa4ec58309> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_a4dfad4f8024f7e5f9fbfb240ac86a2468e3670ab8a308316a951dfa4ec58309> sp:path "crates/oe-cli/Cargo.toml" .
 <urn:oev2:design:build_a4dfad4f8024f7e5f9fbfb240ac86a2468e3670ab8a308316a951dfa4ec58309> sp:sha256 "c24384260faac922b29e28112af403ccea02bd58eca63e14aa2a622ce03ba7fd" .
@@ -170204,6 +170712,9 @@
 <urn:oev2:design:build_b5f1cda84b56d0f7d1574e541f5a23820df626947bf8b48063e50e232c7af15c> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_b5f1cda84b56d0f7d1574e541f5a23820df626947bf8b48063e50e232c7af15c> sp:path "integrations/runtime-locks/cadcraft-source.json" .
 <urn:oev2:design:build_b5f1cda84b56d0f7d1574e541f5a23820df626947bf8b48063e50e232c7af15c> sp:sha256 "c55593644209b677e03cea8aa5d9aafe78975a17e1970e775b3de437002f0225" .
+<urn:oev2:design:build_b73beed1915131360813ae0812026d086ee4869a1b1bc45aee13d335f3820a87> sp:kind "RustBuildInput" .
+<urn:oev2:design:build_b73beed1915131360813ae0812026d086ee4869a1b1bc45aee13d335f3820a87> sp:path "crates/oe-drawing/knowledge/concepts/G6.toml" .
+<urn:oev2:design:build_b73beed1915131360813ae0812026d086ee4869a1b1bc45aee13d335f3820a87> sp:sha256 "9aaa469a8c34941046de12d33f93cf5cd156d358f966ea5496dc6e989926a4c6" .
 <urn:oev2:design:build_b8d039d84b0e3130809d8869b16eb67f701d55e93077c71d39c84d84c89fb416> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_b8d039d84b0e3130809d8869b16eb67f701d55e93077c71d39c84d84c89fb416> sp:path "crates/semantica-service/tests/fixtures/original-mcp-catalog.json" .
 <urn:oev2:design:build_b8d039d84b0e3130809d8869b16eb67f701d55e93077c71d39c84d84c89fb416> sp:sha256 "0d501c30e02c1c70db293685d47c2b83fcfd81257645338adcc3ce754296ed6a" .
@@ -170231,6 +170742,9 @@
 <urn:oev2:design:build_c01021103e6ccf8a6a51140654ce45d83ec40183057be159714c92a1ad529179> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_c01021103e6ccf8a6a51140654ce45d83ec40183057be159714c92a1ad529179> sp:path "vendor/spareval/src/eval/source_function_runtime_receiving.rs" .
 <urn:oev2:design:build_c01021103e6ccf8a6a51140654ce45d83ec40183057be159714c92a1ad529179> sp:sha256 "ab4c43dfbfd81cf113e4375ecaa7c3fbbc0770a960cdce168449dd9225bda494" .
+<urn:oev2:design:build_c0be213f3d79af8bfc73c899b2a4f1e415b0458736da93e55fa9bb0c9c403900> sp:kind "RustBuildInput" .
+<urn:oev2:design:build_c0be213f3d79af8bfc73c899b2a4f1e415b0458736da93e55fa9bb0c9c403900> sp:path "crates/oe-drawing/knowledge/concepts/G7.toml" .
+<urn:oev2:design:build_c0be213f3d79af8bfc73c899b2a4f1e415b0458736da93e55fa9bb0c9c403900> sp:sha256 "42bf19046236d2dcd1ef56f2f1cb2cb3c6d6b76d8a8fec451262acf3046f9ca8" .
 <urn:oev2:design:build_c10dc13e83d1fb395a08ef647ee124059a3a684d2ec5ffb5ce2e515e3d56a5a0> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_c10dc13e83d1fb395a08ef647ee124059a3a684d2ec5ffb5ce2e515e3d56a5a0> sp:path "vendor/oxjsonld/src/profile.rs" .
 <urn:oev2:design:build_c10dc13e83d1fb395a08ef647ee124059a3a684d2ec5ffb5ce2e515e3d56a5a0> sp:sha256 "dc3f8eaf87ddc9ef28aeda23cfa9ed93a3d60695e8088f1200eebf2d8ab183de" .
@@ -170257,7 +170771,7 @@
 <urn:oev2:design:build_c99f28b47ddac76be6359db03ee08f7d03f1d093857504e9df76269960b5e142> sp:sha256 "a9ad3a9ee760ebc89e3541f73a6d67cea0d4a91a5d590bb348c5c5ed427d8790" .
 <urn:oev2:design:build_ca956eb510e22d5e08c3526bc88a3385d9ba47a88c51f638fa6c67a9abc74ad2> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_ca956eb510e22d5e08c3526bc88a3385d9ba47a88c51f638fa6c67a9abc74ad2> sp:path "crates/oe-drawing/knowledge/drawing-representation.toml" .
-<urn:oev2:design:build_ca956eb510e22d5e08c3526bc88a3385d9ba47a88c51f638fa6c67a9abc74ad2> sp:sha256 "5c202efa1fd4f8768ee7c017504c923416c49b18e1b94ecf60d330e2ad0c202c" .
+<urn:oev2:design:build_ca956eb510e22d5e08c3526bc88a3385d9ba47a88c51f638fa6c67a9abc74ad2> sp:sha256 "7d8dffe83b9534c548010d16d41377cf521693f42a503de5b708315edd3566db" .
 <urn:oev2:design:build_cce674c56f3fd27a00316967f025f124d6de0d66360b130c0a14867946a849b0> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_cce674c56f3fd27a00316967f025f124d6de0d66360b130c0a14867946a849b0> sp:path "vendor/oxrdfxml/Cargo.toml.orig" .
 <urn:oev2:design:build_cce674c56f3fd27a00316967f025f124d6de0d66360b130c0a14867946a849b0> sp:sha256 "493da9400ff4a3fc604e5baffeb5acc8a227cbb593250f6e16637f201d810e8b" .
@@ -170408,6 +170922,9 @@
 <urn:oev2:design:build_f45aebb08c48bf510dd235a4a4c0f775dbfacc80e05083710afaf35cca1703de> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_f45aebb08c48bf510dd235a4a4c0f775dbfacc80e05083710afaf35cca1703de> sp:path "vendor/spareval/src/dataset/fixtures/source_mutable_memory_cases.json" .
 <urn:oev2:design:build_f45aebb08c48bf510dd235a4a4c0f775dbfacc80e05083710afaf35cca1703de> sp:sha256 "24a59242fdabb5036cd54d624861fbe1be51fa971985ab1f2ab3544a94745068" .
+<urn:oev2:design:build_f7dabf2670ab03230b2540aa5962abfdfac0b43c4f8a7cccca472c60a360cadf> sp:kind "RustBuildInput" .
+<urn:oev2:design:build_f7dabf2670ab03230b2540aa5962abfdfac0b43c4f8a7cccca472c60a360cadf> sp:path "crates/oe-drawing/knowledge/concepts/G3.toml" .
+<urn:oev2:design:build_f7dabf2670ab03230b2540aa5962abfdfac0b43c4f8a7cccca472c60a360cadf> sp:sha256 "c8786bce2f002fc4aa497d04a1ab48736b4cb065302aff4dffc3ff2f57a00bf8" .
 <urn:oev2:design:build_f81feeecc621752945642cf6971ce8281db1913bbfcbec3f3e154eb8b9c46449> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_f81feeecc621752945642cf6971ce8281db1913bbfcbec3f3e154eb8b9c46449> sp:path "crates/oe-evolution/Cargo.toml" .
 <urn:oev2:design:build_f81feeecc621752945642cf6971ce8281db1913bbfcbec3f3e154eb8b9c46449> sp:sha256 "567d21aff5a6d277067ce76fa5209defe54bade6da5c265d260d4b499184df45" .
@@ -175257,7 +175774,7 @@ code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:kind "R
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:module <urn:oev2:design:drawing_understanding> .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:path "crates/oe-drawing/tests/representation_knowledge.rs" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:production false .
-code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:sha256 "aea70179fbc8401ab804b3dc7a683d3bd75b7da7fc984c42712016a8d85648de" .
+code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:sha256 "6445992e55d2d85f284f4d5484deed31698ed01223dc03a1f4a341e97b73dbdc" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "angle_with_unit_is_unchanged" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "angle_without_unit_gets_a_degree_sign" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "cells_without_a_glyph_are_not_a_frame" .
@@ -175269,10 +175786,13 @@ code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "d
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "datum_new_square_triangle_loose_is_one_symbol" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "datum_old_circle_bar_block_is_one_symbol" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "datum_old_circle_bar_loose_is_one_symbol" .
+code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "edge_cut_by_a_circle_labelled_through_a_leader_is_joined" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "every_card_is_used_and_every_named_test_exists" .
+code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "every_concept_card_is_complete_and_linked" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "extension_line_from_a_chamfer_corner_stays_annotation" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "frame_leader_on_the_outline_needs_no_extension" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "frame_leader_to_a_drawn_extension_line" .
+code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "frame_leader_to_an_extension_line_drawn_into_the_outline" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "frame_leader_without_extension_gets_a_constructed_one" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "frame_with_block_glyph_is_read" .
 code:20d2eb7a510c89a825bf6c383679e2738ee5284f6d20e5bf83d11912404fcdc2 sp:test "frame_with_loose_position_glyph_is_read" .
@@ -192963,7 +193483,7 @@ code:8a1242b26246281f452dc9f95211842dd00dac98a19bb3691dd96edc8194c1e7 sp:kind "R
 code:8a1242b26246281f452dc9f95211842dd00dac98a19bb3691dd96edc8194c1e7 sp:module <urn:oev2:design:drawing_understanding> .
 code:8a1242b26246281f452dc9f95211842dd00dac98a19bb3691dd96edc8194c1e7 sp:path "crates/oe-drawing/src/representation.rs" .
 code:8a1242b26246281f452dc9f95211842dd00dac98a19bb3691dd96edc8194c1e7 sp:production true .
-code:8a1242b26246281f452dc9f95211842dd00dac98a19bb3691dd96edc8194c1e7 sp:sha256 "37a2eb83d11d74e4f61cccab46628f7179b227fbfb1a2871f7225146378cb6a3" .
+code:8a1242b26246281f452dc9f95211842dd00dac98a19bb3691dd96edc8194c1e7 sp:sha256 "bc90e875769a63694302c858c375fa447aa4793a87683ced7bb2ed63459b09c5" .
 code:8a133b1803f78d4b8797067d7f42cbcdb8add534c1c9d782aeba172aa7163326 sp:calls "AtomicU64::new" .
 code:8a133b1803f78d4b8797067d7f42cbcdb8add534c1c9d782aeba172aa7163326 sp:calls "Command::new" .
 code:8a133b1803f78d4b8797067d7f42cbcdb8add534c1c9d782aeba172aa7163326 sp:calls "FileEntry::from_bytes" .
@@ -208733,7 +209253,7 @@ code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:module 
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:path "crates/oe-drawing/src/engineering_expression.rs" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:production true .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:publicType "Pattern" .
-code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:sha256 "c3a5166cc41c14800c61c0cb12eeb116119114fcdd417c3c32d5f4e888b5d974" .
+code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:sha256 "b1044769e599375bbc7c1e93c95af6d423b0429b39d9fe1fd6becc01199f544e" .
 code:fb1fa1cb393e1e754d3a4117a427a1829c9a485b74d8d59ccf2536ec9b047653 sp:calls "Duration::from_millis" .
 code:fb1fa1cb393e1e754d3a4117a427a1829c9a485b74d8d59ccf2536ec9b047653 sp:calls "Duration::from_secs" .
 code:fb1fa1cb393e1e754d3a4117a427a1829c9a485b74d8d59ccf2536ec9b047653 sp:calls "Err" .
@@ -236866,6 +237386,9 @@ function:b5e445a299e52a031b1c303be0131194df9a56d04b8df5c1a0cfeb7876055147 sp:exe
 function:b5e445a299e52a031b1c303be0131194df9a56d04b8df5c1a0cfeb7876055147 sp:file code:e60f27db4c97662c81b67568c1253d26baffc540873ca9c6778cb5df29fd3a0f .
 function:b5e445a299e52a031b1c303be0131194df9a56d04b8df5c1a0cfeb7876055147 sp:kind "RustFunction" .
 function:b5e445a299e52a031b1c303be0131194df9a56d04b8df5c1a0cfeb7876055147 sp:name "validate" .
+function:b5ec5dbee9b2eddca1c2d32c15214d260739300ae003e1e123b1d0ec460bd892 sp:file code:8a1242b26246281f452dc9f95211842dd00dac98a19bb3691dd96edc8194c1e7 .
+function:b5ec5dbee9b2eddca1c2d32c15214d260739300ae003e1e123b1d0ec460bd892 sp:kind "RustFunction" .
+function:b5ec5dbee9b2eddca1c2d32c15214d260739300ae003e1e123b1d0ec460bd892 sp:name "drawing_concepts" .
 function:b5f7d7e7e52d8a07447cdec7950fa6451e131ad3e0ab8b78e94b5db473e3f990 sp:executes <urn:oev2:design:semantic_query_source_order_schedule> .
 function:b5f7d7e7e52d8a07447cdec7950fa6451e131ad3e0ab8b78e94b5db473e3f990 sp:file code:a60f241ac25aa16480c028fe15c14504ee2a6986b6f7cde65b22857b3c6a51e5 .
 function:b5f7d7e7e52d8a07447cdec7950fa6451e131ad3e0ab8b78e94b5db473e3f990 sp:kind "RustFunction" .

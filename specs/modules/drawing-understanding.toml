@@ -25,6 +25,12 @@ role = "Method of record for the reverse drawing route: source conservation, iso
 applicability = "Two-dimensional DXF read from a DWG through a pinned converter; thresholds and view heuristics calibrated on development drawings remain to be evaluated on others"
 
 [[sources]]
+id = "drawing_concept_catalogue"
+identity = "crates/oe-drawing/knowledge/concepts/G1.toml ... G9.toml; national drafting standards (GB/T 4457, 4458, 4459, 1182, 17851, 131, 324, 14689-14692, 14665, 16675, 10609 and others) and two textbooks, cited per card by clause and page"
+role = "Catalogue of every drafting representation concept with paraphrased meaning, parts, variants, DXF forms, recognition cues, confusions, relations, frequency, sources and coverage status; recognition cards link to it"
+applicability = "Planning and driving recognition of two-dimensional DXF drawings; knowledge candidates until reviewed by an expert"
+
+[[sources]]
 id = "drawing_representation_knowledge"
 identity = "crates/oe-drawing/knowledge/drawing-representation.toml; GB/T 1182-2018 chapters 5-8 (symbols, toleranced feature leaders on the outline or its extension, 7.4 cylindrical and spherical zones); GB/T 17851-2022; GB/T 4459.5-1999 table 1; GB/T 4457.4-2002; GB/T 4457.5-2013; GB/T 4458.1-2002; GB/T 4458.4-2003; expert corrections cited per card"
 role = "Drafting representation knowledge read by recognition at run time: one card per concept with meaning, components, drawing variants, geometric relations as parameters, counter-examples and sources; each card names the tests of its variants and counter-examples"
@@ -41,7 +47,7 @@ platform = "Rust 1.95；只收源字节的隔离 worker 依赖 macOS sandbox-exe
 effects = "只读源字节与 Project；在新输出目录写关系图、复核、检查页与回执；不改源图、模型、Project 或 HEAD"
 failures = "第一步失败即停，后续步骤记为未运行；保留失败、未知与部分结果；结构校验不等于工程采用"
 status = "source_only"
-source_refs = ["md_engineering_expression_basis", "drawing_understanding_method", "drawing_representation_knowledge"]
+source_refs = ["md_engineering_expression_basis", "drawing_understanding_method", "drawing_representation_knowledge", "drawing_concept_catalogue"]
 
 [[types]]
 name = "MdNativeLayerMember"
@@ -1603,6 +1609,364 @@ applicability="DXF source expression candidates under the finite dxf-expression-
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types]]
+name="MdDrawingConceptGroup"
+contract_group="engineering"
+meaning="One group of the drafting concept catalogue: every representation concept a reader of two-dimensional mechanical drawings must recognise"
+identity="Group id"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="Catalogue schema"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="group"
+rust_type="String"
+required=true
+format="typed"
+meaning="Group id"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+allowed_values=["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"]
+
+[[types.fields]]
+name="label"
+rust_type="String"
+required=true
+format="typed"
+meaning="Group name"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="concepts"
+rust_type="Vec<MdDrawingConcept>"
+required=true
+format="typed"
+meaning="Concept cards of the group"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types]]
+name="MdDrawingConcept"
+contract_group="engineering"
+meaning="Drafting concept card: meaning, parts, drawing variants, DXF forms, recognition cues, confusions, relations, frequency, sources and coverage status"
+identity="Concept id"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="Stable concept id (DC-<group>-<number>)"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="name"
+rust_type="String"
+required=true
+format="typed"
+meaning="Standard term"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="aliases"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Other names in the sources"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="group"
+rust_type="String"
+required=true
+format="typed"
+meaning="Group id"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+allowed_values=["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"]
+
+[[types.fields]]
+name="kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="Kind of representation"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="What the representation means on a drawing"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="components"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Parts and their arrangement"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="variants"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Editions and drawing forms"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="dxf_forms"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="How it is stored in DXF"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="recognition"
+rust_type="String"
+required=true
+format="typed"
+meaning="Anchor and relations that identify it, and how to tell it from confusions"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="confusions"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="What it is confused with"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="related"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Related concept ids"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="priority"
+rust_type="String"
+required=true
+format="typed"
+meaning="Frequency on ordinary mechanical drawings"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+allowed_values=["high", "medium", "low", "rare"]
+
+[[types.fields]]
+name="text_forms"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Typical written forms"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="sources"
+rust_type="Vec<MdConceptSource>"
+required=true
+format="typed"
+meaning="Standard clauses and textbook pages"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="knowledge_units"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Knowledge-system units"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="recognition_cards"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Recognition cards that implement it"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="recognizer"
+rust_type="String"
+required=true
+format="typed"
+meaning="Recognition coverage"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+allowed_values=["none", "partial", "card"]
+
+[[types.fields]]
+name="seen_on_drawing"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Evaluation drawings it was seen on"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="expert_checked"
+rust_type="bool"
+required=true
+format="typed"
+meaning="Whether an expert has reviewed the card"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="notes"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Uncertainties and points from general practice, when there are any"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types]]
+name="MdConceptSource"
+contract_group="engineering"
+meaning="Source locator of a concept card"
+identity="Document, clause and page"
+
+[[types.fields]]
+name="document"
+rust_type="String"
+required=true
+format="typed"
+meaning="Standard number or textbook"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="clause"
+rust_type="String"
+required=true
+format="typed"
+meaning="Clause, table or figure"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="page"
+rust_type="i64"
+required=true
+format="typed"
+meaning="Physical page of the library copy"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types]]
 name="MdRepresentationKnowledge"
 contract_group="engineering"
 meaning="Drafting representation knowledge read by recognition: one card per concept"
@@ -1776,6 +2140,18 @@ rust_type="Vec<MdRepresentationCounterExample>"
 required=true
 format="typed"
 meaning="What the concept must not be confused with"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="concepts"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Ids of the catalogue concepts the card implements"
 unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
 precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
 write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
@@ -2514,6 +2890,15 @@ check="discover_expressions"
 rust_path="crates/oe-drawing/src/review.rs"
 statement="Expression kind is derived from display text, construction and checked conventions, independent of native primitive and DIMENSION enum; members retain source identity and bounded intervals; structural use of a shared source is limited to spans between structural junctions or explained free ends, minus coincident higher-precedence sources; every free end of a visible or hidden outline span carries a typed interruption cause; outline inferred across text breaks or local sections is kept apart from source members; outline is assembled into structural lines whose line type follows the structure; every source domain is covered; unresolved views and targets remain explicit; drafting representation knowledge cards are parsed and validated when recognition runs, their parameters drive the rules that use them, and every expression or member a card produces names the card"
 severity="error"
+
+[[validations]]
+id="md_concepts_every_concept_card_is_complete_and_linked"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="every_concept_card_is_complete_and_linked"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="All concept card files parse into the generated types; ids unique; required fields non-empty; recognition cards and concept cards link both ways"
+scope="Knowledge completeness and linkage; recognition quality is evaluated separately"
 
 [[validations]]
 id="md_representation_datum_old_circle_bar_loose_is_one_symbol"

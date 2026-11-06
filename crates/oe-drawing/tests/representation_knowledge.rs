@@ -3,7 +3,7 @@
 //! None of these fixtures is taken from a real drawing: handles, coordinates and layer names
 //! are invented, and no expert reference is read.
 use oe_contracts::{MdEngineeringExpression, MdEngineeringExpressionGraph};
-use oe_drawing::engineering_expression::{USED_CARDS, discover, representation_knowledge};
+use oe_drawing::engineering_expression::{USED_CARDS, discover, drawing_concepts, representation_knowledge};
 use std::collections::BTreeSet;
 
 fn ent(kind: &str, id: &str, layer: &str, tags: &str) -> String {
@@ -705,5 +705,24 @@ fn every_card_is_used_and_every_named_test_exists() {
     }
     for c in ["datum_feature_symbol", "center_hole_symbol", "gdt_frame_symbol"] {
         assert!(k.cards.iter().find(|x| x.id == c).unwrap().variants.len() >= 2, "{c}");
+    }
+}
+
+#[test]
+fn every_concept_card_is_complete_and_linked() {
+    let groups = drawing_concepts().expect("concept catalogue parses, validates and links both ways");
+    assert_eq!(groups.len(), 9);
+    let total: usize = groups.iter().map(|g| g.concepts.len()).sum();
+    assert!(total >= 900, "catalogue covers the drafting concepts: {total}");
+    for g in groups {
+        assert!(!g.concepts.is_empty(), "{}", g.group);
+        for c in &g.concepts {
+            assert!(["high", "medium", "low", "rare"].contains(&c.priority.as_str()), "{}", c.id);
+            assert!(c.meaning.chars().count() <= 400 && c.components.iter().all(|x| x.chars().count() <= 400), "{} paraphrase length", c.id);
+        }
+    }
+    let cards = representation_knowledge().unwrap();
+    for card in &cards.cards {
+        assert!(!card.concepts.is_empty(), "{} names its concepts", card.id);
     }
 }

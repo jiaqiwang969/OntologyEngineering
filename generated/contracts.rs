@@ -2752,6 +2752,9 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdCadcraftRuntime", "repository", "String"),
     ("MdCadcraftRuntime", "schema", "String"),
     ("MdCadcraftRuntime", "source_commit", "String"),
+    ("MdConceptSource", "clause", "String"),
+    ("MdConceptSource", "document", "String"),
+    ("MdConceptSource", "page", "i64"),
     ("MdDiscoveredUse", "consumer_id", "String"),
     ("MdDiscoveredUse", "engineering_target", "Option<String>"),
     ("MdDiscoveredUse", "id", "String"),
@@ -2761,6 +2764,31 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDiscoveredUse", "role", "String"),
     ("MdDiscoveredUse", "rule", "String"),
     ("MdDiscoveredUse", "state", "String"),
+    ("MdDrawingConcept", "aliases", "Vec<String>"),
+    ("MdDrawingConcept", "components", "Vec<String>"),
+    ("MdDrawingConcept", "confusions", "Vec<String>"),
+    ("MdDrawingConcept", "dxf_forms", "Vec<String>"),
+    ("MdDrawingConcept", "expert_checked", "bool"),
+    ("MdDrawingConcept", "group", "String"),
+    ("MdDrawingConcept", "id", "String"),
+    ("MdDrawingConcept", "kind", "String"),
+    ("MdDrawingConcept", "knowledge_units", "Vec<String>"),
+    ("MdDrawingConcept", "meaning", "String"),
+    ("MdDrawingConcept", "name", "String"),
+    ("MdDrawingConcept", "notes", "Option<String>"),
+    ("MdDrawingConcept", "priority", "String"),
+    ("MdDrawingConcept", "recognition", "String"),
+    ("MdDrawingConcept", "recognition_cards", "Vec<String>"),
+    ("MdDrawingConcept", "recognizer", "String"),
+    ("MdDrawingConcept", "related", "Vec<String>"),
+    ("MdDrawingConcept", "seen_on_drawing", "Vec<String>"),
+    ("MdDrawingConcept", "sources", "Vec<MdConceptSource>"),
+    ("MdDrawingConcept", "text_forms", "Vec<String>"),
+    ("MdDrawingConcept", "variants", "Vec<String>"),
+    ("MdDrawingConceptGroup", "concepts", "Vec<MdDrawingConcept>"),
+    ("MdDrawingConceptGroup", "group", "String"),
+    ("MdDrawingConceptGroup", "label", "String"),
+    ("MdDrawingConceptGroup", "schema", "String"),
     ("MdDrawingRouteFile", "bytes", "u64"),
     ("MdDrawingRouteFile", "path", "String"),
     ("MdDrawingRouteFile", "sha256", "String"),
@@ -2887,6 +2915,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdPinnedFile", "path", "String"),
     ("MdPinnedFile", "sha256", "String"),
     ("MdRepresentationCard", "components", "Vec<MdRepresentationComponent>"),
+    ("MdRepresentationCard", "concepts", "Vec<String>"),
     ("MdRepresentationCard", "counter_examples", "Vec<MdRepresentationCounterExample>"),
     ("MdRepresentationCard", "expression_kind", "String"),
     ("MdRepresentationCard", "id", "String"),
@@ -5527,6 +5556,31 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDiscoveredUse", "state", "candidate"),
     ("MdDiscoveredUse", "state", "observed"),
     ("MdDiscoveredUse", "state", "unknown"),
+    ("MdDrawingConcept", "group", "G1"),
+    ("MdDrawingConcept", "group", "G2"),
+    ("MdDrawingConcept", "group", "G3"),
+    ("MdDrawingConcept", "group", "G4"),
+    ("MdDrawingConcept", "group", "G5"),
+    ("MdDrawingConcept", "group", "G6"),
+    ("MdDrawingConcept", "group", "G7"),
+    ("MdDrawingConcept", "group", "G8"),
+    ("MdDrawingConcept", "group", "G9"),
+    ("MdDrawingConcept", "priority", "high"),
+    ("MdDrawingConcept", "priority", "low"),
+    ("MdDrawingConcept", "priority", "medium"),
+    ("MdDrawingConcept", "priority", "rare"),
+    ("MdDrawingConcept", "recognizer", "card"),
+    ("MdDrawingConcept", "recognizer", "none"),
+    ("MdDrawingConcept", "recognizer", "partial"),
+    ("MdDrawingConceptGroup", "group", "G1"),
+    ("MdDrawingConceptGroup", "group", "G2"),
+    ("MdDrawingConceptGroup", "group", "G3"),
+    ("MdDrawingConceptGroup", "group", "G4"),
+    ("MdDrawingConceptGroup", "group", "G5"),
+    ("MdDrawingConceptGroup", "group", "G6"),
+    ("MdDrawingConceptGroup", "group", "G7"),
+    ("MdDrawingConceptGroup", "group", "G8"),
+    ("MdDrawingConceptGroup", "group", "G9"),
     ("MdDrawingRouteReceipt", "status", "failed"),
     ("MdDrawingRouteReceipt", "status", "page_not_checked"),
     ("MdDrawingRouteReceipt", "status", "passed"),
@@ -20058,6 +20112,28 @@ impl MdCadcraftRuntime {
     }
 }
 
+/// Source locator of a concept card
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdConceptSource {
+    /// Clause, table or figure
+    pub clause: String,
+    /// Standard number or textbook
+    pub document: String,
+    /// Physical page of the library copy
+    pub page: i64,
+}
+impl MdConceptSource {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.clause.trim().is_empty() { failures.push("MdConceptSource.clause:required".into()); }
+        if self.document.trim().is_empty() { failures.push("MdConceptSource.document:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
 /// Evidence-bound usage; physical ownership and competing uses are retained
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -20094,6 +20170,99 @@ impl MdDiscoveredUse {
 
         if !["axis_candidate","block_unresolved","construction_native","dimension_angle","dimension_diameter","dimension_linear","dimension_other","dimension_radius","fill_unresolved","geometry_candidate","hatch_native","hidden_candidate","leader_native","other_unresolved","text_native","tolerance_native",].contains(&self.role.as_str()) { failures.push("MdDiscoveredUse.role:allowed_values".into()); }
         if !["candidate","observed","unknown",].contains(&self.state.as_str()) { failures.push("MdDiscoveredUse.state:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Drafting concept card: meaning, parts, drawing variants, DXF forms, recognition cues, confusions, relations, frequency, sources and coverage status
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingConcept {
+    /// Other names in the sources
+    pub aliases: Vec<String>,
+    /// Parts and their arrangement
+    pub components: Vec<String>,
+    /// What it is confused with
+    pub confusions: Vec<String>,
+    /// How it is stored in DXF
+    pub dxf_forms: Vec<String>,
+    /// Whether an expert has reviewed the card
+    pub expert_checked: bool,
+    /// Group id
+    pub group: String,
+    /// Stable concept id (DC-<group>-<number>)
+    pub id: String,
+    /// Kind of representation
+    pub kind: String,
+    /// Knowledge-system units
+    pub knowledge_units: Vec<String>,
+    /// What the representation means on a drawing
+    pub meaning: String,
+    /// Standard term
+    pub name: String,
+    /// Uncertainties and points from general practice, when there are any
+    pub notes: Option<String>,
+    /// Frequency on ordinary mechanical drawings
+    pub priority: String,
+    /// Anchor and relations that identify it, and how to tell it from confusions
+    pub recognition: String,
+    /// Recognition cards that implement it
+    pub recognition_cards: Vec<String>,
+    /// Recognition coverage
+    pub recognizer: String,
+    /// Related concept ids
+    pub related: Vec<String>,
+    /// Evaluation drawings it was seen on
+    pub seen_on_drawing: Vec<String>,
+    /// Standard clauses and textbook pages
+    pub sources: Vec<MdConceptSource>,
+    /// Typical written forms
+    pub text_forms: Vec<String>,
+    /// Editions and drawing forms
+    pub variants: Vec<String>,
+}
+impl MdDrawingConcept {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.group.trim().is_empty() { failures.push("MdDrawingConcept.group:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdDrawingConcept.id:required".into()); }
+        if self.kind.trim().is_empty() { failures.push("MdDrawingConcept.kind:required".into()); }
+        if self.meaning.trim().is_empty() { failures.push("MdDrawingConcept.meaning:required".into()); }
+        if self.name.trim().is_empty() { failures.push("MdDrawingConcept.name:required".into()); }
+        if self.priority.trim().is_empty() { failures.push("MdDrawingConcept.priority:required".into()); }
+        if self.recognition.trim().is_empty() { failures.push("MdDrawingConcept.recognition:required".into()); }
+        if self.recognizer.trim().is_empty() { failures.push("MdDrawingConcept.recognizer:required".into()); }
+
+        if !["G1","G2","G3","G4","G5","G6","G7","G8","G9",].contains(&self.group.as_str()) { failures.push("MdDrawingConcept.group:allowed_values".into()); }
+        if !["high","low","medium","rare",].contains(&self.priority.as_str()) { failures.push("MdDrawingConcept.priority:allowed_values".into()); }
+        if !["card","none","partial",].contains(&self.recognizer.as_str()) { failures.push("MdDrawingConcept.recognizer:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One group of the drafting concept catalogue: every representation concept a reader of two-dimensional mechanical drawings must recognise
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingConceptGroup {
+    /// Concept cards of the group
+    pub concepts: Vec<MdDrawingConcept>,
+    /// Group id
+    pub group: String,
+    /// Group name
+    pub label: String,
+    /// Catalogue schema
+    pub schema: String,
+}
+impl MdDrawingConceptGroup {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.group.trim().is_empty() { failures.push("MdDrawingConceptGroup.group:required".into()); }
+        if self.label.trim().is_empty() { failures.push("MdDrawingConceptGroup.label:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdDrawingConceptGroup.schema:required".into()); }
+
+        if !["G1","G2","G3","G4","G5","G6","G7","G8","G9",].contains(&self.group.as_str()) { failures.push("MdDrawingConceptGroup.group:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -20645,6 +20814,8 @@ impl MdPinnedFile {
 pub struct MdRepresentationCard {
     /// Parts the concept is drawn with
     pub components: Vec<MdRepresentationComponent>,
+    /// Ids of the catalogue concepts the card implements
+    pub concepts: Vec<String>,
     /// What the concept must not be confused with
     pub counter_examples: Vec<MdRepresentationCounterExample>,
     /// Expression kind or family the card produces or qualifies

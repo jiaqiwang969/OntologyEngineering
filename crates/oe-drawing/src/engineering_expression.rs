@@ -36,7 +36,7 @@ mod topology;
 
 #[path = "representation.rs"]
 mod representation;
-pub use representation::{USED_CARDS, representation_knowledge};
+pub use representation::{USED_CARDS, drawing_concepts, representation_knowledge};
 
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";

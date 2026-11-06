@@ -28,6 +28,78 @@ pub const USED_CARDS: [&str; 10] = [
     "visible_edge_line",
 ];
 
+/// Concept catalogue: one card per drafting representation concept, by group.
+const CONCEPT_FILES: [(&str, &str); 9] = [
+    ("G1", include_str!("../knowledge/concepts/G1.toml")),
+    ("G2", include_str!("../knowledge/concepts/G2.toml")),
+    ("G3", include_str!("../knowledge/concepts/G3.toml")),
+    ("G4", include_str!("../knowledge/concepts/G4.toml")),
+    ("G5", include_str!("../knowledge/concepts/G5.toml")),
+    ("G6", include_str!("../knowledge/concepts/G6.toml")),
+    ("G7", include_str!("../knowledge/concepts/G7.toml")),
+    ("G8", include_str!("../knowledge/concepts/G8.toml")),
+    ("G9", include_str!("../knowledge/concepts/G9.toml")),
+];
+const SCHEMA_C: &str = "oev2.drawing-concept-catalogue/1";
+
+/// The parsed and checked concept catalogue; every concept card is complete, ids are unique and
+/// recognition cards and concept cards name each other.
+pub fn drawing_concepts() -> Result<&'static Vec<oe_contracts::MdDrawingConceptGroup>> {
+    static K: OnceLock<std::result::Result<Vec<oe_contracts::MdDrawingConceptGroup>, String>> = OnceLock::new();
+    K.get_or_init(|| {
+        let cards = representation_knowledge().map_err(|e| e.to_string())?;
+        let mut bad: Vec<String> = Vec::new();
+        let mut groups = Vec::new();
+        let mut ids = BTreeSet::new();
+        let mut linked: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
+        for (g, text) in CONCEPT_FILES {
+            let grp: oe_contracts::MdDrawingConceptGroup =
+                toml::from_str(text).map_err(|e| format!("drawing_concept_parse:{g}: {e}"))?;
+            bad.extend(grp.validate().err().unwrap_or_default());
+            if grp.schema != SCHEMA_C || grp.group != g {
+                bad.push(format!("group_header:{g}"));
+            }
+            for c in &grp.concepts {
+                bad.extend(c.validate().err().unwrap_or_default());
+                for s in &c.sources {
+                    bad.extend(s.validate().err().unwrap_or_default());
+                }
+                if !ids.insert(c.id.clone()) || c.group != g || !c.id.starts_with(&format!("DC-{g}-")) {
+                    bad.push(format!("concept_id:{}", c.id));
+                }
+                if c.meaning.trim().is_empty() || c.components.is_empty() || c.dxf_forms.is_empty() || c.recognition.trim().is_empty() || c.sources.is_empty() {
+                    bad.push(format!("incomplete_concept:{}", c.id));
+                }
+                for r in &c.recognition_cards {
+                    linked.entry(r.clone()).or_default().insert(c.id.clone());
+                }
+                if (c.recognizer == "card") != !c.recognition_cards.is_empty() {
+                    bad.push(format!("recognizer_status:{}", c.id));
+                }
+            }
+            groups.push(grp);
+        }
+        for card in &cards.cards {
+            let named: BTreeSet<String> = card.concepts.iter().cloned().collect();
+            if named.is_empty() || named.iter().any(|x| !ids.contains(x)) || linked.get(&card.id).cloned().unwrap_or_default() != named {
+                bad.push(format!("card_concept_link:{}", card.id));
+            }
+        }
+        for r in linked.keys() {
+            if !cards.cards.iter().any(|c| &c.id == r) {
+                bad.push(format!("unknown_recognition_card:{r}"));
+            }
+        }
+        if bad.is_empty() {
+            Ok(groups)
+        } else {
+            Err(format!("drawing_concept_contract: {}", bad.join(",")))
+        }
+    })
+    .as_ref()
+    .map_err(|e| anyhow::anyhow!(e.clone()))
+}
+
 /// The parsed and checked knowledge (parsed once per process).
 pub fn representation_knowledge() -> Result<&'static MdRepresentationKnowledge> {
     static K: OnceLock<std::result::Result<MdRepresentationKnowledge, String>> = OnceLock::new();

@@ -1,0 +1,877 @@
+# Drafting concept catalogue, group G9: 零件图组成、标题栏与技术要求.
+# One card per representation concept; paraphrased from the cited sources (page = physical page of the library copy).
+schema = "oev2.drawing-concept-catalogue/1"
+group = "G9"
+label = "零件图组成、标题栏与技术要求"
+
+[[concepts]]
+id = "DC-G9-001"
+name = "允许性工艺注语"
+aliases = []
+group = "G9"
+kind = "note"
+meaning = "放宽制造方法的注语，说明某处允许采用锉修、打磨、分段制造，或允许焊接并在焊后修整，属于对工艺的许可而不是强制要求。"
+components = ["典型短语：“允许锉修”“允许打磨”“允许分段制造”“允许焊接，焊后修整”。", "可作为技术要求中的一条，也可用指引线直接注在相关部位旁。", "常带范围限定，如“××处允许打磨”。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT item inside the 技术要求 block (layer 11)", "LEADER + TEXT placed next to the feature"]
+recognition = "以文字中“允许”后紧接工艺动词（锉修、打磨、分段制造、焊接、补焊）为锚点；在技术要求块内作为条目处理，在视图中则应有指引线指向某一表面。与焊接技术要求的区别：后者规定焊接方法、焊条和焊缝质量，是强制要求。"
+confusions = ["焊接技术要求注语：规定性而非许可性。", "否定类质量要求（“不允许有卡阻”“不得有裂纹”）：是限制而不是许可。"]
+related = ["DC-G9-002", "DC-G7-028"]
+priority = "low"
+text_forms = ["允许锉修", "允许打磨", "允许分段制造", "允许焊接，焊后修整"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 48-50"
+page = 12
+
+[[concepts]]
+id = "DC-G9-002"
+name = "技术要求"
+aliases = []
+group = "G9"
+kind = "note"
+meaning = "图样上以“技术要求”为标题的文字块，用简要文字分条说明不能或不便用符号、代号表达的制造、检验和装配要求，如热处理与硬度、去毛刺锐边、未注倒角圆角和公差、铸锻件质量、时效、表面处理、试验等；零件图、装配图和弹簧等图上都有。"
+components = ["标题“技术要求”，在条目块上方居中或左对齐，字高通常比条目大一号左右。", "条目按“1.”“2.”…逐条编号书写，每条一句或一段；只有一条时可不编号。", "位置：一般在标题栏上方或左侧的空白处，靠近图纸右下角，在视图之外。", "广义的技术要求还包括图上的尺寸公差、几何公差、表面结构等符号；本概念指文字块。"]
+variants = ["零件图技术要求", "装配图技术要求", "弹簧图技术要求"]
+dxf_forms = ["MTEXT with a '技术要求' heading and \\P paragraph breaks, or separate TEXT entities one per line (layer 11)", "heading TEXT height about 1.4× the item height (e.g. 7 vs 5, or 5 vs 3.5)", "items may contain %%c, %%p, %%d codes and standard numbers such as 'GB/T 1804-m'"]
+recognition = "以内容等于“技术要求”（允许字间有空格，如“技 术 要 求”）的文字为锚点；从其下方约0.5~2倍字高处开始，取若干行左对齐文字，行首匹配“^\\d+\\s*[.、．]”的为条目，直到行距明显变大或遇到表格线为止。文字块通常在标题栏上方或左方、视图之外。与标题栏（有格线）、明细栏备注（在表格内）、局部注释（有指引线）区分。"
+confusions = ["标题栏：表格格线内的字段。", "明细栏备注列：单元格内的短语。", "指引线注释：直接指向某表面的单条说明。", "表格图或齿轮的参数表：表格形式。"]
+related = ["DC-G8-011", "DC-G9-003", "DC-G9-004", "DC-G9-005", "DC-G9-009", "DC-G9-010", "DC-G9-011", "DC-G9-014", "DC-G7-025", "DC-G4-070", "DC-G5-025"]
+priority = "high"
+text_forms = ["技术要求", "1. 调质处理220~250HBW。", "2. 去毛刺、锐边。", "1. 表面高频淬火50~55HRC。", "未注尺寸公差按GB/T 1804-m"]
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-2"
+page = 293
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-4 引言"
+page = 303
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-57"
+page = 328
+
+[[concepts]]
+id = "DC-G9-003"
+name = "未注倒角注语"
+aliases = []
+group = "G9"
+kind = "note"
+meaning = "技术要求中对图上未单独标注的倒角统一规定尺寸的说明，如“未注倒角C1”；所有倒角都相同时写“全部倒角为C×”。这时图上的倒角可以不画或画出但不逐个标注。"
+components = ["典型写法：“未注倒角C1”“未注倒角为C0.5”“全部倒角为C2”。", "C表示45°倒角，后面的数字是倒角的轴向长度（mm）。", "图上对应的倒角可按简化画法省略不画，或画出而不注尺寸。"]
+variants = ["未注倒角为 C×", "全部倒角为 C×"]
+dxf_forms = ["TEXT/MTEXT item inside the 技术要求 block; sometimes placed alone near the title block"]
+recognition = "以匹配“(未注|全部)倒角(为)?\\s*C\\s*\\d+(\\.\\d+)?”的文字为锚点。识别后，可把图中没有尺寸的45°小斜边（两端点在轮廓转角处，长度约等于C值乘比例）解释为由该注语规定的倒角。与图上倒角尺寸“C1”的区别：后者有指引线或尺寸线指向具体倒角；与“锐角倒钝”的区别：后者不给尺寸。"
+confusions = ["倒角尺寸C×：在视图上单独标注。", "锐角倒钝、去毛刺：不规定尺寸。", "未注圆角说明：给的是R而不是C。"]
+related = ["DC-G1-070", "DC-G4-068", "DC-G4-081", "DC-G3-091", "DC-G4-040", "DC-G9-010", "DC-G9-002"]
+priority = "high"
+text_forms = ["未注倒角C1", "未注倒角为C0.5", "全部倒角为C2"]
+knowledge_units = ["K03", "K52", "K55", "K39", "K29"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5"
+page = 8
+
+[[concepts]]
+id = "DC-G9-004"
+name = "未注铸造圆角注语"
+aliases = []
+group = "G9"
+kind = "note"
+meaning = "铸件零件图技术要求中对未单独标注的铸造圆角统一规定半径的说明，如“未注铸造圆角R1~R3”“未注铸造圆角R5”。"
+components = ["典型写法：“未注铸造圆角R×”“未注铸造圆角R1~R3”；简化表示法中也可写“全部铸造圆角R5”。", "图上铸件非加工面的转角画成小圆弧或不画，不逐个标注半径。", "常与“铸件应经时效处理”等铸件要求同列。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT item in the 技术要求 block (layer 11)", "the unspecified fillets themselves as small ARC entities between LINE outlines, without radius DIMENSION"]
+recognition = "以匹配“(未注|全部)铸造圆角\\s*R\\s*\\d+(\\.\\d+)?(\\s*[~～-]\\s*R?\\d+(\\.\\d+)?)?”的文字为锚点；图中应有未注半径的小圆弧过渡，其半径约为注语值乘比例。标题栏材料为铸造材料（HT、QT、ZG、ZL等）可作旁证。与半径尺寸R×（有尺寸线指向某个圆弧）和一般“未注圆角R×”（没有“铸造”二字，可用于机加工件）区分。"
+confusions = ["半径尺寸R：针对单个圆弧的标注。", "未注倒角注语：给的是C而不是R。", "一般未注圆角说明：没有“铸造”二字。"]
+related = ["DC-G3-067", "DC-G3-112", "DC-G1-071", "DC-G9-009", "DC-G9-002"]
+priority = "medium"
+text_forms = ["未注铸造圆角R1~R3", "未注铸造圆角R2", "全部铸造圆角R5"]
+knowledge_units = ["K03", "K52", "K55", "K39", "K29", "K44"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5"
+page = 8
+
+[[concepts]]
+id = "DC-G9-005"
+name = "表面处理与涂装注语"
+aliases = []
+group = "G9"
+kind = "note"
+meaning = "技术要求中说明零件表面镀覆、化学处理和涂装要求的注语，如镀铬、钝化、磷化、阳极氧化、抛光、喷漆，可用镀覆代号表示，并可用“镀前、镀后、涂前、涂后”说明要求适用的阶段。"
+components = ["适用范围：全部表面、除注明“不镀覆”以外的表面、非工作表面、未加工处等。", "处理及代号：如镀铬 Fe/Ep·Cr25b、钝化 Cu/Ct·P、磷化 Fe/Ct·MnPh、阳极氧化 Al/Et·A·Cl(BK)，格式为基体材料/处理方法·镀覆层。", "涂装：如“非工作表面抛光、喷漆”“未加工处涂××漆”“喷××色漆”。", "阶段限定：“镀前”“镀后”“涂前”“涂后”，常与尺寸配合使用。"]
+variants = ["镀覆代号形式 Fe/Ep·Cr…", "钝化", "磷化", "阳极氧化", "喷漆/涂漆", "镀前/镀后/涂前/涂后"]
+dxf_forms = ["TEXT/MTEXT in 技术要求; coating designations contain '/', the middle dot '·' (often typed as '.' or '•') and letters", "leader note at a surface, or a thick dash-dot line (layer 06) marking the treated zone together with a note"]
+recognition = "以关键词（镀、钝化、磷化、氧化、发黑、喷漆、涂漆、抛光、喷砂、喷丸）或镀覆代号模式“[A-Z][a-z]?/[A-Z][a-z]?[·.•]”为锚点；“全部表面”“除…外”“非工作表面”等范围词用于确定作用对象。与表面结构符号中的加工方法（写在表面结构符号长边横线上）和热处理注语（淬火、回火、调质、渗碳）区分。"
+confusions = ["表面结构要求中的加工方法或表面处理：写在表面结构符号的横线上。", "粗点画线表示的局部处理范围：线型只标记区域，注语说明处理内容。", "热处理注语：淬火、调质、渗碳、时效等。"]
+related = ["DC-G6-060", "DC-G4-073", "DC-G9-002", "DC-G7-025"]
+priority = "medium"
+text_forms = ["其余表面镀铬 Fe/Ep·Cr25b", "全部表面磷化 Fe/Ct·MnPh", "全部表面阳极氧化 Al/Et·A·Cl(BK)", "非工作表面抛光、喷漆", "未加工处涂××漆", "镀后"]
+knowledge_units = ["K03", "K52", "K55", "K33"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5"
+page = 7
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5"
+page = 8
+
+[[concepts]]
+id = "DC-G9-006"
+name = "试验注语"
+aliases = []
+group = "G9"
+kind = "note"
+meaning = "技术要求中规定试验和检验的注语，如压力试验（在×MPa压力下保持×min不得渗漏）、焊缝气密性检查、装配后按某标准进行性能、寿命或可靠性试验、空载试验等。"
+components = ["试验对象：零件、焊缝、密封处或整个部件。", "试验条件：压力值（MPa）、保压时间（min）、试验介质，或引用的试验标准号。", "合格判据：不渗漏、不漏气、运行平稳、响声均匀等。"]
+variants = ["压力试验", "气密性检查", "性能/寿命/可靠性试验"]
+dxf_forms = ["TEXT/MTEXT item in the 技术要求 block (layer 11); pressure written as '0.6MPa' or '0.6 MPa'"]
+recognition = "以“试验”“气密性”“压力下”“保压”“渗漏”“漏气”“漏油”或“按GB/T…进行…试验”为锚点，常与数值加“MPa”“min”同时出现。与材料性能要求（HRC、HBW、抗拉强度）区分，后者属于热处理或材料项。"
+confusions = ["材料性能或硬度要求：HRC、HBW、N/mm²，属于材料或热处理。", "焊接工艺要求：焊接方法、焊条牌号等。"]
+related = ["DC-G8-011", "DC-G9-002", "DC-G7-028"]
+priority = "low"
+text_forms = ["在××MPa压力下试验××min，不得出现渗漏", "焊缝在0.05MPa表压下不漏气", "完成装配后应按GB/T ××进行性能试验", "空载试验时应运行平稳，不得漏油"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表6 23-25 38"
+page = 10
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 26"
+page = 7
+
+[[concepts]]
+id = "DC-G9-007"
+name = "配作与同钻铰注语"
+aliases = ["配作"]
+group = "G9"
+kind = "note"
+meaning = "要求某些孔或结构在与相配零件装配在一起后共同加工的注语，如“配作”“与××同钻铰”“与××零件协调制孔”“配制”；常用于定位销孔和需要对中的轴承孔，相配的两张零件图上都要注明。"
+components = ["注在相应孔的尺寸后面或下方，如“2×锥销孔Ø3 配作”“2×Ø5 与泵体同钻铰”。", "也可作为技术要求的一条，说明哪些孔与相配件合在一起加工。", "相配的两个零件（如箱体与箱盖）的零件图对应部位有同样的注语。"]
+variants = ["配作", "与××同钻铰"]
+dxf_forms = ["DIMENSION or LEADER with attached/override text containing '配作' (e.g. '2×锥销孔%%c3\\P配作')", "two-line MTEXT label: hole specification above the reference line, '配作' or '与××同钻铰' below it"]
+recognition = "以文字“配作”“同钻铰”“同钻”“协调制孔”“配制”为锚点：若它与孔尺寸（含%%c、n×、锥销孔）在同一指引线或尺寸文字中，或紧靠在同一基准线的下方，就关联到该孔。注意配作孔常只注基本尺寸，不应判为漏注公差。与普通旁注法孔标注（只有尺寸、深度、沉孔信息）和装配图上的整体装配要求区分。"
+confusions = ["尺寸公差：配作孔可能只注基本尺寸，不是漏注公差。", "装配技术要求：在装配图上整体说明；配作注语在零件图具体孔旁。", "旁注法孔标注：只含孔的尺寸信息。"]
+related = ["DC-G4-064", "DC-G9-002", "DC-G8-011"]
+priority = "medium"
+text_forms = ["2×锥销孔Ø3 配作", "2×Ø5 与泵体同钻铰", "与××零件协调制孔", "配作"]
+knowledge_units = ["K03", "K52", "K55", "K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 45"
+page = 8
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表6 19 29"
+page = 10
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 47"
+page = 12
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-18"
+page = 353
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-5 （2）"
+page = 359
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-24"
+page = 360
+
+[[concepts]]
+id = "DC-G9-008"
+name = "重要特性与关键件注语"
+aliases = []
+group = "G9"
+kind = "note"
+meaning = "说明零件或其某些尺寸、要求属于关键或重要级别的注语，如“关键件”“重要件”“关键特性”“重要特性”“本图有重要特性×处”，提示制造和检验时重点控制。"
+components = ["整图级注语：“本图有重要特性×处”，常在技术要求中或标题栏附近。", "零件级标识：“关键件”“重要件”，常写在标题栏附近或明细栏备注中。", "特性级标识：在重要尺寸或要求旁加专用标记（企业常用☆、★或带框字母等），并由注语说明标记的含义和数量。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT such as '本图有重要特性3处' in 技术要求 or near the title block", "special-characteristic mark inside DIMENSION override text (unicode ☆/★, or \\U+2606) or as a small separate TEXT/INSERT next to a dimension", "boxed-letter mark as INSERT of a small block (rectangle or triangle + letter)"]
+recognition = "两级锚点：（1）文字含“重要特性”“关键特性”“关键件”“重要件”；若写有“×处”，用数字核对标记数量。（2）尺寸文字中或尺寸数字旁出现的专用标记字符（☆、★、△或带框字母），字高与尺寸字高相当，数量应与“×处”一致。与标题栏更改区的“标记”列（更改标记字母）和阶段标记区分。"
+confusions = ["标题栏更改区“标记”列：更改标记，在标题栏内。", "阶段标记：标题栏中的阶段字母。", "理论正确尺寸的方框、参考尺寸的括号：是尺寸性质，不是重要程度。"]
+related = ["DC-G9-002", "DC-G9-023", "DC-G9-027", "DC-G4-009"]
+priority = "medium"
+text_forms = ["本图有重要特性3处", "关键件", "重要件", "关键特性", "☆"]
+knowledge_units = ["K03", "K52", "K55", "K35"]
+recognition_cards = ["special_characteristic_mark"]
+recognizer = "card"
+seen_on_drawing = ["second"]
+expert_checked = false
+notes = "注语来自 GB/T 24745 表7；特性标记的具体符号（☆、★、带框字母）是企业惯例，标准资料中没有规定。本概念已链接识别卡 special_characteristic_mark。"
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 3 18 19"
+page = 11
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 54-56"
+page = 12
+
+[[concepts]]
+id = "DC-G9-009"
+name = "铸件技术要求注语"
+aliases = []
+group = "G9"
+kind = "note"
+meaning = "铸件零件图技术要求中对铸造质量和铸后处理的说明，如不得有砂眼、缩孔、裂纹，铸件尺寸公差按某标准，起模斜度，非加工面粗糙度与涂漆，精加工前人工时效，清砂，铸出的文字和标志应清晰等。"
+components = ["缺陷要求：铸件不得有砂眼、缩孔、裂纹等缺陷。", "公差与斜度：铸件尺寸公差按××，铸件起模斜度不大于××。", "处理：铸件应经时效处理、精加工前进行人工时效、清砂处理、热处理后喷砂。", "非加工面：涂××底漆、复涂××磁漆，粗糙度、褶皱深度要求；铸字和标志应清晰。", "常与“未注铸造圆角R×”一起出现，材料多为HT、QT、ZG、ZL等铸造牌号。"]
+variants = ["起模斜度", "铸件尺寸公差按 ×", "非加工表面涂底漆/磁漆", "人工时效"]
+dxf_forms = ["TEXT/MTEXT items in the 技术要求 block (layer 11)"]
+recognition = "以关键词“铸件”“铸造”“砂眼”“缩孔”“时效”“起模斜度”“清砂”为锚点；标题栏材料栏中的铸造牌号（HT200、QT450-10、ZG230-450、ZAlSi12等）作旁证。与锻件要求（锻件、锻透、折叠、白点）区分。注意“时效处理”也属热处理，在铸件图中通常与铸件条目同列。"
+confusions = ["锻件技术要求注语：主语是锻件。", "热处理注语：时效也是热处理，需看主语和材料判断。"]
+related = ["DC-G9-004", "DC-G9-011", "DC-G3-061", "DC-G9-002", "DC-G9-022", "DC-G4-134"]
+priority = "medium"
+text_forms = ["铸件应经时效处理", "铸件不得有砂眼、缩孔和裂纹等缺陷", "铸件尺寸公差按××", "未注铸造圆角R1~R3", "时效处理，消除内应力"]
+knowledge_units = ["K03", "K52", "K55", "K44"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 63-83"
+page = 9
+
+[[concepts]]
+id = "DC-G9-010"
+name = "锐边与毛刺处理注语"
+aliases = ["去毛刺锐边"]
+group = "G9"
+kind = "note"
+meaning = "对零件棱边状态的文字要求：“锐角倒钝”（去掉锐边）、“去除毛刺飞边”“去毛刺”，或者相反的“保持锐边”（棱边不得倒钝）；是零件图技术要求中最常见的条目之一。"
+components = ["常见写法：“去毛刺、锐边”“去毛刺，锐角倒钝”“锐边倒钝”“去除毛刺飞边”。", "相反要求：“保持锐边”，常用于刃口、密封边等。", "一般不带尺寸；需要尺寸时改用倒角注语或GB/T 19096棱边状态符号。"]
+variants = ["锐角倒钝", "去除毛刺飞边", "保持锐边"]
+dxf_forms = ["TEXT/MTEXT item in the 技术要求 block (layer 11)"]
+recognition = "以关键词“毛刺”“锐边”“倒钝”“飞边”为锚点；“保持锐边”需单独判为反向要求，与“锐角倒钝”互斥。教材例图中的“去毛刺、锐边”应理解为去毛刺并倒钝锐边。与未注倒角注语（带C数值）和棱边状态符号（图形符号加数值）区分。"
+confusions = ["未注倒角注语：有C×尺寸。", "棱边状态符号（GB/T 19096）：图形符号，带正负数值。", "“锐角倒圆R0.5”一类注语：给出了圆角尺寸。"]
+related = ["DC-G9-003", "DC-G7-030", "DC-G7-023", "DC-G9-002"]
+priority = "high"
+text_forms = ["去毛刺、锐边", "锐角倒钝", "去除毛刺飞边", "保持锐边"]
+knowledge_units = ["K03", "K52", "K55", "K39", "K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "“去毛刺、锐边”理解为去毛刺并倒钝锐边，属一般读图惯例；“保持锐边”与“锐角倒钝”是相反要求。"
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5"
+page = 8
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5"
+page = 7
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-2"
+page = 293
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-57"
+page = 328
+
+[[concepts]]
+id = "DC-G9-011"
+name = "锻件技术要求注语"
+aliases = []
+group = "G9"
+kind = "note"
+meaning = "锻件零件图技术要求中对锻造质量的说明，如不允许有肉眼可见的裂纹、折叠，不允许有白点、内部裂纹和残余缩孔，非加工表面缺陷应清理并圆滑过渡，保证锻透，在能力足够的锻压设备上锻造等。"
+components = ["外观缺陷：不得有肉眼可见的裂纹、折叠和影响使用的外观缺陷。", "内部缺陷：不得有白点、内部裂纹、残余缩孔和严重偏析。", "表面清理：非加工表面缺陷应清理干净并圆滑过渡，局部清理深度不超过加工余量的一定比例。", "工艺保证：保证充分锻透，在能力足够的锻压机上成形。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT items in the 技术要求 block (layer 11)"]
+recognition = "以关键词“锻件”“锻透”“折叠”“白点”“锻压”为锚点；材料栏常为45、40Cr、42CrMo等钢号，图上可能有分模面或毛坯轮廓。与铸件注语（砂眼、清砂、时效）区分；“缩孔”两者都可能出现，需结合主语“锻件”或“铸件”判断。"
+confusions = ["铸件技术要求注语：主语为铸件，含砂眼、清砂、起模斜度等。"]
+related = ["DC-G9-009", "DC-G9-002"]
+priority = "low"
+text_forms = ["锻件不允许有肉眼可见的裂纹、折叠", "保证锻件内部充分锻透", "锻件不允许存在白点、内部裂纹"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 4-17"
+page = 7
+
+[[concepts]]
+id = "DC-G9-012"
+name = "读装配图与拆画零件图"
+aliases = []
+group = "G9"
+kind = "other"
+meaning = "从装配图了解部件的名称、用途、零件组成、装配关系和工作原理，再把某个零件从装配图中分离出来，补全形状，重新选择视图，注写尺寸和技术要求，得到零件图（拆图）的方法；也是读图程序组织装配图信息的顺序。"
+components = ["概括了解：读标题栏、明细栏，得到部件名称及标准件与非标准件的种类、数量，按序号在视图中找到各零件。", "分析视图：明确视图投影关系、剖切位置和投射方向，弄清各视图的表达重点。", "装配关系与原理：沿装配干线分析配合代号、定位、连接、密封和运动关系。", "分离零件：依据同一零件剖面线方向和间隔一致、序号圆点所在区域，在各视图中划出零件范围，补全被遮挡和省略的结构。", "拆画：按零件图原则重选主视图，移注装配图上的尺寸并把配合代号转为偏差，相配零件的尺寸和“配作”要求两边一致。"]
+variants = ["概括了解", "了解装配关系和工作原理", "分析零件", "拆画零件图"]
+dxf_forms = ["no specific entity: uses parts-list TEXT, balloon leaders, HATCH patterns (angle and scale per part) and DIMENSION fit texts such as '%%c22H7/g6'"]
+recognition = "程序实现要点：以“明细栏行→序号→指引线圆点→所在闭合区域”为链，把零件编号投到视图区域上；同一零件在各视图中的剖面线角度和间距相同（HATCH的图案角度和比例一致），相邻零件不同，据此按零件分割剖面区域；配合代号所在的尺寸指出两零件的配合面。装配图中省略的工艺结构不能当作零件“没有该结构”的证据。"
+confusions = ["读零件图：对象是单个零件，不涉及明细栏、序号和配合关系分析。"]
+related = ["DC-G9-013", "DC-G8-013", "DC-G8-025", "DC-G8-024", "DC-G2-009", "DC-G8-023"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "这是读图方法而不是图上的表达形式；用 HATCH 参数分割零件属一般 CAD 实践。"
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-5 一"
+page = 346
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-5 二"
+page = 348
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-5 拆图注意事项"
+page = 359
+
+[[concepts]]
+id = "DC-G9-013"
+name = "读零件图"
+aliases = []
+group = "G9"
+kind = "other"
+meaning = "识读零件图的一般步骤：先从标题栏了解名称、材料、比例、质量；再分析视图和结构形状；然后分析尺寸基准、定形定位尺寸、公差、表面粗糙度和技术要求；最后综合归纳，形成对零件的完整认识。"
+components = ["概括了解：由名称判断零件类别（轴套、盘盖、叉架、箱体），由材料推断加工方法（铸、锻、棒料切削），由比例估计实际大小。", "分析视图：弄清各视图的投影关系，先整体后局部，用形体分析和线面分析想象形状。", "分析尺寸和技术要求：找出长、宽、高三向尺寸基准和定形、定位尺寸；带公差代号或偏差的尺寸表示有配合关系，配合面粗糙度要求较严。", "综合归纳：把视图、尺寸和技术要求联系起来理解。"]
+variants = ["概括了解", "分析视图和结构形状", "分析尺寸和技术要求", "综合归纳"]
+dxf_forms = ["no specific entity: reading order over title-block ATTRIB/TEXT, view geometry, DIMENSION entities, tolerance and roughness symbols, and 技术要求 MTEXT"]
+recognition = "作为读图程序的组织顺序：先定位图框和标题栏，读取名称、材料和比例（比例用于把DXF中的几何换算为实际尺寸，或核对DIMENSION实测值与标注值之比）；再按视图对几何分组；然后把尺寸、公差、粗糙度、几何公差挂到对应要素上；最后读技术要求文字，补充全局规则（未注倒角、未注公差等）。尺寸基准可由多个尺寸共用的尺寸界线起点推断。"
+confusions = ["读装配图：需要明细栏、序号和配合关系分析，零件图没有这些。"]
+related = ["DC-G9-014", "DC-G9-012", "DC-G9-028", "DC-G9-002", "DC-G9-015"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "这是读图方法；比例换算与尺寸基准推断的线索属一般实践。"
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-7 一"
+page = 327
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-57 阀杆"
+page = 328
+
+[[concepts]]
+id = "DC-G9-014"
+name = "零件图的组成"
+aliases = []
+group = "G9"
+kind = "other"
+meaning = "一张完整的零件图包含四项内容：一组视图（视图、剖视、断面、局部放大图等）完整清晰地表达零件结构；完整的尺寸；技术要求（符号、代号、标记和简要文字）；填写完整的标题栏。"
+components = ["一组视图：主视图加必要的其他视图、剖视图、断面图和局部放大图。", "完整的尺寸：制造和检验需要的全部尺寸，正确、完整、清晰、合理。", "技术要求：表面结构、尺寸公差、几何公差、热处理、表面处理等，一部分用符号注在图上，一部分写在“技术要求”文字中。", "标题栏：单位名称、图名、材料、质量、比例、图号及签名和日期。"]
+variants = []
+dxf_forms = ["composite: view geometry on layers 01/02/04/05/10, DIMENSION entities, tolerance and roughness symbol INSERTs, 技术要求 MTEXT, frame and title-block INSERT"]
+recognition = "判定零件图：标题栏材料栏填有材料牌号；图上没有明细栏和带圆点指引线的零件序号；尺寸以单个零件的定形、定位尺寸为主，公差带代号是单个的（如Ø14c11），而不是孔轴配合形式（H7/g6）。四项内容可作为完整性检查；没有技术要求文字块不一定是缺陷（要求可能全用符号表达）。"
+confusions = ["装配图的组成：有明细栏和序号，尺寸只注必要的几类。", "表格图或系列零件图：零件图加参数表，多个变型共用一张图。"]
+related = ["DC-G8-013", "DC-G9-028", "DC-G9-002", "DC-G9-015", "DC-G9-013"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-1 二"
+page = 293
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-1 二、4"
+page = 294
+
+[[concepts]]
+id = "DC-G9-015"
+name = "零件图视图选择"
+aliases = []
+group = "G9"
+kind = "other"
+meaning = "零件图视图选择的原则：主视图按零件的主要加工位置（轴、套、轮盘类轴线水平）或工作位置（支座、箱体类）安放，并选最能反映形状特征和各部分相对位置的投射方向；其他视图各有表达重点，在表达清楚的前提下数量尽量少。"
+components = ["回转体类（轴、套、盘、盖）：主视图轴线水平；轴套类加断面图、局部放大图表达键槽、销孔、退刀槽；盘盖类常用全剖主视图加一个表达外形和均布孔的视图。", "非回转体类（叉架、箱体）：按工作位置或自然位置安放，一般需要2~3个或更多基本视图，再配局部视图、断面图等。", "同一零件可有多种表达方案，优先采用基本视图并在其上作剖视。"]
+variants = ["轴套类", "盘盖类", "叉架类", "箱体类"]
+dxf_forms = ["no specific entity: inferred from view layout, i.e. orientation of the main CENTER-type line (layer 05) and arrangement of view bounding boxes"]
+recognition = "可作为视图分组后的先验：轴套类主视图的主中心线（细点画线）水平且贯穿全长，周围常有移出断面（带剖切符号）和局部放大图（罗马数字加比例）；盘盖类常为两个视图，其中一个是带均布孔中心圆的圆形视图；箱体类有三个以上视图和向视图。先验只用于排序和消歧，不作为判定依据。"
+confusions = ["装配图的视图选择：按工作位置和主要装配干线确定，主视图常沿装配干线全剖。"]
+related = ["DC-G9-014", "DC-G2-084", "DC-G2-025", "DC-G2-075"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-2 一"
+page = 294
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-2 三"
+page = 295
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-5~图9-7"
+page = 296
+
+[[concepts]]
+id = "DC-G9-016"
+name = "制图作业标题栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "教材为学生制图作业推荐的简化标题栏，外形130 mm×28 mm，包括图名、比例、材料、图号、制图、审核、日期和校名；教材的例图普遍使用它，但它不是国标格式。"
+components = ["尺寸：长130 mm，高28 mm（4行，每行7 mm）。", "左上为（图名），占两行，写10号字；其右为“比例”“材料”标签及其填写格。", "（图号）格按作业顺序写7号阿拉伯数字。", "下部两行为“制图”“审核”及签名、日期格；（校名）写10号字；其余文字为5号字。", "材料格只在零件图作业中填写，其他作业留空。"]
+variants = []
+dxf_forms = ["exploded LINE grid (outer border layer 01, inner lines layer 02) + TEXT labels 制图 / 审核 / 比例 / 材料 (layer 11)", "INSERT of a school title-block block with ATTRIBs"]
+recognition = "以位于图框右下角、宽高比约130:28（约4.6）、内部有“制图”“审核”而没有“标准化”“工艺”“批准”“阶段标记”的表格为锚点；“（校名）”或学校名称写在其中一格。与GB/T 10609.1标题栏（180×56，有更改区和多个签字角色）区分。"
+confusions = ["GB/T 10609.1 标题栏：180×56，有更改区和更多签字角色。", "明细栏：多行等高，有序号列。"]
+related = ["DC-G9-028", "DC-G9-017", "DC-G9-019", "DC-G9-018"]
+priority = "low"
+text_forms = ["制图", "审核", "比例 1:1", "材料 HT200", "（校名）"]
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "非标准格式；教材例图多用此格式，实际图纸通常是 GB/T 10609.1 格式。格内各格的精确位置按 OCR 难以完全确定。"
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-3"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-2"
+page = 293
+
+[[concepts]]
+id = "DC-G9-017"
+name = "单位名称栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏名称及代号区中填写图样绘制单位（设计单位或企业）名称的格，位于右列最上方；学生作业中写校名。"
+components = ["位置：GB/T 10609.1 格式右侧50 mm宽一列的最上格，在图样名称格之上。", "内容：单位全称或简称，有时附企业标志图形。", "学生作业标题栏中对应“（校名）”格。"]
+variants = ["校名"]
+dxf_forms = ["ATTRIB/ATTDEF in the title-block INSERT (tag is template-specific, e.g. 单位名称 / COMPANY)", "TEXT or MTEXT inside the cell; logo as INSERT, IMAGE or HATCH graphics"]
+recognition = "在已识别的标题栏中取右列最上格的文字；内容常以“公司”“厂”“研究所”“大学”“学院”结尾，或为企业标志图形。与图样名称的区别：图样名称在其下方，是零件或部件名称（如“轴”“阀体”）。"
+confusions = ["图样名称：零件或部件名称，位于单位名称下方。", "图框外的企业印记或说明：在标题栏以外。"]
+related = ["DC-G9-028", "DC-G9-019", "DC-G9-016"]
+priority = "high"
+text_forms = ["（单位名称）", "（校名）", "××机械有限公司"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2、图1-3"
+page = 13
+
+[[concepts]]
+id = "DC-G9-018"
+name = "图样代号栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏中填写图样代号（图号）的格，在图样名称格之下；图号用于图样管理，并在明细栏代号列中被引用。教材示例中装配图图号以00结尾（如01-00、ZDY70.00），其零件依次编号（01-01…、ZDY70.01…）。"
+components = ["位置：GB/T 10609.1 格式右列中下部，图样名称之下；学生作业标题栏中为“（图号）”格，写7号字。", "形式：数字和字母组合，用“-”或“.”分段，如01-04、04-07、ZDY70.09；企业图号常为多段数字编码。", "关系：同一部件的零件图号与装配图图号前缀相同，装配图明细栏代号列列出各零件图号。"]
+variants = ["图号（学生作业，7号字）", "带分隔符 01-04", "点分隔 ZDY70.09"]
+dxf_forms = ["ATTRIB in the title-block INSERT (tag e.g. 图样代号 / 图号 / DWGNO)", "TEXT/MTEXT in the cell, height usually equal to or larger than other cell text"]
+recognition = "在标题栏右列取位于图样名称之下的文字；它是含数字和“.”“-”分隔的编码，基本不含汉字。可与明细栏代号列、DWG文件名互相印证（文件名常含图号）。与零件序号（视图中的单个整数）和标准编号（以GB/T、JB/T开头）区分。"
+confusions = ["零件序号：视图中的单个整数。", "标准编号：以GB/T、JB/T开头，在明细栏代号列中表示标准件。", "比例：形如1:2，在比例栏。", "张次：“共×张 第×张”。"]
+related = ["DC-G9-028", "DC-G8-025", "DC-G9-019", "DC-G9-020"]
+priority = "high"
+text_forms = ["01-04", "04-00", "ZDY70.09", "ZDY70.00"]
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = ["second"]
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2、图1-3"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 明细栏代号"
+page = 337
+
+[[concepts]]
+id = "DC-G9-019"
+name = "图样名称栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏中填写零件或部件名称（图名）的格，位于单位名称格之下，一般用标题栏中最大的字写出，如“阀芯”“球阀”“齿轮油泵”。"
+components = ["位置：GB/T 10609.1 格式右列中部，单位名称之下、图样代号之上；学生作业标题栏中为左上“（图名）”格，占两行，写10号字。", "内容：简短的名词，零件图为零件名，装配图为部件名。", "字高一般大于标题栏中其他文字。"]
+variants = ["图名（学生作业，10号字）"]
+dxf_forms = ["ATTRIB in the title-block INSERT (tag e.g. 图样名称 / 图名 / TITLE)", "TEXT/MTEXT with the largest text height inside the title block"]
+recognition = "在标题栏内选字高最大或接近最大的汉字文字，位于右列中部（学生格式在左上）；内容应是零件类型词（轴、套、盖、体、架、轮、阀等）或与明细栏某一名称相符。装配图的图名与其明细栏中各零件名称都不同（它是部件名）。与单位名称（含公司、厂、学校字样，位置在上）区分。"
+confusions = ["单位名称：机构名称。", "明细栏名称列：表格中的各零件名称。", "视图名称（A—A、B向）：在视图上方，不在标题栏内。"]
+related = ["DC-G9-028", "DC-G9-017", "DC-G9-018", "DC-G8-025"]
+priority = "high"
+text_forms = ["阀芯", "球阀", "齿轮油泵", "右端盖"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2、图1-3"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-2"
+page = 293
+
+[[concepts]]
+id = "DC-G9-020"
+name = "张次栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏中注明该图样总张数和本张序次的格，形式为“共 张 第 张”，用于同一图样代号有多张图纸的情况。"
+components = ["位置：GB/T 10609.1 格式其他区的底部，在阶段标记、质量、比例格之下。", "内容：“共×张 第×张”，数字填在空位中；单张图为“共1张 第1张”。"]
+variants = []
+dxf_forms = ["fixed TEXT labels '共' '张' '第' '张' with separate number TEXT/ATTRIB, or one TEXT '共 1 张 第 1 张'"]
+recognition = "以匹配“共\\s*\\d*\\s*张\\s*第\\s*\\d*\\s*张”的文字为锚点（字符可能被拆成多个TEXT，按同一行纵坐标拼接后再匹配），位于标题栏中间列底部。与图样代号（编码）和明细栏续页编号区分。"
+confusions = ["图样代号：编码，不含“共、第、张”。", "文件页码（第×页）：用于文件而非图纸。"]
+related = ["DC-G9-028", "DC-G9-018", "DC-G8-026"]
+priority = "medium"
+text_forms = ["共 1 张 第 1 张", "共2张 第1张"]
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2"
+page = 13
+
+[[concepts]]
+id = "DC-G9-021"
+name = "投影符号栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏中放置投影识别符号的格（GB/T 10609.1—2008格式名称及代号区的右下角）：采用第三角画法时必须在此画出第三角投影识别符号；采用第一角画法时必要时画出，也可空着。"
+components = ["位置：名称及代号区右下角的小格，2008版格式中出现；GB/T 18229—2000所附早期格式中没有此格。", "内容：第一角或第三角投影识别符号（截锥的两个视图：同心圆与梯形）。", "第一角画法时可空白。"]
+variants = []
+dxf_forms = ["INSERT of a projection-symbol block, or exploded 2 CIRCLEs + 4 LINEs (trapezoid) + CENTER-type lines inside the cell"]
+recognition = "以标题栏右下角的小格为锚点，检查格内是否有“同心双圆＋梯形”的组合：同心圆在梯形右侧为第一角画法，同心圆在梯形左侧为第三角画法（具体以投影识别符号卡为准）。格内空白时按第一角画法理解。本卡只指容纳符号的格，符号本身的识别见投影识别符号概念。"
+confusions = ["第一角或第三角投影识别符号本体：本卡只指格。", "图样代号格：同列相邻，内容为文字编码。"]
+related = ["DC-G1-099", "DC-G1-100", "DC-G9-028", "DC-G2-084", "DC-G2-085"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "早期格式无投影符号格是根据 GB/T 18229—2000 图7 的 OCR 判断。"
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§7-5 二"
+page = 251
+
+[[concepts]]
+id = "DC-G9-022"
+name = "材料标记栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏其他区上部填写零件材料标记（牌号）的格，如40Cr、45、HT200、ZG230-450、Q235；装配图中该格一般不填，材料写在明细栏中。"
+components = ["位置：GB/T 10609.1 格式中间列最上部的大格，在阶段标记、质量、比例格之上；学生作业标题栏为“材料”标签右侧的格。", "内容：材料牌号，必要时加标准号或型材规格。", "装配图中通常空白。"]
+variants = ["学生作业：'材料'框右侧填写"]
+dxf_forms = ["ATTRIB in the title-block INSERT (tag e.g. 材料 / MATERIAL)", "TEXT in the cell, possibly followed by a standard number"]
+recognition = "在标题栏中间列上部取文字，匹配常见牌号：碳钢和合金钢（45、20、40Cr、42CrMo、20CrMnTi）、灰铸铁“HT\\d{3}”、球铁“QT\\d{3}-\\d+”、铸钢“ZG\\d{3}-\\d{3}”、铸铝（ZAlSi12、ZL\\d+）、碳素结构钢“Q\\d{3}”、铜合金（H62、ZCuSn…）、非金属（橡胶、聚四氟乙烯）。与热处理要求（HRC、调质）和明细栏材料列（表格中多行）区分。"
+confusions = ["明细栏材料列：在明细栏表格中。", "热处理要求：在技术要求中。", "比例、质量：数值格式不同。"]
+related = ["DC-G9-028", "DC-G8-025", "DC-G9-009", "DC-G3-098"]
+priority = "high"
+text_forms = ["40Cr", "45", "HT200", "ZG230-450", "Q235", "ZAlSi12"]
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2、图1-3"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-7 一、（一）"
+page = 327
+
+[[concepts]]
+id = "DC-G9-023"
+name = "标题栏更改区"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏左上部记录图样更改的区域，表头为“标记、处数、分区、更改文件号、签名、年月日”，表头上方的空行用于逐次填写更改记录。"
+components = ["位置：GB/T 10609.1 格式左侧80 mm宽区域的上部，签字区之上。", "列宽（CAD格式）约为 标记10、处数10、分区16、更改文件号16、签名12、年月日16（mm）。", "行高7 mm，表头行在下，其上为若干记录行。", "标记列填更改标记（如字母），可与图上更改处的标记对应。"]
+variants = []
+dxf_forms = ["fixed LINE grid + TEXT labels '标记' '处数' '分区' '更改文件号' '签名' '年、月、日' (part of the title-block block)", "revision entries as ATTRIB or TEXT in the rows above the header"]
+recognition = "以同一行（纵坐标相同）出现“标记”“处数”“分区”“更改文件号”中至少三项的文字为锚点，其上方几行即更改记录；行内若有标记字母、处数、文件号和日期，说明图样曾经更改。与签字区（设计、审核、工艺、批准）和明细栏表头（序号、代号、名称）区分。"
+confusions = ["签字区：角色名称和签名。", "明细栏表头：序号、代号、名称。", "独立的更改记录表：位于图框其他位置，列数和名称可能不同。"]
+related = ["DC-G9-028", "DC-G9-024", "DC-G9-008"]
+priority = "high"
+text_forms = ["标记 处数 分区 更改文件号 签名 年、月、日"]
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "OCR 把“更改文件号”识读为“便改文件号”。记录行的填写顺序（通常自下而上）书中未说明，属一般惯例。"
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2"
+page = 13
+
+[[concepts]]
+id = "DC-G9-024"
+name = "标题栏签字区"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏左下部供有关人员签名并填写日期的区域，角色包括设计、审核、工艺、标准化、批准等；学生作业为制图、审核和日期。"
+components = ["位置：GB/T 10609.1 格式左侧80 mm宽区域的下部，更改区之下。", "布置：每行一个角色名（设计、审核、工艺等），后接签名格和年月日格；同区另有标准化、批准等角色。", "例图中常写作“制图/审核”或“制图/审校”。"]
+variants = ["学生作业：制图、审核、日期", "例图中写作 制图/审核 或 制图/审校"]
+dxf_forms = ["fixed TEXT labels '设计' '审核' '工艺' '标准化' '批准' in the title-block grid; signatures and dates as ATTRIB or TEXT, sometimes IMAGE or handwritten SPLINE strokes"]
+recognition = "以标题栏左下区域中出现“设计”“审核”“批准”“工艺”“标准化”“制图”中至少两项的文字为锚点；其右侧相邻格中的文字是签名和日期（日期模式如“\\d{4}[.\\-/]\\d{1,2}[.\\-/]\\d{1,2}”）。与更改区表头中的“签名”列和明细栏备注区分。"
+confusions = ["更改区“签名”列：属于更改记录。", "明细栏备注列：表格单元格内容。"]
+related = ["DC-G9-028", "DC-G9-023", "DC-G9-016"]
+priority = "high"
+text_forms = ["设计", "审核", "工艺", "标准化", "批准", "制图"]
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2、图1-3"
+page = 13
+
+[[concepts]]
+id = "DC-G9-025"
+name = "比例栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏中填写图样主要绘图比例的格，标签为“比例”，内容如1:1、1:2、2:1；个别视图比例不同时，另在该视图名称的下方或右侧注出。"
+components = ["位置：GB/T 10609.1 格式其他区中，“比例”格（宽12 mm）在阶段标记和质量之右，标签在上、比例值在下；学生作业标题栏为“比例”标签右侧的格。", "比例值优先从1:1、1:2、1:5、2:1、5:1及其10的n次方倍中选取，必要时用1:1.5、1:2.5、1:3、1:4、2.5:1、4:1等。"]
+variants = []
+dxf_forms = ["ATTRIB in the title-block INSERT (tag e.g. 比例 / SCALE) or TEXT '1:2' (colon may be ':' or '：')"]
+recognition = "以标题栏内的“比例”标签为锚点，取其下方或右侧格中匹配“^\\d+(\\.\\d+)?\\s*[:：]\\s*\\d+(\\.\\d+)?$”的文字。可用于校核：若图形按出图比例绘制，DIMENSION实测长度÷标注值≈比例；若模型按1:1绘制而图框被缩放，则实测≈标注值，而图框尺寸÷标准幅面尺寸≈比例的倒数。与锥度、斜度“1:n”（在视图中，带锥度或斜度符号）和局部放大图比例（在放大图标注中）区分。"
+confusions = ["锥度、斜度1:n：在视图中，带锥度或斜度符号。", "局部放大图比例：在放大图的标注“I/5:1”中。", "质量栏：数值，可带kg。"]
+related = ["DC-G9-028", "DC-G1-114", "DC-G1-115", "DC-G2-068", "DC-G4-057"]
+priority = "high"
+text_forms = ["1:1", "1:2", "2:1", "1:1.5"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2、图1-3"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 二"
+page = 14
+
+[[concepts]]
+id = "DC-G9-026"
+name = "质量栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏中填写零件或部件计算质量的格，标签为“质量”（旧版标题栏和明细栏称“重量”），位于阶段标记与比例之间。"
+components = ["位置：GB/T 10609.1 格式其他区中，阶段标记格右侧、比例格左侧，宽12 mm，标签在上、数值在下。", "内容：质量数值，以千克为单位时可不写单位。", "旧版格式（GB/T 18229—2000图7）该格标签为“重量”。"]
+variants = ["重量（旧称）"]
+dxf_forms = ["ATTRIB in the title-block INSERT (tag e.g. 质量 / 重量 / MASS) or a TEXT number"]
+recognition = "以标题栏内“质量”或“重量”标签为锚点，取相邻格中的数值（可带kg）。该格常空着。与比例栏（含冒号）和明细栏单件、总计质量列区分。"
+confusions = ["比例栏：形如1:2。", "明细栏单件、总计质量：在明细栏表格中。"]
+related = ["DC-G9-028", "DC-G9-025", "DC-G9-027", "DC-G8-025"]
+priority = "medium"
+text_forms = ["1.25", "0.36kg"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-1 二、4"
+page = 294
+
+[[concepts]]
+id = "DC-G9-027"
+name = "阶段标记栏"
+aliases = []
+group = "G9"
+kind = "sheet_element"
+meaning = "标题栏其他区中一排标有“阶段标记”的小格，用于填写图样所处设计或生产阶段的标记。"
+components = ["位置：GB/T 10609.1 格式中间列，材料标记格之下，左侧4个宽6.5 mm的小格（共26 mm），右接质量格和比例格。", "内容：阶段字母（企业和行业惯例常用S、A、B等），可在几个小格中依次填写。"]
+variants = []
+dxf_forms = ["four small cells as LINE grid with label TEXT '阶段标记'; entries as single-letter TEXT or ATTRIB"]
+recognition = "以标题栏内的“阶段标记”标签为锚点，取其下方并排的4个等宽小格中的单个大写字母作为阶段标记。与更改区的“标记”列（更改标记）和质量格区分。"
+confusions = ["更改区“标记”列：更改标记。", "质量栏：数值。", "重要特性标记：在视图中的尺寸旁。"]
+related = ["DC-G9-028", "DC-G9-026", "DC-G9-023"]
+priority = "medium"
+text_forms = ["S", "A", "B"]
+knowledge_units = ["K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "图1-2 的 OCR 表明为4个6.5 mm的小格。阶段字母的含义书中未说明，S/A/B 等来自企业和行业惯例。"
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2"
+page = 13
+
+[[concepts]]
+id = "DC-G9-028"
+name = "标题栏"
+aliases = []
+group = "G9"
+kind = "table"
+meaning = "每张图样都必须配置的栏目，位于图框右下角，由更改区、签字区、其他区（材料标记、阶段标记、质量、比例、张次）和名称及代号区（单位名称、图样名称、图样代号、投影符号）组成；看图方向与看标题栏方向一致。"
+components = ["位置：图框内框右下角，右边和下边与内框线重合；长边水平且与图纸长边平行为X型图纸，长边与图纸长边垂直为Y型图纸。", "尺寸（CAD格式）：宽180 mm、高56 mm（8行×7 mm）；左区80 mm（上为更改区，下为签字区），中区50 mm（材料标记，阶段标记4×6.5，质量12，比例12，张次），右区50 mm（名称及代号区）。", "名称及代号区自上而下为单位名称、图样名称、图样代号，2008版在右下有投影符号格；早期格式（GB/T 18229—2000图7）没有投影符号格，“质量”写作“重量”。", "线型：外框粗实线，内部分格多为细实线。", "装配图中明细栏紧贴其上方且同宽；教材学生作业用130×28的简化格式。"]
+variants = ["GB/T 10609.1 format reproduced in GB/T 18229 图7", "X型（长边水平）/Y型（长边与图纸长边垂直）", "GB/T 10609.1—2008 格式举例（图1-2）", "制图作业简化标题栏（图1-3）", "装配图中与明细栏连成一体（图10-26）"]
+dxf_forms = ["INSERT of a title-block block (often combined with the frame block of a GB A0–A4 template) with ATTRIBs for name, number, material, scale, mass, sheet and organisation", "exploded: LWPOLYLINE/LINE grid (outer border layer 01, inner lines layer 02) + TEXT labels and values (layer 11)", "in model-space drawings the frame and title block are often inserted with a scale factor equal to the inverse drawing scale (e.g. ×2 for 1:2)", "CAXA and GstarCAD/AutoCAD Mechanical exports: title block as a block reference with attribute definitions, or as proxy/anonymous blocks"]
+recognition = "以图框内框的右下角为锚点：找右下角与内框重合的矩形表格，宽高比约180:56（约3.2；学生格式约4.6），内部有多条等距水平线（间距约为高度的1/8）和多条竖线，文字中含“设计”“审核”“比例”“标记”“处数”中至少三项即可确认。标题栏宽与内框宽之比可推出幅面和插入比例（A4竖放时标题栏几乎占满内框宽度）。若标题栏是带ATTRIB的INSERT，直接按属性取值。与明细栏（在其上方，表头含序号、名称、数量）、参数表（在右上角）、技术要求（无格线）区分。"
+confusions = ["明细栏：在标题栏上方，多行等高，序号递增。", "更改记录表：单独的表格，只有更改记录的列。", "齿轮参数表或表格图参数表：通常在图框右上角，列为名称、代号、数值。", "技术要求文字块：没有格线。"]
+related = ["DC-G9-017", "DC-G9-018", "DC-G9-019", "DC-G9-020", "DC-G9-021", "DC-G9-022", "DC-G9-023", "DC-G9-024", "DC-G9-025", "DC-G9-026", "DC-G9-027", "DC-G9-016", "DC-G8-025", "DC-G1-085", "DC-G1-084"]
+priority = "high"
+text_forms = ["设计", "审核", "批准", "比例", "共 1 张 第 1 张", "阶段标记", "质量"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+notes = "现有 GB/T 10609.1 文本为空白页，格式取自教材图1-2 和 GB/T 18229—2000 图7 的 OCR（180 宽、8×7=56 高，中区 4×6.5+12+12）；右区各格的高度 OCR 读不可靠，未写入。外框粗、内部细的线型以及 CAD 存储形式来自一般实践。"
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.6 4.6.1 4.6.2"
+page = 7
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "图6 图7"
+page = 8
+[[concepts.sources]]
+document = "GB/T 13361-2012"
+clause = "4.7"
+page = 6
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "5.1"
+page = 5
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 一"
+page = 11
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-2"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-1 二、4"
+page = 294
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 一、4"
+page = 336
+
+[[concepts]]
+id = "DC-G9-029"
+name = "齿厚或公法线长度极限偏差注写"
+aliases = []
+group = "G9"
+kind = "tolerance_indication"
+meaning = "齿轮零件图中，按GB/T 6443的规定，把齿厚（或公法线长度）及其上、下极限偏差数值写在图样右上角的齿轮参数表中，而不在视图上标注，用来控制齿侧间隙。"
+components = ["参数表中的行：名称为“公法线长度及其极限偏差”或“齿厚及其极限偏差”，符号为W_k或s。", "数值：公称值后跟上、下极限偏差（通常都为负值），如W_k=32.341，偏差−0.089/−0.137。", "同一表中还有模数、齿数、齿形角、变位系数、精度等级以及各项公差等行。"]
+variants = ["齿厚 S 及偏差", "公法线长度 Wk 及偏差"]
+dxf_forms = ["TEXT/MTEXT inside the gear parameter table (LINE grid at the top-right of the frame); deviations as MTEXT stacking '\\S-0.089^-0.137;' or two small TEXT entities", "subscript k written as plain 'Wk' or with MTEXT height override"]
+recognition = "以图框右上角的参数表为锚点（表中有“模数”“齿数”“齿形角”等行），查找名称含“公法线”或“齿厚”的行，取同行的公称值及其右侧上下叠写的两个小字号偏差（字高约为数值的0.7倍，通常都带负号）。与一般尺寸偏差的区别：一般尺寸偏差附在视图中的尺寸上。"
+confusions = ["一般尺寸偏差：附在视图中的DIMENSION上。", "齿顶圆直径公差：作为尺寸注在视图上（如Ø102±0.15）。"]
+related = ["DC-G3-211", "DC-G3-099", "DC-G4-132"]
+priority = "low"
+text_forms = ["Wk=32.341 -0.089/-0.137", "公法线长度及其极限偏差", "\\S-0.089^-0.137;"]
+knowledge_units = ["K17", "K18", "K19", "K20", "K21"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "偏差数值按目录记录（页面 OCR 不清晰）；MTEXT 叠写形式属一般 CAD 实践。"
+[[concepts.sources]]
+document = "互换性与测量技术"
+clause = "7.4.1 2."
+page = 179
+[[concepts.sources]]
+document = "互换性与测量技术"
+clause = "图7.18"
+page = 187
+

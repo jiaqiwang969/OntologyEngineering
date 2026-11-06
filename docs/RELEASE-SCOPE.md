@@ -1,6 +1,6 @@
 # 统一 RC 的范围与验收
 
-当前源码候选为 **2.0.0-rc.7，重构中**。工程本体与 engineering-memory 共用 workspace、Cargo.lock 和语义实现，通过同一安装的 `oev2` 与 `oev2 memory` 使用。当前实际验证见 [UNIFIED-VERIFICATION.md](UNIFIED-VERIFICATION.md)。
+当前源码候选为 **2.0.0-rc.8，重构中**。工程本体与 engineering-memory 共用 workspace、Cargo.lock 和语义实现，通过同一安装的 `oev2` 与 `oev2 memory` 使用。当前实际验证见 [UNIFIED-VERIFICATION.md](UNIFIED-VERIFICATION.md)。
 
 本轮按用户要求移除 Jev 及相关专用判断服务的客户端、配置与自动调度。当前 Agent 承担开放式任务组织和资料审阅，Rust 执行明确检查。其余工程、语义、来源与采用判据保持；不能把已取消的服务目标重新列为必须恢复的依赖。
 
@@ -32,7 +32,7 @@
 
 历史D85与D86记录保持原版本、来源及输入身份。旧 `dist release` 的Mac /1、Windows /2仍是本体七程序发行格式，保留用于其历史范围；它们不代表本候选已完成统一八程序安装。全局旧 `oe` 不被替换。
 
-本候选的 CLI 经 kernel 编入 `source-session-local-v1` 和 `rdflib760-nullable-internal`，独立库无默认 feature。历史 `oev2.rc5-local-source/1` 同时固定 rc.5 版本与 feature 集合，不能用于 rc.7 接收；当前版本调用它应拒绝。统一八程序身份按 `oev2.installation/1` 核验，本轮未扩大旧正式发行 profile 的适用范围。公共接口版本及支持格式按[来源会话](SEMANTIC-SOURCE-SESSION.md)与其后续显式合同核验。
+本候选的 CLI 经 kernel 编入 `source-session-local-v1` 和 `rdflib760-nullable-internal`，独立库无默认 feature。历史 `oev2.rc5-local-source/1` 同时固定 rc.5 版本与 feature 集合，不能用于 rc.7 或当前 rc.8 接收；当前版本调用它应拒绝。统一八程序身份按 `oev2.installation/1` 核验，本轮未扩大旧正式发行 profile 的适用范围。公共接口版本及支持格式按[来源会话](SEMANTIC-SOURCE-SESSION.md)与其后续显式合同核验。
 
 ## 仍未闭合的工程范围
 

@@ -28,6 +28,28 @@ ontology-engineering-unified/
 
 现有 [Google Drive 资料包](https://drive.google.com/drive/folders/1QoNTu0gy9aPwQ-Sk6y5IWSBcVUCDVdXK)继续使用。交付清单中的 `books/...` 对应本安装根 `sources/books/...`，`misumi/...` 对应 `sources/misumi/...`，路径含义与现有 v2 保持一致。本地已有原件时核对摘要后直接迁入，不重复下载。安装根或原件路径改变后，显式重建完整登记与索引；历史回执保留原身份，新位置另记核验结果。
 
+## 资料包下载
+
+| 资料包 | 内容 | 下载 |
+|---|---|---|
+| 旧资料包 | 书籍与米思米标准品目录（以 `upload-manifest.json` 清点） | [Google Drive](https://drive.google.com/drive/folders/1QoNTu0gy9aPwQ-Sk6y5IWSBcVUCDVdXK) |
+| 资料包一：`OntologyEngineering-sources-20261023.zip` | 此前整理的完整资料：7 本书原件（登记 6 本）、米思米两套标准品目录、612 个 inCAD 机构案例（BOM 与 CAD 格式归档分片）及其资料图谱；交付清单 `source-delivery.json` 列 1398 个文件 | [百度网盘](https://pan.baidu.com/s/17f-v1qZitDMdIcnhCUSdmQ)，提取码 `i7qa` |
+| 资料包二：`ontology-sources-mechanical-drawing-20261105.zip` | rc.8 读图规则依据的机械制图资料：7 本书、144 个标准版本（登记 137 个）、机械制图知识体系 v2（12 个领域、67 个知识单元）与资料阅读导航 v1；不含真实图纸、会话或项目原件 | [百度网盘](https://pan.baidu.com/s/1J4xUZXpXCXXrdBUqRmbisg)，提取码 `u8vm` |
+
+资料包二的压缩包为 1,479,005,868 字节，SHA-256 `53e8eb8de2d8f1d85a99360303ffcfe9ab48a67b9d276b5d726c797ce605b150`，包内交付清单 `delivery.json` 的 SHA-256 为 `970c0b20eb620bfb5407ed017bd9d2b5bc6f34230452e7c62477649df5820a72`；网盘分享页显示的文件名可能与上表不同，以摘要为准。资料包二解压后得到与本安装根相同结构的 `sources/`，按包内 `sources/collections/mechanical-drawing/README.md` 先复制 `delivery.json`，再导入并核验：
+
+```sh
+ROOT="$ONTOLOGY_ENGINEERING_ROOT"   # 安装根；PKG 为资料包二的解压目录
+mkdir -p "$ROOT/sources/collections/mechanical-drawing"
+cp "$PKG/sources/collections/mechanical-drawing/delivery.json" "$ROOT/sources/collections/mechanical-drawing/"
+"$ROOT/var/install/bin/oev2" --root "$ROOT" knowledge library source-delivery import \
+  --manifest sources/collections/mechanical-drawing/delivery.json --from "$PKG/sources"
+"$ROOT/var/install/bin/oev2" --root "$ROOT" knowledge library source-delivery verify \
+  --manifest sources/collections/mechanical-drawing/delivery.json
+```
+
+资料包一解压后得到 `OntologyEngineering-sources-20261023/`，按其中 `README.md` 以 `source-delivery.json` 导入与核验。导入逐个核对字节数与 SHA-256，不覆盖已有不同内容；核验不过的文件不使用。网盘与 Drive 上的资料包由用户上传，本目录不自动同步。包内书籍与标准多数受版权保护，仅供授权范围内使用。
+
 ## 两卷方法书的身份
 
 《工程本体论》（`vol1`）与《产品可信工程》（`vol2`）是本系统的方法来源。当前工程流程分别以 `ontology_method`、`trust_method` 绑定它们；机械设计等其他教材承担相应领域依据。方法来源支持如何组织对象、条件、主张与证据，其陈述仍须核对适用性，不能直接当作当前项目事实。

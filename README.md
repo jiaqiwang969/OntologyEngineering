@@ -4,7 +4,7 @@
 
 用户用自然语言提出目标、条件和取舍。Codex、Claude 等 Agent 组织任务；工程本体在同一 Project 中维护对象、版本、来源、检查与决定；工程记忆保存过程、失败、纠正和可核查的经验。专业工具按需提供调查、计算或运行证据，结果回到同一项目审查。
 
-当前为 **2.0.0-rc.7 整合候选，重构中**。本版增加[项目文件体系](docs/PROJECT-WORKSPACE.md)，将根请求、纠正、因果依据、阶段状态及 RRSI 根目标绑定保存到显式项目目录，以供新会话恢复。实际验证见[验证记录](docs/UNIFIED-VERIFICATION.md)，具体工程能力与未完成项见[发布范围](docs/RELEASE-SCOPE.md)。
+当前为 **2.0.0-rc.8 整合候选，重构中**。本版增加[读懂已有工程图纸](docs/DRAWING-UNDERSTANDING.md)：给定一张 DWG，按学科工艺把每个图元读成可复核的工程表达与结构线，经锁定转换器、只读源字节的隔离分类、独立复核和检查页，每步留回执；功能说明见 [rc.8 发布说明](docs/RELEASE-NOTES-v2.0.0-rc.8.md)。rc.7 起的[项目文件体系](docs/PROJECT-WORKSPACE.md)继续保存根请求、纠正、因果依据、阶段状态及 RRSI 根目标，以供新会话恢复。实际验证见[验证记录](docs/UNIFIED-VERIFICATION.md)，具体工程能力与未完成项见[发布范围](docs/RELEASE-SCOPE.md)。
 
 ![工程本体 v2、engineering-memory 与专业能力的闭环架构](docs/assets/engineering-system-architecture.png)
 
@@ -104,6 +104,8 @@ Agent 按以下流程工作：
 工程资料统一放在与 `modules/` 同级的 `sources/`，书籍在 `sources/books/`，米思米资料在 `sources/misumi/`；论文、标准、器件手册等按需要增加分类。放入后告诉 Agent“整理新增资料”，由它清点来源、版本和摘要，按格式接入已有读取与检索能力，再对照原件服务当前 Project。流程、登记边界及资料在“工程本体 → ggen → Rust → RRSI”中的作用见 [sources/README.md](sources/README.md)。放入文件不会自动建立索引或知识图谱，也不授予工程采用。
 
 书籍和米思米目录继续使用 [Google Drive 原始资料包](https://drive.google.com/drive/folders/1QoNTu0gy9aPwQ-Sk6y5IWSBcVUCDVdXK)。交付包中的 `books/`、`misumi/` 分别映射到本安装根 `sources/books/`、`sources/misumi/`。旧包以 `upload-manifest.json` 清点；新版本地资料包使用 `source-delivery.json` 和独立 inCAD 分片清单。上方 Drive 链接在实际上传前仍代表旧包，不能据此假定已包含新增案例和图谱。已有本地原件优先核摘要后迁入，无需重新下载；安装根或原件路径改变时，保留旧回执并显式重建完整登记与索引。来源登记、内容适用性与工程采用分别核查，资料按其权限和许可使用。
+
+Drive 只有旧包。新版资料包与 rc.8 读图依据的机械制图资料包放在百度网盘：[资料包一](https://pan.baidu.com/s/17f-v1qZitDMdIcnhCUSdmQ)（提取码 `i7qa`，`OntologyEngineering-sources-20261023.zip`：书籍、米思米目录、612 个 inCAD 案例及资料图谱）；[资料包二](https://pan.baidu.com/s/1J4xUZXpXCXXrdBUqRmbisg)（提取码 `u8vm`，`ontology-sources-mechanical-drawing-20261105.zip`：机械制图书籍、标准、知识体系与阅读导航）。摘要、导入与核验见 [sources/README.md](sources/README.md#资料包下载)。
 
 `sources/` 中只有 `README.md` 随 GitHub 和软件包公开；原件、提取内容、私人清单、导航笔记和索引均排除。PDF 索引保持 `sources/.indexes/local-pdf/`，`var/` 保存项目、记忆与运行记录。私人 session、客户资料、设备配置、凭据和缓存同样不发布。inCAD 已提供来源图谱的建立、检索、回读和复核，将功能、条件、BOM 与 CAD 关联到固定来源，见[米思米资料使用](docs/MISUMI-SOURCE-LIBRARY.md)。逐书完整本体化仍需另行推进。仅路径调整或软件升级不更新 Drive，新增资料或可复用处理成果另按版本、来源和摘要更新交付包。
 

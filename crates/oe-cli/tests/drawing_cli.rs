@@ -8,9 +8,33 @@ use serde_json::{Value, json};
 use std::ffi::OsStr;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Output, Stdio};
+use std::process::{Child, Command, Output, Stdio};
+use std::sync::RwLock;
 
 const PROBE_DXF: &[u8] = b"0\nSECTION\n2\nENTITIES\n0\nLINE\n5\n1\n8\n0\n330\nM\n10\n0\n20\n0\n11\n10\n21\n0\n0\nLINE\n5\n2\n8\n0\n330\nM\n10\n10\n20\n0\n11\n10\n21\n5\n0\nENDSEC\n0\nEOF\n";
+
+/// Children start only while no fixture in this process holds a workspace lock. A starting child carries the test
+/// process's lock descriptors until its exec closes them, so a fixture that released a lock and took it again at
+/// once could find it still held and fail with resource_busy.
+static LAUNCH: RwLock<()> = RwLock::new(());
+
+fn start(command: &mut Command) -> Child {
+    let _launch = LAUNCH
+        .read()
+        .unwrap_or_else(|poisoned| poisoned.into_inner());
+    command.spawn().unwrap()
+}
+
+fn run(command: &mut Command) -> Output {
+    start(
+        command
+            .stdin(Stdio::null())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped()),
+    )
+    .wait_with_output()
+    .unwrap()
+}
 
 fn root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -76,6 +100,9 @@ impl Home {
             path: name.into(),
             sha256: sha256(std::fs::read(path.join(name)).unwrap()),
         };
+        let locks = LAUNCH
+            .write()
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
         oe_engineering::project_workspace::initialize(&skill, "i1-drawing", "i1-drawing").unwrap();
         let proposal = json!({"schema":"oev2.workspace-commit-request/1","workspace_id":"i1-drawing","commit_id":"c1",
             "expected_parent":null,"project":pin("project.json"),"anchor":pin("anchor.json"),
@@ -87,6 +114,7 @@ impl Home {
         let resumed = oe_engineering::project_workspace::resume(&skill).unwrap();
         assert_eq!(resumed["status"], "ready", "{resumed:#}");
         assert_eq!(resumed["route"]["status"], "anchored");
+        drop(locks);
         Self {
             _directory: directory,
             path,
@@ -96,16 +124,14 @@ impl Home {
     }
 
     fn oev2<S: AsRef<OsStr>>(&self, args: &[S]) -> Output {
-        Command::new(env!("CARGO_BIN_EXE_oev2"))
+        run(Command::new(env!("CARGO_BIN_EXE_oev2"))
             .env_clear()
             .env("PATH", "/usr/bin:/bin")
             .arg("--root")
             .arg(root())
             .arg("--project-home")
             .arg(&self.path)
-            .args(args)
-            .output()
-            .unwrap()
+            .args(args))
     }
 
     /// A discovery request for the I1 DXF under the given Project, written to `name`.
@@ -147,18 +173,18 @@ fn failure_reason(output: &Output) -> String {
 
 fn sandboxed(program: &Path, args: &[&OsStr], stdin: &[u8]) -> Output {
     let profile = oe_drawing_check::graph::expected_profile(program.to_str().unwrap()).unwrap();
-    let mut child = Command::new("/usr/bin/sandbox-exec")
-        .env_clear()
-        .current_dir("/")
-        .arg("-p")
-        .arg(profile)
-        .arg(program)
-        .args(args)
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .unwrap();
+    let mut child = start(
+        Command::new("/usr/bin/sandbox-exec")
+            .env_clear()
+            .current_dir("/")
+            .arg("-p")
+            .arg(profile)
+            .arg(program)
+            .args(args)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped()),
+    );
     child.stdin.take().unwrap().write_all(stdin).unwrap();
     child.wait_with_output().unwrap()
 }
@@ -514,15 +540,13 @@ fn the_route_receipts_discharge_the_drawing_obligations() {
         "I1 stepped shaft",
     ]);
     assert_eq!(output.status.code(), Some(1));
-    let judged = Command::new(env!("CARGO_BIN_EXE_oev2"))
+    let judged = run(Command::new(env!("CARGO_BIN_EXE_oev2"))
         .env_clear()
         .env("PATH", "/usr/bin:/bin")
         .arg("--root")
         .arg(root())
         .args(["design", "evidence", "--run"])
-        .arg(home.path.join("route"))
-        .output()
-        .unwrap();
+        .arg(home.path.join("route")));
     // Without a browser the page obligations lack their documents, so the command does not pass.
     assert_eq!(
         judged.status.code(),

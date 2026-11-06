@@ -10,7 +10,7 @@
 不要求每个项目安装或调用全部八项。核心 Project 和 memory 流程不依赖它们全部可用。
 这些接入材料不要求额外的托管判断服务。
 
-CAD 后端另外按[独立执行](CAD-INDEPENDENT-EXECUTION.md)选择。SolidCraft 的[固定源码身份](../integrations/runtime-locks/solidcraft-source.json)、原生 CLI/MCP 接入及同一 Project 回交见 [SolidCraft CAD](SOLIDCRAFT-CAD.md)。它沿工程本体的 CAD 入口维护，不增加一份宿主顶层 Skill，也不改变以下八个专业模块的锁和身份。实际可执行文件、平台与验收写本机私有 registry；公开源码锁不包含个人路径或自动授予安装资格。
+CAD 后端另外按[独立执行](CAD-INDEPENDENT-EXECUTION.md)选择。SolidCraft 的[固定源码身份](../integrations/runtime-locks/solidcraft-source.json)分别记录真实上游、fork 构建提交、工程定制、选择移植的修复及 SolidCore 依赖；构建取 `source_repository` 的 `source_commit`，不取移动分支或来源基点。原生 CLI/MCP 接入及同一 Project 回交见 [SolidCraft CAD](SOLIDCRAFT-CAD.md)。它沿工程本体的 CAD 入口维护，不增加一份宿主顶层 Skill，也不改变以下八个专业模块的锁和身份。实际可执行文件、平台与验收写本机私有 registry；引用更新不改变现有运行程序或延续旧 `qualified`，公开源码锁不包含个人路径或自动授予安装资格。
 
 ## 固定上游与用途
 

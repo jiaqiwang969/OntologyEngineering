@@ -6,7 +6,7 @@ ontology-engineering-v2 承担 CAD 执行，不依赖原 ontology-engineering �
 
 - NX：本根 `oev2 cad nx` → `oe-cad::nx` → 显式 Fleet/SSH 传输 → 按摘要核验的 `oe-windows-controller` → 任务绑定的 `oe-nx-worker` 与 NX 原生 SDK。控制器、worker、原生运行库和输入各按实际身份取证；旧 schema 名称不指定可执行程序。
 - SolidWorks：本根 `oe-sw-worker` 与 `oe-sw-session-host` 实现受控原生 COM 操作；`oev2 cad solidworks` 核验原始记录和独立重开证据。可执行范围及实际资格见 [SolidWorks 原生 worker](SOLIDWORKS-NATIVE-WORKER.md)，不能把记录核验当成已执行 CAD。
-- SolidCraft：固定上游 `solidcraft-cli` 的原生 CLI/MCP 执行，当前 Agent 调用、读取原件和解释结果，v2 既有 Rust `project tool-result verify/register`、`project decide` 与 workspace 接收来源和状态。见 [SolidCraft CAD](SOLIDCRAFT-CAD.md)。`.sc`、参数时间线、测量、导出、独立重开和截图各自取证；没有新增 v2 CAD worker、`oev2 cad solidcraft` 命令或 NX observation 兼容承诺。
+- SolidCraft：按[源码锁](../integrations/runtime-locks/solidcraft-source.json)固定 fork 提交的 `solidcraft-cli` 原生 CLI/MCP 执行，保留真实上游与 SolidCore 依赖来源。当前 Agent 调用、读取原件和解释结果，v2 既有 Rust `project tool-result verify/register`、`project decide` 与 workspace 接收来源和状态。见 [SolidCraft CAD](SOLIDCRAFT-CAD.md)。源码修订、实际程序与本机验收分别核定；`.sc`、参数时间线、测量、导出、独立重开和截图各自取证；没有新增 v2 CAD worker、`oev2 cad solidcraft` 命令或 NX observation 兼容承诺。
 - CAD 证据、工艺衔接与设计依赖分别由 `oe-cad`、`oe-engineering` 和同一 Project 的既有语义审查承担。缺少图纸、装配、运动或其他原生动作时，在 v2 的实现与合同中补齐并验证，不退回旧工具执行。
 
 ## 选择后端

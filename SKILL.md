@@ -117,7 +117,7 @@ Flameox 使用 `oev2 project performance project` 保留性能观测、基线、
 
 需要执行 v2 程序、维护软件或声明当前能力时，按[使用说明](docs/USAGE.md)核发行 manifest、实际程序、根目录及维护回执；统一源码安装从 `var/install/INSTALLATION.json` 核实际根与八程序身份，初次配置读 [AGENTS.md](AGENTS.md)。旧维护状态只接续对应的历史发行，不覆盖新安装。源码候选版本、已安装程序、历史回执和当前任务各保留身份，能力范围见[发布范围](docs/RELEASE-SCOPE.md)。
 
-CAD 按原生交付物和当前能力选择 NX、SolidWorks 或 SolidCraft，调用前读[独立执行合同](docs/CAD-INDEPENDENT-EXECUTION.md)。NX/SolidWorks 沿 v2 自有 Rust worker 与显式原生 SDK；本机开放源码参数建模、`.sc` 设计及 MCP 交互进入 [SolidCraft 工作流](docs/SOLIDCRAFT-CAD.md)，由固定上游 CLI/MCP 执行、既有 Rust `project tool-result` 接收。用户指定后端或原生文件要求优先，STEP 不能替代 `.prt`/`.sldprt` 的原生特征与装配验收。SolidCraft 是 CAD 执行后端，不另建 Project 或第九套专业模块；当前没有 `oev2 cad solidcraft` 命令或 SolidCraft→NX 专用投影。
+CAD 按原生交付物和当前能力选择 NX、SolidWorks 或 SolidCraft，调用前读[独立执行合同](docs/CAD-INDEPENDENT-EXECUTION.md)。NX/SolidWorks 沿 v2 自有 Rust worker 与显式原生 SDK；本机开放源码参数建模、`.sc` 设计及 MCP 交互进入 [SolidCraft 工作流](docs/SOLIDCRAFT-CAD.md)，按[源码锁](integrations/runtime-locks/solidcraft-source.json)区分真实上游、fork 固定提交和实际 CLI/MCP，由既有 Rust `project tool-result` 接收结果。源码引用更新不自动升级已安装程序或延续旧验收。用户指定后端或原生文件要求优先，STEP 不能替代 `.prt`/`.sldprt` 的原生特征与装配验收。SolidCraft 是 CAD 执行后端，不另建 Project 或第九套专业模块；当前没有 `oev2 cad solidcraft` 命令或 SolidCraft→NX 专用投影。
 
 读一张已有图纸时，先用任务原话经 `oev2 memory session prepare` 查读图经验（先看不含原文的候选摘要，需要时再 `get`/`verify`），按其条件与未知判断是否适用；再沿[读懂已有图纸](docs/DRAWING-UNDERSTANDING.md)用 `oev2 drawing route`：DWG 只经锁定的 CADCraft fork 提交转换（不给字体），分类只在只收字节的沙箱 worker 中进行，独立复核从源字节重推，检查页经离线浏览器检查。参照答案、手工区域和配对模型不进入输入；零件要素目标保持未知，结果是待复核候选。结束时用 `oev2 memory session feedback` 记录经验实际用、拒绝或未用。正向出图与反向读图的建设、外部工具的固定与保真资格按 [CAD 路线](references/cad-route.md) 进行。
 

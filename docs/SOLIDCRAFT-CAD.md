@@ -4,9 +4,21 @@
 
 ## 身份和实际入口
 
-[源码锁](../integrations/runtime-locks/solidcraft-source.json) 固定上游 0.27.0 的提交和 Cargo.lock；这不是最新版本声明或本机资格。构建与程序来自 [SolidCraft 上游](https://github.com/tangency-labs/solidcraft/tree/d11d268597637029055060a8a6555005faaa1f93)，不复制其几何内核到 v2。升级重新核源码、CLI/应用摘要和受影响案例。
+[源码锁](../integrations/runtime-locks/solidcraft-source.json) 当前固定 [jiaqiwang969/solidcraft 的 `1453beabd793feb74d2c1b359b0cbbd34024a8bc`](https://github.com/jiaqiwang969/solidcraft/tree/1453beabd793feb74d2c1b359b0cbbd34024a8bc)，版本字段为 `0.40.0-rc.1`。真实上游是 [tangency-labs/solidcraft](https://github.com/tangency-labs/solidcraft)；双方默认分支都是 `main`。构建使用锁中的 `source_repository`、`source_commit` 和 Cargo.lock 摘要，不能只检出会移动的 `main`，也不能把来源字段 `upstream_base_commit` 当作构建目标。
+
+该提交先完整保留 `integrate/engineering-fixes-0.40.0-rc.1` 的工程定制，再依次移植上游 #11974、#11893，已于 2026-11-06 推送到 fork main；它不是新发布版本或上游全量同步。几何实现已使用 [SolidCore `8ddce901`](https://github.com/tangency-labs/solidcore/tree/8ddce901671f1cebd9214a31d21895d725e886c8)，由 [Cargo.toml](https://github.com/jiaqiwang969/solidcraft/blob/1453beabd793feb74d2c1b359b0cbbd34024a8bc/Cargo.toml) 和 [Cargo.lock](https://github.com/jiaqiwang969/solidcraft/blob/1453beabd793feb74d2c1b359b0cbbd34024a8bc/Cargo.lock) 固定。本次未改 SolidCore 修订；两项修复分别位于 SolidCraft 的 SMLib 转换层与 STEP 读取层。旧 0.27.0/Truck 分支的测试或安装回执不自动适用于此版本，也不把几何内核复制到 v2。
+
+| 当前源码中的能力或修复 | 对工程使用的作用及边界 | 提交依据 |
+|---|---|---|
+| 几何检查、解析支撑和投影来源信息 | 保留边面/圆检查、HLR 来源和版本 2 投影；时间线带错误或警告时拒绝捕获，不把残留实体当成完整模型 | [工程定制](https://github.com/jiaqiwang969/solidcraft/commit/d48fdfbd7d2eccf51a50824482796d5a43db4048) |
+| 远离原点的 NURBS 权重比较 | 按控制点坐标量级容纳舍入误差；不代表全部大坐标布尔或平移不变性问题已解决 | [上游 #11974](https://github.com/tangency-labs/solidcraft/pull/11974)、[fork 提交](https://github.com/jiaqiwang969/solidcraft/commit/c73a24d44afcc0db165ccff153adb473b0f8c1b5) |
+| STEP 自引用保护 | 直接或间接递归进入曲线/曲面读取时执行深度保护，返回带实体号的错误，避免该用例栈溢出 | [上游 #11893](https://github.com/tangency-labs/solidcraft/pull/11893)、[fork 提交](https://github.com/jiaqiwang969/solidcraft/commit/1453beabd793feb74d2c1b359b0cbbd34024a8bc) |
+
+2026-11-05 的 macOS arm64 / Rust 1.99.1 源码集成检查中，两项修复均验证了修复前失败、修复后通过；HLR 85 项、几何检查接口 5 项、STEP 默认执行 40 项、槽切/STEP 四项定制回归、投影捕获拒绝不完整模型和 17 个仓库 STEP 样本的几何往返检查通过。完整 CI 仍为 **11,699 通过、35 失败、58 跳过**，未达到全绿，后续 Web 离线门禁未执行。31 个失败在已知名单，另 4 个与工程分支历史记录同名；未重跑未修改工程分支的完整基线，不能由名称一致证明原因一致。原始日志与受测提交绑定保存在对应工程项目的集成回执中；这里记录有范围的源码检查结果，不授予运行程序或私人模型资格。
 
 使用前确认实际 `solidcraft-cli --version`、可执行文件的真实路径/摘要，以及 MCP 的初始化、工具发现和一次实际调用。GUI 桥接同时记录桌面应用版本与二进制摘要，优先使用同一次构建的 CLI 与应用。具体路径、控制端口、程序摘要和本机验收保存到私有 `var/capabilities/registry.json` 与 Project 原件，不写入共享 Skill 的默认值。
+
+更新本源码锁和文档不会替换 CLI、桌面应用或现有 MCP 进程，也不会把 registry 中的旧 `qualified` 迁移到新源码。实际切换前核构建提交及程序摘要，补跑下面的小零件、改参/保存/独立重开、STEP 回读和实际需要的接口；按同一 Project 登记新结果并重审受影响决定。旧程序继续使用时明确记录其旧身份，不只改版本号或摘要来沿用旧通过结论。
 
 原生入口如下，变量由 Agent 按当前机器与任务确定：
 
@@ -16,7 +28,7 @@
 "$SOLIDCRAFT_CLI" mcp --connect "127.0.0.1:$CAD_PORT" --allow-path "$CAD_OUTPUT"
 ```
 
-- 无 `--headless`/`--connect` 时，启动时发现运行中的应用则桥接，否则成为独立无窗口会话。先核 initialize 返回的 `Backend`；应用稍后打开不表示既有无窗口会话自动迁移。需要驱动可见窗口时显式连接或重新建立 MCP 会话。
+- 不带 `--headless`、`--connect`、`--in` 的默认模式会自动发现应用：启动时有应用则桥接，否则先无窗口运行；无窗口会话尚无特征时，后续调用发现应用可切换到桥接，已有特征时则保留原会话，不搬移工作。先核 initialize 的 `Backend`，并关注每次调用的后端提示，不能把初始化状态当成整个会话的固定状态。需要固定可见窗口时用 `--connect`，需要独立复验时用 `--headless`。[当前源码](https://github.com/jiaqiwang969/solidcraft/blob/1453beabd793feb74d2c1b359b0cbbd34024a8bc/crates/mcp/src/backend.rs#L758)。
 - 输出目录须先存在。工作目录不自动授予文件访问；只加入实际项目所需的 `--allow-path`，路径拒绝按项目授权补配置，不改走控制端口绕过限制。token 由上游管理，不写证据、命令日志或共享文档。
 - Codex MCP 名称为 `solidcraft`，底层是实际 CLI 的 `mcp` 子命令。不要创建并不存在的 `oev2 cad solidcraft` 命令。缺程序或连接时报告具体缺项；CLI 与 MCP 可用性分别核验。
 

@@ -66,7 +66,7 @@ python3 scripts/check_tool_skills.py --skill-root "$HOME/.codex/skills" --skill-
 - 四环维护沿 `references/design-method.md` 核要求、模型、规范、承担者与独立证据。用 `design inspect` 的 `traceability` 和生成验证清单追查已声明关联，缺口保留；静态符号与生成注释不能计作执行。反馈按 `references/regularized-evolution.md` 回到相应层次，项目实例修订与共享方法收益分别记录。
 - 先复现、分析影响，再修正规范/模板/实现，回归与独立验证。保留失败、未知、未执行和反例，不放宽判据取得通过。
 - 构建用锁定工具链与 Cargo.lock；生成失败不切换工作版本，漂移检查比较重新实际生成的字节。源码、程序、安装、工具执行与工程采用分别取证。
-- CAD 按 `docs/CAD-INDEPENDENT-EXECUTION.md` 选择后端。NX/SW 使用 v2 自有 Rust controller/worker 与显式原生 SDK；SolidCraft 使用固定上游原生 CLI/MCP，按 `docs/SOLIDCRAFT-CAD.md` 经既有 Rust Project 合同回交。后端声明、实际安装、原生能力与工程采用分别取证，不将 STEP 或截图升级为 NX/SW 原生交付。不得调用旧 cad-agent 脚本、环境、MCP、Journal runner 或默认配置作为入口/备用；Fusion 不执行。
+- CAD 按 `docs/CAD-INDEPENDENT-EXECUTION.md` 选择后端。NX/SW 使用 v2 自有 Rust controller/worker 与显式原生 SDK；SolidCraft 原生 CLI/MCP 按 `integrations/runtime-locks/solidcraft-source.json` 固定 fork 构建提交并保留真实上游来源，按 `docs/SOLIDCRAFT-CAD.md` 经既有 Rust Project 合同回交。引用更新不替代程序升级和新版本验收；后端声明、实际安装、原生能力与工程采用分别取证，不将 STEP 或截图升级为 NX/SW 原生交付。不得调用旧 cad-agent 脚本、环境、MCP、Journal runner 或默认配置作为入口/备用；Fusion 不执行。
 - `var/` 保存私有任务、项目、记忆、运行及维护记录，`sources/` 保存工程资料原件、处理成果与私有索引。私人内容不进入分发，`sources/` 只允许公开精确路径 `sources/README.md`；不要强制 git add 原件、提取文本、私人清单或导航笔记。凭据、账号、设备配置、私人 session 不发布。公开案例必须可独立取得。
 - 外部工具升级时核上游身份，从干净副本重查 diff，再更新模块及锁内摘要，重跑受影响案例；查宿主同名副本，避免上游 setup/upgrade 又生成顶层 Skill。安装成功不等于结果合同或工程能力通过。
 

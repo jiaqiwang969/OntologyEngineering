@@ -1,9 +1,32 @@
 {
   "name": "solidcraft",
   "upstream_repository": "https://github.com/tangency-labs/solidcraft",
-  "upstream_commit": "d11d268597637029055060a8a6555005faaa1f93",
-  "workspace_version": "0.27.0",
-  "cargo_lock_sha256": "8b37b362545a62000f3d2175c228b4dad83b060288106ff3fbbc24e7af218c68",
+  "upstream_base_commit": "4bdffef06180fb3a2e8fbd4b15c7d3f60e55bd11",
+  "source_repository": "https://github.com/jiaqiwang969/solidcraft",
+  "source_commit": "1453beabd793feb74d2c1b359b0cbbd34024a8bc",
+  "tracking_ref": "refs/heads/main",
+  "workspace_version": "0.40.0-rc.1",
+  "cargo_lock_sha256": "2b595cdae172a6c8de952287de20346b8acb89d21b4e5e947841eb5155d637d1",
+  "cargo_manifest_sha256": "365056b4e428ed09145cf90583d81915977cd5f2137068f3e6e44033bb31f946",
+  "engineering_commit": "d48fdfbd7d2eccf51a50824482796d5a43db4048",
+  "selected_backports": [
+    {
+      "pull_request": "https://github.com/tangency-labs/solidcraft/pull/11974",
+      "upstream_commit": "9df9d1fbdc44d3f3249a3a39bb29f624a9f7712b",
+      "source_commit": "c73a24d44afcc0db165ccff153adb473b0f8c1b5"
+    },
+    {
+      "pull_request": "https://github.com/tangency-labs/solidcraft/pull/11893",
+      "upstream_commit": "63ffadfebf9b121e6e2cb9ecf697ddb35155baa6",
+      "source_commit": "1453beabd793feb74d2c1b359b0cbbd34024a8bc"
+    }
+  ],
+  "geometry_kernel": {
+    "name": "SolidCore",
+    "repository": "https://github.com/tangency-labs/solidcore",
+    "commit": "8ddce901671f1cebd9214a31d21895d725e886c8",
+    "package_version": "1.0.1"
+  },
   "license": "MIT OR Apache-2.0",
   "runtime_source_patch": null,
   "minimum_rust": "1.95",
@@ -11,5 +34,5 @@
   "entrypoints": ["solidcraft", "solidcraft-cli"],
   "mcp_transport": "stdio",
   "documentation_path": "docs/mcp.md",
-  "scope": "Pinned upstream source identity only. Actual executables, signatures, platform, MCP discovery and operation qualifications belong to the local capability registry and original acceptance records."
+  "scope": "Pinned fork source identity only: build source_commit from source_repository, not the moving tracking_ref. upstream_base_commit is provenance before the engineering commit and selected backports, not the build target. Source regression results do not qualify installed executables; signatures, platform, MCP discovery and operation qualifications belong to the local capability registry and original acceptance records."
 }

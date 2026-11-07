@@ -1,0 +1,2199 @@
+# Drawing representation knowledge (图形表达知识).
+#
+# One card per drafting concept: what it means, which parts it is drawn with, the ways it is
+# drawn (standard editions, block or loose entities, written inside a text or apart), the
+# geometric relations between the parts, what it must not be confused with, and where the
+# knowledge comes from. Recognition reads these cards when it runs (oe-drawing
+# `representation` module); every expression a card produces names the card. Parameters are
+# drawing-domain ratios (to a text height, a circle radius or an arm length), never product
+# tolerances. Expert corrections named here are the source of the knowledge, not an input of
+# recognition: no handle, coordinate or label of a real drawing appears in this file.
+schema = "oev2.drawing-representation-knowledge/1"
+profile = "dxf-expression-rules/2"
+
+[[cards]]
+id = "datum_feature_symbol"
+expression_kind = "datum_symbol"
+title = "基准要素符号"
+meaning = "指认基准要素的符号：基准字母写在圆圈（旧版）或方框（现行）中，细实线连线把它接到贴在被测要素轮廓、其延长线或尺寸线上的终端。终端在旧版是粗短横线，在现行标准是涂黑或空白的基准三角形。符号表示“这里是基准要素”，字母本身不是基准。"
+sources = [
+  "GB/T 1182-2018 表4 基准要素标识（方框字母与基准三角形），引 GB/T 17851",
+  "GB/T 17851-2022 基准和基准体系",
+  "专家纠正 E-2026-11-06-2：旧版基准符号由粗短横线、连线、圆圈与字母构成，粗短横线不是可见轮廓",
+  "专家纠正 E-2026-11-06-10：需要理解构成基准符号的要素",
+]
+knowledge_units = ["K24", "K25"]
+recognition = "以单个大写字母为锚：字母居中于一个大小与字高相称的圆圈或方框；一条细线一端落在边框上、向外伸出；另一端是终端——旧版为与连线垂直、连线落在其中部的粗短横线，现行为三角形。四部分齐全才成立；图块与散线同样处理。"
+markers = []
+concepts = ["DC-G5-009"]
+
+[[cards.components]]
+role = "datum_letter"
+primitives = ["TEXT", "MTEXT"]
+requirement = "一个大写拉丁字母"
+[[cards.components]]
+role = "datum_frame"
+primitives = ["CIRCLE", "LWPOLYLINE"]
+requirement = "圆圈（旧版）或闭合方框（现行），字母中心在边框中心附近"
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE"]
+requirement = "细实线连线，一端在边框上，沿离开字母的方向伸出"
+[[cards.components]]
+role = "datum_terminal"
+primitives = ["LINE", "LWPOLYLINE", "SOLID"]
+requirement = "旧版：粗短横线，垂直于连线，连线端点在其中部；现行：基准三角形，连线端点在其顶点或底边中点"
+
+[[cards.variants]]
+id = "old_circle_bar"
+title = "旧版：圆圈字母 + 连线 + 粗短横线"
+distinguishing = "边框是圆，终端是与连线垂直的短线（常画在粗实线层）"
+encodings = ["loose", "block"]
+tests = ["datum_old_circle_bar_loose_is_one_symbol", "datum_old_circle_bar_block_is_one_symbol"]
+[[cards.variants]]
+id = "new_square_triangle"
+title = "现行：方框字母 + 连线 + 基准三角形"
+distinguishing = "边框是方框，终端是三角形"
+encodings = ["loose"]
+tests = ["datum_new_square_triangle_loose_is_one_symbol"]
+
+[[cards.counter_examples]]
+statement = "圆圈里的字母没有连线和终端，不是基准符号（可能是视图或放大标识）"
+test = "circled_letter_without_connector_is_not_a_datum"
+[[cards.counter_examples]]
+statement = "几何公差框格中写基准字母的格子与框格指引线箭头不是基准符号"
+test = "datum_letter_cell_of_a_frame_is_not_a_datum_symbol"
+[[cards.counter_examples]]
+statement = "单独的粗短横线不接到带字母的边框时，不是基准终端，仍按轮廓等其他规则判断"
+test = "short_thick_line_without_datum_letter_stays_outline"
+
+[[cards.parameters]]
+name = "letter_offset_max"
+value = 0.75
+meaning = "字母中心到边框中心的距离 ≤ 该值 × 边框半径（方框取半边长）"
+[[cards.parameters]]
+name = "boundary_to_text_height_min"
+value = 0.6
+meaning = "边框半径（半边长）≥ 该值 × 字高"
+[[cards.parameters]]
+name = "boundary_to_text_height_max"
+value = 1.8
+meaning = "边框半径（半边长）≤ 该值 × 字高"
+[[cards.parameters]]
+name = "connector_on_boundary"
+value = 0.12
+meaning = "连线端点到边框的距离 ≤ 该值 × 边框半径"
+[[cards.parameters]]
+name = "connector_length_max"
+value = 6.0
+meaning = "连线长度 ≤ 该值 × 边框半径"
+[[cards.parameters]]
+name = "terminal_length_min"
+value = 0.9
+meaning = "粗短横线长度 ≥ 该值 × 边框半径"
+[[cards.parameters]]
+name = "terminal_length_max"
+value = 3.5
+meaning = "粗短横线长度 ≤ 该值 × 边框半径"
+[[cards.parameters]]
+name = "terminal_mid_offset"
+value = 0.25
+meaning = "连线端点到粗短横线中点的距离 ≤ 该值 × 横线长度"
+[[cards.parameters]]
+name = "perpendicular_cos_max"
+value = 0.08
+meaning = "粗短横线与连线夹角余弦的绝对值上限"
+[[cards.parameters]]
+name = "triangle_touch"
+value = 0.25
+meaning = "连线端点到三角形顶点或底边中点的距离 ≤ 该值 × 边框半径"
+[[cards.parameters]]
+name = "triangle_aspect_max"
+value = 1.6
+meaning = "基准三角形最长边与最短边之比上限（细长的箭头不是基准三角形）"
+
+[[cards]]
+id = "center_hole_symbol"
+expression_kind = "center_hole"
+title = "中心孔符号与标记"
+meaning = "在不需要画出中心孔形状时，用符号表示完工零件上是否保留中心孔，并用标记写出型式与尺寸（如 GB/T 4459.5-B2.5/8，旧图写作“中心孔 B4 GB145-85”，“2-”表示两端）。要求保留：在轴线端部画开口向外的 60° 折线（<）；不允许保留：折线顶点处加一短竖线；可以保留：不画符号，只引出标记。符号线不是零件轮廓。"
+sources = [
+  "GB/T 4459.5-1999 机械制图 中心孔表示法 第3章与表1（符号）、第4章（标记）",
+  "GB/T 145 中心孔",
+  "专家纠正 E-2026-11-06-3：中心孔符号被当成可见轮廓线",
+]
+knowledge_units = ["K39"]
+recognition = "两条短直线共一个顶点，夹角约 60°；顶点在端面线与一条中心线的交点上，角平分线与中心线重合；开口朝向零件以外。附近沿轴线的细线上下写有中心孔标记时一并归入。"
+markers = ["中心孔", "4459.5", "GB145", "GB/T145", "GB/T 145"]
+concepts = ["DC-G3-144", "DC-G3-218", "DC-G3-003"]
+
+[[cards.components]]
+role = "symbol_glyph"
+primitives = ["LINE"]
+requirement = "两条等长短线组成 60° 折线，顶点在轴线与端面的交点"
+[[cards.components]]
+role = "note_text"
+primitives = ["TEXT", "MTEXT"]
+requirement = "中心孔标记：标准编号或“中心孔”字样，型式 R/A/B/C 与尺寸"
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE"]
+requirement = "沿轴线引出的细线，标记文字写在其上下"
+
+[[cards.variants]]
+id = "keep"
+title = "要求保留中心孔：开口向外的 60° 折线"
+distinguishing = "只有折线"
+encodings = ["loose"]
+tests = ["center_hole_keep_symbol_with_designation"]
+[[cards.variants]]
+id = "not_allowed"
+title = "不允许保留中心孔：折线加顶点处短竖线"
+distinguishing = "顶点外侧另有一条垂直于轴线的短线"
+encodings = ["loose"]
+tests = ["center_hole_not_allowed_symbol"]
+
+[[cards.counter_examples]]
+statement = "两线夹角约 60° 但顶点不在中心线上（如倒角线、锥面线），不是中心孔符号"
+test = "v_lines_off_axis_are_not_a_center_hole"
+[[cards.counter_examples]]
+statement = "开口朝向零件内部的 60° 折线（如剖视中的钻尖锥面）不是中心孔符号"
+test = "v_lines_opening_into_the_part_are_not_a_center_hole"
+
+[[cards.parameters]]
+name = "included_angle_deg"
+value = 60.0
+meaning = "折线两臂夹角"
+[[cards.parameters]]
+name = "angle_tolerance_deg"
+value = 12.0
+meaning = "夹角允许偏差"
+[[cards.parameters]]
+name = "arm_length_min"
+value = 0.6
+meaning = "臂长 ≥ 该值 × 图中常用字高"
+[[cards.parameters]]
+name = "arm_length_max"
+value = 4.0
+meaning = "臂长 ≤ 该值 × 图中常用字高"
+[[cards.parameters]]
+name = "arm_ratio_max"
+value = 1.5
+meaning = "两臂长度之比上限"
+[[cards.parameters]]
+name = "apex_tolerance"
+value = 0.05
+meaning = "顶点重合、顶点在中心线或端面上的距离容差 × 字高"
+[[cards.parameters]]
+name = "axis_cross_max"
+value = 0.06
+meaning = "角平分线与中心线方向叉积绝对值上限"
+[[cards.parameters]]
+name = "note_reach"
+value = 4.0
+meaning = "引出细线近端到折线远端的距离 ≤ 该值 × 臂长"
+[[cards.parameters]]
+name = "note_offset_max"
+value = 1.8
+meaning = "标记文字中心到引出细线的距离 ≤ 该值 × 字高"
+
+[[cards]]
+id = "gdt_frame_symbol"
+expression_kind = "geometric_tolerance"
+title = "几何公差框格与特征符号"
+meaning = "几何公差写在矩形框格中：第一格是几何特征符号，第二格是公差值（可带公差带形状符号），其后各格是基准字母；框格用指引线连到被测要素。框格与符号可以是图块，也可以是炸开后的直线、圆与文字；特征符号由其笔画构成决定（如位置度＝圆加十字）。"
+sources = [
+  "GB/T 1182-2018 第5章符号（表2 几何特征符号）与第8章几何公差规范标注",
+  "专家纠正 E-2026-11-06-7：位置度框格用散线画出时须按框格读出",
+]
+knowledge_units = ["K23", "K25", "K26"]
+recognition = "一串等高相邻的矩形格；第一格内只有组成特征符号的笔画（块内或散线），由笔画构成判定特征；第二格文字为公差值，其后为基准字母；从框格边线伸出的细线为指引线。"
+markers = []
+concepts = ["DC-G5-090"]
+
+[[cards.components]]
+role = "symbol_glyph"
+primitives = ["INSERT", "LINE", "CIRCLE", "LWPOLYLINE"]
+requirement = "第一格内的特征符号笔画"
+[[cards.components]]
+role = "frame_cell"
+primitives = ["LWPOLYLINE", "LINE", "INSERT"]
+requirement = "等高相邻矩形格"
+[[cards.components]]
+role = "tolerance_value"
+primitives = ["TEXT", "MTEXT"]
+requirement = "第二格文字"
+[[cards.components]]
+role = "datum_reference"
+primitives = ["TEXT", "MTEXT"]
+requirement = "第三格起的基准字母"
+
+[[cards.variants]]
+id = "block_glyph"
+title = "符号为图块"
+distinguishing = "第一格内是一个符号图块"
+encodings = ["block"]
+tests = ["frame_with_block_glyph_is_read"]
+[[cards.variants]]
+id = "loose_glyph"
+title = "符号为散线（圆、直线）"
+distinguishing = "第一格内是若干未归属的直线与圆，按笔画构成判定特征"
+encodings = ["loose"]
+tests = ["frame_with_loose_position_glyph_is_read"]
+
+[[cards.counter_examples]]
+statement = "一排相邻方格第一格内没有特征符号笔画（如表格、理论正确尺寸框）不是几何公差框格"
+test = "cells_without_a_glyph_are_not_a_frame"
+
+[[cards.parameters]]
+name = "cell_inset"
+value = 0.06
+meaning = "判定笔画在第一格内时向内收缩的距离 × 格高"
+
+[[cards]]
+id = "tolerance_zone_modifier"
+expression_kind = "geometric_tolerance"
+title = "公差带形状符号 φ / Sφ"
+meaning = "几何公差框格第二格中公差值前的 φ 表示公差带为圆柱形或圆形，Sφ 表示球形。它修饰公差带，不是直径尺寸里的直径符号；框格内的 φ 值不得读成直径尺寸。"
+sources = [
+  "GB/T 1182-2018 7.4 圆柱形或球形公差带：公差值前有“φ”则公差带为圆柱形或圆形，有“Sφ”则为球形",
+  "专家纠正 E-2026-11-06-7：同轴度（位置度）里的“Φ”代表公差带是圆柱形的，不要识别成直径尺寸",
+]
+knowledge_units = ["K25"]
+recognition = "公差值文字以 φ/Φ/Ø/⌀ 开头时给框格加“公差带：圆柱或圆形”限定；以 Sφ 开头时为球形。该文字只作框格成员。"
+markers = ["Ø", "ø", "φ", "Φ", "⌀"]
+concepts = ["DC-G5-088", "DC-G5-087"]
+parameters = []
+
+[[cards.components]]
+role = "tolerance_value"
+primitives = ["TEXT", "MTEXT"]
+requirement = "以公差带形状符号开头的公差值"
+
+[[cards.variants]]
+id = "cylindrical"
+title = "φ：圆柱形或圆形公差带"
+distinguishing = "公差值前为 φ"
+encodings = ["text"]
+tests = ["phi_in_frame_value_is_a_cylindrical_zone"]
+[[cards.variants]]
+id = "spherical"
+title = "Sφ：球形公差带"
+distinguishing = "公差值前为 Sφ"
+encodings = ["text"]
+tests = ["sphi_in_frame_value_is_a_spherical_zone"]
+
+[[cards.counter_examples]]
+statement = "框格以外、带尺寸线和终端的 φ 文字仍是直径尺寸"
+test = "phi_text_with_dimension_lines_stays_a_diameter"
+
+
+[[cards]]
+id = "special_characteristic_mark"
+expression_kind = "dimension"
+title = "尺寸前的特殊标记（☆ 等）"
+meaning = "写在尺寸数值前的特殊标记（如 ☆、★）按企业规定表示关键或重要特性，属于该尺寸，须随尺寸保留。它可以写在尺寸文字里，也可以作为单独文字放在数值前方、与数值同一方向。"
+sources = [
+  "专家纠正 E-2026-11-06-5：线性尺寸前的特殊标记应保留",
+  "专家纠正 E-2026-11-06-6：直径尺寸前的特殊标记未保留",
+  "标记含义由企业标准或技术要求规定；本卡只保留标记与尺寸的归属，不判定含义",
+]
+knowledge_units = ["K17"]
+recognition = "只含标记字符的文字，若与某个尺寸的数值文字同方向，位于其数值起点之前约一个字宽以内、且在同一行，即为该尺寸的成员；尺寸加“关键特性”限定，标签前加标记。"
+markers = ["☆", "★"]
+concepts = ["DC-G9-008"]
+
+[[cards.components]]
+role = "special_mark"
+primitives = ["TEXT", "MTEXT"]
+requirement = "只含标记字符，紧靠尺寸数值起点"
+
+[[cards.variants]]
+id = "inline"
+title = "标记写在尺寸文字里"
+distinguishing = "尺寸文字以标记开头"
+encodings = ["text"]
+tests = ["star_inside_dimension_text_is_kept"]
+[[cards.variants]]
+id = "standalone"
+title = "标记为单独文字，放在数值前"
+distinguishing = "单独文字，方向与尺寸数值相同，在数值起点前"
+encodings = ["loose"]
+tests = ["standalone_star_before_linear_dimension_joins_it", "standalone_star_before_rotated_diameter_text_joins_it"]
+
+[[cards.counter_examples]]
+statement = "远离任何尺寸数值或方向不一致的标记不并入尺寸"
+test = "star_far_from_any_dimension_is_not_attached"
+
+[[cards.parameters]]
+name = "before_max"
+value = 2.2
+meaning = "标记中心到数值起点（沿阅读方向向前）的距离 ≤ 该值 × 标记字高"
+[[cards.parameters]]
+name = "after_max"
+value = 0.6
+meaning = "标记中心越过数值起点的距离 ≤ 该值 × 标记字高"
+[[cards.parameters]]
+name = "line_offset_max"
+value = 0.8
+meaning = "标记中心到数值所在行的距离 ≤ 该值 × 标记字高"
+[[cards.parameters]]
+name = "direction_cos_min"
+value = 0.98
+meaning = "标记方向与数值方向夹角余弦下限"
+
+[[cards]]
+id = "angle_unit"
+expression_kind = "dimension_angle"
+title = "角度数值的单位"
+meaning = "角度尺寸的数值必须注写单位（°、′、″）。图上角度尺寸只写了数字时，识别后在数值后补“°”，并记录这是补写的单位、保留原文。"
+sources = [
+  "GB/T 4458.4-2003 尺寸注法：角度数字注写单位",
+  "专家纠正 E-2026-11-06-8：任何图纸识别角度后，数值后面未加角度符号“°”时补充“°”",
+]
+knowledge_units = ["K17", "K20"]
+recognition = "类别为角度尺寸、标签是纯数字且不含 °′″ 时，标签补“°”，限定“单位为补写”，证据保留原文。带公差或其他文字的角度不自动改写。"
+markers = ["°", "′", "″"]
+concepts = ["DC-G4-032"]
+parameters = []
+
+[[cards.components]]
+role = "dimension_text"
+primitives = ["DIMENSION", "TEXT", "MTEXT"]
+requirement = "角度尺寸的数值"
+
+[[cards.variants]]
+id = "unit_missing"
+title = "只写数字：补 °"
+distinguishing = "纯数字"
+encodings = ["text"]
+tests = ["angle_without_unit_gets_a_degree_sign"]
+[[cards.variants]]
+id = "unit_present"
+title = "已写单位：不变"
+distinguishing = "含 °、′ 或 ″"
+encodings = ["text"]
+tests = ["angle_with_unit_is_unchanged"]
+
+[[cards.counter_examples]]
+statement = "线性尺寸的纯数字不补角度单位"
+test = "linear_number_gets_no_degree_sign"
+
+
+[[cards]]
+id = "gdt_leader_extension"
+expression_kind = "geometric_tolerance"
+title = "几何公差指引线指向轮廓或其延长线"
+meaning = "被测要素是组成要素时，指引线终止在要素的轮廓上或轮廓的延长线上（与尺寸线明显错开），以箭头终止。指引线不直接落在轮廓上时，箭头所在的那条细线是被测轮廓的延长线；图上没有画出延长线时，须按被测轮廓构造延长线，使指引线指向它。"
+sources = [
+  "GB/T 1182-2018 第6章 被测要素：二维标注中指引线终止在要素的轮廓上或轮廓的延长线上",
+  "专家纠正 E-2026-11-06-9：任何几何公差的指引线不能指向被测轮廓线时，需构造被测轮廓线的延长线",
+]
+knowledge_units = ["K23", "K25"]
+recognition = "框格指引线箭头尖端不在轮廓上时：找经过尖端、与箭头方向垂直、并与一段可见轮廓共线的细线，作为延长线并入框格；找不到画出的细线但有共线轮廓时，构造从尖端到轮廓端点的延长线并记为推断。"
+markers = []
+concepts = ["DC-G5-110"]
+
+[[cards.components]]
+role = "extension_line"
+primitives = ["LINE"]
+requirement = "经过箭头尖端、与被测轮廓共线的细线"
+
+[[cards.variants]]
+id = "drawn"
+title = "延长线已画出"
+distinguishing = "尖端在一条与轮廓共线的细线上"
+encodings = ["loose"]
+tests = ["frame_leader_to_a_drawn_extension_line"]
+[[cards.variants]]
+id = "constructed"
+title = "未画延长线：构造"
+distinguishing = "尖端落在轮廓的延长方向上，中间无线"
+encodings = ["inferred"]
+tests = ["frame_leader_without_extension_gets_a_constructed_one"]
+
+[[cards.counter_examples]]
+statement = "箭头直接落在轮廓上时不另加延长线"
+test = "frame_leader_on_the_outline_needs_no_extension"
+
+[[cards.parameters]]
+name = "tip_tolerance"
+value = 0.1
+meaning = "尖端到细线端点或轮廓所在直线的距离 ≤ 该值 × 字高"
+[[cards.parameters]]
+name = "perpendicular_cos_max"
+value = 0.1
+meaning = "箭头方向与延长线夹角余弦的绝对值上限"
+[[cards.parameters]]
+name = "outline_gap_max"
+value = 3.0
+meaning = "延长线远端到轮廓端点的距离 ≤ 该值 × 字高"
+[[cards.parameters]]
+name = "constructed_reach_max"
+value = 15.0
+meaning = "构造延长线长度 ≤ 该值 × 字高"
+
+[[cards]]
+id = "section_line_region"
+expression_kind = "section_hatch"
+title = "剖面区域内的剖面线"
+meaning = "剖面线是画在剖面区域内的等距平行细实线（通常 45°），两端止于区域边界。区域内部、与剖面线方向平行、两端落在区域边界上的直线是剖面线，即使绘图者用了粗线或轮廓图层；轮廓线是区域的边界，不在区域内部穿过。"
+sources = [
+  "专家纠正 E-2026-11-06-1（2026-11-06 经用户确认）：放大图中与剖面线近乎平行、从端面画到轴线的单根粗线是手画的剖面线，填充边界是沿它选出的",
+  "GB/T 4457.5-2013 剖面区域的表示法",
+  "GB/T 4457.4-2002 图线（剖面线为细实线）",
+  "专家纠正 E-2026-11-06-1：剖面线跟可见轮廓线识别不清，需要增加对两者区分度的理解",
+]
+knowledge_units = ["K12", "K03"]
+recognition = "对每个填充区域取其边界与图案角度；区域内部、与图案方向平行、两端在边界上、且不沿边界的直线并入该剖面。"
+markers = []
+concepts = ["DC-G1-010", "DC-G2-061"]
+
+[[cards.components]]
+role = "hatch_fill"
+primitives = ["HATCH", "LINE"]
+requirement = "填充区域或区域内平行于图案方向的直线"
+
+[[cards.variants]]
+id = "drawn_as_line"
+title = "剖面线单独画成直线（线宽不论）"
+distinguishing = "在填充区域内、平行于图案方向"
+encodings = ["loose"]
+tests = ["thick_line_inside_hatch_parallel_to_pattern_is_a_section_line"]
+
+[[cards.counter_examples]]
+statement = "沿填充区域边界的粗线是轮廓，不是剖面线"
+test = "thick_line_on_the_hatch_boundary_stays_outline"
+[[cards.counter_examples]]
+statement = "区域内与图案方向不平行的线不按剖面线并入"
+test = "line_inside_hatch_not_parallel_to_pattern_is_not_a_section_line"
+
+[[cards.parameters]]
+name = "angle_tolerance_deg"
+value = 6.0
+meaning = "与图案方向的夹角容差"
+[[cards.parameters]]
+name = "boundary_tolerance"
+value = 0.05
+meaning = "端点在边界上的距离容差 × 字高"
+
+[[cards.variants]]
+id = "boundary_along_drawn_line"
+title = "手画剖面线，填充边界沿它选出"
+distinguishing = "线本身是填充边界、与剖面图案平行；两端处真实轮廓或轴线径直穿过（真正的结构棱线会在端点处转折）"
+encodings = ["loose"]
+tests = ["section_line_drawn_by_hand_on_the_hatch_boundary"]
+
+[[cards.counter_examples]]
+statement = "填充边界上与图案平行的倒角线：两端处轮廓在此转折，是可见轮廓，不是剖面线"
+test = "chamfer_edge_on_the_hatch_boundary_stays_outline"
+
+[[cards]]
+id = "detail_circle_interruption"
+expression_kind = "visible_contour"
+title = "被局部放大圈打断的结构线"
+meaning = "局部放大图的细实线圈只标出被放大的部位，不改变零件结构。绘图者在圈处把轮廓线剪断时，圈两侧共线的两段仍是同一条结构线，按完整结构连起来；补出的部分是推断，不是来源线。"
+sources = [
+  "GB/T 4458.1-2002 局部放大图：用细实线圈出被放大的部位",
+  "专家纠正 E-2026-11-06-4：局部放大图的细实线圈和尺寸轮廓线遮挡，造成可见轮廓线缺失（开发图上曾有同类纠正，被遮挡段补全当时延后）",
+]
+knowledge_units = ["K13", "K11"]
+recognition = "一段轮廓的端点落在放大圈上，另一段共线轮廓在圈的另一处交点开始，两端之间的间隙在圈内：原因记为“放大圈打断”，按推断连成一条结构线。"
+markers = []
+concepts = ["DC-G2-075"]
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE"]
+requirement = "圈两侧共线的轮廓段"
+[[cards.components]]
+role = "detail_circle"
+primitives = ["CIRCLE"]
+requirement = "带罗马数字的细实线圈"
+
+[[cards.variants]]
+id = "cut_at_circle"
+title = "轮廓在圈处剪断"
+distinguishing = "两段间隙的两端都在同一圈上"
+encodings = ["loose"]
+tests = ["outline_cut_by_a_detail_circle_is_one_line"]
+
+[[cards.counter_examples]]
+statement = "间隙端点不都在同一放大圈上时不按此原因连接"
+test = "pieces_ending_on_different_circles_are_not_joined"
+
+[[cards.parameters]]
+name = "on_circle_tolerance"
+value = 0.02
+meaning = "端点到圈的距离容差 × 字高"
+
+[[cards]]
+id = "visible_edge_line"
+expression_kind = "visible_contour"
+title = "可见棱边线（如倒角棱线）"
+meaning = "两表面的可见交线（棱边）用粗实线画出，如轴端倒角与圆柱面的交线在主视图中是连接两侧倒角角点、横跨零件的直线。它的两端都是轮廓的角点、整段在零件内；绘图者误用细线颜色或图层时，几何关系优先于颜色。被放大圈剪断的棱线按两段合起来判断。"
+sources = [
+  "GB/T 4457.4-2002 图线：粗实线用于可见棱边线、可见轮廓线",
+  "专家纠正 E-2026-11-06-4：放大圈处可见轮廓线缺失（端面倒角棱线被当作引出线和未解释线）",
+]
+knowledge_units = ["K03", "K09"]
+recognition = "实线（不论颜色）或其被放大圈剪断的共线几段，合起来的两个端点都是两条以上轮廓线相交的角点，且不与已有轮廓重叠：按可见轮廓读出。尺寸界线只有一端在轮廓上，不满足。"
+markers = []
+concepts = ["DC-G1-014", "DC-G1-015"]
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE"]
+requirement = "两端为轮廓角点的直线（或其被放大圈剪断的几段）"
+
+[[cards.variants]]
+id = "edge_in_annotation_colour"
+title = "棱线用了细线颜色"
+distinguishing = "两端为轮廓角点"
+encodings = ["loose"]
+tests = ["chamfer_edge_line_in_thin_colour_is_visible_outline"]
+
+[[cards.counter_examples]]
+statement = "从倒角角点引出、另一端不在轮廓角点上的细线（尺寸界线）不是棱线"
+test = "extension_line_from_a_chamfer_corner_stays_annotation"
+
+[[cards.parameters]]
+name = "vertex_tolerance"
+value = 0.02
+meaning = "端点与轮廓角点重合的距离容差 × 字高"
+[[cards.parameters]]
+name = "min_length"
+value = 0.8
+meaning = "棱线长度 ≥ 该值 × 字高"
+
+[[cards]]
+id = "dimension_text"
+expression_kind = "dimension"
+title = "尺寸注写文法"
+meaning = "尺寸值的书写形式：尺寸数字前后可带尺寸符号（Ø、R、C、SØ、SR）、重复要素数量（n× 或旧式 n-）、公差带代号（如 H7、k6）、极限偏差（上下叠写、±对称、零偏差）、螺纹标记（M、Tr、B 等及其公差带代号、旋向、旋合长度）、孔的旁注符号（深度 ↧、沉孔 ⌴、埋头 ⌵）和角度单位。文法说明数值是什么尺寸、带什么公差，不决定被测要素。"
+sources = [
+  "GB/T 4458.4-2003 机械制图 尺寸注法 3.2、4.1.5、4.2.3、4.2.4",
+  "GB/T 16675.2-2012 技术制图 简化表示法 第2部分：尺寸注法 4.2.1、4.2.2、表1、表2",
+  "GB/T 4458.5-2003 机械制图 尺寸公差与配合注法 4.1.1–4.1.4",
+  "GB/T 1800.1-2020 公差带代号与标准公差等级 4.1.2、4.2",
+  "GB/T 4459.1-1995 螺纹及螺纹紧固件表示法 4.6、附录A",
+  "GB/T 197-2018 普通螺纹 公差（螺纹标记与公差带代号）",
+  "机械制图（第7版）§1 尺寸数字、§7-4、§8-1、§9-5",
+  "互换性与测量技术 1.3.3 公差带代号",
+]
+knowledge_units = ["K17", "K18", "K19", "K20", "K21", "K34", "K39"]
+recognition = "以尺寸表达或文字的显示文本为锚（解码 %%c、%%d、%%p 与 \\S 叠写）：开头的数字后紧跟 × 或旧式 - 再接尺寸符号或数值为数量；Ø/R/C 等前缀定尺寸类型；数值后紧跟“基本偏差字母 + 标准公差等级”为公差带代号；“上/下”成对且带符号或为 0 的为极限偏差；M、Tr、B 等前缀接直径的为螺纹标记，其后“等级数字 + 位置字母”为螺纹公差带；° ′ ″ 为角度单位。哪些符号、字母和词属于哪个概念从本卡词表读取。"
+markers = ["Ø", "R", "C", "×", "±", "°", "M", "↧", "⌴", "⌵"]
+parameters = []
+concepts = ["DC-G4-017", "DC-G4-030", "DC-G4-055", "DC-G4-006", "DC-G4-041", "DC-G4-032", "DC-G4-099", "DC-G4-040", "DC-G3-091", "DC-G3-080", "DC-G4-094", "DC-G4-088", "DC-G4-114", "DC-G4-132", "DC-G4-126", "DC-G4-103", "DC-G4-113", "DC-G3-088", "DC-G3-223", "DC-G3-232", "DC-G3-089"]
+
+[[cards.components]]
+role = "size_value"
+primitives = ["TEXT", "MTEXT", "DIMENSION"]
+requirement = "尺寸数字，可带尺寸符号前缀"
+
+[[cards.components]]
+role = "count_prefix"
+primitives = ["TEXT", "MTEXT", "DIMENSION"]
+requirement = "重复要素数量 n×（旧式 n-），写在尺寸符号或数值之前"
+
+[[cards.components]]
+role = "tolerance"
+primitives = ["TEXT", "MTEXT", "DIMENSION"]
+requirement = "公差带代号、极限偏差（叠写或括号内）、±对称偏差"
+
+[[cards.components]]
+role = "thread_designation"
+primitives = ["TEXT", "MTEXT", "DIMENSION"]
+requirement = "螺纹标记：牙型代号、公称直径×螺距、公差带代号、旋合长度、旋向"
+
+[[cards.variants]]
+id = "size_symbols"
+title = "尺寸符号 Ø、R、C 与倒角 a×b°"
+distinguishing = "前缀决定直径、半径、倒角"
+encodings = ["text", "native_dimension"]
+tests = ["dimension_text_size_symbols_name_their_concepts", "native_diameter_dimension_names_its_text_concepts"]
+
+[[cards.variants]]
+id = "count_prefix"
+title = "重复要素数量 n× 与旧式 n-"
+distinguishing = "数量写在尺寸符号或数值之前"
+encodings = ["text"]
+tests = ["dimension_text_counts_old_and_new"]
+
+[[cards.variants]]
+id = "tolerance_class"
+title = "公差带代号"
+distinguishing = "基本偏差字母紧跟标准公差等级"
+encodings = ["text"]
+tests = ["dimension_text_tolerance_classes"]
+
+[[cards.variants]]
+id = "deviations"
+title = "极限偏差：叠写、±、零偏差、代号加括号偏差"
+distinguishing = "成对的带符号数值或 ±"
+encodings = ["text", "stacked_mtext"]
+tests = ["dimension_text_deviations_stacked_symmetric_and_zero", "stacked_mtext_deviation_dimension_names_deviation_concepts"]
+
+[[cards.variants]]
+id = "thread_designation"
+title = "螺纹标记及螺纹公差带"
+distinguishing = "牙型代号接直径，等级数字在前、位置字母在后"
+encodings = ["text"]
+tests = ["dimension_text_thread_designations"]
+
+[[cards.variants]]
+id = "hole_callout"
+title = "孔的旁注：深度、沉孔、埋头"
+distinguishing = "尺寸后接 ↧、⌴、⌵ 或“深”"
+encodings = ["text"]
+tests = ["dimension_text_hole_callouts"]
+
+[[cards.variants]]
+id = "angle_units"
+title = "角度与单位"
+distinguishing = "° ′ ″ 必须写出；线性尺寸缺省为毫米"
+encodings = ["text"]
+tests = ["dimension_text_angles_and_units"]
+
+[[cards.counter_examples]]
+statement = "中心孔标记 B4（无 × 螺距）不是锯齿形螺纹"
+test = "center_hole_mark_is_not_a_buttress_thread"
+
+[[cards.counter_examples]]
+statement = "一般公差标准号 GB/T 1804-m 中的 m 不是公差带代号"
+test = "general_tolerance_reference_is_not_a_tolerance_class"
+
+[[cards.counter_examples]]
+statement = "表面结构参数 Ra 不是半径 R"
+test = "roughness_parameter_is_not_a_radius"
+
+[[cards.lexicon]]
+concept = "DC-G4-099"
+entry = "unit"
+values = ["mm", "°", "′", "″"]
+meaning = "显式单位；线性尺寸缺省为毫米不注单位（GB/T 4458.4）"
+
+[[cards.lexicon]]
+concept = "DC-G4-094"
+entry = "count_separator"
+values = ["×", "x", "X", "*", "-"]
+meaning = "数量与尺寸之间的分隔；“-”为旧式（GB/T 16675.2 表2 与旧版图样）"
+
+[[cards.lexicon]]
+concept = "DC-G4-055"
+entry = "prefix"
+values = ["Ø", "SØ"]
+meaning = "直径与球直径符号；%%c、φ、Φ 解码为 Ø（通用 CAD 写法）"
+
+[[cards.lexicon]]
+concept = "DC-G4-030"
+entry = "prefix"
+values = ["Ø"]
+meaning = "直径尺寸"
+
+[[cards.lexicon]]
+concept = "DC-G4-041"
+entry = "prefix"
+values = ["R", "SR"]
+meaning = "半径与球半径符号"
+
+[[cards.lexicon]]
+concept = "DC-G4-006"
+entry = "prefix"
+values = ["R"]
+meaning = "半径尺寸"
+
+[[cards.lexicon]]
+concept = "DC-G3-080"
+entry = "prefix"
+values = ["R"]
+meaning = "倒圆以半径注出；仅凭文字不能区分倒圆与其他圆弧"
+
+[[cards.lexicon]]
+concept = "DC-G4-040"
+entry = "prefix"
+values = ["C"]
+meaning = "45° 倒角符号 C 接轴向长度"
+
+[[cards.lexicon]]
+concept = "DC-G3-091"
+entry = "pattern"
+values = ["C<n>", "<a>×<angle>°"]
+meaning = "倒角：C 简注或“轴向长度×角度”"
+
+[[cards.lexicon]]
+concept = "DC-G3-088"
+entry = "prefix"
+values = ["M", "Tr", "B"]
+meaning = "米制螺纹牙型代号接公称直径；B（锯齿形）须带 ×螺距"
+
+[[cards.lexicon]]
+concept = "DC-G3-088"
+entry = "prefix_with_fraction"
+values = ["G", "Rc", "Rp", "R1", "R2"]
+meaning = "管螺纹代号接英寸尺寸代号（含分数）"
+
+[[cards.lexicon]]
+concept = "DC-G3-088"
+entry = "word"
+values = ["UNC", "UNF", "UNEF", "NPT"]
+meaning = "统一螺纹与美制锥管螺纹（通用实践）"
+
+[[cards.lexicon]]
+concept = "DC-G3-223"
+entry = "prefix"
+values = ["M"]
+meaning = "普通螺纹"
+
+[[cards.lexicon]]
+concept = "DC-G3-232"
+entry = "thread_positions"
+values = ["G", "H", "a", "b", "c", "d", "e", "f", "g", "h"]
+meaning = "螺纹公差带位置：内螺纹 G、H，外螺纹 a–h；等级数字在前（GB/T 197）"
+
+[[cards.lexicon]]
+concept = "DC-G3-089"
+entry = "glyph"
+values = ["↧", "深", "攻深"]
+meaning = "螺纹深度"
+
+[[cards.lexicon]]
+concept = "DC-G4-088"
+entry = "glyph"
+values = ["↧", "⌵", "⌴", "深", "沉孔", "锪平", "埋头"]
+meaning = "孔的旁注：深度、埋头孔、沉孔或锪平（GB/T 16675.2 表1）"
+
+[[cards.lexicon]]
+concept = "DC-G4-032"
+entry = "glyph"
+values = ["°", "′", "″"]
+meaning = "角度单位"
+
+[[cards.lexicon]]
+concept = "DC-G4-126"
+entry = "glyph"
+values = ["±"]
+meaning = "对称偏差；%%p 解码为 ±"
+
+[[cards.lexicon]]
+concept = "DC-G4-114"
+entry = "deviation_letters"
+values = ["JS", "js", "CD", "cd", "EF", "ef", "FG", "fg", "ZA", "za", "ZB", "zb", "ZC", "zc", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "N", "P", "R", "S", "T", "U", "V", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "j", "k", "m", "n", "p", "r", "s", "t", "u", "v", "x", "y", "z"]
+meaning = "基本偏差代号：孔大写、轴小写（GB/T 1800.1）；两字母者先匹配"
+
+[[cards.lexicon]]
+concept = "DC-G4-114"
+entry = "grades"
+values = ["01", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"]
+meaning = "标准公差等级 IT01、IT0、IT1–IT18"
+
+[[cards.lexicon]]
+concept = "DC-G4-132"
+entry = "pattern"
+values = ["upper/lower", "stacked"]
+meaning = "上下偏差成对，至少一个带符号或为 0；MTEXT \\S 叠写由解码分出"
+
+[[cards.lexicon]]
+concept = "DC-G4-103"
+entry = "pattern"
+values = ["0"]
+meaning = "零偏差写 0，不带符号"
+
+[[cards.lexicon]]
+concept = "DC-G4-113"
+entry = "pattern"
+values = ["<class>(<upper>/<lower>)", "<upper>/<lower> (<class>)"]
+meaning = "公差带代号与极限偏差同时注出，偏差或代号加括号"
+
+[[cards.lexicon]]
+concept = "DC-G4-017"
+entry = "pattern"
+values = ["<number>"]
+meaning = "尺寸数字"
+
+[[cards.lexicon]]
+concept = "DC-G4-099"
+entry = "pattern"
+values = ["<number>"]
+meaning = "不带单位的线性尺寸数字以毫米计"
+
+[[cards.outside_forms]]
+concept = "DC-G3-232"
+form = "4H5"
+reason = "来源中的写法不完整（应为两组等级加位置），不是独立的螺纹公差带代号"
+
+[[cards.outside_forms]]
+concept = "DC-G3-089"
+form = "20"
+reason = "螺纹长度以普通线性尺寸注出时，只凭文字无法与其他长度区分，需要几何关系"
+
+[[cards.outside_forms]]
+concept = "DC-G3-089"
+form = "螺纹长度含螺尾"
+reason = "这是对注法的说明，不是图上的注写"
+
+[[cards.outside_forms]]
+concept = "DC-G4-088"
+form = "4-Ø4"
+reason = "旧式旁注无深度、沉孔符号时与“数量-直径”尺寸相同，需借助指引线位置判断"
+
+[[cards]]
+id = "technical_note"
+expression_kind = "note"
+title = "技术要求注语"
+meaning = "技术要求中的标准注语：一般公差（GB/T 1804）与未注几何公差（GB/T 1184）、未注倒角与圆角、铸造圆角、锐边与毛刺、热处理与硬度、其余表面粗糙度、铸件要求等。每条注语对未单独注出的要素统一给出要求。"
+sources = [
+  "GB/T 1804-2000 一般公差 未注公差的线性和角度尺寸的公差 5、6",
+  "GB/T 1184-1996 形状和位置公差 未注公差值 6、附录A",
+  "GB/T 24743-2009 技术产品文件 钢铁零件热处理表示法 4.3、4.4、6.7",
+  "GB/T 24745-2009 技术产品文件 词汇 表5、表7",
+  "GB/T 16675.2-2012 简化表示法 第2部分 4.2.1",
+  "机械制图（第7版）§9-4、§9-5、图10-18、图10-22",
+  "互换性与测量技术 1.5、3.7.2",
+]
+knowledge_units = ["K14", "K21", "K33", "K40", "K41"]
+recognition = "以技术要求标题下的编号条目为锚，按本卡词表判断条目说的是哪类要求；硬度以“数值+硬度标尺”识别，硬化层深度以 CHD、CD 接数值识别；条目中出现的 C1、R4 等尺寸记号同时按尺寸注写文法命名。条目主题（材料热处理、防护、工艺）的词也来自本卡。"
+markers = ["技术要求", "未注", "GB/T 1804", "GB/T 1184", "HRC", "HBW"]
+parameters = []
+concepts = ["DC-G9-002", "DC-G1-070", "DC-G9-003", "DC-G1-071", "DC-G9-004", "DC-G3-112", "DC-G4-068", "DC-G4-061", "DC-G4-070", "DC-G5-025", "DC-G5-026", "DC-G9-010", "DC-G7-025", "DC-G7-026", "DC-G7-089", "DC-G6-001", "DC-G9-009"]
+
+[[cards.components]]
+role = "heading"
+primitives = ["TEXT", "MTEXT"]
+requirement = "标题“技术要求”"
+
+[[cards.components]]
+role = "item"
+primitives = ["TEXT", "MTEXT"]
+requirement = "编号条目，一条一项要求"
+
+[[cards.variants]]
+id = "item_wording"
+title = "条目措辞"
+distinguishing = "词表中的词或词组"
+encodings = ["text"]
+tests = ["technical_note_wording_names_concepts", "technical_requirement_block_items_name_concepts"]
+
+[[cards.variants]]
+id = "heat_treatment"
+title = "热处理与硬度"
+distinguishing = "处理名称、硬度值、硬化层深度"
+encodings = ["text"]
+tests = ["technical_note_heat_treatment_and_hardness"]
+
+[[cards.counter_examples]]
+statement = "只有标题“技术要求”时不说明任何未注要求"
+test = "heading_alone_is_not_an_untoleranced_note"
+
+[[cards.counter_examples]]
+statement = "线性尺寸一般公差注语不是未注几何公差注语"
+test = "general_tolerance_note_is_not_a_geometric_one"
+
+[[cards.lexicon]]
+concept = "DC-G1-070"
+entry = "word"
+values = ["未注倒角"]
+meaning = "未注倒角说明"
+
+[[cards.lexicon]]
+concept = "DC-G9-003"
+entry = "word"
+values = ["未注倒角", "全部倒角", "其余倒角"]
+meaning = "未注倒角注语"
+
+[[cards.lexicon]]
+concept = "DC-G1-071"
+entry = "word"
+values = ["未注圆角", "未注铸造圆角", "其余圆角"]
+meaning = "未注圆角说明"
+
+[[cards.lexicon]]
+concept = "DC-G9-004"
+entry = "word"
+values = ["铸造圆角"]
+meaning = "铸造圆角注语"
+
+[[cards.lexicon]]
+concept = "DC-G3-112"
+entry = "word"
+values = ["铸造圆角", "未注圆角", "全部圆角", "其余圆角"]
+meaning = "圆角省略后的统一说明"
+
+[[cards.lexicon]]
+concept = "DC-G4-068"
+entry = "word"
+values = ["全部倒角", "其余倒角", "其余圆角", "未注倒角", "未注圆角", "全部圆角", "未注铸造圆角"]
+meaning = "总的尺寸说明"
+
+[[cards.lexicon]]
+concept = "DC-G4-061"
+entry = "word"
+values = ["GB/T 1804", "GB 1804", "ISO 2768"]
+meaning = "一般公差标准号（GB/T 1804 等同 ISO 2768-1）"
+
+[[cards.lexicon]]
+concept = "DC-G4-070"
+entry = "word"
+values = ["未注尺寸公差", "未注线性尺寸公差", "未注公差", "一般公差"]
+meaning = "未注尺寸公差注语"
+
+[[cards.lexicon]]
+concept = "DC-G5-025"
+entry = "word"
+values = ["未注几何公差", "未注形位公差", "未注形状和位置公差"]
+meaning = "未注几何公差注语（旧称形位公差）"
+
+[[cards.lexicon]]
+concept = "DC-G5-026"
+entry = "word"
+values = ["GB/T 1184", "GB 1184"]
+meaning = "未注几何公差标准号"
+
+[[cards.lexicon]]
+concept = "DC-G9-010"
+entry = "word"
+values = ["毛刺", "锐边", "锐角", "倒钝", "飞边"]
+meaning = "锐边与毛刺"
+
+[[cards.lexicon]]
+concept = "DC-G7-025"
+entry = "word"
+values = ["热处理", "调质", "淬火", "回火", "正火", "退火", "渗碳", "渗氮", "氮化", "时效", "高频", "表面硬化"]
+meaning = "热处理名称"
+
+[[cards.lexicon]]
+concept = "DC-G7-026"
+entry = "word"
+values = ["淬火硬化", "表面硬化", "退火", "渗碳"]
+meaning = "热处理要求的表示（GB/T 24743）"
+
+[[cards.lexicon]]
+concept = "DC-G7-026"
+entry = "case_depth"
+values = ["CHD", "CD"]
+meaning = "硬化层深度代号后接数值"
+
+[[cards.lexicon]]
+concept = "DC-G7-089"
+entry = "hardness_scale"
+values = ["HRC", "HRA", "HRB", "HBW", "HBS", "HB", "HV"]
+meaning = "硬度标尺，前面是数值或括号"
+
+[[cards.lexicon]]
+concept = "DC-G6-001"
+entry = "word_with"
+values = ["其余", "未注表面粗糙度", "&Ra", "&Rz", "&√", "&粗糙度"]
+meaning = "“其余/未注”与粗糙度值同时出现（& 标记第二组）"
+
+[[cards.lexicon]]
+concept = "DC-G9-009"
+entry = "word"
+values = ["铸件", "铸造", "砂眼", "缩孔", "时效处理"]
+meaning = "铸件技术要求"
+
+[[cards.lexicon]]
+concept = "DC-G9-002"
+entry = "topic:material_heat"
+values = ["热处理", "调质", "淬火", "回火", "渗碳", "渗氮", "HRC", "HB", "HV", "硬度", "材料"]
+meaning = "条目主题：材料与热处理"
+
+[[cards.lexicon]]
+concept = "DC-G9-002"
+entry = "topic:protection_requirement"
+values = ["清洗", "防锈", "涂", "漆", "铁屑", "清洁", "去毛刺", "油"]
+meaning = "条目主题：清洁与防护"
+
+[[cards.lexicon]]
+concept = "DC-G9-002"
+entry = "topic:process_requirement"
+values = ["钻", "铣", "车削", "磨削", "加工", "装配", "配作", "相对位置", "键槽"]
+meaning = "条目主题：加工与装配"
+
+[[cards.outside_forms]]
+concept = "DC-G3-112"
+form = "2×R1"
+reason = "这是带数量的半径尺寸，不是注语；由尺寸注写文法识别"
+
+[[cards.outside_forms]]
+concept = "DC-G3-112"
+form = "C1 R1"
+reason = "来源只列出两个尺寸记号，不是完整注语"
+
+[[cards]]
+id = "title_block_field"
+expression_kind = "title_block"
+title = "标题栏栏目"
+meaning = "标题栏由更改区、签字区、其他区（材料标记、阶段标记、质量、比例、张次）与名称及代号区（单位名称、图样名称、图样代号）组成。栏目名（设计、审核、比例等）印在格内，所填内容写在对应格中；图样代号还可在图框角上倒写重复。"
+sources = [
+  "GB/T 10609.1-2008 技术制图 标题栏（以 GB/T 18229-2000、GB/T 13361-2012 的引述为据）",
+  "GB/T 14690-1993 技术制图 比例 3、4、5",
+  "GB/T 14689-2008 技术制图 图纸幅面和格式 5.1",
+  "机械制图（第7版）§1-1、§10-1",
+]
+knowledge_units = ["K01", "K61"]
+recognition = "在已识别的标题栏内：栏目名按本卡词表定区（签字区、更改区、其他区）；所填文字按左侧同行或正上方的栏目名定栏，无栏目名的按值的形式定栏——比例为“数:数”，材料为牌号（两位数字碳钢、数字加合金元素、HT/QT/ZG/Q 等前缀），图样代号为字母数字加分隔符，单位名称含公司、厂等词，图样名称为不带栏目名的短中文。图框角上与图样代号相同的倒写文字是重复的代号；代号中的“~”与“-”同表示序号范围（企业常用写法，非标准条文）。"
+markers = ["设计", "审核", "比例", "材料", "共", "张"]
+parameters = []
+concepts = ["DC-G9-028", "DC-G9-017", "DC-G9-018", "DC-G9-019", "DC-G9-022", "DC-G9-023", "DC-G9-024", "DC-G9-025", "DC-G1-114"]
+
+[[cards.components]]
+role = "zone_label"
+primitives = ["TEXT", "ATTDEF", "INSERT"]
+requirement = "印在格内的栏目名"
+
+[[cards.components]]
+role = "field_value"
+primitives = ["TEXT", "ATTRIB"]
+requirement = "填写在格内的内容"
+
+[[cards.components]]
+role = "grid"
+primitives = ["LINE", "LWPOLYLINE", "INSERT"]
+requirement = "标题栏格线"
+
+[[cards.variants]]
+id = "zone_labels"
+title = "栏目名定区"
+distinguishing = "文字等于词表中的栏目名，或一行中有两个以上栏目名"
+encodings = ["block_text", "text"]
+tests = ["title_block_labels_name_their_zones"]
+
+[[cards.variants]]
+id = "field_values"
+title = "所填内容定栏"
+distinguishing = "按栏目名邻接或按值的形式"
+encodings = ["text", "attribute"]
+tests = ["title_block_values_name_their_fields", "title_block_on_a_drawing_names_its_fields"]
+
+[[cards.variants]]
+id = "repeated_code"
+title = "图框角上重复的图样代号"
+distinguishing = "倒写的代号与标题栏代号相同（序号范围分隔符视为相同）"
+encodings = ["text"]
+tests = ["repeated_drawing_code_with_range_separator_is_recognised"]
+
+[[cards.counter_examples]]
+statement = "八位日期与单个数字不是图样代号"
+test = "date_and_count_are_not_drawing_codes"
+
+[[cards.lexicon]]
+concept = "DC-G9-024"
+entry = "label"
+values = ["设计", "制图", "描图", "描校", "校对", "审核", "工艺", "标准化", "批准", "主管设计", "审定", "会签"]
+meaning = "签字区栏目名"
+
+[[cards.lexicon]]
+concept = "DC-G9-023"
+entry = "label"
+values = ["标记", "处数", "分区", "更改文件号", "签名", "年、月、日", "年月日"]
+meaning = "更改区栏目名"
+
+[[cards.lexicon]]
+concept = "DC-G9-025"
+entry = "label"
+values = ["比例"]
+meaning = "比例栏"
+
+[[cards.lexicon]]
+concept = "DC-G9-022"
+entry = "label"
+values = ["材料", "材料标记"]
+meaning = "材料标记栏"
+
+[[cards.lexicon]]
+concept = "DC-G9-018"
+entry = "label"
+values = ["图号", "图样代号", "代号"]
+meaning = "图样代号栏"
+
+[[cards.lexicon]]
+concept = "DC-G9-019"
+entry = "label"
+values = ["名称", "图样名称"]
+meaning = "图样名称栏"
+
+[[cards.lexicon]]
+concept = "DC-G9-028"
+entry = "label"
+values = ["质量", "重量", "阶段标记", "图样标记", "数量", "标题栏", "日期", "日 期"]
+meaning = "其他区栏目名"
+
+[[cards.lexicon]]
+concept = "DC-G9-028"
+entry = "sheet_count"
+values = ["共", "张", "第"]
+meaning = "张次“共 n 张 第 m 张”"
+
+[[cards.lexicon]]
+concept = "DC-G9-017"
+entry = "word"
+values = ["公司", "厂", "研究所", "研究院", "学院", "大学", "学校", "集团"]
+meaning = "单位名称中的机构词"
+
+[[cards.lexicon]]
+concept = "DC-G9-022"
+entry = "grade_prefix"
+values = ["HT", "QT", "KT", "ZG", "Q", "ZAl", "ZCu", "ZZn", "ZL", "H", "T", "LY", "Cr", "GCr", "1Cr", "0Cr"]
+meaning = "材料牌号前缀：灰铸铁、球墨铸铁、可锻铸铁、铸钢、碳素结构钢、铸造铝/铜/锌合金、黄铜、碳素工具钢、硬铝、不锈钢与轴承钢"
+
+[[cards.lexicon]]
+concept = "DC-G9-022"
+entry = "alloy_element"
+values = ["Cr", "Mn", "Si", "Mo", "Ni", "Ti", "V", "W", "B"]
+meaning = "合金结构钢：两位数字后接合金元素（如 40Cr、20CrMnTi）"
+
+[[cards.lexicon]]
+concept = "DC-G9-022"
+entry = "stock_word"
+values = ["圆钢", "棒", "板", "管", "型材"]
+meaning = "坯料形式词，牌号写在其后"
+
+[[cards.lexicon]]
+concept = "DC-G9-025"
+entry = "value_form"
+values = ["<n>:<m>"]
+meaning = "比例值"
+
+[[cards.lexicon]]
+concept = "DC-G1-114"
+entry = "value_form"
+values = ["<n>:<m>"]
+meaning = "比例的标注形式"
+
+[[cards.lexicon]]
+concept = "DC-G9-018"
+entry = "value_form"
+values = ["<letters/digits>.<digits>", "<digits>-<digits>"]
+meaning = "图样代号：字母数字与分隔符"
+
+[[cards.lexicon]]
+concept = "DC-G9-019"
+entry = "value_form"
+values = ["<short Chinese name>"]
+meaning = "图样名称：不带栏目名的短中文"
+
+[[cards.lexicon]]
+concept = "DC-G9-018"
+entry = "code_range_separator"
+values = ["~", "～", "-", "—"]
+meaning = "代号中序号范围的分隔符（企业常用写法，非标准条文）"
+
+[[cards.outside_forms]]
+concept = "DC-G9-017"
+form = "（单位名称）"
+reason = "教材空白标题栏中的占位词，图上该格写机构名称"
+
+[[cards.outside_forms]]
+concept = "DC-G9-017"
+form = "（校名）"
+reason = "教材空白标题栏中的占位词"
+
+[[cards]]
+id = "series_table"
+expression_kind = "series_table"
+title = "表格图"
+meaning = "对结构相同、尺寸不同的一系列零件只画一组图形，变化的尺寸用字母代号代替数值，另附表格列出各变型的代号和对应尺寸。表格中的字母与图上尺寸的字母一一对应。"
+sources = [
+  "GB/T 16675.2-2012 技术制图 简化表示法 第2部分：尺寸注法 表2 5.16",
+  "GB/T 13361-2012 技术制图 通用术语 6.5",
+  "GB/T 24745-2009 技术产品文件 词汇 表4",
+]
+knowledge_units = ["K17", "K55"]
+recognition = "找一张由细实线组成、至少两行两列的表格：表头的字母代号（一到两个字母，可带数字下标）与图上某些尺寸的字母标注相同（图上字母后可再注偏差，如 L 0/-0.5，也可加括号作参考尺寸），或表头有代号、型号、规格等词且下面各行是数值。表格的格线与文字成为一个表格图表达，并与这些尺寸相连。与标题栏区分：标题栏有栏目名词表；与公差框格区分：框格高度约为字高的两倍且第一格是特征符号。"
+markers = ["代号", "型号", "规格"]
+concepts = ["DC-G4-098"]
+
+[[cards.components]]
+role = "table_line"
+primitives = ["LINE", "LWPOLYLINE"]
+requirement = "表格的横线与竖线"
+
+[[cards.components]]
+role = "table_header"
+primitives = ["TEXT", "MTEXT"]
+requirement = "表头：代号词和尺寸字母"
+
+[[cards.components]]
+role = "table_value"
+primitives = ["TEXT", "MTEXT"]
+requirement = "各变型的代号与尺寸值"
+
+[[cards.variants]]
+id = "variables_named_by_dimensions"
+title = "表头字母与图上尺寸字母相同"
+distinguishing = "图上有以表头字母标注的尺寸"
+encodings = ["loose"]
+tests = ["series_table_links_its_variables_to_dimensions"]
+
+[[cards.variants]]
+id = "header_words_and_numeric_rows"
+title = "表头有代号等词且各行为数值"
+distinguishing = "图上未找到相同字母的尺寸"
+encodings = ["loose"]
+tests = ["series_table_with_header_words_and_values"]
+
+[[cards.counter_examples]]
+statement = "标题栏的格子不是表格图"
+test = "title_block_grid_is_not_a_series_table"
+
+[[cards.counter_examples]]
+statement = "没有数值行的格子不是表格图"
+test = "grid_without_values_is_not_a_series_table"
+
+[[cards.parameters]]
+name = "min_rows"
+value = 2.0
+meaning = "表头与数值行合计至少行数"
+
+[[cards.parameters]]
+name = "min_columns"
+value = 2.0
+meaning = "至少列数"
+
+[[cards.parameters]]
+name = "join_tolerance"
+value = 0.05
+meaning = "格线端点对齐的容差 = 该值 × 字高"
+
+[[cards.lexicon]]
+concept = "DC-G4-098"
+entry = "label"
+values = ["代号", "图号", "型号", "规格", "件号", "零件号", "序号", "名称", "数量"]
+meaning = "表头常用词"
+
+[[cards.lexicon]]
+concept = "DC-G4-098"
+entry = "value_form"
+values = ["<letter><digits>"]
+meaning = "变量尺寸的字母代号：一到两个字母，可带数字下标；图上尺寸可在字母后注偏差或加括号"
+
+[[cards]]
+id = "gdt_characteristic"
+expression_kind = "geometric_tolerance"
+title = "几何特征符号"
+meaning = "GB/T 1182-2018 表1 的十四个几何特征符号：形状公差（直线度、平面度、圆度、圆柱度、线轮廓度、面轮廓度）、方向公差（平行度、垂直度、倾斜度）、位置公差（位置度、同轴度、对称度）和跳动公差（圆跳动、全跳动）。符号写在公差框格第一格，决定公差的种类。"
+sources = [
+  "GB/T 1182-2018 产品几何技术规范 几何公差 表1、第17章",
+  "GB/T 1184-1996 形状和位置公差 未注公差值 5",
+  "机械制图（第7版）表9-9",
+  "互换性与测量技术 表3.1",
+]
+knowledge_units = ["K23", "K24", "K25"]
+recognition = "在框格第一格中按笔画特征识别：一条横线为直线度，平行四边形为平面度，一个圆为圆度，圆加两条平行切线为圆柱度，开口圆弧为线轮廓度，圆弧加弦为面轮廓度，两条平行斜线为平行度，竖线立在横线中点为垂直度，横线与斜线成锐角为倾斜度，圆加十字为位置度，两个同心圆为同轴度，三条平行线中间最长为对称度，一支斜箭头为圆跳动，两支斜箭头立在底线上为全跳动。也可写成 Unicode 字符或 GD&T 字体字母（字体对应为通用 CAD 实践）。笔画特征与种类的对应从本卡读取。"
+markers = ["⏤", "⏥", "○", "⌭", "⌒", "⌓", "∥", "⊥", "∠", "⌖", "◎", "⌯", "↗", "⌰"]
+parameters = []
+concepts = ["DC-G5-076", "DC-G5-061", "DC-G5-055", "DC-G5-056", "DC-G5-077", "DC-G5-082", "DC-G5-060", "DC-G5-058", "DC-G5-042", "DC-G5-041", "DC-G5-054", "DC-G5-059", "DC-G5-057", "DC-G5-045"]
+
+[[cards.components]]
+role = "glyph"
+primitives = ["LINE", "CIRCLE", "ARC", "LWPOLYLINE", "INSERT", "TEXT"]
+requirement = "框格第一格中的特征符号"
+
+[[cards.variants]]
+id = "characteristic_symbol"
+title = "笔画画出的特征符号（图块或散线）"
+distinguishing = "按笔画特征"
+encodings = ["block", "loose"]
+tests = ["every_characteristic_stroke_signature_gives_its_kind", "flatness_frame_with_stroke_glyph_block"]
+
+[[cards.variants]]
+id = "text_glyph"
+title = "文字写出的特征符号"
+distinguishing = "Unicode 字符或 GD&T 字体字母"
+encodings = ["text"]
+tests = ["characteristic_written_as_text_glyph"]
+
+[[cards.counter_examples]]
+statement = "直角矩形不是平面度的平行四边形"
+test = "right_angle_rectangle_is_not_flatness"
+
+[[cards.counter_examples]]
+statement = "表面结构符号的 60° 折线不是倾斜度"
+test = "roughness_v_is_not_angularity"
+
+[[cards.lexicon]]
+concept = "DC-G5-076"
+entry = "kind"
+values = ["gps_straightness"]
+meaning = "直线度"
+
+[[cards.lexicon]]
+concept = "DC-G5-076"
+entry = "glyph"
+values = ["⏤"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-076"
+entry = "font_char"
+values = ["u"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-076"
+entry = "stroke_signature"
+values = ["single_line"]
+meaning = "一条横线"
+
+[[cards.lexicon]]
+concept = "DC-G5-061"
+entry = "kind"
+values = ["gps_flatness"]
+meaning = "平面度"
+
+[[cards.lexicon]]
+concept = "DC-G5-061"
+entry = "glyph"
+values = ["⏥"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-061"
+entry = "font_char"
+values = ["c"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-061"
+entry = "stroke_signature"
+values = ["parallelogram"]
+meaning = "平行四边形"
+
+[[cards.lexicon]]
+concept = "DC-G5-055"
+entry = "kind"
+values = ["gps_circularity"]
+meaning = "圆度"
+
+[[cards.lexicon]]
+concept = "DC-G5-055"
+entry = "glyph"
+values = ["○"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-055"
+entry = "font_char"
+values = ["e"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-055"
+entry = "stroke_signature"
+values = ["single_circle"]
+meaning = "一个圆"
+
+[[cards.lexicon]]
+concept = "DC-G5-056"
+entry = "kind"
+values = ["gps_cylindricity"]
+meaning = "圆柱度"
+
+[[cards.lexicon]]
+concept = "DC-G5-056"
+entry = "glyph"
+values = ["⌭"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-056"
+entry = "font_char"
+values = ["g"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-056"
+entry = "stroke_signature"
+values = ["circle_two_tangent_parallels"]
+meaning = "圆加两条平行切线"
+
+[[cards.lexicon]]
+concept = "DC-G5-077"
+entry = "kind"
+values = ["gps_line_profile"]
+meaning = "线轮廓度"
+
+[[cards.lexicon]]
+concept = "DC-G5-077"
+entry = "glyph"
+values = ["⌒"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-077"
+entry = "font_char"
+values = ["k"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-077"
+entry = "stroke_signature"
+values = ["open_arc"]
+meaning = "开口圆弧"
+
+[[cards.lexicon]]
+concept = "DC-G5-082"
+entry = "kind"
+values = ["gps_surface_profile"]
+meaning = "面轮廓度"
+
+[[cards.lexicon]]
+concept = "DC-G5-082"
+entry = "glyph"
+values = ["⌓"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-082"
+entry = "font_char"
+values = ["d"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-082"
+entry = "stroke_signature"
+values = ["arc_with_chord"]
+meaning = "圆弧加弦"
+
+[[cards.lexicon]]
+concept = "DC-G5-060"
+entry = "kind"
+values = ["gps_parallelism"]
+meaning = "平行度"
+
+[[cards.lexicon]]
+concept = "DC-G5-060"
+entry = "glyph"
+values = ["∥"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-060"
+entry = "font_char"
+values = ["f"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-060"
+entry = "stroke_signature"
+values = ["two_parallel_obliques"]
+meaning = "两条平行斜线"
+
+[[cards.lexicon]]
+concept = "DC-G5-058"
+entry = "kind"
+values = ["gps_perpendicularity"]
+meaning = "垂直度"
+
+[[cards.lexicon]]
+concept = "DC-G5-058"
+entry = "glyph"
+values = ["⊥"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-058"
+entry = "font_char"
+values = ["b"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-058"
+entry = "stroke_signature"
+values = ["perpendicular_tee"]
+meaning = "竖线立在横线中点"
+
+[[cards.lexicon]]
+concept = "DC-G5-042"
+entry = "kind"
+values = ["gps_angularity"]
+meaning = "倾斜度"
+
+[[cards.lexicon]]
+concept = "DC-G5-042"
+entry = "glyph"
+values = ["∠"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-042"
+entry = "font_char"
+values = ["a"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-042"
+entry = "stroke_signature"
+values = ["acute_angle"]
+meaning = "横线与斜线成锐角"
+
+[[cards.lexicon]]
+concept = "DC-G5-041"
+entry = "kind"
+values = ["gps_position"]
+meaning = "位置度"
+
+[[cards.lexicon]]
+concept = "DC-G5-041"
+entry = "glyph"
+values = ["⌖"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-041"
+entry = "font_char"
+values = ["j"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-041"
+entry = "stroke_signature"
+values = ["circle_with_cross"]
+meaning = "圆加十字"
+
+[[cards.lexicon]]
+concept = "DC-G5-054"
+entry = "kind"
+values = ["gps_coaxiality"]
+meaning = "同轴度"
+
+[[cards.lexicon]]
+concept = "DC-G5-054"
+entry = "glyph"
+values = ["◎"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-054"
+entry = "font_char"
+values = ["r"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-054"
+entry = "stroke_signature"
+values = ["concentric_circles"]
+meaning = "两个同心圆"
+
+[[cards.lexicon]]
+concept = "DC-G5-059"
+entry = "kind"
+values = ["gps_symmetry"]
+meaning = "对称度"
+
+[[cards.lexicon]]
+concept = "DC-G5-059"
+entry = "glyph"
+values = ["⌯"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-059"
+entry = "font_char"
+values = ["i"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-059"
+entry = "stroke_signature"
+values = ["three_parallels_middle_longest"]
+meaning = "三条平行线，中间最长"
+
+[[cards.lexicon]]
+concept = "DC-G5-057"
+entry = "kind"
+values = ["gps_runout"]
+meaning = "圆跳动"
+
+[[cards.lexicon]]
+concept = "DC-G5-057"
+entry = "glyph"
+values = ["↗"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-057"
+entry = "font_char"
+values = ["h"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-057"
+entry = "stroke_signature"
+values = ["single_oblique_arrow"]
+meaning = "一支斜箭头"
+
+[[cards.lexicon]]
+concept = "DC-G5-045"
+entry = "kind"
+values = ["gps_total_runout"]
+meaning = "全跳动"
+
+[[cards.lexicon]]
+concept = "DC-G5-045"
+entry = "glyph"
+values = ["⌰"]
+meaning = "Unicode 字符"
+
+[[cards.lexicon]]
+concept = "DC-G5-045"
+entry = "font_char"
+values = ["t"]
+meaning = "GD&T 字体中的字母（通用 CAD 实践）"
+
+[[cards.lexicon]]
+concept = "DC-G5-045"
+entry = "stroke_signature"
+values = ["two_oblique_arrows_on_base"]
+meaning = "两支斜箭头立在底线上"
+
+[[cards.lexicon]]
+concept = "DC-G5-090"
+entry = "font_file"
+values = ["gdt"]
+meaning = "GD&T 字体文件名所含的词（通用 CAD 实践）"
+
+[[cards]]
+id = "gdt_frame_content"
+expression_kind = "geometric_tolerance"
+title = "公差框格内容"
+meaning = "公差框格从左到右依次为特征符号、公差值格（公差带形状符号 Ø/SØ、公差值及修饰符）和基准格。一个基准字母为单一基准，用短横连接的两个字母为公共基准，多格依次为第一、第二、第三基准组成的基准体系。框格用指引线连到被测要素：与尺寸线对齐时被测的是导出要素，箭头落在轮廓或其延长线上时被测的是组成要素。框格也常画成一个外框再用竖线分格。"
+sources = [
+  "GB/T 1182-2018 产品几何技术规范 几何公差 8.1、8.2、17.14",
+  "GB/T 17851-2022 基准和基准体系 7.3、7.4",
+  "机械制图（第7版）§9-5 三、图9-44",
+  "互换性与测量技术 3.1.3",
+]
+knowledge_units = ["K23", "K24", "K25"]
+recognition = "对已识别的框格读各格内容：第二格以 Ø 或 SØ 开头时公差带为圆柱或球；基准格中单个字母为单一基准，“A-B”为公共基准，两格以上为基准体系；框格指引线与尺寸线对齐为导出要素，箭头落在轮廓或延长线为组成要素。外框加竖线分格的框格按竖线把外框切成格再识别。"
+markers = ["|", "Ø", "-"]
+concepts = ["DC-G5-090", "DC-G5-091", "DC-G5-089", "DC-G5-002", "DC-G5-003", "DC-G5-004", "DC-G5-107", "DC-G5-108"]
+
+[[cards.components]]
+role = "frame_cell"
+primitives = ["LINE", "LWPOLYLINE", "INSERT"]
+requirement = "框格的格"
+
+[[cards.components]]
+role = "tolerance_value"
+primitives = ["TEXT", "MTEXT"]
+requirement = "公差值格"
+
+[[cards.components]]
+role = "datum_reference"
+primitives = ["TEXT", "MTEXT"]
+requirement = "基准格"
+
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE", "LWPOLYLINE"]
+requirement = "指引线"
+
+[[cards.variants]]
+id = "fields_and_datums"
+title = "各格内容与基准"
+distinguishing = "读第二格与基准格"
+encodings = ["block", "loose"]
+tests = ["frame_fields_name_value_zone_and_datums"]
+
+[[cards.variants]]
+id = "outline_dividers"
+title = "外框加竖线分格"
+distinguishing = "一个闭合外框与贯通全高的竖线"
+encodings = ["loose", "block"]
+tests = ["frame_drawn_as_outline_with_dividers"]
+
+[[cards.counter_examples]]
+statement = "只有一个基准格的框格不是基准体系"
+test = "single_datum_frame_is_not_a_datum_system"
+
+[[cards.parameters]]
+name = "outline_aspect_min"
+value = 1.5
+meaning = "外框宽高比下限（单格方框不再分格）"
+
+[[cards.parameters]]
+name = "divider_join"
+value = 0.06
+meaning = "分格竖线两端到外框上下边的容差 = 该值 × 框高"
+
+[[cards.lexicon]]
+concept = "DC-G5-089"
+entry = "prefix"
+values = ["Ø", "SØ"]
+meaning = "公差带形状符号"
+
+[[cards.lexicon]]
+concept = "DC-G5-002"
+entry = "separator"
+values = ["-"]
+meaning = "公共基准字母之间的短横"
+
+[[cards.lexicon]]
+concept = "DC-G5-107"
+entry = "excludes"
+values = ["DC-G5-110", "DC-G5-108"]
+meaning = "指引线与尺寸线对齐时被测的是导出要素，同一框格不再是组成要素的指引（GB/T 1182 8.2）"
+
+[[cards.variants]]
+id = "block_outline_dividers"
+title = "整块框格：外框、分格竖线与嵌套的特征符号图块"
+distinguishing = "一个图块中闭合外框被竖线分格；第一格的符号是子图块，箭头是闭合三角"
+encodings = ["block"]
+tests = ["frame_block_with_outline_dividers_and_nested_glyph"]
+
+[[cards]]
+id = "surface_texture_symbol"
+expression_kind = "surface_roughness"
+title = "表面结构代号"
+meaning = "GB/T 131 的表面结构图形符号：基本符号是两条不等长、夹角 60° 的细实线；加一短横封口表示要求去除材料，加内切小圆表示不允许去除材料；长边上加横线为完整符号，在其上下注写参数代号与极限值（如 Ra 3.2）及加工方法等补充要求。旧版（1993）只注数值、不写参数代号。符号尖端从材料外指向表面，可立在轮廓线、延长线或指引线上；符号与数值按从下或从右读的方向注写。大多数表面相同的要求可统一注在标题栏附近（“其余”）。"
+sources = [
+  "GB/T 131-2006 产品几何技术规范 技术产品文件中表面结构的表示法 4、5、11",
+  "GB/T 131-1993 机械制图 表面粗糙度符号、代号及其注法 3.3–3.6、4.1",
+  "GB/T 3505-2009 表面结构 轮廓法 术语、定义及表面结构参数 附录A",
+  "机械制图（第7版）§9-4",
+  "互换性与测量技术 4.3",
+]
+knowledge_units = ["K31", "K32"]
+recognition = "以两条从同一点出发、夹角约 60°、长度比 1.5～3 的细线为锚：两臂间有横线封口为去除材料，内切小圆为不允许去除材料，长臂端有横线为完整符号。数值在符号内（图块属性）或开口一侧附近的文字；带 Ra、Rz 等代号为现行写法，只有数值为旧版写法。尖端所在的线的作用（轮廓、延长线、指引线、尺寸线）决定注在哪里；开口不朝上即按另一读图方向注写。"
+markers = ["Ra", "Rz", "√", "其余"]
+concepts = ["DC-G6-071", "DC-G6-072", "DC-G6-063", "DC-G6-069", "DC-G6-045", "DC-G6-046", "DC-G6-075", "DC-G6-027", "DC-G6-049", "DC-G6-053", "DC-G6-052", "DC-G6-032", "DC-G6-006", "DC-G6-051"]
+
+[[cards.components]]
+role = "roughness_symbol"
+primitives = ["LINE", "LWPOLYLINE", "INSERT", "CIRCLE"]
+requirement = "60° 折线及封口横线、小圆或长臂横线"
+
+[[cards.components]]
+role = "roughness_value"
+primitives = ["TEXT", "MTEXT", "ATTRIB"]
+requirement = "参数代号与数值"
+
+[[cards.variants]]
+id = "symbol_type"
+title = "基本、去除材料、不去除材料、完整符号"
+distinguishing = "封口横线、小圆、长臂横线"
+encodings = ["block", "loose"]
+tests = ["texture_symbol_types_name_their_concepts"]
+
+[[cards.variants]]
+id = "current_edition_value"
+title = "现行写法：参数代号加数值"
+distinguishing = "Ra 3.2"
+encodings = ["text", "attribute"]
+tests = ["texture_value_editions"]
+
+[[cards.variants]]
+id = "old_edition_value"
+title = "旧版写法：只注数值"
+distinguishing = "3.2"
+encodings = ["text", "attribute"]
+tests = ["texture_value_editions"]
+
+[[cards.variants]]
+id = "block_with_parameter_value"
+title = "图块符号，块内写参数代号与数值"
+distinguishing = "块内文字带 Ra、Rz 等代号"
+encodings = ["block"]
+tests = ["texture_value_editions"]
+
+[[cards.variants]]
+id = "block_value_apart"
+title = "图块符号，数值写在旁边"
+distinguishing = "图块内无文字，开口一侧附近有数值"
+encodings = ["block"]
+tests = ["rotated_texture_block_with_value_beside_it"]
+
+[[cards.variants]]
+id = "loose_strokes"
+title = "散线画出的符号"
+distinguishing = "两条细线成 60° 且旁有数值"
+encodings = ["loose"]
+tests = ["texture_symbol_drawn_with_loose_strokes"]
+
+[[cards.variants]]
+id = "reading_direction"
+title = "旋转的符号（从右读）"
+distinguishing = "开口不朝上"
+encodings = ["block", "loose"]
+tests = ["rotated_texture_block_with_value_beside_it"]
+
+[[cards.variants]]
+id = "standing_on_feature"
+title = "尖端立在轮廓、延长线、指引线或尺寸线上"
+distinguishing = "尖端处那条线的作用"
+encodings = ["block", "loose"]
+tests = ["texture_tip_on_outline_and_extension_line", "texture_symbol_takes_the_extension_line_it_stands_on"]
+
+[[cards.variants]]
+id = "most_surfaces"
+title = "大多数表面相同要求的统一注法"
+distinguishing = "“其余”或位于标题栏附近"
+encodings = ["block"]
+tests = ["remaining_surfaces_texture_note"]
+
+[[cards.variants]]
+id = "symbol_only"
+title = "不带数值的符号"
+distinguishing = "只有符号"
+encodings = ["block"]
+tests = ["texture_symbol_without_value"]
+
+[[cards.counter_examples]]
+statement = "倒角两条线不是表面结构符号（夹角与长度比不符、旁无数值）"
+test = "chamfer_lines_are_not_a_texture_symbol"
+
+[[cards.parameters]]
+name = "included_angle_deg"
+value = 60.0
+meaning = "两臂夹角（度）"
+
+[[cards.parameters]]
+name = "angle_cos_tolerance"
+value = 0.025
+meaning = "夹角余弦的容差"
+
+[[cards.parameters]]
+name = "arm_ratio_min"
+value = 1.5
+meaning = "长臂与短臂之比下限"
+
+[[cards.parameters]]
+name = "arm_ratio_max"
+value = 3.0
+meaning = "长臂与短臂之比上限"
+
+[[cards.parameters]]
+name = "value_reach"
+value = 1.6
+meaning = "数值文字中心到开口点的距离上限 = 该值 × 长臂长"
+
+[[cards.parameters]]
+name = "arm_min"
+value = 0.8
+meaning = "散线符号长臂下限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "arm_max"
+value = 6.0
+meaning = "散线符号长臂上限 = 该值 × 字高"
+
+[[cards.lexicon]]
+concept = "DC-G6-075"
+entry = "parameter_code"
+values = ["Ra", "Rz", "Rq", "Rt", "Rp", "Rv", "Rsk", "RSm", "Rmr", "Ry", "Wz", "Wa", "Pt", "Pa", "Sm"]
+meaning = "轮廓参数代号（Ry、Sm 为旧标准）"
+
+[[cards.components]]
+role = "extension_line"
+primitives = ["LINE"]
+requirement = "符号所立的延长线：与轮廓线或尺寸界线共线的细线，并入代号"
+
+[[cards.parameters]]
+name = "collinear_tolerance"
+value = 0.05
+meaning = "延长线与轮廓或界线共线的容差 = 该值 × 字高"
+
+[[cards]]
+id = "view_callout"
+expression_kind = "view_callout"
+title = "视图与剖切标注"
+meaning = "向视图在投射方向处画箭头并注字母，在视图上方注同一字母（旧版写“X向”）；剖视图、断面图用剖切符号（剖切位置处的粗短画、投射方向箭头和字母）表示剖切位置，在视图上方注“X—X”；局部放大图和不按原比例画的视图在名称下或旁注比例。"
+sources = [
+  "GB/T 4458.1-2002 机械制图 图样画法 视图 5.7",
+  "GB/T 4458.6-2002 机械制图 图样画法 剖视图和断面图 6、8",
+  "GB/T 17452-1998 技术制图 图样画法 剖视图和断面图 3.6、8",
+  "GB/T 14690-1993 技术制图 比例 5.2",
+  "机械制图（第7版）§7-1、§7-2",
+]
+knowledge_units = ["K11", "K13"]
+recognition = "剖切符号：在已识别的“箭头+字母”投射方向标注的箭尾处，找一条与箭杆垂直、长约 1～4 倍字高的短线，即剖切位置的短画。剖视名称：一行文字为“字母—字母”（两字母相同），可再接比例。视图名称带比例时比例写在名称之下或之后。"
+markers = ["—", "-", "向"]
+concepts = ["DC-G2-043", "DC-G1-007", "DC-G2-072", "DC-G2-065", "DC-G2-068", "DC-G1-115"]
+
+[[cards.components]]
+role = "cutting_stroke"
+primitives = ["LINE", "LWPOLYLINE"]
+requirement = "剖切位置的短画"
+
+[[cards.components]]
+role = "view_arrow"
+primitives = ["LINE", "LWPOLYLINE", "SOLID"]
+requirement = "投射方向箭头"
+
+[[cards.components]]
+role = "view_letter"
+primitives = ["TEXT", "MTEXT"]
+requirement = "字母"
+
+[[cards.components]]
+role = "view_title"
+primitives = ["TEXT", "MTEXT"]
+requirement = "视图名称"
+
+[[cards.variants]]
+id = "cutting_plane_stroke"
+title = "剖切符号：短画 + 箭头 + 字母"
+distinguishing = "箭尾处垂直于箭杆的短线"
+encodings = ["loose"]
+tests = ["cutting_plane_stroke_joins_the_arrow_and_letter"]
+
+[[cards.variants]]
+id = "section_name"
+title = "剖视、断面名称 X—X（可带比例）"
+distinguishing = "两字母相同，以横线相连"
+encodings = ["text"]
+tests = ["section_name_titles_a_section_view"]
+
+[[cards.variants]]
+id = "direction_view_name"
+title = "向视图的箭头字母与名称"
+distinguishing = "箭头加字母、或“X向”"
+encodings = ["loose", "text"]
+tests = ["direction_view_names_are_tagged"]
+
+[[cards.variants]]
+id = "name_with_scale"
+title = "视图名称与比例组合"
+distinguishing = "名称下方或旁边的比例"
+encodings = ["text"]
+tests = ["section_name_titles_a_section_view"]
+
+[[cards.counter_examples]]
+statement = "远离箭尾的短线不并入剖切符号"
+test = "stroke_far_from_arrow_stays_apart"
+
+[[cards.parameters]]
+name = "stroke_min"
+value = 0.8
+meaning = "短画长度下限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "stroke_max"
+value = 4.0
+meaning = "短画长度上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "stroke_reach"
+value = 0.6
+meaning = "短画到箭尾的距离上限 = 该值 × 字高"
+
+[[cards.lexicon]]
+concept = "DC-G2-065"
+entry = "separator"
+values = ["—", "–", "-", "－"]
+meaning = "剖视名称中两字母之间的横线"
+
+[[cards.variants]]
+id = "arrow_block"
+title = "视向箭头做成一个图块"
+distinguishing = "图块中一条箭杆、一个实心（闭合）箭头、旁边一个大写字母（可在子图块中）"
+encodings = ["block"]
+tests = ["view_arrow_drawn_as_one_block"]
+
+[[cards.counter_examples]]
+statement = "图块中只有箭杆和箭头而没有字母，不作为视向箭头"
+test = "arrow_block_without_letter_is_not_a_view_arrow"
+
+[[cards.parameters]]
+name = "letter_reach"
+value = 3.0
+meaning = "字母到箭杆的距离上限 = 该值 × 字高"
+
+[[cards]]
+id = "theoretically_exact_dimension"
+expression_kind = "dimension"
+title = "理论正确尺寸"
+meaning = "确定被测要素理论正确位置、方向或轮廓的尺寸（TED），数值外加矩形方框，本身不带公差，由几何公差控制其变动；常见于位置度所用的孔分布圆直径和孔距。"
+sources = [
+  "GB/T 1182-2018 产品几何技术规范 几何公差 3.7、第 6 章（理论正确尺寸的方框）",
+  "GB/T 4458.4-2003 机械制图 尺寸注法",
+  "机械制图（第7版）§9-5",
+]
+knowledge_units = ["K17", "K23", "K26"]
+recognition = "以尺寸数值为锚：数值上方有一条平行线，其两端各有一条垂直边下到数值下方；底边常就是数值所立的引线台或尺寸线。方框内的数值即理论正确尺寸；方框的线是框，不是引出线。数值可写在尺寸线延长后的引线台上。"
+markers = ["□"]
+concepts = ["DC-G4-029"]
+
+[[cards.components]]
+role = "value"
+primitives = ["TEXT", "MTEXT", "DIMENSION"]
+requirement = "尺寸数值"
+
+[[cards.components]]
+role = "frame"
+primitives = ["LINE"]
+requirement = "围住数值的矩形方框（上边、两侧边、底边）"
+
+[[cards.variants]]
+id = "native_value_box"
+title = "原生尺寸的数值外加方框"
+distinguishing = "方框由散线画在原生尺寸文字周围"
+encodings = ["loose"]
+tests = ["boxed_native_value_is_theoretically_exact"]
+
+[[cards.variants]]
+id = "line_box"
+title = "散线尺寸或引出数值外的方框"
+distinguishing = "方框由三到四条直线组成，底边可与引线台共用"
+encodings = ["loose"]
+tests = ["boxed_loose_value_is_theoretically_exact", "boxed_value_on_extended_dimension_line_is_one_dimension"]
+
+[[cards.counter_examples]]
+statement = "公差框格的格子围住的公差值不是理论正确尺寸"
+test = "frame_cell_value_is_not_a_theoretically_exact_dimension"
+
+[[cards.parameters]]
+name = "top_offset_min"
+value = 0.45
+meaning = "上边到数值中心的距离下限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "top_offset_max"
+value = 1.8
+meaning = "上边到数值中心的距离上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "corner_tolerance"
+value = 0.25
+meaning = "方框角点重合的容差 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "box_width_extra"
+value = 4.0
+meaning = "上边长度上限 = 数值宽度 + 该值 × 字高"
+
+[[cards]]
+id = "local_section_boundary"
+expression_kind = "break_line"
+title = "局部剖视的波浪线"
+meaning = "局部剖视中剖开部分与未剖部分的分界线，用细实线徒手画的波浪线表示；剖面线画在它与轮廓之间，可以是填充对象，也可以是一根根散线。细的徒手曲线只能是波浪线，不是可见轮廓（可见轮廓是粗实线）。"
+sources = [
+  "GB/T 4457.4-2002 机械制图 图样画法 图线（波浪线）",
+  "GB/T 4458.6-2002 机械制图 图样画法 剖视图和断面图（局部剖视）",
+  "GB/T 17452-1998 技术制图 图样画法 剖视图和断面图",
+  "用户 2026-11-06 截图核对：主视图 I 圈中围住散线剖面线的细徒手曲线被认成可见轮廓",
+]
+knowledge_units = ["K12", "K13"]
+recognition = "以一条徒手曲线为锚（开口、无凸度、顶点不少于给定数、每处转角小而整体弯曲；不是粗实线层）：曲线的顶点落在剖面填充的边界上，或有两条以上互相平行的斜向细线（剖面线）一端落在曲线上或其附近，即为局部剖视的边界——判断靠上下文而不靠颜色，各图层颜色因图而异。以图纸自己的细线颜色画的徒手曲线即使连着轮廓也不归入可见轮廓。"
+markers = []
+concepts = ["DC-G1-032", "DC-G2-023"]
+
+[[cards.components]]
+role = "break_curve"
+primitives = ["LWPOLYLINE", "POLYLINE", "SPLINE"]
+requirement = "细实线徒手曲线"
+
+[[cards.components]]
+role = "section_lines"
+primitives = ["HATCH", "LINE"]
+requirement = "剖面填充或散线剖面线，落在曲线上"
+
+[[cards.variants]]
+id = "hatch_entity"
+title = "围住剖面填充对象"
+distinguishing = "曲线顶点在填充边界上"
+encodings = ["loose"]
+tests = ["local_section_boundary_around_a_hatch_entity"]
+
+[[cards.variants]]
+id = "loose_hatch_lines"
+title = "围住散线剖面线"
+distinguishing = "两条以上平行斜细线一端落在曲线上"
+encodings = ["loose"]
+tests = ["local_section_boundary_around_loose_section_lines"]
+
+[[cards.counter_examples]]
+statement = "没有剖面线的细徒手曲线也不作为可见轮廓"
+test = "thin_free_curve_without_section_lines_is_not_an_outline"
+
+[[cards.parameters]]
+name = "free_curve_min_vertices"
+value = 5.0
+meaning = "徒手曲线最少顶点数"
+
+[[cards.parameters]]
+name = "free_curve_max_turn_deg"
+value = 35.0
+meaning = "徒手曲线每处转角上限（度）"
+
+[[cards.parameters]]
+name = "line_end_on_curve"
+value = 0.35
+meaning = "剖面线端点到曲线的距离上限 = 该值 × 字高（手画剖面线常略短或略长）"
+
+[[cards.parameters]]
+name = "parallel_deg"
+value = 3.0
+meaning = "散线剖面线互相平行的角度容差（度）"
+
+[[cards.parameters]]
+name = "min_section_lines"
+value = 2.0
+meaning = "落在曲线上的平行剖面线最少条数"
+
+[[cards]]
+id = "dimension_line_parts"
+expression_kind = "dimension"
+title = "尺寸线与尺寸界线的画法"
+meaning = "尺寸界线从轮廓、轴线或对称中心线引出，一般超出尺寸线终端 2 mm 左右；一条线可以同时作两个尺寸的界线；画图时界线起头可能略画进轮廓。尺寸线可以越过终端延长，作为引线把数值写到外面。这些部分都属于相应的尺寸，不是另外的要素。"
+sources = [
+  "GB/T 4458.4-2003 机械制图 尺寸注法 3.1、3.2、4.1",
+  "GB/T 16675.2-2012 技术制图 简化表示法 第2部分：尺寸注法",
+  "机械制图（第7版）§1 尺寸注法",
+]
+knowledge_units = ["K17", "K18"]
+recognition = "以已识别尺寸的尺寸界线为锚：同一根线上未解释的短端段（不超过给定长度）——在尺寸线一侧为超出段，在轮廓一侧为画进轮廓的起头——并入该界线；较长的未解释段若有另一尺寸的终端箭头垂直落在其上，则为两尺寸共用的界线。尺寸线终端之外从箭尖起共线延伸的细线是尺寸线的延长，沿它找数值。"
+markers = []
+concepts = ["DC-G4-058", "DC-G4-059"]
+
+[[cards.components]]
+role = "extension_line"
+primitives = ["LINE"]
+requirement = "尺寸界线，含超出段与起头"
+
+[[cards.components]]
+role = "dimension_line"
+primitives = ["LINE"]
+requirement = "尺寸线及其越过终端的延长段"
+
+[[cards.variants]]
+id = "end_piece"
+title = "界线端部的短段"
+distinguishing = "同一根界线上未解释的短端段：超出尺寸线的部分，或起头画进轮廓的部分（界线常分段画或比原生尺寸的界线画得长）"
+encodings = ["loose", "native"]
+tests = ["extension_line_end_piece_joins_the_extension_line"]
+
+[[cards.variants]]
+id = "shared"
+title = "两个尺寸共用一条界线"
+distinguishing = "另一尺寸的终端箭头垂直落在界线的未解释段上"
+encodings = ["loose"]
+tests = ["one_line_is_extension_line_of_two_dimensions"]
+
+[[cards.variants]]
+id = "extended_to_outside_value"
+title = "尺寸线越过终端延长到外面的数值"
+distinguishing = "从箭尖起共线向外的细线，数值在其末端或引线台上"
+encodings = ["loose"]
+tests = ["dimension_line_continues_past_the_terminator_to_the_value", "boxed_value_on_extended_dimension_line_is_one_dimension"]
+
+[[cards.counter_examples]]
+statement = "界线上较长的未解释段若没有别的尺寸落在其上，不并入尺寸"
+test = "long_free_piece_of_an_extension_line_is_not_absorbed"
+
+[[cards.parameters]]
+name = "end_piece_max"
+value = 1.0
+meaning = "可并入界线的端段长度上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "terminator_on_line"
+value = 0.05
+meaning = "终端箭尖落在共用界线上的容差 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "perpendicular_cos_max"
+value = 0.1
+meaning = "箭头方向与共用界线夹角余弦的绝对值上限"

@@ -6,6 +6,9 @@
 //!   are broken where a text sits; a gap between two collinear outline pieces
 //!   that is covered by a text box (and the dimension lines and terminators
 //!   next to it) is such a break;
+//! * GB/T 4458.1 local detail: a thin detail circle only marks the enlarged part;
+//!   collinear outline pieces whose facing ends both lie on one detail circle are
+//!   one line cut at the circle (card `detail_circle_interruption`);
 //! * GB/T 4458.1 / 4457.4: inside a local section the outline is replaced by
 //!   the section; an end inside a hatched region bounded by a break curve or a
 //!   detail circle is interrupted by that section.
@@ -38,6 +41,8 @@ pub(super) struct Cover {
     /// Section hatch clusters: bounding box, evidence handles (hatch pieces,
     /// boundary curves and detail circles meeting the cluster) and hatch pieces.
     sections: Vec<([f64; 4], Vec<String>, Vec<String>)>,
+    /// Detail circles: centre, radius and source handle.
+    circles: Vec<(P, f64, String)>,
 }
 
 /// A collinear outline piece that may continue a line across a gap.
@@ -185,10 +190,17 @@ pub(super) fn cover(cx: &Ctx, b: &Builder) -> Cover {
         hs.dedup();
         sections.push((bb, hs, hatch));
     }
+    let circles = b
+        .members
+        .iter()
+        .filter(|m| m.member_role == "detail_circle")
+        .filter_map(|m| cx.arc(&m.source_handle).map(|(c, r, ..)| (c, r, m.source_handle.clone())))
+        .collect();
     Cover {
         texts,
         strips,
         sections,
+        circles,
     }
 }
 
@@ -296,6 +308,44 @@ pub(super) fn interruption(
         });
     }
     None
+}
+
+/// A line end on a detail circle facing a collinear outline piece whose end lies on the
+/// same circle across a gap inside it: one line cut at the circle.
+pub(super) fn detail_crossing(
+    cx: &Ctx,
+    cov: &Cover,
+    own: &str,
+    p: P,
+    d: P,
+    partners: &[Partner],
+) -> Option<Cause> {
+    let s = cx.scale.max(1.);
+    let ctol = 0.02 * s;
+    let (c, r, ch) = cov.circles.iter().find(|(c, r, _)| (dist(p, *c) - r).abs() <= ctol)?;
+    let mut best: Option<(f64, &Partner, usize)> = None;
+    for k in partners.iter().filter(|k| k.handle != own) {
+        for i in 0..2 {
+            let q = k.ends[i];
+            let t = dot(sub(q, p), d);
+            if (dist(q, *c) - r).abs() <= ctol
+                && t > ctol
+                && cross(d, sub(q, p)).abs() <= ctol
+                && cross(d, sub(k.ends[1 - i], p)).abs() <= ctol
+                && dot(sub(k.ends[1 - i], p), d) > t
+                && dist(mid(p, q), *c) < *r
+                && best.as_ref().is_none_or(|b| t < b.0)
+            {
+                best = Some((t, k, i));
+            }
+        }
+    }
+    let (_, k, i) = best?;
+    Some(Cause {
+        kind: "detail_circle_crossing",
+        partner: Some((k.handle.clone(), k.t[i], k.ends[i], true)),
+        evidence: vec![format!("detail_circle:{ch}"), "card:detail_circle_interruption".into()],
+    })
 }
 
 /// A co-circular outline arc that may continue an arc across a gap.
@@ -610,7 +660,15 @@ pub(super) fn audit(
             continue;
         };
         for k in 0..2 {
-            if !free.get(&(sp.member, k)).copied().unwrap_or(false) {
+            let crossing = detail_crossing(
+                cx,
+                cov,
+                &sp.handle,
+                ps[k],
+                dirs[k],
+                &partners[&(sp.class, sp.view.clone())],
+            );
+            if crossing.is_none() && !free.get(&(sp.member, k)).copied().unwrap_or(false) {
                 continue;
             }
             // Within the drafting gap that structure() already treats as a junction:
@@ -618,7 +676,9 @@ pub(super) fn audit(
             let (dn, ni) = nearest[&(sp.member, k)];
             // An arc continues along its circle first, then as before along its tangent.
             let mut gap_arc = None;
-            let cause = if dn <= gap {
+            let cause = if crossing.is_some() {
+                crossing
+            } else if dn <= gap {
                 Some(Cause {
                     kind: "drafting_gap",
                     partner: None,

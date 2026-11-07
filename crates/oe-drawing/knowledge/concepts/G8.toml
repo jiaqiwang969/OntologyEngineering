@@ -1,0 +1,858 @@
+# Drafting concept catalogue, group G8: 装配图表达、序号与明细栏.
+# One card per representation concept; paraphrased from the cited sources (page = physical page of the library copy).
+schema = "oev2.drawing-concept-catalogue/1"
+group = "G8"
+label = "装配图表达、序号与明细栏"
+
+[[concepts]]
+id = "DC-G8-001"
+name = "化工设备管口旋转画法"
+aliases = []
+group = "G8"
+kind = "conventional_representation"
+meaning = "化工设备、锅炉等装配图中，接管口等结构的方位已在其他图形（俯视图或管口方位图）中表达清楚时，可把它们分别旋转到与投影面平行后再投影，使管口的高度位置和伸出长度在主视图中按真实大小画出，但圆周方位不再是真实投影；必须加标注。"
+components = ["主视图中被旋转画出的接管、法兰轮廓（粗实线），伸出长度与法兰按真实尺寸，圆周方位不是真实投影位置。", "每个管口在主视图和表示方位的视图中注同一个小写字母（a、b、c…），用字母对应作为该画法的标注。", "表示方位的视图（俯视图或管口方位图）按真实角度画出各管口位置并注相同字母。", "同一条文还允许用细点画线表示锅炉、化工设备中密集的管子。"]
+variants = []
+dxf_forms = ["nozzle and flange outlines as exploded LINE/ARC/LWPOLYLINE on layer 01 (thick)", "nozzle letters as single lowercase TEXT/MTEXT (a, b, c…) near each nozzle in both views, usually layer 11", "dense tubes as LINE with CENTER-type linetype on layer 05"]
+recognition = "以成对出现的小写字母为锚点：同一字母在主视图管口旁和另一视图（俯视/方位图）管口旁各出现一次，字高与尺寸字高相近；再检查主视图中管口位置与方位视图的真实角度是否不符（如方位图中管口在45°方向而主视图画在正侧面）。没有成对字母时按普通投影处理。与旋转剖的区别：旋转剖有剖切符号、箭头、“X—X”名称和剖面线，而本画法不需要剖切，只靠字母对应。"
+confusions = ["真实投影：管口位置与方位视图保持投影关系，且没有成对的管口字母。", "旋转剖（几个相交剖切面）：有剖切符号与X—X名称，表达零件内部结构；管口旋转画法是外部结构的方位转换。", "管口表中的字母：在表格单元格内，不在视图上。"]
+related = ["DC-G2-016", "DC-G3-126", "DC-G1-044"]
+priority = "rare"
+text_forms = ["a", "b", "c"]
+knowledge_units = ["K11", "K12", "K13"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "图A.16 页 OCR 几乎无文字，字母对应的标注细节读自页面图像；“管口方位图”的称呼来自化工设备制图的一般惯例。"
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "A.14"
+page = 30
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "图A.16"
+page = 31
+
+[[concepts]]
+id = "DC-G8-002"
+name = "夸大画法"
+aliases = []
+group = "G8"
+kind = "conventional_representation"
+meaning = "装配图中对薄片零件、细丝弹簧、微小间隙和小斜度等，按实际尺寸难以画出或难以看清时，可不按比例而适当放大画出，使其清晰可见；所注尺寸仍为真实值。"
+components = ["薄垫片、调整垫等的厚度被放大成可见的窄带，窄带可涂黑或画剖面线。", "微小间隙（如螺钉与通孔之间）被放大成明显分开的两条线。", "细丝弹簧的线径、小锥度、小斜度（如箱体油池底面的排油斜面）被适当放大。", "被夸大部位的尺寸数字仍按真实值注写，因此图上量取值与标注值不一致。"]
+variants = []
+dxf_forms = ["no dedicated entity: ordinary LINE/LWPOLYLINE outlines on layer 01 with exaggerated spacing", "thin gasket section as a narrow closed LWPOLYLINE filled by HATCH SOLID (涂黑) or ANSI31 on layer 10", "DIMENSION entity whose measured value differs from its displayed override text at the exaggerated feature"]
+recognition = "没有专用标记，只能用“图上量取值与标注值不符”且发生在薄、小、细结构上来判断：如垫片标注厚度0.5，而按出图比例换算后图上宽度≥1 mm；螺钉与通孔的双线间距远大于孔径与螺纹大径之差。窄带涂黑区的出图宽度常不到2 mm。与非接触面双线的关系：双线规则只要求有两条线，夸大画法是把间距放大，两者常同时出现。大尺寸结构的量取不符应视为未按比例或错误，不归入此画法。"
+confusions = ["尺寸不符或绘图错误：夸大画法只用于薄、小、细结构，目的在于可见。", "非接触面双线：属于拓扑规定（必须两条线），夸大是几何放大。", "狭小剖面涂黑：是断面的表示方式，常与夸大画法同时用于垫片。"]
+related = ["DC-G8-005", "DC-G2-057", "DC-G3-130", "DC-G8-023"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "用 DIMENSION 实测值与覆盖文字比较作为线索属一般 CAD 实践。"
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 二、3"
+page = 338
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-5 箱底斜面"
+page = 359
+
+[[concepts]]
+id = "DC-G8-003"
+name = "实心件、紧固件和标准部件按不剖绘制"
+aliases = ["实心件和标准件按不剖绘制"]
+group = "G8"
+kind = "conventional_representation"
+meaning = "装配图剖视中，剖切平面纵向通过紧固件（螺栓、螺母、垫圈、螺钉）和实心零件（轴、连杆、球、钩子、键、销）的轴线或对称面时，这些零件按不剖绘制，只画外形；标准产品（如油杯）或已由其他图形表达清楚的部件也可不剖。"
+components = ["被纵向剖切的实心件只画外形轮廓，不画剖面线；周围被剖零件的剖面线画到其轮廓为止。", "需要表明实心件上的凹槽、键槽、销孔等结构时，在其上作局部剖视，用波浪线界定范围并画剖面线。", "剖切平面垂直于实心件轴线（横剖）时，实心件断面必须画剖面线。", "标准部件（油杯、滚动轴承等）或已另有图形表达的部件可整体按不剖画出外形。"]
+variants = ["solid parts", "fasteners", "standard units", "local section to reveal keyway etc."]
+dxf_forms = ["uncut solid part: closed outline of LINE/ARC on layer 01 inside a hatched area, with no HATCH of its own", "neighbouring parts: HATCH ANSI31 (layer 10) whose boundary loops stop at the shaft or bolt outline", "local section on the shaft: SPLINE/LWPOLYLINE wavy line on layer 02 with a HATCH inside it", "standard parts often as INSERT of library blocks (bolt, nut, washer) left unhatched"]
+recognition = "以剖视图中的剖面线区域为锚点：若一个粗实线围成的长条形或回转形区域被两侧剖面线区域夹住（剖面线边界正好停在它的轮廓上），自身没有HATCH，且其轴线与剖切位置线或视图对称中心线共线，则判为实心件纵剖按不剖。螺纹紧固件可由螺纹小径细实线、六角头轮廓和倒角线加以确认。其中若有波浪线围成的小区域带剖面线，则是局部剖示键槽、销孔等。与漏画剖面线的区别：漏画区域通常属于空心零件（有内孔线）；与肋纵剖的区别：肋属于同一零件，轮廓与本体相连。"
+confusions = ["未画剖面线的孔或空腔：两侧轮廓之间是空的，没有零件外形线；实心件内部有倒角、螺纹线、头部等外形线。", "肋、轮辐纵剖不画剖面线：肋属于同一零件，与本体以粗实线分界并相连；实心件是独立零件。", "漏画剖面线的空心轴：空心轴纵剖时必须画剖面线，内孔线可辨。", "横剖的实心件：横剖时必须画剖面线，断面为圆形或带键槽的圆形。"]
+related = ["DC-G3-046", "DC-G3-060", "DC-G8-005", "DC-G2-009", "DC-G2-023"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K11", "K12", "K13", "K34", "K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "A.7 图A.9"
+page = 26
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "A.11"
+page = 30
+[[concepts.sources]]
+document = "GB/T 4458.6-2002"
+clause = "4.4"
+page = 7
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 二、4（1）"
+page = 338
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§8-1 基本规定（3）"
+page = 274
+
+[[concepts]]
+id = "DC-G8-004"
+name = "拆卸画法（拆去××等）"
+aliases = ["拆卸画法"]
+group = "G8"
+kind = "conventional_representation"
+meaning = "装配图中当某些零件遮住了需要表达的结构或装配关系时，可假想把这些零件拆去后再画该视图；需要说明时在该视图上方注写“拆去××等”。"
+components = ["视图中不画被拆去的零件（如扳手、轴承盖），原来被它挡住的零件按可见轮廓画出。", "视图上方注写说明文字，如“拆去扳手13”“拆去轴承盖等”“拆去件号8~13”，字高与视图名称相当。", "被拆零件在其他视图中仍正常画出并编有序号。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT '拆去…等' placed above the view (layer 11), sometimes on the same line as the view name", "remaining parts as ordinary LINE/ARC/HATCH geometry; no geometry for the removed parts"]
+recognition = "以内容以“拆去”开头的文字为锚点：它位于某一视图包络框的上方（间距约1~3倍字高），可带件号或零件名，末尾常有“等”。把它关联到其下方最近的视图，再在明细栏中查出被拆零件，确认它在其他视图中出现。与视图名称的区别：视图名称为“A”“A—A”“B向”等字母形式，没有“拆去”二字。"
+confusions = ["视图名称或向视图标注：只有字母和“向”字。", "沿结合面剖切：可与拆卸画法同时出现，但有剖切符号和剖面线断面。", "局部视图：只画一部分，有波浪线边界；拆卸画法视图是完整视图但缺件。", "未画完的装配图：没有“拆去”说明且明细栏零件在各视图都找不到时才怀疑不完整。"]
+related = ["DC-G8-006", "DC-G2-065", "DC-G2-076", "DC-G8-025"]
+priority = "medium"
+text_forms = ["拆去扳手13", "拆去轴承盖等", "拆去件号8~13", "拆去××等"]
+knowledge_units = ["K11", "K12", "K13"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "A.8"
+page = 27
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "图A.11"
+page = 29
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 二、4（4）"
+page = 339
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-1"
+page = 337
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-21"
+page = 355
+
+[[concepts]]
+id = "DC-G8-005"
+name = "接触面单线非接触面双线"
+aliases = []
+group = "G8"
+kind = "conventional_representation"
+meaning = "装配图中相邻两零件的接触面和配合面（如轴与轴承孔的配合面）只画一条线；不接触、不配合的表面（如螺钉与光孔）即使间隙很小也必须画成两条线。"
+components = ["接触面或配合面：两零件共用一条粗实线，两侧剖面线方向相反或间隔不同。", "非接触面：两条平行或同心的粗实线，间距可以夸大，中间不画剖面线。", "典型例子：注配合代号（如Ø50H11/h11）的面为单线；螺栓杆与光孔（孔径约1.1d）之间为双线。"]
+variants = []
+dxf_forms = ["single shared LINE/ARC on layer 01 between two HATCH regions of different angle (e.g. ANSI31 at 0° and 90° pattern rotation)", "two parallel LINE entities on layer 01 with a small blank gap between hatched regions", "in exploded drawings the shared contact edge may be duplicated as two coincident LINEs"]
+recognition = "以两个剖面线区域之间的公共边界为锚点：若两个方向或间距不同的剖面线区域之间只有一条粗实线（两区边界共用此线），判为接触面或配合面；若两区域之间有两条平行粗实线，间距很小（出图后约0.5~2 mm）且间隙内无剖面线，判为非接触面。配合代号（H7/g6等）所指的面应为单线，螺纹紧固件穿过的光孔应为双线，可互相印证。DXF中两条完全重合的线（重线）不能算双线，双线必须间距大于零。"
+confusions = ["重线（两条重合的线）：间距为零，是同一接触面的重复图元，仍按单线理解。", "薄件或窄缝：薄垫片两条边线之间是零件材料（常涂黑或有剖面线），不是间隙。", "同一零件的轮廓与内孔：同一零件剖面线方向和间隔一致，区分零件要看剖面线。"]
+related = ["DC-G8-002", "DC-G2-009", "DC-G3-053", "DC-G3-058", "DC-G4-150"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 二、1"
+page = 337
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-2"
+page = 338
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§8-1 基本规定（1）"
+page = 274
+
+[[concepts]]
+id = "DC-G8-006"
+name = "沿零件结合面剖切"
+aliases = ["沿结合面剖切画法"]
+group = "G8"
+kind = "conventional_representation"
+meaning = "装配图中可假想沿某两个零件的结合面（如泵体与垫片、箱体与箱盖的分界面）剖切画出视图；结合面上不画剖面线，只有被横向切断的螺钉、销、轴等零件画剖面线。"
+components = ["剖切位置在结合面上，用剖切符号和字母标注，视图上方注“B—B”等名称。", "剖切面前方的零件被移去，露出后方零件的结合面，结合面区域按外形画出，不画剖面线。", "穿过结合面的螺钉、销、齿轮轴等被横向切断，其小圆形或环形断面画剖面线。"]
+variants = []
+dxf_forms = ["section label TEXT such as 'B-B' (layer 11) plus cutting-plane marks of short thick LINE segments and arrows", "joint face drawn as outline LINE/ARC without HATCH; small circular HATCH regions only at the cut screws, pins or shafts"]
+recognition = "以剖视名称（如“B—B”）和剖切符号为锚点，找到对应视图后看剖面线分布：若视图大部分是没有剖面线的零件轮廓（结合面），只有若干直径与螺钉、销规格相当、常呈均布的小圆形或环形区域有剖面线，判为沿结合面剖切。与全剖视的区别：全剖视中主体零件的切断面大面积画剖面线；与拆卸画法的区别：拆卸画法没有剖切符号，被拆零件的连接件也不出现断面。"
+confusions = ["全剖视图：被剖零件的实体区域都画剖面线。", "外形视图：螺钉显示为头部外形（六角形或圆），不是带剖面线的断面。", "拆卸画法：没有剖切符号和断面剖面线，常以“拆去××”说明。"]
+related = ["DC-G8-004", "DC-G2-013", "DC-G2-065", "DC-G8-003"]
+priority = "low"
+text_forms = ["B—B", "A—A"]
+knowledge_units = ["K11", "K12", "K13", "K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "A.8 图A.10"
+page = 27
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 二、4（4）"
+page = 339
+
+[[concepts]]
+id = "DC-G8-007"
+name = "运动件的变动和极限位置"
+aliases = ["运动零件极限位置假想画法"]
+group = "G8"
+kind = "conventional_representation"
+meaning = "装配图中用细双点画线画出运动零件（手柄、扳手、摆杆等）的变动位置或极限位置的轮廓，表示其运动范围；同一线型也用来画与本部件有关但不属于本部件的相邻零部件（假想画法）。"
+components = ["运动件在主位置按粗实线正常画出，另一位置或极限位置只画外轮廓，用细双点画线。", "假想轮廓一般不画剖面线和内部结构，可附转角或极限尺寸（如90°）。", "相邻零部件（如安装本部件的安装板）也用细双点画线画外形，与极限位置使用同一线型。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE on layer 07 (细双点画线) with PHANTOM / ACAD_ISO05W100 type linetype, or BYLAYER", "angular DIMENSION between the solid and phantom positions (e.g. 90°)"]
+recognition = "以细双点画线（PHANTOM类线型或07层）构成的闭合或半闭合轮廓为锚点：若它与图中某个粗实线零件形状相同，且可以绕某一铰点或轴线旋转（或平移）后重合，判为运动件的变动或极限位置；若双点画线轮廓在图中找不到对应的粗实线零件，并且只在安装面与本部件接触，则更可能是相邻零部件的假想画法。两位置之间的角度尺寸可作旁证。"
+confusions = ["相邻零部件假想画法：形状在图中没有对应的粗实线件。", "零件图中的初始轮廓或成形前轮廓：出现在零件图，不在装配图。", "剖切平面前的结构：同为细双点画线，但位于剖视图中被假想移去的部分。", "运动轨迹或中心线：细点画线（单点），不是双点。"]
+related = ["DC-G1-013", "DC-G1-042", "DC-G1-036", "DC-G3-038", "DC-G3-011"]
+priority = "low"
+text_forms = ["90°"]
+knowledge_units = ["K11", "K12", "K13", "K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4458.1-2002"
+clause = "5.12 图30"
+page = 12
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 二、2"
+page = 338
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-4 一"
+page = 344
+
+[[concepts]]
+id = "DC-G8-008"
+name = "公共指引线"
+aliases = []
+group = "G8"
+kind = "line"
+meaning = "一组紧固件（如螺栓、垫圈、螺母）或装配关系清楚的零件组，可以共用一根指引线，在其末端集中注写这组零件的多个序号。"
+components = ["一根细实线指引线，从组内某个零件的可见轮廓内以小圆点引出。", "末端形式一：多个序号竖向叠放，每个序号有自己的水平基准线；形式二：几个序号沿同一条水平基准线横排。", "形式三：多个细实线圆竖向叠放或横向并排，每个圆内一个序号；形式四：序号用短划连写，如“1-2-3”。", "组内序号的排列一般与零件由近及远的装配顺序（如螺栓—垫圈—螺母）一致。"]
+variants = ["vertical stack of boxed numbers", "numbers along the horizontal line", "vertical stack of circles", "row of circles", "1-2-3 text"]
+dxf_forms = ["one LEADER/MLEADER (arrowhead _DotSmall or _Dot) on layer 09 with several stacked TEXT numbers, each over a short horizontal LINE", "stacked or side-by-side CIRCLE + TEXT balloons attached to a single leader LINE (usually exploded, since one MLEADER holds one tag block)", "TEXT '1-2-3' or '-1-2-3' at the end of a single leader", "CAXA/GstarCAD balloons as one INSERT of a 序号 block per number, joined by one leader"]
+recognition = "以一条指引线（起点有小圆点、细线、最多折一次）末端附近出现两个及以上序号为锚点：数字字高一致（比尺寸字高大一到两号），竖向叠放时每格间距约为字高的1.5~2倍，或沿同一水平线排列，或多个等大的圆相切叠放；也可能是一个匹配“^-?\\d+(-\\d+)+$”的文字。组内每个序号都应能在明细栏序号列中找到。与表格单元叠放的区别：表格有外框和竖线，公共指引线只在一侧连着一根斜线。"
+confusions = ["明细栏或表格行：有完整格线、行数多，不连指引线。", "同一零件多处标注的多个序号：各自有独立的指引线。", "范围文字（如“1~3”或“件号8~13”）：用波浪号，出现在说明文字中，不在指引线末端。", "单个零件序号：末端只有一个数字。"]
+related = ["DC-G8-024", "DC-G8-009", "DC-G8-018", "DC-G8-025", "DC-G1-028"]
+priority = "medium"
+text_forms = ["1-2-3", "-1-2-3"]
+knowledge_units = ["K43", "K40", "K41"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4458.2-2003"
+clause = "4.4 图3"
+page = 5
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-3d"
+page = 340
+
+[[concepts]]
+id = "DC-G8-009"
+name = "序号指引线"
+aliases = []
+group = "G8"
+kind = "line"
+meaning = "装配图中把零部件与其序号连接起来的细实线引线：从所指零件的可见轮廓内引出，起点画一个实心小圆点，另一端接序号的水平基准线或圆，或直接在端部附近写序号。"
+components = ["起点：在零件可见轮廓区域内部画实心小圆点（出图后直径约1 mm）。", "线身：细实线，一般为斜线；可以画成折线，但只能折一次。", "各指引线互不相交；穿过剖面线区域时不得与剖面线平行，以免混淆。", "终端：接水平细实线基准线或细实线圆，或不画基准而直接在附近注写序号。"]
+variants = ["dot end (normal)", "single kink"]
+dxf_forms = ["LEADER entity with arrowhead block _DotSmall or _Dot (DIMLDRBLK) on layer 09 or 02", "MULTILEADER (MLEADER) with arrowhead _DotSmall and block content _TagCircle or text content", "exploded: LINE (or two-segment LWPOLYLINE) + DONUT (closed LWPOLYLINE of two arcs with constant width) or a small CIRCLE filled by HATCH SOLID", "AutoCAD Mechanical / GstarCAD Mechanical balloons as proxy entities or anonymous *U blocks containing the leader"]
+recognition = "以实心小圆点为锚点：直径约为序号字高的0.2~0.3倍的实心点（DONUT、填充小圆或_DotSmall箭头块）位于某个闭合轮廓（零件区域）内部；从它出发的细线不超过两段（折一次），终点在零件外部，附近有一个整数文字（字高大于尺寸字高）及短水平线或细实线圆。再检查：线段与所穿过区域的剖面线方向不平行，与其他同类指引线不相交。与尺寸界线的区别：尺寸界线从轮廓端点成对引出、垂直于尺寸线、无圆点；与焊缝指引线的区别：焊缝箭头线接带焊缝符号的基准线；与注释引线的区别：注释引线多为箭头终端、末端为说明文字。"
+confusions = ["尺寸界线：从轮廓或其延长线成对引出，没有起点圆点。", "焊缝指引线：箭头终端，基准线上有焊缝符号，常配虚线基准线。", "带箭头的注释指引线：末端是说明文字或标记（表面处理、螺纹标记等），不是单个整数。", "局部放大图的标注：细实线圆圈住被放大部位，旁注罗马数字。"]
+related = ["DC-G8-024", "DC-G8-010", "DC-G8-008", "DC-G1-095", "DC-G1-028", "DC-G1-018"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "圆点大小比例与 _DotSmall、DONUT 等存储形式来自一般 CAD 实践。"
+[[concepts.sources]]
+document = "GB/T 4458.2-2003"
+clause = "4.4"
+page = 5
+
+[[concepts]]
+id = "DC-G8-010"
+name = "序号指引线末端箭头"
+aliases = []
+group = "G8"
+kind = "line"
+meaning = "所指零件很薄（如垫片）或是涂黑的剖面，无法在其轮廓内画圆点时，序号指引线的起点改画实心箭头，箭头指向该零件的轮廓。"
+components = ["指引线起点为实心箭头，箭尖落在薄件或涂黑断面的轮廓线上，而不是在其内部。", "其余部分与普通序号指引线相同：细实线、最多折一次，终端为基准线、圆或序号。", "所指对象通常是出图宽度不到约1~2 mm的窄带或涂黑区域。"]
+variants = ["arrowhead end"]
+dxf_forms = ["LEADER/MLEADER with closed filled arrowhead (_ClosedFilled or default) on layer 09", "exploded: LINE + SOLID (triangle) or LWPOLYLINE segment with tapering width as the arrowhead"]
+recognition = "以指引线一端的实心箭头为锚点：箭尖接触一个窄长的涂黑区域（HATCH SOLID，出图宽度约1.5 mm以下）或两条非常接近的平行轮廓线；另一端是单个整数序号，字高与同图其他序号一致。关键判据是它与同图圆点式序号属于同一编号体系（数字连续、字高相同、与明细栏对应）。若箭头指向普通轮廓而末端是文字说明，则是注释引线。"
+confusions = ["注释指引线：末端为文字或标记，不是序号。", "焊缝指引线：接焊缝基准线和焊缝符号。", "几何公差指引线：箭头指向轮廓，另一端连公差框格。", "带箭头的尺寸线：中间或旁边有尺寸数字，常两端都有箭头。"]
+related = ["DC-G8-009", "DC-G8-024", "DC-G1-096", "DC-G2-057"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4458.2-2003"
+clause = "4.4 图2"
+page = 5
+
+[[concepts]]
+id = "DC-G8-011"
+name = "装配技术要求注语"
+aliases = ["装配图技术要求"]
+group = "G8"
+kind = "note"
+meaning = "装配图“技术要求”中用文字说明部件在装配、调试、检验和使用方面的要求，如装配前清洗、结合面接触检查、多螺钉拧紧顺序、轴承和齿轮装配后检查、涂润滑脂或密封胶、空载或压力试验等。"
+components = ["标题“技术要求”，下面按1、2、3…编号逐条写出，只有一条时可不编号。", "装配前要求：零件清理和清洗、密封件浸油、管子去毛刺倒角、尺寸复查。", "装配过程要求：同一零件的多个螺钉交叉、对称、均匀拧紧，某处涂××润滑脂或密封胶，平键与键槽两侧均匀接触。", "装配后检查：结合面用××塞尺检查塞入深度、齿面接触斑点与侧隙、轴承用手转动灵活、空载运行平稳不漏油。", "试验：在××MPa压力下保持××min不渗漏，按某标准进行性能、寿命或可靠性试验。"]
+variants = ["装配前清洗", "塞尺检查", "交叉对称拧紧", "涂润滑脂/密封胶", "接触斑点与侧隙"]
+dxf_forms = ["MTEXT block on layer 11 whose first line is '技术要求', followed by numbered paragraphs, or one TEXT per line", "heading '技术要求' often a separate TEXT about one size larger, centred above the items"]
+recognition = "以内容等于“技术要求”的文字为锚点，取其下方左对齐、行距约1.5倍字高的条目；判为装配类注语的依据是关键词：装配前、装配时、装配后、拧紧、塞尺、接触斑点、侧隙、啮合、涂…密封胶或润滑脂、空载试验、漏油、转动灵活、调试。同时图上有明细栏和零件序号（说明是装配图）。与零件图技术要求的区别：后者关键词是热处理、未注倒角或圆角、铸件、锻件、去毛刺、未注公差。"
+confusions = ["零件图技术要求：针对单个零件的制造和检验，关键词不同，所在图上没有明细栏。", "明细栏备注：表格单元格内的短语，没有“技术要求”标题。", "焊接技术要求：关键词为焊缝、焊条、焊后处理，出现在焊接件图上。"]
+related = ["DC-G9-002", "DC-G9-006", "DC-G9-007", "DC-G8-013"]
+priority = "medium"
+text_forms = ["技术要求", "装配前所有零件应清洗干净", "结合面用0.05mm塞尺检查不得塞入", "各螺钉应交叉、对称、均匀拧紧", "两齿轮轮齿的啮合面占齿长的3/4以上", "在××MPa压力下试验××min，不得渗漏"]
+knowledge_units = ["K03", "K52", "K55", "K14", "K61", "K21", "K40"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表6 1-4"
+page = 9
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表6 5-38"
+page = 10
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 一、3"
+page = 336
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-14"
+page = 351
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-21"
+page = 355
+
+[[concepts]]
+id = "DC-G8-012"
+name = "序号的排列"
+aliases = []
+group = "G8"
+kind = "other"
+meaning = "装配图中各零部件序号应沿水平或竖直方向排列整齐，按顺时针或逆时针方向依次编排；整张图上无法连续时可只在每一水平行或竖直列内顺次排列；也可按明细栏中的序号顺序排列。"
+components = ["同一水平行上的序号（含基准线或圆）纵坐标一致，同一竖直列上的序号横坐标一致。", "绕视图一周，序号数值按顺时针或逆时针方向单调递增。", "每一行或每一列内部按顺序排列，间距尽量均匀。", "同一张装配图中序号的形式（横线式、圆圈式、无框式）一致。"]
+variants = ["clockwise", "counter-clockwise", "parts-list order per row"]
+dxf_forms = ["no dedicated entity: derived from the insertion points of balloon TEXT/INSERT/MLEADER entities"]
+recognition = "把已识别的零件序号（整数、同字高、带指引线）按插入点聚类：纵坐标相差小于约0.5倍字高的归为一行，横坐标相差小于约0.5倍字高的归为一列；行列内按坐标排序检查数值是否单调。再以视图群的形心为中心计算各序号的方位角，若序号值随方位角单调变化，判为顺时针或逆时针排列。这一规律可用来发现漏识别的序号（缺号位置），并排除与序号字高相同的其他数字。"
+confusions = ["随意分布的注释编号：不成行列，没有递增规律。", "尺寸数字：沿尺寸线方向，字高较小，连有尺寸线。"]
+related = ["DC-G8-024", "DC-G8-025", "DC-G8-008"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4458.2-2003"
+clause = "4.5"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4458.2-2003"
+clause = "图4"
+page = 6
+
+[[concepts]]
+id = "DC-G8-013"
+name = "装配图的组成"
+aliases = []
+group = "G8"
+kind = "other"
+meaning = "装配图（总装配图或部件装配图）由一组视图、必要的尺寸、技术要求、零部件序号、明细栏和标题栏组成，用来表达机器或部件的工作原理、装配关系、主要零件的结构形状和装配检验要求。"
+components = ["一组视图：主视图常沿主要装配干线全剖，另配其他视图、局部剖视和拆卸画法等。", "必要的尺寸：性能（规格）尺寸、装配尺寸（配合代号如Ø50H11/h11）、安装尺寸、外形尺寸和其他重要尺寸，不注全部零件尺寸。", "技术要求：装配、安装、调试、检验、使用方面的文字或符号说明。", "零部件序号和明细栏：每种零件一个序号，与明细栏的行对应，明细栏在标题栏上方。", "标题栏：部件名称、图号（教材例中以00结尾）、比例和签名等，材料栏一般不填。"]
+variants = []
+dxf_forms = ["composite of entities: view geometry (layers 01/02/05/10), DIMENSION entities with fit texts such as '%%c50H11/h11', 技术要求 MTEXT, balloon leaders, parts-list and title-block grids or INSERTs"]
+recognition = "判定一张图是装配图：标题栏正上方有与之同宽、表头含“序号、代号、名称、数量”的明细栏；视图中有带圆点指引线的整数序号，且序号集合与明细栏一致；尺寸中出现孔轴配合代号（用“/”分隔的两个公差带，如H7/g6）；剖视中有多个方向不同的剖面线区域。满足其中两项即可判为装配图，否则按零件图的组成检查。"
+confusions = ["零件图的组成：没有明细栏和序号，尺寸完整，标题栏材料栏填有牌号。", "焊接件图：也有明细栏，但表示一个焊接件的组成，有焊缝符号。", "表格图或系列零件图：有参数表但没有零件序号。"]
+related = ["DC-G9-014", "DC-G8-024", "DC-G8-025", "DC-G9-028", "DC-G8-011", "DC-G4-150"]
+priority = "medium"
+text_forms = ["%%c50H11/h11", "M36×2-6g"]
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 一"
+page = 336
+
+[[concepts]]
+id = "DC-G8-014"
+name = "标准件直接标注规格"
+aliases = []
+group = "G8"
+kind = "sheet_element"
+meaning = "部件中的标准件可以不编写序号，而用指引线把它的数量、名称、规格和标准编号直接标注在图上，如“2×螺钉M4×16 GB/T 67—2000”；这种情况下明细栏中不再单列该标准件。"
+components = ["一根指引线（起点圆点或箭头）指向图中的标准件。", "指引线末端的水平基准线上方写“数量×名称规格”，下方或同行写标准编号。", "同一张图中其他零件仍用序号标注，两种方式可以并存。"]
+variants = []
+dxf_forms = ["LEADER/MLEADER + two-line MTEXT: '2×螺钉M4×16' over 'GB/T 67-2000' (× often typed as 'x' or 'X')", "exploded: LINE leader + horizontal LINE + two TEXT entities on layers 09/11"]
+recognition = "以成对的两行文字为锚点：一行匹配“^\\d+\\s*[×xX]\\s*[\\u4e00-\\u9fa5]+.*\\d”（数量×名称规格），另一行匹配“(GB|JB)/T\\s*\\d+(\\.\\d+)?[-—]\\d{4}”（标准编号），两行左对齐、分别位于一条水平基准线上下，并连一根指引线指向某紧固件（螺钉、销、垫圈）的投影；该紧固件附近没有整数序号。可进一步核对规格与图上投影尺寸是否相符（如M4的螺纹大径按比例换算约为4）。与零件序号的区别：末端是名称加规格而不是单一整数；与螺纹标记的区别：螺纹标记只含螺纹代号，不含零件名称和标准号。"
+confusions = ["零件序号：末端为单一整数。", "螺纹标记或尺寸：只含螺纹代号，无零件名与标准号，通常在尺寸线上。", "明细栏中的紧固件标记：在明细栏名称、代号列中，不在视图上。"]
+related = ["DC-G8-024", "DC-G3-229", "DC-G3-083", "DC-G8-025"]
+priority = "low"
+text_forms = ["2×螺钉M4×16 GB/T 67—2000", "2×销3×14 GB/T 119.2—2000", "2×垫圈4 GB/T 97.1—2002", "螺钉M3×12 GB/T 75—1985"]
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-2 二、1（6）"
+page = 340
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-11"
+page = 347
+
+[[concepts]]
+id = "DC-G8-015"
+name = "重复序号加括号"
+aliases = []
+group = "G8"
+kind = "sheet_element"
+meaning = "相同的零件一般只标注一个序号；为了便于看图在另一处再次标注时，重复的序号加圆括号，如“(9)”，明细栏中该序号的数量按全部件数填写。"
+components = ["首次出现的序号按常规形式标注，不加括号。", "重复标注处同样有指引线和基准线或圆，序号写成“(9)”的形式。", "明细栏中该序号只占一行，数量为全部件数（例中为2）。"]
+variants = []
+dxf_forms = ["TEXT '(9)' on a balloon reference line or inside a circle, same height as the other item numbers", "MLEADER/LEADER whose text content is '(9)'"]
+recognition = "以内容匹配“^[(（]\\d+[)）]$”、字高与其他序号一致、连有圆点指引线的文字为锚点；同一数值必须另有一个不带括号的序号，并且明细栏中该序号的数量不少于2。与参考尺寸的区别：参考尺寸的括号数字在尺寸线上，带尺寸界线，字高为尺寸字高，比序号小。"
+confusions = ["参考尺寸（圆括号尺寸）：在尺寸线上，字高为尺寸字高。", "明细栏备注中的括号：在表格内。", "括号中的分区代号或视图代号：如(A)、(B3)，含字母。"]
+related = ["DC-G8-024", "DC-G8-025", "DC-G4-009"]
+priority = "low"
+text_forms = ["(9)"]
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-5 （4）"
+page = 357
+
+[[concepts]]
+id = "DC-G8-016"
+name = "带传动和链传动的简化画法"
+aliases = []
+group = "G8"
+kind = "simplified_representation"
+meaning = "在装配图中，带传动的带可用一条粗实线表示，链传动的链可用细点画线表示；必要时在粗实线或细点画线上加画表示带或链类型的符号（见GB/T 4460）。"
+components = ["带轮、链轮按简化轮廓或节圆画出。", "带：两轮之间的公切粗实线（开口式或交叉式），代表带的运行路线。", "链：沿两链轮节圆的公切线和节圆弧形成闭合环的细点画线。", "可选：在线上加画平带、V带、圆带或链的类型符号。"]
+variants = ["belt: thick line", "chain: thin dash-dot line", "with type symbol"]
+dxf_forms = ["belt: LINE tangent segments (layer 01) between two pulley ARC/CIRCLE entities, sometimes a closed LWPOLYLINE loop", "chain: LINE/ARC loop with CENTER-type linetype on layer 05 following the sprocket pitch circles", "type symbol as a small INSERT or exploded LINE/CIRCLE strokes on the line"]
+recognition = "以两个或多个分离的带轮或链轮圆为锚点，查找同时与两圆相切（或与两节圆相切）的成对线段：切线为粗实线（01层或线宽≥0.5）且与轮外缘相切的，判为带；切线为细点画线并沿节圆形成闭环的，判为链。与节圆的区别：节圆是单个细点画线圆，不连接到另一轮；与普通轮廓的区别：零件轮廓不会只用公切线连接两个分离的回转体。"
+confusions = ["齿轮节圆（分度圆）：独立的细点画线圆，啮合时两节圆相切而不是用公切线连接。", "外形轮廓线：闭合包围实体，不是两圆之间的公切线。", "机构运动简图中的带、链符号：属于示意图，常为独立符号。"]
+related = ["DC-G3-163", "DC-G3-201", "DC-G3-068", "DC-G1-044"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K11", "K12", "K13"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "目录定位为表1 5.22；该页 OCR 把条目号识读为 5.21，内容相同，以页面内容为准。"
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "表1 5.22"
+page = 21
+
+[[concepts]]
+id = "DC-G8-017"
+name = "焊接固定电子元器件用图形符号表示"
+aliases = []
+group = "G8"
+kind = "simplified_representation"
+meaning = "仅以焊接固定、没有其他紧固工序的电子元器件，在装配图中可以用GB/T 4728规定的电气图形符号代替其外形画出。"
+components = ["印制板或机械结构按正常画法画出。", "元器件位置画电气图形符号（如电阻的小矩形、电容的两条平行短线、二极管的三角形加短竖线），可附位号。", "焊点和引线不单独表示。"]
+variants = []
+dxf_forms = ["INSERT of electrical symbol blocks (GB/T 4728 library) or exploded small LINE/LWPOLYLINE symbols", "reference designators as TEXT such as 'R1', 'C3', 'VD1'"]
+recognition = "在机械装配图的视图中出现电气符号形态（小矩形加两端引线、两条平行短线、三角形加短竖线等），并伴有字母加数字的位号（R、C、L、VD、VT、U等开头）时，判为本画法。与机构运动简图符号（GB/T 4460，表示运动副或传动）和焊缝符号（在指引线的基准线上）区分。"
+confusions = ["机构运动简图符号：表示运动副或传动，不带电气位号。", "焊缝符号：位于焊缝指引线的基准线上。"]
+related = ["DC-G7-135"]
+priority = "rare"
+text_forms = ["R1", "C2", "VD1"]
+knowledge_units = ["K11", "K12", "K13", "K43"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "标准表1 5.18 只规定可用 GB/T 4728 图形符号，图例为“略”；具体符号形状和位号前缀来自电气制图一般惯例。"
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "表1 5.18"
+page = 19
+
+[[concepts]]
+id = "DC-G8-018"
+name = "紧固件的省略画法（细点画线和公共指引线）"
+aliases = []
+group = "G8"
+kind = "simplified_representation"
+meaning = "装配图中可以省略螺栓、螺母、销等紧固件的投影，只用细点画线画出它们的位置，并用公共指引线指明这组紧固件；指引线按连接类型从被连接件的一端引出：螺钉、螺柱、销连接从装入端引出，螺栓连接从装螺母的一端引出。"
+components = ["紧固件位置只画细点画线（轴线或十字中心线），不画紧固件外形和螺纹。", "公共指引线从被连接件的装入端或螺母端外表面引出，末端注一组序号（如“-1-2-3”）。", "被连接零件本身仍按正常剖视或外形画出。"]
+variants = []
+dxf_forms = ["LINE with CENTER-type linetype (layer 05) crossing the joint of two parts, with no fastener outline", "LEADER/LINE on layer 09 starting at the outer face of one part, ending with TEXT '-1-2-3' or stacked numbers"]
+recognition = "以穿过两零件结合面的细点画线为锚点：它垂直于结合面，两端略伸出零件外轮廓（出图约2~5 mm），该处没有紧固件外形；附近有一根公共指引线从其中一端零件的外表面引出，末端为多个序号。指引线所在一端可说明连接类型（螺母端为螺栓连接，装入端为螺钉、螺柱或销连接）。若同一结构在别处有完整画出的紧固件可作旁证。与空孔中心线的区别：空孔有孔的轮廓线。"
+confusions = ["空孔的中心线：有孔轮廓线，无指引线。", "普通序号指引线：起点圆点在零件轮廓内，只指一个零件。", "相同零部件组简化画法：其余位置也用细点画线，但另有一组完整画出。"]
+related = ["DC-G8-008", "DC-G8-022", "DC-G3-127", "DC-G3-129", "DC-G1-044"]
+priority = "low"
+text_forms = ["-1-2-3"]
+knowledge_units = ["K11", "K12", "K13", "K34"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "A.13 图A.15"
+page = 30
+
+[[concepts]]
+id = "DC-G8-019"
+name = "装配剖视中螺旋弹簧仅画端面"
+aliases = []
+group = "G8"
+kind = "simplified_representation"
+meaning = "在装配图的剖视图中，螺旋弹簧可只画出其端部，被弹簧挡住的结构一般不画出（GB/T 16675.1—2012新增的简化画法）。"
+components = ["只画弹簧两端的端部簧圈（端面或其簧丝断面），簧丝断面小时可涂黑。", "中间各圈不画。", "弹簧后面被挡住的零件轮廓不画，在弹簧外轮廓或簧丝中心线处断开。"]
+variants = []
+dxf_forms = ["small CIRCLE pairs or HATCH SOLID filled circles at the spring ends (layers 01/10)", "optional CENTER-type LINE through the wire centres (layer 05)"]
+recognition = "以剖视图中成对出现、直径相同的小圆或涂黑小圆为锚点：它们分布在一根轴线两侧，只在轴向两端各有一组，两组之间没有其他簧丝断面；后方零件的轮廓线在弹簧外径包络处中断。与完整弹簧画法的区别：完整画法中间有连续的簧丝断面或斜线。"
+confusions = ["完整螺旋弹簧画法（GB/T 4459.4）：中间各圈截面连续出现或以斜线表示。", "弹簧中间部分省略画法：两端各画1~2圈后用细点画线连接，仍画出若干圈。", "O形密封圈断面：单个小圆，位于沟槽中，常涂黑。"]
+related = ["DC-G3-059", "DC-G3-130", "DC-G3-017", "DC-G3-113"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K11", "K12", "K13", "K38"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "依据 2012 版前言说明和页面图像，表1该页 OCR 只有条目号；“端面”具体画成何种形状未能从 OCR 确认，按图像理解为端部簧圈。"
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "前言（5.27）"
+page = 3
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "表1 5.27"
+page = 23
+
+[[concepts]]
+id = "DC-G8-020"
+name = "装配图中仅画外形或简化轮廓"
+aliases = []
+group = "G8"
+kind = "simplified_representation"
+meaning = "已在一个视图中表达清楚的产品组成部分（如电动机、外购部件），在其他视图中可只画外形轮廓；在能清楚表达产品特征和装配关系的条件下，整个装配图也可只画出简化后的轮廓。"
+components = ["已表达清楚的组成部分在其他视图中只画外轮廓（粗实线），无内部线、剖面线和细节。", "简化轮廓用较少的直线和圆弧概括外形，省去小台阶、圆角、紧固件等。", "其余部分仍按正常画法，与该外形轮廓相接。"]
+variants = ["component outline only (5.23)", "simplified overall contour (5.24)"]
+dxf_forms = ["closed LWPOLYLINE or a few LINE/ARC outlines on layer 01 with no internal entities or HATCH", "purchased units sometimes as an INSERT of a simplified outline block"]
+recognition = "在装配图某视图中，若某区域只是一个简单的闭合轮廓（顶点少，内部除中心线外没有其他图元，无剖面线），而同一组成部分在另一视图中有详细结构（可用明细栏同一序号在两个视图中出现来确认），判为仅画外形。与相邻辅助零件的区别：外形轮廓是粗实线且属于本产品（有序号），相邻件是细双点画线且没有序号。"
+confusions = ["未画完的图：未画完的轮廓常不闭合，或在其他视图找不到对应。", "相邻辅助零件：细双点画线，不属于本产品。", "局部视图：有波浪线边界和视图名称。"]
+related = ["DC-G8-023", "DC-G3-038", "DC-G1-036"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K11", "K12", "K13"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "表1 5.23-5.24"
+page = 22
+
+[[concepts]]
+id = "DC-G8-021"
+name = "装配图中相同单元的简化画法"
+aliases = []
+group = "G8"
+kind = "simplified_representation"
+meaning = "装配图中有若干相同的单元（如相同的组件、模块）时，可以只详细画出一个单元，其余单元只画出外框，并在框内注写表示与第一个单元相同的标记，如“2=1”“3=1”。"
+components = ["第一个单元详细画出，作为单元1。", "其余单元只画外框（单元边界），框内空白。", "空框内注写等同标记，如“2=1”表示第2个单元同第1个单元。"]
+variants = []
+dxf_forms = ["rectangles as closed LWPOLYLINE on layer 01/02 with a TEXT like '2=1' at the centre"]
+recognition = "以内容匹配“^\\d+\\s*=\\s*\\d+$”的文字为锚点：它的外面有一个与某个详细画出的单元外框尺寸相同的空矩形或空轮廓，框内除该文字外没有其他图元；几个框尺寸相同、排列规则。与表格的区别：表格有行列格线和多个单元格文字。"
+confusions = ["空白框或预留区：没有“n=1”这类等同标记。", "表格：格线多、文字多。", "公式或尺寸关系文字：不位于空框中心。"]
+related = ["DC-G8-022", "DC-G3-134"]
+priority = "rare"
+text_forms = ["2=1", "3=1"]
+knowledge_units = ["K11", "K12", "K13"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "等同标记的写法读自页面图像，OCR 未识别出。"
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "表1 5.15"
+page = 17
+
+[[concepts]]
+id = "DC-G8-022"
+name = "装配图中相同零、部件组的简化画法"
+aliases = ["相同零件组简化画法"]
+group = "G8"
+kind = "simplified_representation"
+meaning = "装配图中若干规格相同的零部件组（如多组螺钉连接），可只详细画出一组，其余各组只用细点画线表示其装配位置，并注出零部件组的总数，如“共3组”。"
+components = ["一组按完整画法画出（螺栓、垫圈、螺母等）。", "其余位置只画细点画线中心线（轴线或十字中心线）表示装配位置。", "在详细画出的一组附近或其指引线上注总数，如“共3组”。"]
+variants = []
+dxf_forms = ["one full group of LINE/ARC/HATCH (or fastener INSERTs) plus CENTER-type LINEs (layer 05) at the other positions", "TEXT '共3组' near the detailed group or its leader"]
+recognition = "以细点画线中心线群为锚点：若干等距或对称分布的中心线位置中，只有一个位置画有完整的零件组，其余位置只有中心线，且方向和长度与完整位置的中心线一致；附近有“共n组”文字，n等于位置数。缺少“共n组”时，可用位置数与明细栏数量（每组件数×n）互相印证。与零件图重复结构要素的区别：后者是同一零件内的孔、槽，用“n×”尺寸标注，不涉及多个零件。"
+confusions = ["零件图中重复结构要素的简化：在同一零件内部，用n×尺寸。", "紧固件省略画法：所有位置都不画紧固件。", "空孔中心线或空白区域：没有完整画出的一组可对照。"]
+related = ["DC-G8-018", "DC-G8-021", "DC-G3-134", "DC-G4-094", "DC-G1-044"]
+priority = "low"
+text_forms = ["共3组"]
+knowledge_units = ["K11", "K12", "K13", "K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "表1 5.14"
+page = 17
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 二、4（3）"
+page = 338
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 二、4（3）"
+page = 339
+
+[[concepts]]
+id = "DC-G8-023"
+name = "装配图中零件细节的省略"
+aliases = ["装配图中工艺结构省略"]
+group = "G8"
+kind = "simplified_representation"
+meaning = "装配图中零件的工艺结构和细节，如倒角、圆角、退刀槽、肋、滚花、拔模斜度，以及剖面线等，允许省略不画；根据装配图拆画零件图时必须补全。"
+components = ["轴端、孔口的倒角和小圆角不画，转角画成尖角。", "退刀槽、越程槽不画，轴肩画成直角台阶。", "拔模斜度不画，铸件侧壁画成直线。", "滚花可在轮廓附近用粗实线局部画出，也可省略。", "零件的剖面线也可省略；大面积剖面可只沿周边画出一部分。"]
+variants = []
+dxf_forms = ["absence of chamfer LINEs and small fillet ARCs at corners of LINE outlines on layer 01", "partial HATCH along the boundary for large section areas"]
+recognition = "这是一种“省略”表达，只能通过比较识别：同一零件在装配图中是尖角或直角台阶，而零件图、技术要求（如“未注倒角C1”）或尺寸中表明存在倒角、退刀槽等结构。程序在装配图上不应把尖角当作“没有倒角”的事实，也不应因为缺少倒角线而报错。与零件图漏画的区别：零件图中应画的结构缺失属于错误或需由注语说明。"
+confusions = ["零件图中的省略或漏画：零件图必须画出或用注语说明。", "真正的尖角：零件图注“保持锐边”时才确认是尖角。", "外形视图不画剖面线：外形视图本来就不画剖面线。"]
+related = ["DC-G8-020", "DC-G2-005", "DC-G2-038", "DC-G3-061", "DC-G2-042", "DC-G9-003"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K11", "K12", "K13", "K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "表1 5.25"
+page = 23
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 二、4（2）"
+page = 338
+
+[[concepts]]
+id = "DC-G8-024"
+name = "零部件序号（横线式）"
+aliases = ["零部件序号（圆圈式）", "零部件序号（无框式）", "零件序号"]
+group = "G8"
+kind = "symbol"
+meaning = "装配图中给每种零件或部件编的号，用来与明细栏对应。三种注写形式：写在指引线末端的水平细实线基准上、写在细实线圆内、或直接写在指引线非零件端附近；序号字高比同图尺寸数字大一号或两号；同一张图的形式要一致。"
+components = ["序号数字：整数，字高比尺寸数字大一号（如3.5→5）或两号（如3.5→7）；GB/T 4458.2 图1a为大一号，图1b、1c为大一号或两号。", "横线式：数字写在指引线末端的水平细实线上方，横线略长于数字宽度。", "圆圈式：数字居中写在细实线圆内，圆的大小随字号加大。", "无框式：数字直接写在指引线末端附近。", "指引线：从零件可见轮廓内的小圆点引出（薄件或涂黑断面用箭头），最多折一次，互不相交。", "编号规则：每种零件一个序号，标准化组件（油杯、滚动轴承、电动机）整体一个序号，与明细栏一致；需要时可重复标注。"]
+variants = ["one size larger (图1a)", "one or two sizes larger (图1b)", "small circle (图1a)", "larger circle with bigger figures (图1b)", "plain figure at leader end", "水平线上注写", "圆内注写", "指引线末端箭头（薄件、涂黑断面）", "折一次的指引线"]
+dxf_forms = ["MULTILEADER (MLEADER) with block content _TagCircle (circle style) or MTEXT content with a horizontal landing (underline style), arrowhead _DotSmall, layer 09", "LEADER (from QLEADER) + TEXT/MTEXT number + LINE reference line or CIRCLE on layers 09/11", "INSERT of a balloon block (CAXA/GstarCAD 序号 block) with an ATTRIB holding the number", "AutoCAD Mechanical balloons (AMBALLOON) as ACAD_PROXY_ENTITY or anonymous *U blocks in exported DXF", "exploded: TEXT digits + LINE/CIRCLE + LINE leader + DONUT or HATCH SOLID dot"]
+recognition = "以“整数文字＋与之相连的细线指引线＋指引线另一端位于某零件闭合区域内的实心圆点（或箭头）”三者为锚点。同图所有序号字高一致，约为尺寸字高的1.4倍（大一号）或2倍（大两号）。横线式：文字下方有长度约为文字宽度1~1.5倍的水平线，指引线接在横线一端；圆圈式：文字中心与细实线圆圆心重合（偏差小于0.2倍字高），圆半径约为字高的0.8~1倍。全图序号集合应与明细栏序号一一对应，并排成整齐的行列、按顺时针或逆时针递增。区别：局部放大图是细实线圆圈住被放大部位、旁注罗马数字；基准目标是被水平线分成上下两半的圆；热处理分区序号是零件区域内的带圈数字；周围焊符号是指引线转折处的小圆；尺寸数字连有尺寸线且字高较小。"
+confusions = ["带文字的注释指引线：末端是说明文字或标记。", "焊缝基准线：基准线上有焊缝符号，常配虚线基准线。", "指引线上的尺寸（旁注法孔尺寸等）：含%%c、×、深度符号，字高为尺寸字高。", "点焊或周围焊小圆：在指引线转折点，内无数字。", "基准目标圆：圆被水平线分成两半，内含字母加数字。", "局部放大图编号：罗马数字，对应放大图上方的“I/2:1”。", "热处理分区序号①：带圈数字在零件区域内部，而不在指引线末端。", "尺寸数字：字高小一到两号，与尺寸线相连。", "技术要求条目编号：在文字块行首，后跟点号。"]
+related = ["DC-G8-009", "DC-G8-010", "DC-G8-008", "DC-G8-012", "DC-G8-015", "DC-G8-025", "DC-G1-094", "DC-G1-095", "DC-G1-018", "DC-G2-075", "DC-G7-024"]
+priority = "high"
+text_forms = ["8", "12", "(9)"]
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "序号须与明细栏一致；同图形式一致；相同零件只编一个号（必要时可重复标注）。圆圈大小比例、MLEADER/_TagCircle 等存储形式来自一般 CAD 实践。"
+[[concepts.sources]]
+document = "GB/T 4458.2-2003"
+clause = "4.1.1 图1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4458.2-2003"
+clause = "4.1.1 4.1.2 图1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4458.2-2003"
+clause = "4.1.3"
+page = 5
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-2 二"
+page = 339
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-3"
+page = 340
+
+[[concepts]]
+id = "DC-G8-025"
+name = "明细栏"
+aliases = ["明细栏栏目"]
+group = "G8"
+kind = "table"
+meaning = "装配图中列出全部零部件的详细目录，画在标题栏正上方并与其同宽，序号自下而上填写；向上位置不够时可紧靠标题栏左边自下而上延续；不能放在标题栏上方时，作为装配图续页按A4幅面单独绘制，由上而下填写。"
+components = ["表头行在最下面，紧贴标题栏上边：序号、代号、名称、数量、材料、质量（单件、总计）、备注，分区必要时写在备注中；旧版（GB/T 18229—2000图8）质量写作“重量”。", "格式（一）宽180 mm，各列约为 序号8、代号40、名称44、数量8、材料38、单件10、总计12、备注(20)；数据行高常为7 mm。", "格式（二）宽100 mm：序号8、代号30、名称38、数量8、备注(16)，不含材料和质量列。", "数据行从表头向上依次为1、2、3…；代号列中标准件填标准编号，非标准件填零件图样代号。", "位置不够时在标题栏左侧再起一段，同样表头在下、自下而上。", "线型按粗实线和细实线绘制，常见模板为竖向分隔线和外框用粗实线、行线用细实线。"]
+variants = ["位于标题栏上方（由下而上填写）", "A4 续页（由上而下）", "格式（一）: 180 mm, full columns incl. material and mass", "格式（二）: 100 mm reduced columns (序号, 代号, 名称, 数量, 备注) beside a 更改区", "continuation to the left of the title block", "学生作业格式（图10-1）", "GB/T 10609.2 格式", "与标题栏连成一体（图10-26）", "A4 续页", "序号", "代号", "名称", "数量", "材料", "质量（单件/总计）", "分区", "备注"]
+dxf_forms = ["exploded grid: LINE/LWPOLYLINE (vertical dividers often layer 01, row lines layer 02) + one TEXT per cell (layer 11)", "CAXA/GstarCAD 明细表: one INSERT per row with ATTRIBs (序号, 代号, 名称, 数量, 材料, 单件, 总计, 备注) plus a header block", "AutoCAD ACAD_TABLE entity, or AutoCAD Mechanical part list (AMPARTLIST) as proxy or anonymous block", "cell text with codes and standard numbers such as 'GB/T 5782-2000', '%%c', '×'"]
+recognition = "以标题栏上边界为锚点向上查找：与标题栏同宽（或宽约100 mm靠右）、由等高行组成的表格（行高约为字高的2倍，常为7 mm乘出图比例），最下一行文字中含“序号”“名称”“数量”至少两项；数据行第一列为由下向上递增的整数（1在最下），第二列常含“GB/T”“JB/T”或图号。用序号集合与视图中的零件序号互相核对。表头在顶部、序号向下递增并在独立A4页上的，是明细栏续页。与标题栏的区别：标题栏含设计、审核、批准、比例、图样名称等字段；与参数表的区别：参数表在图框右上角，没有递增的序号列。"
+confusions = ["标题栏：在明细栏下方，字段为签字、比例、图名、图号。", "齿轮参数表或表格图参数表：在右上角，没有序号列。", "更改记录表、图样目录：表头字段不同（标记、处数、文件号，或图号、张数）。", "焊接件明细栏：形式相同，但用于焊接件图，列出焊件组成。", "独立的物料清单文件：不在图纸上。"]
+related = ["DC-G8-026", "DC-G9-028", "DC-G8-024", "DC-G8-013", "DC-G9-018"]
+priority = "high"
+text_forms = ["序号 代号 名称 数量 材料 单件 总计 备注", "GB/T 6170-2000 螺母M6", "ZDY70.01", "Q235", "HT200"]
+knowledge_units = ["K03", "K52", "K55", "K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "列宽依据 GB/T 10609.2—2009 图A.1、A.2 与 GB/T 18229—2000 图8 的 OCR 数字；粗细线分配与 CAD 存储形式来自一般实践，应以实际模板为准。"
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.7 4.7.1 4.7.2"
+page = 7
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "图8"
+page = 9
+[[concepts.sources]]
+document = "GB/T 13361-2012"
+clause = "4.8"
+page = 6
+[[concepts.sources]]
+document = "GB/T 10609.2-2009"
+clause = "3.2.1 3.5"
+page = 3
+[[concepts.sources]]
+document = "GB/T 10609.2-2009"
+clause = "图A.1 图A.2"
+page = 5
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 一、4"
+page = 336
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-1 明细栏"
+page = 337
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§10-2 二、2"
+page = 340
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-26"
+page = 362
+[[concepts.sources]]
+document = "GB/T 10609.2-2009"
+clause = "4.1"
+page = 3
+[[concepts.sources]]
+document = "GB/T 10609.2-2009"
+clause = "4.2"
+page = 4
+
+[[concepts]]
+id = "DC-G8-026"
+name = "明细栏续页"
+aliases = []
+group = "G8"
+kind = "table"
+meaning = "装配图上不能在标题栏上方配置明细栏时，把明细栏作为装配图的续页，按A4幅面单独绘制：表头在上，序号由上而下排列，可以连续加页，并在明细栏下方配置标题栏。"
+components = ["A4图纸（竖放），图框内上部是表头行，下面是数据行，序号自上而下递增。", "格式（三）宽180 mm：序号10、代号46、名称70、数量10、备注(44)。", "格式（四）宽180 mm：列与装配图上的格式（一）相同，含材料和质量（单件、总计）。", "页面底部配置标题栏，张次栏注“共×张 第×张”。"]
+variants = ["格式（三）: 序号/代号/名称/数量/备注", "格式（四）: full columns incl. material and mass"]
+dxf_forms = ["separate layout or separate DWG with an A4 frame INSERT, table grid LINEs and cell TEXT", "ACAD_TABLE or row INSERTs with ATTRIBs, as for the on-drawing 明细栏"]
+recognition = "以A4图框（内框约180×287）为锚点：图框内没有视图图形，主体是从顶部开始的一张表格，第一行含“序号、代号、名称、数量”，数据行序号自上而下递增，底部有标题栏，则判为明细栏续页。与装配图上明细栏的区别是方向相反（后者表头在下、序号向上）；与图样目录的区别：目录列为图号、名称、张数、幅面，没有数量和材料。"
+confusions = ["独立的物料清单文件：通常没有图框和标题栏，或格式不同。", "图样目录或文件目录：列中有张数、幅面。", "装配图上的明细栏：表头在下、序号由下而上。"]
+related = ["DC-G8-025", "DC-G9-028", "DC-G9-020"]
+priority = "low"
+text_forms = ["序号 代号 名称 数量 备注"]
+knowledge_units = ["K15"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 10609.2-2009"
+clause = "3.2.2"
+page = 3
+[[concepts.sources]]
+document = "GB/T 10609.2-2009"
+clause = "图A.3"
+page = 6
+[[concepts.sources]]
+document = "GB/T 10609.2-2009"
+clause = "图A.4"
+page = 7
+
+[[concepts]]
+id = "DC-G8-027"
+name = "装配图中单独画出某零件的视图"
+aliases = []
+group = "G8"
+kind = "view"
+meaning = "装配图中可以单独画出某一个零件的视图，以补充表达该零件未表达清楚的形状；必须在该视图上方注出零件名称和视图名称（如“泵盖B向”），并在相应视图附近用箭头指明投射方向、注上同样的字母。"
+components = ["单独视图只画一个零件的轮廓，不画相邻零件。", "视图上方标注“零件名＋字母＋向”，如“泵盖B向”。", "相应视图附近有投射方向箭头和同一个字母（如B）。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT '泵盖B向' above the view (layer 11)", "projection arrow as LEADER or LWPOLYLINE with tapering width / SOLID, plus TEXT 'B' near the related view"]
+recognition = "以视图上方匹配“^[\\u4e00-\\u9fa5]+\\s*[A-Z]\\s*向$”的文字为锚点，其中零件名应与明细栏名称列中的某一项相同；同图存在只带该字母的投射方向箭头。与普通向视图的区别：普通向视图名称只有字母（或旧式“B向”），没有零件名，并且画出的是整个装配体。"
+confusions = ["整个装配体的向视图：名称只有字母，图形包含多个零件。", "局部视图：只画部分结构，常有波浪线边界。", "拆卸画法：说明文字为“拆去××”。"]
+related = ["DC-G2-072", "DC-G2-076", "DC-G8-004", "DC-G8-025"]
+priority = "low"
+text_forms = ["泵盖B向", "B"]
+knowledge_units = ["K11", "K12", "K13"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 16675.1-2012"
+clause = "A.9 图A.12"
+page = 29
+

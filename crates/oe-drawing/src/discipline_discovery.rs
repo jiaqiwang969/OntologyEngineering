@@ -57,6 +57,8 @@ pub(crate) struct Shape {
     pub(crate) texts: Vec<(String, P, f64)>,
     pub(crate) paths: Vec<Vec<P>>,
     pub(crate) curved: bool,
+    /// Sampled points of each ARC (used for symbol signatures; not part of the line geometry).
+    pub(crate) arcs: Vec<Vec<P>>,
 }
 pub(crate) fn raw_text(r: &Record) -> String {
     r.tags
@@ -149,7 +151,42 @@ fn shape(d: &Drawing, r: &Record, tr: Transform, depth: usize, out: &mut Shape) 
                 }
             }
         }
-        "ARC" | "ELLIPSE" | "SPLINE" => out.curved = true,
+        "ARC" => {
+            out.curved = true;
+            if let (Ok(c), Ok(rad)) = (r.xy(10), r.number(40)) {
+                let a0 = r.number(50).unwrap_or(0.);
+                let mut a1 = r.number(51).unwrap_or(360.);
+                if a1 <= a0 {
+                    a1 += 360.;
+                }
+                out.arcs.push(
+                    (0..=8)
+                        .map(|i| {
+                            let a = (a0 + (a1 - a0) * f64::from(i) / 8.).to_radians();
+                            tr.p([c[0] + rad * a.cos(), c[1] + rad * a.sin()])
+                        })
+                        .collect(),
+                );
+            }
+        }
+        "ELLIPSE" | "SPLINE" => out.curved = true,
+        // A filled triangle (arrowhead) is kept as a closed three-vertex path; it carries no
+        // line geometry of its own.
+        "SOLID" | "TRACE" => {
+            let mut p: Vec<P> = Vec::new();
+            for c in 10..=13 {
+                if let Ok(v) = r.xy(c) {
+                    let v = tr.p(v);
+                    if !p.iter().any(|q| near(*q, v)) {
+                        p.push(v)
+                    }
+                }
+            }
+            if p.len() == 3 {
+                p.push(p[0]);
+                out.paths.push(p)
+            }
+        }
         "TEXT" | "MTEXT" | "ATTRIB" => {
             let p = if r.get(72).is_some_and(|v| v != "0") {
                 r.xy(11).or_else(|_| r.xy(10))

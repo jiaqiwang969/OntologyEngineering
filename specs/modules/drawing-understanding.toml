@@ -24,6 +24,18 @@ identity = "docs/DRAWING-UNDERSTANDING.md"
 role = "Method of record for the reverse drawing route: source conservation, isolated source-only discovery, converter fidelity, independent re-derivation and evaluation references kept out of the input"
 applicability = "Two-dimensional DXF read from a DWG through a pinned converter; thresholds and view heuristics calibrated on development drawings remain to be evaluated on others"
 
+[[sources]]
+id = "drawing_concept_catalogue"
+identity = "crates/oe-drawing/knowledge/concepts/G1.toml ... G9.toml; national drafting standards (GB/T 4457, 4458, 4459, 1182, 17851, 131, 324, 14689-14692, 14665, 16675, 10609 and others) and two textbooks, cited per card by clause and page"
+role = "Catalogue of every drafting representation concept with paraphrased meaning, parts, variants, DXF forms, recognition cues, confusions, relations, frequency, sources and coverage status; recognition cards link to it"
+applicability = "Planning and driving recognition of two-dimensional DXF drawings; knowledge candidates until reviewed by an expert"
+
+[[sources]]
+id = "drawing_representation_knowledge"
+identity = "crates/oe-drawing/knowledge/drawing-representation.toml; GB/T 1182-2018 chapters 5-8 (symbols, toleranced feature leaders on the outline or its extension, 7.4 cylindrical and spherical zones); GB/T 17851-2022; GB/T 4459.5-1999 table 1; GB/T 4457.4-2002; GB/T 4457.5-2013; GB/T 4458.1-2002; GB/T 4458.4-2003; expert corrections cited per card"
+role = "Drafting representation knowledge read by recognition at run time: one card per concept with meaning, components, drawing variants, geometric relations as parameters, counter-examples and sources; each card names the tests of its variants and counter-examples"
+applicability = "Recognition of the listed concepts in two-dimensional DXF drawings; expert corrections are knowledge sources only and never recognition input"
+
 [[modules]]
 id = "drawing_understanding"
 kind = "pipeline"
@@ -35,7 +47,7 @@ platform = "Rust 1.95；只收源字节的隔离 worker 依赖 macOS sandbox-exe
 effects = "只读源字节与 Project；在新输出目录写关系图、复核、检查页与回执；不改源图、模型、Project 或 HEAD"
 failures = "第一步失败即停，后续步骤记为未运行；保留失败、未知与部分结果；结构校验不等于工程采用"
 status = "source_only"
-source_refs = ["md_engineering_expression_basis", "drawing_understanding_method"]
+source_refs = ["md_engineering_expression_basis", "drawing_understanding_method", "drawing_representation_knowledge", "drawing_concept_catalogue"]
 
 [[types]]
 name = "MdNativeLayerMember"
@@ -931,7 +943,7 @@ meaning="View identity"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -943,9 +955,9 @@ meaning="View kind"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["principal", "direction_view", "partial_view", "detail_view", "sheet"]
+allowed_values=["principal", "direction_view", "section_view", "partial_view", "detail_view", "sheet"]
 
 [[types.fields]]
 name="label"
@@ -956,7 +968,7 @@ meaning="Displayed view name or principal-view designation"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -968,7 +980,7 @@ meaning="Scale text of a detail view when present"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -980,7 +992,7 @@ meaning="Region [xmin, ymin, xmax, ymax] in drawing units"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -992,7 +1004,7 @@ meaning="Source handles of the view title or callout"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1004,7 +1016,7 @@ meaning="Evidence state"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["observed", "candidate", "unknown"]
 
@@ -1017,7 +1029,7 @@ meaning="Evidence supporting the view region and title"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1029,7 +1041,7 @@ meaning="Unresolved view limitations"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types]]
@@ -1047,7 +1059,7 @@ meaning="Root source handle"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1059,7 +1071,7 @@ meaning="Native entity kind"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1071,7 +1083,7 @@ meaning="Pattern class from actual LTYPE dash elements"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["continuous", "dashed", "dash_dot", "dash_double_dot", "byblock_unresolved", "not_curve", "unknown"]
 
@@ -1084,7 +1096,7 @@ meaning = "Original native layer name, not an inferred engineering category"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1096,7 +1108,7 @@ meaning="GB/T 14665-2012 Table 6 description when the convention is consistent w
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1108,7 +1120,7 @@ meaning="Geometric line type used for review"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["thick_continuous", "thin_continuous", "continuous", "wavy", "double_break", "thick_dashed", "thin_dashed", "thick_dash_dot", "thin_dash_dot", "thin_dash_double_dot", "fill", "text", "point", "block", "dimension", "unknown"]
 
@@ -1121,7 +1133,7 @@ meaning="Basis of the line type"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["observed_pattern", "layer_convention", "geometry_shape", "role_rule", "native_kind", "unknown"]
 
@@ -1134,7 +1146,7 @@ meaning="Pattern, layer and geometry evidence"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types]]
@@ -1152,7 +1164,7 @@ meaning="Member identity"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1164,7 +1176,7 @@ meaning="Owning expression"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1176,7 +1188,7 @@ meaning="Root source handle"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1188,7 +1200,7 @@ meaning="Nested native member path inside a DIMENSION or INSERT root"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1200,7 +1212,7 @@ meaning = "Normalized source parameter interval within [0, 1]; [0, 1] is the who
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1212,9 +1224,9 @@ meaning="Role of the member in the expression"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["native_dimension", "dimension_line", "extension_line", "extension_origin", "arrowhead", "dimension_text", "tolerance_text", "definition_point", "leader_line", "note_text", "contour_segment", "hidden_segment", "center_line", "phantom_segment", "thread_line", "break_curve", "hatch_fill", "symbol_glyph", "frame_cell", "tolerance_value", "datum_reference", "datum_letter", "datum_frame", "roughness_symbol", "roughness_value", "view_arrow", "view_letter", "detail_circle", "view_title", "scale_text", "table_line", "table_text", "frame_border", "native_block", "native_member", "coincident_source", "unresolved_source"]
+allowed_values=["native_dimension", "dimension_line", "extension_line", "extension_origin", "arrowhead", "dimension_text", "tolerance_text", "definition_point", "leader_line", "note_text", "contour_segment", "hidden_segment", "center_line", "phantom_segment", "thread_line", "break_curve", "hatch_fill", "symbol_glyph", "frame_cell", "tolerance_value", "datum_reference", "datum_letter", "datum_frame", "datum_terminal", "special_mark", "roughness_symbol", "roughness_value", "view_arrow", "view_letter", "detail_circle", "view_title", "scale_text", "cutting_stroke", "table_line", "table_text", "frame_border", "native_block", "native_member", "coincident_source", "unresolved_source"]
 
 [[types.fields]]
 name="line_type"
@@ -1225,7 +1237,7 @@ meaning="Geometric line type of the member"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["thick_continuous", "thin_continuous", "continuous", "wavy", "double_break", "thick_dashed", "thin_dashed", "thick_dash_dot", "thin_dash_dot", "thin_dash_double_dot", "fill", "text", "point", "block", "dimension", "unknown"]
 
@@ -1238,7 +1250,7 @@ meaning = "View that contains it, when established"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1250,7 +1262,7 @@ meaning="Evidence state"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["observed", "candidate", "unknown"]
 
@@ -1263,7 +1275,7 @@ meaning = "Source relations used as evidence"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1275,7 +1287,7 @@ meaning="Evidence for this assignment"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1287,7 +1299,7 @@ meaning="Member-specific limitations"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types]]
@@ -1305,7 +1317,7 @@ meaning="Expression identity"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1317,9 +1329,9 @@ meaning="Discipline expression kind"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["visible_contour", "hidden_contour", "center_axis", "phantom_line", "thread_convention", "break_line", "section_hatch", "dimension_linear", "dimension_diameter", "dimension_radius", "dimension_angle", "dimension_chamfer", "thread_note", "geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_parallelism", "gps_runout", "gps_symmetry", "gps_position", "datum_symbol", "surface_roughness", "view_callout", "technical_general", "material_heat", "process_requirement", "protection_requirement", "sheet_frame", "title_block", "construction_reference", "leader", "unresolved"]
+allowed_values=["visible_contour", "hidden_contour", "center_axis", "phantom_line", "thread_convention", "break_line", "section_hatch", "dimension_linear", "dimension_diameter", "dimension_radius", "dimension_angle", "dimension_chamfer", "thread_note", "geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_parallelism", "gps_runout", "gps_symmetry", "gps_position", "gps_straightness", "gps_flatness", "gps_circularity", "gps_cylindricity", "gps_line_profile", "gps_surface_profile", "gps_angularity", "gps_coaxiality", "gps_total_runout", "datum_symbol", "center_hole", "surface_roughness", "view_callout", "technical_general", "material_heat", "process_requirement", "protection_requirement", "sheet_frame", "title_block", "series_table", "construction_reference", "leader", "unresolved"]
 
 [[types.fields]]
 name="family"
@@ -1330,7 +1342,7 @@ meaning="Expression family"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["geometry", "dimension", "tolerance", "surface", "view", "note", "sheet", "construction", "unresolved"]
 
@@ -1343,7 +1355,7 @@ meaning="Displayed value or short description"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1355,7 +1367,7 @@ meaning = "Complete list of the identifiers of its members"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1367,7 +1379,7 @@ meaning = "View that contains it, when established"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1379,7 +1391,7 @@ meaning = "Part feature, face or requirement target; absent unless separately an
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1391,7 +1403,7 @@ meaning="Qualifiers such as key characteristic, reference, toleranced or general
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1403,9 +1415,21 @@ meaning="Knowledge units bound to this kind"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
+
+[[types.fields]]
+name="concept_ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Drafting concept ids of the catalogue this expression is an instance of"
+unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
+acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 [[types.fields]]
 name="state"
 rust_type="String"
@@ -1415,7 +1439,7 @@ meaning="Evidence state"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["observed", "candidate", "unknown"]
 
@@ -1428,7 +1452,7 @@ meaning="Generic rule that formed the expression"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1440,7 +1464,7 @@ meaning="Evidence for the composition"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1452,7 +1476,7 @@ meaning="Expression limitations and unresolved links"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types]]
@@ -1470,7 +1494,7 @@ meaning="Stable end identifier"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1482,7 +1506,7 @@ meaning = "View that contains it, when established"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1494,7 +1518,7 @@ meaning = "Outline class: visible or hidden outline"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["visible_outline", "hidden_outline"]
 
@@ -1507,7 +1531,7 @@ meaning = "Root source handle"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1519,7 +1543,7 @@ meaning="Normalized curve parameter of the end on its source"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1531,7 +1555,7 @@ meaning="End point in drawing coordinates (x, y)"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1543,9 +1567,9 @@ meaning="Interruption cause: a dimension or note text the line is broken for (GB
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["text_break", "local_section", "drafting_gap", "unexplained"]
+allowed_values=["text_break", "local_section", "detail_circle_crossing", "drafting_gap", "unexplained"]
 
 [[types.fields]]
 name="partner_end_id"
@@ -1556,7 +1580,7 @@ meaning="Facing free end across the same interruption"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1568,7 +1592,7 @@ meaning="Covering texts and annotation lines, section hatch or boundary sources"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1580,7 +1604,7 @@ meaning="Evidence state"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["candidate", "unknown"]
 
@@ -1593,8 +1617,774 @@ meaning="Open questions about this end"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
+
+[[types]]
+name="MdDrawingConceptGroup"
+contract_group="engineering"
+meaning="One group of the drafting concept catalogue: every representation concept a reader of two-dimensional mechanical drawings must recognise"
+identity="Group id"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="Catalogue schema"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="group"
+rust_type="String"
+required=true
+format="typed"
+meaning="Group id"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+allowed_values=["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"]
+
+[[types.fields]]
+name="label"
+rust_type="String"
+required=true
+format="typed"
+meaning="Group name"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="concepts"
+rust_type="Vec<MdDrawingConcept>"
+required=true
+format="typed"
+meaning="Concept cards of the group"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types]]
+name="MdDrawingConcept"
+contract_group="engineering"
+meaning="Drafting concept card: meaning, parts, drawing variants, DXF forms, recognition cues, confusions, relations, frequency, sources and coverage status"
+identity="Concept id"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="Stable concept id (DC-<group>-<number>)"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="name"
+rust_type="String"
+required=true
+format="typed"
+meaning="Standard term"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="aliases"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Other names in the sources"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="group"
+rust_type="String"
+required=true
+format="typed"
+meaning="Group id"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+allowed_values=["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9"]
+
+[[types.fields]]
+name="kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="Kind of representation"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="What the representation means on a drawing"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="components"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Parts and their arrangement"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="variants"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Editions and drawing forms"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="dxf_forms"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="How it is stored in DXF"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="recognition"
+rust_type="String"
+required=true
+format="typed"
+meaning="Anchor and relations that identify it, and how to tell it from confusions"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="confusions"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="What it is confused with"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="related"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Related concept ids"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="priority"
+rust_type="String"
+required=true
+format="typed"
+meaning="Frequency on ordinary mechanical drawings"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+allowed_values=["high", "medium", "low", "rare"]
+
+[[types.fields]]
+name="text_forms"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Typical written forms"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="sources"
+rust_type="Vec<MdConceptSource>"
+required=true
+format="typed"
+meaning="Standard clauses and textbook pages"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="knowledge_units"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Knowledge-system units"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="recognition_cards"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Recognition cards that implement it"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="recognizer"
+rust_type="String"
+required=true
+format="typed"
+meaning="Recognition coverage"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+allowed_values=["none", "partial", "rule", "card"]
+
+[[types.fields]]
+name="seen_on_drawing"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Evaluation drawings it was seen on"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="expert_checked"
+rust_type="bool"
+required=true
+format="typed"
+meaning="Whether an expert has reviewed the card"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="notes"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="Uncertainties and points from general practice, when there are any"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types]]
+name="MdConceptSource"
+contract_group="engineering"
+meaning="Source locator of a concept card"
+identity="Document, clause and page"
+
+[[types.fields]]
+name="document"
+rust_type="String"
+required=true
+format="typed"
+meaning="Standard number or textbook"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="clause"
+rust_type="String"
+required=true
+format="typed"
+meaning="Clause, table or figure"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types.fields]]
+name="page"
+rust_type="i64"
+required=true
+format="typed"
+meaning="Physical page of the library copy"
+unit="Card text; page numbers refer to the physical page of the library copy"
+precision="Exact card identity; text is a paraphrase of the cited sources"
+write="Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing"
+applicability="Drafting concept knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every concept of the catalogue has a complete card with sources; recognition cards and concept cards link both ways"
+
+[[types]]
+name="MdRepresentationKnowledge"
+contract_group="engineering"
+meaning="Drafting representation knowledge read by recognition: one card per concept"
+identity="Schema, rules profile and card identities"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="Knowledge schema"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="profile"
+rust_type="String"
+required=true
+format="typed"
+meaning="Expression rules profile that reads the cards"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="cards"
+rust_type="Vec<MdRepresentationCard>"
+required=true
+format="typed"
+meaning="Concept cards"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types]]
+name="MdRepresentationCard"
+contract_group="engineering"
+meaning="Drafting concept: meaning, parts, drawing variants, relations as parameters, counter-examples and sources"
+identity="Card identifier"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="Stable card identifier named by the expressions it produces"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="expression_kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="Expression kind or family the card produces or qualifies"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="title"
+rust_type="String"
+required=true
+format="typed"
+meaning="Concept name"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="What the representation means in the drawing"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="sources"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Standard clauses and expert corrections the knowledge comes from"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="knowledge_units"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Knowledge-system units for reading"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="recognition"
+rust_type="String"
+required=true
+format="typed"
+meaning="Decision rule in words"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="markers"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Characters or words that identify the concept in text"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="components"
+rust_type="Vec<MdRepresentationComponent>"
+required=true
+format="typed"
+meaning="Parts the concept is drawn with"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="variants"
+rust_type="Vec<MdRepresentationVariant>"
+required=true
+format="typed"
+meaning="Ways the concept is drawn"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="counter_examples"
+rust_type="Vec<MdRepresentationCounterExample>"
+required=true
+format="typed"
+meaning="What the concept must not be confused with"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="concepts"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Ids of the catalogue concepts the card implements"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="parameters"
+rust_type="Vec<MdRepresentationParameter>"
+required=true
+format="typed"
+meaning="Geometric relations as drawing-domain ratios"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+
+[[types.fields]]
+name="lexicon"
+rust_type="Option<Vec<MdRepresentationLexeme>>"
+required=false
+format="typed"
+meaning="Words, glyphs, patterns and layouts of the concept in text and symbol form, each tied to a catalogue concept"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="outside_forms"
+rust_type="Option<Vec<MdOutsideForm>>"
+required=false
+format="typed"
+meaning="Written forms of the concept cards that this card does not recognise from text alone, with the reason"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+[[types]]
+name="MdRepresentationComponent"
+contract_group="engineering"
+meaning="Part of a drafting representation"
+identity="Card and member role"
+
+[[types.fields]]
+name="role"
+rust_type="String"
+required=true
+format="typed"
+meaning="Member role the part takes"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="primitives"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Native primitives the part may be drawn with"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="requirement"
+rust_type="String"
+required=true
+format="typed"
+meaning="Condition the part must meet"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types]]
+name="MdRepresentationVariant"
+contract_group="engineering"
+meaning="One way a concept is drawn (standard edition, block or loose entities, inside a text or apart)"
+identity="Card and variant identifier"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="Variant identifier"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="title"
+rust_type="String"
+required=true
+format="typed"
+meaning="Variant name"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="distinguishing"
+rust_type="String"
+required=true
+format="typed"
+meaning="What tells the variant apart"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="encodings"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Encodings covered: block, loose, text or inferred"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="tests"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Synthetic tests of the variant"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types]]
+name="MdRepresentationCounterExample"
+contract_group="engineering"
+meaning="Representation that must not be read as the concept"
+identity="Card and test"
+
+[[types.fields]]
+name="statement"
+rust_type="String"
+required=true
+format="typed"
+meaning="What is not the concept and why"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="test"
+rust_type="String"
+required=true
+format="typed"
+meaning="Synthetic test of the counter-example"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types]]
+name="MdRepresentationParameter"
+contract_group="engineering"
+meaning="Geometric relation of a card as a drawing-domain ratio"
+identity="Card and parameter name"
+
+[[types.fields]]
+name="name"
+rust_type="String"
+required=true
+format="typed"
+meaning="Parameter name used by recognition"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="value"
+rust_type="f64"
+required=true
+format="typed"
+meaning="Ratio or angle in degrees"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="What the ratio bounds"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
 
 [[types]]
 name="MdImpliedSpan"
@@ -1611,7 +2401,7 @@ meaning="Stable span identifier"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1623,7 +2413,7 @@ meaning = "View that contains it, when established"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1635,7 +2425,7 @@ meaning = "Outline class: visible or hidden outline"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["visible_outline", "hidden_outline"]
 
@@ -1648,9 +2438,9 @@ meaning = "Interruption cause: a dimension or note text the line is broken for (
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["text_break", "local_section"]
+allowed_values=["text_break", "local_section", "detail_circle_crossing"]
 
 [[types.fields]]
 name="representation"
@@ -1661,7 +2451,7 @@ meaning="Representation that shows the span"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["complete_structure"]
 
@@ -1674,7 +2464,7 @@ meaning="Source root at the first end"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1686,7 +2476,7 @@ meaning = "Normalized curve parameter on the first source, when defined"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1698,7 +2488,7 @@ meaning="Source root at the second end"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1710,7 +2500,7 @@ meaning = "Normalized curve parameter on the second source, when defined"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1722,7 +2512,7 @@ meaning="End points in drawing coordinates (x0, y0, x1, y1)"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1734,7 +2524,7 @@ meaning = "Circular carrier (centre x, centre y, radius, start angle, sweep) of 
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1746,7 +2536,7 @@ meaning="Cause evidence and mirror-counterpart evidence"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1758,7 +2548,7 @@ meaning="Evidence state"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["candidate"]
 
@@ -1771,7 +2561,7 @@ meaning="Open questions about this span"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types]]
@@ -1789,7 +2579,7 @@ meaning="Stable structural line identifier"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1801,7 +2591,7 @@ meaning = "View that contains it, when established"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1813,7 +2603,7 @@ meaning = "Outline class: visible or hidden outline"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["visible_outline", "hidden_outline"]
 
@@ -1826,7 +2616,7 @@ meaning="Carrier geometry"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["line", "arc", "circle", "polyline"]
 
@@ -1839,7 +2629,7 @@ meaning="Line type of the structure (visible outline solid, hidden outline dashe
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["thick_continuous", "thin_continuous", "continuous", "wavy", "double_break", "thick_dashed", "thin_dashed", "thick_dash_dot", "thin_dash_dot", "thin_dash_double_dot", "fill", "text", "point", "block", "dimension", "unknown"]
 
@@ -1852,7 +2642,7 @@ meaning="Ordered points of the line in drawing coordinates (x0, y0, x1, y1, ...)
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1864,7 +2654,7 @@ meaning = "Circular carrier (centre x, centre y, radius, start angle, sweep) of 
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1876,7 +2666,7 @@ meaning="Ordered contributing pieces: member:<id> for source spans, implied:<id>
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1888,7 +2678,7 @@ meaning="Members lying on the line and covered by its pieces (drawn again)"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1900,7 +2690,7 @@ meaning="Portions cut off inside a local section: member:<id>:<t0>:<t1>"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1912,7 +2702,7 @@ meaning="Merge evidence"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1924,7 +2714,7 @@ meaning="Evidence state"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["candidate", "observed"]
 
@@ -1937,7 +2727,7 @@ meaning="Open questions about this line"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types]]
@@ -1955,7 +2745,7 @@ meaning="Graph schema"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["oev2.drawing-expression-graph/1"]
 
@@ -1968,9 +2758,9 @@ meaning="Rule profile"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["dxf-expression-rules/1"]
+allowed_values=["dxf-expression-rules/2"]
 
 [[types.fields]]
 name="source_sha256"
@@ -1981,7 +2771,7 @@ meaning="Exact source digest"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -1993,7 +2783,7 @@ meaning="Lossless native source graph"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -2005,7 +2795,7 @@ meaning="Whether GB/T 14665-2012 Table 6 layer identifiers are consistent with t
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 allowed_values=["gbt14665_2012_table6_consistent", "not_qualified"]
 
@@ -2018,7 +2808,7 @@ meaning="Per-layer consistency evidence"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -2030,7 +2820,7 @@ meaning="Views and sheet region"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -2042,7 +2832,7 @@ meaning="Line style of each source root"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -2054,7 +2844,7 @@ meaning="All expression members"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -2066,7 +2856,7 @@ meaning="All expressions"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -2078,7 +2868,7 @@ meaning="Free ends of visible and hidden outline spans with typed causes"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -2090,7 +2880,7 @@ meaning="Outline inferred across explained interruptions (complete structure onl
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -2102,7 +2892,7 @@ meaning="Structural lines of the complete structure"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[types.fields]]
@@ -2114,7 +2904,7 @@ meaning="Graph-level limitations"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
-applicability="DXF source expression candidates under the finite dxf-expression-rules/1 profile"
+applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
 
 [[interfaces]]
@@ -2134,8 +2924,116 @@ requirement="req_md_engineering_expression"
 module="drawing_understanding"
 check="discover_expressions"
 rust_path="crates/oe-drawing/src/review.rs"
-statement="Expression kind is derived from display text, construction and checked conventions, independent of native primitive and DIMENSION enum; members retain source identity and bounded intervals; structural use of a shared source is limited to spans between structural junctions or explained free ends, minus coincident higher-precedence sources; every free end of a visible or hidden outline span carries a typed interruption cause; outline inferred across text breaks or local sections is kept apart from source members; outline is assembled into structural lines whose line type follows the structure; every source domain is covered; unresolved views and targets remain explicit"
+statement="Expression kind is derived from display text, construction and checked conventions, independent of native primitive and DIMENSION enum; members retain source identity and bounded intervals; structural use of a shared source is limited to spans between structural junctions or explained free ends, minus coincident higher-precedence sources; every free end of a visible or hidden outline span carries a typed interruption cause; outline inferred across text breaks or local sections is kept apart from source members; outline is assembled into structural lines whose line type follows the structure; every source domain is covered; unresolved views and targets remain explicit; drafting representation knowledge cards are parsed and validated when recognition runs, their parameters drive the rules that use them, and every expression or member a card produces names the card"
 severity="error"
+
+[[validations]]
+id="md_concepts_every_concept_card_is_complete_and_linked"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="every_concept_card_is_complete_and_linked"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="All concept card files parse into the generated types; ids unique; required fields non-empty; recognition cards and concept cards link both ways"
+scope="Knowledge completeness and linkage; recognition quality is evaluated separately"
+
+[[validations]]
+id="md_representation_datum_old_circle_bar_loose_is_one_symbol"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="datum_old_circle_bar_loose_is_one_symbol"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_center_hole_keep_symbol_with_designation"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="center_hole_keep_symbol_with_designation"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_frame_with_loose_position_glyph_is_read"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="frame_with_loose_position_glyph_is_read"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_phi_in_frame_value_is_a_cylindrical_zone"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="phi_in_frame_value_is_a_cylindrical_zone"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_standalone_star_before_linear_dimension_joins_it"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="standalone_star_before_linear_dimension_joins_it"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_angle_without_unit_gets_a_degree_sign"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="angle_without_unit_gets_a_degree_sign"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_frame_leader_to_a_drawn_extension_line"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="frame_leader_to_a_drawn_extension_line"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_thick_line_inside_hatch_parallel_to_pattern_is_a_section_l"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="thick_line_inside_hatch_parallel_to_pattern_is_a_section_line"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_outline_cut_by_a_detail_circle_is_one_line"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="outline_cut_by_a_detail_circle_is_one_line"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_chamfer_edge_line_in_thin_colour_is_visible_outline"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="chamfer_edge_line_in_thin_colour_is_visible_outline"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
+
+[[validations]]
+id="md_representation_every_card_is_used_and_every_named_test_exists"
+module="drawing_understanding"
+constraint="md_engineering_expression"
+behavior="every_card_is_used_and_every_named_test_exists"
+rust_path="crates/oe-drawing/tests/representation_knowledge.rs"
+oracle="Authored synthetic DXF built from the card's variant or counter-example with an independently constructed expectation"
+scope="Development rule behaviour on synthetic input; real-drawing quality is evaluated separately against expert references"
 
 [[validations]]
 id="md_engineering_expression_display_text_decides_dimension_kind_over_native_"
@@ -3959,3 +4857,358 @@ value = "passed"
 kind = "qualification"
 module = "drawing_understanding"
 entry = "A second run on the same inputs compared byte for byte"
+
+[[types]]
+name="MdRepresentationLexeme"
+contract_group="engineering"
+meaning="One lexical or symbolic entry of a recognition card: a concept and the forms that indicate it"
+identity="Card, concept and entry kind"
+
+[[types.fields]]
+name="concept"
+rust_type="String"
+required=true
+format="typed"
+meaning="Catalogue concept id the entry indicates"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="entry"
+rust_type="String"
+required=true
+format="typed"
+meaning="Kind of entry: word, prefix, pattern, glyph, label, value_form, stroke_signature or layout"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="values"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="The forms (words, characters, regular-expression-free patterns or signature names)"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="meaning"
+rust_type="String"
+required=true
+format="typed"
+meaning="What the entry means and where it comes from"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types]]
+name="MdOutsideForm"
+contract_group="engineering"
+meaning="A written form of a concept card that the recognition card does not recognise from text alone"
+identity="Concept and form"
+
+[[types.fields]]
+name="concept"
+rust_type="String"
+required=true
+format="typed"
+meaning="Catalogue concept id"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="form"
+rust_type="String"
+required=true
+format="typed"
+meaning="The written form as given on the concept card"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types.fields]]
+name="reason"
+rust_type="String"
+required=true
+format="typed"
+meaning="Why the form is outside the text grammar"
+unit="Card text and dimensionless drawing-domain ratios; no product tolerance"
+precision="Exact card identity; parameters are ratios to a text height, circle radius or arm length"
+write="Authored knowledge reviewed with its sources; parsed by oe-drawing at run time; never derived from a real drawing"
+applicability="Drafting representation knowledge of the dxf-expression-rules/2 profile"
+acceptance="Every card has meaning, components, variants, counter-examples and sources; every variant and counter-example names an existing test; every card is used by recognition"
+
+[[types]]
+name="MdRecognizerCoverage"
+contract_group="engineering"
+meaning="Audited coverage of the drafting concept catalogue by the recognizer rules and recognition cards"
+identity="Schema and rules profile"
+
+[[types.fields]]
+name="schema"
+rust_type="String"
+required=true
+format="typed"
+meaning="Coverage schema"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="profile"
+rust_type="String"
+required=true
+format="typed"
+meaning="Expression rules profile"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="rules"
+rust_type="Vec<MdCoverageRule>"
+required=true
+format="typed"
+meaning="Every rule the recognizer emits"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="concepts"
+rust_type="Vec<MdCoverageConcept>"
+required=true
+format="typed"
+meaning="Coverage verdict of every recognised concept"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+
+[[types.fields]]
+name="conventions"
+rust_type="Vec<MdCoverageConvention>"
+required=true
+format="typed"
+meaning="Drawing-wide conventions applied to members and line styles rather than as expressions"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+[[types]]
+name="MdCoverageRule"
+contract_group="engineering"
+meaning="One recognizer rule: the expression kinds it emits and the concepts it names"
+identity="Rule name"
+
+[[types.fields]]
+name="rule"
+rust_type="String"
+required=true
+format="typed"
+meaning="Rule name as written in the expression (piece rules as rule evidence)"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="function"
+rust_type="String"
+required=true
+format="typed"
+meaning="Recognizer function that emits it"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="piece"
+rust_type="bool"
+required=true
+format="typed"
+meaning="Whether the rule recognises line pieces later grouped by view"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="kinds"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Expression kinds it emits"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="concepts"
+rust_type="Vec<MdCoverageKindConcepts>"
+required=true
+format="typed"
+meaning="Concepts named by its expressions, per kind"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types]]
+name="MdCoverageKindConcepts"
+contract_group="engineering"
+meaning="Concepts a rule names for one expression kind (empty kind: every kind of the rule)"
+identity="Rule and kind"
+
+[[types.fields]]
+name="kind"
+rust_type="String"
+required=true
+format="typed"
+meaning="Expression kind, or empty for every kind of the rule"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Catalogue concept ids"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types]]
+name="MdCoverageConcept"
+contract_group="engineering"
+meaning="Coverage verdict of one concept"
+identity="Concept id"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="Catalogue concept id"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="level"
+rust_type="String"
+required=true
+format="typed"
+meaning="full: its ordinary drawing forms are recognised; partial: some are missing"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+allowed_values=["full", "partial"]
+
+[[types.fields]]
+name="by"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Rules and cards (card:<id>) that name it"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="missing"
+rust_type="Option<String>"
+required=false
+format="typed"
+meaning="What is not recognised yet"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types]]
+name="MdCoverageConvention"
+contract_group="engineering"
+meaning="A drawing-wide convention the recognizer applies to members or line styles, and the concepts it implements"
+identity="Convention name"
+
+[[types.fields]]
+name="name"
+rust_type="String"
+required=true
+format="typed"
+meaning="Convention name"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="applies_to"
+rust_type="String"
+required=true
+format="typed"
+meaning="Where the convention shows in the expression graph"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+[[types.fields]]
+name="ids"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Catalogue concept ids"
+unit="Rule names, expression kinds and catalogue concept ids"
+precision="Exact rule and concept identity; level is an audited judgement with what is missing written out"
+write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
+applicability="Recognition coverage of the dxf-expression-rules/2 profile"
+acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"

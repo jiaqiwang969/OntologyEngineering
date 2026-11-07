@@ -1,0 +1,3862 @@
+# Drafting concept catalogue, group G1: 图纸、图线与通用注写.
+# One card per representation concept; paraphrased from the cited sources (page = physical page of the library copy).
+schema = "oev2.drawing-concept-catalogue/1"
+group = "G1"
+label = "图纸、图线与通用注写"
+
+[[concepts]]
+id = "DC-G1-001"
+name = "不可见棱边线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细虚线表示在该投射方向上被遮挡、看不见的棱边（两个面相交形成的边），用来交代背面或内部结构。"
+components = ["线型为细虚线（No.02.1），线宽约为粗线的一半；画长约12d、间隔约3d，首尾以画开始和结束。", "位置与另一视图中对应的面交线按投影关系对齐，常表示孔底、内台阶、背面凸台的棱边。", "虚线为粗实线的延长时，粗实线画到分界点、虚线一侧留间隙；与其他线相交时在画上相交。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE with a dashed linetype (HIDDEN, HIDDEN2, DASHED, ACAD_ISO02W100 or a Chinese-named type such as 虚线), thin lineweight, layer 04 / 虚线 / HIDDEN, colour yellow (ACI 2)", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring", "visible dash length = LTYPE pattern × header $LTSCALE × entity linetype scale (group 48) (× $PSLTSCALE rules in paper space)"]
+recognition = "锚点为虚线型实体（线型名含 HIDDEN/DASHED/ISO02/虚线，或在04层、黄色）。按线宽与粗虚线区分（细≈粗的1/2）。判为“棱边”的线索：虚线多为直线段，端点与其他棱边或轮廓相接成折线，在相邻视图中对应两个面的交线（另一视图该处为面的积聚线或折点）。二维上与不可见轮廓线同型，可先统一记为隐藏线，再借多视图对应判定是棱边还是曲面转向轮廓。同一位置若有粗实线或点画线，按重合优先顺序隐藏线会被省略，不能据缺失否定结构。"
+confusions = ["不可见轮廓线：线型相同，区别在语义——棱边是两面交线，轮廓线是曲面在投射方向的转向线。", "粗虚线：线宽为粗线，平行贴近表面，表示允许表面处理的范围，不代表几何边。", "细点画线：带点（或短画）且长画约为虚线画长的2倍，表示轴线或对称线。"]
+related = ["DC-G1-002", "DC-G1-045", "DC-G1-014", "DC-G1-055", "DC-G1-061"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55", "K39"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "线型与用途见 GB/T 4457.4 表1 02.1.1、GB/T 15751“隐线”；DXF 表示与识别线索为通用 CAD 实践。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 02.1.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 02.1.1"
+page = 12
+[[concepts.sources]]
+document = "GB/T 15751-1995"
+clause = "术语 隐线"
+page = 7
+
+[[concepts]]
+id = "DC-G1-002"
+name = "不可见轮廓线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细虚线表示物体被遮挡部分的外形轮廓（含孔、内腔等曲面在投射方向上的转向轮廓），只在需要说明时画出。"
+components = ["细虚线（No.02.1），与可见轮廓的粗实线处于同一视图。", "典型位置：内孔在非圆视图中的两条素线（关于轴线对称成对出现）、内腔外形、被遮挡凸台的轮廓。", "视图中用粗实线画可见轮廓，必要时才用细虚线画不可见轮廓；剖视已表达清楚的内部结构一般不再画虚线。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE with a dashed linetype (HIDDEN, HIDDEN2, DASHED, ACAD_ISO02W100 or a Chinese-named type such as 虚线), thin lineweight, layer 04 / 虚线 / HIDDEN, colour yellow (ACI 2)", "pairs of parallel dashed LINEs symmetric about a centre-type axis LINE (hidden bore)", "dashed CIRCLE/ARC in an end view for a hidden hole outline", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为虚线实体。常见模式：两条等长平行虚线关于一条点画线对称，间距等于另一视图中某圆的直径（隐藏的孔）；或一个虚线圆与另一视图中孔的位置对应。剖视图（有 HATCH 和 X—X 标题）中虚线应很少，出现时核对是否属于未剖部分。与不可见棱边线同型，二维识别中合并为隐藏线，再由投影对应确定其为曲面轮廓。"
+confusions = ["不可见棱边线：同为细虚线，语义不同（面—面交线与曲面转向轮廓）。", "粗虚线（允许表面处理）：线宽粗、紧贴表面平行偏移，不构成外形。", "不可见螺纹：牙顶、牙底线都画细虚线，易被当作普通隐藏孔，需结合螺纹终止线和螺纹标记判别。"]
+related = ["DC-G1-001", "DC-G1-045", "DC-G1-015", "DC-G1-055", "DC-G3-001"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 02.1.2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 02.1.2"
+page = 13
+[[concepts.sources]]
+document = "GB/T 14692-2008"
+clause = "5.1.5"
+page = 5
+[[concepts.sources]]
+document = "GB/T 15751-1995"
+clause = "术语 隐藏轮廓线"
+page = 7
+
+[[concepts]]
+id = "DC-G1-003"
+name = "不连续同一表面连线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细实线把被其他结构隔断、但实际属于同一几何表面的几段轮廓连接起来，说明它们是同一个面，便于只注一次尺寸或表面要求。"
+components = ["细实线（No.01.1.17）。", "连线跨过中间的槽、缺口等结构，与两侧轮廓共线，或沿同一圆弧、曲面延伸。", "常与该表面只注一次的表面结构要求或尺寸配合使用。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight 25 or 35 (or ByLayer) on a thin layer: GB/T 14665 layer 02, names such as 细实线/THIN; colour green (ACI 3)", "a single thin LINE/ARC collinear with two thick outline pieces and bridging the gap between them", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：一条细实线，两端与两段共线（或同圆心同半径）的粗实线轮廓端点重合或很接近，中间跨越被其他轮廓占据的区域。判据：方向与两段粗线一致、无终端符号；其上或附近有一次性注出的表面结构符号或尺寸。与辅助线区分：辅助线是为求理论交点而延长，终点落在交点而不是另一段轮廓上。"
+confusions = ["可见轮廓线：粗实线，是实体真实边界。", "辅助线：细实线延长到理论交点，供引出尺寸界线。", "尺寸界线：从轮廓引出、与尺寸线垂直并超出约2 mm。"]
+related = ["DC-G1-043", "DC-G1-053", "DC-G6-034", "DC-G4-079"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.17"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.17"
+page = 10
+
+[[concepts]]
+id = "DC-G1-004"
+name = "中断线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细双点画线画在图形被中断处，作为断开部分的边界或表示中间被省略的部分，例如较长件断开后、规律结构只画一部分时。"
+components = ["细双点画线（No.05.1.11），横跨被中断的图形。", "两端超出轮廓约2~5 mm（教材对作为中断线的双点画线的要求）。", "常成对出现在断开的两侧，之间的轮廓不画；尺寸仍按实际长度标注。", "GB/T 4458.1 允许断裂边界用波浪线、双折线或细双点画线绘制。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "two short PHANTOM LINEs perpendicular to the long direction of a part with the outline gap between them", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为双点画线直线段，垂直（或倾斜）穿过长件的两条平行轮廓，两端略超出轮廓。判据：成对出现、之间无轮廓线、跨越的距离对应的尺寸数字大于图上测得长度（断开缩短）。与相邻辅助零件、极限位置轮廓区分：后两者为闭合或成片的外形，不横切主零件的轮廓。"
+confusions = ["波浪线/双折线断裂边界：细实线类，波浪线止于轮廓。", "成规律分布的相同要素连线：细实线，连接各结构的顶部或底部。", "相邻辅助零件的轮廓线：细双点画线围成另一零件的外形。"]
+related = ["DC-G1-042", "DC-G1-029", "DC-G1-025", "DC-G1-011", "DC-G2-041", "DC-G3-117"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.11"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.11"
+page = 16
+
+[[concepts]]
+id = "DC-G1-005"
+name = "允许表面处理的表示线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用粗虚线沿零件表面平行画出，指明在该范围内允许（而非必须）进行某种表面处理，例如允许局部热处理或镀覆的区域。"
+components = ["粗虚线（No.02.2.1），线宽与粗实线相同。", "画在相关表面轮廓外侧、与之平行并靠近，起止点界定范围。", "常配尺寸限定范围或用指引线注出处理要求。"]
+variants = []
+dxf_forms = ["LINE/ARC with a dashed linetype and thick lineweight (50/70), GB/T 14665 layer 03 (粗虚线), colour white", "offset copy of a stretch of the outline", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying"]
+recognition = "锚点为线宽为粗线的虚线，与某段粗实线轮廓平行，偏距约1~3 mm，长度只覆盖轮廓的一部分；附近有限定起止的尺寸或文字。与粗点画线（要求处理的限定范围）区分：粗虚线只有画和间隔，没有点。与细虚线区分靠线宽约2:1；线宽缺失时依图层03与白色（细虚线为04层黄色）。"
+confusions = ["限定范围表示线：粗点画线，表示要求处理的范围。", "细虚线：不可见轮廓，具有几何意义。", "可能热处理区域（工艺符号中的粗虚线）：同属允许范围的表达，按热处理标准解读。"]
+related = ["DC-G1-040", "DC-G1-060", "DC-G1-039", "DC-G7-019", "DC-G7-021"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55", "K33"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "粗虚线自 GB/T 4457.4-2002 起才有，1984 版图样不会出现。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 02.2.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 02.2.1"
+page = 13
+
+[[concepts]]
+id = "DC-G1-006"
+name = "分度圆（线）"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细点画线画出齿轮、链轮等齿形零件的分度圆（端视图中的圆）或分度线（非圆视图中的直线），是齿轮几何的基准。"
+components = ["细点画线（No.04.1.3）。端视图中为与齿顶圆、齿根圆同心的整圆。", "非圆视图（外形或剖视）中为平行于轴线的一条点画线，位于齿顶线与齿根线之间，两端略超出齿宽轮廓。", "两齿轮啮合时分度圆相切；非圆剖视中两条分度线重合为一条。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE with a dash-dot linetype (CENTER, CENTER2, DASHDOT, ACAD_ISO04W100 or e.g. 点画线/中心线), thin lineweight, layer 05 / 中心线 / CENTER, colour red (ACI 1)", "CENTER-type CIRCLE concentric with a thick CIRCLE (tip circle) and often a thin CIRCLE (root)", "CENTER-type LINE parallel to the axis inside the gear width", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为点画线圆，同心存在一个略大的粗实线圆（齿顶圆，直径差约2m），可能还有更小的细实线圆（齿根圆）；附近常有参数表（模数 m、齿数 z、压力角）。与孔系分布中心线区分：分度圆上没有孔心，孔系圆上有若干小圆的圆心并有径向点画线。"
+confusions = ["齿顶圆：粗实线，最大的同心圆。", "齿根圆/线：细实线，可省略；剖视中齿根线为粗实线。", "孔系分布的中心线：点画线圆上落有孔心。"]
+related = ["DC-G1-044", "DC-G1-062", "DC-G1-057", "DC-G1-020", "DC-G3-022", "DC-G3-211"]
+priority = "medium"
+text_forms = ["m=2", "z=40"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 04.1.3"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 04.1.3"
+page = 13
+
+[[concepts]]
+id = "DC-G1-007"
+name = "剖切符号用线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用粗短画在视图外标出剖切面的起、迄和转折位置，并配箭头（投射方向）和字母，说明剖视图或断面图从哪里剖切、向哪里投射。"
+components = ["粗实线短画（No.01.2.10），尽量不与图形轮廓相交，长度一般约5~10 mm。", "起、迄处短画外端画箭头，箭头垂直于短画，表示投射方向；转折处画直角形短画。", "起、迄和转折处注同一大写字母，剖视图上方注“X—X”；转折处位置有限时可省字母。", "短画之间可用细点画线（剖切线）相连，也可省略。"]
+variants = []
+dxf_forms = ["short thick LINE/LWPOLYLINE strokes (lineweight 50–70 or polyline width) on layer 01 or a dedicated section layer; GB/T 18229 layer 01 also lists the thick cutting-plane line", "arrowheads as SOLID/HATCH triangles, LWPOLYLINE with tapering width, or LEADER/QLEADER with closed filled arrow", "single capital-letter TEXT next to each stroke", "mechanical add-ons (CAXA, GstarCAD/AutoCAD Mechanical) store the whole symbol as one object that exports as an anonymous INSERT or exploded strokes+text", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点是视图轮廓外侧的孤立粗短线段（长度约为字高的1.5~3倍），其延长线穿过视图；通常成对且共线，或经直角转折相连；短画外端有箭头或旁边有大写字母，且图中另有同字母的“X—X”标题。字母与剖视标题的匹配是最强证据。与对中符号区分：后者在图纸边中点、从纸边伸入图框约5 mm；与螺纹终止线区分：后者在螺纹区内、两端接到牙顶/牙底线。"
+confusions = ["对中符号：粗短线，但位于图纸各边中点。", "螺纹长度终止线：粗实线，垂直于螺纹轴线、两端连接螺纹线。", "剖切线：细点画线，只表示剖切面迹线。", "移出断面的轮廓：粗实线闭合外形，而非孤立短画。"]
+related = ["DC-G1-008", "DC-G1-038", "DC-G2-043", "DC-G2-065", "DC-G2-066"]
+priority = "high"
+text_forms = ["A", "A—A", "B-B"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = ["view_callout"]
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+notes = "短画长度与箭头画法细节为一般实践，源中只规定线型及组合。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.2.10"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2.10"
+page = 12
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "表13 01 剖切面的粗剖切线"
+page = 12
+
+[[concepts]]
+id = "DC-G1-008"
+name = "剖切线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细点画线表示剖切面在视图上的位置（剖切面迹线），画在剖切符号的粗短画之间；剖切线可以省略不画。"
+components = ["细点画线（No.04.1.5），沿剖切面迹线，与粗短画共线或首尾相接。", "移出断面配置在剖切线延长线上时，剖切线是断面定位的依据；对称且配置在剖切线延长线上的移出断面可不标字母和箭头。", "部分结构剖切时，可用细点画线把分散的剖切符号连起来。", "GB/T 4457.4 未采用 ISO 128-24 中用粗点画线表示的剖切平面位置线。"]
+variants = ["ISO 128-24 04.2.2 thick chain cutting-plane position line was not adopted (GB/T 4457.4 前言)", "drawn", "omitted"]
+dxf_forms = ["LINE/ARC/CIRCLE with a dash-dot linetype (CENTER, CENTER2, DASHDOT, ACAD_ISO04W100 or e.g. 点画线/中心线), thin lineweight, layer 05 / 中心线 / CENTER, colour red (ACI 1)", "CENTER-type LINE collinear with thick cutting strokes; GB/T 18229 layer 05 includes the cutting-plane line", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：与剖切符号粗短画共线的点画线，或一端附近有移出断面图形（断面在其延长线上）的点画线。与轴线、对称中心线区分：后两者沿零件的对称面或回转轴，两端只略超出轮廓（2~5 mm）且不连粗短画；剖切线可能偏离对称面，并可外伸到断面图处。剖切面恰过对称面时两线重合只画一条，此时只能靠剖切符号判断。"
+confusions = ["轴线、对称中心线：同为细点画线，但不与粗短画相连。", "剖切符号：粗短画，表示起迄与转折。", "ISO 粗点画线位置线：国标未采用，旧国外图样中可能出现。"]
+related = ["DC-G1-007", "DC-G1-044", "DC-G1-021", "DC-G2-043", "DC-G2-032", "DC-G2-028"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "GB/T 4458.6 7.1 的扫描件把剖切线印为 No.04.2（粗点画线），与 GB/T 4457.4 表1 04.1.5（细点画线）不一致，按后者处理，待核对。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 04.1.5"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 04.1.5"
+page = 14
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "表13 05 剖切面的剖切线"
+page = 12
+[[concepts.sources]]
+document = "GB/T 17452-1998"
+clause = "3.5"
+page = 5
+[[concepts.sources]]
+document = "GB/T 17452-1998"
+clause = "8.2"
+page = 8
+[[concepts.sources]]
+document = "GB/T 4458.6-2002"
+clause = "7.1"
+page = 17
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§7-2 一（4）"
+page = 234
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "移出断面"
+page = 245
+
+[[concepts]]
+id = "DC-G1-009"
+name = "剖切面前的结构轮廓线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "剖视图中位于剖切面前方、已被假想移去的结构，需要表示时用细双点画线画出其轮廓（假想画法），仅供参考。"
+components = ["细双点画线（No.05.1.5），画在剖视图内，与剖面区域叠置或相邻。", "所画结构位于剖切面与观察者之间，如前方的凸台、孔或肋。", "该轮廓内不画剖面线，不作为本视图的实体轮廓。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "PHANTOM-type outline lying inside a sectioned view next to HATCH regions", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：剖视图（含 HATCH、有 X—X 标题）内部出现的双点画线轮廓，其形状在外形视图中对应一个位于剖切位置前方的结构。与相邻辅助零件（形状不属于本零件，位于外侧并贴合）和可动零件极限位置（与本零件某运动件全等）区分。"
+confusions = ["相邻辅助零件的轮廓线：同线型，表示他件。", "不可见轮廓线：细虚线，表示剖切面后方被遮挡的结构。"]
+related = ["DC-G1-042", "DC-G1-036", "DC-G3-011", "DC-G2-018"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.5"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.5"
+page = 15
+
+[[concepts]]
+id = "DC-G1-010"
+name = "剖面线"
+aliases = ["通用剖面线"]
+group = "G1"
+kind = "line"
+meaning = "在剖视图、断面图的剖面区域内画的一组等距平行细实线，表示被剖切到的实体材料；机械图中通用剖面线同时就是金属材料的剖面符号。"
+components = ["细实线（No.01.1.5）平行线组，间距相等，间距按剖面区域大小选取并大于最小间隙。", "一般与主要轮廓或剖面区域的对称线成45°；同一零件在各剖视、断面中方向和间距一致，相邻零件方向相反或间距不同。", "剖面区域内有文字或尺寸数字时，剖面线在该处断开。", "1984 版：与水平成45°，主要轮廓本身为45°时改画30°或60°；1998/2005/2013 版：与主要轮廓或对称线成45°，必要时取其他角度。"]
+variants = ["1984: 45° to the horizontal; 30° or 60° when the main outline is at 45°", "1998/2005/2013: 45° to main outline or symmetry line, another angle if needed", "spacing chosen by area size, above the minimum gap"]
+dxf_forms = ["HATCH entity: pattern ANSI31 (45°, scale sets spacing) or user-defined pattern (U) at 45°/135° with spacing ~2–4 mm; boundary loops follow the section outline; GB/T 14665 layer 10 (剖面符号) or 剖面线/HATCH", "ANSI31 rotated 90° gives the opposite direction used for an adjacent part", "exploded HATCH: many parallel thin LINEs clipped to the outline, often grouped in an anonymous block", "CAXA and other GB add-ons export hatches as HATCH or as LINE bundles", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为 HATCH 实体（读取图案名、角度、比例/间距）或一组≥3条相互平行、等距、端点都落在同一闭合轮廓上的细实线。判据：间距恒定（常2~4 mm，约为字高的0.5~1倍），角度约45°/135°（或30°/60°），被粗实线闭合轮廓包围。同一零件在各视图中角度和间距相同，可据此把剖面区域归属到零件；相邻区域方向相反或间距不同表示不同零件。文字处剖面线断开是正常现象，不应把断开处当作边界。"
+confusions = ["网格线：两组正交线、不被零件轮廓裁剪。", "表示平面的对角线：只有两条交叉细线。", "螺纹牙底线：细实线平行于轴线，不成等距斜线组。", "非金属材料剖面符号：交叉网格线；其他材料另有专用符号。", "滚花简化画法：只画在外表面局部的直纹或网纹。"]
+related = ["DC-G1-043", "DC-G1-101", "DC-G2-061", "DC-G2-019", "DC-G2-009", "DC-G2-003", "DC-G2-001"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55", "K11", "K12", "K13"]
+recognition_cards = ["section_line_region"]
+recognizer = "card"
+seen_on_drawing = ["second"]
+expert_checked = false
+notes = "ANSI31 等图案名与常用间距为 CAD 通用实践；源只规定45°等距细实线及同零件一致。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.5"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.5"
+page = 8
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表6 10 剖面符号"
+page = 12
+[[concepts.sources]]
+document = "GB/T 17453-1998"
+clause = "4.1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 17453-2005"
+clause = "5 图1"
+page = 7
+[[concepts.sources]]
+document = "GB/T 4457.5-2013"
+clause = "4.1 图1"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.5-1984"
+clause = "2.1 图1-2"
+page = 2
+
+[[concepts]]
+id = "DC-G1-011"
+name = "双折线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "断裂处边界线的一种：带一个或几个Z形折的细实线，表示机件在此断开（断开缩短或局部断裂），也可作视图与剖视的分界，较适合长的直线断裂边界。"
+components = ["细实线（No.01.1.22），中间有尖角Z形折，折形等距分布。", "CAD 画法：全长为被断开宽度加10d（两端各超出轮廓约5d），每个Z形沿线约占7.5d；线短时只放一个Z形。", "较长时可画两个双折符号。", "同一张图样上一般只用波浪线或双折线中的一种。"]
+variants = ["两个双折符号（较长时）"]
+dxf_forms = ["LWPOLYLINE (or chained LINEs) with zigzag vertices on thin layer 02, colour green", "a break-line symbol INSERT (e.g. the AutoCAD express-tool break-line block) or its exploded strokes", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为主体是直线、中间夹有Z形尖折的细实线折线（每个折约3~4个顶点、折段长为线宽的数倍）。整线穿过机件轮廓且两端略超出轮廓（波浪线则止于轮廓）；在断开缩短处常成对出现、之间无图线。与焊缝符号的小折线（附着于焊缝基准线）及整条规则锯齿线区分。"
+confusions = ["波浪线：徒手不规则曲线，止于轮廓。", "规则锯齿连续线：整条线连续锯齿。", "折线状轮廓：粗实线，构成零件外形。", "折线指引线：只折一次，端部有箭头或接文字。"]
+related = ["DC-G1-029", "DC-G1-032", "DC-G1-043", "DC-G2-041", "DC-G3-117"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "AutoCAD 断裂线块为通用实践；10d 与 7.5d 取自 GB/T 14665/18686 的计算公式。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.22"
+page = 5
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.2.1 图1-图3"
+page = 4
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.2.1.2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 18686-2002"
+clause = "4.7.2 图12-图14"
+page = 10
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4"
+page = 16
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4 注"
+page = 17
+
+[[concepts]]
+id = "DC-G1-012"
+name = "叠片结构位置线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细实线表示叠片结构（如变压器、电机叠钢片）中薄片的位置与叠放方向。"
+components = ["细实线（No.01.1.15），一组与叠片方向一致的平行线。", "画在叠片区域或其一部分内；剖视时叠钢片剖面线的方向应与束装中叠片的方向一致。"]
+variants = []
+dxf_forms = ["parallel thin LINEs or a HATCH with lines along the lamination direction, layer 02 or 10", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "一组平行细实线，方向沿某主轴（多为水平或竖直，而非45°），只出现在电机、变压器类零件的铁心区域，常伴材料说明（如硅钢片）。与剖面线区分：剖面线一般45°且布满整个剖面区域。普通机械零件图中很少见。"
+confusions = ["剖面线：45°等距细实线。", "网格线：两组正交线。", "叠钢片剖面符号：剖面区域内的材料符号，方向与叠片一致。"]
+related = ["DC-G1-043", "DC-G1-010", "DC-G2-045"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.15"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.15"
+page = 9
+
+[[concepts]]
+id = "DC-G1-013"
+name = "可动零件的极限位置的轮廓线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细双点画线画出运动零件（手柄、摇杆、门盖等）在极限或另一工作位置时的外形，表示其运动范围。"
+components = ["细双点画线（No.05.1.2），外形与实际位置的零件（粗实线）相同或简化。", "与实线零件绕同一转轴转过某角度，或沿导轨平移一段距离。", "常配角度或行程尺寸及轨迹线。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "a rotated/moved copy of the part outline, or a second INSERT of the same block with a different rotation on the phantom layer", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：一组双点画线围成的外形，与图中某粗实线零件外形全等或近似全等（经旋转/平移可重合）；变换的转动中心落在某孔或销的圆心上，常有角度尺寸。这是与相邻辅助零件（形状不同）区分的关键。"
+confusions = ["相邻辅助零件的轮廓线：同线型，形状不同于本零件。", "轨迹线：单条非闭合曲线，不是外形。", "成形前轮廓线：与本零件只共享未变形部分。"]
+related = ["DC-G1-042", "DC-G1-051", "DC-G1-036", "DC-G8-007"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.2"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.2"
+page = 14
+
+[[concepts]]
+id = "DC-G1-014"
+name = "可见棱边线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用粗实线表示物体上两个面相交形成、在投射方向上看得见的棱边。"
+components = ["粗实线（No.01.2.1），线宽 d（常用0.5或0.7 mm）。", "两端连接其他棱边或轮廓，构成面的边界；与另一视图中的面边界按投影对应。", "画法与可见轮廓线完全相同，仅含义不同（面—面交线而非转向轮廓）。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight (group 370) 50 or 70 (0.5/0.7 mm) or ByLayer on a thick layer: GB/T 14665 layer 01, names such as 粗实线/轮廓线/OUTLINE, CAXA 0层; colour white/black (ACI 7)", "thick strokes drawn as LWPOLYLINE with constant width (group 43 ≈ 0.5–0.7) when lineweights are not used", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为粗线（按线宽、图层或颜色判定）。二维上与可见轮廓线无法区分，可在三维重建时区分：若该线在相邻视图中对应两个面的交线（端点处有折向、另一视图出现面的积聚线），则为棱边；若对应曲面在投射方向的转向线（另一视图该处为圆的切点），则为转向轮廓。铸造圆角处的理论棱边画成细实线并在端部留隙（过渡线），不要误判为棱边缺失。"
+confusions = ["可见轮廓线：同型，语义为外形或曲面转向轮廓。", "过渡线：细实线，端部与轮廓留有空隙。", "相贯线：粗实线，但为两个曲面立体的交线，多为曲线或简化圆弧。"]
+related = ["DC-G1-015", "DC-G1-038", "DC-G1-054", "DC-G1-035", "DC-G1-001"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55", "K39"]
+recognition_cards = ["visible_edge_line"]
+recognizer = "card"
+seen_on_drawing = ["second"]
+expert_checked = false
+notes = "外观与可见轮廓线相同，差别只在语义（面—面交线与转向轮廓），对三维重建有用。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.2.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2.1"
+page = 11
+
+[[concepts]]
+id = "DC-G1-015"
+name = "可见轮廓线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用粗实线表示物体在投射方向上可见的外形轮廓，包括圆柱、圆锥、球等曲面的转向轮廓线，是图样中最主要的图线。"
+components = ["粗实线（No.01.2.2）。", "构成视图外形和可见的内部结构边界；曲面在非圆视图中的转向轮廓为直线素线，在端视图中为圆。", "剖视图中剖面区域的边界同样为粗实线。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight (group 370) 50 or 70 (0.5/0.7 mm) or ByLayer on a thick layer: GB/T 14665 layer 01, names such as 粗实线/轮廓线/OUTLINE, CAXA 0层; colour white/black (ACI 7)", "CIRCLE/ARC for round outlines, closed LWPOLYLINE for whole outlines", "thick strokes drawn as LWPOLYLINE with constant width (group 43 ≈ 0.5–0.7) when lineweights are not used", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "粗线集合中构成闭合或近闭合外形的部分即为可见轮廓。线宽缺失时依图层（01/粗实线/轮廓线）和颜色（白，ACI 7）判断，并以“视图中最外层的闭合环”“HATCH 的边界”作佐证。与移出断面轮廓（同为粗实线）靠位置区分（在剖切线延长线上或另有标题）；与重合断面轮廓（细实线、叠在视图上）靠线宽区分；与图框（纸边内的大矩形）靠尺寸和位置区分。"
+confusions = ["可见棱边线：同型，语义为面—面交线。", "重合断面的轮廓线：细实线，叠画在视图内。", "图框：粗实线大矩形，与纸边相距 e 或 a/c。", "剖切符号：视图外的孤立粗短画。"]
+related = ["DC-G1-014", "DC-G1-038", "DC-G1-002", "DC-G1-056", "DC-G1-026", "DC-G1-035"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = ["visible_edge_line"]
+recognizer = "card"
+seen_on_drawing = ["second"]
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.2.2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2.2"
+page = 11
+[[concepts.sources]]
+document = "GB/T 14692-2008"
+clause = "5.1.5"
+page = 5
+
+[[concepts]]
+id = "DC-G1-016"
+name = "图线宽度与线宽组别"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "规定图线宽度的数系与粗细搭配：机械图样只用粗、细两种线宽，粗细比为2:1，按图样类型、尺寸、比例和缩微要求选用线宽组。"
+components = ["线宽数系（公比约1:√2）：0.13、0.18、0.25、0.35、0.5、0.7、1、1.4、2 mm。", "机械图样线宽组（粗/细）：0.25/0.13、0.35/0.18、0.5/0.25、0.7/0.35、1/0.5、1.4/0.7，优先0.5/0.25和0.7/0.35。", "粗线类：粗实线、粗虚线、粗点画线；细线类：细实线、波浪线、双折线、细虚线、细点画线、细双点画线。", "CAD 五组（GB/T 14665）：2.0/1.0、1.4/0.7、1.0/0.5、0.7/0.35、0.5/0.25。", "旧版 GB/T 4457.4-1984 粗细比约3:1；GB/T 17450 通用比率粗:中粗:细=4:2:1；平行线最小间隙0.7 mm。"]
+variants = ["GB/T 4457.4-1984 粗细比 3:1", "GB/T 14665 CAD 五组: 2.0/1.0, 1.4/0.7, 1.0/0.5, 0.7/0.35, 0.5/0.25", "GB/T 17450 粗:中粗:细 = 4:2:1"]
+dxf_forms = ["entity group 370 lineweight in 1/100 mm (25, 35, 50, 70 …), or -1 ByLayer / -2 ByBlock / -3 Default", "LAYER table group 370 gives the per-layer lineweight", "plot style tables (CTB by colour) often carry the widths outside the DXF, e.g. colour 7 → 0.5 mm, other colours → 0.25 mm in many Chinese templates", "LWPOLYLINE constant width (group 43) used for thick frame lines or cutting strokes"]
+recognition = "先统计全图线宽分布：若370有效，取出现最多的两档，比值应接近2:1（旧图约3:1），大者为粗线宽 d。若全为默认/ByLayer 且图层也无线宽，则改用图层名与颜色（白=粗；绿、黄、红、粉=细）或打印样式推断。线宽不是独立图形，而是所有图线分类的属性；同类图线线宽应一致，出现第三档宽度时多为多段线宽度画的框线或符号。"
+confusions = ["中粗线：建筑等图样使用，机械图不用。", "屏幕线宽与打印线宽：DXF 内可能只存颜色，宽度在打印样式中。", "多段线全局宽度：不是370线宽，需分开读取。"]
+related = ["DC-G1-038", "DC-G1-043", "DC-G1-019", "DC-G1-101", "DC-G1-079"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+notes = "打印样式按颜色定线宽是通用实践，非源内容。"
+[[concepts.sources]]
+document = "GB/T 17450-1998"
+clause = "4.1 5.1"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "5 表2"
+page = 6
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.1 表1"
+page = 3
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "前言"
+page = 3
+
+[[concepts]]
+id = "DC-G1-017"
+name = "图线组合"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "把两条或多条基本线型平行、重叠或相邻地组合，或在实线上、实线间规则地布置图形要素，构成具有专门含义的组合图线，如“铁道”线。"
+components = ["平行排列：两条以上图线相互平行。", "重叠排列：不同宽度的两条图线重叠，如实线与点线、实线与间隔画线。", "相邻排列：两条相邻间隔画线的外侧各邻接一条实线。", "在两条平行实线之间规则分布涂黑的圆或梯形；在实线上（连续或间断）规则分布几何图形。", "“铁道”线由实线（01）与间隔画线（03）组合，CAD 中按公式计算线段数。"]
+variants = ["平行排列", "不同宽度重叠", "相邻排列", "实线间规则分布的图形要素", "实线上规则分布的几何要素", "“铁道”线"]
+dxf_forms = ["complex LTYPE with embedded shapes or text elements", "two overlapping entities with different lineweights at the same coordinates", "MLINE entity for parallel lines", "exploded: repeated small SOLID/HATCH/CIRCLE glyphs at constant pitch along a path"]
+recognition = "锚点：同一路径上有两个以上实体（坐标重合或等距平行），或沿一条线等间距重复的同尺寸小图形（涂黑圆、三角形、梯形）。判据：重复间距恒定、图形尺寸相同。机械零件图很少见，多出现在示意图、管线图、土建图中。注意 CAD 中常见的误重复绘制（完全重叠的同型实体）不是组合图线。"
+confusions = ["双点画线：单一线型，不是组合。", "焊缝、管线示意线：属专业符号，按相应标准解读。", "重复绘制的重叠线：绘图错误，应去重。"]
+related = ["DC-G1-019", "DC-G1-016"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "机械零件图上罕见，主要见于各类示意图和土建图。"
+[[concepts.sources]]
+document = "GB/T 17450-1998"
+clause = "3.3.1 图1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 17450-1998"
+clause = "3.3.2-3.3.4 图2-图6"
+page = 5
+[[concepts.sources]]
+document = "GB/T 18686-2002"
+clause = "4.7.1 图10"
+page = 9
+[[concepts.sources]]
+document = "GB/T 18686-2002"
+clause = "4.7.3 图15"
+page = 11
+
+[[concepts]]
+id = "DC-G1-018"
+name = "基准线（指引线的参考线）"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "与指引线末端相连的水平或竖直细实线，在其上方或旁边注写说明文字；此处“基准线”指参考线，不是几何公差的基准。"
+components = ["细实线，水平或竖直，接在指引线指向注释的一端。", "长度为固定的6 mm，或与注释文字同长。", "注释优先写在基准线上方，相距约两倍线宽，不得接触基准线。", "指引线本身水平或竖直时注释顺指引线方向写，不适用时可省略基准线；特定应用中必须画出。"]
+variants = ["固定长度 6 mm", "与注释说明等长", "省略基准线（指引线本身水平或竖直时）"]
+dxf_forms = ["LEADER entity whose last segment is horizontal (hook line/landing) with associated MTEXT", "MULTILEADER (MLEADER) with a landing (dogleg) of about 6 mm", "QLEADER result: LEADER + MTEXT", "exploded: oblique LINE + horizontal LINE + TEXT above it", "GB add-ons (e.g. CAXA 引出说明) export as LINEs + TEXT"]
+recognition = "锚点为文字（TEXT/MTEXT），其底边下方约0.5~1.5 mm 处有一条水平细线，线长≈6 mm 或≈文字宽度；线的一端与一条斜细线（指引线）端点相连。判据：文字底边到线的距离小于字高的一半；线长与文字宽相近；斜线与水平线夹角大于15°。与尺寸线（两端有终端、跨两条尺寸界线）、文字下划线（MTEXT \\L 格式，无连接斜线）、焊缝基准线（实线+虚线并列，挂焊缝符号）区分。"
+confusions = ["尺寸线：两端有箭头或斜线，与尺寸界线垂直相接。", "几何公差基准：基准字母方框加涂黑或空心三角形，含义完全不同。", "文字下划线：无指引线相连。", "焊缝符号的基准线：可带平行虚线，承载焊缝符号。"]
+related = ["DC-G1-028", "DC-G1-080", "DC-G1-111", "DC-G1-094", "DC-G7-109", "DC-G8-024"]
+priority = "high"
+text_forms = ["4×Ø8", "M20×2LH-6H", "C1"]
+knowledge_units = ["K03", "K52", "K55", "K24"]
+recognition_cards = []
+recognizer = "rule"
+seen_on_drawing = []
+expert_checked = false
+notes = "GB/T 24745 表3 同时列有“参考线”和“基准线”；MLEADER 等存储形式为通用 CAD 实践。"
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "3.2"
+page = 2
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "5 图14-图18"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "5 图19 图20"
+page = 5
+
+[[concepts]]
+id = "DC-G1-019"
+name = "基本线型（No.01-No.15）"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "技术制图规定的十五种基本线型及其代码，是一切图线的基础；机械图样只用其中实线、虚线、点画线、双点画线等少数几种及其变形。"
+components = ["01实线、02虚线、03间隔画线、04点画线、05双点画线、06三点画线、07点线。", "08长画短画线、09长画双短画线、10画点线、11双画单点线、12画双点线、13双画双点线、14画三点线、15双画三点线。", "可变形为规则波浪、规则螺旋、规则锯齿连续线及徒手波浪线；机械图中的波浪线、双折线即01型的变形。", "手工线素长度：点≤0.5d，短间隔3d，短画6d，画12d，长画24d，间隔18d。"]
+variants = ["01 实线", "02 虚线", "03 间隔画线", "04 点画线（单点长画线）", "05 双点画线", "06 三点画线", "07 点线", "08 长画短画线", "09 长画双短画线", "10 画点线", "11 双画单点线", "12 画双点线", "13 双画双点线", "14 画三点线", "15 双画三点线", "规则波浪连续线", "规则螺旋连续线", "规则锯齿连续线", "波浪线（徒手连续线）"]
+dxf_forms = ["LTYPE table entries: name (2), description (3), element lengths (49): positive = dash, negative = gap, 0 = dot — classify by pattern, not by name", "CONTINUOUS = 01; HIDDEN/DASHED/ACAD_ISO02W100 = 02; ACAD_ISO03W100 = 03; ACAD_ISO04W100/DASHDOT = 04; ACAD_ISO05W100/DIVIDE = 05; ACAD_ISO06W100 = 06; DOT/ACAD_ISO07W100 = 07", "AutoCAD CENTER (long + short dash) is nominally type 08 and PHANTOM (long + two short dashes) type 09, yet they are used for chain lines on Chinese mechanical drawings", "entity group 6 linetype name, group 48 linetype scale, header $LTSCALE"]
+recognition = "按线型图案判别而不是按名称：读取 LTYPE 的画/间隔序列，换算为线宽 d 的倍数（ISO 线型按1 mm 线宽定义）后与线素长度比较。中国机械图普遍用 CENTER、PHANTOM 画点画线与双点画线，它们实际是“长画+短画”，识别时应归入04/05的用途。炸开的不连续线先按共线与周期重组，再判线型。"
+confusions = ["机械图常用九种线型：细实线、波浪线、双折线、粗实线、细虚线、粗虚线、细点画线、粗点画线、细双点画线，用途见各线型条目。", "CENTER/PHANTOM 与 ISO 点画线：名义线型不同，机械图中用途相同。"]
+related = ["DC-G1-038", "DC-G1-043", "DC-G1-044", "DC-G1-045", "DC-G1-042", "DC-G1-016", "DC-G1-017"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+notes = "LTYPE 名称与图案对应为 AutoCAD 通用实践。线型标记如“图线 GB/T 17450-03×0.25”是文件标记，不画在图上。"
+[[concepts.sources]]
+document = "GB/T 17450-1998"
+clause = "3.1 表1"
+page = 3
+[[concepts.sources]]
+document = "GB/T 17450-1998"
+clause = "表1（完） 3.2 表2"
+page = 4
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.4.1 表7"
+page = 6
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.4.2 表8"
+page = 7
+
+[[concepts]]
+id = "DC-G1-020"
+name = "孔系分布的中心线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细点画线画出一组孔（如法兰上的均布孔）的分布圆或分布直线，孔的圆心都在其上，表示孔的定位关系。"
+components = ["细点画线圆（定位圆）或直线（直线排列的孔），通常与零件中心同心。", "每个孔另有径向点画线（或十字中心线）穿过孔心，与分布圆在孔心相交。", "常与“n×Ø… EQS”及定位圆直径尺寸配合。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE with a dash-dot linetype (CENTER, CENTER2, DASHDOT, ACAD_ISO04W100 or e.g. 点画线/中心线), thin lineweight, layer 05 / 中心线 / CENTER, colour red (ACI 1)", "CENTER-type CIRCLE or ARC concentric with the part plus short radial CENTER-type LINEs through each hole centre", "centre marks at the holes from DIMCEN or CENTERMARK objects", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：点画线圆（或圆弧），其上有≥2个小圆（孔）的圆心与之距离小于孔半径的0.1倍；均布时相邻孔角距相等。附近常有该圆的 Ø 尺寸和“n×Ø”文字。与分度圆区分：分度圆上无孔，且有同心的粗实线齿顶圆。"
+confusions = ["分度圆：点画线圆，无孔心，配齿顶圆。", "对称中心线：直线，表示对称面。"]
+related = ["DC-G1-044", "DC-G1-006", "DC-G1-021", "DC-G1-052", "DC-G1-093", "DC-G3-111", "DC-G3-115", "DC-G4-043"]
+priority = "high"
+text_forms = ["6×Ø8 EQS", "4×Ø14", "Ø100"]
+knowledge_units = ["K03", "K52", "K55", "K39"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 04.1.4"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 04.1.4"
+page = 13
+
+[[concepts]]
+id = "DC-G1-021"
+name = "对称中心线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细点画线画出零件或结构对称面的迹线，表示图形关于该线对称。"
+components = ["细点画线（No.04.1.2），通过对称图形中心，两端超出轮廓约2~5 mm。", "圆的两条正交中心线是对称中心线的典型形式，应在长画处相交于圆心。", "对称机件只画一半或四分之一时，对称线两端画两条平行短细实线（对称符号）。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE with a dash-dot linetype (CENTER, CENTER2, DASHDOT, ACAD_ISO04W100 or e.g. 点画线/中心线), thin lineweight, layer 05 / 中心线 / CENTER, colour red (ACI 1)", "two orthogonal CENTER-type LINEs crossing at a circle centre", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为点画线直线；两侧图形关于其镜像对称（把一侧端点镜像后与另一侧匹配率高）。圆的十字中心线：两条正交点画线交于圆心，长度约为直径加2×(2~5 mm)。与轴线：二维上同型，可统一记为中心线并附“对称/回转”属性；与剖切线：剖切线端部连粗短画。"
+confusions = ["轴线：沿回转轴，两侧为回转体素线。", "剖切线：与剖切符号相连。"]
+related = ["DC-G1-044", "DC-G1-052", "DC-G1-008", "DC-G1-033", "DC-G1-061", "DC-G3-161"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 04.1.2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 04.1.2"
+page = 13
+
+[[concepts]]
+id = "DC-G1-022"
+name = "工艺用结构的轮廓线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细双点画线画出只为制造需要而设、在后续加工中去除的结构，如工艺凸台、夹持头、工艺搭子。"
+components = ["细双点画线（No.05.1.10），与零件轮廓相连。", "该结构在成品上不存在，一般不标注最终尺寸或另加说明。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "双点画线围成的小块外形，与零件粗实线轮廓有公共边，常在零件端部或侧面；附近可能有“工艺凸台”“加工后去除”等文字。与毛坯图中的制成品轮廓（位于粗线毛坯内部）和相邻辅助零件（属于他件）区分。"
+confusions = ["毛坯图中制成品的轮廓线：在毛坯外形内部。", "相邻辅助零件的轮廓线：表示他件。", "成形前轮廓线：表示变形前形状。"]
+related = ["DC-G1-042", "DC-G1-031", "DC-G1-024"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.10"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.10"
+page = 16
+
+[[concepts]]
+id = "DC-G1-023"
+name = "延伸公差带表示线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细双点画线画出延伸公差带所对应的、伸出零件实体之外的假想要素（如螺孔轴线的延伸段或配合件位置），与延伸公差带符号Ⓟ和延伸长度一起使用。"
+components = ["细双点画线（No.05.1.9），从零件表面向外延伸，表示被测要素延伸部分的范围。", "延伸长度注在双点画线旁，数字前加Ⓟ。", "与公差框格中的Ⓟ修饰符对应。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "DIMENSION whose text carries a circled P (Unicode Ⓟ or a letter P inside a small CIRCLE)", "TOLERANCE entity or exploded frame containing the Ⓟ modifier", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：公差框格中出现Ⓟ，同时在相应孔或轴外侧有一段双点画线矩形或轴线延长线，旁边的线性尺寸前带Ⓟ。双点画线外形起自零件表面并伸出实体之外。"
+confusions = ["相邻辅助零件的轮廓线：表示他件外形，不配Ⓟ尺寸。", "螺柱/销的假想轮廓：装配示意，不带公差修饰符。"]
+related = ["DC-G1-042", "DC-G5-062", "DC-G5-099"]
+priority = "low"
+text_forms = ["Ⓟ 30"]
+knowledge_units = ["K03", "K52", "K55", "K19"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.9"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.9"
+page = 16
+
+[[concepts]]
+id = "DC-G1-024"
+name = "成形前轮廓线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细双点画线画出零件在弯曲、冲压等成形之前的形状（如弯曲前的直板或展开状态），与成形后的粗实线形状对照。"
+components = ["细双点画线（No.05.1.4）。", "与成形后零件共享未变形的部分，变形部分以伸直或展开状态画出。", "可配展开长度注语或尺寸。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "双点画线外形与粗实线零件共享一段轮廓，其余部分是粗实线弯曲段的伸直（长度≈中性层弧长）；多见于钣金件、弯管、弹簧钩。附近常有“展开长度”注语或细实线弯折线。"
+confusions = ["毛坯图中制成品的轮廓线：在毛坯内部偏移。", "弯折线：细实线，标出折弯位置。", "可动零件的极限位置：与零件全等，经旋转/平移得到。"]
+related = ["DC-G1-042", "DC-G1-031", "DC-G1-067", "DC-G2-011", "DC-G3-010"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.4"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.4"
+page = 15
+
+[[concepts]]
+id = "DC-G1-025"
+name = "成规律分布的相同要素连线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "若干相同结构（齿、槽等）按规律分布而只画出其中几个时，用细实线把它们连起来，表示其余的按同样规律分布。"
+components = ["细实线（No.01.1.18）。", "画出两端或少数几个完整结构，其余位置用细实线连接其顶部或底部轮廓。", "须注明结构的总数（如“n×…”）。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight 25 or 35 (or ByLayer) on a thin layer: GB/T 14665 layer 02, names such as 细实线/THIN; colour green (ACI 3)", "thin LINE/ARC collinear with the tips or roots of the drawn features", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：一排等距的相同小结构只在两端或局部完整画出，中间被一条与结构顶/底共线的细实线连接；附近有“n×”数量标注。细线两端与完整结构的轮廓端点重合。"
+confusions = ["中断线：细双点画线。", "孔系分布中心线：点画线，表示孔心位置。", "不连续同一表面连线：连接同一表面的几段轮廓。"]
+related = ["DC-G1-043", "DC-G1-004", "DC-G1-003", "DC-G3-134", "DC-G3-115", "DC-G4-094"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.18"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.18"
+page = 10
+
+[[concepts]]
+id = "DC-G1-026"
+name = "截交线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "平面截切立体（切槽、开口、铣扁、切角）时在立体表面上产生的交线，是截平面与立体表面的共有线，按可见性画粗实线或细虚线。"
+components = ["截平面平行于圆柱轴线时交线为两条平行直线，垂直时为圆（弧），倾斜时为椭圆（弧）；圆锥、球截切得圆、椭圆、抛物线等。", "可见部分画粗实线，不可见部分画细虚线；端点落在转向轮廓或其他交线上。", "曲面立体的截交线一般是闭合平面曲线，或由曲线与直线围成的平面图形。"]
+variants = []
+dxf_forms = ["LINE/ARC/ELLIPSE/SPLINE (or LWPOLYLINE approximating a curve) on the thick or hidden layer", "ELLIPSE entity for an oblique cut of a cylinder", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "截交线与其他轮廓同型，靠几何关系识别：回转体视图中出现与素线平行、间距小于直径的一组直线（铣扁、开槽），其端点与另一视图中截平面的积聚直线按投影对应；或 ELLIPSE/样条与圆柱、圆锥轮廓相接。与相贯线区分：截交线所在的截面在另一视图中积聚为直线。"
+confusions = ["相贯线：两立体相交的交线。", "平面符号：细实线对角线，表示平面而非交线。", "过渡线：细实线，端部留隙。"]
+related = ["DC-G1-035", "DC-G1-015", "DC-G1-054", "DC-G3-026"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "截交线是投影几何概念，不是单独线型；识别依赖多视图对应（通用实践）。"
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§4-3"
+page = 142
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§4-3"
+page = 143
+
+[[concepts]]
+id = "DC-G1-027"
+name = "投影线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "细实线画的投影连线，表示点或结构在两个视图（或视图与辅助视图）之间的投影对应关系，多见于作图过程、展开图和特殊图样。"
+components = ["细实线（No.01.1.19），连接不同视图中的对应点，方向垂直于投影轴或沿投射方向。", "正式零件图中一般不保留，仅在需要说明投影关系时画出。", "CAD 分层中投影连线与尺寸线同归08层。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight 25 or 35 (or ByLayer) on a thin layer: GB/T 14665 layer 02, names such as 细实线/THIN; colour green (ACI 3); GB/T 14665 layer 08 (尺寸线、投影连线)", "XLINE/RAY construction lines left in the file, often on a non-plotting layer"]
+recognition = "细实线两端分别落在两个视图中的对应点（端点处有轮廓顶点），方向严格水平或竖直（基本视图之间）或垂直于斜视图投射方向；无箭头与数字。XLINE/RAY 或位于 Defpoints、不打印层的线多为作图辅助，应排除在图面内容之外。"
+confusions = ["尺寸界线：只从一个视图伸出，越过尺寸线约2 mm。", "辅助线：延长轮廓求交点。"]
+related = ["DC-G1-043", "DC-G1-053", "DC-G1-101"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.19"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.19"
+page = 10
+
+[[concepts]]
+id = "DC-G1-028"
+name = "指引线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细实线把图形上的要素与说明文字或符号（技术要求、序号、标注）连接起来，建立明确对应关系的线。"
+components = ["细实线；与相邻图线成大于15°的角，不得与剖面线平行。", "可弯折一次成锐角；多条指引线可共用一个起点；不得穿过其他指引线、基准线、图形符号或尺寸数字。", "终端：止于轮廓线用实心箭头，止于轮廓内用圆点，止于另一条线（尺寸线、对称线）不加终端，指向多条平行线可用斜线。", "文字一端接基准线（6 mm 或与文字同长），或在指引线后直接注写。"]
+variants = ["单条", "折弯一次（锐角）", "共用起点的多条指引线"]
+dxf_forms = ["LEADER entity (71 arrowhead flag, 72 path type, 76 vertex count, 340 link to annotation) with MTEXT/TOLERANCE/INSERT annotation", "MULTILEADER (MLEADER) with arrow block _CLOSEDFILLED, _DOT, _NONE or _OBLIQUE and a landing", "exploded: LINE(s) + SOLID/HATCH triangle or small filled dot (DONUT-like LWPOLYLINE) at the end", "layer 09 (参考圆含引出线及终端) or 08/细实线 per GB/T 14665"]
+recognition = "锚点为一端带终端（箭头/圆点/斜线，或无终端）、另一端接文字、基准线或符号的细实线折线。判据：末端落在轮廓线上（箭头）或轮廓内部（圆点）；另一端距某文字插入点小于一个字高；与邻近图线夹角大于15°；不成对、不连尺寸界线（区别于尺寸线）。另一端连接的对象决定其用途：序号、几何公差框格、焊缝符号等。"
+confusions = ["尺寸线：两端有终端，与尺寸界线垂直相接。", "剖面线：成组等距平行。", "尺寸界线：从轮廓引出，越过尺寸线。", "焊缝箭头线：指向接头，另一端接焊缝基准线。"]
+related = ["DC-G1-018", "DC-G1-095", "DC-G1-096", "DC-G1-097", "DC-G1-098", "DC-G1-111", "DC-G1-080", "DC-G8-009", "DC-G4-026", "DC-G7-141"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = ["second"]
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "3.1 4 图1-图13"
+page = 2
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.4"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.4"
+page = 7
+
+[[concepts]]
+id = "DC-G1-029"
+name = "断裂处边界线（视图与剖视图的分界线）"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "机件断开（断裂画法、断开缩短）处的边界线，或局部剖视中剖开部分与未剖部分的分界线，用波浪线或双折线绘制。"
+components = ["波浪线：徒手连续曲线，画到轮廓线为止，只画在实体上，不穿过孔、槽等中空处，不超出轮廓。", "双折线：带Z形折的细实线，两端略超出轮廓，适合较长的直线边界。", "同一张图样一般只用其中一种；GB/T 4458.1 还允许断裂边界用细双点画线。", "断开缩短画法中尺寸仍按实际长度标注。"]
+variants = ["波浪线", "双折线"]
+dxf_forms = ["SPLINE (fit or control points) or LWPOLYLINE with many short segments/bulges for the freehand wavy line", "LWPOLYLINE zigzag for the double-break line; thin layer 02, green", "in local sections the wavy line often doubles as an edge of the HATCH boundary path", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：细实线中“非规则”的曲线（SPLINE 或多段折线，无明显直线/圆弧结构）或Z形折线。判据：两端落在同一零件的轮廓线上（波浪线）或略超出（双折线）；一侧有 HATCH（局部剖），或两条成对、之间轮廓缺失（断开缩短）；常与 HATCH 边界共享几何。与相贯线（粗实线、端点在两立体轮廓交点、形状规则）区分。"
+confusions = ["折断线与轮廓线相交处：断裂线应止于轮廓，不应与轮廓重合或画在其延长线上。", "相贯线：粗实线规则曲线。", "中断线：细双点画线。"]
+related = ["DC-G1-032", "DC-G1-011", "DC-G1-004", "DC-G2-023", "DC-G2-041", "DC-G3-117"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55", "K39"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.21 01.1.22"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.21 01.1.22"
+page = 10
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 注"
+page = 6
+
+[[concepts]]
+id = "DC-G1-030"
+name = "模样分型线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "在铸件、模锻件图上用粗实线表示模样（或模具）的分型位置，图形两侧可画起模斜度符号。"
+components = ["粗实线（No.01.2.9），沿分型面迹线，通常穿过视图并伸出外形。", "图形外左右两侧的符号为起模斜度符号，指示起模方向。", "可配分型面符号或文字说明。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight (group 370) 50 or 70 (0.5/0.7 mm) or ByLayer on a thick layer: GB/T 14665 layer 01, names such as 粗实线/轮廓线/OUTLINE, CAXA 0层; colour white/black (ACI 7)", "draft-angle symbols as small LINE/TEXT groups or INSERTs on both sides of the view", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：一条粗实线横穿铸件视图并伸出到轮廓外，两侧附近有起模斜度符号或分型符号；它不与零件轮廓围成闭合外形。多见于铸件毛坯图或模具设计，普通零件图中罕见。"
+confusions = ["可见棱边线：粗实线，但不伸出外形。", "剖切符号：只在视图外两端出现粗短画。", "分模面图形符号：工艺符号，另有专门形状。"]
+related = ["DC-G1-038", "DC-G7-020", "DC-G7-046", "DC-G3-061"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.2.9"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2.9"
+page = 12
+
+[[concepts]]
+id = "DC-G1-031"
+name = "毛坯图中制成品的轮廓线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "在毛坯（铸件、锻件）图上用细双点画线画出加工完成后零件的轮廓，显示加工余量的分布。"
+components = ["细双点画线（No.05.1.7），画在毛坯粗实线轮廓的内侧。", "两轮廓之间的距离即加工余量，可注余量尺寸。", "反之，零件图中也可用细双点画线表示毛坯外形。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "PHANTOM outline offset inward from the thick blank outline by the machining allowance", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：在粗实线闭合外形内部，有一组与之大部分平行、偏移量小且近似恒定（如1~5 mm）的双点画线外形；图名或标题栏常含“毛坯”“锻件图”“铸件图”。"
+confusions = ["成形前轮廓线：表示变形前形状。", "加工余量线：余量注法中的细线或尺寸，不一定是双点画线。", "工艺用结构的轮廓线：只是附加的局部结构。"]
+related = ["DC-G1-042", "DC-G1-024", "DC-G1-022", "DC-G3-030", "DC-G6-018"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.7"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.7"
+page = 15
+
+[[concepts]]
+id = "DC-G1-032"
+name = "波浪线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "徒手画出的细实线连续曲线（01型实线的变形），用作断裂处边界线以及视图与局部剖视的分界线。"
+components = ["线宽同细实线，形状为不规则的平缓波浪。", "应画到轮廓线为止，只能画在表示实体的图形上，不得超出轮廓，也不得穿越孔、槽等中空处。", "不应与轮廓线重合，也不应画在轮廓线的延长线上。", "CAD 分层归02层（与细实线、双折线同层），屏幕显示为绿色。"]
+variants = []
+dxf_forms = ["SPLINE entity (often degree 3 with fit points)", "LWPOLYLINE with bulges or many small segments", "thin lineweight on layer 02, colour green", "an edge of a HATCH boundary path (spline or polyline edge type) in local sections", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为 SPLINE 或曲率不规则的细线多段线，端点落在粗实线轮廓上（距离小于线宽的数倍）。判据：曲线不对称、无确定圆心（拟合圆弧残差大）、波幅约1~3 mm；一侧有 HATCH 时为局部剖分界线，成对且之间轮廓缺失时为断开边界。与规则波浪线（等幅等距）、相贯线（粗实线规则曲线）和细实线曲线轮廓（如重合断面）区分。"
+confusions = ["双折线：带Z形折的直线。", "规则波浪连续线：等幅等周期，属其他专业用线。", "手绘相贯线：粗实线，端点在两立体轮廓交点。", "曲线轮廓：粗实线，构成零件外形。", "普通细实线：直线或规则曲线。"]
+related = ["DC-G1-029", "DC-G1-011", "DC-G1-043", "DC-G2-023", "DC-G2-041"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = ["local_section_boundary"]
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 17450-1998"
+clause = "表2"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.21"
+page = 5
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表1"
+page = 3
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表2"
+page = 9
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4"
+page = 16
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§7-1 四"
+page = 232
+
+[[concepts]]
+id = "DC-G1-033"
+name = "点画线的伸出长度与最短长度"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "点画线（中心线、轴线、对称线）和双点画线应略超出所属轮廓；太短而画不出点画结构时用细实线代替或放大线素。"
+components = ["伸出量：教材为超出轮廓2~5 mm；CAD 公式中点画线全长=轮廓内长度+24d，即每端约12d（d=0.25时约3 mm）。", "首末两端是长画而不是点；圆心应是长画的交点。", "点画线最小长度54.5d，短于此可画成细实线；双点画线最小长度58d，短于此按比例放大线素画出。", "中心线也不宜超出轮廓过长。"]
+variants = []
+dxf_forms = ["CENTER-type LINE whose endpoints lie 2–5 mm beyond the outline or circle", "short centre lines drawn as CONTINUOUS thin LINEs", "dimension variable DIMCEN: positive value = centre cross only, negative value = cross plus lines extending beyond the circle"]
+recognition = "用于确认中心线：点画线与图形外形求交，交点外侧余量约2~5 mm（或约12d）；圆的中心线长度≈直径+4~10 mm。小圆（直径约小于8~12 mm）的中心线常为细实线十字、略长于直径，应按短中心线处理而非尺寸界线。中心线伸出很长（>10 mm）时可能兼作尺寸界线。"
+confusions = ["短中心线：细实线，用于小圆。", "尺寸界线：细实线，越过尺寸线约2 mm，不成十字。"]
+related = ["DC-G1-044", "DC-G1-037", "DC-G1-042", "DC-G1-061", "DC-G1-093"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 18686-2002"
+clause = "4.2"
+page = 6
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.2.3 4.2.4"
+page = 7
+
+[[concepts]]
+id = "DC-G1-034"
+name = "特定区域线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细双点画线围出具有特殊含义的区域，例如铭牌、标签位置，或轮廓无法明确绘制的特定封闭区域。"
+components = ["细双点画线（No.05.1.8），通常为闭合矩形或外形。", "区域内或旁边有说明文字（如“铭牌”）。", "GB/T 4458.1：轮廓线无法明确绘制时，其特定封闭区域用细双点画线画出。"]
+variants = []
+dxf_forms = ["closed LWPOLYLINE with a PHANTOM-type linetype plus TEXT inside or beside it", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "闭合的双点画线矩形或外形，位于零件表面范围内，内部或旁边有说明文字；与零件其他图线无投影对应。与局部放大的细实线圆圈、限定范围的粗点画线（沿表面的开口线）区分。"
+confusions = ["范围线及分界线：细实线。", "限定范围表示线：粗点画线，沿表面平行。", "局部放大图的圈注：细实线圆。"]
+related = ["DC-G1-042", "DC-G1-047", "DC-G3-035", "DC-G7-004"]
+priority = "low"
+text_forms = ["铭牌"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.8"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.8"
+page = 15
+
+[[concepts]]
+id = "DC-G1-035"
+name = "相贯线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "两个立体（如两圆柱、圆柱与圆锥、球）相交时表面上的交线；可见部分用粗实线、不可见部分用细虚线画出，常可用圆弧或直线简化。"
+components = ["可见相贯线为粗实线（No.01.2.3），不可见为细虚线。", "两回转体的相贯线一般为闭合空间曲线，特殊情况为平面曲线或直线（如等径正交圆柱为两条相交直线）。", "简化画法：用圆弧或直线代替非圆曲线，也可用模糊画法，但不得影响理解。", "转向轮廓线只画到相贯线上的点为止，不穿入另一立体。"]
+variants = ["visible: thick solid", "hidden: thin dashed"]
+dxf_forms = ["ARC (simplified; radius usually that of the larger cylinder), SPLINE or LWPOLYLINE on the thick layer", "pair of crossing LINEs for equal-diameter cylinders", "dashed ARC/SPLINE for a hidden intersection", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：两组回转体轮廓（两对平行素线互相垂直或斜交）之间的一条曲线（ARC/SPLINE），两端恰在两立体转向轮廓的交点处。简化圆弧的半径约等于较大圆柱的半径，凸向较大圆柱的轴线；等径正交时为两条交叉直线。粗实线、端点与轮廓相接为相贯线；细实线且端部留隙为过渡线。"
+confusions = ["过渡线：细实线，端部留空隙，用于圆角过渡处。", "可见棱边线：平面交线，多为直线。", "截交线：平面与立体的交线。", "普通轮廓：不位于两立体交界。"]
+related = ["DC-G1-054", "DC-G1-026", "DC-G1-014", "DC-G3-125"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2.3"
+page = 11
+[[concepts.sources]]
+document = "GB/T 4458.1-2002"
+clause = "5.3"
+page = 7
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§4-2"
+page = 140
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§4-4"
+page = 159
+
+[[concepts]]
+id = "DC-G1-036"
+name = "相邻辅助零件的轮廓线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细双点画线画出与本零件相邻、仅为说明安装或工作关系而画出的其他零件的轮廓。"
+components = ["细双点画线（No.05.1.1）。", "相邻辅助零件不覆盖主零件，但可被主零件遮挡（被遮部分不画）。", "相邻辅助零件的断面不画剖面线。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "sometimes an INSERT of the neighbouring part placed on the phantom layer", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：双点画线组成的外形，与主零件粗实线轮廓接触或相邻（共边或贴合）；在被主零件遮挡处中断，内部没有 HATCH。形状与主零件任何部分都不全等（据此与可动零件极限位置区分）。"
+confusions = ["可动零件的极限位置轮廓：与本零件全等，只是位置不同。", "可见轮廓线：粗实线，表示本零件。", "剖切面前的结构轮廓线：属本零件被移去的部分。"]
+related = ["DC-G1-042", "DC-G1-013", "DC-G1-009", "DC-G3-038"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.1"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.1"
+page = 14
+
+[[concepts]]
+id = "DC-G1-037"
+name = "短中心线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "尺寸很小的圆或结构的中心线（短的轴线、对称线），用细实线画出，以代替难以表现线素的点画线。"
+components = ["细实线（No.01.1.7），常为小圆上的十字线，略超出圆周。", "依据：点画线长度不足以表现长画和点（CAD 规定短于54.5d）时允许用细实线。"]
+variants = []
+dxf_forms = ["two thin CONTINUOUS LINEs crossing at a small CIRCLE centre", "DIMCEN/centre-mark crosses on small circles", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为小圆（直径通常小于8~12 mm，或中心线长度小于54.5d），圆心处有两条正交细实线，长度约为直径+2~6 mm，交点与圆心重合。与尺寸界线区分：尺寸界线一端连轮廓、另一端越过尺寸线，不成十字；与圆心符号区分：圆心符号的十字更短，可不超出圆周。"
+confusions = ["细点画线中心线：用于一般大小的圆。", "尺寸界线：不成十字。", "圆心符号：短十字，只标圆心。"]
+related = ["DC-G1-043", "DC-G1-044", "DC-G1-033", "DC-G1-093"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.7"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.7"
+page = 8
+
+[[concepts]]
+id = "DC-G1-038"
+name = "粗实线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "线宽为 d（常用0.5或0.7 mm）的连续线，是机械图样的主线，用于可见轮廓、可见棱边、相贯线、螺纹牙顶线、螺纹终止线、齿顶圆、剖切符号等。"
+components = ["线型01，线宽 d，同一图样中宽度一致。", "用途：可见棱边线、可见轮廓线、相贯线、螺纹牙顶线、螺纹长度终止线、齿顶圆（线）、表格图和流程图主要表示线、系统结构线、模样分型线、剖切符号用线。", "图框也用粗实线画出。CAD 分层01层，屏幕显示白色。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight (group 370) 50 or 70 (0.5/0.7 mm) or ByLayer on a thick layer: GB/T 14665 layer 01, names such as 粗实线/轮廓线/OUTLINE, CAXA 0层; colour white/black (ACI 7)", "thick strokes drawn as LWPOLYLINE with constant width (group 43 ≈ 0.5–0.7) when lineweights are not used", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "判据优先级：(1) 370线宽明显大于其他图线（约2倍）；(2) 图层名或编号（01、粗实线、轮廓线）；(3) 颜色白/黑（ACI 7）且线型连续；(4) 打印样式按颜色映射。再按位置细分用途：闭合外形→轮廓；视图外孤立短画→剖切符号；纸边内大矩形→图框；与3/4细圆同心的粗圆→螺纹；与点画线圆同心的粗圆→齿顶圆。"
+confusions = ["粗虚线：粗线宽的虚线，表示允许表面处理。", "粗点画线：粗线宽的点画线，表示限定范围。", "剖切符号：粗短画，位于视图外。", "小比例输出时的细实线：打印后线宽差异变小，应以 DXF 属性为准。", "可见焊缝的加粗线、螺钉头一字槽的加粗线：专业规定画法。"]
+related = ["DC-G1-015", "DC-G1-014", "DC-G1-016", "DC-G1-101", "DC-G1-079", "DC-G1-007", "DC-G1-085"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+notes = "CAXA 默认“0层”为粗实线层是通用实践，需按实际模板核对。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2"
+page = 11
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表6 01"
+page = 11
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表2"
+page = 9
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4"
+page = 16
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-6"
+page = 17
+
+[[concepts]]
+id = "DC-G1-039"
+name = "粗点画线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "线宽为粗线的点画线，平行且靠近表面画出，用来限定某项特殊要求（如热处理、测量）所适用的有限范围。"
+components = ["线型04，线宽 d；机械图中唯一用途是限定范围表示线（04.2.1）。", "画在表面轮廓外侧并与之平行，起止位置常由尺寸确定。", "CAD 分层06层，屏幕显示棕色。"]
+variants = []
+dxf_forms = ["LINE/ARC with a dash-dot linetype and thick lineweight on layer 06, brown colour (no basic ACI index; templates use an index colour or true colour)", "offset copy of a stretch of the outline", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying"]
+recognition = "锚点为线宽为粗线的点画线；与某段粗实线轮廓平行、间距小（约1~3 mm），只覆盖轮廓的一段；附近有限定起止的线性尺寸和文字或符号。与细点画线靠线宽和颜色区分；与粗虚线靠图案中有无点区分。"
+confusions = ["粗虚线：没有点，表示允许处理。", "细点画线：细线宽，表示轴线、对称线等。"]
+related = ["DC-G1-060", "DC-G1-044", "DC-G1-005", "DC-G4-060", "DC-G6-026", "DC-G7-021", "DC-G5-098"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 04.2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 04.2"
+page = 14
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表2"
+page = 9
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4"
+page = 17
+
+[[concepts]]
+id = "DC-G1-040"
+name = "粗虚线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "线宽为粗线的虚线，GB/T 4457.4-2002 新增，用于表示允许进行表面处理的范围。"
+components = ["线型02，线宽 d。", "用途：允许表面处理的表示线（02.2.1），沿表面平行画出。", "CAD 分层03层，屏幕显示白色（与粗实线同色）。"]
+variants = []
+dxf_forms = ["LINE/ARC with a dashed linetype and thick lineweight on layer 03, colour white", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying"]
+recognition = "虚线图案加粗线宽。因与粗实线同为白色，线宽缺失时只能依据图层（03）或“虚线+与轮廓平行偏移”的位置关系判别。2002年以前的图样不会出现。"
+confusions = ["细虚线：细线宽，表示不可见轮廓。", "粗点画线：有点，表示要求处理的限定范围。"]
+related = ["DC-G1-005", "DC-G1-045", "DC-G1-060", "DC-G7-019"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 02.2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "前言"
+page = 3
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表1"
+page = 3
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表2"
+page = 9
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4"
+page = 17
+
+[[concepts]]
+id = "DC-G1-041"
+name = "系统结构线（金属结构工程）"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "在金属结构（钢结构、桁架）的系统图中，用粗实线单线表示各杆件的布置，并在线旁注出杆件长度。"
+components = ["粗实线（No.01.2.8），每根杆件一条线，节点处相交。", "线旁注写杆件长度数字，不画尺寸界线和尺寸线。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight (group 370) 50 or 70 (0.5/0.7 mm) or ByLayer on a thick layer: GB/T 14665 layer 01, names such as 粗实线/轮廓线/OUTLINE, CAXA 0层; colour white/black (ACI 7)", "TEXT lengths aligned with each member LINE", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：一组粗实线构成的网格或桁架图（节点处多线共点），每条线中部旁有与之平行的数字，没有尺寸界线。普通零件图中罕见。"
+confusions = ["可见轮廓线：表示实体外形。", "表格图主要表示线：表格中的粗线。", "单线图尺寸注法：尺寸数字直接注在单线旁，属尺寸注法。"]
+related = ["DC-G1-038", "DC-G1-050", "DC-G3-065", "DC-G4-085"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.2.8"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2.8"
+page = 12
+
+[[concepts]]
+id = "DC-G1-042"
+name = "细双点画线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "线宽为细线的长画双点画线，主要表示假想轮廓：相邻辅助零件、可动零件极限位置、成形前轮廓、剖切面前的结构、轨迹线、中断线等。"
+components = ["线型05，线宽约0.5d；长画约24d，间隔约3d，两点各不大于0.5d。", "用途共11项（05.1.1~05.1.11），含重心线、毛坯图中的制成品轮廓、特定区域线、延伸公差带表示线、工艺用结构轮廓线。", "CAD 规定最小长度58d，过短时放大线素；画长画时允许改变方向。", "CAD 分层07层，屏幕显示粉红色。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "AutoCAD PHANTOM is long dash + two short dashes; DIVIDE and ACAD_ISO05W100 contain true dots", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying", "visible dash length = LTYPE pattern × header $LTSCALE × entity linetype scale (group 48) (× $PSLTSCALE rules in paper space)", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "按线型图案判定：一个长画后跟两个点（或两个短画）。名称不可靠时数 LTYPE 序列：长画+3个间隔+2个点/短画为双点画线，长画+2个间隔+1个点为点画线。再按几何关系分用途：与主零件全等→极限位置；与主零件贴合而不同形→相邻零件；在毛坯外形内→制成品轮廓；单条曲线→轨迹；横切长件→中断线。"
+confusions = ["细点画线：一个点（或一个短画）。", "三点画线：三个点，机械图不用。", "细虚线：只有画和间隔。"]
+related = ["DC-G1-036", "DC-G1-013", "DC-G1-024", "DC-G1-009", "DC-G1-051", "DC-G1-031", "DC-G1-022", "DC-G1-023", "DC-G1-034", "DC-G1-058", "DC-G1-004"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1"
+page = 14
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.2.4"
+page = 7
+[[concepts.sources]]
+document = "GB/T 18686-2002"
+clause = "4.3"
+page = 6
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表2"
+page = 9
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4、图1-6"
+page = 17
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§7-4 （11）（13）"
+page = 249
+
+[[concepts]]
+id = "DC-G1-043"
+name = "细实线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "线宽约为粗线一半（如0.25或0.35 mm）的连续线，用于尺寸线、尺寸界线、剖面线、指引线和基准线、过渡线、螺纹牙底线、重合断面轮廓、短中心线等大量辅助表达。"
+components = ["线型01，线宽约0.5d。", "用途（01.1.1~01.1.20）：过渡线、尺寸线、尺寸界线、指引线和基准线、剖面线、重合断面轮廓、短中心线、螺纹牙底线、尺寸线起止线、平面对角线、成形前弯折线、范围线及分界线、重复要素线、锥形基面线、叠片线、辅助线、同一表面连线、相同要素连线、投影线、网格线。", "波浪线、双折线（01.1.21、01.1.22）也属细实线类。", "CAD 分层02层（细实线、波浪线、双折线），屏幕绿色；尺寸类细线归08层。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight 25 or 35 (or ByLayer) on a thin layer: GB/T 14665 layer 02, names such as 细实线/THIN; colour green (ACI 3)", "lines inside DIMENSION, HATCH and LEADER entities are thin by convention", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "连续线型且线宽约为粗线一半（或位于细实线、尺寸、剖面线等图层，颜色绿色等）。用途靠关系细分：成组等距平行且被闭合轮廓包围→剖面线；属于 DIMENSION 或与之关联→尺寸线/界线；一端终端一端文字→指引线；与粗圆同心的3/4圆弧→螺纹牙底；端部留隙的交线→过渡线；SPLINE→波浪线；Z形折→双折线。"
+confusions = ["粗实线：线宽约为2倍。", "波浪线、双折线：同属细实线类，形状特殊。", "过渡线与轮廓线：过渡线细且端部留隙。", "重合断面轮廓：细实线闭合外形叠在视图上。"]
+related = ["DC-G1-038", "DC-G1-010", "DC-G1-028", "DC-G1-054", "DC-G1-032", "DC-G1-011", "DC-G1-048", "DC-G1-056", "DC-G1-037"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1"
+page = 7
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表6 02"
+page = 11
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表2"
+page = 9
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4"
+page = 16
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-6"
+page = 17
+
+[[concepts]]
+id = "DC-G1-044"
+name = "细点画线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "线宽为细线的长画点画线（单点长画线），用于轴线、对称中心线、分度圆（线）、孔系分布的中心线和剖切线。"
+components = ["线型04，线宽约0.5d；线素长画约24d、短间隔约3d、点不大于0.5d；手工常用长画约15~20 mm、间隔约3 mm。", "首末两端为长画，相交处在长画上；超出轮廓约2~5 mm；过短时用细实线代替。", "CAD 分层05层，屏幕显示红色。"]
+variants = ["线素：长画 24d, 短间隔 3d, 点 ≤0.5d"]
+dxf_forms = ["LINE/ARC/CIRCLE with a dash-dot linetype (CENTER, CENTER2, DASHDOT, ACAD_ISO04W100 or e.g. 点画线/中心线), thin lineweight, layer 05 / 中心线 / CENTER, colour red (ACI 1)", "AutoCAD CENTER/CENTER2 are long dash + short dash (render like dash-dot); ACAD_ISO04W100 is 24, -3, 0, -3 with a true dot", "DIMCEN with a negative value draws centre lines beyond circles", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying", "visible dash length = LTYPE pattern × header $LTSCALE × entity linetype scale (group 48) (× $PSLTSCALE rules in paper space)", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "由线型图案（长画+间隔+点或短画+间隔）或图层、颜色判定；长画约为虚线画长的2倍。几何用途：直线位于回转体两侧对称轮廓的中线→轴线；两正交线交于圆心→圆中心线；点画线圆上有孔心→孔系中心线；点画线圆与粗实线圆同心且无孔→分度圆；端部连粗短画→剖切线。"
+confusions = ["细双点画线：两个点或两个短画。", "长画短画线：CENTER 线型名义上属此型，机械图中当点画线用。", "细虚线：无长画，画长较短。", "粗点画线：粗线宽，表示限定范围。"]
+related = ["DC-G1-052", "DC-G1-021", "DC-G1-006", "DC-G1-020", "DC-G1-008", "DC-G1-033", "DC-G1-061"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "rule"
+seen_on_drawing = []
+expert_checked = false
+notes = "手工绘制的线素尺寸为教材习惯的一般实践；CAD 公式取自 GB/T 14665 与 GB/T 18686。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 04.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 04.1"
+page = 13
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.2.3"
+page = 6
+[[concepts.sources]]
+document = "GB/T 18686-2002"
+clause = "4.2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表2"
+page = 9
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4、图1-6"
+page = 17
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-7"
+page = 18
+
+[[concepts]]
+id = "DC-G1-045"
+name = "细虚线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "线宽为细线的虚线，用于不可见棱边线和不可见轮廓线。"
+components = ["线型02，线宽约0.5d；画约12d、间隔约3d；手工常用画约3~6 mm、间隔约1 mm。", "CAD 画法使画数为整数、首尾为画；最小长度27d，过短时放大线素；也允许按定长12d 画线。", "与粗实线共线时粗实线画到分界点、虚线留间隙；与其他线相交应在画上。", "CAD 分层04层，屏幕显示黄色。"]
+variants = ["线素：画 12d, 短间隔 3d"]
+dxf_forms = ["LINE/ARC/CIRCLE with a dashed linetype (HIDDEN, HIDDEN2, DASHED, ACAD_ISO02W100 or a Chinese-named type such as 虚线), thin lineweight, layer 04 / 虚线 / HIDDEN, colour yellow (ACI 2)", "ACAD_ISO02W100 = 12, -3 (true ISO proportions); HIDDEN = 6.35, -3.175; HIDDEN2 = half of HIDDEN", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying", "visible dash length = LTYPE pattern × header $LTSCALE × entity linetype scale (group 48) (× $PSLTSCALE rules in paper space)", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "线型图案只有“画+间隔”交替、没有点，画长约为间隔的2~4倍。若线型丢失而被炸成线段：一串共线短 LINE，长度相等、间距相等（约12d、3d 乘以比例）。按线宽排除粗虚线；按图案排除点线（画极短）与间隔画线（间隔很长，约18d）。"
+confusions = ["粗虚线：粗线宽。", "间隔画线：间隔约为画长的1.5倍，机械图不用。", "点线：由点组成。", "焊缝符号中的虚线基准线：与实线基准线平行，属焊接符号。"]
+related = ["DC-G1-001", "DC-G1-002", "DC-G1-040", "DC-G1-061", "DC-G1-055"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+notes = "手工线素尺寸为教材习惯的一般实践。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 02.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表1"
+page = 3
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.2.2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 18686-2002"
+clause = "4.1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表2"
+page = 9
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-4"
+page = 16
+
+[[concepts]]
+id = "DC-G1-046"
+name = "网格线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细实线画出的格网，例如用来确定曲线形状或位置的坐标网格。"
+components = ["细实线（No.01.1.20），两组相互垂直（或成规定角度）的等距平行线。", "网格节点或边缘常配坐标值、编号，用于定义自由曲线轮廓。"]
+variants = []
+dxf_forms = ["arrays of thin LINEs, possibly in a block or MINSERT", "HATCH with a net/grid pattern", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "两组正交、等距的细实线覆盖一个矩形区域，边缘有坐标数值或编号；线端在网格边界上对齐，不被零件轮廓裁剪（与剖面线不同）。与图幅分区（只在图框周边刻度）及交叉剖面线（限于剖面区域内）区分。"
+confusions = ["剖面线（交叉）：限于剖面区域、多为45°。", "图幅分区：只在图框与纸边之间。", "滚花：仅在外表面局部的纹样。"]
+related = ["DC-G1-043", "DC-G4-087", "DC-G4-092"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.20"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.20"
+page = 10
+
+[[concepts]]
+id = "DC-G1-047"
+name = "范围线及分界线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细实线画出的范围界限或两区域的分界线，例如同一表面上不同要求区域的分界、局部结构的范围线。"
+components = ["细实线（No.01.1.12）；GB/T 4457.4-2002 在 ISO 基础上增加了“分界线”及示例。", "范围线界定某结构或要求的起止；分界线把同一表面分成要求不同的两部分（如不同表面粗糙度或处理）。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight 25 or 35 (or ByLayer) on a thin layer: GB/T 14665 layer 02, names such as 细实线/THIN; colour green (ACI 3)", "single thin LINE across a surface outline", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "一条细实线横跨（多为垂直于）某粗实线轮廓或在面内分隔区域，两端止于轮廓；两侧常各有一个不同的表面结构、处理要求或尺寸。与剖面线（成组）、尺寸界线（伸出轮廓越过尺寸线）区分。"
+confusions = ["特定区域线：细双点画线围成闭合区域。", "限定范围表示线：粗点画线，平行于表面。"]
+related = ["DC-G1-043", "DC-G1-034", "DC-G1-060", "DC-G6-022"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.12"
+page = 9
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "前言"
+page = 3
+
+[[concepts]]
+id = "DC-G1-048"
+name = "螺纹牙底线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细实线画出螺纹牙底所在的线：外螺纹的小径线、内螺纹的大径线；在投影为圆的视图中画约3/4圈的细实线圆弧。"
+components = ["细实线（No.01.1.8）。非圆视图中与牙顶线（粗实线）平行，作图时小径常近似取大径的0.85倍。", "外螺纹细线在粗实线（大径）内侧，内螺纹剖视中细线在粗实线（小径）外侧；外螺纹倒角部分也应画出牙底线。", "投影为圆的视图中牙底圆只画约3/4圈，倒角圆省略不画。", "不可见螺纹的牙底、牙顶线都画细虚线。"]
+variants = []
+dxf_forms = ["thin ARC with an included angle of about 270° concentric with a thick CIRCLE", "thin LINEs parallel to the thick crest lines over the threaded length", "thread blocks of mechanical add-ons (AutoCAD Mechanical, GstarCAD, CAXA) or their exploded strokes", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：一条包角约270°的细实线圆弧，与一个粗实线整圆同心，半径比约0.85（外螺纹细弧在粗圆内，内螺纹细弧在粗圆外）。非圆视图中：一对细实线与一对粗实线平行、关于轴线对称，终止于一条垂直于轴线的粗实线（螺纹终止线）；附近有 M、G、Tr、Rc 等开头的螺纹标记。这是识别螺纹最强的几何特征。"
+confusions = ["螺纹牙顶线：粗实线。", "不可见轮廓线：细虚线；不可见螺纹全为虚线。", "倒角圆、孔的同心圆：整圆而非3/4圆弧。"]
+related = ["DC-G1-049", "DC-G1-043", "DC-G3-024", "DC-G3-005", "DC-G3-094", "DC-G3-088"]
+priority = "high"
+text_forms = ["M10-6g", "M24×1.5-6H"]
+knowledge_units = ["K03", "K52", "K55", "K34"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+notes = "小径约0.85倍大径为教材作图习惯（一般实践）；3/4圆弧与倒角圆省略取自螺纹画法通则。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.8"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.8"
+page = 8
+
+[[concepts]]
+id = "DC-G1-049"
+name = "螺纹牙顶线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用粗实线画出螺纹牙顶所在的线：外螺纹的大径线、内螺纹的小径线。"
+components = ["粗实线（No.01.2.4）。外螺纹的大径即外轮廓；内螺纹剖视中小径线为粗实线。", "投影为圆的视图中牙顶圆为粗实线整圆（外螺纹为大径圆，内螺纹为小径圆）。", "与垂直于轴线的螺纹长度终止线（粗实线）相接。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight (group 370) 50 or 70 (0.5/0.7 mm) or ByLayer on a thick layer: GB/T 14665 layer 01, names such as 粗实线/轮廓线/OUTLINE, CAXA 0层; colour white/black (ACI 7)", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "本身与可见轮廓线相同，需借配对的细实线牙底线（3/4圆弧或平行细线）判定。外螺纹：粗线在外、细线在内；内螺纹：粗线（小径）在内、细线（大径）在外，剖视中剖面线画到粗实线为止。螺纹终止线垂直于轴线并连接两条牙顶线。"
+confusions = ["螺纹牙底线：细实线。", "可见轮廓线：普通外形。"]
+related = ["DC-G1-048", "DC-G1-038", "DC-G3-024", "DC-G3-005", "DC-G3-094"]
+priority = "high"
+text_forms = ["M10-6g", "M24×1.5-6H"]
+knowledge_units = ["K03", "K52", "K55", "K34"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.2.4"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2.4"
+page = 11
+
+[[concepts]]
+id = "DC-G1-050"
+name = "表格图、流程图中的主要表示线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "在表格图（以表格列出多种规格的图样）和流程图中用粗实线画出的主要线条。"
+components = ["粗实线（No.01.2.7）。", "表格图中主要图形或主要分隔线用粗线，次要线用细线；流程图中主流程线用粗线。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight (group 370) 50 or 70 (0.5/0.7 mm) or ByLayer on a thick layer: GB/T 14665 layer 01, names such as 粗实线/轮廓线/OUTLINE, CAXA 0层; colour white/black (ACI 7)", "tables drawn as LINE grids or ACAD_TABLE entities", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "表格或流程图结构中线宽较粗的线条，只在表格图等特殊图样中出现。与标题栏、明细栏外框（同为粗实线）靠位置（右下角）和内容区分。"
+confusions = ["标题栏、明细栏的粗外框：位于图纸右下角。", "系统结构线：桁架单线图。"]
+related = ["DC-G1-041", "DC-G1-038", "DC-G4-098"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.2.7"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2.7"
+page = 11
+
+[[concepts]]
+id = "DC-G1-051"
+name = "轨迹线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细双点画线表示运动点或运动零件上某点的运动路径。"
+components = ["细双点画线（No.05.1.6），曲线或直线。", "常与可动零件极限位置的轮廓一起出现，起止于两个位置的对应点。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "PHANTOM-type ARC/SPLINE whose centre lies at a pivot", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "一条非闭合的双点画线圆弧或曲线，两端分别连在零件实际位置与极限位置（双点画线外形）的对应点上；圆弧圆心常在转轴孔心。"
+confusions = ["可动零件的极限位置轮廓：闭合外形。", "中心线：点画线，表示轴或对称面。"]
+related = ["DC-G1-042", "DC-G1-013", "DC-G3-199"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.6"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.6"
+page = 15
+
+[[concepts]]
+id = "DC-G1-052"
+name = "轴线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细点画线画出回转体（轴、孔、回转面）的轴线。"
+components = ["细点画线（No.04.1.1），在非圆视图中贯穿回转体，两端超出轮廓约2~5 mm。", "投影为圆的视图中轴线积聚为点，以两条正交中心线的交点表示。", "同轴的多段回转体共用一条轴线。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE with a dash-dot linetype (CENTER, CENTER2, DASHDOT, ACAD_ISO04W100 or e.g. 点画线/中心线), thin lineweight, layer 05 / 中心线 / CENTER, colour red (ACI 1)", "usually one long CENTER-type LINE through a whole shaft or bore", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点为点画线直线；两侧有成对、等距的平行粗实线（回转体素线），另一视图中对应圆的中心。轴类零件图通常有一条贯穿全长的点画线。与对称中心线二维同型，区别在两侧轮廓构成回转体（台阶两侧对称、标注 Ø）。"
+confusions = ["对称中心线：表示对称面，不一定是回转体。", "剖切线：与剖切符号相连。"]
+related = ["DC-G1-044", "DC-G1-021", "DC-G1-033", "DC-G1-020"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 04.1.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 04.1.1"
+page = 13
+
+[[concepts]]
+id = "DC-G1-053"
+name = "辅助线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细实线画出的辅助线，例如延长轮廓线以确定理论交点，以便在圆角或倒角处标注尺寸。"
+components = ["细实线（No.01.1.16）。", "典型：在光滑过渡处把两轮廓延长相交，从交点引出尺寸界线；其他作图延长线。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight 25 or 35 (or ByLayer) on a thin layer: GB/T 14665 layer 02, names such as 细实线/THIN; colour green (ACI 3)", "XLINE/RAY or construction LINEs on non-plotting layers", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "细实线从粗实线轮廓（尤其圆角、倒角两侧的直线）共线延长，两条延长线交于一点，交点处有尺寸界线或圆点引出。位于不打印图层的构造线应忽略。"
+confusions = ["尺寸界线：从交点或轮廓引出，越过尺寸线。", "投影线：连接两个视图的对应点。"]
+related = ["DC-G1-043", "DC-G1-027", "DC-G4-005"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.16"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.16"
+page = 9
+
+[[concepts]]
+id = "DC-G1-054"
+name = "过渡线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "铸件、锻件表面以圆角光滑过渡时，原有理论交线已不存在，用细实线画出其大致位置（过渡线），表示面与面的分界。"
+components = ["细实线（No.01.1.1），画法同相贯线或截交线，但两端不与轮廓线相连，留有空隙。", "板与圆柱相切处没有过渡线，相交处才画。", "GB/T 4458.1-2002 起假想交线由粗实线改用细实线；此前的图样中可见过渡线可能为粗实线。"]
+variants = ["2002: thin solid (01.1)", "per 2002 foreword the 假想交线 were thick solid before 2002"]
+dxf_forms = ["thin ARC/LINE/SPLINE whose endpoints stop short of the thick outline", "tangent edges generated by 3D-to-2D projection in CAD (often a separate layer or linetype)", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：一条细实线曲线或直线，形状像相贯线或截交线，端点与邻近粗实线轮廓之间留有约1~2 mm 的间隙；零件为铸/锻件（材料如 HT、ZG，技术要求有“未注铸造圆角”）。旧图中可能用粗实线画出。与相贯线区分：相贯线为粗实线且端点与轮廓相接。"
+confusions = ["可见棱边线：粗实线，端点与轮廓相接。", "相贯线：粗实线，无端部空隙。", "尺寸界线：从轮廓引出，越过尺寸线。", "CAD 自动生成的相切边：三维出图时可能出现，应按模板设置判断是否为过渡线。"]
+related = ["DC-G1-035", "DC-G1-014", "DC-G1-071", "DC-G3-125", "DC-G3-067"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "端部空隙的数值源中未给出，1~2 mm 为一般实践；“假想交线”是否完全等同过渡线存疑（见目录说明）。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.1"
+page = 7
+[[concepts.sources]]
+document = "GB/T 4458.1-2002"
+clause = "5.3 图12"
+page = 8
+[[concepts.sources]]
+document = "GB/T 4458.1-2002"
+clause = "前言"
+page = 4
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§9-6 一（二）、图9-48、图9-49"
+page = 324
+
+[[concepts]]
+id = "DC-G1-055"
+name = "重合图线的优先顺序"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "两种以上图线在同一位置重合时只画优先级最高的一种：可见轮廓和棱线 > 不可见轮廓和棱线 > 剖切线 > 轴线和对称中心线 > 假想轮廓线 > 尺寸界线和分界线。"
+components = ["顺序（GB/T 14665）：(1)粗实线可见轮廓和棱线；(2)细虚线不可见轮廓和棱线；(3)细点画线剖切线；(4)细点画线轴线和对称中心线；(5)细双点画线假想轮廓；(6)细实线尺寸界线和分界线。", "教材补充：线宽相同时按习惯，细实线与细虚线或细点画线重叠画细实线，细虚线与细点画线重叠画细虚线。", "被盖住的中心线常只在轮廓两端露出一小段。"]
+variants = []
+dxf_forms = ["absence of the lower-priority entity at the shared location", "both entities present and exactly coincident in the file (common in CAD), or a short centre-type stub protruding beyond each end of an outline"]
+recognition = "识别时反向使用：粗实线两端各伸出一小段点画线（约2~5 mm）时，推断其下“藏着”一条轴线或对称线；虚线落在对称面位置时也推断有对称线。DXF 中两实体完全重合时，取高优先级者为可见语义，低优先级者记为附加语义，不当作重复错误删除。"
+confusions = ["缺失的中心线：可能被轮廓覆盖，而非遗漏。", "被遮挡未画出的虚线：按优先顺序省略，结构仍存在。"]
+related = ["DC-G1-038", "DC-G1-045", "DC-G1-044", "DC-G1-042", "DC-G1-043", "DC-G1-033"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "rule"
+seen_on_drawing = ["development", "second"]
+expert_checked = false
+notes = "教材“细实线与细虚线、细点画线重叠画细实线”的习惯与 GB/T 14665 中细实线优先级最低的规定不一致，待专家确认。"
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.3"
+page = 8
+
+[[concepts]]
+id = "DC-G1-056"
+name = "重合断面的轮廓线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "重合断面（画在视图轮廓之内的断面图）的轮廓用细实线绘制，以免与视图的粗实线混淆；移出断面的轮廓则用粗实线。"
+components = ["细实线（No.01.1.6），断面图形叠画在视图上剖切位置处（旋转90°后重合）。", "断面内画剖面线；视图中的轮廓线在重合断面处仍连续画出，不中断。", "对称的重合断面不必标注，不对称的画剖切符号和箭头。"]
+variants = []
+dxf_forms = ["thin closed LWPOLYLINE/LINEs overlapping a view, with a small HATCH inside", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：一个由细实线围成、内部带 HATCH 的闭合外形，位于某视图的粗实线轮廓之内并与视图图线叠合；其对称轴与该处肋、杆、型材的走向垂直。与移出断面区分：移出断面轮廓为粗实线，位于视图外或剖切线延长线上。"
+confusions = ["移出断面轮廓：粗实线，在视图外。", "可见轮廓线：粗实线，属视图本身。"]
+related = ["DC-G1-043", "DC-G1-010", "DC-G2-034", "DC-G2-028"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.6"
+page = 4
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.6"
+page = 8
+
+[[concepts]]
+id = "DC-G1-057"
+name = "重复要素表示线（齿根线）"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细实线表示重复要素，典型例子是齿轮的齿根圆（线）。"
+components = ["细实线（No.01.1.13）。", "齿轮端视图中齿根圆为细实线圆（也可省略）；非圆外形视图中齿根线为细实线（可省略），剖视中齿根线画粗实线。", "与齿顶圆（粗实线）、分度圆（细点画线）同心或平行。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight 25 or 35 (or ByLayer) on a thin layer: GB/T 14665 layer 02, names such as 细实线/THIN; colour green (ACI 3)", "thin CIRCLE concentric with a CENTER-type pitch circle and a thick tip circle", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "一组同心圆中最小的细实线圆，与粗实线齿顶圆、点画线分度圆同心；齿顶与齿根直径差约4.5m（标准齿轮）。附近有齿轮参数表。剖视图中齿根线为粗实线（轮齿按不剖处理）。"
+confusions = ["分度圆：细点画线。", "齿顶圆：粗实线。", "螺纹牙底线：约3/4圈的细实线圆弧。"]
+related = ["DC-G1-006", "DC-G1-062", "DC-G3-022", "DC-G3-074"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "剖视中齿根线为粗实线、直径差约4.5m 来自齿轮画法与标准齿轮几何（一般实践），非本条源页内容。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.13"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.13"
+page = 9
+
+[[concepts]]
+id = "DC-G1-058"
+name = "重心线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细双点画线表示截面或构件重心（形心）所在位置的线，常见于型材和钢结构。"
+components = ["细双点画线（No.05.1.3），穿过截面形心，平行于构件长度方向。", "线旁可注重心距离。"]
+variants = []
+dxf_forms = ["LINE/ARC/LWPOLYLINE with a double-dot linetype (PHANTOM, PHANTOM2, DIVIDE, ACAD_ISO05W100 or e.g. 双点画线), thin lineweight, layer 07 / 双点画线, colour magenta/pink (ACI 6)", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "型材（角钢、槽钢等）截面或构件视图中的一条双点画线直线，平行于截面外边、通常不在对称轴上（不对称截面的形心偏移），附近有偏距尺寸。普通零件图罕见。"
+confusions = ["轴线：细点画线。", "对称中心线：细点画线，位于对称面。"]
+related = ["DC-G1-042", "DC-G1-052", "DC-G3-195"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 05.1.3"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 05.1.3"
+page = 14
+
+[[concepts]]
+id = "DC-G1-059"
+name = "锥形结构的基面位置线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用细实线标出圆锥结构（锥孔、锥轴）基准平面（基面）的位置，供圆锥尺寸和公差标注使用。"
+components = ["细实线（No.01.1.14），垂直于圆锥轴线，横跨圆锥轮廓。", "基面处的直径和基面到端面的距离以此线为依据标注。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight 25 or 35 (or ByLayer) on a thin layer: GB/T 14665 layer 02, names such as 细实线/THIN; colour green (ACI 3)", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "一条细实线垂直于轴线、两端落在两条斜交的圆锥轮廓上，位于锥面中间某处（而不在端部）；附近有基准直径尺寸和锥度符号。与螺纹终止线（粗实线）和尺寸界线（伸出轮廓外）区分。"
+confusions = ["可见棱边线：粗实线，锥面与平面的真实交线。", "尺寸界线：从轮廓引出。"]
+related = ["DC-G1-043", "DC-G4-011", "DC-G4-057"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.1.14"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.1.14"
+page = 9
+
+[[concepts]]
+id = "DC-G1-060"
+name = "限定范围表示线"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用粗点画线平行并靠近表面画出，限定某项要求（如热处理、测量）只适用于该范围；这是粗点画线在机械图中的唯一用途。"
+components = ["粗点画线（No.04.2.1），线宽 d。", "画在要求适用表面的外侧，与轮廓平行；范围起止用尺寸确定。", "要求以文字或符号经指引线注在线旁。"]
+variants = []
+dxf_forms = ["LINE/ARC with a dash-dot linetype and thick lineweight on layer 06 (brown)", "offset copy of a stretch of the outline", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying"]
+recognition = "判据为“粗线宽+点画图案+与轮廓平行且间距小+有起止尺寸+有要求说明”；可能附表面结构符号、硬度或热处理文字。"
+confusions = ["允许表面处理的表示线：粗虚线，表示允许而非要求。", "细点画线：细线宽，表示轴线等。"]
+related = ["DC-G1-039", "DC-G1-005", "DC-G4-060", "DC-G6-026", "DC-G7-021", "DC-G5-098"]
+priority = "low"
+text_forms = ["淬火 58～62HRC"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 04.2.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 04.2.1"
+page = 14
+
+[[concepts]]
+id = "DC-G1-061"
+name = "非连续线的相交与连接"
+aliases = ["图线画法规则"]
+group = "G1"
+kind = "line"
+meaning = "虚线、点画线等不连续线相交、连接或转弯时，应在画（长画、短画）处相交或相连，不应在间隔或点处；点线则应在点上相交。"
+components = ["两条中心线在圆心处以长画相交；点画线、双点画线首末两端是长画。", "虚线与虚线、虚线与实线相交应在画上；虚线是粗实线的延长线时，粗实线画到分界点，虚线留间隙。", "虚线圆弧与虚线直线相切时，圆弧的画画到切点，直线一侧留间隙。", "平行线最小间隙0.7 mm；绘两条平行线时推荐第二条画在第一条的右下侧。"]
+variants = []
+dxf_forms = ["the rule is visible only after the linetype is rendered: DXF stores continuous geometry plus a linetype", "AutoCAD centres the pattern on each segment; LWPOLYLINE flag 128 (PLINEGEN) makes the pattern run continuously through vertices", "exploded form: a run of collinear (or concentric) short LINE/ARC pieces with a regular dash–gap period, typical of PDF→DWG conversion or exploded linetypes; rejoin by collinearity and period before classifying"]
+recognition = "DXF 中不连续线以连续几何加线型存储，相交规则只在渲染后体现，对几何识别影响小。对炸开的短线段，重组时应容忍交点落在间隔中，以共线和等周期为准，不因相交处无画而判为断开。可用作质量检查：圆心处无长画交点、端部为点等提示线型比例不当。"
+confusions = ["图线断开或间隙造成的误判：间隙是线型的一部分，不是结构的断开。"]
+related = ["DC-G1-044", "DC-G1-045", "DC-G1-042", "DC-G1-093", "DC-G1-033", "DC-G1-055"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "DXF 渲染与 PLINEGEN 为通用 CAD 实践。"
+[[concepts.sources]]
+document = "GB/T 17450-1998"
+clause = "5.2.1"
+page = 6
+[[concepts.sources]]
+document = "GB/T 17450-1998"
+clause = "5.2.2 图7-图16"
+page = 7
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.4.1 4.4.2 图10 图11"
+page = 8
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 四"
+page = 16
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-7 说明 1-3"
+page = 17
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-7"
+page = 18
+
+[[concepts]]
+id = "DC-G1-062"
+name = "齿顶圆（线）"
+aliases = []
+group = "G1"
+kind = "line"
+meaning = "用粗实线画出齿轮（齿条、链轮等）的齿顶圆（端视图）或齿顶线（非圆视图）。"
+components = ["粗实线（No.01.2.6），端视图中为最大的齿轮圆，与分度圆（细点画线）、齿根圆（细实线）同心。", "非圆视图中为齿宽范围的外轮廓线；啮合区剖视中一个齿轮的齿顶线画粗实线，另一个被遮挡的齿顶线画细虚线或省略。", "轮齿齿形一般不画出。"]
+variants = []
+dxf_forms = ["LINE/ARC/CIRCLE/LWPOLYLINE with linetype CONTINUOUS and lineweight (group 370) 50 or 70 (0.5/0.7 mm) or ByLayer on a thick layer: GB/T 14665 layer 01, names such as 粗实线/轮廓线/OUTLINE, CAXA 0层; colour white/black (ACI 7)", "thick CIRCLE concentric with a CENTER-type CIRCLE", "the same entities nested in an INSERT (view, symbol or frame block); apply the INSERT transform (scale, rotation, mirror) before measuring"]
+recognition = "锚点：粗实线圆与同心点画线圆（半径略小，直径差约2m）；若再有更小的同心细实线圆即构成齿轮三圆。附近参数表含 m、z、α。外形上不画齿形，这是与真实外形轮廓区分的线索。"
+confusions = ["分度圆：细点画线。", "齿根线：细实线。"]
+related = ["DC-G1-006", "DC-G1-057", "DC-G3-022", "DC-G3-211"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "关键词按 OCR 形态“齿頂”保留；啮合区画法与直径差为齿轮画法通用规定（一般实践）。"
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表1 01.2.6"
+page = 5
+[[concepts.sources]]
+document = "GB/T 4457.4-2002"
+clause = "表A.1 01.2.6"
+page = 11
+
+[[concepts]]
+id = "DC-G1-063"
+name = "专利与实用新型标识"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "声明专利或实用新型保护的标记：圆圈内字母（P 表示专利、U 表示实用新型），后接国家代码、公开号或注册号以及文献种类代码。"
+components = ["圆圈字母 Ⓟ（专利）或 Ⓤ（实用新型）。", "后接 WIPO ST.3 两字母国家或组织代码，如 FR、US、CN。", "再接公开号或注册号，以及 WIPO ST.16 文献种类代码（如 A1、B）。", "无法排印圆圈字母时写出专利类型全称，例如“实用新型 CH 679439 B5”。"]
+variants = ["圆圈 P（专利）", "圆圈 U（实用新型）", "文字全称"]
+dxf_forms = ["TEXT/MTEXT with a Unicode circled letter (\\U+24C5 Ⓟ, \\U+24CA Ⓤ) or the letter inside a small CIRCLE", "usually in or near the title block, possibly as ATTRIB of the frame block"]
+recognition = "文本模式：圆圈字母或圆内单字母 P/U，紧跟两位大写国家代码和数字串、末尾字母码，例如正则 (Ⓟ|Ⓤ|P|U)\\s*[A-Z]{2}\\s*[0-9 ,.]+\\s*[A-Z][0-9]?。圆内字母时，CIRCLE 直径约为字高的1.2~1.5倍。多在标题栏附近。与零件序号圆（内为数字、有指引线）区分。"
+confusions = ["版权标识：圆圈内为 C。", "设计专利标识：圆圈内为 D。", "零件序号圆：圆内为数字，带指引线。"]
+related = ["DC-G1-078", "DC-G1-075", "DC-G1-064"]
+priority = "rare"
+text_forms = ["Ⓟ FR 2775 254 A1", "Ⓤ US 5,927,354 B", "实用新型 CH 679439 B5"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "OCR 中圆圈字母识别不清，P/U/D 依 ISO 16016 惯例。"
+[[concepts.sources]]
+document = "GB/T 19827-2005"
+clause = "4.3"
+page = 4
+[[concepts.sources]]
+document = "GB/T 19827-2005"
+clause = "4.3 4.5"
+page = 5
+
+[[concepts]]
+id = "DC-G1-064"
+name = "保护声明（完全版）"
+aliases = ["保护声明（简化版）"]
+group = "G1"
+kind = "note"
+meaning = "写在文件（图样）上的限制使用声明：未经许可不得转让、复制、利用或公开其内容，违者承担赔偿责任，并保留专利、实用新型或外观设计注册的权利；不便时可用简化版“版权保护”。"
+components = ["完全版：一段声明文字，可把“文档”换成准确术语（如“图样”）。", "简化版：仅写“版权保护”，应尽量少用。", "附录给出多种外文版本，外贸图样常见英文或德文版。", "常放在标题栏附近或图框内边缘。"]
+variants = ["中文完全版", "英文等外文版（表A.1）"]
+dxf_forms = ["MTEXT paragraph near the title block, often inside the frame/title-block INSERT", "ATTRIB/ATTDEF inside the frame or title-block INSERT when the note is part of a company template"]
+recognition = "文本关键词匹配：中文“未经许可”“转让”“翻印/复制”“赔偿”“保留”；英文“reproduction”“distribution”“without express authorization”“prohibited”“damages”；德文“Weitergabe”“Vervielfältigung”。位置在图框内靠边或标题栏上方，字高小（常2.5~3.5 mm）。属管理信息，不是技术要求。"
+confusions = ["技术要求注语：对零件的技术要求，带编号。", "保密等级标记：如“秘密”，属密级而非版权。", "版权标识：© 加所有者与年份。"]
+related = ["DC-G1-075", "DC-G1-063", "DC-G9-028"]
+priority = "low"
+text_forms = ["版权保护", "未经许可不得转让及翻印", "… without express authorization is prohibited."]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 19827-2005"
+clause = "5.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 19827-2005"
+clause = "附录A 表A.1"
+page = 6
+[[concepts.sources]]
+document = "GB/T 19827-2005"
+clause = "5.2"
+page = 5
+
+[[concepts]]
+id = "DC-G1-065"
+name = "对称件注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "左右对称（镜像）的两个零件只画其中一个，用注语说明另一件与其对称，例如“右件如图，左件对称”。"
+components = ["形式：“右件如图，左件对称”或“左件如图，右件对称”。", "带件号形式：“件×（LH）如图，件×（RH）对称”，LH/RH 分别表示左件、右件。", "常写在技术要求中或视图附近。"]
+variants = ["左件如图", "右件如图", "LH/RH"]
+dxf_forms = ["TEXT or MTEXT (paragraphs split by \\P) on a text layer (GB/T 14665 layer 11; names such as 文字/TEXT/技术要求), usually numbered lines under a 技术要求 heading", "TEXT/MTEXT attached to a LEADER/MLEADER or written above a short reference LINE"]
+recognition = "文本正则：(左|右)件如图[，,]\\s*(右|左)件对称，或含 LH 与 RH 且有“如图”“对称”。出现时一张图对应两个零件，零件数量与代号应按两件记录，镜像件的几何由图示件镜像得到。"
+confusions = ["镜像投影：视图名后注“镜像”，是投影方法而非两件。", "对称中心线：表示图形自身对称。"]
+related = ["DC-G3-136", "DC-G9-002", "DC-G2-089"]
+priority = "low"
+text_forms = ["右件如图，左件对称", "左件如图，右件对称", "件1（LH）如图，件2（RH）对称"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 51 52"
+page = 12
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 37"
+page = 8
+
+[[concepts]]
+id = "DC-G1-066"
+name = "局部改动注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "图样只画出对另一图样的改动部分时所加的注语，表示未画出的部分仍按原图样执行。"
+components = ["形式：“本图仅示改动部分，未示部分均按 ××”，××为被引用的图样代号。", "图中只有局部视图或局部结构，其余省略。"]
+variants = []
+dxf_forms = ["TEXT or MTEXT (paragraphs split by \\P) on a text layer (GB/T 14665 layer 11; names such as 文字/TEXT/技术要求), usually numbered lines under a 技术要求 heading"]
+recognition = "文本含“仅示改动部分”或“未示部分均按”，后接图号。出现此注语时图形不完整是有意的，不应把缺失结构判为错误，并应建立与被引用图号的关联。"
+confusions = ["局部视图：只表达局部，但图样本身完整。", "标题栏更改区：记录更改，不说明图形范围。"]
+related = ["DC-G9-023", "DC-G2-076"]
+priority = "rare"
+text_forms = ["本图仅示改动部分，未示部分均按××"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 4"
+page = 11
+
+[[concepts]]
+id = "DC-G1-067"
+name = "展开长度与弯折注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "钣金冲压件等图样上的注语：给出展开长度（展开长度 L=…），标明弯折线，以及说明零件类别（成形冲压件、平冲压件）。"
+components = ["“展开长度 L=…”或“展开长…”，给出下料长度。", "“弯折线”：注在细实线弯折线旁。", "零件类别注语：“成形冲压件”“平冲压件”。"]
+variants = ["展开长", "弯折线", "成形冲压件", "平冲压件"]
+dxf_forms = ["TEXT or MTEXT (paragraphs split by \\P) on a text layer (GB/T 14665 layer 11; names such as 文字/TEXT/技术要求), usually numbered lines under a 技术要求 heading", "TEXT/MTEXT attached to a LEADER/MLEADER or written above a short reference LINE"]
+recognition = "文本匹配“展开长度\\s*L?\\s*=\\s*数字”“展开长”“弯折线”“冲压件”。“弯折线”注语旁通常有一条横穿钣金件的细实线；展开长度可与成形前轮廓（细双点画线）对照。"
+confusions = ["弯折线：细实线图线本身。", "成形前轮廓线：细双点画线外形。"]
+related = ["DC-G1-024", "DC-G4-046", "DC-G2-011"]
+priority = "low"
+text_forms = ["展开长度 L=125", "展开长 86", "弯折线", "平冲压件"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 84"
+page = 9
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 61"
+page = 8
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表3 展开长"
+page = 6
+
+[[concepts]]
+id = "DC-G1-068"
+name = "引用文件注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "图样上指向其他文件的注语，表示某项要求按指定的生产说明书、工艺说明书或标准执行。"
+components = ["形式：“按××生产说明书”“按××工艺说明书”“铸件热处理按××”等，××为文件代号。", "一般列在技术要求中，或用指引线指向相关部位。"]
+variants = ["按生产说明书", "按工艺说明书"]
+dxf_forms = ["TEXT or MTEXT (paragraphs split by \\P) on a text layer (GB/T 14665 layer 11; names such as 文字/TEXT/技术要求), usually numbered lines under a 技术要求 heading", "TEXT/MTEXT attached to a LEADER/MLEADER or written above a short reference LINE"]
+recognition = "文本以“按”开头，后接文件代号并以“说明书”“规范”或标准号结尾，如“按\\s*\\S+\\s*(生产|工艺)说明书”；“按 GB/T …”也属引用。识别后记录被引用文件代号。"
+confusions = ["标准件代号：零件标记中的标准号，不是引用注语。"]
+related = ["DC-G9-002", "DC-G7-027", "DC-G4-061"]
+priority = "low"
+text_forms = ["按××工艺说明书", "铸件热处理按××"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "GB/T 24745 表6 另列“无图”（零件无单独图样）。"
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 1 2"
+page = 11
+
+[[concepts]]
+id = "DC-G1-069"
+name = "旋转方向注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "表示零件旋转方向的文字“顺转”“逆转”“旋转”，通常与图上的方向箭头配合。"
+components = ["文字：顺转（顺时针）、逆转（逆时针）、旋转。", "方向箭头一般为带实心箭头的细实线圆弧，画在端视图上，文字注在箭头旁。"]
+variants = []
+dxf_forms = ["TEXT + ARC with an arrowhead (LEADER, tapering LWPOLYLINE or SOLID)", "TEXT or MTEXT (paragraphs split by \\P) on a text layer (GB/T 14665 layer 11; names such as 文字/TEXT/技术要求), usually numbered lines under a 技术要求 heading"]
+recognition = "文本“顺转”“逆转”“旋转”，且附近有带箭头的圆弧。注意排除视图名称中的“旋转”字样（旋转后的视图标注）。"
+confusions = ["轨迹线：细双点画线，表示路径。", "可动零件极限位置：外形而非方向说明。", "视图的旋转符号：标在图名旁，表示图形旋转配置。"]
+related = ["DC-G1-051", "DC-G2-048", "DC-G3-153"]
+priority = "low"
+text_forms = ["顺转", "逆转"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 29"
+page = 11
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 36 41"
+page = 12
+
+[[concepts]]
+id = "DC-G1-070"
+name = "未注倒角说明"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "在技术要求中统一给出图上未单独标注的倒角，如“未注倒角C1”，表示所有未注尺寸的锐边按此倒角。"
+components = ["形式：“未注倒角C1”“未注倒角C0.5”，C 表示45°倒角，后为倒角宽度（mm）。", "相近注语：“全部倒角C×”“锐边倒钝”。", "通常为技术要求中的一条带序号文字；零件图上省略不画的倒角按此执行。"]
+variants = []
+dxf_forms = ["TEXT or MTEXT (paragraphs split by \\P) on a text layer (GB/T 14665 layer 11; names such as 文字/TEXT/技术要求), usually numbered lines under a 技术要求 heading", "MTEXT such as 技术要求\\P1. 未注倒角C1。\\P2. …", "ATTRIB/ATTDEF inside the frame or title-block INSERT when the note is part of a company template"]
+recognition = "正则：未注倒角\\s*[CＣ]\\s*\\d+(\\.\\d+)?；旧图可能写“未注倒角1×45°”。锚点是标题“技术要求”下方的编号文本行。识别后作为全局规则作用于所有未注倒角的边。"
+confusions = ["倒角 C 标注：单个倒角的尺寸，带指引线或尺寸线。"]
+related = ["DC-G9-003", "DC-G3-091", "DC-G4-068", "DC-G4-040", "DC-G2-038"]
+priority = "high"
+text_forms = ["未注倒角C1", "未注倒角C0.5", "未注倒角1×45°"]
+knowledge_units = ["K13", "K39", "K29"]
+recognition_cards = ["technical_note"]
+recognizer = "card"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-9b"
+page = 343
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图10-18"
+page = 353
+
+[[concepts]]
+id = "DC-G1-071"
+name = "未注圆角说明"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "在技术要求中统一给出未单独标注的圆角半径；铸件常写“未注铸造圆角R1~R3”，机加工件写“未注圆角R2”等。"
+components = ["形式：“未注铸造圆角R1~R3”“未注圆角R2~R4”“未注圆角R0.5”。", "铸件图中圆角在视图上画出但不注尺寸，其半径按此说明；相关面交处画过渡线。", "一般为技术要求中的一条。"]
+variants = ["未注铸造圆角", "未注圆角"]
+dxf_forms = ["TEXT or MTEXT (paragraphs split by \\P) on a text layer (GB/T 14665 layer 11; names such as 文字/TEXT/技术要求), usually numbered lines under a 技术要求 heading", "ATTRIB/ATTDEF inside the frame or title-block INSERT when the note is part of a company template"]
+recognition = "正则：未注(铸造)?圆角\\s*R\\s*\\d+(\\.\\d+)?\\s*([~～\\-至]\\s*R?\\s*\\d+(\\.\\d+)?)?。可与零件材料（HT、ZG 等铸造材料）和图中的过渡线相互印证；识别后作为全局规则作用于未注圆角。"
+confusions = ["半径尺寸：单个圆角的 R 标注。", "铸造圆角画法：图形上的圆角本身。"]
+related = ["DC-G1-054", "DC-G9-004", "DC-G3-067", "DC-G3-112", "DC-G4-068"]
+priority = "high"
+text_forms = ["未注铸造圆角R1~R3", "未注圆角R2~R4", "未注圆角R0.5"]
+knowledge_units = ["K13", "K39", "K29"]
+recognition_cards = ["technical_note"]
+recognizer = "card"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图7-7d"
+page = 235
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-58"
+page = 329
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图9-59"
+page = 330
+
+[[concepts]]
+id = "DC-G1-072"
+name = "标记注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "关于零件标记方式的注语，如“打冲点”（以冲点作标记）、“标印打在标签上”。"
+components = ["文字注语，常用指引线指向标记位置，或写在技术要求中。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT attached to a LEADER/MLEADER or written above a short reference LINE", "TEXT or MTEXT (paragraphs split by \\P) on a text layer (GB/T 14665 layer 11; names such as 文字/TEXT/技术要求), usually numbered lines under a 技术要求 heading"]
+recognition = "文本“打冲点”“标印”“标记”等；有指引线时其终点位置即标记处。"
+confusions = ["圆心符号：圆心处的小十字，是图形符号。", "铸字和标志：铸造在零件上的文字标志。"]
+related = ["DC-G9-002"]
+priority = "rare"
+text_forms = ["打冲点", "标印打在标签上"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 6 10"
+page = 11
+
+[[concepts]]
+id = "DC-G1-073"
+name = "测量注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "有关测量的文字，如“测量方向”“水平测量点”“水平测量公差”，用于说明测量位置或方向。"
+components = ["文字，常配箭头或指引线指向测量点或方向。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT attached to a LEADER/MLEADER or written above a short reference LINE", "TEXT or MTEXT (paragraphs split by \\P) on a text layer (GB/T 14665 layer 11; names such as 文字/TEXT/技术要求), usually numbered lines under a 技术要求 heading"]
+recognition = "文本“测量方向”“水平测量点”“水平测量公差”，附近有箭头或点。"
+confusions = ["基准目标：圆框内字母加数字，属几何公差。", "表面粗糙度测量方向：表面结构标注的一部分。"]
+related = ["DC-G6-036", "DC-G5-005"]
+priority = "rare"
+text_forms = ["测量方向", "水平测量点"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 8"
+page = 11
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 34 35"
+page = 12
+
+[[concepts]]
+id = "DC-G1-074"
+name = "滚花注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "标注滚花类型与模数的注语，如“网纹 m0.3 GB/T 6403.3”或“直纹 m0.4 GB/T 6403.3”。"
+components = ["滚花类型：网纹（菱形）或直纹。", "模数 m 值，如0.2、0.3、0.4、0.5。", "引用滚花标准 GB/T 6403.3。", "通常用指引线引自滚花表面，表面上可局部画网纹或直纹细实线。"]
+variants = ["网纹", "直纹"]
+dxf_forms = ["TEXT/MTEXT attached to a LEADER/MLEADER or written above a short reference LINE", "knurl texture as a partial HATCH or crossing thin LINEs on the cylinder"]
+recognition = "正则：(网纹|直纹)\\s*m\\s*\\d+(\\.\\d+)?(\\s*GB/?T\\s*6403\\.3)?；指引线指向圆柱外表面上局部的交叉或直线纹样。"
+confusions = ["网格线：坐标网格。", "剖面线：只在剖面区域内。"]
+related = ["DC-G4-071", "DC-G2-042", "DC-G3-045"]
+priority = "low"
+text_forms = ["网纹 m0.3 GB/T 6403.3", "直纹 m0.4"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 58"
+page = 8
+
+[[concepts]]
+id = "DC-G1-075"
+name = "版权标识"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "声明版权的标记：圆圈中的字母C（©）后接版权所有者名称和首次出版年份，或直接写“版权所有”。"
+components = ["© + 所有者名称 + 首次出版年份。", "或文字“版权所有”。", "通常在标题栏或图框附近。"]
+variants = ["© 所有者 年份", "版权所有"]
+dxf_forms = ["TEXT with © (\\U+00A9) or a letter C inside a small CIRCLE", "ATTRIB/ATTDEF inside the frame or title-block INSERT when the note is part of a company template"]
+recognition = "文本以 © 或“(C)”开头、后接名称与四位年份，或含“版权所有”。与圆圈字母专利标识（P/U/D）和零件序号圆区分。"
+confusions = ["专利标识：圆圈内为 P、U 或 D。", "零件序号圆：圆内为数字。"]
+related = ["DC-G1-063", "DC-G1-078", "DC-G1-064"]
+priority = "rare"
+text_forms = ["© ××公司 2005", "版权所有"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 19827-2005"
+clause = "4.2"
+page = 4
+
+[[concepts]]
+id = "DC-G1-076"
+name = "纹理方向与纤维方向注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "说明表面纹理方向或材料纤维（轧制、锻造流线）方向的注语，通常配箭头画在视图上。"
+components = ["文字“纹理方向”或“纤维方向”。", "方向箭头（细实线带箭头）画在零件视图上指出方向。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT attached to a LEADER/MLEADER or written above a short reference LINE", "arrow LINE/LEADER without extension lines"]
+recognition = "文本“纹理方向”“纤维方向”（也可能是“轧制方向”），附近有单向或双向箭头直线，该箭头不连接尺寸界线。与表面结构纹理符号（=、⊥、X、M、C、R、P，写在表面结构符号旁）区分。"
+confusions = ["表面纹理符号：表面结构符号的一部分。", "轧制方向箭头：材料方向标记，与纤维方向同义时可合并。"]
+related = ["DC-G3-187", "DC-G6-037"]
+priority = "low"
+text_forms = ["纹理方向", "纤维方向"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 56"
+page = 8
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表5 63"
+page = 9
+
+[[concepts]]
+id = "DC-G1-077"
+name = "航空产品专用注语"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "航空等行业图样上表示布置几何与安装关系的专用词语，如航向、前缘线、弦线、弦长、理论外形、理论交点、上/下交点、外挂物质心、发动机前/后安装面、机械关锁/开锁。"
+components = ["方向与基准类：航向、前缘线、弦线、弦长。", "外形与交点类：理论外形、理论交点、上交点、下交点。", "安装与机构类：外挂物质心、外挂物中心、外挂站位、发动机前/后安装面、机械关锁、机械开锁。"]
+variants = []
+dxf_forms = ["TEXT/MTEXT attached to a LEADER/MLEADER or written above a short reference LINE", "TEXT labels placed along reference lines or arrows"]
+recognition = "按词典匹配上述词语；出现时说明图样属于航空类产品，相关线条可能是理论外形线或基准线而非实际轮廓。普通机械零件图几乎不出现。"
+confusions = ["中心线：表示轴或对称面。", "基准线（参考线）：承载注释的细实线。"]
+related = []
+priority = "rare"
+text_forms = ["航向", "前缘线", "理论外形", "理论交点", "发动机前安装面"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "行业专用，普通机械图上罕见。"
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 13-31"
+page = 11
+[[concepts.sources]]
+document = "GB/T 24745-2009"
+clause = "表7 33-46"
+page = 12
+
+[[concepts]]
+id = "DC-G1-078"
+name = "设计专利标识"
+aliases = []
+group = "G1"
+kind = "note"
+meaning = "声明外观设计（工业设计）专利保护的标记：圆圈中的字母D，后接国家代码和注册号或公开号。"
+components = ["圆圈字母 Ⓓ。", "国家代码（同专利标识）加注册号或公开号，例如 DE 496 00 001。", "无法排印圆圈时写出类型全称。"]
+variants = []
+dxf_forms = ["TEXT with Ⓓ (\\U+24B9) or a letter D inside a small CIRCLE", "ATTRIB/ATTDEF inside the frame or title-block INSERT when the note is part of a company template"]
+recognition = "与专利标识相同的文本模式，字母为 D。与几何公差基准字母 D（方框内、连涂黑三角形）区分：设计专利标识为圆圈，后接国家代码与数字。"
+confusions = ["专利与实用新型标识：圆圈内为 P 或 U。", "基准字母 D：方框内，附基准三角形。"]
+related = ["DC-G1-063", "DC-G1-075", "DC-G1-064"]
+priority = "rare"
+text_forms = ["Ⓓ DE 496 00 001"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 19827-2005"
+clause = "4.4"
+page = 5
+
+[[concepts]]
+id = "DC-G1-079"
+name = "图线屏幕颜色（CAD）"
+aliases = []
+group = "G1"
+kind = "other"
+meaning = "CAD 屏幕上各类图线按固定颜色显示、同类图线用同一颜色：粗实线白，细实线、波浪线、双折线绿，细虚线黄，粗虚线白，细点画线红，粗点画线棕，细双点画线粉红。"
+components = ["GB/T 14665-2012 表2：粗实线白；细实线、波浪线、双折线绿；细虚线黄；粗虚线白；细点画线红；粗点画线棕；细双点画线粉红。", "GB/T 18229-2000 表9：基本相同（虚线黄、双点画线粉红），没有粗虚线一项。", "GB/T 17450：图线一般按背景用黑或白，用其他标准色时须说明其含义。"]
+variants = ["GB/T 18229-2000 表9 (虚线 yellow, 双点画线 pink; no thick dashed line)", "GB/T 17450: lines normally black or white on the background; other standard colours allowed if their meaning is stated"]
+dxf_forms = ["entity colour group 62 (ACI) or ByLayer (256) resolved through the LAYER colour: 7 white/black, 3 green, 2 yellow, 1 red, 6 magenta (pink); brown has no basic ACI index", "true colour group 420 in newer files", "ACI 7 plots black on white paper"]
+recognition = "颜色是线宽缺失时最可靠的辅助线索：取实体颜色（ByLayer 时取图层颜色），按上表映射为候选线类，再用线型图案复核（红色+点画图案→细点画线）。企业模板常改色（如尺寸线青色、文字黄色），应先统计“颜色—线型—线宽”的共现表找出主映射再使用；颜色单独不足以判定。"
+confusions = ["企业自定义颜色：需按本图共现关系重建映射。", "按层着色（ByLayer）：实体颜色需经图层解析。"]
+related = ["DC-G1-101", "DC-G1-016", "DC-G1-038", "DC-G1-043", "DC-G1-044", "DC-G1-045", "DC-G1-042"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "ACI 对应与企业改色为通用实践；棕色无基本 ACI 号，模板中多用其他索引色或真彩色。"
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.5 表2"
+page = 9
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.4.3 表9"
+page = 7
+[[concepts.sources]]
+document = "GB/T 17450-1998"
+clause = "6"
+page = 9
+
+[[concepts]]
+id = "DC-G1-080"
+name = "指引线与基准线的专业应用"
+aliases = []
+group = "G1"
+kind = "other"
+meaning = "指引线加基准线是许多专业符号的载体：焊缝说明（含现场焊标志、焊点位置）、基准目标、参考条目说明、几何公差框格以及弧长尺寸等都经它与图形相连。"
+components = ["焊接：指引线+基准线承载焊缝符号、数量与焊接方法；旗形符号表示现场焊；圆圈表示焊点位置。", "基准目标：基准线端接被横线分隔的圆框（字母+数字）。", "参考条目说明：基准线端接圆圈（如序号）。", "几何公差：指引线连公差框格，可表示一项或几项公差。", "弧长尺寸：指引线配弧长符号。"]
+variants = ["焊缝说明", "现场焊标志", "焊点位置", "基准目标", "参考条目说明", "形位公差", "弧长尺寸"]
+dxf_forms = ["LEADER/MLEADER whose annotation is a TOLERANCE entity, an INSERT (weld symbol, datum target, balloon block) or MTEXT", "exploded: LINEs + CIRCLE or rectangular cells + TEXT"]
+recognition = "先识别指引线，再看其非终端一端连接的对象：TOLERANCE 实体或由细线矩形分格加符号字符组成的框格→几何公差；实线基准线（可带平行虚线）+焊缝符号→焊接；被水平直径分成两半、内有字母数字的圆→基准目标；圆内数字→序号或参考条目。据此把对象分派给几何公差、焊接、序号等专业识别。"
+confusions = ["普通文字注释指引线：另一端只接说明文字。"]
+related = ["DC-G1-028", "DC-G1-018", "DC-G7-034", "DC-G7-136", "DC-G5-006", "DC-G5-090", "DC-G4-025", "DC-G8-024"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55", "K24"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "具体符号属于焊接、几何公差、尺寸注法各族。"
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "附录A 表A.1"
+page = 6
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "表A.1（续）"
+page = 7
+
+[[concepts]]
+id = "DC-G1-081"
+name = "X型图纸与Y型图纸"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "按标题栏方位区分的图纸类型：标题栏长边水平且与图纸长边平行为X型，标题栏长边与图纸长边垂直为Y型；看图方向与看标题栏的方向一致。"
+components = ["标题栏位于图框右下角。", "X型：图纸长边水平（横放），标题栏长边沿图纸长边方向。", "Y型：图纸短边水平（竖放，A4 常见），标题栏长边与图纸长边垂直。", "两种类型均可有或无装订边。"]
+variants = ["X型（标题栏长边平行于图纸长边）", "Y型（标题栏长边垂直于图纸长边）"]
+dxf_forms = ["sheet edge and frame rectangles plus title-block outline (LWPOLYLINE or INSERT)", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space"]
+recognition = "计算纸边界（或图框）宽 W、高 H 以及标题栏外框的长边方向。W>H 且标题栏长边水平→X型；W<H 且标题栏长边水平（即与图纸长边垂直）→Y型。以标题栏文字方向确定看图方向。若标题栏在右上角并有方向符号，属于预先印制图纸的旋转使用。"
+confusions = ["预先印制图纸的旋转使用：标题栏方位与常规不同，并有方向符号。", "横放/竖放：只是摆放方式，类型由标题栏与图纸长边的关系决定。"]
+related = ["DC-G1-085", "DC-G1-092", "DC-G1-086", "DC-G9-028"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "5.2 图2-图5"
+page = 5
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "5.2"
+page = 5
+
+[[concepts]]
+id = "DC-G1-082"
+name = "剪切符号"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "画在图纸（如供复制用的底图）四个角上的标记，供复制后自动裁切：黑色实心等腰直角三角形（直角边10 mm），或两条宽2 mm、长10 mm 的粗线段组成的直角。"
+components = ["形式一：涂黑的等腰直角三角形，直角边10 mm，位于纸的角上。", "形式二：两条线宽2 mm、长10 mm 的粗线段沿纸边组成直角，用于不适合三角形的切纸机。", "四角各一个；属可选的附加符号。"]
+variants = ["实心等腰直角三角形（图9）", "两条粗线段（图10）"]
+dxf_forms = ["SOLID or solid-filled HATCH triangle at each corner, or two LWPOLYLINEs with width 2", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space"]
+recognition = "锚点：纸边界四角处的涂黑三角形（直角边约10 mm）或宽2 mm、长10 mm 的L形粗线，四个角都出现且布置对称。与方向符号（细线等边三角形，在下边中点）及基准三角形（小，连在基准字母框上）区分。"
+confusions = ["方向符号：细实线等边三角形，不涂黑。", "基准三角形（涂黑）：几何公差基准的一部分，尺寸小。", "图框转角：粗实线直角，但位于图框而非纸角。", "焊缝符号中的三角形：角焊缝符号，附于基准线。"]
+related = ["DC-G1-091", "DC-G1-085", "DC-G1-087"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "教材只提名称，形式取自 GB/T 14689。"
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "6.3 图9 图10"
+page = 6
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "6.3"
+page = 6
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.1.2 图3"
+page = 4
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 一"
+page = 11
+
+[[concepts]]
+id = "DC-G1-083"
+name = "加长幅面"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "在基本幅面基础上按短边的整数倍加长得到的图纸幅面，如 A3×3（420×891）、A0×2（1189×1682），用于长轴等细长零件。"
+components = ["第二选择：A3×3（420×891）、A3×4（420×1189）、A4×3（297×630）、A4×4（297×841）、A4×5（297×1051）。", "第三选择：A0×2、A0×3、A1×3、A1×4、A2×3~A2×5、A3×5~A3×7、A4×6~A4×9 等。", "图框尺寸按比所选基本幅面大一号的图框尺寸确定，如 A2×3 用 A1 的边距。", "CAD 中加长、加宽也只能按基本幅面短边的整数倍增加。"]
+variants = ["第二选择（A3x3, A3x4, A4x3, A4x4, A4x5）", "第三选择（A0x2 ... A4x9）", "CAD: lengthen/widen only by integer multiples of B (GB/T 18229 表1注)"]
+dxf_forms = ["outer sheet rectangle whose size matches the table (times the model-space scale factor)", "frame block names such as A3X3 or A4×4", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space"]
+recognition = "纸边界矩形尺寸（除以比例因子后）与表中尺寸匹配：一边等于某基本幅面的长边，另一边为该幅面短边的整数倍；容差约±1 mm。边距按大一号幅面取值，可用来复核。"
+confusions = ["基本幅面：A0~A4 五种。", "两张图纸拼接：两个独立图框。", "图幅分区：分区刻度，不改变幅面。"]
+related = ["DC-G1-086", "DC-G1-085", "DC-G1-091"]
+priority = "low"
+text_forms = ["A3×3", "A4×4"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "3.2 表2"
+page = 3
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "表3 图1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "3.2"
+page = 2
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "4.4"
+page = 5
+
+[[concepts]]
+id = "DC-G1-084"
+name = "图幅分区"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "必要时在图框周边内用细实线把图纸分区，用于在大图上定位；分区数为偶数，每区长25~75 mm，行用字母、列用数字编号。"
+components = ["分区线为细实线，画在图框与纸边之间的周边内并沿图框线排列。", "每边分区数为偶数，每区长25~75 mm，按图样复杂程度确定。", "编号：竖直方向用大写拉丁字母自上而下，水平方向用阿拉伯数字自左而右，尽量靠近图框线；字母不够时用双字母 AA、BB、CC…。", "CAD 复杂装配图一般应设置分区。"]
+variants = ["单字母 A, B, C...", "超过字母数时用双字母 AA, BB, CC...", "CAD 复杂装配图一般设置"]
+dxf_forms = ["short thin LINEs between frame and sheet edge plus single-character TEXT centred in each zone", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space"]
+recognition = "锚点：图框外侧周边带内，沿四边等距排列的短细刻线，相邻刻线之间有单个大写字母（左右两边）或数字（上下两边）。判据：间距25~75 mm、数量为偶数、字母自上而下 A、B、C…、数字自左而右 1、2、3…。与米制参考分度（只在下边中部、粗线、无数字）区分。"
+confusions = ["米制参考分度：下边中部的粗线刻度。", "对中符号：各边中点的单根粗短线。", "表格网格、坐标网格线：在图框内。", "尺寸标注：带尺寸线与数字。"]
+related = ["DC-G1-104", "DC-G1-085", "DC-G1-090", "DC-G1-087"]
+priority = "medium"
+text_forms = ["A", "B", "C", "1", "2", "3"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "教材只提及，规定见 GB/T 14689。"
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "7.1-7.3 图13 图14"
+page = 7
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "7.1-7.3"
+page = 7
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.1.3 图5"
+page = 4
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 一"
+page = 11
+
+[[concepts]]
+id = "DC-G1-085"
+name = "图框"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "图纸上用粗实线画出的限定绘图区域的线框；分不留装订边和留装订边两种格式，同一产品的图样只能用一种。"
+components = ["粗实线矩形，位于纸边界线内侧。", "不留装订边：四边距纸边均为 e（A0、A1 为20 mm，A2~A4 为10 mm）。", "留装订边：左边 a=25 mm，其余三边为 c（A0~A2 为10 mm，A3、A4 为5 mm）。", "加长幅面按大一号基本幅面取 e、a、c；标题栏在图框右下角，对中符号从纸边伸入图框约5 mm。"]
+variants = ["不留装订边（四边均为 e）", "留有装订边（左边 a=25, 其余 c）", "X型/Y型", "加长幅面按大一号基本幅面取图框尺寸", "one product's drawings use only one frame format", "不留装订边（周边宽 e）", "留装订边（装订边 a，其余 c）", "X型（标题栏长边平行图纸长边）", "Y型（标题栏长边垂直图纸长边）"]
+dxf_forms = ["closed LWPOLYLINE rectangle with thick lineweight (0.5–0.7) or constant width", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space", "CAXA 图幅/图框 objects export as a BLOCK containing frame, title block and centring marks"]
+recognition = "锚点：图中最大的两个嵌套矩形——外层细线（纸边界）与内层粗线（图框）。判据：外层尺寸除以比例因子后匹配基本或加长幅面；四边间距相等（e）或左25、其余 c；右下角内接标题栏。常作为一个 INSERT 整体出现，按块名和尺寸判定幅面与比例因子。注意 840×594 的外框既可能是 A1 按1:1，也可能是 A3 在模型空间按1:2 放大2倍，须结合标题栏字高与比例栏判断。"
+confusions = ["纸边界线：细实线，图框外侧。", "标题栏外框、明细栏外框：粗实线，但在图框内右下角。", "视图外的粗实线矩形零件轮廓：属于零件。", "表格或视图分区框：在图框内部。"]
+related = ["DC-G1-091", "DC-G1-086", "DC-G1-083", "DC-G1-081", "DC-G1-087", "DC-G9-028"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = ["second"]
+expert_checked = false
+notes = "同一产品的图样只能采用一种图框格式。"
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "4.1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "4.2-4.4 表4 图2-图5"
+page = 5
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "4.1-4.3"
+page = 4
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.1.1 图1 表1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 13361-2012"
+clause = "4.9"
+page = 6
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 一、图纸幅面和格式"
+page = 11
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-1"
+page = 12
+
+[[concepts]]
+id = "DC-G1-086"
+name = "基本幅面"
+aliases = ["图纸幅面"]
+group = "G1"
+kind = "sheet_element"
+meaning = "优先采用的五种图纸尺寸 A0~A4（宽×长从841×1189到210×297 mm），即纸边界线所围的范围；本身不作为符号画出。"
+components = ["A0 841×1189，A1 594×841，A2 420×594，A3 297×420，A4 210×297（mm）。", "相邻幅面面积比2:1，长短边比约√2。", "1993 版与2008 版的基本幅面相同；需要时允许加长幅面。"]
+variants = ["A0", "A1", "A2", "A3", "A4", "1993 and 2008 editions give identical base sizes", "加长幅面"]
+dxf_forms = ["implied by the sheet-edge rectangle or the frame plus margins", "header $LIMMIN/$LIMMAX (drawing limits) when set", "paper-space layout PLOTSETTINGS paper name such as ISO_A3_(420.00_x_297.00_MM)", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space"]
+recognition = "由纸边界矩形（或由图框加边距反推）尺寸除以比例因子后与五种尺寸匹配（容差±1 mm）；也可读取布局纸张名称或块名。图框比纸边小 2e，或长向小 a+c、短向小 2c。"
+confusions = ["加长幅面：短边整数倍加长。", "图框尺寸：比纸边小 e/c/a。", "比例：模型空间图框可能按比例缩放，需先求比例因子。"]
+related = ["DC-G1-083", "DC-G1-085", "DC-G1-091", "DC-G1-107"]
+priority = "high"
+text_forms = ["A0", "A1", "A2", "A3", "A4"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "幅面数值见 GB/T 14689 表1。"
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "3.1 表1"
+page = 3
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "3.1 表1"
+page = 2
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.1.1 表1"
+page = 4
+[[concepts.sources]]
+document = "GB/T 13361-2012"
+clause = "4.1 图纸幅面"
+page = 6
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 一"
+page = 11
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-1 基本幅面及图框尺寸"
+page = 12
+
+[[concepts]]
+id = "DC-G1-087"
+name = "对中符号"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "在图纸各边长中点处画的粗实线短线段，从纸边界开始伸入图框内约5 mm，作为复制和缩微摄影时的定位标记。"
+components = ["粗实线，线宽不小于0.5 mm，位置误差不大于0.5 mm。", "四边中点各一，从纸边延伸到图框内约5 mm，因此长度约为周边宽度加5 mm。", "落在标题栏范围内的部分省略不画。", "基本幅面与第二选择的加长幅面均应画出。"]
+variants = []
+dxf_forms = ["short thick LINE/LWPOLYLINE perpendicular to each sheet edge at its midpoint", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space"]
+recognition = "锚点：纸边界四条边的中点；从中点向内垂直于边的一条粗短线，终点越过图框线约5 mm（无装订边 A3 时总长约15 mm）。四个通常同时存在。与剖切符号（在视图旁、带字母或箭头）和图幅分区刻线（细线、成排）区分。"
+confusions = ["图幅分区刻线：细线，等距多条。", "米制参考分度：下边中点两侧的10格刻度。", "方向符号：下边对中符号处的细线三角形。", "尺寸界线、剖切符号：位于视图附近。"]
+related = ["DC-G1-088", "DC-G1-090", "DC-G1-085", "DC-G1-091"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "教材只提名称，画法取自 GB/T 14689。"
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "6.1 图6 图7"
+page = 6
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "6.1"
+page = 6
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.1.2 图5"
+page = 4
+[[concepts.sources]]
+document = "GB/T 13361-2012"
+clause = "4.10"
+page = 6
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 一"
+page = 11
+
+[[concepts]]
+id = "DC-G1-088"
+name = "方向符号"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "使用预先印制图纸并将其旋转使用时，在图纸下边对中符号处画出的细实线等边三角形，用来指明绘图与看图的方向。"
+components = ["细实线等边三角形，画在下边对中符号处，尺寸和位置见 GB/T 14689 图8。", "仅在 X 型图纸竖放或 Y 型图纸横放使用时需要。"]
+variants = []
+dxf_forms = ["thin closed LWPOLYLINE (3 vertices) at the bottom centring mark", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space"]
+recognition = "锚点：下边对中符号附近的一个小等边三角形（细线、不涂黑），对中线通过其对称轴。出现方向符号时标题栏通常在右上角，应以三角形所在边为“下边”确定看图方向，再识别视图配置。"
+confusions = ["剪切符号：涂黑的直角三角形，在纸角。", "箭头、剖切或投射方向箭头：在视图附近，实心。", "基准三角形：几何公差基准。", "焊缝符号：附于焊缝基准线。", "对中符号：粗短线本身。"]
+related = ["DC-G1-087", "DC-G1-092", "DC-G1-081"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "OCR 中图8无数值，三角形具体尺寸未核对。"
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "6.2 图8"
+page = 6
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "6.2"
+page = 6
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.1.2 图2"
+page = 4
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 一"
+page = 11
+
+[[concepts]]
+id = "DC-G1-089"
+name = "比例尺（图示比例）"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "以图形方式表示图样比例的刻度尺，必要时在图样的铅垂或水平方向加画，复制缩放后仍能正确量取。"
+components = ["带刻度和数值的线段，沿图样水平或铅垂方向画出。", "刻度数值为实物尺寸（如0、10、20 m），常与比例数字同时出现。"]
+variants = []
+dxf_forms = ["LINE/LWPOLYLINE ticks (sometimes alternately filled) plus TEXT numbers, or a scale-bar INSERT"]
+recognition = "一条分段等分的尺（刻线或交替涂黑），段端有递增数值和单位，不依附任何图形要素，没有尺寸界线。机械图罕见，地形、建筑类较多。"
+confusions = ["米制参考分度：无数字，只在下边中部。", "尺寸线：两端有终端，标注具体要素。"]
+related = ["DC-G1-114", "DC-G1-090"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14690-1993"
+clause = "5.4"
+page = 2
+
+[[concepts]]
+id = "DC-G1-090"
+name = "米制参考分度"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "用作缩微摄影原件的图纸，在下边对中符号两侧设置的不注数字的分度尺，用来识别缩微复制的放大或缩小倍率。"
+components = ["粗实线，线宽不小于0.5 mm，总长100 mm，等分为10格，格高5 mm。", "对称配置在图纸下边对中符号的两侧。", "与图幅分区同时采用时，该段省略图幅分区。"]
+variants = []
+dxf_forms = ["thick LWPOLYLINE/LINE ticks near the bottom centre of the sheet", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space"]
+recognition = "锚点：下边对中符号两侧、总长100 mm（乘以比例因子）的刻度线组，11条短刻线间距10 mm、高约5 mm，无数字。与图幅分区（细线、带字母数字）和比例尺（带数字）区分。"
+confusions = ["比例尺：带数值。", "图幅分区刻度：细线，覆盖整个周边。", "尺寸链：成串尺寸，带数字。"]
+related = ["DC-G1-087", "DC-G1-084", "DC-G1-089"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "教材只提及。"
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "8.1"
+page = 7
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "8.2 8.3 图15"
+page = 8
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "8"
+page = 7
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.1.2 图4"
+page = 4
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 一"
+page = 11
+
+[[concepts]]
+id = "DC-G1-091"
+name = "纸边界线"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "用细实线画出的图纸裁切边界（纸边），即幅面的实际大小；粗实线图框在其内侧，距离为 e 或 a/c。"
+components = ["细实线矩形，尺寸等于幅面 B×L。", "图框位于其内：无装订边四边距 e；有装订边左 a=25 mm，其余 c。", "对中符号、剪切符号、图幅分区都以纸边为基准布置。"]
+variants = []
+dxf_forms = ["thin closed LWPOLYLINE rectangle, the outermost entity of the drawing", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space", "may be absent in paper-space layouts where the paper itself is the edge"]
+recognition = "全图包围盒最外层的细线矩形，其内紧邻一个粗线矩形（图框），四边间距符合 e 或 a/c。若 DXF 中缺纸边（只画图框），可由图框尺寸加边距反推幅面。"
+confusions = ["图框线：粗实线，在纸边内侧。", "剪切符号所指的裁切位置：与纸边一致，符号本身在角上。"]
+related = ["DC-G1-085", "DC-G1-086", "DC-G1-082", "DC-G1-087"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55", "K39"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "4.2 图2"
+page = 5
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "图4"
+page = 5
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.1.1 图1"
+page = 4
+
+[[concepts]]
+id = "DC-G1-092"
+name = "预先印制图纸的旋转使用"
+aliases = []
+group = "G1"
+kind = "sheet_element"
+meaning = "为利用预先印制的图纸，允许把 X 型图纸短边水平（竖放）或把 Y 型图纸长边水平（横放）使用；此时标题栏位于右上角，并在下边对中符号处画方向符号。"
+components = ["X 型图纸竖放，或 Y 型图纸横放。", "标题栏随之位于图纸右上角。", "下边对中符号处画方向符号，指明看图方向。", "预先印制图纸一般具有图框、标题栏和对中符号三项；剪切符号、分区、参考分度等按需。"]
+variants = ["X形图纸竖放（图6）", "Y形图纸横放（图7）", "pre-printed sheets carry at least frame, title block and centring marks; other marks optional"]
+dxf_forms = ["frame block with the title block rotated 90° (INSERT rotation 90/270 or vertical title-block text)", "usually part of a frame/title-block INSERT (block names like A3, A4-H, TK, 图框, GB_A3; CAXA 图幅 exported as a BLOCK) or drawn in a paper-space layout; may be scaled by the drawing scale in model space"]
+recognition = "判据：标题栏位于右上角、其文字相对图纸旋转90°，且有方向符号。读图时以方向符号所在边为下边，先旋转坐标系再识别视图。"
+confusions = ["X型/Y型图纸：常规布置，标题栏在右下角。", "标题栏位于右下角的常规布置：看图方向与标题栏一致。"]
+related = ["DC-G1-081", "DC-G1-088", "DC-G1-087"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "5.3"
+page = 5
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "图6 图7"
+page = 6
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "5.3"
+page = 5
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "9 预先印制的图纸"
+page = 8
+
+[[concepts]]
+id = "DC-G1-093"
+name = "圆心符号"
+aliases = []
+group = "G1"
+kind = "symbol"
+meaning = "绘制圆时可在圆心处画出圆心符号（小十字），两条中心线以长画相交于圆心。"
+components = ["圆心处的小十字，由两条正交短画构成，交点即圆心。", "两条中心线在长画处相交；CAD 中可用圆心标记命令生成。"]
+variants = ["中心线交叉", "CAD 圆心标记（短十字）"]
+dxf_forms = ["DIMCEN centre mark: two short LINEs forming a cross (positive value) plus extension lines (negative value), produced with radius/diameter dimensions or the centre-mark command", "AutoCAD 2017+ CENTERMARK objects, typically stored as an anonymous BLOCK of LINEs", "plain cross of two LINEs about 2–4 mm long"]
+recognition = "锚点为 CIRCLE/ARC 的圆心；该处有两条正交短线（长度远小于直径，常约2~4 mm），交点与圆心重合（距离<0.1 mm）。十字为点画线且超出圆周时属于中心线；为细实线短十字且不超出圆周时属于圆心符号。与冲点标记区分要看是否有对应的圆。"
+confusions = ["短中心线：细实线十字超出圆周。", "定位点/冲点：可能无对应圆。", "孔系分布中心：点画线圆与径向线。"]
+related = ["DC-G1-037", "DC-G1-061", "DC-G1-044", "DC-G1-033"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "CENTERMARK 与 DIMCEN 的存储形式为通用 CAD 实践。"
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "4.4.1 图10"
+page = 8
+
+[[concepts]]
+id = "DC-G1-094"
+name = "指引线“圆”符号"
+aliases = []
+group = "G1"
+kind = "symbol"
+meaning = "在指引线与基准线的连接处画一个小圆（直径约为指引线宽的8倍），表示注释说明一次性适用于该零件相关联的所有侧表面或轮廓。"
+components = ["小圆，直径约8倍指引线宽（线宽0.25 mm 时约2 mm），圆心在指引线与基准线的连接点。", "注释说明写在基准线上。", "不得使用的情况：可能引起误解时；涉及零件所有表面或转角时。"]
+variants = []
+dxf_forms = ["small CIRCLE (radius ≈ 1 mm) at the leader/reference-line junction; may be part of an MLEADER block or exploded LEADER"]
+recognition = "锚点：斜指引线与水平基准线交点处的小圆（直径约2 mm）。与几何公差全周符号（另一端连公差框格）、表面结构全周符号（在表面结构符号长边与横线交点）、周围焊缝符号（在焊缝箭头线与基准线交点）区分：看基准线挂接的是普通文字、框格、表面结构符号还是焊缝符号。"
+confusions = ["几何公差全周符号：同样的小圆，挂公差框格。", "表面结构“周边同一要求”符号：圆在表面结构符号上。", "周围焊缝符号：圆在焊缝指引线转折处。", "零件序号圆：大圆内写数字。"]
+related = ["DC-G1-028", "DC-G1-018", "DC-G5-043", "DC-G6-070", "DC-G7-106"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "附录B 图B.1-图B.3"
+page = 8
+
+[[concepts]]
+id = "DC-G1-095"
+name = "指引线终端—圆点"
+aliases = []
+group = "G1"
+kind = "symbol"
+meaning = "指引线末端落在物体轮廓以内（某区域内部）时，用一个小圆点作终端。"
+components = ["实心小圆点，位于指引线末端、零件轮廓内的表面上。", "装配图零件序号的指引线常用此形式。"]
+variants = []
+dxf_forms = ["LEADER/MLEADER arrowhead block _DOT, _DOTSMALL or _DOTBLANK", "DONUT-like closed LWPOLYLINE of two bulged segments with width, or a solid-filled HATCH/CIRCLE", "mechanical add-ons export the balloon leader as LINE + filled dot + CIRCLE/TEXT"]
+recognition = "锚点：指引线端点处的实心小圆（直径约为字高的1/3~1/2，常约1 mm），端点位于某闭合轮廓内部（点在多边形内）而不在轮廓线上。另一端多为序号或说明文字。与尺寸线圆点终端（在尺寸线与尺寸界线交点）和焊点（焊缝符号中的圆）区分。"
+confusions = ["零件序号的圆点：同形式，按另一端是否为序号区分用途。", "尺寸线圆点终端：在尺寸界线上。", "焊点：焊缝符号的一部分。"]
+related = ["DC-G1-028", "DC-G8-009", "DC-G4-018"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "4 图9-图11"
+page = 2
+
+[[concepts]]
+id = "DC-G1-096"
+name = "指引线终端—实心箭头"
+aliases = []
+group = "G1"
+kind = "symbol"
+meaning = "指引线末端终止在零件轮廓线或转角上，或终止在图内的管线、图表曲线上时，用实心箭头作终端；箭头也可画到这些线与其他线（如对称中心线）的交点处。"
+components = ["实心（涂黑）箭头，尖端接触轮廓线或图线。", "箭头大小与尺寸箭头相近（一般约3 mm 长）。"]
+variants = []
+dxf_forms = ["LEADER with the default closed filled arrow (DIMLDRBLK) or MLEADER arrow", "exploded: SOLID (3–4 vertices), solid HATCH triangle, or LWPOLYLINE with start width > 0 and end width 0"]
+recognition = "锚点：一个小实心三角形（SOLID、HATCH 或变宽多段线），尖端落在粗实线轮廓或其他图线上，底边中点连出一条细实线至文字或符号。与尺寸线箭头区分：尺寸箭头成对、尖端顶在尺寸界线上、箭杆与尺寸界线垂直；几何公差指引箭头的另一端接公差框格。"
+confusions = ["尺寸线箭头：成对出现在尺寸线两端。", "几何公差指引箭头：另一端接框格。", "焊缝箭头：另一端接焊缝基准线。"]
+related = ["DC-G1-028", "DC-G4-019", "DC-G8-010", "DC-G5-108"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "partial"
+seen_on_drawing = []
+expert_checked = false
+notes = "箭头尺寸为一般实践。"
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "4 图1-图7"
+page = 2
+
+[[concepts]]
+id = "DC-G1-097"
+name = "指引线终端—斜线"
+aliases = []
+group = "G1"
+kind = "symbol"
+meaning = "一条指引线指向若干条平行线时，可在与各平行线的交点处画短斜线代替箭头。"
+components = ["指引线穿过几条平行线，每个交点处画一条短斜线。"]
+variants = []
+dxf_forms = ["short LINEs across the leader at each parallel line", "arrow blocks _OBLIQUE or _ARCHTICK"]
+recognition = "一条细直线穿过一组平行线，每个交点处有长约2~3 mm 的短斜线，指引线另一端接文字（如层数、材料）。与尺寸线斜线终端区分：后者只在尺寸线两端与尺寸界线相交处各一个。"
+confusions = ["尺寸线斜线终端：只在尺寸线两端。", "剖面线：成组平行线，无指引线。"]
+related = ["DC-G1-028", "DC-G4-021"]
+priority = "rare"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "斜线长度与角度为一般实践。"
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "4 图8"
+page = 2
+
+[[concepts]]
+id = "DC-G1-098"
+name = "指引线终端—无终端"
+aliases = []
+group = "G1"
+kind = "symbol"
+meaning = "指引线末端终止在另一条图线（如尺寸线、对称线）上时，不加任何终止符号。"
+components = ["指引线末端直接接触尺寸线、对称线等图线，没有箭头或圆点。"]
+variants = []
+dxf_forms = ["LEADER/MLEADER with arrowhead _NONE (DIMLDRBLK = None)", "plain LINE ending exactly on another line"]
+recognition = "一条细直线一端接文字或基准线，另一端恰好落在尺寸线或点画线上（端点到该线距离小于0.2 mm），端点处没有 SOLID 或圆点。"
+confusions = ["未完成的线：端点悬空，不落在其他线上。", "尺寸界线：越过尺寸线约2 mm，且从轮廓引出。"]
+related = ["DC-G1-028", "DC-G4-004"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "4 图12 图13"
+page = 2
+
+[[concepts]]
+id = "DC-G1-099"
+name = "第一角画法投影识别符号"
+aliases = []
+group = "G1"
+kind = "symbol"
+meaning = "表示图样采用第一角画法的识别符号：一个圆台的两个视图（等腰梯形和两个同心圆），同心圆在梯形右侧；我国默认第一角画法，必要时画出，一般放在标题栏名称及代号区的下方。"
+components = ["等腰梯形（圆台主视图）与两同心圆（左视图）共用一条水平细点画线中心线；第一角画法中同心圆在梯形右侧。", "比例：小圆直径约等于图中尺寸字高 h；大圆直径、梯形长底边及两底边距离均为2h，梯形短底边等于小圆直径；轮廓粗实线不小于0.5 mm。", "两种符号中梯形朝向相同，只是圆的位置不同。", "GB/T 14689-1993 无此条款，2008 版增加；GB/T 18229 称为说明符号。"]
+variants = ["GB/T 14692 图6 gives proportions in terms of lettering height h", "CAD form in GB/T 14665 表5", "GB/T 18229 '说明符号'", "not in GB/T 14689-1993; projection-symbol clause 6.4 added in 2008"]
+dxf_forms = ["INSERT of a projection-symbol block nested in the title-block block", "exploded: 4 LINEs (trapezoid) + 2 concentric CIRCLEs + CENTER-type LINEs", "located in the 投影符号 cell of the title block"]
+recognition = "锚点：一对同心圆（半径比2:1），其水平中心线延长穿过一个等腰梯形（两平行边竖直，高度约等于大圆直径）。判断圆心相对梯形的位置：在右侧→第一角，在左侧→第三角。通常位于标题栏投影符号格内，尺寸很小（大圆直径约5~10 mm）。与锥度符号（单个三角形、无圆）和同心圆孔的端视图（尺寸大、无梯形）区分。"
+confusions = ["第三角画法投影识别符号：同心圆在梯形左侧。", "锥度符号：等腰三角形，注在锥度数值前。", "同心圆孔的端视图：真实结构，尺寸大。"]
+related = ["DC-G1-100", "DC-G2-084", "DC-G9-021"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "我国默认第一角画法，其识别符号为可选（GB/T 14692 5.2.1.4）。"
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "6.4 图11"
+page = 7
+[[concepts.sources]]
+document = "GB/T 14692-2008"
+clause = "5.2.1.4 图6"
+page = 6
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "7 表5"
+page = 11
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "5.1.2 图11"
+page = 9
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§7-5 二"
+page = 251
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图7-30a"
+page = 252
+
+[[concepts]]
+id = "DC-G1-100"
+name = "第三角画法投影识别符号"
+aliases = []
+group = "G1"
+kind = "symbol"
+meaning = "表示图样采用第三角画法的识别符号：与第一角符号同为圆台的两视图，但两同心圆在等腰梯形左侧；采用第三角画法时必须画出。"
+components = ["粗实线等腰梯形加两同心圆，共用细点画线中心线；同心圆在梯形左侧。", "比例与第一角符号相同（小圆约为字高 h，大圆、梯形长底边与高为2h）。", "一般画在标题栏投影符号格内；第三角画法的图样必须有。"]
+variants = []
+dxf_forms = ["INSERT of a projection-symbol block nested in the title-block block", "exploded: 4 LINEs + 2 concentric CIRCLEs + CENTER-type LINEs"]
+recognition = "锚点同第一角符号，圆在梯形左侧即第三角。识别到第三角符号后应切换视图配置规则（俯视图在主视图之上、右视图在主视图之右），否则视图对应会出错。外资或出口图样中常见。"
+confusions = ["第一角画法投影识别符号：同心圆在梯形右侧。", "锥度符号：等腰三角形。"]
+related = ["DC-G1-099", "DC-G2-085", "DC-G9-021", "DC-G2-078"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "6.4 图12"
+page = 7
+[[concepts.sources]]
+document = "GB/T 14692-2008"
+clause = "A.4 图A.3"
+page = 11
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "7 表5"
+page = 11
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "附录A 图A3"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§7-5 二"
+page = 251
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图7-30b"
+page = 252
+
+[[concepts]]
+id = "DC-G1-101"
+name = "CAD图层分层标识"
+aliases = []
+group = "G1"
+kind = "table"
+meaning = "CAD 图样中按图线类型分层的标识号建议：01粗实线、02细实线/波浪线/双折线、03粗虚线、04细虚线、05细点画线、06粗点画线、07细双点画线、08尺寸、09参考圆与引出线、10剖面符号、11/12文本、13~15用户选用。"
+components = ["GB/T 14665-2012 表6：08 为尺寸线、投影连线、尺寸终端与符号细实线及尺寸和公差；09 为参考圆（含引出线及其终端）；10 剖面符号；11 细实线文本；12 粗实线文本；13~15 用户选用。", "GB/T 18229-2000 表13：01 还含剖切面的粗剖切线；02 含细波浪线、细折断线；05 含剖切线；12 为尺寸值和公差；13 为粗文本；14~16 用户选用。", "层是 CAD 中组织实体、控制颜色、线型和可见性的属性。"]
+variants = ["GB/T 18229-2000 表13: 01 also thick cutting-plane line, 02 thin wavy/break lines, 05 also cutting-plane line, 12 dimension values and tolerances, 13 thick text, 14-16 user", "GB/T 14665-2012 表6: dimension values and tolerances merged into 08, 13-15 user"]
+dxf_forms = ["LAYER table: name (2), colour (62), linetype (6), lineweight (370), plot flag (290), frozen/off flags", "layer names may be the numbers 01…15, Chinese names (粗实线、细实线、虚线、中心线、剖面线、尺寸线、文字、双点画线), English names (OUTLINE, HIDDEN, CENTER, DIM, HATCH, TEXT), CAXA names (0层、中心线层、虚线层、细实线层、尺寸线层、剖面线层、隐藏层) or AutoCAD Mechanical names (AM_0, AM_3, AM_5, AM_7 …)", "Defpoints and frozen/off/non-plot layers"]
+recognition = "先读 LAYER 表，建立“层名—颜色—线型—线宽”映射，再用层名关键字（数字编号、粗/细/虚/中心/点画/双点/剖面/尺寸/文字/标注）给出候选线类；以实体实际线型、颜色、线宽复核（实体可覆盖 ByLayer 设置）。许多图把内容都放在0层或随意分层，此时层不可作依据；关闭、冻结、不打印层（含 Defpoints）上的内容不属于图面表达。"
+confusions = ["企业自定义层名：需结合颜色与线型重建映射。", "颜色号：颜色与层是两种属性，可能不一致。", "按线型而非层判断图线：层只是候选线索，线型与线宽才是图线本身。"]
+related = ["DC-G1-079", "DC-G1-016", "DC-G1-038", "DC-G1-043", "DC-G1-044", "DC-G1-045", "DC-G1-042", "DC-G1-010"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "rule"
+seen_on_drawing = []
+expert_checked = false
+notes = "GB/T 18617.1 与 GB/T 15751 只定义“层”；编号表见 GB/T 14665 与 GB/T 18229。CAXA、AutoCAD Mechanical 层名为通用实践，需按具体模板核对。"
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "8 表6"
+page = 11
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "表6（续）"
+page = 12
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "9.1 表13"
+page = 12
+[[concepts.sources]]
+document = "GB/T 15751-1995"
+clause = "术语 层、层辨别、多层"
+page = 8
+[[concepts.sources]]
+document = "GB/T 18617.1-2002"
+clause = "3.1 层"
+page = 4
+
+[[concepts]]
+id = "DC-G1-102"
+name = "A型与B型字体（字母与数字）"
+aliases = ["数字与字母字体"]
+group = "G1"
+kind = "text_convention"
+meaning = "图样中拉丁字母、希腊字母、阿拉伯数字和罗马数字的两种字形：A型笔画宽为字高的1/14，B型为1/10；同一图样只用一种，可写成斜体或直体。"
+components = ["A型：笔画宽 h/14，小写字母高约10/14 h，字母间距约2/14 h，词间距约6/14 h。", "B型：笔画宽 h/10，小写字母高约7/10 h，字母间距约2/10 h，无发音符号时基准线最小间距约15/10 h，词间距约6/10 h。", "斜体字头向右倾斜，与水平基准线成75°；直体竖直。", "附录示例给出拉丁、希腊字母和阿拉伯、罗马数字。"]
+variants = ["A型（d=h/14）", "B型（d=h/10）", "拉丁字母、希腊字母、阿拉伯数字、罗马数字示例（附录A）", "A型", "B型", "斜体", "直体", "罗马数字"]
+dxf_forms = ["STYLE table entry: font file (3) such as gbenor.shx (upright) or gbeitc.shx (italic), isocp.shx; big font (4) gbcbig.shx; width factor (41); oblique angle (50) of 15° for italic", "TEXT/MTEXT height (40) of 2.5, 3.5, 5 …", "MTEXT inline font/oblique codes such as \\f…; and \\Q15;"]
+recognition = "字形在 DXF 中不直接可见，可由文字样式推断：字体文件名、倾斜角（15°即75°斜体）、宽度因子。字母数字高度应落在1.8、2.5、3.5、5…系列上。DXF 文本可直接取字符串，1/l、0/O 等字形混淆只在光栅或矢量化来源中需要处理。"
+confusions = ["CAD 字体 CA/CB 型：矢量字体规则，与 A/B 型对应。", "OCR 中斜体 1/l、0/O 混淆：只影响光栅来源。"]
+related = ["DC-G1-106", "DC-G1-103", "DC-G1-113", "DC-G1-117"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "gbenor/gbeitc/gbcbig 为国内 AutoCAD 常用 GB 字体文件（通用实践）。"
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "3.4"
+page = 2
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "表1"
+page = 3
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "表2"
+page = 4
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 三"
+page = 14
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-5"
+page = 15
+
+[[concepts]]
+id = "DC-G1-103"
+name = "CAD字体型式（CB型、CA型）"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "计算机辅助制图用的矢量字体规则：CB型（笔画 h/10，优先采用）和CA型（较窄，笔画 h/14），各有直体V与斜体S；字符间隔分等宽 T 与比例 P 两种。"
+components = ["CB-V（优先）、CB-S、CA-V、CA-S 四种型式。", "CA型字宽为CB型的1/√2，相当于手写体A型。", "每个字符在字符框内按栅格构建，字符框高与基线间距均约19/10 h；每个字符有对正点。", "等宽间隔（T）与比例间隔（P）。"]
+variants = ["CB-V（优先）", "CB-S", "CA-V", "CA-S", "等宽间隔 T", "比例间隔 P"]
+dxf_forms = ["STYLE with SHX single-stroke vector fonts (gbenor.shx, gbeitc.shx, isocp.shx, txt.shx) and big font gbcbig.shx for Chinese", "width factor (41) below 1 for narrow styles; TrueType alternatives"]
+recognition = "由 STYLE 表判断：SHX 单线矢量字即 CAD 字体；宽度因子约0.7对应窄体；等宽与比例间隔在 DXF 中无直接标志。主要用于由字高估算文字宽度和行距（判断文字是否属于同一行、是否压线），而不是识别对象本身。"
+confusions = ["手写体 A/B 型：手工书写规则，比例对应。"]
+related = ["DC-G1-102", "DC-G1-117", "DC-G1-113", "DC-G1-112"]
+priority = "low"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "标记如“字体 GB/T 14691-CB PVL-3.5”是文件标记，不画在图上。"
+[[concepts.sources]]
+document = "GB/T 18594-2001"
+clause = "5.1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 18594-2001"
+clause = "5.2 5.3"
+page = 6
+[[concepts.sources]]
+document = "GB/T 18594-2001"
+clause = "表1"
+page = 7
+
+[[concepts]]
+id = "DC-G1-104"
+name = "分区代号"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "在采用图幅分区的图样中，用“字母+数字”并排书写的代号（如 B3、C5）指明某个位置所在的分区；与图形名称同时标注时，写在名称之后，中间空一个字母宽。"
+components = ["字母在前、数字在后，并排书写，如 B3、C5。", "与视图或剖视名称同时标注时，名称后空一个字母宽再写分区代号。", "多见于大型装配图、更改记录和引用说明。"]
+variants = ["单独书写（B3）", "与图形名称同时标注（名称后空一字宽）"]
+dxf_forms = ["short TEXT/MTEXT strings, alone or appended to a view label"]
+recognition = "正则 ^[A-Z]{1,2}\\d{1,2}$ 的短文本，且图纸上存在图幅分区（周边字母与数字）；若紧跟在视图标题或剖切字母后、以约一个字宽的空格隔开，则为分区代号。须排除公差带代号（H7）、螺纹（M10）、零件序号和焊接方法代号等。"
+confusions = ["剖视/向视字母：单个字母或 X—X。", "零件序号：纯数字，带指引线。", "螺纹、公差代号：M10、H7 等，位置在尺寸处。"]
+related = ["DC-G1-084", "DC-G2-065", "DC-G9-023"]
+priority = "low"
+text_forms = ["B3", "C5", "A—A B3"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14689-2008"
+clause = "7.4"
+page = 7
+[[concepts.sources]]
+document = "GB/T 14689-1993"
+clause = "7.4"
+page = 7
+
+[[concepts]]
+id = "DC-G1-105"
+name = "双向不同比例"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "必要时在同一视图的铅垂方向和水平方向采用不同比例（两比例之比不超过5倍），并分别注写。"
+components = ["两条带方向说明的比例：“铅垂方向 1:…”与“水平方向 1:…”。", "一般写在视图名称下方或旁边。"]
+variants = []
+dxf_forms = ["two TEXT lines under or beside the view label"]
+recognition = "文本中同时出现“铅垂方向”和“水平方向”且各接一个比例。出现时该视图两个方向的长度换算系数不同，几何测量须分别缩放。机械图罕见。"
+confusions = ["比例（标注形式）：单一比例。"]
+related = ["DC-G1-114", "DC-G1-115"]
+priority = "rare"
+text_forms = ["铅垂方向 1:1000", "水平方向 1:2000"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "多用于河流横剖面等土建图，机械图罕见。"
+[[concepts.sources]]
+document = "GB/T 14690-1993"
+clause = "5.3"
+page = 2
+
+[[concepts]]
+id = "DC-G1-106"
+name = "字体号数（字高系列）"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "字体高度 h 代表字体号数，公称尺寸系列为1.8、2.5、3.5、5、7、10、14、20 mm；需要更大的字时按√2的比率递增。"
+components = ["系列：1.8、2.5、3.5、5、7、10、14、20 mm，如“5号字”即 h=5 mm。", "汉字高度不小于3.5 mm；字母数字可用更小号。", "指数、偏差等用小一号字。"]
+variants = ["1.8 号 ... 20 号"]
+dxf_forms = ["TEXT group 40 / MTEXT group 40 or inline \\H codes; STYLE fixed height (40) may be 0 (variable)", "heights multiplied by INSERT scale and by the model-space drawing scale"]
+recognition = "统计全图文字高度（计入块缩放与比例因子），应集中在系列值或其比例倍数上（如1:2 模型空间中出现7、10）。以最常见的字高推断尺寸字高 h，用来估算其他符号的大小（箭头、表面结构符号、投影符号）。偏离系列的字高多来自缩放的块或非标准模板。"
+confusions = ["线宽数系：同为公比√2的数系，但用于图线。"]
+related = ["DC-G1-107", "DC-G1-102", "DC-G1-117", "DC-G1-108"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "3.2"
+page = 2
+
+[[concepts]]
+id = "DC-G1-107"
+name = "字高与图幅的对应及最小间距"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "CAD 图样中字高随图幅选用：A0、A1 上字母数字5 mm、汉字7 mm；A2~A4 上字母数字3.5 mm、汉字5 mm；并规定字距、行距及字与间隔线或基准线的最小距离。"
+components = ["GB/T 14665-2012 表3：A0/A1 字母数字5、汉字7；A2/A3/A4 字母数字3.5、汉字5（mm）。", "最小距离（表4）：汉字字距1.5、行距2、与间隔线或基准线间距1；字母数字字距0.5、词距1.5、行距1、与基准线间距1（mm）；混用时按汉字规定。", "1998 版汉字为 A0/A1 5 mm、A2~A4 3.5 mm，2012 版各提高一号；GB/T 18229-2000 表4 也有对应规定。"]
+variants = ["GB/T 14665-1998: Chinese 5 mm (A0/A1) and 3.5 mm (A2-A4), raised in 2012", "GB/T 18229-2000 表4 (values only partly legible in the OCR)"]
+dxf_forms = ["text heights (40) relative to the frame size", "MTEXT line spacing factor (44) and placement offsets"]
+recognition = "由幅面（图框）推断期望字高，用于区分正文、尺寸文字与标题、表格文字；文字与某条线相距约1 mm 时，说明文字附属于该线（指引线注释、标题栏格）。"
+confusions = ["字体号数（字高系列）：系列本身不随图幅变化，本条规定的是选用关系。"]
+related = ["DC-G1-106", "DC-G1-086", "DC-G1-111"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "表4数值按 OCR 顺序对应到各项，字母数字一行的排列可能有误，待核对；GB/T 18229 表4 在 OCR 中只部分可读。"
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "5.6 表3 5.7 表4"
+page = 10
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.3.1 表4"
+page = 5
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.3.2 表5"
+page = 6
+
+[[concepts]]
+id = "DC-G1-108"
+name = "小一号字体（指数、分数、极限偏差、注脚）"
+aliases = ["字体综合应用"]
+group = "G1"
+kind = "text_convention"
+meaning = "用作指数、分数、极限偏差、注脚等的数字和字母，一般比正文小一号，例如尺寸后面上下叠写的极限偏差。"
+components = ["指数（如10³）、分数（如3/5）、极限偏差（如Ø20 后的 +0.010/−0.023）、注脚，用小一号字（正文3.5 时用2.5）。", "极限偏差上下叠写，上偏差在上、下偏差在下，紧跟在基本尺寸之后。"]
+variants = []
+dxf_forms = ["MTEXT stacking \\S+0.010^-0.023; often with \\H0.7x; height factor", "DIMENSION with tolerance display (DIMTOL=1, DIMTFAC≈0.7); tolerance values in dimstyle overrides (ACAD XDATA DSTYLE) or in the override text", "exploded dimensions: separate small TEXT entities at the upper and lower right of the nominal text", "exponents and fractions via \\S3^; or \\S3/5;"]
+recognition = "锚点：一个尺寸数字或基本尺寸文本，右侧紧邻上下两个较小文字（字高约为主文字的0.7倍或小一号），上者以 + 或0 开头、下者以 − 或0 开头，两者左对齐；或 MTEXT 中的 \\S…^…; 叠写码、DIMENSION 的 DIMTOL/DIMTP/DIMTM 设置。用相对字高和位置把分离的 TEXT 合并为“尺寸+偏差”。"
+confusions = ["公差带代号：与正文同高，如 H7。", "上下标注释：一般说明中的上标，不是偏差。", "尺寸公差标注：本条只管字号，公差含义见尺寸公差条目。", "配合代号：分式形式 H7/g6。"]
+related = ["DC-G4-132", "DC-G4-113", "DC-G4-114", "DC-G1-106"]
+priority = "high"
+text_forms = ["Ø20+0.010/−0.023", "\\S+0.010^-0.023;", "10³"]
+knowledge_units = ["K03", "K52", "K55", "K19"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "A6.1"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 三"
+page = 15
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "图1-5e"
+page = 16
+
+[[concepts]]
+id = "DC-G1-109"
+name = "小数点与标点符号的字位"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "CAD 输出文字时，小数点占一个字位并位于该字位中间靠下处；标点按 GB/T 15834 使用，除省略号和破折号占两个字位外，其余各占一个字位。"
+components = ["小数点：占一个字位，位于下方中间。", "标点符号：一个符号一个字位；省略号、破折号各占两个字位。"]
+variants = []
+dxf_forms = ["plain characters in TEXT/MTEXT strings; dimension decimal separator set by DIMDSEP ('.' or ',')"]
+recognition = "对 DXF 文本只需正确解析小数点“.”（个别模板 DIMDSEP 设为逗号）。从字形或光栅恢复文本时，应把占满字位的低位点识别为小数点，而不是句号或尺寸圆点终端。"
+confusions = ["句点与尺寸圆点终端：位置与大小不同。", "乘号、中点：如“×”“·”，不是小数点。"]
+related = ["DC-G1-112", "DC-G1-106"]
+priority = "low"
+text_forms = ["0.5", "Ø12.5"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "5.2 5.5"
+page = 9
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "5.5"
+page = 10
+
+[[concepts]]
+id = "DC-G1-110"
+name = "括号中的表述（资料性）"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "图样上写在括号中的数值或表述只是资料性的，不属于规范或要求，例如参考尺寸“(50)”。"
+components = ["圆括号括起的尺寸数字或说明，如“(50)”“(Ø30)”。", "不施加公差，不作为检验依据。", "一般尺寸规范不适用于参考尺寸（GB/T 45683 规则）。"]
+variants = []
+dxf_forms = ["DIMENSION with override text (1) such as (<>) or (50)", "TEXT/MTEXT with surrounding parentheses"]
+recognition = "尺寸文本或注释以“(”开头、以“)”结尾，内容为数值（可带 Ø、R 等前缀），或 DIMENSION 覆盖文本为“(<>)”。识别为参考尺寸或资料性信息，不进入公差与要求。与公差带代号后括号中的极限偏差（如 Ø20H7(+0.021/0)）区分：后者括号紧跟公差带代号，是偏差的补充写法。"
+confusions = ["括号中的公差数值：公差带代号后的偏差，属于要求。", "辅助尺寸：如两件共用图中的括号尺寸，含义另见尺寸注法。"]
+related = ["DC-G4-009", "DC-G4-080", "DC-G4-113"]
+priority = "medium"
+text_forms = ["(50)", "(Ø30)"]
+knowledge_units = ["K23", "K24", "K25"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4249-2018"
+clause = "8"
+page = 9
+[[concepts.sources]]
+document = "GB/T 45683-2025"
+clause = "6.2 图4"
+page = 9
+
+[[concepts]]
+id = "DC-G1-111"
+name = "指引线注释说明的位置"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "与指引线相关的注释说明优先写在基准线上方，与基准线相距约两倍线宽，不得写在线内或与之接触；也可写在指引线或基准线后方并以字中对齐，或写在相关图形符号的旁边、内部或后方。"
+components = ["优先：基准线上方，距线约两倍线宽，不接触。", "其次：指引线或基准线的后方，文字中部与线对齐。", "或：相关图形符号（框格、焊缝符号等）的旁边、内部或后面。"]
+variants = ["基准线上方", "指引线/基准线后方（字中对齐）", "图形符号旁、内或后"]
+dxf_forms = ["MLEADER text attachment above the landing (bottom of text on the landing) or middle-of-text attachment for after-line placement", "exploded: TEXT whose bottom sits just above a short horizontal LINE"]
+recognition = "用于把文字归属到指引线：(1) 文字底边在某水平线上方且距离不大于字高的0.5倍、文字水平范围覆盖该线段→归该基准线；(2) 文字竖直中心与指引线或基准线端点同高、文字起点距端点不大于一个字宽→归该线。MLEADER 中文字已显式关联。"
+confusions = ["尺寸数字位置：写在尺寸线上方或中断处，属尺寸注法。"]
+related = ["DC-G1-018", "DC-G1-028", "DC-G1-107"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 4457.2-2003"
+clause = "6 图21 图22"
+page = 5
+
+[[concepts]]
+id = "DC-G1-112"
+name = "文字对正点"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "每个字符、每行和每段文字都有一个对正点，按“顶、中、底”与“左、中、右”组合编号1~9；十进制数字以小数点对正；段落可左对正、中对正或右对正。"
+components = ["对正点九种：竖直方向顶/中/底与水平方向左/中/右的组合，标识码1~9。", "十进制数字以小数点对齐。", "段落文字可左、中、右对正，整个段落区域有一个对正点。"]
+variants = ["左/中/右对正", "以小数点对正"]
+dxf_forms = ["TEXT: first point (10) and alignment point (11) with group 72 (0 left, 1 centre, 2 right, 3 aligned, 4 middle, 5 fit) and group 73 (0 baseline, 1 bottom, 2 middle, 3 top)", "MTEXT attachment point (71): 1 TL, 2 TC, 3 TR, 4 ML, 5 MC, 6 MR, 7 BL, 8 BC, 9 BR"]
+recognition = "计算文字实际包围盒时必须先按对正方式换算：TEXT 非左基线对正时以11组码为准，MTEXT 按71组码。对正方式可帮助判断归属（右对正的一列数字属于表格列，中对正的标题对准格中线）。GB/T 18594 的1~9编号顺序可能与 DXF MTEXT 71组码顺序不同，不可直接等同。"
+confusions = ["文字插入点与几何对齐：插入点不一定是文字左下角。"]
+related = ["DC-G1-103", "DC-G1-109", "DC-G1-111"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+notes = "DXF 组码为通用实践；标准表2编号与 DXF 的对应关系未核对。"
+[[concepts.sources]]
+document = "GB/T 18594-2001"
+clause = "6 表2 图7 图8"
+page = 8
+[[concepts.sources]]
+document = "GB/T 18594-2001"
+clause = "6 图9-图11"
+page = 9
+
+[[concepts]]
+id = "DC-G1-113"
+name = "斜体与直体"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "字母和数字可写成斜体（字头向右倾斜，与水平基准线成75°）或直体；CAD 机械图中数字和字母一般以正体输出，表示变量的字母除外，汉字用正体。"
+components = ["斜体：字头右倾，与基准线成75°（即倾斜15°）。", "直体（正体）：竖直。", "GB/T 14665-1998 要求数字、字母以斜体输出，2012 版改为正体；手工图和教材示例常用斜体。", "表示变量的字母（如 d、h、L）可用斜体。"]
+variants = ["斜体（75°）", "直体/正体", "GB/T 14665-1998 required slanted output; 2012 changed to upright"]
+dxf_forms = ["STYLE oblique angle (50) = 15 for italic, or italic font files such as gbeitc.shx vs gbenor.shx", "TEXT group 51 oblique angle per entity; MTEXT inline \\Q15;"]
+recognition = "读 TEXT 的倾斜角（51组码）、样式倾斜角或字体文件名（含 itc/italic）。斜体与否不改变文字含义，但能提示图样年代或模板（较老的图多为斜体）。倾斜的尺寸数字（随尺寸线方向旋转，由旋转角50组码表示）不是斜体。"
+confusions = ["倾斜的尺寸数字：整体旋转，不是字形倾斜。"]
+related = ["DC-G1-102", "DC-G1-103"]
+priority = "medium"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "3.5"
+page = 2
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "5.1 5.3 5.4"
+page = 9
+[[concepts.sources]]
+document = "GB/T 14665-2012"
+clause = "前言"
+page = 2
+
+[[concepts]]
+id = "DC-G1-114"
+name = "比例（标注形式）"
+aliases = ["比例"]
+group = "G1"
+kind = "text_convention"
+meaning = "图中图形与实物相应要素的线性尺寸之比，用冒号表示、图形尺寸在前：1:1为原值比例，大于1为放大比例，小于1为缩小比例；一般注在标题栏的比例栏内。"
+components = ["写法：两数以冒号分隔，如1:1、1:2、2:1、1:500。", "优先系列：1:1；放大5:1、2:1、1×10ⁿ:1 及其×10ⁿ；缩小1:2、1:5、1:10 及其×10ⁿ。", "允许系列：放大4:1、2.5:1 及其×10ⁿ；缩小1:1.5、1:2.5、1:3、1:4、1:6 及其×10ⁿ（教材表中加括号为次选）。", "位置：标题栏比例栏；必要时在视图名称下方或右侧。"]
+variants = ["原值比例 1:1", "放大比例", "缩小比例", "优先系列（表1）", "允许系列（表2）", "原值比例", "带括号的次选比例"]
+dxf_forms = ["TEXT or ATTRIB in the title-block INSERT (tags like 比例, SCALE, BL)", "DIMLFAC (linear factor) and DIMSCALE in the dimstyle; viewport scale in paper-space layouts"]
+recognition = "锚点为标题栏“比例”格中的文本，匹配 ^\\d+(\\.\\d+)?\\s*[:：]\\s*\\d+(\\.\\d+)?$。用于把几何长度换算为实物尺寸：模型空间按1:1绘制时图框被放大（缩小比例）或缩小；也可用“测得长度/尺寸数字”验证（DIMLFAC 可能已补偿）。与锥度、斜度区分：后者前有锥度或斜度符号、注在图形旁，比例在标题栏或视图名下。"
+confusions = ["锥度 1:n：带锥度符号，注在圆锥处。", "斜度 1:n：带斜度符号。", "尺寸数字中的比值、传动比：技术参数，不是绘图比例。"]
+related = ["DC-G1-115", "DC-G1-089", "DC-G1-105", "DC-G9-025", "DC-G4-057", "DC-G4-048"]
+priority = "high"
+text_forms = ["1:1", "1:2", "2:1", "1:2.5", "1:100"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = ["title_block_field"]
+recognizer = "card"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14690-1993"
+clause = "3 4.1 表1"
+page = 1
+[[concepts.sources]]
+document = "GB/T 14690-1993"
+clause = "4.2 表2 5.1 5.2"
+page = 2
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.2 表2 表3"
+page = 5
+[[concepts.sources]]
+document = "GB/T 13361-2012"
+clause = "4.2"
+page = 6
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "表1-2"
+page = 13
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 二"
+page = 14
+
+[[concepts]]
+id = "DC-G1-115"
+name = "视图名称处的比例标注"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "某个视图（如局部放大图、剖视图）采用与标题栏不同的比例时，在该视图名称的下方或右侧注写其比例。"
+components = ["名称下方：如罗马数字“Ⅰ”之下写“2:1”，或“B—B”之下写“2.5:1”。", "名称右侧：如“平面图 1:100”。", "上下叠写时名称与比例中心对齐。"]
+variants = ["写在图名下方", "写在图名右侧"]
+dxf_forms = ["two TEXT entities stacked and centred (label above, scale below) or one MTEXT with \\P", "MTEXT stacking such as \\SⅠ^2:1;"]
+recognition = "锚点：视图标题（罗马数字Ⅰ、Ⅱ，大写字母或 X—X）正下方或右方的比例文本，两者中心对齐、间距小于字高。识别后该视图的几何按此比例换算，而不用标题栏比例；局部放大图还应在原视图中找到细实线圆圈和同一罗马数字。"
+confusions = ["分区代号写在图名之后：字母+数字，不含冒号。", "剖切字母：只有字母。", "局部放大图编号：罗马数字本身，比例在其下方。"]
+related = ["DC-G1-114", "DC-G2-068", "DC-G2-075", "DC-G2-065"]
+priority = "medium"
+text_forms = ["Ⅰ/2:1", "B—B/2.5:1", "平面图 1:100"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = ["view_callout"]
+recognizer = "card"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14690-1993"
+clause = "5.2"
+page = 2
+
+[[concepts]]
+id = "DC-G1-116"
+name = "量和单位符号的书写"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "图样中的数学符号、物理量符号、计量单位符号和其他符号代号应按有关法令和标准书写，如460r/min、220V、5MΩ、380kPa；公差代号、螺纹标记等组合书写也遵循字体规定。"
+components = ["单位符号写在数值之后，如 r/min、V、MΩ、kPa、m/kg。", "组合示例：10Js5(±0.003)、M24-6h、Ø25H6/m5、R8、5%、5:1。", "图样中以 mm 为单位的尺寸不注单位，其他单位须注明。"]
+variants = ["单位符号", "公差代号/螺纹标记等组合示例"]
+dxf_forms = ["TEXT/MTEXT with special codes %%c (Ø), %%d (°), %%p (±) and Unicode escapes such as \\U+2126 (Ω)"]
+recognition = "先解析 %%c、%%d、%%p 和 Unicode 转义，再用单位词典（mm、m、kg、N、N·m、MPa、kPa、r/min、V、Ω、℃、%）识别“数值+单位”的物理量；带非长度单位的数值不是长度尺寸。螺纹、公差等组合代号按各自规则解析。"
+confusions = ["尺寸数字：默认单位 mm，不写单位。", "代号与变量：如 d、m、z 等参数符号。"]
+related = ["DC-G1-102", "DC-G1-108", "DC-G4-099"]
+priority = "medium"
+text_forms = ["460r/min", "220V", "5MΩ", "380kPa", "M24-6h", "10Js5(±0.003)"]
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "A6.2"
+page = 13
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "A6.2 A6.3"
+page = 14
+
+[[concepts]]
+id = "DC-G1-117"
+name = "长仿宋体汉字"
+aliases = []
+group = "G1"
+kind = "text_convention"
+meaning = "图样中的汉字应写成长仿宋体，采用国家正式推行的简化字，高度不小于3.5 mm，字宽约 h/√2；CAD 图中标注、标题栏、明细栏用长仿宋体，大标题、封面等可用其他字体。"
+components = ["字形：长仿宋体，简化字，宽高比约0.7（h/√2）。", "字高不小于3.5 mm，常用10、7、5、3.5号。", "CAD（GB/T 18229 表6）：长仿宋体用于图中标注及说明、标题栏、明细栏；单线宋体、宋体、仿宋体、楷体、黑体用于大标题、小标题、封面、目录、单位名称、图样名称等。"]
+variants = ["长仿宋体（图中标注、标题栏、明细栏）", "单线宋体/宋体/仿宋体/楷体/黑体（大标题、封面、单位名称）", "10号、7号、5号、3.5号字"]
+dxf_forms = ["STYLE with big font gbcbig.shx (plus gbenor/gbeitc), or TrueType 仿宋_GB2312 / 仿宋 / FangSong with width factor (41) about 0.7", "legacy font files named HZCF (长仿宋), HZDX, HZST, HZFS, HZKT, HZHT (GB/T 18229 表6)", "MTEXT inline font codes such as \\f仿宋_GB2312|b0|i0|c134|p49;"]
+recognition = "文字样式宽度因子约0.7、字体为仿宋或 gbcbig 等可判为长仿宋体；字形本身对 DXF 识别不重要，重要的是汉字内容与字高。汉字高度不小于3.5 mm，可帮助区分汉字说明与小号的字母数字（如偏差）。"
+confusions = ["非标准字体：宋体正文、手写体等，不符合规定但内容可读。", "其他字体的说明文字：大标题、单位名称可用宋体、黑体等。"]
+related = ["DC-G1-106", "DC-G1-103", "DC-G1-102", "DC-G1-107"]
+priority = "high"
+text_forms = []
+knowledge_units = ["K03", "K52", "K55"]
+recognition_cards = []
+recognizer = "none"
+seen_on_drawing = []
+expert_checked = false
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "3.3"
+page = 2
+[[concepts.sources]]
+document = "GB/T 14691-1993"
+clause = "附录A A1"
+page = 5
+[[concepts.sources]]
+document = "GB/T 18229-2000"
+clause = "4.3.3 表6"
+page = 6
+[[concepts.sources]]
+document = "机械制图（第7版）"
+clause = "§1-1 三"
+page = 14
+

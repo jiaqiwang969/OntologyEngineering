@@ -3126,7 +3126,7 @@ platform = "Rust 1.95；页面检查运行调用方给出的 Chrome（无头、�
 effects = "只读源字节、关系图、复核与页面；在新位置写检查报告、浏览器结果与截图"
 failures = "首个不符即停并给出该项名称；浏览器超时或失败如实记录；通过只说明源守恒与输出合同一致，不说明工程正确"
 status = "source_only"
-source_refs = ["drawing_understanding_method"]
+source_refs = ["drawing_understanding_method", "drafting_ontology"]
 
 [[types]]
 name = "MdCadcraftRuntime"
@@ -4842,14 +4842,14 @@ value = "passed"
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
-pointer = "/steps/11/id"
+pointer = "/steps/12/id"
 op = "equals"
 value = "verify-source"
 
 [[obligations.executors.evidence]]
 contract = "MdDrawingRouteReceipt"
 schema = "oev2.drawing-route-receipt/1"
-pointer = "/steps/11/status"
+pointer = "/steps/12/status"
 op = "equals"
 value = "passed"
 
@@ -5212,3 +5212,830 @@ precision="Exact rule and concept identity; level is an audited judgement with w
 write="Authored audit of the recognizer sources; checked by oe-drawing tests against the sources, the recognition cards and the concept cards"
 applicability="Recognition coverage of the dxf-expression-rules/2 profile"
 acceptance="Every rule the recognizer emits is listed; every concept status follows from the table and the recognition cards"
+
+# ---------------------------------------------------------------- drafting rules of the ontology
+
+[[sources]]
+id = "drafting_ontology"
+identity = "crates/oe-drawing-check/knowledge/drafting-ontology.toml (ontology and SHACL shapes of the first batch of drafting rules); GB/T 14665-2012 4.3 overlapping-line precedence; GB/T 4458.4-2003 4.1.5, 4.2.1, 4.2.2, 4.3.2, 4.3.4 and 图24 dimensioning; GB/T 4457.4-2002 表1 line types 01.1.2, 01.1.3, 01.1.5, 01.1.21; GB/T 4458.6-2002 5.6 and GB/T 17452-1998 6.3 local sections; GB/T 17453-1998 4.6 hatching broken at text; GB/T 18229-2000 4.5 CAD hatching; GB/T 4457.2-2003 3.1 leaders"
+role = "Drafting rules as ontology constraints: each shape names the concepts of the catalogue and the clause it formalizes; evaluated by the framework's SHACL engine on exported facts, never used as recognition input"
+applicability = "The classes and predicates of the fact contract; findings are deviations to review on the named layer"
+
+[[types]]
+name = "MdDraftingRuleRequest"
+contract_group = "engineering"
+meaning = "Request to evaluate the drafting rules of the ontology on one discovery result"
+identity = "Discovery request path and output path"
+
+[[types.fields]]
+name = "schema"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "oev2.drawing-drafting-rules-request/1"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "discovery_request"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Portable path of the discovery request; its output directory holds graph.json"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "output"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Portable path of the new report; the facts files are written beside it"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types]]
+name = "MdDraftingObject"
+contract_group = "engineering"
+meaning = "One drawing object of a fact layer: its classes from the recognized member role, its identities, its text"
+identity = "Layer and object id"
+
+[[types.fields]]
+name = "layer"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Fact layer: the drawing as drawn, what the graph claims, or what the page draws"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["source", "recognition", "presentation"]
+
+[[types.fields]]
+name = "id"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Object id, unique within the layer"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "class"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Most specific class of the object; the ontology declares exactly these classes"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["Line", "VisibleOutline", "HiddenOutline", "CentreLine", "BreakBoundary", "WavyBreakBoundary", "HatchLine", "SectionRegion", "DimensionLine", "ExtensionLine", "Arrowhead", "LeaderLine", "ThreadLine", "DetailCircle", "SheetLine", "SymbolLine", "InferredSpan", "OtherLine", "Text", "DimensionText", "AngularDimensionText", "ToleranceText", "NoteText", "TableText", "ViewLabel", "DatumLetter", "Construction"]
+
+[[types.fields]]
+name = "classes"
+rust_type = "Vec<String>"
+required = true
+format = "typed"
+meaning = "All classes of the object, general to specific"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "source_handles"
+rust_type = "Vec<String>"
+required = true
+format = "typed"
+meaning = "Source handles the object comes from"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "member_ids"
+rust_type = "Vec<String>"
+required = true
+format = "typed"
+meaning = "Graph member ids the object comes from"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "expression_id"
+rust_type = "Option<String>"
+required = false
+format = "typed"
+meaning = "Expression of the member, when the object is one member"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "view"
+rust_type = "Option<String>"
+required = false
+format = "typed"
+meaning = "View of the object"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "line_type"
+rust_type = "Option<String>"
+required = false
+format = "typed"
+meaning = "Line type the graph gives the member"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "text"
+rust_type = "Option<String>"
+required = false
+format = "typed"
+meaning = "Text content without formatting codes; the graph label on the recognition layer"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types]]
+name = "MdDraftingRelation"
+contract_group = "engineering"
+meaning = "One relation fact between objects of a layer, or a literal fact of an object, from the generic geometry predicates"
+identity = "Layer, subject, predicate and object"
+
+[[types.fields]]
+name = "layer"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Fact layer"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["source", "recognition", "presentation"]
+
+[[types.fields]]
+name = "subject"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Object id"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "predicate"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Predicate of the fact vocabulary; the ontology declares exactly these properties"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "endOnOutline", "crossedBy", "coincidentWith"]
+
+[[types.fields]]
+name = "object"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Object id, or the literal value"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "object_kind"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Whether the object is a node or a literal"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["node", "text", "number"]
+
+[[types]]
+name = "MdDraftingLayer"
+contract_group = "engineering"
+meaning = "Counts of one fact layer and where its facts were written"
+identity = "Layer"
+
+[[types.fields]]
+name = "layer"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Fact layer"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["source", "recognition", "presentation"]
+
+[[types.fields]]
+name = "object_count"
+rust_type = "u64"
+required = true
+format = "typed"
+meaning = "Objects exported"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "relation_count"
+rust_type = "u64"
+required = true
+format = "typed"
+meaning = "Relation facts exported"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "triple_count"
+rust_type = "u64"
+required = true
+format = "typed"
+meaning = "Triples written"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "focus_count"
+rust_type = "u64"
+required = true
+format = "typed"
+meaning = "Focus nodes the shapes targeted"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "finding_count"
+rust_type = "u64"
+required = true
+format = "typed"
+meaning = "Findings on this layer"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "facts_file"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Portable path of the Turtle facts of this layer"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types]]
+name = "MdDraftingRule"
+contract_group = "engineering"
+meaning = "One drafting rule of the shapes document with its concept, clause and message"
+identity = "Rule id"
+
+[[types.fields]]
+name = "id"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Rule id as written in the shape"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "group"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Concept group of the rule"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "concept_ids"
+rust_type = "Vec<String>"
+required = true
+format = "typed"
+meaning = "Concept ids of the catalogue the rule formalizes"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "clause"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Standard clause or source the rule comes from"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "label"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Rule in one Chinese sentence"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "message"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Message of a finding"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "severity"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Severity of the shape"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["violation", "warning", "info"]
+
+[[types.fields]]
+name = "target_classes"
+rust_type = "Vec<String>"
+required = true
+format = "typed"
+meaning = "Classes the rule targets"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types]]
+name = "MdDraftingFinding"
+contract_group = "engineering"
+meaning = "One finding: a rule not satisfied by one focus object on one layer"
+identity = "Layer, rule id, focus and value"
+
+[[types.fields]]
+name = "layer"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Fact layer of the finding"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["source", "recognition", "presentation"]
+
+[[types.fields]]
+name = "rule_id"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Rule id"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "focus"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Object the rule targeted"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "focus_classes"
+rust_type = "Vec<String>"
+required = true
+format = "typed"
+meaning = "Classes of the focus object"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "source_handles"
+rust_type = "Vec<String>"
+required = true
+format = "typed"
+meaning = "Source handles of the focus object"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "expression_ids"
+rust_type = "Vec<String>"
+required = true
+format = "typed"
+meaning = "Expressions of the focus object"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "value"
+rust_type = "Option<String>"
+required = false
+format = "typed"
+meaning = "The offending value: another object id or a literal, when the engine names one"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "message"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Message of the shape"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "severity"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Severity of the shape"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["violation", "warning", "info"]
+
+[[types]]
+name = "MdDraftingRuleReport"
+contract_group = "engineering"
+meaning = "Result of the drafting-rule check: the rules, the layers and every finding"
+identity = "Graph digest, ontology digest and program"
+
+[[types.fields]]
+name = "schema"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "oev2.drawing-drafting-rules/1"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "status"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Always checked: findings are reported, never a failure of the check"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+allowed_values = ["checked"]
+
+[[types.fields]]
+name = "graph_sha256"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "SHA-256 of the expression graph file"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "source_sha256"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "SHA-256 of the source DXF bytes"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "ontology_sha256"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "SHA-256 of the compiled knowledge file holding the ontology and the shapes"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "rule_count"
+rust_type = "u64"
+required = true
+format = "typed"
+meaning = "Distinct rule ids in the shapes"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "rules"
+rust_type = "Vec<MdDraftingRule>"
+required = true
+format = "typed"
+meaning = "Every rule of the shapes document"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "layers"
+rust_type = "Vec<MdDraftingLayer>"
+required = true
+format = "typed"
+meaning = "The three layers in order: source, recognition, presentation"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "findings"
+rust_type = "Vec<MdDraftingFinding>"
+required = true
+format = "typed"
+meaning = "Every finding of every layer"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "by_rule"
+rust_type = "std::collections::BTreeMap<String, u64>"
+required = true
+format = "typed"
+meaning = "Findings per rule id over all layers, zero for rules without findings"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "scope"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "What the report claims and does not claim"
+unit = "Identifiers, counts, text and class names; drawing units only inside the facts files"
+precision = "Exact identities and counts; relations by the stated tolerances (0.15 units coincidence, 0.5 units at ends, a chord of 0.3 text heights)"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[interfaces]]
+name = "MdDraftingRulePort"
+module = "drawing_understanding_check"
+method = "check_rules"
+input = "MdDraftingRuleRequest"
+output = "MdDraftingRuleReport"
+error = "FailureRecord"
+effects = "Read the source bytes and the frozen graph; write one new report and three facts files; no classification"
+rust_path = "crates/oe-drawing-check/src/drafting.rs"
+implementation = "DraftingRuleChecker"
+
+[[constraints]]
+id = "md_drafting_rules"
+requirement = "req_md_drawing_route"
+module = "drawing_understanding_check"
+check = "check_rules"
+rust_path = "crates/oe-drawing-check/src/drafting.rs"
+statement = "Drafting rules are evaluated only as SHACL shapes of the drafting ontology, by the framework's SHACL engine, over typed facts exported from the source bytes and the frozen graph without classifier code; the ontology declares exactly the classes and predicates the fact contract allows; every rule names its concepts of the catalogue, its standard clause and its message; the same shapes are evaluated on the source, recognition and presentation layers and every finding names its layer, focus and sources; a finding is a deviation to review and never changes the graph"
+severity = "error"
+
+[[validations]]
+id = "md_drafting_rules_the_ontology_the_fact_contract_and_the_exporter_declare_t"
+module = "drawing_understanding_check"
+constraint = "md_drafting_rules"
+behavior = "the_ontology_the_fact_contract_and_the_exporter_declare_the_same_vocabulary"
+rust_path = "crates/oe-drawing-check/tests/drafting_rules.rs"
+oracle = "Classes and properties read from the ontology document equal the allowed values of the fact contract and the constants of the exporter, in both directions; every class and property a shape references is declared"
+scope = "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+
+[[validations]]
+id = "md_drafting_rules_every_rule_has_a_violating_and_a_conforming_fixture"
+module = "drawing_understanding_check"
+constraint = "md_drafting_rules"
+behavior = "every_rule_has_a_violating_and_a_conforming_fixture"
+rust_path = "crates/oe-drawing-check/tests/drafting_rules.rs"
+oracle = "Authored DXF and graph fixtures per rule: the violating fixture yields that rule and no other on its layer, the conforming fixture yields no finding"
+scope = "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+
+[[validations]]
+id = "md_drafting_rules_the_same_shapes_are_evaluated_on_the_three_layers"
+module = "drawing_understanding_check"
+constraint = "md_drafting_rules"
+behavior = "the_same_shapes_are_evaluated_on_the_three_layers"
+rust_path = "crates/oe-drawing-check/tests/drafting_rules.rs"
+oracle = "One authored drawing whose fault is only in the presentation layer (an inferred span) and one whose fault is only in the source (a raw text) give findings on those layers alone"
+scope = "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+
+[[validations]]
+id = "md_drafting_rules_every_rule_names_concepts_of_the_catalogue_and_a_clause"
+module = "drawing_understanding_check"
+constraint = "md_drafting_rules"
+behavior = "every_rule_names_concepts_of_the_catalogue_and_a_clause"
+rust_path = "crates/oe-drawing/tests/drafting_rules.rs"
+oracle = "Every rule shape carries a rule id, concept ids that exist in the concept catalogue, a clause, a label and a message; rule ids are distinct per shape family and at least twelve"
+scope = "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+
+[[obligations]]
+id = "ob_drawing_rules_from_ontology"
+constraint = "md_drafting_rules"
+statement = "Every route run evaluates the drafting rules of the ontology on the three fact layers and records the findings per layer; the rules are read from the compiled shapes, not from code"
+gaps = ["First batch of rules only (lines, views and sections, dimensions); rules that need cavity, projection or part knowledge are not formalized"]
+
+[[obligations.executors]]
+kind = "generated_validation"
+module = "drawing_understanding_check"
+symbol = "MdDraftingRuleReport"
+entry = "Report validated against the generated contract before it is written"
+
+[[obligations.executors]]
+kind = "independent_check"
+module = "drawing_understanding_check"
+rust_path = "crates/oe-drawing-check/src/drafting.rs"
+symbol = "check_rules"
+entry = "oev2 drawing rules; oev2 drawing route, step check-rules"
+
+[[obligations.executors.evidence]]
+contract = "MdDraftingRuleReport"
+schema = "oev2.drawing-drafting-rules/1"
+pointer = "/status"
+op = "equals"
+value = "checked"
+
+[[obligations.executors.evidence]]
+contract = "MdDraftingRuleReport"
+schema = "oev2.drawing-drafting-rules/1"
+pointer = "/rule_count"
+op = "at_least"
+value = 12
+
+[[obligations.executors.evidence]]
+contract = "MdDraftingRuleReport"
+schema = "oev2.drawing-drafting-rules/1"
+pointer = "/layers/0/layer"
+op = "equals"
+value = "source"
+
+[[obligations.executors.evidence]]
+contract = "MdDraftingRuleReport"
+schema = "oev2.drawing-drafting-rules/1"
+pointer = "/layers/1/layer"
+op = "equals"
+value = "recognition"
+
+[[obligations.executors.evidence]]
+contract = "MdDraftingRuleReport"
+schema = "oev2.drawing-drafting-rules/1"
+pointer = "/layers/2/layer"
+op = "equals"
+value = "presentation"
+
+[[obligations.executors]]
+kind = "rust_check"
+module = "drawing_understanding"
+rust_path = "crates/oe-drawing/src/route.rs"
+symbol = "route"
+entry = "oev2 drawing route, step check-rules"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/11/id"
+op = "equals"
+value = "check-rules"
+
+[[obligations.executors.evidence]]
+contract = "MdDrawingRouteReceipt"
+schema = "oev2.drawing-route-receipt/1"
+pointer = "/steps/11/status"
+op = "equals"
+value = "passed"

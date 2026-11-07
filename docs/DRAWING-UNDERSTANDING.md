@@ -54,9 +54,9 @@ oev2 --root ROOT --project-home HOME drawing route \
   --output-directory runs/drawing-r1 --title "图名" --chrome "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 ```
 
-步骤依次为：核运行身份 → 读源 → 沙箱探针 → CADCraft 转 2018 DXF → CADCraft 渲染中性 SVG 与预览 → 当前 Project 上下文 → 发现请求 → 隔离 worker 分类 → 独立复核 → 检查页 → 七种显示模式的离线浏览器检查 → 核源未变。首个失败即停，其后步骤记为 `not_run`；不给 Chrome 时页面不检查，路线状态为 `page_not_checked`。输入固定：不能传入参照答案、区域、反馈、配对模型或截图。
+步骤依次为：核运行身份 → 读源 → 沙箱探针 → CADCraft 转 2018 DXF → CADCraft 渲染中性 SVG 与预览 → 当前 Project 上下文 → 发现请求 → 隔离 worker 分类 → 独立复核 → 检查页 → 七种显示模式的离线浏览器检查 → 制图规定检查 → 核源未变。首个失败即停，其后步骤记为 `not_run`；不给 Chrome 时页面不检查，路线状态为 `page_not_checked`。输入固定：不能传入参照答案、区域、反馈、配对模型或截图。
 
-已有 DXF 及其渲染时用 `--dxf` 与 `--svg` 代替 `--dwg`，转换与渲染记为 `not_applicable`。单独的命令：`drawing discover`（在当前 Project 下发现）、`drawing check`（独立复核）、`drawing page`（检查页）、`drawing check-page`（单一模式的浏览器检查）。路径相对项目目录，或为绝对路径；输出目录必须是项目目录内的新目录。
+已有 DXF 及其渲染时用 `--dxf` 与 `--svg` 代替 `--dwg`，转换与渲染记为 `not_applicable`。单独的命令：`drawing discover`（在当前 Project 下发现）、`drawing check`（独立复核）、`drawing page`（检查页）、`drawing check-page`（单一模式的浏览器检查）、`drawing rules`（制图规定检查）。路径相对项目目录，或为绝对路径；输出目录必须是项目目录内的新目录。
 
 发现要求项目目录是已锚定的 workspace，且给出的 Project 就是其当前 Project（`native_current_project_changed` 拒绝其他修订）。workspace 经同一管理程序打开，支持 `oev2.workspace-commit/1`–`/6`（见[项目文件体系](PROJECT-WORKSPACE.md)）；在大型 Project 上读图前，图纸须先登记为该 Project 的证据。
 
@@ -82,6 +82,22 @@ oev2 --root ROOT --project-home HOME drawing route \
 
 `oe-drawing-check` 用自己的 DXF 读入与代码页解码，从源字节重新推导并逐项核对：源根对象完整保留及类型/图层/所属；原生成员存在且互异；LTYPE 划段推得的线型节奏；合格 LINE 的精确端点；成员区间留在源域内且无缝覆盖；表达族随种类、成员表完整、视图存在、无臆造零件目标；尺寸带数值来源、形位框共享被标尺寸的两个终端；结构端点落在源上、推断区间端点精确且与两侧共线或同圆、结构线片段同视图同类且恰好出现一次；渲染身份都是源根对象；worker 身份与沙箱配置；固定文件未变。任何一项不符即停并报出该项名称（命令行失败行只给检查种类，不含句柄与路径）。报告给出总数、源推导数与分项计数。
 
+## 制图规定的本体化约束
+
+概念目录和识别卡回答"图上这是什么"，制图规定回答"图上应当怎样"。规定不写在代码里，而是本体的约束：[`crates/oe-drawing-check/knowledge/drafting-ontology.toml`](../crates/oe-drawing-check/knowledge/drafting-ontology.toml) 装着两份 Turtle 文档。`ontology` 声明图样对象的类（可见轮廓线、中心线、波浪线、剖面线、尺寸线、尺寸界线、指引线、尺寸数字、角度数字……）和对象之间可由几何计算的关系属性（被图线穿过、与图线重合、端点落在轮廓线上、方向角、文字方向、文字内容）；每个类链接概念目录编号。`shapes` 为每条规定写一个 SHACL 形状：目标类、属性路径与约束、规定编号、概念编号、标准条款、中文消息和严重度。第一批 14 条规定来自图线（G1）、视图与剖视（G2）、尺寸（G4）三组，例如"尺寸数字不得被任何图线穿过"（GB/T 4458.4-2003 4.3.4）、"波浪线应画到轮廓线为止、不得与轮廓线相穿"、"中心线与可见轮廓线重合时只画轮廓线"（GB/T 14665-2012 4.3）、"角度数字须注写单位、一律水平书写"、"剖面区域内注写处剖面线断开"。
+
+规范与本体互相绑定：`MdDraftingObject.class` 与 `MdDraftingRelation.predicate` 的允许值就是本体声明的类表和属性表，测试双向核对；形状只能引用本体里的类和属性；每条形状的概念编号必须存在于目录。本体文件是编译输入，改动即重新绑定程序。
+
+检查在独立复核 crate 中进行，不调用分类程序：对象的类来自冻结关系图的成员角色（识别给出的身份），几何来自源 DXF 字节（含尺寸显示块的文字框及其块偏移），关系由通用几何谓词计算，然后分三层导出事实并用框架的 SHACL 引擎（`semantica-runtime`）对每层评估同一套形状：
+
+| 层 | 事实 | 一条命中说明 |
+|---|---|---|
+| source 源图 | 实体如画：整条线、原文 | 源文件本身偏离规定（要与纸质原图和画图习惯对照后才算图纸错误） |
+| recognition 识别 | 成员区间内的几何、关系图给出的标签（如补了单位的角度） | 识别结果仍偏离规定 |
+| presentation 呈现 | 合并后的结构线与推断补全的线段，文字按渲染即原文 | 页面所画偏离规定；推断段命中时是补全规则越界 |
+
+`oev2 drawing rules --request 发现请求 --output 报告` 写出报告（`oev2.drawing-drafting-rules/1`：规定表、每层的对象数、关系数、三元组数与命中数、每条命中的层、规定、焦点对象、源句柄与消息）和每层的事实文件 `drafting-facts-<层>.ttl`。路线的 `check-rules` 步运行同一检查并把计数写进回执。命中是待复核的偏离，不改变关系图，也不使路线失败；复核时把每条命中归为原图偏离、识别偏离、呈现偏离、规定需例外或误报。
+
 ## 检查页与浏览器检查
 
 检查页嵌入冻结的关系图与中性 SVG，不做分类；含脚本、外部对象、图片、事件属性或链接的 SVG 被拒。页面默认显示完整结构（每根结构线画一次，推断区间在线内），可切换学科类别/线型/图元/视图筛选、原图对照、断口端点与重复线。页面明确写出未嵌入独立参照：参照答案只用于独立评价，不进入页面或输入。
@@ -94,7 +110,7 @@ oev2 --root ROOT --project-home HOME drawing route \
 
 ## 义务：谁执行、在哪个入口、凭什么成立
 
-规范 `specs/modules/drawing-understanding.toml` 为本模块声明八条义务（格式见[设计方法](../references/design-method.md#在四环之间保持含义和依据)）。`oev2 --root ROOT design evidence --run 运行目录` 按这些义务判定一次运行；不给 Chrome 时，三条页面义务缺证据而不是成立。
+规范 `specs/modules/drawing-understanding.toml` 为本模块声明九条义务（格式见[设计方法](../references/design-method.md#在四环之间保持含义和依据)）。`oev2 --root ROOT design evidence --run 运行目录` 按这些义务判定一次运行；不给 Chrome 时，三条页面义务缺证据而不是成立。
 
 | 义务 | 执行者与入口 | 运行证据 | 运行之外 |
 |---|---|---|---|
@@ -106,6 +122,7 @@ oev2 --root ROOT --project-home HOME drawing route \
 | 转换器身份 | `verify_cadcraft`（verify-runtime） | 回执 verify-runtime 通过、编译进程序的锁在回执中 | 转换保真由开发图纸上的资格验证确立 |
 | 页面如实显示 | `render`；浏览器检查 | 回执 page 步通过；7 份页面检查通过且各有断言 | — |
 | 运行可复核 | 路线回执 | 回执记有程序摘要；read-source、verify-source 通过 | 跨运行的逐字节复现由重复资格运行确立 |
+| 制图规定出自本体 | 生成合同校验；独立复核 `check_rules`（`drawing rules`、check-rules） | 报告状态 checked、规定不少于 12 条、三层依次为 source/recognition/presentation；回执 check-rules 步通过 | 第一批只覆盖图线、视图与剖视、尺寸中可由几何判定的规定 |
 
 ## 资格与限制
 

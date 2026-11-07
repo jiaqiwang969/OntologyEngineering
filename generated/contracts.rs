@@ -2778,6 +2778,59 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDiscoveredUse", "role", "String"),
     ("MdDiscoveredUse", "rule", "String"),
     ("MdDiscoveredUse", "state", "String"),
+    ("MdDraftingFinding", "expression_ids", "Vec<String>"),
+    ("MdDraftingFinding", "focus", "String"),
+    ("MdDraftingFinding", "focus_classes", "Vec<String>"),
+    ("MdDraftingFinding", "layer", "String"),
+    ("MdDraftingFinding", "message", "String"),
+    ("MdDraftingFinding", "rule_id", "String"),
+    ("MdDraftingFinding", "severity", "String"),
+    ("MdDraftingFinding", "source_handles", "Vec<String>"),
+    ("MdDraftingFinding", "value", "Option<String>"),
+    ("MdDraftingLayer", "facts_file", "String"),
+    ("MdDraftingLayer", "finding_count", "u64"),
+    ("MdDraftingLayer", "focus_count", "u64"),
+    ("MdDraftingLayer", "layer", "String"),
+    ("MdDraftingLayer", "object_count", "u64"),
+    ("MdDraftingLayer", "relation_count", "u64"),
+    ("MdDraftingLayer", "triple_count", "u64"),
+    ("MdDraftingObject", "class", "String"),
+    ("MdDraftingObject", "classes", "Vec<String>"),
+    ("MdDraftingObject", "expression_id", "Option<String>"),
+    ("MdDraftingObject", "id", "String"),
+    ("MdDraftingObject", "layer", "String"),
+    ("MdDraftingObject", "line_type", "Option<String>"),
+    ("MdDraftingObject", "member_ids", "Vec<String>"),
+    ("MdDraftingObject", "source_handles", "Vec<String>"),
+    ("MdDraftingObject", "text", "Option<String>"),
+    ("MdDraftingObject", "view", "Option<String>"),
+    ("MdDraftingRelation", "layer", "String"),
+    ("MdDraftingRelation", "object", "String"),
+    ("MdDraftingRelation", "object_kind", "String"),
+    ("MdDraftingRelation", "predicate", "String"),
+    ("MdDraftingRelation", "subject", "String"),
+    ("MdDraftingRule", "clause", "String"),
+    ("MdDraftingRule", "concept_ids", "Vec<String>"),
+    ("MdDraftingRule", "group", "String"),
+    ("MdDraftingRule", "id", "String"),
+    ("MdDraftingRule", "label", "String"),
+    ("MdDraftingRule", "message", "String"),
+    ("MdDraftingRule", "severity", "String"),
+    ("MdDraftingRule", "target_classes", "Vec<String>"),
+    ("MdDraftingRuleReport", "by_rule", "std::collections::BTreeMap<String, u64>"),
+    ("MdDraftingRuleReport", "findings", "Vec<MdDraftingFinding>"),
+    ("MdDraftingRuleReport", "graph_sha256", "String"),
+    ("MdDraftingRuleReport", "layers", "Vec<MdDraftingLayer>"),
+    ("MdDraftingRuleReport", "ontology_sha256", "String"),
+    ("MdDraftingRuleReport", "rule_count", "u64"),
+    ("MdDraftingRuleReport", "rules", "Vec<MdDraftingRule>"),
+    ("MdDraftingRuleReport", "schema", "String"),
+    ("MdDraftingRuleReport", "scope", "String"),
+    ("MdDraftingRuleReport", "source_sha256", "String"),
+    ("MdDraftingRuleReport", "status", "String"),
+    ("MdDraftingRuleRequest", "discovery_request", "String"),
+    ("MdDraftingRuleRequest", "output", "String"),
+    ("MdDraftingRuleRequest", "schema", "String"),
     ("MdDrawingConcept", "aliases", "Vec<String>"),
     ("MdDrawingConcept", "components", "Vec<String>"),
     ("MdDrawingConcept", "confusions", "Vec<String>"),
@@ -5587,6 +5640,68 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDiscoveredUse", "state", "candidate"),
     ("MdDiscoveredUse", "state", "observed"),
     ("MdDiscoveredUse", "state", "unknown"),
+    ("MdDraftingFinding", "layer", "presentation"),
+    ("MdDraftingFinding", "layer", "recognition"),
+    ("MdDraftingFinding", "layer", "source"),
+    ("MdDraftingFinding", "severity", "info"),
+    ("MdDraftingFinding", "severity", "violation"),
+    ("MdDraftingFinding", "severity", "warning"),
+    ("MdDraftingLayer", "layer", "presentation"),
+    ("MdDraftingLayer", "layer", "recognition"),
+    ("MdDraftingLayer", "layer", "source"),
+    ("MdDraftingObject", "class", "AngularDimensionText"),
+    ("MdDraftingObject", "class", "Arrowhead"),
+    ("MdDraftingObject", "class", "BreakBoundary"),
+    ("MdDraftingObject", "class", "CentreLine"),
+    ("MdDraftingObject", "class", "Construction"),
+    ("MdDraftingObject", "class", "DatumLetter"),
+    ("MdDraftingObject", "class", "DetailCircle"),
+    ("MdDraftingObject", "class", "DimensionLine"),
+    ("MdDraftingObject", "class", "DimensionText"),
+    ("MdDraftingObject", "class", "ExtensionLine"),
+    ("MdDraftingObject", "class", "HatchLine"),
+    ("MdDraftingObject", "class", "HiddenOutline"),
+    ("MdDraftingObject", "class", "InferredSpan"),
+    ("MdDraftingObject", "class", "LeaderLine"),
+    ("MdDraftingObject", "class", "Line"),
+    ("MdDraftingObject", "class", "NoteText"),
+    ("MdDraftingObject", "class", "OtherLine"),
+    ("MdDraftingObject", "class", "SectionRegion"),
+    ("MdDraftingObject", "class", "SheetLine"),
+    ("MdDraftingObject", "class", "SymbolLine"),
+    ("MdDraftingObject", "class", "TableText"),
+    ("MdDraftingObject", "class", "Text"),
+    ("MdDraftingObject", "class", "ThreadLine"),
+    ("MdDraftingObject", "class", "ToleranceText"),
+    ("MdDraftingObject", "class", "ViewLabel"),
+    ("MdDraftingObject", "class", "VisibleOutline"),
+    ("MdDraftingObject", "class", "WavyBreakBoundary"),
+    ("MdDraftingObject", "layer", "presentation"),
+    ("MdDraftingObject", "layer", "recognition"),
+    ("MdDraftingObject", "layer", "source"),
+    ("MdDraftingRelation", "layer", "presentation"),
+    ("MdDraftingRelation", "layer", "recognition"),
+    ("MdDraftingRelation", "layer", "source"),
+    ("MdDraftingRelation", "object_kind", "node"),
+    ("MdDraftingRelation", "object_kind", "number"),
+    ("MdDraftingRelation", "object_kind", "text"),
+    ("MdDraftingRelation", "predicate", "angleDeg"),
+    ("MdDraftingRelation", "predicate", "coincidentWith"),
+    ("MdDraftingRelation", "predicate", "crossedBy"),
+    ("MdDraftingRelation", "predicate", "endOnOutline"),
+    ("MdDraftingRelation", "predicate", "expressionId"),
+    ("MdDraftingRelation", "predicate", "expressionKind"),
+    ("MdDraftingRelation", "predicate", "layer"),
+    ("MdDraftingRelation", "predicate", "lineType"),
+    ("MdDraftingRelation", "predicate", "memberId"),
+    ("MdDraftingRelation", "predicate", "rotationDeg"),
+    ("MdDraftingRelation", "predicate", "sourceHandle"),
+    ("MdDraftingRelation", "predicate", "text"),
+    ("MdDraftingRelation", "predicate", "view"),
+    ("MdDraftingRule", "severity", "info"),
+    ("MdDraftingRule", "severity", "violation"),
+    ("MdDraftingRule", "severity", "warning"),
+    ("MdDraftingRuleReport", "status", "checked"),
     ("MdDrawingConcept", "group", "G1"),
     ("MdDrawingConcept", "group", "G2"),
     ("MdDrawingConcept", "group", "G3"),
@@ -20310,6 +20425,250 @@ impl MdDiscoveredUse {
     }
 }
 
+/// One finding: a rule not satisfied by one focus object on one layer
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDraftingFinding {
+    /// Expressions of the focus object
+    pub expression_ids: Vec<String>,
+    /// Object the rule targeted
+    pub focus: String,
+    /// Classes of the focus object
+    pub focus_classes: Vec<String>,
+    /// Fact layer of the finding
+    pub layer: String,
+    /// Message of the shape
+    pub message: String,
+    /// Rule id
+    pub rule_id: String,
+    /// Severity of the shape
+    pub severity: String,
+    /// Source handles of the focus object
+    pub source_handles: Vec<String>,
+    /// The offending value: another object id or a literal, when the engine names one
+    pub value: Option<String>,
+}
+impl MdDraftingFinding {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.focus.trim().is_empty() { failures.push("MdDraftingFinding.focus:required".into()); }
+        if self.layer.trim().is_empty() { failures.push("MdDraftingFinding.layer:required".into()); }
+        if self.message.trim().is_empty() { failures.push("MdDraftingFinding.message:required".into()); }
+        if self.rule_id.trim().is_empty() { failures.push("MdDraftingFinding.rule_id:required".into()); }
+        if self.severity.trim().is_empty() { failures.push("MdDraftingFinding.severity:required".into()); }
+
+        if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingFinding.layer:allowed_values".into()); }
+        if !["info","violation","warning",].contains(&self.severity.as_str()) { failures.push("MdDraftingFinding.severity:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Counts of one fact layer and where its facts were written
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDraftingLayer {
+    /// Portable path of the Turtle facts of this layer
+    pub facts_file: String,
+    /// Findings on this layer
+    pub finding_count: u64,
+    /// Focus nodes the shapes targeted
+    pub focus_count: u64,
+    /// Fact layer
+    pub layer: String,
+    /// Objects exported
+    pub object_count: u64,
+    /// Relation facts exported
+    pub relation_count: u64,
+    /// Triples written
+    pub triple_count: u64,
+}
+impl MdDraftingLayer {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.facts_file.trim().is_empty() { failures.push("MdDraftingLayer.facts_file:required".into()); }
+        if self.layer.trim().is_empty() { failures.push("MdDraftingLayer.layer:required".into()); }
+
+        if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingLayer.layer:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One drawing object of a fact layer: its classes from the recognized member role, its identities, its text
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDraftingObject {
+    /// Most specific class of the object; the ontology declares exactly these classes
+    pub class: String,
+    /// All classes of the object, general to specific
+    pub classes: Vec<String>,
+    /// Expression of the member, when the object is one member
+    pub expression_id: Option<String>,
+    /// Object id, unique within the layer
+    pub id: String,
+    /// Fact layer: the drawing as drawn, what the graph claims, or what the page draws
+    pub layer: String,
+    /// Line type the graph gives the member
+    pub line_type: Option<String>,
+    /// Graph member ids the object comes from
+    pub member_ids: Vec<String>,
+    /// Source handles the object comes from
+    pub source_handles: Vec<String>,
+    /// Text content without formatting codes; the graph label on the recognition layer
+    pub text: Option<String>,
+    /// View of the object
+    pub view: Option<String>,
+}
+impl MdDraftingObject {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.class.trim().is_empty() { failures.push("MdDraftingObject.class:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdDraftingObject.id:required".into()); }
+        if self.layer.trim().is_empty() { failures.push("MdDraftingObject.layer:required".into()); }
+
+        if !["AngularDimensionText","Arrowhead","BreakBoundary","CentreLine","Construction","DatumLetter","DetailCircle","DimensionLine","DimensionText","ExtensionLine","HatchLine","HiddenOutline","InferredSpan","LeaderLine","Line","NoteText","OtherLine","SectionRegion","SheetLine","SymbolLine","TableText","Text","ThreadLine","ToleranceText","ViewLabel","VisibleOutline","WavyBreakBoundary",].contains(&self.class.as_str()) { failures.push("MdDraftingObject.class:allowed_values".into()); }
+        if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingObject.layer:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One relation fact between objects of a layer, or a literal fact of an object, from the generic geometry predicates
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDraftingRelation {
+    /// Fact layer
+    pub layer: String,
+    /// Object id, or the literal value
+    pub object: String,
+    /// Whether the object is a node or a literal
+    pub object_kind: String,
+    /// Predicate of the fact vocabulary; the ontology declares exactly these properties
+    pub predicate: String,
+    /// Object id
+    pub subject: String,
+}
+impl MdDraftingRelation {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.layer.trim().is_empty() { failures.push("MdDraftingRelation.layer:required".into()); }
+        if self.object.trim().is_empty() { failures.push("MdDraftingRelation.object:required".into()); }
+        if self.object_kind.trim().is_empty() { failures.push("MdDraftingRelation.object_kind:required".into()); }
+        if self.predicate.trim().is_empty() { failures.push("MdDraftingRelation.predicate:required".into()); }
+        if self.subject.trim().is_empty() { failures.push("MdDraftingRelation.subject:required".into()); }
+
+        if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingRelation.layer:allowed_values".into()); }
+        if !["node","number","text",].contains(&self.object_kind.as_str()) { failures.push("MdDraftingRelation.object_kind:allowed_values".into()); }
+        if !["angleDeg","coincidentWith","crossedBy","endOnOutline","expressionId","expressionKind","layer","lineType","memberId","rotationDeg","sourceHandle","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// One drafting rule of the shapes document with its concept, clause and message
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDraftingRule {
+    /// Standard clause or source the rule comes from
+    pub clause: String,
+    /// Concept ids of the catalogue the rule formalizes
+    pub concept_ids: Vec<String>,
+    /// Concept group of the rule
+    pub group: String,
+    /// Rule id as written in the shape
+    pub id: String,
+    /// Rule in one Chinese sentence
+    pub label: String,
+    /// Message of a finding
+    pub message: String,
+    /// Severity of the shape
+    pub severity: String,
+    /// Classes the rule targets
+    pub target_classes: Vec<String>,
+}
+impl MdDraftingRule {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.clause.trim().is_empty() { failures.push("MdDraftingRule.clause:required".into()); }
+        if self.group.trim().is_empty() { failures.push("MdDraftingRule.group:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdDraftingRule.id:required".into()); }
+        if self.label.trim().is_empty() { failures.push("MdDraftingRule.label:required".into()); }
+        if self.message.trim().is_empty() { failures.push("MdDraftingRule.message:required".into()); }
+        if self.severity.trim().is_empty() { failures.push("MdDraftingRule.severity:required".into()); }
+
+        if !["info","violation","warning",].contains(&self.severity.as_str()) { failures.push("MdDraftingRule.severity:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Result of the drafting-rule check: the rules, the layers and every finding
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDraftingRuleReport {
+    /// Findings per rule id over all layers, zero for rules without findings
+    pub by_rule: std::collections::BTreeMap<String, u64>,
+    /// Every finding of every layer
+    pub findings: Vec<MdDraftingFinding>,
+    /// SHA-256 of the expression graph file
+    pub graph_sha256: String,
+    /// The three layers in order: source, recognition, presentation
+    pub layers: Vec<MdDraftingLayer>,
+    /// SHA-256 of the compiled knowledge file holding the ontology and the shapes
+    pub ontology_sha256: String,
+    /// Distinct rule ids in the shapes
+    pub rule_count: u64,
+    /// Every rule of the shapes document
+    pub rules: Vec<MdDraftingRule>,
+    /// oev2.drawing-drafting-rules/1
+    pub schema: String,
+    /// What the report claims and does not claim
+    pub scope: String,
+    /// SHA-256 of the source DXF bytes
+    pub source_sha256: String,
+    /// Always checked: findings are reported, never a failure of the check
+    pub status: String,
+}
+impl MdDraftingRuleReport {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.graph_sha256.trim().is_empty() { failures.push("MdDraftingRuleReport.graph_sha256:required".into()); }
+        if self.ontology_sha256.trim().is_empty() { failures.push("MdDraftingRuleReport.ontology_sha256:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdDraftingRuleReport.schema:required".into()); }
+        if self.scope.trim().is_empty() { failures.push("MdDraftingRuleReport.scope:required".into()); }
+        if self.source_sha256.trim().is_empty() { failures.push("MdDraftingRuleReport.source_sha256:required".into()); }
+        if self.status.trim().is_empty() { failures.push("MdDraftingRuleReport.status:required".into()); }
+
+        if !["checked",].contains(&self.status.as_str()) { failures.push("MdDraftingRuleReport.status:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// Request to evaluate the drafting rules of the ontology on one discovery result
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDraftingRuleRequest {
+    /// Portable path of the discovery request; its output directory holds graph.json
+    pub discovery_request: String,
+    /// Portable path of the new report; the facts files are written beside it
+    pub output: String,
+    /// oev2.drawing-drafting-rules-request/1
+    pub schema: String,
+}
+impl MdDraftingRuleRequest {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.discovery_request.trim().is_empty() { failures.push("MdDraftingRuleRequest.discovery_request:required".into()); }
+        if self.output.trim().is_empty() { failures.push("MdDraftingRuleRequest.output:required".into()); }
+        if self.schema.trim().is_empty() { failures.push("MdDraftingRuleRequest.schema:required".into()); }
+
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
 /// Drafting concept card: meaning, parts, drawing variants, DXF forms, recognition cues, confusions, relations, frequency, sources and coverage status
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -28852,6 +29211,10 @@ pub trait EngineeringWorkPort {
 
 pub trait FixedCodeComparisonPort {
     fn compare(&self, input: &CodeComparisonRequest) -> Result<CodeComparison, CodeEvolutionFailure>;
+}
+
+pub trait MdDraftingRulePort {
+    fn check_rules(&self, input: &MdDraftingRuleRequest) -> Result<MdDraftingRuleReport, FailureRecord>;
 }
 
 pub trait MdDrawingRoutePort {

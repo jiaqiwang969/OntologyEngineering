@@ -1,0 +1,284 @@
+# 制图规定的本体与约束，第一批。两份 Turtle 文档放在这个 TOML 里，因为编译输入只捕获 crates/ 下的 .rs 和 .toml：
+# 这样本体与程序绑定在一起，改动本体就要重新构建并重新冻结。
+#
+# ontology：图样对象的类和它们之间的关系属性。类由识别结果的成员角色赋予（识别层的身份），几何由源 DXF 字节
+# 给出；关系属性由独立复核 crate 的通用几何谓词计算，不含任何单条规定的知识。
+# shapes：每条制图规定一个 SHACL 形状，带规定编号、概念目录编号、标准条款、中文消息和严重度；由框架的 SHACL
+# 引擎在源图、识别、呈现三层的事实上分别评估。规定命中是待复核的偏离，不改变识别结果。
+#
+# 规范 drawing-understanding.toml 的事实合同（MdDraftingObject.class 与 MdDraftingRelation.predicate 的允许值）
+# 必须与这里声明的类和属性集合完全相同，由 oe-drawing-check 的测试双向核对。
+schema = "oev2.drafting-ontology/1"
+title = "制图规定的本体化约束 · 第一批（图线、视图与剖视、尺寸）"
+
+[ontology]
+format = "text/turtle"
+text = '''
+@prefix md:   <urn:oev2:drafting:> .
+@prefix dc:   <urn:oev2:drafting:concept:> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+md: a owl:Ontology ;
+    rdfs:label "机械制图图样对象与制图规定"@zh ;
+    rdfs:comment "类是图样上的对象种类，属性是对象之间可由几何计算的关系；规定在 shapes 中。"@zh .
+
+# ---- 注释属性（本体与形状的元数据，不是事实词汇）
+md:concept a owl:AnnotationProperty ; rdfs:label "概念目录编号"@zh .
+md:ruleId  a owl:AnnotationProperty ; rdfs:label "规定编号"@zh .
+md:clause  a owl:AnnotationProperty ; rdfs:label "标准条款"@zh .
+md:group   a owl:AnnotationProperty ; rdfs:label "概念组"@zh .
+
+# ---- 图线
+md:Line a owl:Class ; rdfs:label "图线"@zh ; rdfs:comment "线段、圆弧、圆、多段线或样条构成的一条图线。"@zh .
+md:VisibleOutline a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "可见轮廓线与可见棱边线"@zh ; md:concept dc:DC-G1-015, dc:DC-G1-014 ; md:group "G1" .
+md:HiddenOutline a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "不可见轮廓线与不可见棱边线"@zh ; md:concept dc:DC-G1-002, dc:DC-G1-001 ; md:group "G1" .
+md:CentreLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "轴线与对称中心线"@zh ; md:concept dc:DC-G1-021, dc:DC-G1-044 ; md:group "G1" .
+md:BreakBoundary a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "断裂处边界线"@zh ; md:concept dc:DC-G1-029 ; md:group "G1" .
+md:WavyBreakBoundary a owl:Class ; rdfs:subClassOf md:BreakBoundary ; rdfs:label "波浪线"@zh ; md:concept dc:DC-G1-032 ; md:group "G1" .
+md:HatchLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "剖面线"@zh ; md:concept dc:DC-G1-010 ; md:group "G1" .
+md:SectionRegion a owl:Class ; rdfs:label "剖面区域（填充实体）"@zh ; md:concept dc:DC-G2-019 ; md:group "G2" .
+md:DimensionLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "尺寸线"@zh ; md:concept dc:DC-G4-059 ; md:group "G4" .
+md:ExtensionLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "尺寸界线"@zh ; md:concept dc:DC-G4-058 ; md:group "G4" .
+md:Arrowhead a owl:Class ; rdfs:label "箭头"@zh ; md:concept dc:DC-G4-059 ; md:group "G4" .
+md:LeaderLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "指引线"@zh ; md:concept dc:DC-G1-028 ; md:group "G1" .
+md:ThreadLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "螺纹规定画法的线"@zh ; md:group "G3" .
+md:DetailCircle a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "局部放大图的圈"@zh ; md:group "G2" .
+md:SheetLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "图框与表格线"@zh ; md:group "G9" .
+md:SymbolLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "符号笔画"@zh ; md:group "G5" .
+md:InferredSpan a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "推断补全的线段"@zh ; rdfs:comment "呈现层按制图惯例补出的结构线段，源文件中没有。"@zh .
+md:OtherLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "未解释的图线"@zh .
+md:Construction a owl:Class ; rdfs:label "构造点与原生容器"@zh ; rdfs:comment "定义点、原生尺寸和块的容器记录；没有自己的图面几何。"@zh .
+
+# ---- 注写
+md:Text a owl:Class ; rdfs:label "注写文字"@zh ; rdfs:comment "文字框由插入点、高度、旋转和估算宽度给出。"@zh .
+md:DimensionText a owl:Class ; rdfs:subClassOf md:Text ; rdfs:label "尺寸数字（含前缀符号与公差）"@zh ; md:concept dc:DC-G4-017 ; md:group "G4" .
+md:AngularDimensionText a owl:Class ; rdfs:subClassOf md:DimensionText ; rdfs:label "角度尺寸数字"@zh ; md:concept dc:DC-G4-032 ; md:group "G4" .
+md:ToleranceText a owl:Class ; rdfs:subClassOf md:Text ; rdfs:label "公差数值文字"@zh ; md:group "G4" .
+md:NoteText a owl:Class ; rdfs:subClassOf md:Text ; rdfs:label "技术要求与说明文字"@zh ; md:group "G9" .
+md:TableText a owl:Class ; rdfs:subClassOf md:Text ; rdfs:label "标题栏与表格文字"@zh ; md:group "G9" .
+md:ViewLabel a owl:Class ; rdfs:subClassOf md:Text ; rdfs:label "视图名称与字母"@zh ; md:group "G2" .
+md:DatumLetter a owl:Class ; rdfs:subClassOf md:Text ; rdfs:label "基准字母"@zh ; md:group "G5" .
+
+# ---- 数据属性：对象自身的事实
+md:layer a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "事实层"@zh ; rdfs:comment "source 源图如画、recognition 识别结果、presentation 页面所画。"@zh .
+md:sourceHandle a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "源句柄"@zh .
+md:memberId a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "成员编号"@zh .
+md:expressionId a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "表达编号"@zh .
+md:expressionKind a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "表达种类"@zh .
+md:view a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "所在视图"@zh .
+md:lineType a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "线型（识别）"@zh .
+md:text a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "文字内容（去除格式码）"@zh .
+md:rotationDeg a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "文字方向，度，归一到 [0,180)"@zh .
+md:angleDeg a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "图线或图案方向，度，归一到 [0,180)"@zh .
+md:endOnOutline a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "端点落在轮廓线或轴线上（start/end）"@zh ;
+    rdfs:comment "断裂处边界线的端点距可见轮廓线或轴线不超过 0.5 单位；回转体的局部剖可以轴线为界（GB/T 4458.6-2002 5.6）。"@zh .
+
+# ---- 对象属性：由通用几何谓词计算的关系
+md:crossedBy a owl:ObjectProperty ; rdfs:domain [ owl:unionOf ( md:Text md:Line ) ] ; rdfs:range md:Line ;
+    rdfs:label "被图线穿过"@zh ;
+    rdfs:comment "文字：一条图线穿过文字框内部，框内弦长不小于 0.3 倍字高。图线：另一条图线与它在两者内部相交，不在端点。"@zh .
+md:coincidentWith a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:Line ;
+    rdfs:label "与图线重合"@zh ;
+    rdfs:comment "两条直线段方向相同、距离不超过 0.15 单位且重叠长度不小于 1 单位；曲线与直线：曲线上一半以上采样点落在该直线段上且走向平行。"@zh .
+'''
+
+[shapes]
+format = "text/turtle"
+text = '''
+@prefix md:   <urn:oev2:drafting:> .
+@prefix dc:   <urn:oev2:drafting:concept:> .
+@prefix rule: <urn:oev2:drafting:rule:> .
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# ================= G1 图线 =================
+
+rule:G1-032-wavy-ends-on-outline a sh:NodeShape ;
+    sh:targetClass md:WavyBreakBoundary ;
+    md:ruleId "G1-032-wavy-ends-on-outline" ; md:group "G1" ;
+    md:concept dc:DC-G1-032, dc:DC-G1-029 ;
+    md:clause "GB/T 4457.4-2002 表1 01.1.21；GB/T 17450-1998 表2" ;
+    rdfs:label "波浪线应画到轮廓线为止（回转体的局部剖可以轴线为界）"@zh ;
+    sh:property rule:G1-032-wavy-ends-on-outline-p1 .
+
+rule:G1-032-wavy-ends-on-outline-p1 a sh:PropertyShape ;
+    sh:path md:endOnOutline ; sh:minCount 2 ;
+    sh:message "波浪线的两端应止于轮廓线，这条波浪线至少有一端没有落在轮廓线上"@zh .
+
+rule:G1-032-wavy-not-crossed-by-outline a sh:NodeShape ;
+    sh:targetClass md:WavyBreakBoundary ;
+    md:ruleId "G1-032-wavy-not-crossed-by-outline" ; md:group "G1" ;
+    md:concept dc:DC-G1-032, dc:DC-G2-023 ;
+    md:clause "GB/T 4457.4-2002 表1 01.1.21；GB/T 4458.6-2002 5.6" ;
+    rdfs:label "波浪线不得超出轮廓、不得与轮廓线相穿"@zh ;
+    sh:property rule:G1-032-wavy-not-crossed-by-outline-p1 .
+
+rule:G1-032-wavy-not-crossed-by-outline-p1 a sh:PropertyShape ;
+    sh:path md:crossedBy ;
+    sh:qualifiedValueShape [ sh:class md:VisibleOutline ] ; sh:qualifiedMaxCount 0 ;
+    sh:message "一条可见轮廓线从波浪线中间穿过：波浪线超出了轮廓，或轮廓线画进了剖开的范围"@zh .
+
+rule:G1-055-centre-line-not-coincident-with-outline a sh:NodeShape ;
+    sh:targetClass md:CentreLine ;
+    md:ruleId "G1-055-centre-line-not-coincident-with-outline" ; md:group "G1" ;
+    md:concept dc:DC-G1-055 ;
+    md:clause "GB/T 14665-2012 4.3" ;
+    rdfs:label "中心线与可见轮廓线重合时只画轮廓线"@zh ;
+    sh:property rule:G1-055-centre-line-not-coincident-with-outline-p1 .
+
+rule:G1-055-centre-line-not-coincident-with-outline-p1 a sh:PropertyShape ;
+    sh:path md:coincidentWith ;
+    sh:qualifiedValueShape [ sh:class md:VisibleOutline ] ; sh:qualifiedMaxCount 0 ;
+    sh:message "细点画线与可见轮廓线重合，按优先顺序这里只应画可见轮廓线"@zh .
+
+rule:G1-055-hidden-line-not-coincident-with-outline a sh:NodeShape ;
+    sh:targetClass md:HiddenOutline ;
+    md:ruleId "G1-055-hidden-line-not-coincident-with-outline" ; md:group "G1" ;
+    md:concept dc:DC-G1-055, dc:DC-G1-045 ;
+    md:clause "GB/T 14665-2012 4.3" ;
+    rdfs:label "虚线与可见轮廓线重合时只画轮廓线"@zh ;
+    sh:property rule:G1-055-hidden-line-not-coincident-with-outline-p1 .
+
+rule:G1-055-hidden-line-not-coincident-with-outline-p1 a sh:PropertyShape ;
+    sh:path md:coincidentWith ;
+    sh:qualifiedValueShape [ sh:class md:VisibleOutline ] ; sh:qualifiedMaxCount 0 ;
+    sh:message "细虚线与可见轮廓线重合，按优先顺序这里只应画可见轮廓线"@zh .
+
+rule:G1-028-leader-not-crossing-text-or-leader a sh:NodeShape ;
+    sh:targetClass md:LeaderLine ;
+    md:ruleId "G1-028-leader-not-crossing-text-or-leader" ; md:group "G1" ;
+    md:concept dc:DC-G1-028 ;
+    md:clause "GB/T 4457.2-2003 3.1、4" ;
+    rdfs:label "指引线不得穿过尺寸数字和其他指引线"@zh ;
+    sh:property rule:G1-028-leader-not-crossing-text-or-leader-p1 ;
+    sh:property rule:G1-028-leader-not-crossing-text-or-leader-p2 .
+
+# ================= G2 视图与剖视 =================
+
+rule:G1-028-leader-not-crossing-text-or-leader-p1 a sh:PropertyShape ;
+    sh:path [ sh:inversePath md:crossedBy ] ;
+    sh:qualifiedValueShape [ sh:class md:Text ] ; sh:qualifiedMaxCount 0 ;
+    sh:message "指引线穿过了注写文字"@zh .
+rule:G1-028-leader-not-crossing-text-or-leader-p2 a sh:PropertyShape ;
+    sh:path md:crossedBy ;
+    sh:qualifiedValueShape [ sh:class md:LeaderLine ] ; sh:qualifiedMaxCount 0 ;
+    sh:message "指引线与另一条指引线相穿"@zh .
+
+rule:G2-023-section-boundary-not-coincident a sh:NodeShape ;
+    sh:targetClass md:BreakBoundary ;
+    md:ruleId "G2-023-section-boundary-not-coincident" ; md:group "G2" ;
+    md:concept dc:DC-G2-023, dc:DC-G1-032 ;
+    md:clause "GB/T 4458.6-2002 5.6；GB/T 17452-1998 6.3" ;
+    rdfs:label "局部剖视的分界线不应与其他图线重合"@zh ;
+    sh:property rule:G2-023-section-boundary-not-coincident-p1 .
+
+rule:G2-023-section-boundary-not-coincident-p1 a sh:PropertyShape ;
+    sh:path md:coincidentWith ; sh:maxCount 0 ;
+    sh:message "断裂处边界线与另一条图线重合"@zh .
+
+rule:G2-019-hatch-angle-45 a sh:NodeShape ;
+    sh:targetClass md:HatchLine, md:SectionRegion ;
+    md:ruleId "G2-019-hatch-angle-45" ; md:group "G2" ;
+    md:concept dc:DC-G2-019, dc:DC-G1-010 ;
+    md:clause "GB/T 4457.4-2002 表1 01.1.5；GB/T 18229-2000 4.5" ;
+    rdfs:label "剖面线与水平成 45°"@zh ;
+    sh:property rule:G2-019-hatch-angle-45-p1 .
+
+rule:G2-019-hatch-angle-45-p1 a sh:PropertyShape ;
+    sh:path md:angleDeg ; sh:minCount 1 ;
+    sh:or ( [ sh:minInclusive 40.0 ; sh:maxInclusive 50.0 ] [ sh:minInclusive 130.0 ; sh:maxInclusive 140.0 ] ) ;
+    sh:message "剖面线方向不是 45°（允许 ±5°）"@zh .
+
+rule:G2-001-hatch-broken-at-text a sh:NodeShape ;
+    sh:targetClass md:Text ;
+    md:ruleId "G2-001-hatch-broken-at-text" ; md:group "G2" ;
+    md:concept dc:DC-G2-001, dc:DC-G1-010 ;
+    md:clause "GB/T 17453-1998 4.6 图6" ;
+    rdfs:label "剖面区域内注写处剖面线断开"@zh ;
+    sh:property rule:G2-001-hatch-broken-at-text-p1 .
+
+# ================= G4 尺寸 =================
+
+rule:G2-001-hatch-broken-at-text-p1 a sh:PropertyShape ;
+    sh:path md:crossedBy ;
+    sh:qualifiedValueShape [ sh:class md:HatchLine ] ; sh:qualifiedMaxCount 0 ;
+    sh:message "剖面线穿过了注写文字，注写处的剖面线应断开留白"@zh .
+
+rule:G4-001-dimension-text-not-crossed a sh:NodeShape ;
+    sh:targetClass md:DimensionText ;
+    md:ruleId "G4-001-dimension-text-not-crossed" ; md:group "G4" ;
+    md:concept dc:DC-G4-001, dc:DC-G4-017, dc:DC-G4-101 ;
+    md:clause "GB/T 4458.4-2003 4.3.4、图24" ;
+    rdfs:label "尺寸数字不得被任何图线穿过"@zh ;
+    sh:property rule:G4-001-dimension-text-not-crossed-p1 .
+
+rule:G4-001-dimension-text-not-crossed-p1 a sh:PropertyShape ;
+    sh:path md:crossedBy ; sh:maxCount 0 ;
+    sh:message "图线穿过尺寸数字；中心线、剖面线或轮廓线经过数字时应在数字处断开"@zh .
+
+rule:G4-032-angle-unit-written a sh:NodeShape ;
+    sh:targetClass md:AngularDimensionText ;
+    md:ruleId "G4-032-angle-unit-written" ; md:group "G4" ;
+    md:concept dc:DC-G4-032 ;
+    md:clause "GB/T 4458.4-2003 4.1.5、4.2.4" ;
+    rdfs:label "角度数字须注写单位"@zh ;
+    sh:property rule:G4-032-angle-unit-written-p1 .
+
+rule:G4-032-angle-unit-written-p1 a sh:PropertyShape ;
+    sh:path md:text ; sh:minCount 1 ; sh:pattern "[°′″]" ;
+    sh:message "角度尺寸的数字没有单位（°、′、″）"@zh .
+
+rule:G4-032-angle-text-horizontal a sh:NodeShape ;
+    sh:targetClass md:AngularDimensionText ;
+    md:ruleId "G4-032-angle-text-horizontal" ; md:group "G4" ;
+    md:concept dc:DC-G4-032, dc:DC-G4-102 ;
+    md:clause "GB/T 4458.4-2003 4.3.2、图21" ;
+    rdfs:label "角度数字一律水平书写"@zh ;
+    sh:property rule:G4-032-angle-text-horizontal-p1 .
+
+rule:G4-032-angle-text-horizontal-p1 a sh:PropertyShape ;
+    sh:path md:rotationDeg ; sh:minCount 1 ;
+    sh:or ( [ sh:maxInclusive 1.0 ] [ sh:minInclusive 179.0 ] ) ;
+    sh:message "角度尺寸的数字不是水平书写"@zh .
+
+rule:G4-059-dimension-line-thin-continuous a sh:NodeShape ;
+    sh:targetClass md:DimensionLine ;
+    md:ruleId "G4-059-dimension-line-thin-continuous" ; md:group "G4" ;
+    md:concept dc:DC-G4-059 ;
+    md:clause "GB/T 4457.4-2002 表1 01.1.2；GB/T 4458.4-2003 4.2.1" ;
+    rdfs:label "尺寸线用细实线"@zh ;
+    sh:property rule:G4-059-dimension-line-thin-continuous-p1 .
+
+rule:G4-059-dimension-line-thin-continuous-p1 a sh:PropertyShape ;
+    sh:path md:lineType ; sh:minCount 1 ; sh:in ( "thin_continuous" "dimension" "continuous" ) ;
+    sh:message "尺寸线不是细实线"@zh .
+
+rule:G4-058-extension-line-thin-continuous a sh:NodeShape ;
+    sh:targetClass md:ExtensionLine ;
+    md:ruleId "G4-058-extension-line-thin-continuous" ; md:group "G4" ;
+    md:concept dc:DC-G4-058 ;
+    md:clause "GB/T 4457.4-2002 表1 01.1.3；GB/T 4458.4-2003 4.1.1" ;
+    rdfs:label "尺寸界线用细实线；也可直接利用轮廓线、轴线或对称中心线作尺寸界线"@zh ;
+    sh:message "尺寸界线不是细实线，也不是借用的轮廓线或轴线"@zh ;
+    sh:or ( [ sh:class md:VisibleOutline ] [ sh:class md:CentreLine ] [ sh:property rule:G4-058-extension-line-thin-continuous-p1 ] ) .
+
+rule:G4-058-extension-line-thin-continuous-p1 a sh:PropertyShape ;
+    sh:path md:lineType ; sh:minCount 1 ; sh:in ( "thin_continuous" "dimension" "continuous" ) ;
+    sh:message "尺寸界线不是细实线"@zh .
+
+rule:G4-059-dimension-line-not-coincident a sh:NodeShape ;
+    sh:targetClass md:DimensionLine ;
+    sh:severity sh:Warning ;
+    md:ruleId "G4-059-dimension-line-not-coincident" ; md:group "G4" ;
+    md:concept dc:DC-G4-059 ;
+    md:clause "GB/T 4458.4-2003 4.2.2" ;
+    rdfs:label "尺寸线一般不与其他图线重合"@zh ;
+    sh:property rule:G4-059-dimension-line-not-coincident-p1 .
+rule:G4-059-dimension-line-not-coincident-p1 a sh:PropertyShape ;
+    sh:path md:coincidentWith ; sh:maxCount 0 ;
+    sh:message "尺寸线与另一条图线重合"@zh .
+'''

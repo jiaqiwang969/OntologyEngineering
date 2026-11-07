@@ -295,6 +295,11 @@ type P = (f64, f64);
 const EPS_COINCIDENT: f64 = 0.15;
 const MIN_OVERLAP: f64 = 1.0;
 const END_TOLERANCE: f64 = 0.5;
+/// A straight line that ends on a wavy curve meets it inside the wave's band: pieces of the curve up to this far from
+/// the line's end may still intersect it without the line crossing the curve.
+const WAVE_BAND: f64 = 2.0;
+/// Stacked tolerances are drawn one above the other at reduced size, so a text with a stack is this many heights tall.
+const STACK_HEIGHT: f64 = 1.3;
 
 /// Geometry of one drawing object: straight pieces (chains of points) and, for text, a rotated box.
 #[derive(Debug, Clone, Default)]
@@ -312,6 +317,18 @@ struct TextBox {
     height: f64,
 }
 impl TextBox {
+    /// Box coordinates of a point: x along the text, y up from the lower-left corner.
+    fn local(&self, p: P) -> P {
+        let (c, s) = (self.rotation_rad.cos(), self.rotation_rad.sin());
+        let (dx, dy) = (p.0 - self.origin.0, p.1 - self.origin.1);
+        (dx * c + dy * s, -dx * s + dy * c)
+    }
+    /// A straight segment parallel to the text that runs along the bottom band of the box.
+    fn is_shelf(&self, a: P, b: P) -> bool {
+        let (p0, p1) = (self.local(a), self.local(b));
+        let band = 0.3 * self.height;
+        (p1.1 - p0.1).abs() <= 0.05 * dist(a, b).max(1e-9) && p0.1.abs() <= band && p1.1.abs() <= band
+    }
     /// The segment in box coordinates (x along the text, y up), clipped to the box; its length inside.
     fn chord(&self, a: P, b: P) -> f64 {
         let (c, s) = (self.rotation_rad.cos(), self.rotation_rad.sin());
@@ -397,10 +414,25 @@ fn chains_cross(ca: &[P], cb: &[P]) -> bool {
         return false;
     };
     let ends = [*a0, *a1, *b0, *b1];
+    // A straight line ending on a curve (a T-junction) is not a crossing even where the curve's waves run back
+    // across the line near that end.
+    let t_junction = |p: P| -> bool {
+        let check = |straight: &[P], curve: &[P]| {
+            straight.len() == 2
+                && curve.len() >= 3
+                && straight.iter().any(|e| {
+                    dist(*e, p) <= WAVE_BAND
+                        && curve
+                            .windows(2)
+                            .any(|w| point_segment(*e, w[0], w[1]).0 <= END_TOLERANCE)
+                })
+        };
+        check(ca, cb) || check(cb, ca)
+    };
     ca.windows(2).any(|wa| {
         cb.windows(2).any(|wb| {
             segment_intersection(wa[0], wa[1], wb[0], wb[1])
-                .is_some_and(|p| ends.iter().all(|e| dist(*e, p) > END_TOLERANCE))
+                .is_some_and(|p| ends.iter().all(|e| dist(*e, p) > END_TOLERANCE) && !t_junction(p))
         })
     })
 }
@@ -596,7 +628,7 @@ impl<'a> Dxf<'a> {
             .map(|(_, v)| v.as_str())
             .chain(r.tag(1))
             .collect::<String>();
-        let (cleaned, width_units) = clean_text(&raw);
+        let (cleaned, width_units, stacked) = clean_text(&raw);
         let style_width = d_style_width(self, r);
         let width_factor = r
             .float(41)
@@ -650,9 +682,13 @@ impl<'a> Dxf<'a> {
             };
             (anchor, ax, ay)
         };
+        // A stacked tolerance rises above and below the main line: the box grows to STACK_HEIGHT heights around it.
+        let height_box = if stacked { STACK_HEIGHT * height } else { height };
+        let extra = height_box - height;
         // Lower-left corner: move back from the anchor along the text and up directions.
-        let (bx, by) = (-ax * width, -ay * height);
+        let (bx, by) = (-ax * width, -ay * height - extra * (1. - ay) * 0.5 - extra * ay * 0.5);
         let origin = (anchor.0 + bx * c - by * s, anchor.1 + bx * s + by * c);
+        let height = height_box;
         let mut normalized = rotation % 180.;
         if normalized < 0. {
             normalized += 180.;
@@ -678,12 +714,19 @@ fn d_style_width(d: &Dxf, r: &dxf::Record) -> f64 {
         .unwrap_or(1.)
 }
 
-/// Text without MTEXT formatting codes, and its width in text heights (stacked parts at their scale).
-fn clean_text(raw: &str) -> (String, f64) {
+/// Text without MTEXT formatting codes, its width in text heights (stacked parts at their scale), and whether it
+/// holds a stacked part. Besides MTEXT `\S` stacks, TEXT strings of Chinese CAD fonts stack a tolerance with the
+/// private-use marks U+E1D6 (upper part begins), U+E1DA (upper ends), U+E1D7 (lower begins), U+E1D9 (lower ends):
+/// the two parts are drawn one above the other at reduced size, so together they are as wide as the wider one.
+fn clean_text(raw: &str) -> (String, f64, bool) {
     let mut out = String::new();
     let mut width = 0f64;
     let mut scale = 1f64;
+    let mut stacked = false;
     let mut stack_scales: Vec<f64> = Vec::new();
+    // Font stacking marks: (part being collected, its width so far, width of the other part already closed).
+    let mut mark_part: Option<(char, f64)> = None;
+    let mut mark_pending = 0f64;
     let chars: Vec<char> = raw.chars().collect();
     let mut i = 0;
     let char_width = |c: char| -> f64 {
@@ -699,6 +742,38 @@ fn clean_text(raw: &str) -> (String, f64) {
     };
     while i < chars.len() {
         let c = chars[i];
+        if matches!(c, '\u{E1D6}' | '\u{E1D7}') {
+            stacked = true;
+            mark_part = Some((c, 0.));
+            if c == '\u{E1D7}' && !out.ends_with('/') && mark_pending > 0. {
+                out.push('/');
+            }
+            i += 1;
+            continue;
+        }
+        if matches!(c, '\u{E1DA}' | '\u{E1D9}') {
+            if let Some((_, w)) = mark_part.take() {
+                if c == '\u{E1DA}' {
+                    mark_pending = w;
+                } else {
+                    width += w.max(mark_pending) * 0.6;
+                    mark_pending = 0.;
+                }
+            }
+            i += 1;
+            continue;
+        }
+        if ('\u{E000}'..='\u{F8FF}').contains(&c) {
+            i += 1;
+            continue;
+        }
+        if let Some((part, w)) = mark_part.as_mut() {
+            let _ = part;
+            out.push(c);
+            *w += char_width(c);
+            i += 1;
+            continue;
+        }
         if c == '%' && i + 2 < chars.len() && chars[i + 1] == '%' {
             let code = chars[i + 2].to_ascii_lowercase();
             let symbol = match code {
@@ -748,6 +823,7 @@ fn clean_text(raw: &str) -> (String, f64) {
                         .map(|p| p.chars().map(char_width).sum::<f64>())
                         .fold(0., f64::max);
                     width += wide * scale;
+                    stacked = true;
                     out.push_str(&parts.join("/"));
                     i = end + 1;
                     continue;
@@ -794,7 +870,12 @@ fn clean_text(raw: &str) -> (String, f64) {
         width += char_width(c) * scale;
         i += 1;
     }
-    (out.trim().to_owned(), width)
+    if let Some((_, w)) = mark_part.take() {
+        width += w.max(mark_pending) * 0.6;
+    } else if mark_pending > 0. {
+        width += mark_pending * 0.6;
+    }
+    (out.trim().to_owned(), width, stacked)
 }
 
 // ------------------------------------------------------------------------------------------------ objects
@@ -1019,9 +1100,10 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 // A dimension text without a display-block record: the midpoint and the style height.
                 let style = record.tag_or(3, "STANDARD");
                 let height = d.dim_text_height.get(style).copied().unwrap_or(2.5);
-                let (cleaned, width_units) = clean_text(record.tag_or(1, ""));
+                let (cleaned, width_units, stacked) = clean_text(record.tag_or(1, ""));
                 if let (Ok(x), Ok(y)) = (record.float(11), record.float(21)) {
                     let width = (width_units * height).max(0.5 * height);
+                    let height = if stacked { STACK_HEIGHT * height } else { height };
                     geometry.text_box = Some(TextBox {
                         origin: (x - width / 2., y - height / 2.),
                         rotation_rad: 0.,
@@ -1156,14 +1238,14 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
 }
 
 /// Break boundaries drawn as several pieces (short lines, polylines) are one boundary each: pieces of the same
-/// expression whose ends meet are joined into one chain object, so that a rule about the boundary's ends and
-/// crossings sees the whole curve.
+/// view whose ends meet are joined into one chain object, so that a rule about the boundary's ends and crossings
+/// sees the whole curve.
 fn merge_boundaries(objects: &mut Vec<Object>) {
     let mut by_expression: BTreeMap<String, Vec<usize>> = BTreeMap::new();
     for (i, o) in objects.iter().enumerate() {
         if o.is("BreakBoundary") && o.geometry.chains.len() == 1 && o.geometry.chains[0].len() >= 2 {
             by_expression
-                .entry(o.expression_id.clone().unwrap_or_default())
+                .entry(o.view.clone().unwrap_or_default())
                 .or_default()
                 .push(i);
         }
@@ -1298,6 +1380,13 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
         let threshold = 0.3 * tb.height;
         for &li in &lines {
             if li == ti {
+                continue;
+            }
+            // The baseline (shelf) of a note's own leader carries the text; it runs along the bottom of the box.
+            if objects[li].expression_id.is_some()
+                && objects[li].expression_id == t.expression_id
+                && objects[li].geometry.chains.iter().any(|c| c.len() == 2 && tb.is_shelf(c[0], c[1]))
+            {
                 continue;
             }
             let crossed = objects[li].geometry.chains.iter().any(|chain| {
@@ -1745,11 +1834,19 @@ mod tests {
     }
     #[test]
     fn formatting_codes_are_removed_and_width_estimated() {
-        let (t, w) = clean_text("\\A0;%%c57{\\H0.625000x;\\S+0.4^ +0.2;}");
+        let (t, w, stacked) = clean_text("\\A0;%%c57{\\H0.625000x;\\S+0.4^ +0.2;}");
         assert_eq!(t, "Ø57+0.4/ +0.2");
         assert!(w > 2.0 && w < 6.0, "{w}");
+        assert!(stacked);
         assert_eq!(clean_text("30").0, "30");
+        assert!(!clean_text("30").2);
         assert_eq!(clean_text("%%D").0, "°");
+        // Font stacking marks: the tolerance parts share the width of the wider one at reduced size.
+        let (t, w, stacked) = clean_text("%%C19\u{E1D6}+0.05\u{E1DA}\u{E1D7}+0.02\u{E1D9}");
+        assert_eq!(t, "Ø19+0.05/+0.02");
+        assert!(stacked);
+        let (_, flat, _) = clean_text("%%C19+0.05+0.02");
+        assert!(w < 0.6 * flat, "{w} versus flat {flat}");
     }
     #[test]
     fn crossing_and_coincidence_are_interior_relations() {
@@ -1757,6 +1854,18 @@ mod tests {
         assert!(!chains_cross(&[(0., 0.), (10., 0.)], &[(10., -5.), (10., 5.)]));
         assert!(!chains_cross(&[(0., 0.), (10., 0.)], &[(5., 0.), (5., 5.)]));
         assert!(chains_cross(&[(0., 0.), (5., 1.), (10., 0.)], &[(5., -5.), (5., 5.)]));
+        // A line ending on a wavy curve whose waves run back across the line's end is a T-junction.
+        let wavy = [(0., 0.), (2., 1.), (4., -1.), (6., 1.), (8., -1.), (10., 0.)];
+        assert!(!chains_cross(&wavy, &[(5., 0.), (5., 20.)]));
+        assert!(chains_cross(&wavy, &[(5., -20.), (5., 20.)]));
+        let tb = TextBox {
+            origin: (0., 0.),
+            rotation_rad: 0.,
+            width: 10.,
+            height: 3.5,
+        };
+        assert!(tb.is_shelf((-2., 0.2), (12., 0.2)));
+        assert!(!tb.is_shelf((-2., 1.8), (12., 1.8)));
         assert!(segments_coincident((0., 0.), (10., 0.), (5., 0.05), (20., 0.05)));
         assert!(!segments_coincident((0., 0.), (10., 0.), (5., 0.5), (20., 0.5)));
         assert_eq!(angle_deg((0., 0.), (1., 1.)), 45.);

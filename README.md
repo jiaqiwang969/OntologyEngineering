@@ -4,7 +4,7 @@
 
 用户用自然语言提出目标、条件和取舍。Codex、Claude 等 Agent 组织任务；工程本体在同一 Project 中维护对象、版本、来源、检查与决定；工程记忆保存过程、失败、纠正和可核查的经验。专业工具按需提供调查、计算或运行证据，结果回到同一项目审查。
 
-当前为 **2.0.0-rc.9 整合候选，重构中**。本版让工程本体直接承接大型 Project 工作区：显式格式 `/2`–`/6` 提高来源容量与历史预算，见 [rc.9 发布说明](docs/RELEASE-NOTES-v2.0.0-rc.9.md) 与[项目文件体系](docs/PROJECT-WORKSPACE.md)。rc.8 增加了[读懂已有工程图纸](docs/DRAWING-UNDERSTANDING.md)：给定一张 DWG，按学科工艺把每个图元读成可复核的工程表达与结构线，经锁定转换器、只读源字节的隔离分类、独立复核和检查页，每步留回执；功能说明见 [rc.8 发布说明](docs/RELEASE-NOTES-v2.0.0-rc.8.md)。rc.7 起的[项目文件体系](docs/PROJECT-WORKSPACE.md)继续保存根请求、纠正、因果依据、阶段状态及 RRSI 根目标，以供新会话恢复。实际验证见[验证记录](docs/UNIFIED-VERIFICATION.md)，具体工程能力与未完成项见[发布范围](docs/RELEASE-SCOPE.md)。
+当前为 **2.0.0-rc.10 整合候选，重构中**。本版让读图由学科知识驱动：制图概念目录、识别知识卡和逐概念的覆盖表决定程序怎么读图，每个表达写明它对应的制图概念，见 [rc.10 发布说明](docs/RELEASE-NOTES-v2.0.0-rc.10.md)。rc.9 让工程本体直接承接大型 Project 工作区：显式格式 `/2`–`/6` 提高来源容量与历史预算，见 [rc.9 发布说明](docs/RELEASE-NOTES-v2.0.0-rc.9.md) 与[项目文件体系](docs/PROJECT-WORKSPACE.md)。rc.8 增加了[读懂已有工程图纸](docs/DRAWING-UNDERSTANDING.md)：给定一张 DWG，按学科工艺把每个图元读成可复核的工程表达与结构线，经锁定转换器、只读源字节的隔离分类、独立复核和检查页，每步留回执；功能说明见 [rc.8 发布说明](docs/RELEASE-NOTES-v2.0.0-rc.8.md)。rc.7 起的[项目文件体系](docs/PROJECT-WORKSPACE.md)继续保存根请求、纠正、因果依据、阶段状态及 RRSI 根目标，以供新会话恢复。实际验证见[验证记录](docs/UNIFIED-VERIFICATION.md)，具体工程能力与未完成项见[发布范围](docs/RELEASE-SCOPE.md)。
 
 ![工程本体 v2、engineering-memory 与专业能力的闭环架构](docs/assets/engineering-system-architecture.png)
 

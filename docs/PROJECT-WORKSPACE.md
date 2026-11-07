@@ -42,6 +42,8 @@
 
 用户纠正同时有明确义务，`acknowledged`、`pending_review`、`resolved`、`deferred` 分开保存。受影响验收沿原 anchor 的 `affects`，不在另一张表重新定义。`resolved` 当前限定为 anchor `/2` 已绑定决定的纠正：必须覆盖受影响验收所列决定，并提交既有 `reconcile-reviewed` 请求与结果。原 owner 重新执行，核当前 Project、完整检查和真实回执后，才可记录已解决。后续 stage 声称推进过某项验收，不能替代这个闭环。没有对应决定或复核回执的纠正保持待办；明确延后须记录原因，不能删除义务。
 
+已记录的复核保留当时的执行身份。记录它的程序再次读取时仍重新执行一遍；重新编译或升级之后，恢复以及继续携带同一份复核的提交不要求同一程序，只核对原件、绑定、当前 Project 和聚合结论。新增的复核仍由当前程序执行；Project 变化后，旧复核不再算当前。
+
 事件保留来源、验收关联和向前已存在事件的 `corrects`。因果主张沿用 memory 的 `sequence`、`attribution`、`mechanism`、`controlled_comparison` 四种依据层级，并保留原件、混杂因素和未知。工具原件使用原 `ArtifactReference`，不伪装成聊天的 `SourceAnchor`。Project 的依赖边表示变更影响；时间先后和依赖闭包都不能直接证明物理因果。
 
 ## 接入、恢复与阶段推进

@@ -600,3 +600,138 @@ fn explicit_source_symlink_is_rejected_on_unix() {
     q.sources[1].path = "var/inputs/source-link.json".into();
     assert!(run2(&f, &q).is_err());
 }
+
+/// A recorded review keeps the identity it ran under. The child process is this same test program
+/// with one extra byte, so it has another executable digest, like a rebuild or an upgrade.
+mod recorded_review {
+    use super::*;
+    use oe_contracts::WorkspaceCommitRequest;
+    use oe_core::SkillRoot;
+    use oe_engineering::project_workspace as workspace;
+    use std::{io::Write, path::Path, process::Command};
+
+    const INSTALL: &str = "OE_TEST_REBUILT_INSTALL";
+    const HOME: &str = "OE_TEST_REBUILT_HOME";
+    const NAME: &str = "recorded_review::a_recorded_review_stays_readable_after_a_rebuild";
+
+    fn open(install: &Path, home: &Path) -> SkillRoot {
+        SkillRoot::new(install)
+            .unwrap()
+            .with_project_data_root(home)
+            .unwrap()
+    }
+    fn put(home: &Path, path: &str, bytes: &[u8]) -> ArtifactReference {
+        let target = home.join(path);
+        fs::create_dir_all(target.parent().unwrap()).unwrap();
+        fs::write(target, bytes).unwrap();
+        ArtifactReference {
+            path: path.into(),
+            sha256: oe_core::sha256(bytes),
+        }
+    }
+    fn head(home: &Path) -> (ArtifactReference, WorkspaceCommitRequest) {
+        let head: Value = serde_json::from_slice(&fs::read(home.join("HEAD.json")).unwrap()).unwrap();
+        let reference: ArtifactReference = serde_json::from_value(head["commit"].clone()).unwrap();
+        let commit: Value =
+            serde_json::from_slice(&fs::read(home.join(&reference.path)).unwrap()).unwrap();
+        (
+            reference,
+            serde_json::from_value(commit["proposal"].clone()).unwrap(),
+        )
+    }
+
+    fn as_the_rebuilt_program(install: &Path, home: &Path) {
+        let root = open(install, home);
+        assert_eq!(workspace::resume(&root).unwrap()["status"], "ready");
+        // A following commit that carries the review unchanged is accepted and reads back.
+        let (parent, mut carried) = head(home);
+        carried.expected_parent = Some(parent);
+        carried.commit_id = "carried".into();
+        workspace::commit(&root, &carried).unwrap();
+        assert_eq!(workspace::resume(&root).unwrap()["status"], "ready");
+        // A review that is not yet in the chain still has to be executed by this program.
+        let (parent, mut added) = head(home);
+        added.expected_parent = Some(parent);
+        added.commit_id = "added".into();
+        let bytes = fs::read(home.join(&added.reviews[0].result.path)).unwrap();
+        added.reviews[0].result = put(home, "reviews/result-again.json", &bytes);
+        let error = workspace::commit(&root, &added).unwrap_err();
+        assert!(
+            format!("{error:#}").contains("workspace_review_result_not_replayed"),
+            "{error:#}"
+        );
+    }
+
+    #[test]
+    fn a_recorded_review_stays_readable_after_a_rebuild() {
+        if let (Ok(install), Ok(home)) = (std::env::var(INSTALL), std::env::var(HOME)) {
+            return as_the_rebuilt_program(Path::new(&install), Path::new(&home));
+        }
+        let (f, r) = fixture();
+        let store = tempfile::tempdir().unwrap();
+        let home = fs::canonicalize(store.path()).unwrap();
+        fs::create_dir_all(home.join("var/inputs")).unwrap();
+        for file in fs::read_dir(f.temp.path().join("var/inputs")).unwrap() {
+            let file = file.unwrap();
+            fs::copy(file.path(), home.join("var/inputs").join(file.file_name())).unwrap();
+        }
+        let install = fs::canonicalize(f.temp.path()).unwrap();
+        let root = open(&install, &home);
+        workspace::initialize(&root, "recorded-review", "synthetic-review").unwrap();
+        let text = "Synthetic request for a recorded review\n";
+        let said = put(&home, "request.txt", text.as_bytes());
+        let anchor = serde_json::to_vec(&json!({
+            "schema":"oev2.route-anchor/2","project_id":"synthetic-review","root_object":"urn:fixture:review",
+            "deliverable":"Synthetic review record",
+            "requests":[{"id":"U1","kind":"root","text":text,"source":"request.txt","affects":[]}],
+            "functions":[{"id":"F1","statement":"Keep the reviewed decisions","structures":["urn:fixture:review"]}],
+            "acceptance":[{"id":"A1","statement":"The decisions stay reviewed","functions":["F1"],"status":"open","decisions":["up"],"evidence":["raw"]}],
+            "stages":[{"id":"S1","object_id":"urn:fixture:review","relation":"root","relation_target":"urn:fixture:review","advances":["A1"],"outcome":"pending"}],
+            "reviews":[],"policy":{"off_root_stage_limit":2,"no_progress_stage_limit":2,"review_interval":5}
+        }))
+        .unwrap();
+        let anchor = put(&home, "route-anchor.json", &anchor);
+        let result = reconcile_reviewed(&root, &r).unwrap();
+        assert_eq!(result.status, "review_complete");
+        let request = put(&home, "reviews/request.json", &serde_json::to_vec(&r).unwrap());
+        let result = put(&home, "reviews/result.json", &serde_json::to_vec(&result).unwrap());
+        let q: WorkspaceCommitRequest = serde_json::from_value(json!({
+            "schema":"oev2.workspace-commit-request/1","workspace_id":"recorded-review","commit_id":"first","expected_parent":null,
+            "project":r.current,"anchor":anchor,"requests":[{"request_id":"U1","source":said}],
+            "corrections":[],"causal_claims":[],"reviews":[{"request":request,"result":result}],"events":[],
+            "sources":r.sources,"work":null,"checkpoint":null,"stage":null
+        }))
+        .unwrap();
+        workspace::commit(&root, &q).unwrap();
+        assert_eq!(workspace::resume(&root).unwrap()["status"], "ready");
+        // The program that recorded the review re-executes it: without its bundles it cannot.
+        let bundles = install.join("runtime/semantic-bundles.json");
+        let hidden = install.join("runtime/semantic-bundles.hidden");
+        fs::rename(&bundles, &hidden).unwrap();
+        assert!(workspace::resume(&root).is_err());
+        fs::rename(&hidden, &bundles).unwrap();
+        let scratch = tempfile::tempdir().unwrap();
+        let rebuilt = fs::canonicalize(scratch.path())
+            .unwrap()
+            .join("rebuilt-program");
+        fs::copy(std::env::current_exe().unwrap(), &rebuilt).unwrap();
+        fs::OpenOptions::new()
+            .append(true)
+            .open(&rebuilt)
+            .unwrap()
+            .write_all(b"\0")
+            .unwrap();
+        let run = Command::new(&rebuilt)
+            .args(["--exact", NAME, "--nocapture"])
+            .env(INSTALL, &install)
+            .env(HOME, &home)
+            .output()
+            .unwrap();
+        let out = String::from_utf8_lossy(&run.stdout);
+        assert!(
+            run.status.success() && out.contains("1 passed"),
+            "{out}\n{}",
+            String::from_utf8_lossy(&run.stderr)
+        );
+    }
+}

@@ -77,7 +77,7 @@
 
 实际程序、安装版本和通过范围从 `var/maintenance/status.json` 的 `current_cli`、`latest_round` 及对应完成回执核实；源码、生成合同、程序、输入、行为、安装、正式选择与工程采用分别取证。整体仍为“重构中”。[发布范围](RELEASE-SCOPE.md)限定候选，不能用历史测试数量或接口存在替代当前资格。
 
-本源码候选 `2.0.0-rc.9` 经 kernel 显式编入 `source-session-local-v1` 及 `rdflib760-nullable-internal`，支持合同声明的 source-session `/1–4`；其中 `/4` 显式增加分阶段状态与 Turtle 见证，`/1–3` 含义保持。独立库无默认 feature。公共查询保持 `/1–4`，`/5` 拒绝。`dist release check-profile --profile oev2.rc5-local-source/1` 绑定历史 rc.5 的精确版本与 feature 集合，在 rc.7 与当前 rc.8 上应拒绝；RC.4/RC.5 门槛保持原身份。当前统一安装使用 `oev2.installation/1` 记录八程序与源码身份，行为及工程资格另验。
+本源码候选 `2.0.0-rc.10` 经 kernel 显式编入 `source-session-local-v1` 及 `rdflib760-nullable-internal`，支持合同声明的 source-session `/1–4`；其中 `/4` 显式增加分阶段状态与 Turtle 见证，`/1–3` 含义保持。独立库无默认 feature。公共查询保持 `/1–4`，`/5` 拒绝。`dist release check-profile --profile oev2.rc5-local-source/1` 绑定历史 rc.5 的精确版本与 feature 集合，在 rc.7 与当前 rc.8 上应拒绝；RC.4/RC.5 门槛保持原身份。当前统一安装使用 `oev2.installation/1` 记录八程序与源码身份，行为及工程资格另验。
 
 专用判断服务目标按本次用户要求移出当前范围；其余原工程目标、CAD16 及 Semantica 的 19 模块、19 协议、22 owner、13494 范围条目保持，有限支持不缩减这些验收。方法改进沿原 RRSI 范围，独立迁移和实际收益另验。
 

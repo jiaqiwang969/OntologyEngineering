@@ -10,6 +10,7 @@ use anyhow::{bail, ensure, Context, Result};
 use oe_contracts::{
     ArtifactReference, CurrentTaskViewInput, WorkspaceCommit, WorkspaceCommitRequest,
     WorkspaceGoal, WorkspaceHead, WorkspaceLearningBinding, WorkspaceManifest,
+    WorkspaceResolution,
 };
 use oe_core::{
     read_regular_bytes, sha256, write_new, write_new_bytes, AdvisoryFileLock, SkillRoot,
@@ -329,10 +330,38 @@ fn route_report(
         )?))
     }
 }
+/// A review already in the chain and recorded by another program keeps the identity it ran under:
+/// history replay has verified the record, and a rebuild or upgrade reads it without re-signing it.
+/// The program that recorded a review still re-executes it, and a new review is always executed.
+fn recorded_by_another_program(
+    chain: Option<&WorkspaceCommitRequest>,
+    resolution: &WorkspaceResolution,
+    saved: &Value,
+) -> Result<bool> {
+    let in_chain = chain.is_some_and(|c| {
+        c.reviews
+            .iter()
+            .chain(c.corrections.iter().flat_map(|o| o.resolutions.iter()))
+            .any(|r| r == resolution)
+    });
+    if !in_chain {
+        return Ok(false);
+    }
+    let running = oe_kernel::executable_digest()?;
+    Ok(saved["reviews"].as_array().is_some_and(|rows| {
+        rows.iter().any(|row| {
+            row["receipt"]["executable_sha256"]
+                .as_str()
+                .is_some_and(|recorded| recorded != running)
+        })
+    }))
+}
+
 fn semantic_inputs(
     root: &SkillRoot,
     q: &WorkspaceCommitRequest,
     checked: &mut Checked,
+    chain: Option<&WorkspaceCommitRequest>,
 ) -> Result<(Project, Value, Value, BTreeMap<String, Value>)> {
     dto(q.validate())?;
     id(&q.commit_id)?;
@@ -377,6 +406,11 @@ fn semantic_inputs(
             }
         }
         checked.read(root, &resolution.result)?;
+        let saved = checked.json(root, &resolution.result)?;
+        if recorded_by_another_program(chain, resolution, &saved)? {
+            reviews.insert(resolution.result.path.clone(), saved);
+            continue;
+        }
         let fresh = match request["schema"].as_str() {
             Some("oev2.reviewed-reconciliation-request/1") => {
                 json!(reviewed_reconciliation::reconcile_reviewed(
@@ -392,10 +426,7 @@ fn semantic_inputs(
             }
             _ => bail!("workspace_resolution_owner_required"),
         };
-        ensure!(
-            checked.json(root, &resolution.result)? == fresh,
-            "workspace_review_result_not_replayed"
-        );
+        ensure!(saved == fresh, "workspace_review_result_not_replayed");
         reviews.insert(resolution.result.path.clone(), fresh);
     }
     semantics::validate_semantics(
@@ -722,7 +753,8 @@ fn commit_within(
         (None, 0)
     };
     let mut checked = Checked::for_request(q)?;
-    let (p, a, route, reviews) = semantic_inputs(root, q, &mut checked)?;
+    let (p, a, route, reviews) =
+        semantic_inputs(root, q, &mut checked, old.as_ref().map(|c| &c.proposal))?;
     ensure!(
         p.project_id == m.project_id,
         "workspace_project_identity_mismatch"
@@ -884,7 +916,7 @@ pub fn resume(root: &SkillRoot) -> Result<Value> {
     let h = head(root, &m)?.context("workspace_no_committed_state")?;
     let (c, history_use) = load_commit_within(root, &h, None)?;
     let mut checked = Checked::for_request(&c.proposal)?;
-    let (p, a, route, _) = semantic_inputs(root, &c.proposal, &mut checked)?;
+    let (p, a, route, _) = semantic_inputs(root, &c.proposal, &mut checked, Some(&c.proposal))?;
     ensure!(
         p.project_id == m.project_id,
         "workspace_project_identity_mismatch"

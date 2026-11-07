@@ -26,16 +26,26 @@ case "$jobs" in ''|*[!0-9]*|0) printf '%s\n' 'Invalid compiler job count' >&2; e
 command -v rustup >/dev/null 2>&1 || { printf '%s\n' 'Install Rust with rustup first: https://rustup.rs/' >&2; exit 1; }
 toolchain=$(sed -n 's/^channel = "\([^"]*\)"$/\1/p' "$root/rust-toolchain.toml")
 case "$toolchain" in ''|*[!0-9.]*) printf '%s\n' 'Expected one exact Rust toolchain version in rust-toolchain.toml' >&2; exit 1 ;; esac
-rustup run "$toolchain" rustc --version >/dev/null || {
+# Use the pinned toolchain's own programs. `rustup run` leaves the compiler to PATH and to the
+# proxies in CARGO_HOME, so another rustc on PATH wins once CARGO_HOME is not the default one.
+toolchain_cargo=$(rustup which --toolchain "$toolchain" cargo) || {
     printf '%s\n' "Install the pinned toolchain: rustup toolchain install $toolchain --profile minimal" >&2
     exit 1
 }
+toolchain_bin=$(dirname "$toolchain_cargo")
+PATH="$toolchain_bin:$PATH"
+RUSTC="$toolchain_bin/rustc"
+export PATH RUSTC
+case "$(rustc --version)" in
+    "rustc $toolchain "*) ;;
+    *) printf '%s\n' "Expected rustc $toolchain from $toolchain_bin" >&2; exit 1 ;;
+esac
 cd "$root"
 target="$root/var/builds/rust-target"
 if [ "$profile" = dev ]; then output=debug; else output=release; fi
 # Keep the target inside this checkout; never pick up a previous skill's binaries.
 export CARGO_TARGET_DIR="$target"
-rustup run "$toolchain" cargo build --locked $offline --profile "$profile" --jobs "$jobs" \
+cargo build --locked $offline --profile "$profile" --jobs "$jobs" \
     --bin oev2 --bin oev2-design-bootstrap --bin oe-code-runner \
     --bin oe-code-evaluator --bin oe-evolution-driver \
     --bin oe-runtime-linker2 --bin oe-runtime-rustc2 --bin engineering-memory
@@ -57,7 +67,7 @@ done
         shasum -a 256 bin/* > SHA256SUMS
         shasum -a 256 -c SHA256SUMS
     fi
-    { printf 'profile=%s\n' "$profile"; rustup run "$toolchain" rustc --version; rustup run "$toolchain" cargo --version; } > BUILD.txt
+    { printf 'profile=%s\n' "$profile"; rustc --version; cargo --version; } > BUILD.txt
 )
 # Keep the prior complete installation until this one has passed basic startup.
 "$stage/bin/oev2" --root "$root" --version

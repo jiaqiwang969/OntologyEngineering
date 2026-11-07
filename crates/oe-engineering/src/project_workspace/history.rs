@@ -175,6 +175,25 @@ pub fn propagate_pending(project: &Project, pending: &mut BTreeSet<String>) -> R
     Ok(())
 }
 
+/// A saved review keeps the identity it ran under: a later release reads the record and does not
+/// re-sign it, so its engine version is not compared with the running program.
+fn saved_receipt_intact(value: &Receipt, binding_hash: &str, evidence_sha256: &str) -> Result<bool> {
+    Ok(value.schema == "oev2.semantic-receipt/1"
+        && value.engine_id == oe_kernel::ENGINE_ID
+        && !value.engine_version.trim().is_empty()
+        && value.execution == "completed"
+        && value.conclusion == "pass"
+        && value.failures.is_empty()
+        && value.binding.digest()? == binding_hash
+        && value.binding_sha256 == binding_hash
+        && value.evidence_sha256 == evidence_sha256
+        && value.executable_sha256.len() == 64
+        && value
+            .executable_sha256
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()))
+}
+
 fn receipt(
     archive: &mut Archive<'_>,
     p: &Project,
@@ -234,20 +253,7 @@ fn receipt(
     let binding_hash = binding.digest()?;
     for value in [&saved, &observed] {
         ensure!(
-            value.schema == "oev2.semantic-receipt/1"
-                && value.engine_id == oe_kernel::ENGINE_ID
-                && value.engine_version == oe_kernel::ENGINE_VERSION
-                && value.execution == "completed"
-                && value.conclusion == "pass"
-                && value.failures.is_empty()
-                && value.binding.digest()? == binding_hash
-                && value.binding_sha256 == binding_hash
-                && value.evidence_sha256 == sha256(&evidence)
-                && value.executable_sha256.len() == 64
-                && value
-                    .executable_sha256
-                    .bytes()
-                    .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()),
+            saved_receipt_intact(value, &binding_hash, &sha256(&evidence))?,
             "workspace_history_review_receipt_invalid"
         );
         ensure!(
@@ -259,7 +265,8 @@ fn receipt(
         );
     }
     ensure!(
-        saved.executable_sha256 == observed.executable_sha256
+        saved.engine_version == observed.engine_version
+            && saved.executable_sha256 == observed.executable_sha256
             && saved.coverage == observed.coverage
             && json!(saved.checks) == json!(observed.checks),
         "workspace_history_review_receipt_mismatch"
@@ -548,4 +555,57 @@ pub(crate) fn validate_pending(
         crate::artifacts::read(root, &reference)?;
     }
     Ok(used)
+}
+
+#[cfg(test)]
+mod saved_receipt_tests {
+    use super::*;
+
+    fn receipt() -> (Receipt, String) {
+        let binding: Binding = serde_json::from_value(json!({
+            "project_id":"p","object_id":"o","object_revision":"r1","package_id":"b","package_version":"1",
+            "package_sha256":"a".repeat(64),"source_sha256":"b".repeat(64),"condition_scope":"c",
+            "required_checks":["bound_focus_context"],"authority_id":"a"
+        }))
+        .unwrap();
+        let hash = binding.digest().unwrap();
+        (
+            Receipt {
+                schema: "oev2.semantic-receipt/1".into(),
+                engine_id: oe_kernel::ENGINE_ID.into(),
+                engine_version: "2.0.0-rc.1".into(),
+                executable_sha256: "c".repeat(64),
+                binding,
+                binding_sha256: hash.clone(),
+                evidence_sha256: "d".repeat(64),
+                execution: "completed".into(),
+                conclusion: "pass".into(),
+                coverage: BTreeSet::new(),
+                failures: vec![],
+                adoption_conditions: vec![],
+                checks: vec![],
+            },
+            hash,
+        )
+    }
+
+    #[test]
+    fn an_older_engine_version_stays_valid_but_a_broken_identity_does_not() {
+        let evidence = "d".repeat(64);
+        let (good, hash) = receipt();
+        assert_ne!(good.engine_version, oe_kernel::ENGINE_VERSION);
+        assert!(saved_receipt_intact(&good, &hash, &evidence).unwrap());
+        let changes: [fn(&mut Receipt); 5] = [
+            |r| r.engine_version = " ".into(),
+            |r| r.engine_id = "another-engine".into(),
+            |r| r.conclusion = "unknown".into(),
+            |r| r.binding_sha256 = "e".repeat(64),
+            |r| r.executable_sha256 = "short".into(),
+        ];
+        for change in changes {
+            let mut r = good.clone();
+            change(&mut r);
+            assert!(!saved_receipt_intact(&r, &hash, &evidence).unwrap());
+        }
+    }
 }

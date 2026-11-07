@@ -15,7 +15,7 @@ const SOURCE: &str = include_str!("../knowledge/drawing-representation.toml");
 const SCHEMA_K: &str = "oev2.drawing-representation-knowledge/1";
 
 /// Cards that recognition uses; a test checks this list against the file both ways.
-pub const USED_CARDS: [&str; 18] = [
+pub const USED_CARDS: [&str; 21] = [
     "datum_feature_symbol",
     "center_hole_symbol",
     "gdt_frame_symbol",
@@ -34,6 +34,9 @@ pub const USED_CARDS: [&str; 18] = [
     "gdt_frame_content",
     "surface_texture_symbol",
     "view_callout",
+    "theoretically_exact_dimension",
+    "local_section_boundary",
+    "dimension_line_parts",
 ];
 
 /// Concept catalogue: one card per drafting representation concept, by group.
@@ -1011,6 +1014,43 @@ pub(super) fn section_lines(cx: &Ctx, b: &mut Builder) -> Result<()> {
             })
             .map(|(h, _)| h.clone())
             .collect();
+        // A drafter may draw a section line by hand and then pick the hatch boundary along it: the
+        // line is a boundary edge parallel to the pattern, and at both ends the real outline or
+        // axis runs straight on through it (a feature edge would turn there).
+        let through = |p: P, own: &str| {
+            cx.lines.iter().any(|(id, (a, z))| {
+                id != own && on_seg(p, *a, *z, btol).is_some_and(|t| t > 0.02 && t < 0.98) && dist(p, *a) > 4. * btol && dist(p, *z) > 4. * btol
+            })
+        };
+        let drawn_on_boundary: Vec<String> = cx
+            .lines
+            .iter()
+            .filter(|(h, (p, q))| {
+                !b.used(h)
+                    && dist(*p, *q) > 4. * btol
+                    && cross(unit(sub(*q, *p)), u).abs() <= atol.to_radians().sin()
+                    && on_boundary(*p)
+                    && on_boundary(*q)
+                    && on_boundary(mid(*p, *q))
+                    && through(*p, h)
+                    && through(*q, h)
+            })
+            .map(|(h, _)| h.clone())
+            .collect();
+        for h in drawn_on_boundary {
+            b.member(e, &h, None, [0., 1.], "hatch_fill", member_line_type(cx.lt(&h), "hatch_fill"), "candidate", vec![], vec![tag(c), "variant:boundary_along_drawn_line".into(), format!("pattern_angle:{ang:.1}")]);
+            for x in [tag(c), variant_tag("boundary_along_drawn_line")] {
+                if !b.exprs[e].evidence_ids.contains(&x) {
+                    b.exprs[e].evidence_ids.push(x);
+                }
+            }
+            for k in &c.concepts {
+                let x = format!("concept:{k}");
+                if !b.exprs[e].evidence_ids.contains(&x) {
+                    b.exprs[e].evidence_ids.push(x);
+                }
+            }
+        }
         for h in lines {
             b.member(e, &h, None, [0., 1.], "hatch_fill", member_line_type(cx.lt(&h), "hatch_fill"), "candidate", vec![], vec![tag(c), format!("pattern_angle:{ang:.1}")]);
             if !b.exprs[e].evidence_ids.contains(&tag(c)) {

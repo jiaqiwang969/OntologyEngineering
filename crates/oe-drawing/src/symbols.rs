@@ -748,6 +748,31 @@ fn texture_geometry(cx: &Ctx, b: &Builder, e: usize) -> Option<(Texture, bool)> 
     Some((t, rotated))
 }
 
+/// A free thin line under the tip of a texture symbol that continues an outline or an extension
+/// line (the symbol stands on an extension of the surface, GB/T 131 figure 4).
+fn standing_line(cx: &Ctx, b: &Builder, tip: P, tol: f64) -> Option<String> {
+    let c = representation::card_ref("surface_texture_symbol").ok()?;
+    let ctol = representation::param(c, "collinear_tolerance").ok()? * cx.scale.max(1e-6);
+    cx.lines
+        .iter()
+        .filter(|(id, (p, q))| {
+            !b.used(id) && cx.annotation_style(id) && seg_dist(tip, *p, *q) < tol
+        })
+        .find(|(id, (p, q))| {
+            let u = unit(sub(*q, *p));
+            // collinear with a line that already plays an outline or extension-line role
+            b.members.iter().any(|m| {
+                (m.member_role == "contour_segment" || m.member_role == "extension_line")
+                    && m.source_handle != **id
+                    && cx.lines.get(&m.source_handle).is_some_and(|(a, z)| {
+                        cross(unit(sub(*z, *a)), u).abs() < 0.01
+                            && project(*a, *p, *q).1.abs() < ctol
+                    })
+            })
+        })
+        .map(|(id, _)| id.clone())
+}
+
 /// Name the concepts of every surface texture expression: symbol type, value form, reading
 /// direction, what the tip stands on, and the simplified note for most surfaces.
 pub(super) fn texture_concepts(cx: &Ctx, b: &mut Builder) -> Result<()> {
@@ -762,6 +787,7 @@ pub(super) fn texture_concepts(cx: &Ctx, b: &mut Builder) -> Result<()> {
         m
     };
     let mut plans: Vec<(usize, Vec<&'static str>, Vec<&'static str>)> = Vec::new();
+    let mut standing: Vec<(usize, String)> = Vec::new();
     for i in 0..b.exprs.len() {
         if b.exprs[i].kind != "surface_roughness" {
             continue;
@@ -824,7 +850,13 @@ pub(super) fn texture_concepts(cx: &Ctx, b: &mut Builder) -> Result<()> {
                     on.extend(rs.iter().copied());
                 }
             }
-            if on.contains("contour_segment") {
+            if on.is_empty()
+                && let Some(line) = standing_line(cx, b, t.tip, tol)
+            {
+                standing.push((i, line));
+                concepts.push("DC-G6-052");
+                variants.push("standing_on_feature");
+            } else if on.contains("contour_segment") {
                 concepts.push("DC-G6-053");
                 variants.push("standing_on_feature");
             } else if on.contains("extension_line") {
@@ -842,6 +874,20 @@ pub(super) fn texture_concepts(cx: &Ctx, b: &mut Builder) -> Result<()> {
             variants.push("symbol_only");
         }
         plans.push((i, concepts, variants));
+    }
+    for (i, line) in standing {
+        let lt = member_line_type(cx.lt(&line), "extension_line");
+        b.member(
+            i,
+            &line,
+            None,
+            [0., 1.],
+            "extension_line",
+            lt,
+            "candidate",
+            vec![],
+            vec!["standing_line_of_texture_symbol".into()],
+        );
     }
     for (i, concepts, variants) in plans {
         for v in variants {
@@ -933,6 +979,50 @@ pub(super) fn cutting_strokes(cx: &Ctx, b: &mut Builder) -> Result<()> {
         }
     }
     Ok(())
+}
+
+/// A viewing-direction arrow drawn as one block: a shaft line, a closed (filled) head whose tip
+/// is at one end of the shaft, and a single capital letter beside it (card view_callout,
+/// variant arrow_block). Returns the letter.
+pub(super) fn view_arrow_block(s: &dd::Shape) -> Option<String> {
+    let c = representation::card_ref("view_callout").ok()?;
+    let reach = representation::param(c, "letter_reach").ok()?;
+    let letters: Vec<&(String, P, f64)> =
+        s.texts.iter().filter(|t| !t.0.trim().is_empty()).collect();
+    if letters.len() != 1 || s.circles.len() > 0 {
+        return None;
+    }
+    let (t, at, h) = letters[0];
+    let t = t.trim();
+    if !(t.chars().count() == 1 && t.chars().all(|ch| ch.is_ascii_uppercase())) {
+        return None;
+    }
+    let heads = closed_triangles(s);
+    if heads.len() != 1 {
+        return None;
+    }
+    let head = &heads[0];
+    // shafts: lines not belonging to the head outline
+    let shafts: Vec<&(P, P)> = s
+        .lines
+        .iter()
+        .filter(|(a, b)| {
+            !head.iter().any(|v| dist(*v, *a) < 1e-6) || !head.iter().any(|v| dist(*v, *b) < 1e-6)
+        })
+        .collect();
+    if shafts.len() != 1 {
+        return None;
+    }
+    let (a, b) = *shafts[0];
+    let len = dist(a, b);
+    // the head's apex is the vertex farthest from the shaft's line; it must lie beyond one end
+    let tip_at_end = head.iter().any(|v| {
+        let (t0, d) = project(*v, a, b);
+        d.abs() < 0.15 * len && (t0 > 0.95 || t0 < 0.05)
+    });
+    let near = seg_dist(*at, a, b) < reach * h.max(1e-6)
+        || dist(*at, mid(a, b)) < reach * h.max(1e-6) + 0.5 * len;
+    (tip_at_end && near).then(|| t.to_string())
 }
 
 /// Section and cut names written `X—X` (optionally with a scale) title a section view.

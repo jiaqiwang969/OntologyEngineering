@@ -170,6 +170,23 @@ fn shape(d: &Drawing, r: &Record, tr: Transform, depth: usize, out: &mut Shape) 
             }
         }
         "ELLIPSE" | "SPLINE" => out.curved = true,
+        // A filled triangle (arrowhead) is kept as a closed three-vertex path; it carries no
+        // line geometry of its own.
+        "SOLID" | "TRACE" => {
+            let mut p: Vec<P> = Vec::new();
+            for c in 10..=13 {
+                if let Ok(v) = r.xy(c) {
+                    let v = tr.p(v);
+                    if !p.iter().any(|q| near(*q, v)) {
+                        p.push(v)
+                    }
+                }
+            }
+            if p.len() == 3 {
+                p.push(p[0]);
+                out.paths.push(p)
+            }
+        }
         "TEXT" | "MTEXT" | "ATTRIB" => {
             let p = if r.get(72).is_some_and(|v| v != "0") {
                 r.xy(11).or_else(|_| r.xy(10))

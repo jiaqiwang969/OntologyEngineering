@@ -929,3 +929,107 @@ pub(super) fn series_tables(cx: &Ctx, b: &mut Builder) -> Result<()> {
     }
     Ok(())
 }
+
+// ---------------------------------------------------------------- theoretically exact dimensions
+
+/// A box around a dimension value (card theoretically_exact_dimension): a line above the value,
+/// two sides going down from its ends, and the bottom — often the shoulder the value stands on —
+/// joining the sides. Returns (box line ids, rectangle, text id) for free values.
+pub(super) fn ted_boxes(cx: &Ctx, b: &Builder) -> Result<Vec<(Vec<String>, [f64; 4], String)>> {
+    let c = representation::card_ref("theoretically_exact_dimension")?;
+    let (omin, omax) = (
+        representation::param(c, "top_offset_min")?,
+        representation::param(c, "top_offset_max")?,
+    );
+    let stol = representation::param(c, "corner_tolerance")?;
+    let extra = representation::param(c, "box_width_extra")?;
+    let mut out = Vec::new();
+    for t in cx.texts.values().filter(|t| {
+        !b.used(&t.id)
+            && matches!(
+                t.lex,
+                Lex::Number | Lex::Diameter | Lex::Radius | Lex::Angle
+            )
+    }) {
+        let n = [-t.dir[1], t.dir[0]];
+        let h = t.height;
+        let tol = stol * h;
+        let off = |p: P| dot(sub(p, t.center), n);
+        let alg = |p: P| dot(sub(p, t.center), t.dir);
+        let free: Vec<(&String, P, P)> = cx
+            .lines
+            .iter()
+            .filter(|(id, (a, z))| {
+                !b.used(id) && !cx.structural_style(id) && dist(*a, *z) < 12. * h
+            })
+            .map(|(id, (a, z))| (id, *a, *z))
+            .collect();
+        let Some((tid, ta, tc)) = free.iter().find(|(_, a, z)| {
+            cross(unit(sub(*z, *a)), t.dir).abs() < 0.03
+                && dist(*a, *z) < t.width + extra * h
+                && (omin * h..omax * h).contains(&off(*a))
+                && (omin * h..omax * h).contains(&off(*z))
+                && alg(*a).min(alg(*z)) < -0.4 * t.width
+                && alg(*a).max(alg(*z)) > 0.4 * t.width
+        }) else {
+            continue;
+        };
+        let side = |end: P| {
+            free.iter()
+                .find(|(id, a, z)| {
+                    *id != *tid
+                        && dot(unit(sub(*z, *a)), t.dir).abs() < 0.05
+                        && (dist(*a, end) < tol || dist(*z, end) < tol)
+                        && off(*a).min(off(*z)) < -0.3 * h
+                })
+                .map(|(id, a, z)| ((*id).clone(), if off(*a) < off(*z) { *a } else { *z }))
+        };
+        let (Some((s1, b1)), Some((s2, b2))) = (side(*ta), side(*tc)) else {
+            continue;
+        };
+        let mut ids = vec![(*tid).clone(), s1, s2];
+        // bottom: a line through both side ends (it may run on as a shoulder)
+        if let Some((bid, _, _)) = free.iter().find(|(id, a, z)| {
+            !ids.contains(id) && seg_dist(b1, *a, *z) < tol && seg_dist(b2, *a, *z) < tol
+        }) {
+            ids.push((*bid).clone());
+        }
+        let pts = [*ta, *tc, b1, b2];
+        if let Some(r) = bbox_of(&pts) {
+            out.push((ids, r, t.id.clone()));
+        }
+    }
+    Ok(out)
+}
+fn seg_dist(p: P, a: P, z: P) -> f64 {
+    let v = sub(z, a);
+    let n = dot(v, v);
+    if n < 1e-18 {
+        return dist(p, a);
+    }
+    let t = (dot(sub(p, a), v) / n).clamp(0., 1.);
+    dist(p, add(a, mul(v, t)))
+}
+
+/// Name a boxed value as a theoretically exact dimension (qualifier, card, variant, concept).
+pub(super) fn mark_ted(b: &mut Builder, e: usize, variant: &str) {
+    if !b.exprs[e]
+        .qualifiers
+        .iter()
+        .any(|q| q == "theoretically_exact")
+    {
+        b.exprs[e].qualifiers.push("theoretically_exact".into());
+        b.exprs[e]
+            .evidence_ids
+            .push("GB/T 1182 boxed theoretically exact dimension".into());
+    }
+    for x in [
+        "card:theoretically_exact_dimension".to_string(),
+        format!("variant:{variant}"),
+        "concept:DC-G4-029".to_string(),
+    ] {
+        if !b.exprs[e].evidence_ids.contains(&x) {
+            b.exprs[e].evidence_ids.push(x);
+        }
+    }
+}

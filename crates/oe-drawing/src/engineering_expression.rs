@@ -45,6 +45,9 @@ pub use notation::text_concepts;
 #[path = "symbols.rs"]
 mod symbols;
 
+#[path = "lines.rs"]
+mod lines;
+
 #[path = "coverage.rs"]
 mod coverage;
 pub use coverage::{concept_status, recognizer_coverage};
@@ -1956,7 +1959,8 @@ fn frame_of(s: &dd::Shape) -> Option<(&'static str, Vec<[f64; 4]>, Vec<String>)>
             .filter(|(c, _)| inside(*c, shrink, 0.))
             .collect(),
         texts: vec![],
-        paths: vec![],
+        // closed heads (triangles) of arrow glyphs lie inside the first cell too
+        paths: s.paths.iter().filter(|p| p.iter().all(|q| inside(*q, shrink, 0.))).cloned().collect(),
         curved: false,
         arcs: s.arcs.iter().filter(|a| a.iter().all(|p| inside(*p, shrink, 0.))).cloned().collect(),
     };
@@ -2175,6 +2179,18 @@ fn blocks(cx: &Ctx, b: &mut Builder, def: &mut Deferred) {
                 vec![],
                 vec![],
             );
+        } else if let Some(letter) = symbols::view_arrow_block(s) {
+            // A viewing-direction arrow drawn as one block (card view_callout, variant arrow_block).
+            let e = b.expr(
+                "view_callout",
+                &letter,
+                "card:view_callout/arrow_block",
+                "candidate",
+                vec!["view_direction".into()],
+                vec![format!("source:{h}"), "card:view_callout".into(), "variant:arrow_block".into(), "concept:DC-G2-072".into()],
+                vec![],
+            );
+            b.member(e, h, None, [0., 1.], "view_arrow", "block", "candidate", vec![], vec![]);
         } else if symbols::texture_block(s) {
             def.textures.push(h.clone());
         } else if let Some(kind) = glyph_kind(s) {
@@ -3078,8 +3094,14 @@ fn exploded_dimensions(cx: &Ctx, b: &mut Builder, anchors: &mut BTreeMap<usize, 
 /// Terminators across a hole or feature whose dimension line continues as a
 /// leader to a distant text (thread or diameter callout). Runs after tolerance
 /// frames have taken their fields.
-fn extended_pair_dimensions(cx: &Ctx, b: &mut Builder, anchors: &mut BTreeMap<usize, P>) {
+fn extended_pair_dimensions(
+    cx: &Ctx,
+    b: &mut Builder,
+    anchors: &mut BTreeMap<usize, P>,
+    ted: &[(Vec<String>, [f64; 4], String)],
+) {
     let frames = frame_boxes(cx, b);
+    let tol = 1e-3 * cx.scale.max(1.);
     for pr in arrow_pairs(cx, b) {
         if b.used(&pr.a) || b.used(&pr.b) {
             continue;
@@ -3096,10 +3118,31 @@ fn extended_pair_dimensions(cx: &Ctx, b: &mut Builder, anchors: &mut BTreeMap<us
                 }
             }
         }
+        // The dimension line may continue past a terminator, from its tip outward, as a leader
+        // to a value written outside (card dimension_line_parts, variant extended_to_outside_value).
+        let mut extended = false;
+        for (tip, out) in [(pr.p, mul(u, -1.)), (pr.q, u)] {
+            for (id, pts) in free_segments(cx, b) {
+                if pr.supports.contains(&id) {
+                    continue;
+                }
+                let n = pts.len();
+                for (e, o) in [(pts[0], pts[1]), (pts[n - 1], pts[n - 2])] {
+                    if dist(e, tip) < tol + 0.05 * pr.alen && dot(unit(sub(o, e)), out) > 0.999 {
+                        starts.push((e, sub(e, out)));
+                        extended = true;
+                    }
+                }
+            }
+        }
         if starts.is_empty() {
             continue;
         }
         let mut taken: BTreeSet<String> = pr.supports.iter().cloned().collect();
+        // lines boxing a value are its frame, never leader segments
+        for (ids, _, _) in ted {
+            taken.extend(ids.iter().cloned());
+        }
         let (segs, _, ends) = branches(cx, b, &starts, &mut taken, 3);
         let seg_pts: Vec<Vec<P>> = segs
             .iter()
@@ -3123,6 +3166,7 @@ fn extended_pair_dimensions(cx: &Ctx, b: &mut Builder, anchors: &mut BTreeMap<us
             .filter(|t| {
                 seg_pts.iter().any(|pts| on_shoulder(t, pts))
                     || ends.iter().any(|e| dist(t.center, *e) < 2. * t.height)
+                    || ted.iter().any(|(_, r, id)| *id == t.id && ends.iter().any(|e| inside(*e, *r, 0.2 * t.height)))
             })
             .min_by(|x, y| {
                 let dx = ends
@@ -3209,6 +3253,21 @@ fn extended_pair_dimensions(cx: &Ctx, b: &mut Builder, anchors: &mut BTreeMap<us
             );
         }
         add_leader(cx, b, e, &segs, &[], "leader_continuing_dimension_line");
+        if extended {
+            for x in ["card:dimension_line_parts", "variant:extended_to_outside_value", "concept:DC-G4-059"] {
+                if !b.exprs[e].evidence_ids.iter().any(|y| y == x) {
+                    b.exprs[e].evidence_ids.push(x.into());
+                }
+            }
+        }
+        if let Some((ids, _, _)) = ted.iter().find(|(_, _, id)| *id == t.id) {
+            for id in ids {
+                if !b.used(id) {
+                    b.member(e, id, None, [0., 1.], "frame_cell", member_line_type(cx.lt(id), "frame_cell"), "candidate", vec![], vec!["box_around_dimension_value".into()]);
+                }
+            }
+            notation::mark_ted(b, e, "line_box");
+        }
         anchors.insert(e, mid(pr.p, pr.q));
     }
 }
@@ -4164,16 +4223,7 @@ fn boxed_values(cx: &Ctx, b: &mut Builder, native_texts: &BTreeMap<usize, TextFa
                 vec!["box_around_dimension_value".into()],
             );
         }
-        if !b.exprs[e]
-            .qualifiers
-            .iter()
-            .any(|q| q == "theoretically_exact")
-        {
-            b.exprs[e].qualifiers.push("theoretically_exact".into());
-            b.exprs[e]
-                .evidence_ids
-                .push("GB/T 1182 boxed theoretically exact dimension".into());
-        }
+        notation::mark_ted(b, e, if native_texts.contains_key(&e) { "native_value_box" } else { "line_box" });
     }
 }
 
@@ -5298,6 +5348,8 @@ fn break_lines(cx: &Ctx, b: &mut Builder) {
             vec![
                 "vertices_on_section_hatch_boundary".into(),
                 "ends_on_outline_or_axis".into(),
+                "card:local_section_boundary".into(),
+                "variant:hatch_entity".into(),
             ],
             vec!["Local section boundary; its occluded continuation is not reconstructed".into()],
         );
@@ -5324,6 +5376,7 @@ fn break_lines(cx: &Ctx, b: &mut Builder) {
 /// by convention, GB/T 14665-2012 4.3) is left to that source.
 fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
     let mut cand: BTreeMap<String, u8> = BTreeMap::new();
+    let wavy_card = representation::card_ref("local_section_boundary").ok();
     for (h, r) in &cx.rec {
         if !matches!(
             r.kind.as_str(),
@@ -5335,6 +5388,13 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
             || cx.arrows.contains_key(h)
             || cx.inline_arrows.contains_key(h)
             || exclusive(b, h)
+        {
+            continue;
+        }
+        // a thin freehand curve is a wavy line (GB/T 4457.4), never a visible outline
+        if let (Some(c), Some((pts, closed, bulged))) = (wavy_card, cx.polys.get(h))
+            && lines::thin_colour(cx, h)
+            && lines::free_curve(c, pts, *closed, *bulged)
         {
             continue;
         }
@@ -6208,7 +6268,7 @@ fn finalize(
             for ev in std::iter::once(format!("rule:{rule}")).chain(
                 e.evidence_ids
                     .iter()
-                    .filter(|x| x.starts_with("GB/T") || x.starts_with("pattern:"))
+                    .filter(|x| x.starts_with("GB/T") || x.starts_with("pattern:") || x.starts_with("card:") || x.starts_with("variant:"))
                     .cloned(),
             ) {
                 if !nb.exprs[idx].evidence_ids.contains(&ev) {
@@ -6510,7 +6570,8 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     loose.extend(symbols::text_glyphs(&cx, &b)?);
     let divided = symbols::divided_frames(&cx, &b)?;
     exploded_frames(&cx, &mut b, &def, &mut anchors, &loose, &divided);
-    extended_pair_dimensions(&cx, &mut b, &mut anchors);
+    let ted = notation::ted_boxes(&cx, &b)?;
+    extended_pair_dimensions(&cx, &mut b, &mut anchors, &ted);
     let mut titles = view_titles(&cx, &mut b);
     titles.extend(symbols::section_titles(&cx, &mut b)?);
     representation::visible_edges(&cx, &mut b)?;
@@ -6537,11 +6598,13 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     thread_arcs(&cx, &mut b);
     thread_lines(&cx, &mut b);
     break_lines(&cx, &mut b);
+    lines::loose_hatch_boundaries(&cx, &mut b)?;
     hatch_lines(&cx, &mut b);
     let cover = topology::cover(&cx, &b);
     structure(&cx, &mut b, &cover);
     duplicate_spans(&cx, &mut b);
     representation::leader_extensions(&cx, &mut b)?;
+    lines::extension_remainders(&cx, &mut b)?;
     representation::frame_cards(&mut b)?;
     notation::dimension_texts(&mut b)?;
     notation::technical_items(&mut b)?;

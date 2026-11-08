@@ -5652,28 +5652,39 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingObject", "class", "AngularDimensionText"),
     ("MdDraftingObject", "class", "Arrowhead"),
     ("MdDraftingObject", "class", "BreakBoundary"),
+    ("MdDraftingObject", "class", "CalloutLetter"),
     ("MdDraftingObject", "class", "CentreLine"),
     ("MdDraftingObject", "class", "Construction"),
+    ("MdDraftingObject", "class", "DatumIdentifierLetter"),
     ("MdDraftingObject", "class", "DatumLetter"),
     ("MdDraftingObject", "class", "DetailCircle"),
+    ("MdDraftingObject", "class", "DetailViewTitle"),
     ("MdDraftingObject", "class", "DimensionLine"),
     ("MdDraftingObject", "class", "DimensionText"),
     ("MdDraftingObject", "class", "ExtensionLine"),
+    ("MdDraftingObject", "class", "GeometricToleranceValue"),
     ("MdDraftingObject", "class", "HatchLine"),
     ("MdDraftingObject", "class", "HiddenOutline"),
     ("MdDraftingObject", "class", "InferredSpan"),
     ("MdDraftingObject", "class", "LeaderLine"),
     ("MdDraftingObject", "class", "Line"),
+    ("MdDraftingObject", "class", "LinearDimensionLine"),
+    ("MdDraftingObject", "class", "LinearDimensionText"),
     ("MdDraftingObject", "class", "NoteText"),
     ("MdDraftingObject", "class", "OtherLine"),
+    ("MdDraftingObject", "class", "RadiusDimensionLine"),
+    ("MdDraftingObject", "class", "RoughnessValue"),
+    ("MdDraftingObject", "class", "ScaleText"),
     ("MdDraftingObject", "class", "SectionRegion"),
     ("MdDraftingObject", "class", "SheetLine"),
     ("MdDraftingObject", "class", "SymbolLine"),
+    ("MdDraftingObject", "class", "SymbolText"),
     ("MdDraftingObject", "class", "TableText"),
     ("MdDraftingObject", "class", "Text"),
     ("MdDraftingObject", "class", "ThreadLine"),
     ("MdDraftingObject", "class", "ToleranceText"),
     ("MdDraftingObject", "class", "ViewLabel"),
+    ("MdDraftingObject", "class", "ViewTitle"),
     ("MdDraftingObject", "class", "VisibleOutline"),
     ("MdDraftingObject", "class", "WavyBreakBoundary"),
     ("MdDraftingObject", "layer", "presentation"),
@@ -5685,17 +5696,34 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "object_kind", "node"),
     ("MdDraftingRelation", "object_kind", "number"),
     ("MdDraftingRelation", "object_kind", "text"),
+    ("MdDraftingRelation", "predicate", "alignedWith"),
     ("MdDraftingRelation", "predicate", "angleDeg"),
+    ("MdDraftingRelation", "predicate", "angleToDimensionLineDeg"),
+    ("MdDraftingRelation", "predicate", "chainedWith"),
     ("MdDraftingRelation", "predicate", "coincidentWith"),
+    ("MdDraftingRelation", "predicate", "colourIndex"),
     ("MdDraftingRelation", "predicate", "crossedBy"),
+    ("MdDraftingRelation", "predicate", "dxfLayer"),
     ("MdDraftingRelation", "predicate", "endOnOutline"),
     ("MdDraftingRelation", "predicate", "expressionId"),
     ("MdDraftingRelation", "predicate", "expressionKind"),
+    ("MdDraftingRelation", "predicate", "extensionBeyondUnits"),
+    ("MdDraftingRelation", "predicate", "extentUnits"),
+    ("MdDraftingRelation", "predicate", "hatchDirectionDiffersFrom"),
+    ("MdDraftingRelation", "predicate", "hatchSpacingDiffersFrom"),
+    ("MdDraftingRelation", "predicate", "heightUnits"),
     ("MdDraftingRelation", "predicate", "layer"),
+    ("MdDraftingRelation", "predicate", "layerColourIndex"),
     ("MdDraftingRelation", "predicate", "lineType"),
     ("MdDraftingRelation", "predicate", "memberId"),
+    ("MdDraftingRelation", "predicate", "onExtensionOf"),
+    ("MdDraftingRelation", "predicate", "overshootUnits"),
+    ("MdDraftingRelation", "predicate", "radialTo"),
     ("MdDraftingRelation", "predicate", "rotationDeg"),
+    ("MdDraftingRelation", "predicate", "sameLetterAs"),
+    ("MdDraftingRelation", "predicate", "scaledBy"),
     ("MdDraftingRelation", "predicate", "sourceHandle"),
+    ("MdDraftingRelation", "predicate", "spacingUnits"),
     ("MdDraftingRelation", "predicate", "text"),
     ("MdDraftingRelation", "predicate", "view"),
     ("MdDraftingRule", "severity", "info"),
@@ -20528,7 +20556,7 @@ impl MdDraftingObject {
         if self.id.trim().is_empty() { failures.push("MdDraftingObject.id:required".into()); }
         if self.layer.trim().is_empty() { failures.push("MdDraftingObject.layer:required".into()); }
 
-        if !["AngularDimensionText","Arrowhead","BreakBoundary","CentreLine","Construction","DatumLetter","DetailCircle","DimensionLine","DimensionText","ExtensionLine","HatchLine","HiddenOutline","InferredSpan","LeaderLine","Line","NoteText","OtherLine","SectionRegion","SheetLine","SymbolLine","TableText","Text","ThreadLine","ToleranceText","ViewLabel","VisibleOutline","WavyBreakBoundary",].contains(&self.class.as_str()) { failures.push("MdDraftingObject.class:allowed_values".into()); }
+        if !["AngularDimensionText","Arrowhead","BreakBoundary","CalloutLetter","CentreLine","Construction","DatumIdentifierLetter","DatumLetter","DetailCircle","DetailViewTitle","DimensionLine","DimensionText","ExtensionLine","GeometricToleranceValue","HatchLine","HiddenOutline","InferredSpan","LeaderLine","Line","LinearDimensionLine","LinearDimensionText","NoteText","OtherLine","RadiusDimensionLine","RoughnessValue","ScaleText","SectionRegion","SheetLine","SymbolLine","SymbolText","TableText","Text","ThreadLine","ToleranceText","ViewLabel","ViewTitle","VisibleOutline","WavyBreakBoundary",].contains(&self.class.as_str()) { failures.push("MdDraftingObject.class:allowed_values".into()); }
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingObject.layer:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -20561,7 +20589,7 @@ impl MdDraftingRelation {
 
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingRelation.layer:allowed_values".into()); }
         if !["node","number","text",].contains(&self.object_kind.as_str()) { failures.push("MdDraftingRelation.object_kind:allowed_values".into()); }
-        if !["angleDeg","coincidentWith","crossedBy","endOnOutline","expressionId","expressionKind","layer","lineType","memberId","rotationDeg","sourceHandle","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
+        if !["alignedWith","angleDeg","angleToDimensionLineDeg","chainedWith","coincidentWith","colourIndex","crossedBy","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootUnits","radialTo","rotationDeg","sameLetterAs","scaledBy","sourceHandle","spacingUnits","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }

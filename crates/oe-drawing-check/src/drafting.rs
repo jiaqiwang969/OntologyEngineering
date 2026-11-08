@@ -36,7 +36,7 @@ const QUAD_BUDGET: usize = 100_000;
 const SCOPE: &str = "Drafting rules of the ontology evaluated on facts exported from the source bytes and the frozen graph; a finding is a deviation to review, not a correction and not engineering acceptance.";
 
 /// Every class of the fact vocabulary; the ontology and the spec declare the same set (tested).
-pub const CLASSES: [&str; 27] = [
+pub const CLASSES: [&str; 38] = [
     "Line",
     "VisibleOutline",
     "HiddenOutline",
@@ -46,6 +46,8 @@ pub const CLASSES: [&str; 27] = [
     "HatchLine",
     "SectionRegion",
     "DimensionLine",
+    "LinearDimensionLine",
+    "RadiusDimensionLine",
     "ExtensionLine",
     "Arrowhead",
     "LeaderLine",
@@ -57,16 +59,25 @@ pub const CLASSES: [&str; 27] = [
     "OtherLine",
     "Text",
     "DimensionText",
+    "LinearDimensionText",
     "AngularDimensionText",
     "ToleranceText",
+    "GeometricToleranceValue",
+    "RoughnessValue",
     "NoteText",
     "TableText",
+    "ScaleText",
     "ViewLabel",
+    "ViewTitle",
+    "DetailViewTitle",
+    "CalloutLetter",
     "DatumLetter",
+    "DatumIdentifierLetter",
+    "SymbolText",
     "Construction",
 ];
 /// Every predicate of the fact vocabulary (data and object properties); same set in the ontology and the spec.
-pub const PREDICATES: [&str; 13] = [
+pub const PREDICATES: [&str; 30] = [
     "layer",
     "sourceHandle",
     "memberId",
@@ -77,9 +88,26 @@ pub const PREDICATES: [&str; 13] = [
     "text",
     "rotationDeg",
     "angleDeg",
+    "heightUnits",
+    "spacingUnits",
+    "dxfLayer",
+    "colourIndex",
+    "layerColourIndex",
     "endOnOutline",
+    "overshootUnits",
+    "extensionBeyondUnits",
+    "angleToDimensionLineDeg",
+    "extentUnits",
     "crossedBy",
     "coincidentWith",
+    "radialTo",
+    "onExtensionOf",
+    "alignedWith",
+    "sameLetterAs",
+    "scaledBy",
+    "hatchDirectionDiffersFrom",
+    "hatchSpacingDiffersFrom",
+    "chainedWith",
 ];
 
 pub struct DraftingRuleChecker<'a> {
@@ -298,16 +326,34 @@ const END_TOLERANCE: f64 = 0.5;
 /// A straight line that ends on a wavy curve meets it inside the wave's band: pieces of the curve up to this far from
 /// the line's end may still intersect it without the line crossing the curve.
 const WAVE_BAND: f64 = 2.0;
-/// Stacked tolerances are drawn one above the other at reduced size, so a text with a stack is this many heights tall.
+/// Stacked tolerances are drawn one above the other at reduced size, so the stacked part of a text is this many
+/// heights tall; it starts 0.15 heights below the baseline of the main text.
 const STACK_HEIGHT: f64 = 1.3;
+const STACK_DROP: f64 = 0.15;
+/// Two directions are parallel within this angle (alignment of a text with its line, collinearity, chaining).
+const PARALLEL_DEG: f64 = 1.5;
+/// A line lies on the extension of another when collinear and separated along the line by at most this gap.
+const EXTENSION_GAP: f64 = 10.0;
+/// A radial dimension line passes an arc's centre within this distance and ends on the arc within ARROW_REACH.
+const RADIAL_EPS: f64 = 0.3;
+/// Native dimension lines stop where their arrowheads begin and a small radius's line stops outside the arc behind
+/// its arrow: a line reaches another within this distance (two arrow lengths at scale 1).
+const ARROW_REACH: f64 = 6.0;
+/// Two hatch regions differ when their directions differ by more than this angle or their spacings by this ratio.
+const HATCH_ANGLE_DEG: f64 = 3.0;
+const HATCH_SPACING_RATIO: f64 = 1.3;
 
-/// Geometry of one drawing object: straight pieces (chains of points) and, for text, a rotated box.
+/// Geometry of one drawing object: straight pieces (chains of points), the arcs among them and, for text, boxes.
 #[derive(Debug, Clone, Default)]
 struct Geometry {
-    /// Polylines: a LINE is one two-point chain; arcs and circles are sampled; splines use their points.
+    /// Polylines: a LINE is one two-point chain; arcs, circles and polyline bulges are sampled; splines use their points.
     chains: Vec<Vec<P>>,
-    /// A text box: anchor of the lower-left corner in drawing coordinates, rotation, width and height.
+    /// Centre and radius of every arc or circle the object draws (ARC, CIRCLE, polyline bulge segments).
+    arcs: Vec<(P, f64)>,
+    /// The main text box: anchor of the lower-left corner in drawing coordinates, rotation, width and height.
     text_box: Option<TextBox>,
+    /// The box of a stacked part (tolerance stack), drawn after the main text, taller than it.
+    stack_box: Option<TextBox>,
 }
 #[derive(Debug, Clone, Copy)]
 struct TextBox {
@@ -487,6 +533,85 @@ fn angle_deg(a: P, b: P) -> f64 {
     }
     (d * 1000.).round() / 1000.
 }
+/// Smallest angle between two directions given in degrees in [0, 180).
+fn angle_between(a: f64, b: f64) -> f64 {
+    let d = (a - b).abs() % 180.;
+    d.min(180. - d)
+}
+/// Perpendicular distance from a point to the infinite line through a and b, and the parameter along a→b.
+fn point_line(p: P, a: P, b: P) -> (f64, f64) {
+    let (dx, dy) = (b.0 - a.0, b.1 - a.1);
+    let l2 = dx * dx + dy * dy;
+    if l2 < 1e-18 {
+        return (dist(p, a), 0.);
+    }
+    let t = ((p.0 - a.0) * dx + (p.1 - a.1) * dy) / l2;
+    let off = ((p.0 - a.0) * -dy + (p.1 - a.1) * dx).abs() / l2.sqrt();
+    (off, t)
+}
+/// Parameter along the segment a→b where the infinite line through c and d meets it; none when parallel.
+fn line_param(a: P, b: P, c: P, d: P) -> Option<f64> {
+    let (r, s) = ((b.0 - a.0, b.1 - a.1), (d.0 - c.0, d.1 - c.1));
+    let denominator = r.0 * s.1 - r.1 * s.0;
+    if denominator.abs() < 1e-12 {
+        return None;
+    }
+    let qp = (c.0 - a.0, c.1 - a.1);
+    Some((qp.0 * s.1 - qp.1 * s.0) / denominator)
+}
+/// Two straight segments on one line (parallel within PARALLEL_DEG, offset within EPS_COINCIDENT): the signed gap
+/// between them along the line, negative when they overlap.
+fn collinear_gap(a: P, b: P, c: P, d: P) -> Option<f64> {
+    let (la, lc) = (dist(a, b), dist(c, d));
+    if la < 1e-9 || lc < 1e-9 || angle_between(angle_deg(a, b), angle_deg(c, d)) > PARALLEL_DEG {
+        return None;
+    }
+    let ua = ((b.0 - a.0) / la, (b.1 - a.1) / la);
+    let offset = |p: P| ((p.0 - a.0) * -ua.1 + (p.1 - a.1) * ua.0).abs();
+    if offset(c) > EPS_COINCIDENT || offset(d) > EPS_COINCIDENT {
+        return None;
+    }
+    let along = |p: P| (p.0 - a.0) * ua.0 + (p.1 - a.1) * ua.1;
+    let (c0, c1) = (along(c).min(along(d)), along(c).max(along(d)));
+    Some(-(c1.min(la) - c0.max(0.)))
+}
+/// The segment lengthened by `by` at both ends.
+fn stretch(a: P, b: P, by: f64) -> (P, P) {
+    let l = dist(a, b).max(1e-9);
+    let u = ((b.0 - a.0) / l, (b.1 - a.1) / l);
+    ((a.0 - u.0 * by, a.1 - u.1 * by), (b.0 + u.0 * by, b.1 + u.1 * by))
+}
+fn median(values: &mut [f64]) -> Option<f64> {
+    if values.is_empty() {
+        return None;
+    }
+    values.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+    Some(values[values.len() / 2])
+}
+/// The arc of a polyline bulge between two vertices: sampled points and (centre, radius).
+fn bulge_arc(p0: P, p1: P, bulge: f64) -> Option<(Vec<P>, (P, f64))> {
+    let d = dist(p0, p1);
+    if bulge.abs() < 1e-9 || d < 1e-9 {
+        return None;
+    }
+    let theta = 4. * bulge.atan();
+    let r = d / (2. * (theta / 2.).sin().abs());
+    let m = ((p0.0 + p1.0) / 2., (p0.1 + p1.1) / 2.);
+    let h = r * (theta / 2.).cos();
+    let n = (-(p1.1 - p0.1) / d, (p1.0 - p0.0) / d);
+    let sign = if bulge > 0. { 1. } else { -1. };
+    let c = (m.0 + sign * h * n.0, m.1 + sign * h * n.1);
+    let a0 = (p0.1 - c.1).atan2(p0.0 - c.0);
+    let a1 = (p1.1 - c.1).atan2(p1.0 - c.0);
+    let points = if bulge > 0. {
+        sample_arc(c, r, a0, a1)
+    } else {
+        let mut p = sample_arc(c, r, a1, a0);
+        p.reverse();
+        p
+    };
+    Some((points, (c, r)))
+}
 
 // ------------------------------------------------------------------------------------------------ DXF reading
 
@@ -498,6 +623,8 @@ struct Dxf<'a> {
     dim_text_height: HashMap<&'a str, f64>,
     /// Width factor of each text style (STYLE group 41); MTEXT and unscaled TEXT take it from their style.
     style_width: HashMap<&'a str, f64>,
+    /// Colour index of each layer (LAYER group 62), the colour of entities drawn BYLAYER.
+    layer_colour: HashMap<&'a str, i64>,
 }
 impl<'a> Dxf<'a> {
     fn new(records: &'a [dxf::Record]) -> Result<Self> {
@@ -507,6 +634,7 @@ impl<'a> Dxf<'a> {
             vertices: HashMap::new(),
             dim_text_height: HashMap::new(),
             style_width: HashMap::new(),
+            layer_colour: HashMap::new(),
         };
         let mut block: Option<&'a str> = None;
         let mut polyline: Option<&'a str> = None;
@@ -517,6 +645,13 @@ impl<'a> Dxf<'a> {
             match r.kind.as_str() {
                 "BLOCK" => block = r.tag(2),
                 "ENDBLK" => block = None,
+                "LAYER" => {
+                    if let (Some(name), Some(c)) = (r.tag(2), r.tag(62))
+                        && let Ok(c) = c.trim().parse::<i64>()
+                    {
+                        d.layer_colour.insert(name, c.abs());
+                    }
+                }
                 "DIMSTYLE" => {
                     if let (Some(name), Some(h)) = (r.tag(2), r.tag(140)) {
                         d.dim_text_height.insert(name, h.parse().unwrap_or(2.5));
@@ -547,36 +682,68 @@ impl<'a> Dxf<'a> {
         Ok(d)
     }
 
-    /// Straight chains of a curve record, in drawing coordinates plus an offset.
-    fn chains(&self, r: &dxf::Record, offset: P) -> Result<Vec<Vec<P>>> {
+    /// Straight chains of a curve record, in drawing coordinates plus an offset, and the arcs among them.
+    fn chains(&self, r: &dxf::Record, offset: P) -> Result<(Vec<Vec<P>>, Vec<(P, f64)>)> {
         let pt = |x: i64, y: i64| -> Result<P> { Ok((r.float(x)? + offset.0, r.float(y)? + offset.1)) };
-        Ok(match r.kind.as_str() {
+        let mut arcs = Vec::new();
+        let chains = match r.kind.as_str() {
             "LINE" => vec![vec![pt(10, 20)?, pt(11, 21)?]],
-            "ARC" => vec![sample_arc(
-                pt(10, 20)?,
-                r.float(40)?,
-                r.float(50)?.to_radians(),
-                r.float(51)?.to_radians(),
-            )],
-            "CIRCLE" => vec![sample_arc(pt(10, 20)?, r.float(40)?, 0., 2. * PI)],
+            "ARC" => {
+                let (c, radius) = (pt(10, 20)?, r.float(40)?);
+                arcs.push((c, radius));
+                vec![sample_arc(
+                    c,
+                    radius,
+                    r.float(50)?.to_radians(),
+                    r.float(51)?.to_radians(),
+                )]
+            }
+            "CIRCLE" => {
+                let (c, radius) = (pt(10, 20)?, r.float(40)?);
+                arcs.push((c, radius));
+                vec![sample_arc(c, radius, 0., 2. * PI)]
+            }
             "LWPOLYLINE" => {
-                let mut pts = Vec::new();
+                // Vertices with their bulges (group 42 follows the vertex it belongs to).
+                let mut vertices: Vec<(P, f64)> = Vec::new();
                 let mut x = None;
                 for (code, value) in &r.tags {
                     match code {
                         10 => x = Some(value.parse::<f64>().context("dxf_vertex_x")?),
                         20 => {
                             if let Some(px) = x.take() {
-                                pts.push((px + offset.0, value.parse::<f64>().context("dxf_vertex_y")? + offset.1));
+                                vertices.push(((px + offset.0, value.parse::<f64>().context("dxf_vertex_y")? + offset.1), 0.));
+                            }
+                        }
+                        42 => {
+                            if let Some(last) = vertices.last_mut() {
+                                last.1 = value.parse::<f64>().unwrap_or(0.);
                             }
                         }
                         _ => {}
                     }
                 }
                 if r.tag(70).and_then(|f| f.parse::<i64>().ok()).unwrap_or(0) & 1 == 1
-                    && pts.len() > 2
+                    && vertices.len() > 2
                 {
-                    pts.push(pts[0]);
+                    vertices.push((vertices[0].0, 0.));
+                }
+                let mut pts: Vec<P> = Vec::new();
+                for w in vertices.windows(2) {
+                    let ((p0, bulge), (p1, _)) = (w[0], w[1]);
+                    if pts.is_empty() {
+                        pts.push(p0);
+                    }
+                    match bulge_arc(p0, p1, bulge) {
+                        Some((arc_points, arc)) => {
+                            arcs.push(arc);
+                            pts.extend(arc_points.into_iter().skip(1));
+                        }
+                        None => pts.push(p1),
+                    }
+                }
+                if pts.is_empty() && vertices.len() == 1 {
+                    pts.push(vertices[0].0);
                 }
                 vec![pts]
             }
@@ -612,11 +779,12 @@ impl<'a> Dxf<'a> {
                 vec![if fit.len() >= 2 { fit } else { control }]
             }
             _ => Vec::new(),
-        })
+        };
+        Ok((chains, arcs))
     }
 
-    /// Text box of a TEXT, MTEXT or ATTRIB record; the cleaned text and its rotation.
-    fn text_box(&self, r: &dxf::Record, offset: P) -> Result<Option<(TextBox, String, f64)>> {
+    /// Text boxes of a TEXT, MTEXT or ATTRIB record (main text and stacked part); the cleaned text and rotation.
+    fn text_box(&self, r: &dxf::Record, offset: P) -> Result<Option<(TextBox, Option<TextBox>, String, f64)>> {
         let height = match r.float(40) {
             Ok(h) if h > 0. => h,
             _ => return Ok(None),
@@ -628,7 +796,8 @@ impl<'a> Dxf<'a> {
             .map(|(_, v)| v.as_str())
             .chain(r.tag(1))
             .collect::<String>();
-        let (cleaned, width_units, stacked) = clean_text(&raw);
+        let ct = clean_text(&raw);
+        let (cleaned, width_units, stacked) = (ct.text, ct.width, ct.stacked);
         let style_width = d_style_width(self, r);
         let width_factor = r
             .float(41)
@@ -636,6 +805,11 @@ impl<'a> Dxf<'a> {
             .filter(|w| *w > 0. && r.kind != "MTEXT")
             .unwrap_or(style_width);
         let width = (width_units * height * width_factor).max(0.5 * height);
+        let main_width = if stacked {
+            (ct.main_width * height * width_factor).clamp(0.5 * height, width)
+        } else {
+            width
+        };
         let mut rotation = r.float(50).unwrap_or(0.);
         if r.kind == "MTEXT"
             && let (Ok(dx), Ok(dy)) = (r.float(11), r.float(21))
@@ -682,13 +856,20 @@ impl<'a> Dxf<'a> {
             };
             (anchor, ax, ay)
         };
-        // A stacked tolerance rises above and below the main line: the box grows to STACK_HEIGHT heights around it.
-        let height_box = if stacked { STACK_HEIGHT * height } else { height };
-        let extra = height_box - height;
         // Lower-left corner: move back from the anchor along the text and up directions.
-        let (bx, by) = (-ax * width, -ay * height - extra * (1. - ay) * 0.5 - extra * ay * 0.5);
+        let (bx, by) = (-ax * width, -ay * height);
         let origin = (anchor.0 + bx * c - by * s, anchor.1 + bx * s + by * c);
-        let height = height_box;
+        // A stacked tolerance follows the main text and rises above and below it: its own box, STACK_HEIGHT tall,
+        // begins where the main text ends and STACK_DROP heights below the baseline.
+        let stack = (stacked && width - main_width > 1e-9).then(|| {
+            let (sx, sy) = (main_width, -STACK_DROP * height);
+            TextBox {
+                origin: (origin.0 + sx * c - sy * s, origin.1 + sx * s + sy * c),
+                rotation_rad: rad,
+                width: width - main_width,
+                height: STACK_HEIGHT * height,
+            }
+        });
         let mut normalized = rotation % 180.;
         if normalized < 0. {
             normalized += 180.;
@@ -697,9 +878,10 @@ impl<'a> Dxf<'a> {
             TextBox {
                 origin,
                 rotation_rad: rad,
-                width,
+                width: main_width,
                 height,
             },
+            stack,
             cleaned,
             (normalized * 1000.).round() / 1000.,
         )))
@@ -714,15 +896,26 @@ fn d_style_width(d: &Dxf, r: &dxf::Record) -> f64 {
         .unwrap_or(1.)
 }
 
+/// A text string read from its record: the text without formatting codes, its width in text heights (stacked parts
+/// at their scale), whether it holds a stacked part and the width of the main text before the first stack.
+#[derive(Debug, Clone, PartialEq)]
+struct CleanText {
+    text: String,
+    width: f64,
+    stacked: bool,
+    main_width: f64,
+}
+
 /// Text without MTEXT formatting codes, its width in text heights (stacked parts at their scale), and whether it
 /// holds a stacked part. Besides MTEXT `\S` stacks, TEXT strings of Chinese CAD fonts stack a tolerance with the
 /// private-use marks U+E1D6 (upper part begins), U+E1DA (upper ends), U+E1D7 (lower begins), U+E1D9 (lower ends):
 /// the two parts are drawn one above the other at reduced size, so together they are as wide as the wider one.
-fn clean_text(raw: &str) -> (String, f64, bool) {
+fn clean_text(raw: &str) -> CleanText {
     let mut out = String::new();
     let mut width = 0f64;
     let mut scale = 1f64;
     let mut stacked = false;
+    let mut first_stack: Option<f64> = None;
     let mut stack_scales: Vec<f64> = Vec::new();
     // Font stacking marks: (part being collected, its width so far, width of the other part already closed).
     let mut mark_part: Option<(char, f64)> = None;
@@ -744,6 +937,7 @@ fn clean_text(raw: &str) -> (String, f64, bool) {
         let c = chars[i];
         if matches!(c, '\u{E1D6}' | '\u{E1D7}') {
             stacked = true;
+            first_stack.get_or_insert(width);
             mark_part = Some((c, 0.));
             if c == '\u{E1D7}' && !out.ends_with('/') && mark_pending > 0. {
                 out.push('/');
@@ -822,6 +1016,7 @@ fn clean_text(raw: &str) -> (String, f64, bool) {
                         .iter()
                         .map(|p| p.chars().map(char_width).sum::<f64>())
                         .fold(0., f64::max);
+                    first_stack.get_or_insert(width);
                     width += wide * scale;
                     stacked = true;
                     out.push_str(&parts.join("/"));
@@ -875,7 +1070,12 @@ fn clean_text(raw: &str) -> (String, f64, bool) {
     } else if mark_pending > 0. {
         width += mark_pending * 0.6;
     }
-    (out.trim().to_owned(), width, stacked)
+    CleanText {
+        text: out.trim().to_owned(),
+        width,
+        stacked,
+        main_width: first_stack.unwrap_or(width),
+    }
 }
 
 // ------------------------------------------------------------------------------------------------ objects
@@ -894,6 +1094,14 @@ struct Object {
     text: Option<String>,
     rotation_deg: Option<f64>,
     angle_deg: Option<f64>,
+    /// Height of a text (main text, drawing units).
+    height: Option<f64>,
+    /// Spacing of a hatch (pattern offset or the median gap of loose hatch lines).
+    spacing: Option<f64>,
+    /// Where the source record sits: its DXF layer, its colour index (own or by layer) and its layer's colour.
+    dxf_layer: Option<String>,
+    colour: Option<i64>,
+    layer_colour: Option<i64>,
     geometry: Geometry,
 }
 impl Object {
@@ -906,28 +1114,66 @@ impl Object {
     fn is_text(&self) -> bool {
         self.is("Text")
     }
+    /// The one straight segment of a line drawn as a single segment.
+    fn segment(&self) -> Option<(P, P)> {
+        match self.geometry.chains.as_slice() {
+            [c] if c.len() == 2 => Some((c[0], c[1])),
+            _ => None,
+        }
+    }
+    /// Both text boxes (main text and stack), as drawn.
+    fn boxes(&self) -> impl Iterator<Item = &TextBox> {
+        self.geometry.text_box.iter().chain(self.geometry.stack_box.iter())
+    }
 }
 
-/// The class of a member from its role, the source kind and the expression kind.
-fn classes_of(role: &str, line_type: &str, source_kind: &str, expression_kind: &str) -> Vec<&'static str> {
+/// What the graph says about the member's surroundings, which decides a few classes: whether its expression
+/// also holds a view title (a letter beside a title is part of the title, a letter alone is a callout) and whether
+/// the member labels a detail view.
+#[derive(Clone, Copy, Default)]
+struct Setting {
+    title_in_expression: bool,
+    labels_detail_view: bool,
+}
+
+/// The class of a member from its role, the source kind, the expression kind and its setting.
+fn classes_of(role: &str, line_type: &str, source_kind: &str, expression_kind: &str, setting: Setting) -> Vec<&'static str> {
     let text = |extra: &'static str| vec!["Text", extra];
     let line = |extra: &'static str| vec!["Line", extra];
+    let title = || {
+        let mut v = vec!["Text", "ViewLabel", "ViewTitle"];
+        if setting.labels_detail_view {
+            v.push("DetailViewTitle");
+        }
+        v
+    };
     match role {
-        "dimension_text" => {
-            if expression_kind == "dimension_angle" {
-                vec!["Text", "DimensionText", "AngularDimensionText"]
+        "dimension_text" => match expression_kind {
+            "dimension_angle" => vec!["Text", "DimensionText", "AngularDimensionText"],
+            "dimension_linear" => vec!["Text", "DimensionText", "LinearDimensionText"],
+            _ => text("DimensionText"),
+        },
+        "tolerance_text" => vec!["Text", "ToleranceText", "DimensionText"],
+        "tolerance_value" => vec!["Text", "ToleranceText", "DimensionText", "GeometricToleranceValue"],
+        "roughness_value" => vec!["Text", "ToleranceText", "DimensionText", "RoughnessValue"],
+        "note_text" => text("NoteText"),
+        "table_text" => text("TableText"),
+        "scale_text" => text("ScaleText"),
+        "view_title" => title(),
+        "view_letter" => {
+            if setting.title_in_expression {
+                title()
             } else {
-                text("DimensionText")
+                vec!["Text", "ViewLabel", "CalloutLetter"]
             }
         }
-        "tolerance_text" | "tolerance_value" | "roughness_value" => {
-            vec!["Text", "ToleranceText", "DimensionText"]
-        }
-        "note_text" => text("NoteText"),
-        "table_text" | "scale_text" => text("TableText"),
-        "view_letter" | "view_title" => text("ViewLabel"),
-        "datum_letter" | "datum_reference" => text("DatumLetter"),
-        "dimension_line" => line("DimensionLine"),
+        "datum_letter" => vec!["Text", "DatumLetter", "DatumIdentifierLetter"],
+        "datum_reference" => text("DatumLetter"),
+        "dimension_line" => match expression_kind {
+            "dimension_radius" => vec!["Line", "DimensionLine", "RadiusDimensionLine"],
+            "dimension_linear" => vec!["Line", "DimensionLine", "LinearDimensionLine"],
+            _ => line("DimensionLine"),
+        },
         "extension_line" | "extension_origin" => line("ExtensionLine"),
         "arrowhead" | "datum_terminal" => vec!["Arrowhead"],
         "leader_line" => line("LeaderLine"),
@@ -954,7 +1200,7 @@ fn classes_of(role: &str, line_type: &str, source_kind: &str, expression_kind: &
         "symbol_glyph" | "datum_frame" | "roughness_symbol" | "special_mark" | "view_arrow"
         | "cutting_stroke" => {
             if matches!(source_kind, "TEXT" | "MTEXT" | "ATTRIB") {
-                text("DatumLetter")
+                text("SymbolText")
             } else {
                 line("SymbolLine")
             }
@@ -1022,13 +1268,34 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
         }
     }
     // Roles every source handle carries: a line lent to another use (an outline serving as an extension line, an
-    // axis as a boundary) keeps the class of what it is.
+    // axis as a boundary) keeps the class of what it is. Roles per expression decide whether a view letter stands
+    // beside a title.
     let mut roles_by_handle: HashMap<&str, BTreeSet<&str>> = HashMap::new();
+    let mut roles_by_expression: HashMap<&str, BTreeSet<&str>> = HashMap::new();
     for m in list(g, "members")? {
         roles_by_handle
             .entry(text(m, "source_handle")?)
             .or_default()
             .insert(text(m, "member_role")?);
+        roles_by_expression
+            .entry(text(m, "expression_id")?)
+            .or_default()
+            .insert(text(m, "member_role")?);
+    }
+    // Detail views of the graph: their ids and the handles of the texts that label them.
+    let mut detail_views: BTreeSet<&str> = BTreeSet::new();
+    let mut detail_labels: BTreeSet<&str> = BTreeSet::new();
+    for v in g.get("views").and_then(Value::as_array).map(Vec::as_slice).unwrap_or_default() {
+        if v.get("kind").and_then(Value::as_str) == Some("detail_view") {
+            if let Some(id) = v.get("id").and_then(Value::as_str) {
+                detail_views.insert(id);
+            }
+            for h in v.get("label_source_ids").and_then(Value::as_array).map(Vec::as_slice).unwrap_or_default() {
+                if let Some(h) = h.as_str() {
+                    detail_labels.insert(h);
+                }
+            }
+        }
     }
     let mut out = Vec::new();
     for m in list(g, "members")? {
@@ -1055,10 +1322,30 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
         let Some(record) = d.by_handle.get(handle) else {
             continue;
         };
-        let mut classes = classes_of(role, line_type, &record.kind, expression_kind);
+        let view_id = m.get("view_id").and_then(Value::as_str).unwrap_or("");
+        let setting = Setting {
+            title_in_expression: roles_by_expression
+                .get(expression_id)
+                .is_some_and(|r| r.contains("view_title")),
+            labels_detail_view: detail_labels.contains(root) || detail_views.contains(view_id),
+        };
+        let mut classes = classes_of(role, line_type, &record.kind, expression_kind, setting);
         if classes == ["Construction"] && record.kind == "DIMENSION" {
             continue;
         }
+        // Provenance of the record: layer and colour, own or by layer (BYBLOCK pieces take their container's).
+        let container = if handle != root { d.by_handle.get(root).copied() } else { None };
+        let layer_of = |r: &dxf::Record| r.tag(8).map(str::to_owned);
+        let own_colour = |r: &dxf::Record| r.tag(62).and_then(|c| c.trim().parse::<i64>().ok()).filter(|c| *c > 0);
+        let dxf_layer = own_colour(record)
+            .map(|_| layer_of(record))
+            .unwrap_or_else(|| container.and_then(layer_of).or_else(|| layer_of(record)));
+        let layer_colour = dxf_layer
+            .as_deref()
+            .and_then(|l| d.layer_colour.get(l).copied());
+        let colour = own_colour(record)
+            .or_else(|| container.and_then(own_colour))
+            .or(layer_colour);
         if classes.contains(&"Line") && handle == root {
             let shared = roles_by_handle.get(root).map(BTreeSet::iter).into_iter().flatten();
             for (other_role, class) in shared.filter_map(|r| match *r {
@@ -1085,37 +1372,60 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
         let mut text_value = None;
         let mut rotation = None;
         let mut angle = None;
+        let mut height = None;
+        let mut spacing = None;
         match record.kind.as_str() {
             "TEXT" | "MTEXT" | "ATTRIB" => {
-                if let Some((tb, cleaned, rot)) = d.text_box(record, offset)? {
+                if let Some((tb, stack, cleaned, rot)) = d.text_box(record, offset)? {
+                    height = Some(tb.height);
                     geometry.text_box = Some(tb);
+                    geometry.stack_box = stack;
                     text_value = Some(cleaned);
                     rotation = Some(rot);
                 }
             }
             "HATCH" => {
-                angle = Some(record.float(52).unwrap_or(0.).rem_euclid(180.));
+                // The pattern line (group 53) is the direction actually drawn; group 52 is the pattern's rotation.
+                let line_angle = record.float(53).or_else(|_| record.float(52)).unwrap_or(0.);
+                angle = Some(line_angle.rem_euclid(180.));
+                if let (Ok(dx), Ok(dy)) = (record.float(45), record.float(46)) {
+                    let t = line_angle.to_radians();
+                    let s = (-t.sin() * dx + t.cos() * dy).abs();
+                    if s > 1e-6 {
+                        spacing = Some((s * 1000.).round() / 1000.);
+                    }
+                }
             }
             "DIMENSION" if classes.contains(&"Text") => {
                 // A dimension text without a display-block record: the midpoint and the style height.
                 let style = record.tag_or(3, "STANDARD");
-                let height = d.dim_text_height.get(style).copied().unwrap_or(2.5);
-                let (cleaned, width_units, stacked) = clean_text(record.tag_or(1, ""));
+                let h = d.dim_text_height.get(style).copied().unwrap_or(2.5);
+                let ct = clean_text(record.tag_or(1, ""));
                 if let (Ok(x), Ok(y)) = (record.float(11), record.float(21)) {
-                    let width = (width_units * height).max(0.5 * height);
-                    let height = if stacked { STACK_HEIGHT * height } else { height };
+                    let width = (ct.width * h).max(0.5 * h);
+                    let main_width = if ct.stacked { (ct.main_width * h).clamp(0.5 * h, width) } else { width };
+                    let origin = (x - width / 2., y - h / 2.);
                     geometry.text_box = Some(TextBox {
-                        origin: (x - width / 2., y - height / 2.),
+                        origin,
                         rotation_rad: 0.,
-                        width,
-                        height,
+                        width: main_width,
+                        height: h,
                     });
-                    text_value = Some(cleaned);
+                    if ct.stacked && width - main_width > 1e-9 {
+                        geometry.stack_box = Some(TextBox {
+                            origin: (origin.0 + main_width, origin.1 - STACK_DROP * h),
+                            rotation_rad: 0.,
+                            width: width - main_width,
+                            height: STACK_HEIGHT * h,
+                        });
+                    }
+                    height = Some(h);
+                    text_value = Some(ct.text);
                     rotation = Some(0.);
                 }
             }
             _ => {
-                let mut chains = d.chains(record, offset)?;
+                let (mut chains, arcs) = d.chains(record, offset)?;
                 if layer == "recognition"
                     && record.kind == "LINE"
                     && let Ok(interval) = numbers(m, "interval")
@@ -1127,13 +1437,17 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                     let at = |t: f64| (a.0 + (b.0 - a.0) * t, a.1 + (b.1 - a.1) * t);
                     *c = vec![at(interval[0]), at(interval[1])];
                 }
-                if classes.contains(&"HatchLine")
+                // Every straight line carries its direction; a hatch line's direction is its pattern angle.
+                if classes.contains(&"Line")
+                    && chains.len() == 1
                     && let Some(c) = chains.first()
                     && c.len() == 2
+                    && dist(c[0], c[1]) > 1e-9
                 {
                     angle = Some(angle_deg(c[0], c[1]));
                 }
                 geometry.chains = chains;
+                geometry.arcs = arcs;
             }
         }
         if classes.contains(&"Text") && geometry.text_box.is_none() {
@@ -1157,9 +1471,15 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
             text: text_value,
             rotation_deg: rotation,
             angle_deg: angle,
+            height,
+            spacing,
+            dxf_layer,
+            colour,
+            layer_colour,
             geometry,
         });
     }
+    hatch_regions(layer, &mut out);
     merge_boundaries(&mut out);
     if layer == "presentation" {
         let member_sources: HashMap<&str, (&str, &str)> = list(g, "members")?
@@ -1187,6 +1507,8 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 .collect();
             handles.sort();
             handles.dedup();
+            let (chain, arcs) = structural_chain(line)?;
+            let angle = (chain.len() == 2 && dist(chain[0], chain[1]) > 1e-9).then(|| angle_deg(chain[0], chain[1]));
             out.push(Object {
                 id: format!("{layer}:line:{i}"),
                 classes: vec!["Line", class],
@@ -1198,10 +1520,16 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 line_type: optional_text(line, "line_type"),
                 text: None,
                 rotation_deg: None,
-                angle_deg: None,
+                angle_deg: angle,
+                height: None,
+                spacing: None,
+                dxf_layer: None,
+                colour: None,
+                layer_colour: None,
                 geometry: Geometry {
-                    chains: vec![structural_chain(line)?],
-                    text_box: None,
+                    chains: vec![chain],
+                    arcs,
+                    ..Geometry::default()
                 },
             });
         }
@@ -1215,6 +1543,8 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 .iter()
                 .filter_map(|k| optional_text(span, k))
                 .collect();
+            let (chain, arcs) = structural_chain(span)?;
+            let angle = (chain.len() == 2 && dist(chain[0], chain[1]) > 1e-9).then(|| angle_deg(chain[0], chain[1]));
             out.push(Object {
                 id: format!("{layer}:implied:{i}"),
                 classes: vec!["Line", class, "InferredSpan"],
@@ -1226,15 +1556,80 @@ fn objects(layer: &str, g: &Value, d: &Dxf) -> Result<Vec<Object>> {
                 line_type: None,
                 text: None,
                 rotation_deg: None,
-                angle_deg: None,
+                angle_deg: angle,
+                height: None,
+                spacing: None,
+                dxf_layer: None,
+                colour: None,
+                layer_colour: None,
                 geometry: Geometry {
-                    chains: vec![structural_chain(span)?],
-                    text_box: None,
+                    chains: vec![chain],
+                    arcs,
+                    ..Geometry::default()
                 },
             });
         }
     }
     Ok(out)
+}
+
+/// Hatching drawn as loose parallel lines is one section region per expression: an object with the lines'
+/// median direction and the median gap between neighbouring lines, so that regions drawn as HATCH entities and
+/// regions drawn line by line are compared alike.
+fn hatch_regions(layer: &str, objects: &mut Vec<Object>) {
+    let mut by_expression: BTreeMap<String, Vec<usize>> = BTreeMap::new();
+    for (i, o) in objects.iter().enumerate() {
+        if o.is("HatchLine")
+            && o.segment().is_some()
+            && let Some(e) = &o.expression_id
+        {
+            by_expression.entry(e.clone()).or_default().push(i);
+        }
+    }
+    let mut regions = Vec::new();
+    for (expression, indices) in by_expression {
+        if indices.len() < 2 {
+            continue;
+        }
+        let mut angles: Vec<f64> = indices.iter().filter_map(|i| objects[*i].angle_deg).collect();
+        let Some(angle) = median(&mut angles) else {
+            continue;
+        };
+        let t = angle.to_radians();
+        let normal = (-t.sin(), t.cos());
+        let mut offsets: Vec<f64> = indices
+            .iter()
+            .filter_map(|i| objects[*i].segment())
+            .map(|(a, b)| ((a.0 + b.0) / 2.) * normal.0 + ((a.1 + b.1) / 2.) * normal.1)
+            .collect();
+        offsets.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        let mut gaps: Vec<f64> = offsets.windows(2).map(|w| w[1] - w[0]).filter(|g| *g > 1e-6).collect();
+        let spacing = median(&mut gaps).map(|s| (s * 1000.).round() / 1000.);
+        let first = &objects[indices[0]];
+        let mut handles: Vec<String> = indices.iter().flat_map(|i| objects[*i].source_handles.clone()).collect();
+        handles.sort();
+        handles.dedup();
+        regions.push(Object {
+            id: format!("{layer}:hatch:{expression}"),
+            classes: vec!["SectionRegion"],
+            source_handles: handles,
+            member_ids: indices.iter().flat_map(|i| objects[*i].member_ids.clone()).collect(),
+            expression_id: Some(expression),
+            expression_kind: first.expression_kind.clone(),
+            view: first.view.clone(),
+            line_type: None,
+            text: None,
+            rotation_deg: None,
+            angle_deg: Some(angle),
+            height: None,
+            spacing,
+            dxf_layer: first.dxf_layer.clone(),
+            colour: first.colour,
+            layer_colour: first.layer_colour,
+            geometry: Geometry::default(),
+        });
+    }
+    objects.extend(regions);
 }
 
 /// Break boundaries drawn as several pieces (short lines, polylines) are one boundary each: pieces of the same
@@ -1322,9 +1717,14 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
                 text: None,
                 rotation_deg: None,
                 angle_deg: None,
+                height: None,
+                spacing: None,
+                dxf_layer: first.dxf_layer.clone(),
+                colour: first.colour,
+                layer_colour: first.layer_colour,
                 geometry: Geometry {
                     chains: vec![chain],
-                    text_box: None,
+                    ..Geometry::default()
                 },
             });
             remove.extend(members);
@@ -1340,8 +1740,9 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
     *objects = kept;
 }
 
-/// Points of a structural line or implied span: `points` [x0,y0,x1,y1] for a line, `arc` [cx,cy,r,a0,a1] otherwise.
-fn structural_chain(v: &Value) -> Result<Vec<P>> {
+/// Points of a structural line or implied span: `points` [x0,y0,x1,y1] for a line, `arc` [cx,cy,r,a0,a1] otherwise;
+/// with the arc's centre and radius when it is one.
+fn structural_chain(v: &Value) -> Result<(Vec<P>, Vec<(P, f64)>)> {
     if let Some(arc) = v.get("arc").and_then(Value::as_array)
         && arc.len() == 5
     {
@@ -1349,11 +1750,55 @@ fn structural_chain(v: &Value) -> Result<Vec<P>> {
             .iter()
             .map(|x| x.as_f64().context("drafting_arc_number"))
             .collect::<Result<_>>()?;
-        return Ok(sample_arc((a[0], a[1]), a[2], a[3], a[4]));
+        return Ok((sample_arc((a[0], a[1]), a[2], a[3], a[4]), vec![((a[0], a[1]), a[2])]));
     }
     let p = numbers(v, "points")?;
     ensure!(p.len() == 4, "drafting_structural_points");
-    Ok(vec![(p[0], p[1]), (p[2], p[3])])
+    Ok((vec![(p[0], p[1]), (p[2], p[3])], Vec::new()))
+}
+
+/// Pieces of one expression with the given class that lie on one line with piece `i` (the coincidence tolerances),
+/// `i` among them, and the extreme points of all of them along that line: a dimension line broken at its text, an
+/// extension line or centre line drawn in several collinear pieces is one line for the measures taken on it.
+fn collinear_pieces(objects: &[Object], i: usize, class: &str) -> (Vec<usize>, (P, P)) {
+    let (a, b) = objects[i].segment().expect("a straight piece");
+    let mut group = vec![i];
+    // A lent outline or axis keeps its own extent: it is not a piece of the extension line it serves.
+    let lent = |o: &Object| class == "ExtensionLine" && (o.is("VisibleOutline") || o.is("CentreLine"));
+    if objects[i].expression_id.is_some() && !lent(&objects[i]) {
+        for (j, o) in objects.iter().enumerate() {
+            if j != i
+                && o.is(class)
+                && !lent(o)
+                && o.expression_id == objects[i].expression_id
+                && let Some((c, d)) = o.segment()
+                && collinear_gap(a, b, c, d).is_some()
+            {
+                group.push(j);
+            }
+        }
+    }
+    let l = dist(a, b).max(1e-9);
+    let u = ((b.0 - a.0) / l, (b.1 - a.1) / l);
+    let along = |p: P| (p.0 - a.0) * u.0 + (p.1 - a.1) * u.1;
+    let (mut lo, mut hi) = (0f64, l);
+    for &j in &group {
+        if let Some((c, d)) = objects[j].segment() {
+            for p in [c, d] {
+                lo = lo.min(along(p));
+                hi = hi.max(along(p));
+            }
+        }
+    }
+    (group, ((a.0 + u.0 * lo, a.1 + u.1 * lo), (a.0 + u.0 * hi, a.1 + u.1 * hi)))
+}
+/// The piece of a group whose end lies nearest to the point (an end of the group's line).
+fn piece_at(objects: &[Object], group: &[usize], p: P) -> usize {
+    let end_distance = |i: usize| objects[i].segment().map(|(a, b)| dist(a, p).min(dist(b, p))).unwrap_or(f64::MAX);
+    *group
+        .iter()
+        .min_by(|x, y| end_distance(**x).partial_cmp(&end_distance(**y)).unwrap_or(std::cmp::Ordering::Equal))
+        .expect("a non-empty group")
 }
 
 // ------------------------------------------------------------------------------------------------ relations
@@ -1364,6 +1809,31 @@ struct Relation {
     predicate: &'static str,
     object: Option<usize>,
     literal: Option<String>,
+    number: Option<f64>,
+}
+impl Relation {
+    fn node(subject: usize, predicate: &'static str, object: usize) -> Self {
+        Relation { subject, predicate, object: Some(object), literal: None, number: None }
+    }
+    fn number(subject: usize, predicate: &'static str, value: f64) -> Self {
+        Relation { subject, predicate, object: None, literal: None, number: Some((value * 1000.).round() / 1000.) }
+    }
+}
+
+/// The letter a view title or callout carries: the leading run of capital Latin letters (Roman numerals among
+/// them) once direction words, dashes and a scale are set aside; "A—A" and "A向" give "A", "Ⅰ 2:1" gives "Ⅰ".
+fn view_letter(text: &str) -> String {
+    let mut letters = String::new();
+    for c in text.chars() {
+        if c.is_ascii_uppercase() || ('\u{2160}'..='\u{216F}').contains(&c) {
+            letters.push(c);
+        } else if c.is_whitespace() && letters.is_empty() {
+            continue;
+        } else {
+            break;
+        }
+    }
+    letters
 }
 
 /// Relations between the objects of one layer from the generic geometry predicates.
@@ -1372,7 +1842,7 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
     let lines: Vec<usize> = (0..objects.len())
         .filter(|i| objects[*i].is_line() && !objects[*i].geometry.chains.is_empty())
         .collect();
-    // Text crossed by a line: a chord of at least 0.3 text heights inside the box.
+    // Text crossed by a line: a chord of at least 0.3 text heights inside the boxes (main text and stack).
     for (ti, t) in objects.iter().enumerate() {
         let Some(tb) = (t.is_text()).then_some(t.geometry.text_box).flatten() else {
             continue;
@@ -1392,17 +1862,12 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             let crossed = objects[li].geometry.chains.iter().any(|chain| {
                 chain
                     .windows(2)
-                    .map(|w| tb.chord(w[0], w[1]))
+                    .map(|w| t.boxes().map(|b| b.chord(w[0], w[1])).sum::<f64>())
                     .sum::<f64>()
                     >= threshold
             });
             if crossed {
-                out.push(Relation {
-                    subject: ti,
-                    predicate: "crossedBy",
-                    object: Some(li),
-                    literal: None,
-                });
+                out.push(Relation::node(ti, "crossedBy", li));
             }
         }
     }
@@ -1434,27 +1899,318 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             }
             if crosses {
                 for (s, o) in [(i, j), (j, i)] {
-                    out.push(Relation {
-                        subject: s,
-                        predicate: "crossedBy",
-                        object: Some(o),
-                        literal: None,
-                    });
+                    out.push(Relation::node(s, "crossedBy", o));
                 }
             }
             if coincident {
-                out.push(Relation {
-                    subject: i,
-                    predicate: "coincidentWith",
-                    object: Some(j),
-                    literal: None,
-                });
-                out.push(Relation {
-                    subject: j,
-                    predicate: "coincidentWith",
-                    object: Some(i),
-                    literal: None,
-                });
+                out.push(Relation::node(i, "coincidentWith", j));
+                out.push(Relation::node(j, "coincidentWith", i));
+            }
+            // A dimension line on the extension of a visible outline: collinear, not overlapping, close along the line.
+            if !same_expression
+                && let (Some((a0, a1)), Some((b0, b1))) = (a.segment(), b.segment())
+                && let Some(gap) = collinear_gap(a0, a1, b0, b1)
+                && gap > 0.
+                && gap <= EXTENSION_GAP
+            {
+                for (s, o) in [(i, j), (j, i)] {
+                    if objects[s].is("DimensionLine") && objects[o].is("VisibleOutline") {
+                        out.push(Relation::node(s, "onExtensionOf", o));
+                    }
+                }
+            }
+        }
+    }
+    let straight = |i: usize, class: &str| objects[i].is(class) && objects[i].segment().is_some();
+    let dimension_segments: Vec<(usize, P, P)> = lines
+        .iter()
+        .filter(|i| straight(**i, "DimensionLine"))
+        .map(|i| {
+            let (c, d) = objects[*i].segment().expect("straight");
+            (*i, c, d)
+        })
+        .collect();
+    let extension_segments: Vec<(usize, P, P)> = lines
+        .iter()
+        .filter(|i| straight(**i, "ExtensionLine"))
+        .map(|i| {
+            let (c, d) = objects[*i].segment().expect("straight");
+            (*i, c, d)
+        })
+        .collect();
+    // Where the infinite line through c and d meets the axis a→b: the parameter along the axis, when the meeting
+    // point lies on the segment c–d lengthened by `reach`.
+    let crossing = |a: P, b: P, c: P, d: P, reach: f64| -> Option<f64> {
+        let t = line_param(a, b, c, d)?;
+        let p = (a.0 + (b.0 - a.0) * t, a.1 + (b.1 - a.1) * t);
+        let (c2, d2) = stretch(c, d, reach);
+        (point_segment(p, c2, d2).0 <= EPS_COINCIDENT).then_some(t)
+    };
+    // Extension lines (all collinear pieces of one expression as one line) against the dimension lines: the angle
+    // to the expression's own dimension line, and how far the line runs past the outermost dimension line it meets
+    // (negative when it stops short of its own dimension line). The measures sit on the piece holding that end.
+    let mut done: BTreeSet<usize> = BTreeSet::new();
+    for &(ei, _, _) in &extension_segments {
+        if done.contains(&ei) || objects[ei].expression_id.is_none() {
+            continue;
+        }
+        let (group, (a, b)) = collinear_pieces(objects, ei, "ExtensionLine");
+        done.extend(group.iter().copied());
+        let length = dist(a, b);
+        if length < 1e-9 {
+            continue;
+        }
+        let own: Vec<&(usize, P, P)> = dimension_segments
+            .iter()
+            .filter(|(di, _, _)| objects[*di].expression_id == objects[ei].expression_id && !group.contains(di))
+            .collect();
+        if own.is_empty() {
+            continue;
+        }
+        let outside = |t: f64| if t < 0. { -t } else if t > 1. { t - 1. } else { 0. };
+        let own_crossings: Vec<(f64, f64)> = own
+            .iter()
+            .filter_map(|(_, c, d)| crossing(a, b, *c, *d, ARROW_REACH).map(|t| (t, angle_between(angle_deg(a, b), angle_deg(*c, *d)))))
+            .collect();
+        let Some(&(t_own, angle)) = own_crossings
+            .iter()
+            .min_by(|x, y| outside(x.0).partial_cmp(&outside(y.0)).unwrap_or(std::cmp::Ordering::Equal))
+        else {
+            continue;
+        };
+        let (piece, beyond) = if outside(t_own) > 1e-9 {
+            let end = if t_own < 0. { a } else { b };
+            (piece_at(objects, &group, end), -outside(t_own) * length)
+        } else {
+            // Dimension lines the extension line reaches: crossings on the line, or within END_TOLERANCE past an end
+            // (a member whose interval stops at the next dimension line still reaches it).
+            let slack = END_TOLERANCE / length;
+            let all: Vec<f64> = dimension_segments
+                .iter()
+                .filter(|(di, _, _)| !group.contains(di))
+                .filter_map(|(_, c, d)| crossing(a, b, *c, *d, ARROW_REACH))
+                .filter(|t| (-slack..=1. + slack).contains(t))
+                .map(|t| t.clamp(0., 1.))
+                .collect();
+            let t_min = all.iter().copied().fold(t_own, f64::min);
+            let t_max = all.iter().copied().fold(t_own, f64::max);
+            let (from_a, from_b) = (t_min * length, (1. - t_max) * length);
+            if from_a.min(from_b) <= EPS_COINCIDENT {
+                // The line begins at a dimension line and lies on one side of it: a short piece is the part drawn
+                // beyond the dimension line (a native dimension draws it as its own line), a long one stops there.
+                let far = from_a.max(from_b);
+                let end = if from_a > from_b { a } else { b };
+                (piece_at(objects, &group, end), if far <= ARROW_REACH { far } else { 0. })
+            } else if from_a <= from_b {
+                (piece_at(objects, &group, a), from_a)
+            } else {
+                (piece_at(objects, &group, b), from_b)
+            }
+        };
+        out.push(Relation::number(piece, "angleToDimensionLineDeg", angle));
+        out.push(Relation::number(piece, "extensionBeyondUnits", beyond));
+    }
+    // Centre lines (collinear pieces of one expression as one line): how far each end runs past the edge of the
+    // figure it crosses — visible outlines, or the break boundary of a partial or detail view.
+    let mut done: BTreeSet<usize> = BTreeSet::new();
+    for &ci in &lines {
+        if done.contains(&ci) || !straight(ci, "CentreLine") {
+            continue;
+        }
+        let (group, (a, b)) = collinear_pieces(objects, ci, "CentreLine");
+        done.extend(group.iter().copied());
+        let length = dist(a, b);
+        if length < 1e-9 {
+            continue;
+        }
+        let handles: BTreeSet<&str> = group
+            .iter()
+            .flat_map(|g| objects[*g].source_handles.iter().map(String::as_str))
+            .collect();
+        let mut params: Vec<f64> = Vec::new();
+        for &oi in &lines {
+            let o = &objects[oi];
+            if group.contains(&oi)
+                || !(o.is("VisibleOutline") || o.is("BreakBoundary"))
+                || o.source_handles.iter().any(|h| handles.contains(h.as_str()))
+            {
+                continue;
+            }
+            for chain in &o.geometry.chains {
+                for w in chain.windows(2) {
+                    if let Some(p) = segment_intersection(a, b, w[0], w[1]) {
+                        params.push(point_line(p, a, b).1);
+                    }
+                }
+            }
+        }
+        if let (Some(min), Some(max)) = (
+            params.iter().copied().reduce(f64::min),
+            params.iter().copied().reduce(f64::max),
+        ) {
+            out.push(Relation::number(piece_at(objects, &group, a), "overshootUnits", min * length));
+            out.push(Relation::number(piece_at(objects, &group, b), "overshootUnits", (1. - max) * length));
+        }
+    }
+    // A radial dimension line (all its collinear pieces) passes through the centre of an arc and reaches it. A
+    // jogged line (a radial part with a landing for the number) is radial through its radial part: a piece that
+    // meets a radial piece of the same expression end to end is radial to the same arc.
+    let radius_pieces: Vec<usize> = lines.iter().copied().filter(|i| straight(*i, "RadiusDimensionLine")).collect();
+    let mut radial_to: HashMap<usize, Vec<usize>> = HashMap::new();
+    for &ri in &radius_pieces {
+        let (group, (a, b)) = collinear_pieces(objects, ri, "DimensionLine");
+        let ends: Vec<P> = group
+            .iter()
+            .filter_map(|g| objects[*g].segment())
+            .flat_map(|(c, d)| [c, d])
+            .collect();
+        for &oi in &lines {
+            if group.contains(&oi) || objects[oi].geometry.arcs.is_empty() {
+                continue;
+            }
+            let radial = objects[oi].geometry.arcs.iter().any(|(centre, radius)| {
+                point_line(*centre, a, b).0 <= RADIAL_EPS
+                    && ends.iter().any(|e| (dist(*e, *centre) - radius).abs() <= ARROW_REACH)
+            });
+            if radial {
+                radial_to.entry(ri).or_default().push(oi);
+            }
+        }
+    }
+    for &ri in &radius_pieces {
+        let mut arcs: Vec<usize> = radial_to.get(&ri).cloned().unwrap_or_default();
+        if arcs.is_empty()
+            && let Some((a, b)) = objects[ri].segment()
+        {
+            for &pi in &radius_pieces {
+                if pi != ri
+                    && objects[pi].expression_id == objects[ri].expression_id
+                    && let Some((c, d)) = objects[pi].segment()
+                    && [a, b].iter().any(|e| dist(*e, c).min(dist(*e, d)) <= END_TOLERANCE)
+                    && let Some(found) = radial_to.get(&pi)
+                {
+                    arcs.extend(found.iter().copied());
+                }
+            }
+        }
+        arcs.sort();
+        arcs.dedup();
+        for oi in arcs {
+            out.push(Relation::node(ri, "radialTo", oi));
+        }
+    }
+    // The extent of a dimension (collinear pieces of its dimension line as one line): the distance between the
+    // outermost crossings with the expression's own extension lines.
+    let mut done: BTreeSet<usize> = BTreeSet::new();
+    for &(di, _, _) in &dimension_segments {
+        if done.contains(&di) || objects[di].expression_id.is_none() {
+            continue;
+        }
+        let (group, (a, b)) = collinear_pieces(objects, di, "DimensionLine");
+        done.extend(group.iter().copied());
+        let length = dist(a, b);
+        let params: Vec<f64> = extension_segments
+            .iter()
+            .filter(|(xi, _, _)| objects[*xi].expression_id == objects[di].expression_id && !group.contains(xi))
+            .filter_map(|(_, c, d)| crossing(a, b, *c, *d, 1.0))
+            .collect();
+        if let (Some(min), Some(max)) = (params.iter().copied().reduce(f64::min), params.iter().copied().reduce(f64::max))
+            && max - min > 1e-9
+        {
+            for &g in &group {
+                out.push(Relation::number(g, "extentUnits", (max - min) * length));
+            }
+        }
+    }
+    // A linear dimension text written along the dimension line of its expression.
+    for (ti, t) in objects.iter().enumerate() {
+        let (Some(rotation), true) = (t.rotation_deg, t.is("LinearDimensionText")) else {
+            continue;
+        };
+        for &li in &lines {
+            let l = &objects[li];
+            if l.is("DimensionLine")
+                && l.expression_id.is_some()
+                && l.expression_id == t.expression_id
+                && let Some(angle) = l.angle_deg
+                && angle_between(rotation, angle) <= PARALLEL_DEG
+            {
+                out.push(Relation::node(ti, "alignedWith", li));
+            }
+        }
+    }
+    // View titles and callout letters with the same letter; a title and the scale text of its expression. A title
+    // written as several texts ("A" and "向") carries one letter: the letter of all the title texts of its expression.
+    let titles: Vec<usize> = (0..objects.len()).filter(|i| objects[*i].is("ViewTitle")).collect();
+    let callouts: Vec<usize> = (0..objects.len()).filter(|i| objects[*i].is("CalloutLetter")).collect();
+    let own_letter = |i: usize| objects[i].text.as_deref().map(view_letter).unwrap_or_default();
+    let letter = |i: usize| -> String {
+        let own = own_letter(i);
+        if !own.is_empty() || !objects[i].is("ViewTitle") {
+            return own;
+        }
+        titles
+            .iter()
+            .filter(|t| objects[**t].expression_id.is_some() && objects[**t].expression_id == objects[i].expression_id)
+            .map(|t| own_letter(*t))
+            .find(|l| !l.is_empty())
+            .unwrap_or_default()
+    };
+    for &ti in &titles {
+        let lt = letter(ti);
+        if lt.is_empty() {
+            continue;
+        }
+        for &ci in &callouts {
+            if objects[ci].expression_id != objects[ti].expression_id && letter(ci) == lt {
+                out.push(Relation::node(ti, "sameLetterAs", ci));
+                out.push(Relation::node(ci, "sameLetterAs", ti));
+            }
+        }
+        for (si, s) in objects.iter().enumerate() {
+            if s.is("ScaleText") && s.expression_id.is_some() && s.expression_id == objects[ti].expression_id {
+                out.push(Relation::node(ti, "scaledBy", si));
+            }
+        }
+    }
+    // Section regions of one drawing compared pairwise: direction and spacing.
+    let regions: Vec<usize> = (0..objects.len()).filter(|i| objects[*i].is("SectionRegion")).collect();
+    for (n, &i) in regions.iter().enumerate() {
+        for &j in &regions[n + 1..] {
+            let (a, b) = (&objects[i], &objects[j]);
+            if let (Some(aa), Some(ab)) = (a.angle_deg, b.angle_deg)
+                && angle_between(aa, ab) > HATCH_ANGLE_DEG
+            {
+                out.push(Relation::node(i, "hatchDirectionDiffersFrom", j));
+                out.push(Relation::node(j, "hatchDirectionDiffersFrom", i));
+            }
+            if let (Some(sa), Some(sb)) = (a.spacing, b.spacing)
+                && sa > 1e-9
+                && sb > 1e-9
+                && (sa / sb).max(sb / sa) > HATCH_SPACING_RATIO
+            {
+                out.push(Relation::node(i, "hatchSpacingDiffersFrom", j));
+                out.push(Relation::node(j, "hatchSpacingDiffersFrom", i));
+            }
+        }
+    }
+    // Chained dimensions: collinear dimension lines of different expressions joined by an extension line that
+    // meets both (native dimension lines stop an arrow short of the extension line; the neighbour's lines overlap
+    // when arrows are drawn outside).
+    for (n, &(i, a0, a1)) in dimension_segments.iter().enumerate() {
+        for &(j, b0, b1) in &dimension_segments[n + 1..] {
+            let (a, b) = (&objects[i], &objects[j]);
+            if a.expression_id.is_none() || a.expression_id == b.expression_id || collinear_gap(a0, a1, b0, b1).is_none() {
+                continue;
+            }
+            let (sa, sb) = (stretch(a0, a1, ARROW_REACH), stretch(b0, b1, ARROW_REACH));
+            let joined = extension_segments.iter().any(|(_, e0, e1)| {
+                let (e0, e1) = stretch(*e0, *e1, 1.0);
+                segment_intersection(e0, e1, sa.0, sa.1).is_some() && segment_intersection(e0, e1, sb.0, sb.1).is_some()
+            });
+            if joined {
+                out.push(Relation::node(i, "chainedWith", j));
+                out.push(Relation::node(j, "chainedWith", i));
             }
         }
     }
@@ -1486,6 +2242,7 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
                         predicate: "endOnOutline",
                         object: None,
                         literal: Some(name.into()),
+                        number: None,
                     });
                 }
             }
@@ -1569,6 +2326,21 @@ fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(Str
         if let Some(a) = o.angle_deg {
             props.push(("angleDeg", number(a)));
         }
+        if let Some(h) = o.height {
+            props.push(("heightUnits", number(h)));
+        }
+        if let Some(s) = o.spacing {
+            props.push(("spacingUnits", number(s)));
+        }
+        if let Some(l) = &o.dxf_layer {
+            props.push(("dxfLayer", turtle_literal(l)));
+        }
+        if let Some(c) = o.colour {
+            props.push(("colourIndex", format!("\"{c}\"^^xsd:integer")));
+        }
+        if let Some(c) = o.layer_colour {
+            props.push(("layerColourIndex", format!("\"{c}\"^^xsd:integer")));
+        }
         let n = props.len();
         for (i, (p, v)) in props.iter().enumerate() {
             writeln!(ttl, "    md:{p} {v} {}", if i + 1 == n { "." } else { ";" })?;
@@ -1591,9 +2363,10 @@ fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(Str
     }
     for r in relations {
         let s = node_iri(&objects[r.subject].id);
-        let (object, kind) = match (r.object, &r.literal) {
-            (Some(o), _) => (node_iri(&objects[o].id), "node"),
-            (None, Some(l)) => (turtle_literal(l), "text"),
+        let (object, kind, row_object) = match (r.object, &r.literal, r.number) {
+            (Some(o), _, _) => (node_iri(&objects[o].id), "node", objects[o].id.clone()),
+            (None, Some(l), _) => (turtle_literal(l), "text", l.clone()),
+            (None, None, Some(x)) => (number(x), "number", x.to_string()),
             _ => continue,
         };
         writeln!(ttl, "{s} md:{} {object} .", r.predicate)?;
@@ -1602,10 +2375,7 @@ fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(Str
             layer: layer.into(),
             subject: objects[r.subject].id.clone(),
             predicate: r.predicate.into(),
-            object: match r.object {
-                Some(o) => objects[o].id.clone(),
-                None => r.literal.clone().unwrap_or_default(),
-            },
+            object: row_object,
             object_kind: kind.into(),
         };
         ensure!(row.validate().is_ok(), "drafting_relation_contract");
@@ -1620,9 +2390,10 @@ fn facts(layer: &str, objects: &[Object], relations: &[Relation]) -> Result<(Str
 fn related_facts(objects: &[Object], relations: &[Relation]) -> HashMap<String, Vec<String>> {
     let mut out: HashMap<String, Vec<String>> = HashMap::new();
     for r in relations {
-        let object = match (r.object, &r.literal) {
-            (Some(o), _) => objects[o].id.clone(),
-            (None, Some(l)) => l.clone(),
+        let object = match (r.object, &r.literal, r.number) {
+            (Some(o), _, _) => objects[o].id.clone(),
+            (None, Some(l), _) => l.clone(),
+            (None, None, Some(x)) => x.to_string(),
             _ => continue,
         };
         out.entry(objects[r.subject].id.clone())
@@ -1834,19 +2605,104 @@ mod tests {
     }
     #[test]
     fn formatting_codes_are_removed_and_width_estimated() {
-        let (t, w, stacked) = clean_text("\\A0;%%c57{\\H0.625000x;\\S+0.4^ +0.2;}");
-        assert_eq!(t, "Ø57+0.4/ +0.2");
-        assert!(w > 2.0 && w < 6.0, "{w}");
-        assert!(stacked);
-        assert_eq!(clean_text("30").0, "30");
-        assert!(!clean_text("30").2);
-        assert_eq!(clean_text("%%D").0, "°");
+        let ct = clean_text("\\A0;%%c57{\\H0.625000x;\\S+0.4^ +0.2;}");
+        assert_eq!(ct.text, "Ø57+0.4/ +0.2");
+        assert!(ct.width > 2.0 && ct.width < 6.0, "{}", ct.width);
+        assert!(ct.stacked);
+        // The main text ends where the stack begins: Ø (1.0), 5 (0.8), 7 (0.8).
+        assert!((ct.main_width - 2.6).abs() < 1e-9, "{}", ct.main_width);
+        assert_eq!(clean_text("30").text, "30");
+        assert!(!clean_text("30").stacked);
+        assert_eq!(clean_text("30").main_width, clean_text("30").width);
+        assert_eq!(clean_text("%%D").text, "°");
         // Font stacking marks: the tolerance parts share the width of the wider one at reduced size.
-        let (t, w, stacked) = clean_text("%%C19\u{E1D6}+0.05\u{E1DA}\u{E1D7}+0.02\u{E1D9}");
-        assert_eq!(t, "Ø19+0.05/+0.02");
-        assert!(stacked);
-        let (_, flat, _) = clean_text("%%C19+0.05+0.02");
-        assert!(w < 0.6 * flat, "{w} versus flat {flat}");
+        let ct = clean_text("%%C19\u{E1D6}+0.05\u{E1DA}\u{E1D7}+0.02\u{E1D9}");
+        assert_eq!(ct.text, "Ø19+0.05/+0.02");
+        assert!(ct.stacked);
+        assert!((ct.main_width - 2.4).abs() < 1e-9, "{}", ct.main_width);
+        let flat = clean_text("%%C19+0.05+0.02").width;
+        assert!(ct.width < 0.6 * flat, "{} versus flat {flat}", ct.width);
+    }
+    #[test]
+    fn a_stacked_text_has_a_main_box_and_a_stack_box() {
+        // A horizontal text "Ø40" with a stacked tolerance: the stack box follows the main box and is taller.
+        let dxf = b"0\nSECTION\n2\nENTITIES\n0\nMTEXT\n5\nA1\n8\n0\n10\n0\n20\n0\n40\n3.5\n71\n7\n1\n%%c40{\\H0.7x;\\S+0.1^ -0.1;}\n0\nENDSEC\n0\nEOF\n";
+        let records = dxf::records(&dxf::decode(dxf).unwrap()).unwrap();
+        let d = Dxf::new(&records).unwrap();
+        let r = d.by_handle["A1"];
+        let (main, stack, text, _) = d.text_box(r, (0., 0.)).unwrap().unwrap();
+        assert_eq!(text, "Ø40+0.1/ -0.1");
+        let stack = stack.expect("stack box");
+        assert!((main.height - 3.5).abs() < 1e-9);
+        assert!((stack.height - STACK_HEIGHT * 3.5).abs() < 1e-9);
+        assert!((stack.origin.0 - (main.origin.0 + main.width)).abs() < 1e-9, "the stack begins where the main text ends");
+        assert!((stack.origin.1 - (main.origin.1 - STACK_DROP * 3.5)).abs() < 1e-9);
+        // A line through the stack region, past the end of the main text, is a crossing of the stack box only.
+        let y = main.origin.1 + 0.5 * 3.5;
+        let (x0, x1) = (stack.origin.0 + 0.1, stack.origin.0 + stack.width + 5.);
+        assert_eq!(main.chord((x0, y), (x1, y)), 0.);
+        assert!(stack.chord((x0, y), (x1, y)) > 0.3 * 3.5);
+        // A line passing just above the main text, before the stack begins, crosses nothing.
+        let y = main.origin.1 + 3.5 + 0.3;
+        let (x0, x1) = (main.origin.0 - 5., main.origin.0 + 0.5 * main.width);
+        assert_eq!(main.chord((x0, y), (x1, y)) + stack.chord((x0, y), (x1, y)), 0.);
+    }
+    #[test]
+    fn polyline_bulges_are_arcs_with_centres() {
+        // A quarter arc from (10,0) to (0,10) around the origin: bulge tan(90°/4) = 1 - √2 … = 0.41421356.
+        let dxf = b"0\nSECTION\n2\nENTITIES\n0\nLWPOLYLINE\n5\nB1\n8\n0\n90\n2\n70\n0\n10\n10\n20\n0\n42\n0.41421356\n10\n0\n20\n10\n0\nENDSEC\n0\nEOF\n";
+        let records = dxf::records(&dxf::decode(dxf).unwrap()).unwrap();
+        let d = Dxf::new(&records).unwrap();
+        let (chains, arcs) = d.chains(d.by_handle["B1"], (0., 0.)).unwrap();
+        assert_eq!(arcs.len(), 1);
+        let (c, r) = arcs[0];
+        assert!(dist(c, (0., 0.)) < 1e-6 && (r - 10.).abs() < 1e-6, "{c:?} {r}");
+        assert!(chains[0].iter().all(|p| (dist(*p, (0., 0.)) - 10.).abs() < 1e-6));
+        assert!(dist(chains[0][0], (10., 0.)) < 1e-9 && dist(*chains[0].last().unwrap(), (0., 10.)) < 1e-6);
+    }
+    #[test]
+    fn an_extension_line_without_a_measure_is_not_a_finding() {
+        // The beyond rule is an sh:or whose last branch constrains a property; with no value of that property the
+        // branch holds vacuously and the line is not a finding.
+        let k = knowledge().unwrap();
+        let rules = rules(&k.shapes).unwrap();
+        let object = Object {
+            id: "source:expression:0:m1".into(),
+            classes: vec!["Line", "ExtensionLine"],
+            source_handles: vec!["X1".into()],
+            member_ids: vec!["expression:0:m1".into()],
+            expression_id: Some("expression:0".into()),
+            expression_kind: Some("dimension_diameter".into()),
+            view: None,
+            line_type: Some("dimension".into()),
+            text: None,
+            rotation_deg: None,
+            angle_deg: Some(0.),
+            height: None,
+            spacing: None,
+            dxf_layer: None,
+            colour: None,
+            layer_colour: None,
+            geometry: Geometry { chains: vec![vec![(0., 0.), (10., 0.)]], ..Geometry::default() },
+        };
+        let objects = vec![object];
+        let (ttl, _, _, _) = facts("source", &objects, &[]).unwrap();
+        let by_iri: HashMap<String, &Object> = objects.iter().map(|o| (node_iri(&o.id), o)).collect();
+        let (found, _) = evaluate("source", &ttl, &k.shapes, &rules, &by_iri, &HashMap::new()).unwrap();
+        assert!(found.is_empty(), "{found:#?}\n{ttl}");
+    }
+    #[test]
+    fn letters_gaps_and_angles() {
+        assert_eq!(view_letter("A向"), "A");
+        assert_eq!(view_letter("B—B"), "B");
+        assert_eq!(view_letter(" K 向"), "K");
+        assert_eq!(view_letter("Ⅰ 2:1"), "Ⅰ");
+        assert_eq!(view_letter("2:1"), "");
+        assert_eq!(collinear_gap((0., 0.), (10., 0.), (12., 0.05), (20., 0.05)), Some(2.));
+        assert!(collinear_gap((0., 0.), (10., 0.), (5., 0.), (20., 0.)).is_some_and(|g| g < 0.));
+        assert_eq!(collinear_gap((0., 0.), (10., 0.), (12., 2.), (20., 2.)), None);
+        assert_eq!(angle_between(10., 170.), 20.);
+        assert_eq!(line_param((0., 0.), (10., 0.), (2., -1.), (2., 1.)), Some(0.2));
     }
     #[test]
     fn crossing_and_coincidence_are_interior_relations() {

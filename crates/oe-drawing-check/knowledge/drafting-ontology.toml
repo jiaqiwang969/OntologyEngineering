@@ -9,7 +9,7 @@
 # 规范 drawing-understanding.toml 的事实合同（MdDraftingObject.class 与 MdDraftingRelation.predicate 的允许值）
 # 必须与这里声明的类和属性集合完全相同，由 oe-drawing-check 的测试双向核对。
 schema = "oev2.drafting-ontology/1"
-title = "制图规定的本体化约束 · 第一批（图线、视图与剖视、尺寸）"
+title = "制图规定的本体化约束 · 第一批（图线、视图与剖视、尺寸）与第二批（中心线、比例、剖面线一致、视图名称、尺寸界线、半径、数字方向、几何公差、粗糙度）"
 
 [ontology]
 format = "text/turtle"
@@ -52,6 +52,19 @@ md:InferredSpan a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "推断补全
 md:OtherLine a owl:Class ; rdfs:subClassOf md:Line ; rdfs:label "未解释的图线"@zh .
 md:Construction a owl:Class ; rdfs:label "构造点与原生容器"@zh ; rdfs:comment "定义点、原生尺寸和块的容器记录；没有自己的图面几何。"@zh .
 
+# ---- 第二批细分的类（由表达种类、成员角色和所在视图赋予）
+md:LinearDimensionLine a owl:Class ; rdfs:subClassOf md:DimensionLine ; rdfs:label "线性尺寸的尺寸线"@zh ; md:concept dc:DC-G4-059, dc:DC-G4-102 ; md:group "G4" .
+md:RadiusDimensionLine a owl:Class ; rdfs:subClassOf md:DimensionLine ; rdfs:label "半径尺寸的尺寸线"@zh ; md:concept dc:DC-G4-006 ; md:group "G4" .
+md:LinearDimensionText a owl:Class ; rdfs:subClassOf md:DimensionText ; rdfs:label "线性尺寸数字"@zh ; md:concept dc:DC-G4-102, dc:DC-G4-017 ; md:group "G4" .
+md:GeometricToleranceValue a owl:Class ; rdfs:subClassOf md:ToleranceText ; rdfs:label "公差框格第二格的公差值"@zh ; md:concept dc:DC-G5-091, dc:DC-G5-090 ; md:group "G5" .
+md:RoughnessValue a owl:Class ; rdfs:subClassOf md:ToleranceText ; rdfs:label "表面粗糙度参数值"@zh ; md:concept dc:DC-G6-073 ; md:group "G6" .
+md:ScaleText a owl:Class ; rdfs:subClassOf md:Text ; rdfs:label "比例文字"@zh ; md:concept dc:DC-G1-114, dc:DC-G1-115 ; md:group "G1" .
+md:ViewTitle a owl:Class ; rdfs:subClassOf md:ViewLabel ; rdfs:label "视图名称（图形上方的字母、X—X 或 X 向）"@zh ; md:concept dc:DC-G2-065, dc:DC-G2-072 ; md:group "G2" .
+md:DetailViewTitle a owl:Class ; rdfs:subClassOf md:ViewTitle ; rdfs:label "局部放大图的名称"@zh ; md:concept dc:DC-G2-075 ; md:group "G2" .
+md:CalloutLetter a owl:Class ; rdfs:subClassOf md:ViewLabel ; rdfs:label "索引字母（剖切符号、投射箭头或放大部位圈旁的字母）"@zh ; md:concept dc:DC-G2-043, dc:DC-G2-072, dc:DC-G2-075 ; md:group "G2" .
+md:DatumIdentifierLetter a owl:Class ; rdfs:subClassOf md:DatumLetter ; rdfs:label "基准符号方框内的字母"@zh ; md:concept dc:DC-G5-009 ; md:group "G5" .
+md:SymbolText a owl:Class ; rdfs:subClassOf md:Text ; rdfs:label "符号内的文字（特征符号字形等）"@zh ; md:group "G5" .
+
 # ---- 注写
 md:Text a owl:Class ; rdfs:label "注写文字"@zh ; rdfs:comment "文字框由插入点、高度、旋转和估算宽度给出。"@zh .
 md:DimensionText a owl:Class ; rdfs:subClassOf md:Text ; rdfs:label "尺寸数字（含前缀符号与公差）"@zh ; md:concept dc:DC-G4-017 ; md:group "G4" .
@@ -75,6 +88,19 @@ md:rotationDeg a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "文�
 md:angleDeg a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "图线或图案方向，度，归一到 [0,180)"@zh .
 md:endOnOutline a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "端点落在轮廓线或轴线上（start/end）"@zh ;
     rdfs:comment "断裂处边界线的端点距可见轮廓线或轴线不超过 0.5 单位；回转体的局部剖可以轴线为界（GB/T 4458.6-2002 5.6）。"@zh .
+md:heightUnits a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "文字高度（图形单位）"@zh .
+md:spacingUnits a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "剖面线间距（图形单位）"@zh ;
+    rdfs:comment "HATCH 的图案行偏移在垂直方向的分量，或散画剖面线相邻间距的中位数。"@zh .
+md:dxfLayer a owl:DatatypeProperty ; rdfs:range xsd:string ; rdfs:label "DXF 图层"@zh ; rdfs:comment "来源记录所在的图层；块内随块的构件取容器的图层。"@zh .
+md:colourIndex a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:label "颜色索引（自身颜色，否则随层）"@zh .
+md:layerColourIndex a owl:DatatypeProperty ; rdfs:range xsd:integer ; rdfs:label "所在图层的颜色索引"@zh .
+md:overshootUnits a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "中心线一端超出图形边缘的长度"@zh ;
+    rdfs:comment "同一表达内共线的中心线段按整条量：与可见轮廓线或断裂边界线（局部视图、局部放大图的边缘）的所有交点中，最外侧交点到该端的距离；两端各一个值，记在到达该端的那一段上；不与图形边缘相交时无值。"@zh .
+md:extensionBeyondUnits a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "尺寸界线超出尺寸线的长度"@zh ;
+    rdfs:comment "同一表达内共线的尺寸界线段按整条量：越过所遇最外侧尺寸线之后的长度；原生尺寸把越过部分画成单独一段时取该段长度；尺寸界线未到本尺寸的尺寸线时为负。"@zh .
+md:angleToDimensionLineDeg a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "尺寸界线与本尺寸尺寸线的夹角，度，[0,90]"@zh .
+md:extentUnits a owl:DatatypeProperty ; rdfs:range xsd:double ; rdfs:label "尺寸的跨距：尺寸线与本尺寸两条尺寸界线最外两交点的距离"@zh ;
+    rdfs:comment "同一尺寸的尺寸线分成几段时按整条量，每段都带同一值。"@zh .
 
 # ---- 对象属性：由通用几何谓词计算的关系
 md:crossedBy a owl:ObjectProperty ; rdfs:domain [ owl:unionOf ( md:Text md:Line ) ] ; rdfs:range md:Line ;
@@ -83,6 +109,27 @@ md:crossedBy a owl:ObjectProperty ; rdfs:domain [ owl:unionOf ( md:Text md:Line 
 md:coincidentWith a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:Line ;
     rdfs:label "与图线重合"@zh ;
     rdfs:comment "两条直线段方向相同、距离不超过 0.15 单位且重叠长度不小于 1 单位；曲线与直线：曲线上一半以上采样点落在该直线段上且走向平行。"@zh .
+md:radialTo a owl:ObjectProperty ; rdfs:domain md:DimensionLine ; rdfs:range md:Line ;
+    rdfs:label "沿径向指向圆弧"@zh ;
+    rdfs:comment "尺寸线（同一表达内共线各段合为一条）所在直线经过圆弧的圆心（0.3 单位内），且一端到圆弧不超过箭头长度（6 单位，箭头画在弧外时线止于箭头尾）；折线注法的水平段随与之相接的径向段。"@zh .
+md:onExtensionOf a owl:ObjectProperty ; rdfs:domain md:Line ; rdfs:range md:Line ;
+    rdfs:label "位于图线的延长线上"@zh ;
+    rdfs:comment "两条直线段共线（方向差 1.5° 内、偏距 0.15 单位内）、互不重叠、沿线间隔不超过 10 单位。"@zh .
+md:alignedWith a owl:ObjectProperty ; rdfs:domain md:Text ; rdfs:range md:Line ;
+    rdfs:label "文字方向与图线同向"@zh ;
+    rdfs:comment "同一表达内，文字方向与直线方向之差不超过 1.5°。"@zh .
+md:sameLetterAs a owl:ObjectProperty ; rdfs:domain md:Text ; rdfs:range md:Text ;
+    rdfs:label "字母相同"@zh ;
+    rdfs:comment "视图名称与索引字母去掉方向词、连接号与比例后的首组大写字母（含罗马数字）相同；名称分写成几个文字时，同一表达内各名称文字共用其中的字母。"@zh .
+md:scaledBy a owl:ObjectProperty ; rdfs:domain md:Text ; rdfs:range md:Text ;
+    rdfs:label "同一表达中的比例文字"@zh .
+md:hatchDirectionDiffersFrom a owl:ObjectProperty ; rdfs:domain md:SectionRegion ; rdfs:range md:SectionRegion ;
+    rdfs:label "剖面线方向与另一剖面区域不同"@zh ; rdfs:comment "两个剖面区域的方向差超过 3°。"@zh .
+md:hatchSpacingDiffersFrom a owl:ObjectProperty ; rdfs:domain md:SectionRegion ; rdfs:range md:SectionRegion ;
+    rdfs:label "剖面线间距与另一剖面区域不同"@zh ; rdfs:comment "两个剖面区域的间距之比超过 1.3。"@zh .
+md:chainedWith a owl:ObjectProperty ; rdfs:domain md:DimensionLine ; rdfs:range md:DimensionLine ;
+    rdfs:label "与相邻尺寸的尺寸线成链"@zh ;
+    rdfs:comment "两条不同尺寸的尺寸线共线，且有一条尺寸界线同时与两者相交。"@zh .
 '''
 
 [shapes]
@@ -274,11 +321,251 @@ rule:G4-059-dimension-line-not-coincident a sh:NodeShape ;
     sh:targetClass md:DimensionLine ;
     sh:severity sh:Warning ;
     md:ruleId "G4-059-dimension-line-not-coincident" ; md:group "G4" ;
-    md:concept dc:DC-G4-059 ;
-    md:clause "GB/T 4458.4-2003 4.2.2" ;
-    rdfs:label "尺寸线一般不与其他图线重合"@zh ;
-    sh:property rule:G4-059-dimension-line-not-coincident-p1 .
+    md:concept dc:DC-G4-059, dc:DC-G4-016 ;
+    md:clause "GB/T 4458.4-2003 4.2.2；GB/T 4458.4-2003 4.2.5 图15（小尺寸）" ;
+    rdfs:label "尺寸线一般不与其他图线重合；相邻小尺寸箭头外置时，尺寸线越过尺寸界线而与相邻尺寸线相叠是规定允许的"@zh ;
+    sh:message "尺寸线与另一条图线重合（箭头外置的相邻小尺寸成链的除外）"@zh ;
+    sh:or ( [ sh:property rule:G4-059-dimension-line-not-coincident-p1 ]
+            [ sh:property rule:G4-059-dimension-line-not-coincident-p2 ; sh:property rule:G4-059-dimension-line-not-coincident-p3 ;
+              sh:or ( [ sh:property rule:G4-059-dimension-line-not-coincident-p4 ] [ sh:property rule:G4-059-dimension-line-not-coincident-p5 ] ) ] ) .
 rule:G4-059-dimension-line-not-coincident-p1 a sh:PropertyShape ;
     sh:path md:coincidentWith ; sh:maxCount 0 ;
     sh:message "尺寸线与另一条图线重合"@zh .
+# 例外的知识（DC-G4-016）：只与尺寸线重合；与之成链（共线且有一条尺寸界线同时穿过两者）；且本尺寸或成链的相邻尺寸是
+# 小尺寸——尺寸界线间放不下两个箭头和数字，按跨距不超过 12 单位核（箭头约 3 单位，两位数字约 6 单位）。
+rule:G4-059-dimension-line-not-coincident-p2 a sh:PropertyShape ;
+    sh:path md:coincidentWith ; sh:class md:DimensionLine ;
+    sh:message "尺寸线与非尺寸线的图线重合"@zh .
+rule:G4-059-dimension-line-not-coincident-p3 a sh:PropertyShape ;
+    sh:path md:chainedWith ; sh:minCount 1 ;
+    sh:message "重合的尺寸线不是相邻的链式尺寸"@zh .
+rule:G4-059-dimension-line-not-coincident-p4 a sh:PropertyShape ;
+    sh:path md:extentUnits ; sh:minCount 1 ; sh:maxInclusive 12.0 ;
+    sh:message "本尺寸不是小尺寸"@zh .
+rule:G4-059-dimension-line-not-coincident-p5 a sh:PropertyShape ;
+    sh:path md:chainedWith ; sh:qualifiedValueShape [ sh:property rule:G4-059-dimension-line-not-coincident-p6 ] ; sh:qualifiedMinCount 1 ;
+    sh:message "成链的相邻尺寸也不是小尺寸"@zh .
+rule:G4-059-dimension-line-not-coincident-p6 a sh:PropertyShape ;
+    sh:path md:extentUnits ; sh:minCount 1 ; sh:maxInclusive 12.0 .
+
+# ================= 第二批 =================
+
+# ---- G1 图线
+rule:G1-021-centre-line-beyond-outline a sh:NodeShape ;
+    sh:targetClass md:CentreLine ;
+    sh:severity sh:Warning ;
+    md:ruleId "G1-021-centre-line-beyond-outline" ; md:group "G1" ;
+    md:concept dc:DC-G1-021, dc:DC-G1-033, dc:DC-G1-044 ;
+    md:clause "GB/T 4457.4-2002 表1 04.1.2；机械制图（第7版）§1-1 图线画法" ;
+    rdfs:label "中心线两端超出轮廓约 2~5 mm"@zh ;
+    sh:property rule:G1-021-centre-line-beyond-outline-p1 .
+rule:G1-021-centre-line-beyond-outline-p1 a sh:PropertyShape ;
+    sh:path md:overshootUnits ; sh:minInclusive 1.0 ; sh:maxInclusive 8.0 ;
+    sh:message "中心线一端超出所遇轮廓线的长度不在 2~5 mm 左右（按 1~8 单位核）"@zh .
+
+rule:G1-114-scale-in-standard-series a sh:NodeShape ;
+    sh:targetClass md:ScaleText, md:TableText ;
+    md:ruleId "G1-114-scale-in-standard-series" ; md:group "G1" ;
+    md:concept dc:DC-G1-114, dc:DC-G1-115 ;
+    md:clause "GB/T 14690-1993 4.1 表1、4.2 表2；GB/T 18229-2000 4.2" ;
+    rdfs:label "比例取自标准的优先系列或允许系列"@zh ;
+    sh:message "比例文字不在 GB/T 14690 的优先或允许系列中"@zh ;
+    sh:or ( [ sh:property rule:G1-114-scale-in-standard-series-p1 ] [ sh:property rule:G1-114-scale-in-standard-series-p2 ] ) .
+# p1：不是比例写法的文字不受约束；p2：是比例写法的文字须在系列中。
+rule:G1-114-scale-in-standard-series-p1 a sh:PropertyShape ;
+    sh:path md:text ; sh:not [ sh:pattern "^\\s*\\d+(\\.\\d+)?\\s*[:：]\\s*\\d+(\\.\\d+)?\\s*$" ] ;
+    sh:message "文字是比例写法"@zh .
+rule:G1-114-scale-in-standard-series-p2 a sh:PropertyShape ;
+    sh:path md:text ;
+    sh:pattern "^\\s*(1[:：]1|2[:：]1|5[:：]1|10[:：]1|20[:：]1|50[:：]1|100[:：]1|4[:：]1|2\\.5[:：]1|25[:：]1|40[:：]1|1[:：]2|1[:：]5|1[:：]10|1[:：]20|1[:：]50|1[:：]100|1[:：]200|1[:：]500|1[:：]1000|1[:：]2000|1[:：]5000|1[:：]10000|1[:：]1\\.5|1[:：]2\\.5|1[:：]3|1[:：]4|1[:：]6|1[:：]15|1[:：]25|1[:：]30|1[:：]40|1[:：]60|1[:：]150|1[:：]250|1[:：]300|1[:：]400|1[:：]600)\\s*$" ;
+    sh:message "比例不在系列中（优先 1:1、2:1、5:1、10:1…、1:2、1:5、1:10…；允许 4:1、2.5:1、1:1.5、1:2.5、1:3、1:4、1:6 及其十进倍数）"@zh .
+
+# ---- G2 视图与剖视
+rule:G2-009-hatch-direction-consistent a sh:NodeShape ;
+    sh:targetClass md:SectionRegion ;
+    md:ruleId "G2-009-hatch-direction-consistent" ; md:group "G2" ;
+    md:concept dc:DC-G1-010, dc:DC-G2-009 ;
+    md:clause "GB/T 4457.5-2013 4.7；GB/T 17453-2005 5" ;
+    rdfs:label "同一零件在各剖视、断面中剖面线方向一致"@zh ;
+    sh:property rule:G2-009-hatch-direction-consistent-p1 .
+rule:G2-009-hatch-direction-consistent-p1 a sh:PropertyShape ;
+    sh:path md:hatchDirectionDiffersFrom ; sh:maxCount 0 ;
+    sh:message "这个剖面区域的剖面线方向与同一张零件图上另一剖面区域不同"@zh .
+
+rule:G2-009-hatch-spacing-consistent a sh:NodeShape ;
+    sh:targetClass md:SectionRegion ;
+    sh:severity sh:Warning ;
+    md:ruleId "G2-009-hatch-spacing-consistent" ; md:group "G2" ;
+    md:concept dc:DC-G1-010, dc:DC-G2-009, dc:DC-G2-019 ;
+    md:clause "GB/T 4457.5-2013 4.7；GB/T 18229-2000 4.5" ;
+    rdfs:label "同一零件在各剖视、断面中剖面线间距一致"@zh ;
+    sh:property rule:G2-009-hatch-spacing-consistent-p1 .
+rule:G2-009-hatch-spacing-consistent-p1 a sh:PropertyShape ;
+    sh:path md:hatchSpacingDiffersFrom ; sh:maxCount 0 ;
+    sh:message "这个剖面区域的剖面线间距与同一张零件图上另一剖面区域不同（之比超过 1.3）"@zh .
+
+rule:G2-065-view-title-has-callout-letter a sh:NodeShape ;
+    sh:targetClass md:ViewTitle ;
+    md:ruleId "G2-065-view-title-has-callout-letter" ; md:group "G2" ;
+    md:concept dc:DC-G2-065, dc:DC-G2-072, dc:DC-G2-075 ;
+    md:clause "GB/T 4458.6-2002 6.1；GB/T 14692-2008 5.2.1.5；GB/T 4458.1-2002 5.7.2" ;
+    rdfs:label "视图名称的字母与剖切符号、投射箭头或放大部位圈旁的字母对应"@zh ;
+    sh:property rule:G2-065-view-title-has-callout-letter-p1 .
+rule:G2-065-view-title-has-callout-letter-p1 a sh:PropertyShape ;
+    sh:path md:sameLetterAs ; sh:qualifiedValueShape [ sh:class md:CalloutLetter ] ; sh:qualifiedMinCount 1 ;
+    sh:message "图上没有与这个视图名称同字母的索引字母（剖切符号、投射箭头或放大部位圈旁）"@zh .
+
+rule:G2-043-callout-letter-has-view-title a sh:NodeShape ;
+    sh:targetClass md:CalloutLetter ;
+    md:ruleId "G2-043-callout-letter-has-view-title" ; md:group "G2" ;
+    md:concept dc:DC-G2-043, dc:DC-G2-072, dc:DC-G2-075 ;
+    md:clause "GB/T 17452-1998 8.2；GB/T 4458.6-2002 6.1；GB/T 4458.1-2002 5.7.2" ;
+    rdfs:label "剖切符号、投射箭头或放大部位圈旁的字母有同字母的视图名称"@zh ;
+    sh:property rule:G2-043-callout-letter-has-view-title-p1 .
+rule:G2-043-callout-letter-has-view-title-p1 a sh:PropertyShape ;
+    sh:path md:sameLetterAs ; sh:qualifiedValueShape [ sh:class md:ViewTitle ] ; sh:qualifiedMinCount 1 ;
+    sh:message "图上没有与这个索引字母同字母的视图名称"@zh .
+
+rule:G2-075-detail-view-title-has-scale a sh:NodeShape ;
+    sh:targetClass md:DetailViewTitle ;
+    md:ruleId "G2-075-detail-view-title-has-scale" ; md:group "G2" ;
+    md:concept dc:DC-G2-075, dc:DC-G1-115 ;
+    md:clause "GB/T 4458.1-2002 5.7.2；GB/T 14690-1993 5.2" ;
+    rdfs:label "局部放大图的名称处注出比例"@zh ;
+    sh:message "局部放大图的名称旁没有比例"@zh ;
+    sh:or ( [ sh:property rule:G2-075-detail-view-title-has-scale-p1 ] [ sh:property rule:G2-075-detail-view-title-has-scale-p2 ] ) .
+rule:G2-075-detail-view-title-has-scale-p1 a sh:PropertyShape ;
+    sh:path md:scaledBy ; sh:minCount 1 ;
+    sh:message "局部放大图名称所在的表达里没有比例文字"@zh .
+rule:G2-075-detail-view-title-has-scale-p2 a sh:PropertyShape ;
+    sh:path md:text ; sh:pattern "\\d\\s*[:：]\\s*\\d" ;
+    sh:message "名称文字本身不含比例"@zh .
+
+# ---- G4 尺寸
+# 两条尺寸界线规定只对线性与直径尺寸自己画的尺寸界线：借用的轮廓线或轴线没有"超出"（GB/T 4458.4-2003 4.1.1），
+# 角度尺寸的尺寸界线是径向线、尺寸线是圆弧（4.2.4），都不受这两条约束。
+rule:G4-058-extension-line-beyond-dimension-line a sh:NodeShape ;
+    sh:targetClass md:ExtensionLine ;
+    sh:severity sh:Warning ;
+    md:ruleId "G4-058-extension-line-beyond-dimension-line" ; md:group "G4" ;
+    md:concept dc:DC-G4-058 ;
+    md:clause "GB/T 4458.4-2003 4.1.1 图1" ;
+    rdfs:label "尺寸界线超出尺寸线终端约 2 mm（借用的轮廓线、轴线与角度尺寸除外）"@zh ;
+    sh:message "尺寸界线超出尺寸线的长度不在约 2 mm（按 0.8~5 单位核）；为负表示尺寸界线没有画到尺寸线"@zh ;
+    sh:or ( [ sh:class md:VisibleOutline ] [ sh:class md:CentreLine ]
+            [ sh:property rule:G4-058-extension-line-beyond-dimension-line-p0 ]
+            [ sh:property rule:G4-058-extension-line-beyond-dimension-line-p1 ] ) .
+rule:G4-058-extension-line-beyond-dimension-line-p0 a sh:PropertyShape ;
+    sh:path md:expressionKind ; sh:not [ sh:in ( "dimension_linear" "dimension_diameter" ) ] ;
+    sh:message "线性或直径尺寸的尺寸界线"@zh .
+rule:G4-058-extension-line-beyond-dimension-line-p1 a sh:PropertyShape ;
+    sh:path md:extensionBeyondUnits ; sh:minInclusive 0.8 ; sh:maxInclusive 5.0 ;
+    sh:message "尺寸界线超出尺寸线的长度不在约 2 mm（按 0.8~5 单位核）；为负表示尺寸界线没有画到尺寸线"@zh .
+
+rule:G4-058-extension-line-perpendicular a sh:NodeShape ;
+    sh:targetClass md:ExtensionLine ;
+    sh:severity sh:Warning ;
+    md:ruleId "G4-058-extension-line-perpendicular" ; md:group "G4" ;
+    md:concept dc:DC-G4-058 ;
+    md:clause "GB/T 4458.4-2003 4.1.1、4.1.3 图4" ;
+    rdfs:label "尺寸界线一般与尺寸线垂直；贴近轮廓不清晰时允许倾斜，但成对平行（借用的轮廓线、轴线与角度尺寸除外）"@zh ;
+    sh:message "尺寸界线与尺寸线不垂直（夹角小于 88°）"@zh ;
+    sh:or ( [ sh:class md:VisibleOutline ] [ sh:class md:CentreLine ]
+            [ sh:property rule:G4-058-extension-line-perpendicular-p0 ]
+            [ sh:property rule:G4-058-extension-line-perpendicular-p1 ] ) .
+rule:G4-058-extension-line-perpendicular-p0 a sh:PropertyShape ;
+    sh:path md:expressionKind ; sh:not [ sh:in ( "dimension_linear" "dimension_diameter" ) ] ;
+    sh:message "线性或直径尺寸的尺寸界线"@zh .
+rule:G4-058-extension-line-perpendicular-p1 a sh:PropertyShape ;
+    sh:path md:angleToDimensionLineDeg ; sh:minInclusive 88.0 ;
+    sh:message "尺寸界线与尺寸线不垂直（夹角小于 88°）"@zh .
+
+rule:G4-006-radius-dimension-line-through-centre a sh:NodeShape ;
+    sh:targetClass md:RadiusDimensionLine ;
+    md:ruleId "G4-006-radius-dimension-line-through-centre" ; md:group "G4" ;
+    md:concept dc:DC-G4-006, dc:DC-G4-059 ;
+    md:clause "GB/T 4458.4-2003 4.2.3 图12" ;
+    rdfs:label "半径的尺寸线沿径向自圆心引出或其延长线通过圆心，箭头端落在圆弧上"@zh ;
+    sh:property rule:G4-006-radius-dimension-line-through-centre-p1 .
+rule:G4-006-radius-dimension-line-through-centre-p1 a sh:PropertyShape ;
+    sh:path md:radialTo ; sh:minCount 1 ;
+    sh:message "半径尺寸线所在直线不经过任何一段圆弧的圆心，或不止于该圆弧"@zh .
+
+rule:G4-059-dimension-line-not-on-outline-extension a sh:NodeShape ;
+    sh:targetClass md:DimensionLine ;
+    sh:severity sh:Warning ;
+    md:ruleId "G4-059-dimension-line-not-on-outline-extension" ; md:group "G4" ;
+    md:concept dc:DC-G4-059 ;
+    md:clause "GB/T 4458.4-2003 4.2.2" ;
+    rdfs:label "尺寸线不画在轮廓线的延长线上"@zh ;
+    sh:property rule:G4-059-dimension-line-not-on-outline-extension-p1 .
+rule:G4-059-dimension-line-not-on-outline-extension-p1 a sh:PropertyShape ;
+    sh:path md:onExtensionOf ; sh:qualifiedValueShape [ sh:class md:VisibleOutline ] ; sh:qualifiedMaxCount 0 ;
+    sh:message "尺寸线画在了可见轮廓线的延长线上"@zh .
+
+rule:G4-102-linear-dimension-text-along-dimension-line a sh:NodeShape ;
+    sh:targetClass md:LinearDimensionText ;
+    sh:severity sh:Warning ;
+    md:ruleId "G4-102-linear-dimension-text-along-dimension-line" ; md:group "G4" ;
+    md:concept dc:DC-G4-102, dc:DC-G4-017 ;
+    md:clause "GB/T 4458.4-2003 4.3.2 图18" ;
+    rdfs:label "线性尺寸数字（方法1）随尺寸线方向书写"@zh ;
+    sh:property rule:G4-102-linear-dimension-text-along-dimension-line-p1 .
+rule:G4-102-linear-dimension-text-along-dimension-line-p1 a sh:PropertyShape ;
+    sh:path md:alignedWith ; sh:qualifiedValueShape [ sh:class md:DimensionLine ] ; sh:qualifiedMinCount 1 ;
+    sh:message "线性尺寸数字的方向与它的尺寸线不同（方法1 要求平行；方法2 的水平数字应写在尺寸线中断处）"@zh .
+
+rule:G4-102-avoid-30-degree-zone a sh:NodeShape ;
+    sh:targetClass md:LinearDimensionLine ;
+    sh:severity sh:Info ;
+    md:ruleId "G4-102-avoid-30-degree-zone" ; md:group "G4" ;
+    md:concept dc:DC-G4-102, dc:DC-G4-017 ;
+    md:clause "GB/T 4458.4-2003 4.3.2 图19" ;
+    rdfs:label "尽量避免在竖直线左侧 30° 范围内注写线性尺寸"@zh ;
+    sh:property rule:G4-102-avoid-30-degree-zone-p1 .
+rule:G4-102-avoid-30-degree-zone-p1 a sh:PropertyShape ;
+    sh:path md:angleDeg ; sh:or ( [ sh:maxInclusive 90.0 ] [ sh:minInclusive 120.0 ] ) ;
+    sh:message "线性尺寸的尺寸线方向落在竖直线左侧 30° 区内（90°~120°）"@zh .
+
+# ---- G5 几何公差
+rule:G5-091-cylindrical-zone-for-axis-characteristics a sh:NodeShape ;
+    sh:targetClass md:GeometricToleranceValue ;
+    md:ruleId "G5-091-cylindrical-zone-for-axis-characteristics" ; md:group "G5" ;
+    md:concept dc:DC-G5-091, dc:DC-G5-090 ;
+    md:clause "GB/T 1182-2018 8.2.2 图13；GB/T 1182-2018 表2" ;
+    rdfs:label "公差值前的 Ø 表示圆柱形公差带，只用于轴线类特征（位置度、同轴度、垂直度、平行度、倾斜度、直线度）"@zh ;
+    sh:message "公差值前写了 Ø，但这个特征的公差带不是圆柱形"@zh ;
+    sh:or ( [ sh:property rule:G5-091-cylindrical-zone-for-axis-characteristics-p1 ] [ sh:property rule:G5-091-cylindrical-zone-for-axis-characteristics-p2 ] ) .
+rule:G5-091-cylindrical-zone-for-axis-characteristics-p1 a sh:PropertyShape ;
+    sh:path md:text ; sh:not [ sh:pattern "^\\s*[ØΦφ⌀]" ] ;
+    sh:message "公差值前写了 Ø"@zh .
+rule:G5-091-cylindrical-zone-for-axis-characteristics-p2 a sh:PropertyShape ;
+    sh:path md:expressionKind ; sh:in ( "gps_position" "gps_coaxiality" "gps_perpendicularity" "gps_parallelism" "gps_angularity" "gps_straightness" ) ;
+    sh:message "这个特征的公差带不是圆柱形（不是位置度、同轴度、垂直度、平行度、倾斜度或直线度）"@zh .
+
+rule:G5-009-datum-letter-horizontal a sh:NodeShape ;
+    sh:targetClass md:DatumIdentifierLetter ;
+    md:ruleId "G5-009-datum-letter-horizontal" ; md:group "G5" ;
+    md:concept dc:DC-G5-009 ;
+    md:clause "GB/T 17851-2022 7.2.1 图5" ;
+    rdfs:label "基准符号方框内的字母无论符号朝向如何都水平书写"@zh ;
+    sh:property rule:G5-009-datum-letter-horizontal-p1 .
+rule:G5-009-datum-letter-horizontal-p1 a sh:PropertyShape ;
+    sh:path md:rotationDeg ; sh:minCount 1 ;
+    sh:or ( [ sh:maxInclusive 1.0 ] [ sh:minInclusive 179.0 ] ) ;
+    sh:message "基准字母不是水平书写"@zh .
+
+# ---- G6 表面结构
+rule:G6-073-roughness-value-in-series a sh:NodeShape ;
+    sh:targetClass md:RoughnessValue ;
+    sh:severity sh:Warning ;
+    md:ruleId "G6-073-roughness-value-in-series" ; md:group "G6" ;
+    md:concept dc:DC-G6-073 ;
+    md:clause "GB/T 1031-2009 表1、表2；GB/T 131-2006" ;
+    rdfs:label "表面粗糙度 Ra、Rz 数值取自标准系列"@zh ;
+    sh:property rule:G6-073-roughness-value-in-series-p1 .
+rule:G6-073-roughness-value-in-series-p1 a sh:PropertyShape ;
+    sh:path md:text ; sh:minCount 1 ;
+    sh:pattern "^\\s*(Ra|Rz)?\\s*(0\\.012|0\\.025|0\\.05|0\\.1|0\\.2|0\\.4|0\\.8|1\\.6|3\\.2|6\\.3|12\\.5|25|50|100|200|400|800|1600)\\s*$" ;
+    sh:message "粗糙度数值不在 Ra／Rz 的第一系列中"@zh .
 '''

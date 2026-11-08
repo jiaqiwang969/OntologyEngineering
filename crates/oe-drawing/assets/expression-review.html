@@ -43,7 +43,8 @@ details{font-size:12px;margin-top:10px}summary{cursor:pointer;color:#46677e}deta
 <details><summary>本轮如何得到</summary><p>只有源 DXF 字节进入隔离 Rust worker<span id="sourceNote"></span>。类别由显示文字、原生尺寸构造、终端/尺寸线/界线/文字组合、实际 LTYPE 划段、经一致性核验的 GB/T 14665 表 6 图层、结构连接和有限区间推导；没有读取旧分类、人工修复区间、ROI 或配对模型。</p><p id="refNote">本页没有嵌入独立参照；分类只来自源 DXF 字节，对照与评价另做。</p><p id="evalSummary"></p><p id="provenance" class="hash"></p></details>
 </aside><main class="workspace">
 <div class="toolbar"><div class="actions"><button id="fit">整图</button><button id="zoomIn" aria-label="放大">＋</button><button id="zoomOut" aria-label="缩小">－</button><button id="focus">放大选中</button><button id="clear">取消选择</button></div><div id="status" class="status"></div></div>
-<div class="canvas" id="canvas">@@SVG@@<div class="empty" id="empty" hidden>当前筛选下没有可见成员<br><small>可重新勾选左侧类别</small></div><div class="legend" id="colorLegend"></div></div>
+<div class="canvas" id="canvas">@@RASTER@@
+@@SVG@@<div class="empty" id="empty" hidden>当前筛选下没有可见成员<br><small>可重新勾选左侧类别</small></div><div class="legend" id="colorLegend"></div></div>
 <div class="bottom"><section class="card"><h2>来源与完整表达</h2><div id="details"></div></section><section class="card"><h2 id="compareTitle">独立参照</h2><div id="compare" class="muted">本页没有嵌入独立参照（新图默认如此）；类别只来自源 DXF 字节，须由人工或独立评价核对。</div></section><section class="card"><h2>记录本次检查</h2><div class="muted">意见绑定当前选中的来源或表达，只记录，不修改图纸和分类。</div><select id="issue" aria-label="问题类型"><option>学科类别不符</option><option>线型不符</option><option>视图归属不符</option><option>成员缺失或多余</option><option>区间不符</option><option>显示问题</option><option>确认当前结果</option></select><textarea id="note" placeholder="写下看到的问题和依据；不选对象则记为全图意见。"></textarea><div class="actions"><button id="saveNote">保存意见</button><button id="exportNotes">导出意见</button></div><div id="noteStatus" class="feedback-status"></div></section></div>
 </main></div>
 <script type="application/json" id="payload">@@DATA@@</script>

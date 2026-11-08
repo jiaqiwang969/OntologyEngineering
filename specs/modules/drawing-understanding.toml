@@ -621,7 +621,7 @@ name = "profile"
 rust_type = "String"
 required = true
 format = "typed"
-meaning = "dxf-usage-rules/1"
+meaning = "dxf-usage-rules/1; pixel-expression-rules/1 when the entities were recovered from a page image"
 unit = "Original drawing coordinate units, normalized source parameters and unitless identities; no unverified mm conversion"
 precision = "Fixed 1e-7 drawing-unit numerical incidence, not product tolerance; no endpoint snapping or forced closure"
 write = "Formal spec through locked ggen; Rust derives generic source-only relations; presentation consumes results without inference"
@@ -2754,13 +2754,13 @@ name="profile"
 rust_type="String"
 required=true
 format="typed"
-meaning="Rule profile"
+meaning="Rule profile: dxf-expression-rules/2 reads the geometry from the DXF bytes; pixel-expression-rules/1 reads it from the graph's own entities recovered from a page image"
 unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
-allowed_values=["dxf-expression-rules/2"]
+allowed_values=["dxf-expression-rules/2", "pixel-expression-rules/1"]
 
 [[types.fields]]
 name="source_sha256"
@@ -5926,7 +5926,7 @@ requirement = "req_md_drawing_route"
 module = "drawing_understanding_check"
 check = "check_rules"
 rust_path = "crates/oe-drawing-check/src/drafting.rs"
-statement = "Drafting rules are evaluated only as SHACL shapes of the drafting ontology, by the framework's SHACL engine, over typed facts exported from the source bytes and the frozen graph without classifier code; the ontology declares exactly the classes and predicates the fact contract allows; every rule names its concepts of the catalogue, its standard clause and its message; the same shapes are evaluated on the source, recognition and presentation layers and every finding names its layer, focus and sources; a finding is a deviation to review and never changes the graph"
+statement = "Drafting rules are evaluated only as SHACL shapes of the drafting ontology, by the framework's SHACL engine, over typed facts exported from the source bytes (or, for a pixel graph, from the geometry of its own entities) and the frozen graph without classifier code; the ontology declares exactly the classes and predicates the fact contract allows; every rule names its concepts of the catalogue, its standard clause and its message; the same shapes are evaluated on the source, recognition and presentation layers and every finding names its layer, focus and sources; a finding is a deviation to review and never changes the graph"
 severity = "error"
 
 [[validations]]
@@ -5963,6 +5963,24 @@ constraint = "md_drafting_rules"
 behavior = "every_rule_names_concepts_of_the_catalogue_and_a_clause"
 rust_path = "crates/oe-drawing/tests/drafting_rules.rs"
 oracle = "Every rule shape carries a rule id, concept ids that exist in the concept catalogue, a clause, a label and a message; rule ids are distinct per shape family and at least twelve"
+scope = "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+
+[[validations]]
+id = "md_drafting_rules_a_pixel_graph_yields_the_findings_of_the_dxf_path"
+module = "drawing_understanding_check"
+constraint = "md_drafting_rules"
+behavior = "a_pixel_graph_yields_the_findings_of_the_dxf_path"
+rust_path = "crates/oe-drawing-check/tests/drafting_rules.rs"
+oracle = "Every authored fixture drawn with lines, arcs, circles, texts and hatches, violating and conforming, gives identical findings when its geometry is read from the DXF bytes and when it is read from the entities of a pixel graph (profile pixel-expression-rules/1); a pixel graph written by hand with the coordinates of the dimension-text fixture gives the fixture's finding on the three layers, and the general entry needs no bytes for it"
+scope = "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+
+[[validations]]
+id = "md_drafting_rules_a_stacked_pixel_text_is_crossed_through_its_stack_box"
+module = "drawing_understanding_check"
+constraint = "md_drafting_rules"
+behavior = "a_stacked_pixel_text_is_crossed_through_its_stack_box"
+rust_path = "crates/oe-drawing-check/tests/drafting_rules.rs"
+oracle = "A pixel text written with the font stacking marks U+E1D6 to U+E1DA has a main box and a taller stack box; a centre line above the main text through the stack region alone is a crossing of the dimension text on every layer, and the same text written flat is not crossed"
 scope = "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
 
 [[obligations]]

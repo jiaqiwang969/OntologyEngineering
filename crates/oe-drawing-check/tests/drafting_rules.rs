@@ -72,6 +72,8 @@ fn the_ontology_the_fact_contract_and_the_exporter_declare_the_same_vocabulary()
 struct Drawing {
     entities: Vec<String>,
     kinds: Vec<(String, String)>,
+    /// The same entities as a pixel graph carries them, geometry included; null for one without a pixel form.
+    pixel: Vec<Value>,
     members: Vec<Value>,
     expressions: Vec<Value>,
     implied: Vec<Value>,
@@ -91,45 +93,67 @@ impl Drawing {
         self.kinds.push((h.clone(), kind.to_owned()));
         h
     }
+    /// The pixel form of the entity just written: its geometry as a pixel graph carries it.
+    fn pixel(&mut self, h: &str, kind: &str, geometry: Value) {
+        let mut e = json!({"id": h, "kind": kind, "layer": "0"});
+        for (k, v) in geometry.as_object().into_iter().flatten() {
+            e[k] = v.clone();
+        }
+        self.pixel.push(e);
+    }
     fn line(&mut self, a: [f64; 2], b: [f64; 2]) -> String {
-        self.entity(
+        let h = self.entity(
             "LINE",
             &format!("10\n{}\n20\n{}\n11\n{}\n21\n{}\n", a[0], a[1], b[0], b[1]),
-        )
+        );
+        self.pixel(&h, "LINE", json!({"coordinates": [a[0], a[1], b[0], b[1]]}));
+        h
     }
     fn arc(&mut self, c: [f64; 2], r: f64, a0: f64, a1: f64) -> String {
-        self.entity(
+        let h = self.entity(
             "ARC",
             &format!("10\n{}\n20\n{}\n40\n{r}\n50\n{a0}\n51\n{a1}\n", c[0], c[1]),
-        )
+        );
+        self.pixel(&h, "ARC", json!({"coordinates": [c[0], c[1], r, a0, a1 - a0]}));
+        h
     }
     fn circle(&mut self, c: [f64; 2], r: f64) -> String {
-        self.entity("CIRCLE", &format!("10\n{}\n20\n{}\n40\n{r}\n", c[0], c[1]))
+        let h = self.entity("CIRCLE", &format!("10\n{}\n20\n{}\n40\n{r}\n", c[0], c[1]));
+        self.pixel(&h, "CIRCLE", json!({"coordinates": [c[0], c[1], r]}));
+        h
     }
     fn text(&mut self, s: &str, p: [f64; 2], height: f64, rotation: f64) -> String {
-        self.entity(
+        let h = self.entity(
             "TEXT",
             &format!("10\n{}\n20\n{}\n40\n{height}\n50\n{rotation}\n1\n{s}\n", p[0], p[1]),
-        )
+        );
+        self.pixel(&h, "TEXT", json!({"coordinates": [p[0], p[1], height, rotation, 1.0], "text": s}));
+        h
     }
     fn polyline(&mut self, points: &[[f64; 2]]) -> String {
         let mut body = format!("90\n{}\n70\n0\n", points.len());
         for p in points {
             body.push_str(&format!("10\n{}\n20\n{}\n", p[0], p[1]));
         }
-        self.entity("LWPOLYLINE", &body)
+        let h = self.entity("LWPOLYLINE", &body);
+        self.pixel.push(Value::Null);
+        h
     }
     fn hatch(&mut self, angle: f64) -> String {
-        self.entity("HATCH", &format!("2\nANSI31\n70\n0\n52\n{angle}\n91\n0\n"))
+        let h = self.entity("HATCH", &format!("2\nANSI31\n70\n0\n52\n{angle}\n91\n0\n"));
+        self.pixel(&h, "HATCH", json!({"coordinates": [angle]}));
+        h
     }
     /// A hatch with pattern data: one pattern line at `angle` whose rows are `spacing` apart.
     fn hatch_pattern(&mut self, angle: f64, spacing: f64) -> String {
         let t = angle.to_radians();
         let (dx, dy) = (-t.sin() * spacing, t.cos() * spacing);
-        self.entity(
+        let h = self.entity(
             "HATCH",
             &format!("2\nANSI31\n70\n0\n91\n0\n52\n{angle}\n78\n1\n53\n{angle}\n43\n0\n44\n0\n45\n{dx}\n46\n{dy}\n79\n0\n"),
-        )
+        );
+        self.pixel(&h, "HATCH", json!({"coordinates": [angle, spacing]}));
+        h
     }
     /// An expression without members yet; members join it with `member_in`.
     fn expression(&mut self, kind: &str, label: &str) -> String {
@@ -174,6 +198,17 @@ impl Drawing {
             "views": self.views,
             "source": {"entities": self.kinds.iter().map(|(h, k)| json!({"id": h, "kind": k})).collect::<Vec<_>>()},
         })
+    }
+    /// The same drawing as a pixel graph: members, expressions and structure unchanged, the geometry in the
+    /// entities; none when an entity (a polyline) has no pixel form.
+    fn pixel_graph(&self) -> Option<Value> {
+        if self.pixel.iter().any(Value::is_null) {
+            return None;
+        }
+        let mut g = self.graph();
+        g["profile"] = json!(drafting::PIXEL_PROFILE);
+        g["source"]["entities"] = json!(self.pixel);
+        Some(g)
     }
     fn findings(&self) -> BTreeMap<String, Vec<oe_contracts::MdDraftingFinding>> {
         drafting::evaluate_bytes(&self.dxf(), &self.graph()).unwrap()
@@ -559,6 +594,105 @@ fn collinear_pieces_are_measured_as_one_line() {
     }
     let f = d.findings();
     assert!(f["source"].is_empty(), "{f:#?}");
+}
+
+/// A pixel graph, whose geometry is its own entities, is evaluated like the DXF of the same drawing: every fixture
+/// drawn with lines, arcs, circles, texts and hatches gives the same findings both ways, and a graph written by
+/// hand with the coordinates of the dimension-text fixture gives the fixture's finding.
+#[test]
+fn a_pixel_graph_yields_the_findings_of_the_dxf_path() {
+    let k = drafting::knowledge().unwrap();
+    let rules = drafting::rules(&k.shapes).unwrap();
+    let mut compared = 0;
+    for r in &rules {
+        for violating in [true, false] {
+            let d = fixture(&r.id, violating);
+            let Some(pixel) = d.pixel_graph() else {
+                continue;
+            };
+            let by_pixel = drafting::evaluate_pixel_graph(&pixel).unwrap();
+            assert_eq!(d.findings(), by_pixel, "{} violating={violating}", r.id);
+            compared += 1;
+        }
+    }
+    assert!(compared >= 50, "{compared} fixtures compared");
+    // By hand: the violating fixture of G4-001 (a diameter text crossed by a centre line) as a pixel graph, with the
+    // fixture's coordinates as entity coordinates; the text's height, rotation and width factor follow its point.
+    let d = fixture("G4-001-dimension-text-not-crossed", true);
+    let pixel = json!({
+        "profile": drafting::PIXEL_PROFILE,
+        "expressions": [
+            {"id": "expression:0", "kind": "dimension_diameter", "label": "Ø40"},
+            {"id": "expression:1", "kind": "center_axis", "label": ""}
+        ],
+        "members": [
+            {"id": "expression:0:m0", "source_handle": "F1", "member_role": "dimension_text", "line_type": "text",
+             "expression_id": "expression:0", "interval": [0.0, 1.0], "view_id": "view:main"},
+            {"id": "expression:1:m0", "source_handle": "F2", "member_role": "center_line", "line_type": "thin_dash_dot",
+             "expression_id": "expression:1", "interval": [0.0, 1.0], "view_id": "view:main"}
+        ],
+        "structural_lines": [],
+        "implied_spans": [],
+        "views": [],
+        "source": {"entities": [
+            {"id": "F1", "kind": "TEXT", "layer": "0", "coordinates": [10.0, 10.0, 3.5, 0.0, 1.0], "text": "%%c40"},
+            {"id": "F2", "kind": "LINE", "layer": "0", "coordinates": [0.0, 11.5, 40.0, 11.5]}
+        ]}
+    });
+    let by_pixel = drafting::evaluate_pixel_graph(&pixel).unwrap();
+    assert_eq!(d.findings(), by_pixel, "{by_pixel:#?}");
+    for layer in LAYERS {
+        assert_eq!(by_pixel[layer].len(), 1, "{by_pixel:#?}");
+        assert_eq!(by_pixel[layer][0].rule_id, "G4-001-dimension-text-not-crossed");
+        assert_eq!(by_pixel[layer][0].focus, format!("{layer}:expression:0:m0"));
+        assert_eq!(by_pixel[layer][0].source_handles, vec!["F1".to_owned()]);
+    }
+    // The general entry: a pixel graph needs no bytes, a DXF graph needs its bytes.
+    assert_eq!(drafting::evaluate_graph(&pixel, None).unwrap(), by_pixel);
+    assert!(drafting::evaluate_graph(&d.graph(), None).is_err());
+    assert_eq!(drafting::evaluate_graph(&d.graph(), Some(&d.dxf())).unwrap(), by_pixel);
+}
+
+/// A pixel text written with the font stacking marks (U+E1D6…U+E1DA) has the two boxes of the text model: the
+/// stacked tolerance follows the main text, taller than it. A centre line passing above the main text through the
+/// stack region alone crosses the dimension text; the same text written flat is one box the line passes above.
+#[test]
+fn a_stacked_pixel_text_is_crossed_through_its_stack_box() {
+    let graph = |raw: &str| {
+        json!({
+            "profile": drafting::PIXEL_PROFILE,
+            "expressions": [
+                {"id": "expression:0", "kind": "dimension_diameter", "label": "Ø19+0.05/+0.02"},
+                {"id": "expression:1", "kind": "center_axis", "label": ""}
+            ],
+            "members": [
+                {"id": "expression:0:m0", "source_handle": "T1", "member_role": "dimension_text", "line_type": "text",
+                 "expression_id": "expression:0", "interval": [0.0, 1.0], "view_id": "view:main"},
+                {"id": "expression:1:m0", "source_handle": "L1", "member_role": "center_line", "line_type": "thin_dash_dot",
+                 "expression_id": "expression:1", "interval": [0.0, 1.0], "view_id": "view:main"}
+            ],
+            "structural_lines": [],
+            "implied_spans": [],
+            "views": [],
+            "source": {"entities": [
+                // Text height 3.5 at (10, 10): the main text "Ø19" is 8.4 wide and 3.5 tall; the stack begins at
+                // x = 18.4, 0.15 heights below the baseline, and is 1.3 heights tall, reaching y = 14.025.
+                {"id": "T1", "kind": "TEXT", "layer": "0", "coordinates": [10.0, 10.0, 3.5, 0.0, 1.0], "text": raw},
+                // A centre line at y = 13.3: above the main text's box, inside the stack's box.
+                {"id": "L1", "kind": "LINE", "layer": "0", "coordinates": [0.0, 13.3, 40.0, 13.3]}
+            ]}
+        })
+    };
+    let stacked = drafting::evaluate_pixel_graph(&graph("%%C19\u{E1D6}+0.05\u{E1DA}\u{E1D7}+0.02\u{E1D9}")).unwrap();
+    for layer in LAYERS {
+        assert_eq!(stacked[layer].len(), 1, "{stacked:#?}");
+        let f = &stacked[layer][0];
+        assert_eq!(f.rule_id, "G4-001-dimension-text-not-crossed");
+        assert_eq!(f.focus, format!("{layer}:expression:0:m0"));
+        assert!(f.value.as_deref().is_some_and(|v| v.contains("expression:1:m0")), "{f:#?}");
+    }
+    let flat = drafting::evaluate_pixel_graph(&graph("%%C19+0.05+0.02")).unwrap();
+    assert!(flat.values().all(Vec::is_empty), "{flat:#?}");
 }
 
 #[test]

@@ -1,0 +1,18 @@
+[package]
+name = "oe-drawing-pixel"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+description = "Pixel-level lower half of the drawing route: refine proposed members on binary ink and vectorise the rest"
+
+[dependencies]
+anyhow.workspace = true
+# Same locked decoder as semantica-runtime; the only I/O of this crate is decoding PNG bytes.
+png = { version = "=0.18.1", default-features = false, features = ["zlib-rs"] }
+# Observation files in, graph and provenance out; digests of the page and tile images.
+serde_json.workspace = true
+sha2.workspace = true
+
+[lints]
+workspace = true

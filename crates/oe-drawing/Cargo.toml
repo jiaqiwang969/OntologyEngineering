@@ -18,5 +18,10 @@ oe-drawing-check.workspace = true
 oe-contracts = { path = "../oe-contracts" }
 oe-kernel = { path = "../oe-kernel" }
 
+[dev-dependencies]
+# End-to-end test of the pixel synthesis against the graph check and the review page.
+oe-drawing-pixel = { path = "../oe-drawing-pixel" }
+png = { version = "=0.18.1", default-features = false, features = ["zlib-rs"] }
+
 [lints]
 workspace = true

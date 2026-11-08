@@ -2236,6 +2236,32 @@
     "scope": "Knowledge completeness and linkage; recognition quality is evaluated separately"
   },
   {
+    "behavior": "a_pixel_graph_yields_the_findings_of_the_dxf_path",
+    "checker": "check_rules",
+    "checkerModule": "drawing_understanding_check",
+    "checkerPath": "crates/oe-drawing-check/src/drafting.rs",
+    "constraint": "md_drafting_rules",
+    "module": "drawing_understanding_check",
+    "name": "md_drafting_rules_a_pixel_graph_yields_the_findings_of_the_dxf_path",
+    "oracle": "Every authored fixture drawn with lines, arcs, circles, texts and hatches, violating and conforming, gives identical findings when its geometry is read from the DXF bytes and when it is read from the entities of a pixel graph (profile pixel-expression-rules/1); a pixel graph written by hand with the coordinates of the dimension-text fixture gives the fixture's finding on the three layers, and the general entry needs no bytes for it",
+    "requirement": "req_md_drawing_route",
+    "rustPath": "crates/oe-drawing-check/tests/drafting_rules.rs",
+    "scope": "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+  },
+  {
+    "behavior": "a_stacked_pixel_text_is_crossed_through_its_stack_box",
+    "checker": "check_rules",
+    "checkerModule": "drawing_understanding_check",
+    "checkerPath": "crates/oe-drawing-check/src/drafting.rs",
+    "constraint": "md_drafting_rules",
+    "module": "drawing_understanding_check",
+    "name": "md_drafting_rules_a_stacked_pixel_text_is_crossed_through_its_stack_box",
+    "oracle": "A pixel text written with the font stacking marks U+E1D6 to U+E1DA has a main box and a taller stack box; a centre line above the main text through the stack region alone is a crossing of the dimension text on every layer, and the same text written flat is not crossed",
+    "requirement": "req_md_drawing_route",
+    "rustPath": "crates/oe-drawing-check/tests/drafting_rules.rs",
+    "scope": "Route, page and check behaviour on synthetic or original public input; real-drawing qualification is recorded separately"
+  },
+  {
     "behavior": "every_rule_has_a_violating_and_a_conforming_fixture",
     "checker": "check_rules",
     "checkerModule": "drawing_understanding_check",

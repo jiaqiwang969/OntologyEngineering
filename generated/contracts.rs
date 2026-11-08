@@ -5843,6 +5843,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpressionGraph", "layer_convention", "gbt14665_2012_table6_consistent"),
     ("MdEngineeringExpressionGraph", "layer_convention", "not_qualified"),
     ("MdEngineeringExpressionGraph", "profile", "dxf-expression-rules/2"),
+    ("MdEngineeringExpressionGraph", "profile", "pixel-expression-rules/1"),
     ("MdEngineeringExpressionGraph", "schema", "oev2.drawing-expression-graph/1"),
     ("MdExpressionGraphCheck", "status", "passed"),
     ("MdExpressionMember", "line_type", "block"),
@@ -21036,7 +21037,7 @@ pub struct MdEngineeringExpressionGraph {
     pub line_styles: Vec<MdLineStyle>,
     /// All expression members
     pub members: Vec<MdExpressionMember>,
-    /// Rule profile
+    /// Rule profile: dxf-expression-rules/2 reads the geometry from the DXF bytes; pixel-expression-rules/1 reads it from the graph's own entities recovered from a page image
     pub profile: String,
     /// Graph schema
     pub schema: String,
@@ -21063,7 +21064,7 @@ impl MdEngineeringExpressionGraph {
         if self.source_sha256.trim().is_empty() { failures.push("MdEngineeringExpressionGraph.source_sha256:required".into()); }
 
         if !["gbt14665_2012_table6_consistent","not_qualified",].contains(&self.layer_convention.as_str()) { failures.push("MdEngineeringExpressionGraph.layer_convention:allowed_values".into()); }
-        if !["dxf-expression-rules/2",].contains(&self.profile.as_str()) { failures.push("MdEngineeringExpressionGraph.profile:allowed_values".into()); }
+        if !["dxf-expression-rules/2","pixel-expression-rules/1",].contains(&self.profile.as_str()) { failures.push("MdEngineeringExpressionGraph.profile:allowed_values".into()); }
         if !["oev2.drawing-expression-graph/1",].contains(&self.schema.as_str()) { failures.push("MdEngineeringExpressionGraph.schema:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
@@ -21928,7 +21929,7 @@ pub struct MdUsageGraph {
     pub epsilon_drawing_units: f64,
     /// All native expanded occurrences
     pub members: Vec<MdNativeLayerMember>,
-    /// dxf-usage-rules/1
+    /// dxf-usage-rules/1; pixel-expression-rules/1 when the entities were recovered from a page image
     pub profile: String,
     /// Retained source relations, not inferred physical topology
     pub relations: Vec<MdUsageRelation>,

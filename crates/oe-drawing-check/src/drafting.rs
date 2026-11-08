@@ -4,7 +4,9 @@
 //! relations between them, and one shape per drafting rule with its concept, standard clause and message.
 //! This module only exports facts and runs the framework's SHACL engine; it holds no rule of its own.
 //! Objects take their class from the member roles of the frozen graph (the recognition's identity) and
-//! their geometry from the source DXF bytes, read here without the classifier. Generic geometry predicates
+//! their geometry from the source DXF bytes, read here without the classifier; a pixel graph (members
+//! recovered from a page image) carries its geometry in its own entities, which become synthetic records
+//! for the same reader. Generic geometry predicates
 //! give the relations (crossed by, coincident with, end on outline, angle). Facts are exported in three
 //! layers and the same shapes are evaluated on each: `source` is the drawing as drawn, `recognition` is
 //! what the graph claims (member intervals and labels), `presentation` is what the review page draws
@@ -26,6 +28,10 @@ pub const KNOWLEDGE_SCHEMA: &str = "oev2.drafting-ontology/1";
 /// The ontology and the shapes, compiled in so that a change rebinds the program.
 pub const KNOWLEDGE: &str = include_str!("../knowledge/drafting-ontology.toml");
 pub const LAYERS: [&str; 3] = ["source", "recognition", "presentation"];
+/// Profile of a graph whose geometry is read from the DXF bytes, and of a pixel graph whose geometry is its own
+/// `source.entities` (members recovered from a page image); both are evaluated with the same facts and shapes.
+pub const DXF_PROFILE: &str = "dxf-expression-rules/2";
+pub const PIXEL_PROFILE: &str = "pixel-expression-rules/1";
 const NS: &str = "urn:oev2:drafting:";
 const SH: &str = "http://www.w3.org/ns/shacl#";
 const RDFS: &str = "http://www.w3.org/2000/01/rdf-schema#";
@@ -894,6 +900,104 @@ fn d_style_width(d: &Dxf, r: &dxf::Record) -> f64 {
         .get(r.tag_or(7, "STANDARD"))
         .copied()
         .unwrap_or(1.)
+}
+
+// ------------------------------------------------------------------------------------------------ pixel graphs
+
+/// Whether a graph is a pixel graph, whose geometry is its own entities rather than DXF bytes.
+fn is_pixel_graph(g: &Value) -> bool {
+    g.get("profile").and_then(Value::as_str) == Some(PIXEL_PROFILE)
+}
+
+/// Synthetic records of a pixel graph (profile `pixel-expression-rules/1`): every entity of `source.entities` becomes
+/// one record with the group codes the DXF reader expects, so that objects, relations, facts and shapes are those of
+/// the DXF path. LINE `[x0, y0, x1, y1]` gives 10/20/11/21; ARC `[cx, cy, r, start°, sweep°]` gives 10/20/40/50/51
+/// (a negative sweep is the same arc run the other way); CIRCLE `[cx, cy, r, …]` gives 10/20/40; a text (`text` and
+/// coordinates `[x, y, height, rotation°, width factor]`, x and y the baseline-left insertion point) gives a TEXT
+/// record with 1/10/20/40/50/41/7 whatever its kind, since a recovered text has no MTEXT formatting or attachment,
+/// and a text with fewer than three coordinates has no height and no box, like a DXF text without a height; HATCH
+/// `[angle°, spacing]` gives the pattern line 53 and the row offset 45/46 perpendicular to it; SOLID (an arrowhead)
+/// and every other kind carry no geometry, as in the DXF path. The entity's `line_type` (the pattern measured on the
+/// page) is carried as group 6; the checker takes line types from the members, as it does for a DXF.
+pub fn records_from_pixel_graph(g: &Value) -> Result<Vec<dxf::Record>> {
+    ensure!(is_pixel_graph(g), "drafting_pixel_profile");
+    let num = |code: i64, value: f64| (code, format!("{value}"));
+    let mut out = Vec::new();
+    for e in list(get(g, "source")?, "entities")? {
+        let id = text(e, "id")?;
+        ensure!(!id.is_empty(), "drafting_pixel_entity_id");
+        let kind = text(e, "kind")?;
+        let layer = optional_text(e, "layer").unwrap_or_else(|| "0".into());
+        let c = match e.get("coordinates") {
+            Some(v) if !v.is_null() => numbers(e, "coordinates")?,
+            _ => Vec::new(),
+        };
+        let need = |n: usize| -> Result<()> {
+            ensure!(c.len() >= n, "drafting_pixel_coordinates:{kind}:{id}");
+            Ok(())
+        };
+        let mut tags: Vec<(i64, String)> = vec![(5, id.to_owned()), (8, layer)];
+        if let Some(line_type) = optional_text(e, "line_type") {
+            tags.push((6, line_type));
+        }
+        let record_kind = match kind {
+            "LINE" => {
+                need(4)?;
+                tags.extend([num(10, c[0]), num(20, c[1]), num(11, c[2]), num(21, c[3])]);
+                "LINE"
+            }
+            "ARC" => {
+                need(5)?;
+                let (start, sweep) = if c[4] < 0. { (c[3] + c[4], -c[4]) } else { (c[3], c[4]) };
+                tags.extend([num(10, c[0]), num(20, c[1]), num(40, c[2]), num(50, start), num(51, start + sweep)]);
+                "ARC"
+            }
+            "CIRCLE" => {
+                need(3)?;
+                tags.extend([num(10, c[0]), num(20, c[1]), num(40, c[2])]);
+                "CIRCLE"
+            }
+            "TEXT" | "MTEXT" | "ATTRIB" => {
+                tags.push((1, optional_text(e, "text").unwrap_or_default()));
+                if c.len() >= 3 {
+                    tags.extend([num(10, c[0]), num(20, c[1]), num(40, c[2])]);
+                    if let Some(rotation) = c.get(3) {
+                        tags.push(num(50, *rotation));
+                    }
+                    if let Some(factor) = c.get(4) {
+                        tags.push(num(41, *factor));
+                    }
+                    tags.push((7, "STANDARD".into()));
+                }
+                "TEXT"
+            }
+            "HATCH" => {
+                need(1)?;
+                tags.push(num(53, c[0]));
+                if let Some(spacing) = c.get(1).copied().filter(|s| *s > 0.) {
+                    let t = c[0].to_radians();
+                    tags.extend([num(45, -spacing * t.sin()), num(46, spacing * t.cos())]);
+                }
+                "HATCH"
+            }
+            other => other,
+        };
+        tags.insert(0, (0, record_kind.to_owned()));
+        out.push(dxf::Record {
+            kind: record_kind.to_owned(),
+            tags,
+        });
+    }
+    Ok(out)
+}
+
+/// Records the geometry of a graph is read from: those of the DXF bytes, or the synthetic records of a pixel graph.
+fn source_records(g: &Value, raw: &[u8]) -> Result<Vec<dxf::Record>> {
+    if is_pixel_graph(g) {
+        records_from_pixel_graph(g)
+    } else {
+        dxf::records(&dxf::decode(raw)?)
+    }
 }
 
 /// A text string read from its record: the text without formatting codes, its width in text heights (stacked parts
@@ -2494,7 +2598,8 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
         source_sha256 == text(&g, "source_sha256")? && source_sha256 == text(source, "sha256")?,
         "drafting_source_identity"
     );
-    let records = dxf::records(&dxf::decode(&raw)?)?;
+    // A pixel graph's source is the page image; its geometry is read from the graph, not from the bytes.
+    let records = source_records(&g, &raw)?;
     let d = Dxf::new(&records)?;
     let output = root.private_path(Path::new(&q.output))?;
     let directory = output.parent().context("drafting_output_directory")?;
@@ -2563,10 +2668,27 @@ fn read_json(path: &Path) -> Result<Value> {
 
 /// Facts and findings of an authored DXF and graph, for tests and fixtures: no files are written.
 pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String, Vec<MdDraftingFinding>>> {
+    evaluate_records(&dxf::records(&dxf::decode(dxf_bytes)?)?, graph)
+}
+
+/// Facts and findings of a pixel graph, whose geometry is its own entities, for tests and fixtures: no files are
+/// written.
+pub fn evaluate_pixel_graph(graph: &Value) -> Result<BTreeMap<String, Vec<MdDraftingFinding>>> {
+    evaluate_records(&records_from_pixel_graph(graph)?, graph)
+}
+
+/// Facts and findings of a graph of either profile: a pixel graph needs no bytes, any other graph needs its DXF bytes.
+pub fn evaluate_graph(graph: &Value, dxf_bytes: Option<&[u8]>) -> Result<BTreeMap<String, Vec<MdDraftingFinding>>> {
+    if is_pixel_graph(graph) {
+        return evaluate_pixel_graph(graph);
+    }
+    evaluate_bytes(dxf_bytes.context("drafting_dxf_bytes_required")?, graph)
+}
+
+fn evaluate_records(records: &[dxf::Record], graph: &Value) -> Result<BTreeMap<String, Vec<MdDraftingFinding>>> {
     let k = knowledge()?;
     let rules = rules(&k.shapes)?;
-    let records = dxf::records(&dxf::decode(dxf_bytes)?)?;
-    let d = Dxf::new(&records)?;
+    let d = Dxf::new(records)?;
     let mut out = BTreeMap::new();
     for layer in LAYERS {
         let objs = objects(layer, graph, &d)?;
@@ -2583,6 +2705,58 @@ pub fn evaluate_bytes(dxf_bytes: &[u8], graph: &Value) -> Result<BTreeMap<String
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_json::json;
+    #[test]
+    fn pixel_entities_become_records_with_the_dxf_group_codes() {
+        let g = json!({
+            "profile": PIXEL_PROFILE,
+            "source": {"entities": [
+                {"id": "P1", "kind": "LINE", "layer": "0", "coordinates": [0.0, 0.0, 10.0, 5.0]},
+                {"id": "P2", "kind": "ARC", "layer": "0", "coordinates": [0.0, 0.0, 10.0, 90.0, -90.0]},
+                {"id": "P3", "kind": "MTEXT", "layer": "0", "line_type": "text", "coordinates": [10.0, 10.0, 3.5, 90.0, 0.7], "text": "%%c40"},
+                {"id": "P4", "kind": "HATCH", "layer": "0", "coordinates": [45.0, 3.0]},
+                {"id": "P5", "kind": "SOLID", "layer": "0", "coordinates": []},
+                {"id": "P6", "kind": "TEXT", "layer": "0", "coordinates": [1.0, 2.0], "text": null},
+                {"id": "P7", "kind": "TEXT", "layer": "0", "coordinates": [0.0, 0.0, 2.5], "text": "A"},
+            ]}
+        });
+        let records = records_from_pixel_graph(&g).unwrap();
+        let d = Dxf::new(&records).unwrap();
+        // The line and the arc give the chains of the DXF reader; a negative sweep is the same arc run the other way.
+        let (chains, _) = d.chains(d.by_handle["P1"], (0., 0.)).unwrap();
+        assert_eq!(chains, vec![vec![(0., 0.), (10., 5.)]]);
+        assert_eq!(d.by_handle["P1"].tag(8), Some("0"));
+        let (chains, arcs) = d.chains(d.by_handle["P2"], (0., 0.)).unwrap();
+        assert_eq!(arcs, vec![((0., 0.), 10.)]);
+        assert!(dist(chains[0][0], (10., 0.)) < 1e-6 && dist(*chains[0].last().unwrap(), (0., 10.)) < 1e-6);
+        // A recovered text is a TEXT record anchored at its baseline-left point, with the height, rotation and width
+        // factor that follow in its coordinates, whatever kind the graph gives it; its line type rides as group 6.
+        let r = d.by_handle["P3"];
+        assert_eq!(r.kind, "TEXT");
+        assert_eq!(r.tag(6), Some("text"));
+        let (main, stack, text, rotation) = d.text_box(r, (0., 0.)).unwrap().unwrap();
+        assert_eq!(text, "Ø40");
+        assert!(stack.is_none());
+        assert_eq!(rotation, 90.);
+        assert!(dist(main.origin, (10., 10.)) < 1e-9 && (main.height - 3.5).abs() < 1e-9);
+        assert!((main.width - 2.6 * 3.5 * 0.7).abs() < 1e-9, "{}", main.width);
+        // Height alone: no rotation and a width factor of one.
+        let (main, _, _, rotation) = d.text_box(d.by_handle["P7"], (0., 0.)).unwrap().unwrap();
+        assert_eq!(rotation, 0.);
+        assert!((main.height - 2.5).abs() < 1e-9 && (main.width - 0.8 * 2.5).abs() < 1e-9, "{}", main.width);
+        // A hatch carries its pattern angle and a row offset perpendicular to it, of the given spacing.
+        let h = d.by_handle["P4"];
+        assert_eq!(h.float(53).unwrap(), 45.);
+        let t = 45f64.to_radians();
+        assert!((-t.sin() * h.float(45).unwrap() + t.cos() * h.float(46).unwrap() - 3.).abs() < 1e-9);
+        // An arrowhead and a text with only an insertion point carry no geometry; the text has no box.
+        assert!(d.chains(d.by_handle["P5"], (0., 0.)).unwrap().0.is_empty());
+        assert!(d.text_box(d.by_handle["P6"], (0., 0.)).unwrap().is_none());
+        // Only a pixel graph has synthetic records; a line needs its four coordinates.
+        assert!(records_from_pixel_graph(&json!({"profile": DXF_PROFILE, "source": {"entities": []}})).is_err());
+        let short = json!({"profile": PIXEL_PROFILE, "source": {"entities": [{"id": "P7", "kind": "LINE", "coordinates": [0.0, 0.0]}]}});
+        assert!(records_from_pixel_graph(&short).is_err());
+    }
     #[test]
     fn a_chord_through_a_rotated_box_is_measured() {
         let tb = TextBox {

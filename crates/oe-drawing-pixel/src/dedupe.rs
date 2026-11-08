@@ -4,6 +4,13 @@
 //! its duplicates. Members a duplicate saw that the kept proposal lacks (an extension line beyond
 //! the tile edge) are added. Centre lines without text merge when collinear and continuing.
 //!
+//! A text read whole on one tile and in part (with `?`) on its neighbour is one dimension or note
+//! when the readings fit with `?` standing for any run of characters and lie together: their text
+//! boxes overlap (a third of the smaller box for notes; a reading with nothing readable needs the same
+//! dimension line), their centres lie within 70 px with two readable characters, or their dimension
+//! lines (as refined, else as proposed) are one line. The whole reading is kept with the best supported
+//! geometry of both, its text box too when only the partial reading's box is supported.
+//!
 //! Duplicates are also recognised by geometry: two dimensions whose refined dimension lines are
 //! collinear (3 px) and overlap are one dimension, and dimension, leader-note and tolerance-frame
 //! proposals whose refined leader segments coincide are one object (the observer lists a thread note
@@ -93,7 +100,7 @@ fn any_coincident(a: &RefinedProposal, b: &RefinedProposal, role_a: &str, role_b
 fn rank(p: &RefinedProposal) -> (u8, usize, u8, f64) {
     let category = match p.proposal.category {
         Category::Dimension => 3,
-        Category::GdtFrame => 2,
+        Category::GdtFrame | Category::Datum => 2,
         Category::Note => 1,
         _ => 0,
     };
@@ -157,6 +164,19 @@ fn bbox_of(points: &[P]) -> [f64; 4] {
     b
 }
 
+/// Intersection over the smaller box's area.
+fn containment(a: [f64; 4], b: [f64; 4]) -> f64 {
+    let w = (a[2].min(b[2]) - a[0].max(b[0])).max(0.0);
+    let h = (a[3].min(b[3]) - a[1].max(b[1])).max(0.0);
+    let small = ((a[2] - a[0]) * (a[3] - a[1])).min((b[2] - b[0]) * (b[3] - b[1]));
+    if small > 0.0 { w * h / small } else { 0.0 }
+}
+
+/// The first cell of a tolerance frame's text (its characteristic symbol).
+fn first_cell(text: &str) -> String {
+    text.split('|').next().unwrap_or("").trim().to_owned()
+}
+
 fn overlap(a: [f64; 4], b: [f64; 4]) -> f64 {
     let w = (a[2].min(b[2]) - a[0].max(b[0])).max(0.0);
     let h = (a[3].min(b[3]) - a[1].max(b[1])).max(0.0);
@@ -173,8 +193,83 @@ fn compatible_texts(a: &str, b: &str) -> bool {
     ka == kb || ka.contains('?') || kb.contains('?') || ka.is_empty() || kb.is_empty() || ka.contains(&kb) || kb.contains(&ka)
 }
 
+/// Whether two readings can be one text: normalised, `?` standing for any run of characters (an unread
+/// part), some text matches both (`?01` and `Ø20+0.02/-0.01`, `Ø?` and `Ø30`).
+fn wildcard_compatible(a: &str, b: &str) -> bool {
+    let (ka, kb): (Vec<char>, Vec<char>) = (normalise_key(a).chars().collect(), normalise_key(b).chars().collect());
+    let (n, m) = (ka.len(), kb.len());
+    // fits[i][j]: the rests ka[i..] and kb[j..] match a common text.
+    let mut fits = vec![vec![false; m + 1]; n + 1];
+    fits[n][m] = true;
+    for i in (0..=n).rev() {
+        for j in (0..=m).rev() {
+            if i == n && j == m {
+                continue;
+            }
+            fits[i][j] = if i < n && ka[i] == '?' {
+                fits[i + 1][j] || (j < m && fits[i][j + 1])
+            } else if j < m && kb[j] == '?' {
+                fits[i][j + 1] || (i < n && fits[i + 1][j])
+            } else {
+                i < n && j < m && ka[i] == kb[j] && fits[i + 1][j + 1]
+            };
+        }
+    }
+    fits[0][0]
+}
+
+/// Text boxes of a proposal: refined when supported, else as proposed.
+fn text_boxes(p: &RefinedProposal) -> Vec<[f64; 4]> {
+    p.members
+        .iter()
+        .filter_map(|m| match (&m.refined, &m.proposed, m.supported) {
+            (Shape::TextBox { bbox, .. }, _, true) => Some(*bbox),
+            (_, Shape::TextBox { bbox, .. }, false) => Some(*bbox),
+            _ => None,
+        })
+        .collect()
+}
+
+/// A dimension or note read whole on one tile and in part on another (see the module notes).
+fn partial_reading_pair(a: &RefinedProposal, b: &RefinedProposal, params: &DedupeParams) -> bool {
+    let (ta, tb) = (&a.proposal.text, &b.proposal.text);
+    if !(ta.contains('?') || tb.contains('?')) || !wildcard_compatible(ta, tb) {
+        return false;
+    }
+    let readable = |t: &str| normalise_key(t).chars().filter(|c| *c != '?').count();
+    let least = readable(ta).min(readable(tb));
+    let dimension = a.proposal.category == Category::Dimension;
+    let lines = |p: &RefinedProposal| -> Vec<(P, P)> { p.members.iter().filter(|m| m.role == "dimension_line").filter_map(best_segment).collect() };
+    let same_line = dimension
+        && lines(a).iter().any(|sa| {
+            lines(b)
+                .iter()
+                .any(|sb| coincident(*sa, *sb, params.line_angle_rad, params.coincident_offset_px.max(4.0), params.coincident_overlap_px))
+        });
+    if same_line {
+        return true;
+    }
+    if least == 0 {
+        return false;
+    }
+    let need = if dimension { 1e-9 } else { 0.3 };
+    let boxes = text_boxes(a).iter().any(|x| text_boxes(b).iter().any(|y| containment(*x, *y) >= need));
+    let close = least >= 2 && dist(a.proposal.centre, b.proposal.centre) < params.centre_px;
+    boxes || close
+}
+
 fn same_object(a: &RefinedProposal, b: &RefinedProposal, params: &DedupeParams) -> bool {
     let (ca, cb) = (a.proposal.category, b.proposal.category);
+    // A label read on a datum symbol (its letter in the frame) is the datum, never a callout.
+    if let ((Category::Label, Category::Datum) | (Category::Datum, Category::Label), Some(ba), Some(bb)) =
+        ((ca, cb), a.proposal.bbox, b.proposal.bbox)
+    {
+        let (label, datum) = if ca == Category::Label { (ba, bb) } else { (bb, ba) };
+        let label_area = ((label[2] - label[0]) * (label[3] - label[1])).max(1e-9);
+        let w = (label[2].min(datum[2]) - label[0].max(datum[0])).max(0.0);
+        let h = (label[3].min(datum[3]) - label[1].max(datum[1])).max(0.0);
+        return normalise_key(&a.proposal.text) == normalise_key(&b.proposal.text) && w * h / label_area >= 0.5;
+    }
     // Geometry: one dimension line, or one leader, drawn once on the page.
     let compatible = compatible_texts(&a.proposal.text, &b.proposal.text);
     if ca == Category::Dimension && cb == Category::Dimension && compatible && any_coincident(a, b, "dimension_line", "dimension_line", params) {
@@ -196,6 +291,9 @@ fn same_object(a: &RefinedProposal, b: &RefinedProposal, params: &DedupeParams) 
     }
     if ca != cb {
         return false;
+    }
+    if matches!(ca, Category::Dimension | Category::Note) && partial_reading_pair(a, b, params) {
+        return true;
     }
     let close = dist(a.proposal.centre, b.proposal.centre) < params.centre_px;
     match ca {
@@ -226,6 +324,35 @@ fn same_object(a: &RefinedProposal, b: &RefinedProposal, params: &DedupeParams) 
                 _ => true,
             };
             touching && agree
+        }
+        Category::GdtFrame => {
+            // One frame read on two tiles: the boxes overlap mostly (one may be cut by a tile edge) and
+            // the characteristic symbols agree (or one is unread).
+            let (sa, sb) = (first_cell(&a.proposal.text), first_cell(&b.proposal.text));
+            let symbols = sa == sb || sa.contains('?') || sb.contains('?') || sa.is_empty() || sb.is_empty();
+            match (a.proposal.bbox, b.proposal.bbox) {
+                (Some(ba), Some(bb)) => symbols && containment(ba, bb) >= 0.6,
+                _ => close && normalise_key(&a.proposal.text) == normalise_key(&b.proposal.text),
+            }
+        }
+        Category::SurfaceTexture => {
+            // One symbol read on two tiles: the same value (a partly unread one fitting with `?` as a
+            // wildcard) and the symbol boxes overlapping (IoU above 0.3), as observed or as refined
+            // from the symbol's strokes.
+            let (ta, tb) = (&a.proposal.text, &b.proposal.text);
+            let values = normalise_key(ta) == normalise_key(tb) || ((ta.contains('?') || tb.contains('?')) && wildcard_compatible(ta, tb));
+            let symbol_box = |p: &RefinedProposal| {
+                let pts: Vec<P> = p
+                    .members
+                    .iter()
+                    .filter(|m| m.supported && m.role.starts_with("roughness_symbol"))
+                    .flat_map(|m| m.refined.points())
+                    .collect();
+                (!pts.is_empty()).then(|| bbox_of(&pts))
+            };
+            let observed = matches!((a.proposal.bbox, b.proposal.bbox), (Some(ba), Some(bb)) if overlap(ba, bb) > 0.3);
+            let refined = matches!((symbol_box(a), symbol_box(b)), (Some(ba), Some(bb)) if overlap(ba, bb) > 0.3);
+            values && (observed || refined || close)
         }
         Category::BreakLine => {
             let pa: Vec<P> = a.members.iter().flat_map(|m| m.proposed.points()).collect();
@@ -267,6 +394,7 @@ fn same_member(a: &RefinedMember, b: &RefinedMember, params: &DedupeParams) -> b
             (near(*v0, *w0) && near(*v1, *w1)) || (near(*v0, *w1) && near(*v1, *w0))
         }
         (Shape::Hatch { polygon: pa, .. }, Shape::Hatch { polygon: pb, .. }) => overlap(bbox_of(pa), bbox_of(pb)) > 0.6,
+        (Shape::Circle { c: ca, r: ra }, Shape::Circle { c: cb, r: rb }) => dist(*ca, *cb) <= 6.0 && (ra - rb).abs() <= 6.0,
         _ => false,
     }
 }
@@ -369,8 +497,23 @@ pub fn dedupe(items: Vec<RefinedProposal>, params: &DedupeParams) -> (Vec<Refine
                 }
             }
             for m in other.members {
-                // A duplicate with another reading never lends its text.
+                // A duplicate with another reading never lends its text; its box replaces the kept
+                // text's box only when that one is unsupported and its own is supported.
                 if !same_text && matches!(m.refined, Shape::TextBox { .. }) {
+                    let unsupported_text = merged
+                        .members
+                        .iter()
+                        .position(|r| r.role == m.role && !r.supported && matches!(r.refined, Shape::TextBox { .. }));
+                    if let (Some(k), true) = (unsupported_text, m.supported) {
+                        let r = &mut merged.members[k];
+                        r.refined = m.refined.clone();
+                        r.support_after = m.support_after;
+                        r.supported = true;
+                        r.moved_px = m.moved_px;
+                        r.merged_from = Some(from.clone());
+                        r.adjustments.push(format!("text_box_from_partial_reading:{from}"));
+                        record.swapped.push((format!("{}:box", m.role), from.clone()));
+                    }
                     continue;
                 }
                 let found = merged
@@ -439,7 +582,58 @@ mod tests {
             arrow_length_px: None,
             discarded_components: 0,
             adjustments: Vec::new(),
+            span_px: None,
         }
+    }
+
+    #[test]
+    fn frames_roughness_and_datum_labels_merge_by_their_boxes() {
+        let text_box = |b: [f64; 4]| Shape::TextBox { bbox: b, vertical: false };
+        let with_box = |mut p: RefinedProposal, b: [f64; 4]| {
+            p.proposal.bbox = Some(b);
+            p
+        };
+        // A frame cut by the tile edge and the whole frame: one frame, the fuller reading kept.
+        let f1 = with_box(proposal(Category::GdtFrame, "↗ | ?", (2960.0, 2367.0), 20.0, "t_1400_1400.png", vec![member("frame_cell", Shape::Segment((2926.0, 2312.0), (2999.0, 2312.0)), 0.9)]), [2926.0, 2312.0, 2999.0, 2422.0]);
+        let f2 = with_box(proposal(Category::GdtFrame, "↗ | 0.03 | C-D", (3134.0, 2367.0), 200.0, "t_2800_1400.png", vec![member("frame_cell", Shape::Segment((2926.0, 2312.0), (3342.0, 2312.0)), 0.95)]), [2926.0, 2312.0, 3342.0, 2422.0]);
+        let f3 = with_box(proposal(Category::GdtFrame, "≡ | 0.03 | G", (3300.0, 3070.0), 200.0, "t_2800_2800.png", vec![member("frame_cell", Shape::Segment((3136.0, 3014.0), (3480.0, 3014.0)), 0.95)]), [3136.0, 3014.0, 3480.0, 3125.0]);
+        // Two readings of one roughness symbol whose value boxes lie apart; another symbol with another value.
+        let r1 = with_box(proposal(Category::SurfaceTexture, "3.2", (600.0, 600.0), 50.0, "t_0_0.png", vec![member("roughness_value", text_box([580.0, 590.0, 620.0, 610.0]), 1.0)]), [540.0, 550.0, 690.0, 720.0]);
+        let r2 = with_box(proposal(Category::SurfaceTexture, "3.2", (690.0, 600.0), 150.0, "t_1400_0.png", vec![member("roughness_value", text_box([670.0, 590.0, 710.0, 610.0]), 1.0)]), [560.0, 548.0, 700.0, 725.0]);
+        let r3 = with_box(proposal(Category::SurfaceTexture, "1.6", (690.0, 600.0), 150.0, "t_1400_0.png", vec![member("roughness_value", text_box([670.0, 590.0, 710.0, 610.0]), 1.0)]), [560.0, 548.0, 700.0, 725.0]);
+        // A callout label read on datum D's frame.
+        let datum = with_box(proposal(Category::Datum, "D", (4684.0, 1596.0), 100.0, "t_4200_1400.png", vec![member("datum_letter", text_box([4660.0, 1575.0, 4708.0, 1618.0]), 1.0)]), [4646.0, 1559.0, 4722.0, 1634.0]);
+        let label = with_box(proposal(Category::Label, "D", (4684.0, 1579.0), 300.0, "t_4200_0.png", vec![member("view_letter", text_box([4646.0, 1558.0, 4722.0, 1600.0]), 1.0)]), [4646.0, 1558.0, 4722.0, 1600.0]);
+        let (kept, _) = dedupe(vec![f1, f2, f3, r1, r2, r3, datum, label], &DedupeParams::default());
+        let texts: Vec<(Category, String)> = kept.iter().map(|k| (k.proposal.category, k.proposal.text.clone())).collect();
+        assert_eq!(texts.len(), 5, "{texts:?}");
+        assert!(texts.contains(&(Category::GdtFrame, "↗ | 0.03 | C-D".to_owned())));
+        assert!(texts.contains(&(Category::GdtFrame, "≡ | 0.03 | G".to_owned())));
+        assert_eq!(texts.iter().filter(|t| t.0 == Category::SurfaceTexture).count(), 2);
+        let d = kept.iter().find(|k| k.proposal.category == Category::Datum).expect("the datum stays");
+        assert!(d.members.iter().all(|m| m.role != "view_letter"), "the label lends no callout letter");
+        assert!(kept.iter().all(|k| k.proposal.category != Category::Label));
+    }
+
+    #[test]
+    fn roughness_readings_merge_by_their_refined_symbols_and_a_partly_unread_value() {
+        let legs = |x: f64, y: f64| {
+            vec![
+                member("roughness_symbol", Shape::Segment((x, y), (x + 40.0, y + 70.0)), 1.0),
+                member("roughness_symbol", Shape::Segment((x + 40.0, y + 70.0), (x + 140.0, y - 100.0)), 1.0),
+            ]
+        };
+        // One symbol read on two tiles with no observed boxes and centres 120 px apart; the same for a
+        // symbol read once as '6.3' and once with its value unread; a third symbol elsewhere.
+        let a = proposal(Category::SurfaceTexture, "1.6", (2900.0, 2000.0), 50.0, "t_1400_1400.png", legs(2891.0, 1990.0));
+        let b = proposal(Category::SurfaceTexture, "1.6", (3020.0, 2000.0), 150.0, "t_2800_1400.png", legs(2892.0, 1988.0));
+        let c = proposal(Category::SurfaceTexture, "?", (5700.0, 1200.0), 20.0, "t_4200_0.png", legs(5703.0, 1200.0));
+        let d = proposal(Category::SurfaceTexture, "6.3", (5800.0, 1200.0), 150.0, "t_5600_0.png", legs(5702.0, 1205.0));
+        let e = proposal(Category::SurfaceTexture, "1.6", (900.0, 900.0), 150.0, "t_0_0.png", legs(890.0, 890.0));
+        let (kept, _) = dedupe(vec![a, b, c, d, e], &DedupeParams::default());
+        let texts: Vec<String> = kept.iter().map(|k| k.proposal.text.clone()).collect();
+        assert_eq!(texts.len(), 3, "{texts:?}");
+        assert!(texts.contains(&"6.3".to_owned()) && !texts.contains(&"?".to_owned()), "{texts:?}");
     }
 
     #[test]
@@ -522,9 +716,44 @@ mod tests {
                     verification: None,
                 },
                 notes: vec![],
+                bbox: None,
             },
             members,
         }
+    }
+
+    #[test]
+    fn partial_readings_merge_with_the_whole_reading_by_position_and_wildcard_text() {
+        assert!(wildcard_compatible("?01", "Ø20+0.02/-0.01"));
+        assert!(wildcard_compatible("Ø?", "Ø30") && wildcard_compatible("Ø1?", "Ø12"));
+        assert!(wildcard_compatible("3. 括号内尺寸为参考?", "?为参考尺寸；"));
+        assert!(!wildcard_compatible("Ø2?", "Ø12") && !wildcard_compatible("?5", "Ø30"));
+        let tb = |b: [f64; 4]| Shape::TextBox { bbox: b, vertical: false };
+        let tip = |p: P| Shape::Tip { approx: p, along: (1.0, 0.0) };
+        // The whole reading with an unsupported line; the partial one with the supported collinear line.
+        let a = proposal(Category::Dimension, "Ø30", (4750.0, 1400.0), 100.0, "t_4200_0.png",
+            vec![member("dimension_text", tb([4661.0, 1259.0, 4900.0, 1475.0]), 1.0), member("dimension_line", Shape::Segment((4167.0, 1791.0), (4838.0, 1321.0)), 0.77)]);
+        let mut b = proposal(Category::Dimension, "Ø?", (4400.0, 1650.0), 20.0, "t_4200_1400.png",
+            vec![member("dimension_text", tb([4661.0, 1400.0, 4816.0, 1476.0]), 0.0), member("dimension_line", Shape::Segment((4060.0, 1866.0), (4671.0, 1438.0)), 0.98)]);
+        b.proposal.provenance.item_index = 1;
+        // A text read whole (no geometry) and its end read with the line and arrows on the next tile.
+        let c = proposal(Category::Dimension, "Ø20+0.02/-0.01", (3139.0, 998.0), 100.0, "t_2800_0.png", vec![member("dimension_text", tb([2925.0, 537.0, 3354.0, 1460.0]), 1.0)]);
+        let d = proposal(Category::Dimension, "?01", (3500.0, 1700.0), 20.0, "t_2800_1400.png",
+            vec![member("dimension_text", tb([3309.0, 1362.0, 3489.0, 1599.0]), 1.0), member("dimension_line", Shape::Segment((3204.0, 1052.0), (3793.0, 2315.0)), 0.84),
+                 member("arrowhead", tip((3569.0, 1836.0)), 1.0), member("arrowhead", tip((3824.0, 2381.0)), 1.0)]);
+        // A diameter read in part next to another one (boxes apart, one readable character): kept apart.
+        let e = proposal(Category::Dimension, "Ø?", (700.0, 300.0), 20.0, "t_0_0.png", vec![member("dimension_text", tb([650.0, 280.0, 700.0, 320.0]), 1.0)]);
+        let f = proposal(Category::Dimension, "Ø20", (760.0, 300.0), 20.0, "t_0_0.png", vec![member("dimension_text", tb([720.0, 280.0, 800.0, 320.0]), 1.0)]);
+        let (kept, _) = dedupe(vec![a, b, c, d, e, f], &DedupeParams::default());
+        assert_eq!(kept.len(), 4, "{:?}", kept.iter().map(|k| k.proposal.text.clone()).collect::<Vec<_>>());
+        let d30 = kept.iter().find(|k| k.proposal.text == "Ø30").expect("the whole reading is kept");
+        let line = d30.members.iter().find(|m| m.role == "dimension_line").unwrap();
+        assert!(line.supported && (line.support_after - 0.98).abs() < 1e-9, "the supported line is taken");
+        let d20 = kept.iter().find(|k| k.proposal.text == "Ø20+0.02/-0.01").expect("the whole reading is kept");
+        assert!(d20.members.iter().any(|m| m.role == "dimension_line" && m.supported));
+        assert_eq!(d20.members.iter().filter(|m| m.role == "arrowhead").count(), 2);
+        assert_eq!(d20.members.iter().filter(|m| m.role == "dimension_text").count(), 1);
+        assert!(kept.iter().any(|k| k.proposal.text == "Ø?") && kept.iter().any(|k| k.proposal.text == "Ø20"));
     }
 
     #[test]

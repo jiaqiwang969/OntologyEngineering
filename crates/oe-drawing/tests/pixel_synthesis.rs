@@ -210,6 +210,7 @@ fn an_authored_page_becomes_a_checked_graph_with_its_page() {
         tile_index: &tiles,
         observations: &observations,
         tile_pngs: &tile_pngs,
+        crops: &BTreeMap::new(),
         scale_note: None,
         threshold: 128,
     })

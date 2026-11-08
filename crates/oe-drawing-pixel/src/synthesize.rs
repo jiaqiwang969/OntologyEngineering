@@ -11,10 +11,13 @@ use serde_json::{Map, Value, json};
 
 use crate::Ink;
 use crate::calibrate::{Calibration, calibrate};
+use crate::callouts::{find_detail_circle, find_title_bar, find_view_arrow, split_title};
+use crate::chains::chain_leaders;
+use crate::lines::robust_width;
 use crate::dedupe::{DedupeParams, Merge, dedupe};
 use crate::geom::{P, add, dist, dot, mul, sub, unit};
 use crate::observe::{
-    Category, Layout, ObservationFile, Proposal, Shape, Verification, load_observation,
+    Category, Layout, ObservationFile, Proposal, Reread, Shape, Verification, load_observation,
     load_tile_index, page_observations, sha256_hex,
 };
 use crate::overlay::{Frame, Overlay};
@@ -25,7 +28,7 @@ use crate::structure::{
     StrokeClass, StructureParams, erased_strokes, group_collinear, remaining_ink, segment_hits_box,
     segment_hits_polygon, vectorise_remainder,
 };
-use crate::textform::{TextMeasure, text_form, text_measure};
+use crate::textform::{TextMeasure, normalise_key, normalise_symbols, text_form, text_measure};
 
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
 pub const USAGE_SCHEMA: &str = "oev2.drawing-usage-graph/1";
@@ -45,6 +48,8 @@ pub struct PageInput<'a> {
     pub observations: &'a [(String, Vec<u8>)],
     /// Tile images by name, for digest verification (any subset).
     pub tile_pngs: &'a BTreeMap<String, Vec<u8>>,
+    /// Re-read crops by the `image` paths their L1D files name, for digest verification.
+    pub crops: &'a BTreeMap<String, Vec<u8>>,
     /// Scale note overriding the L0 title-block scale (`1:1.5`).
     pub scale_note: Option<&'a str>,
     /// Grey threshold of the ink (dark below).
@@ -78,6 +83,7 @@ fn shape_json(s: &Shape) -> Value {
         Shape::Point(p) => json!({"type": "point", "p": pt(p)}),
         Shape::Polyline(v) => json!({"type": "polyline", "points": v.iter().map(pt).collect::<Vec<_>>()}),
         Shape::Hatch { polygon, angle_deg, spacing_px } => json!({"type": "hatch", "polygon": polygon.iter().map(pt).collect::<Vec<_>>(), "angle_deg": fin(*angle_deg), "spacing_px": fin(*spacing_px)}),
+        Shape::Circle { c, r } => json!({"type": "circle", "c": pt(c), "r": fin(*r)}),
     }
 }
 
@@ -113,6 +119,119 @@ fn stroke_line_type(pattern: Option<Pattern>, thick: bool) -> &'static str {
     }
 }
 
+/// Expression kind of a tolerance frame from its characteristic symbol (first cell).
+fn gdt_kind(symbol: &str) -> &'static str {
+    match symbol.trim() {
+        "⊕" | "⌖" => "gps_position",
+        "⊥" => "gps_perpendicularity",
+        "∥" | "//" | "‖" => "gps_parallelism",
+        "∠" => "gps_angularity",
+        "◎" => "gps_coaxiality",
+        "≡" | "⌯" => "gps_symmetry",
+        "↗" => "gps_runout",
+        "⌰" | "↗↗" => "gps_total_runout",
+        "—" | "−" | "─" | "-" => "gps_straightness",
+        "▱" | "⏥" => "gps_flatness",
+        "○" => "gps_circularity",
+        "⌭" => "gps_cylindricity",
+        "⌒" => "gps_line_profile",
+        "⌓" => "gps_surface_profile",
+        _ => "geometric_tolerance",
+    }
+}
+
+fn centre_of(b: [f64; 4]) -> P {
+    ((b[0] + b[2]) * 0.5, (b[1] + b[3]) * 0.5)
+}
+
+/// Distance from a point to a box (0 inside).
+fn box_distance(b: [f64; 4], p: P) -> f64 {
+    let dx = (b[0] - p.0).max(0.0).max(p.0 - b[2]);
+    let dy = (b[1] - p.1).max(0.0).max(p.1 - b[3]);
+    dx.hypot(dy)
+}
+
+/// Intersection over the smaller box's area.
+fn containment(a: [f64; 4], b: [f64; 4]) -> f64 {
+    let w = (a[2].min(b[2]) - a[0].max(b[0])).max(0.0);
+    let h = (a[3].min(b[3]) - a[1].max(b[1])).max(0.0);
+    let small = ((a[2] - a[0]) * (a[3] - a[1])).min((b[2] - b[0]) * (b[3] - b[1]));
+    if small > 0.0 { w * h / small } else { 0.0 }
+}
+
+/// A view letter: one to three capital letters or roman numerals.
+fn view_letter_text(t: &str) -> Option<String> {
+    let t: String = t.chars().filter(|c| !c.is_whitespace()).collect();
+    let ok = !t.is_empty()
+        && t.chars().count() <= 3
+        && t.chars().all(|c| c.is_ascii_uppercase() || ('Ⅰ'..='Ⅻ').contains(&c));
+    ok.then_some(t)
+}
+
+/// A scale text `a:b` with numbers on both sides.
+fn scale_text(t: &str) -> bool {
+    let t: String = t.chars().filter(|c| !c.is_whitespace()).map(|c| if c == '：' { ':' } else { c }).collect();
+    t.split_once(':').is_some_and(|(a, b)| a.parse::<f64>().is_ok() && b.parse::<f64>().is_ok())
+}
+
+/// Re-read texts (accepted L1D re-reads) in place of unreadable ones: a supported text member whose
+/// text has a `?` takes the re-read whose target box overlaps its refined box by at least half (of
+/// the smaller box); the proposal's text follows when it was that text. Returns what was applied.
+fn apply_rereads(kept: &mut [RefinedProposal], rereads: &[Reread]) -> Vec<Value> {
+    // Each re-read goes to the one unread text it covers best (half of the smaller box at least; the
+    // larger text on a tie), each text takes at most one re-read: a line read in part from a
+    // neighbouring tile keeps its '?' and stays out instead of repeating the whole line.
+    let mut best: Vec<Option<(usize, usize, f64, f64)>> = vec![None; rereads.len()];
+    for (pi, rp) in kept.iter().enumerate() {
+        for (mi, m) in rp.members.iter().enumerate() {
+            let Shape::TextBox { bbox, .. } = m.refined else { continue };
+            let old = m.text.clone().unwrap_or_else(|| rp.proposal.text.clone());
+            if !m.supported || !old.contains('?') {
+                continue;
+            }
+            let area = (bbox[2] - bbox[0]).max(0.0) * (bbox[3] - bbox[1]).max(0.0);
+            for (ri, r) in rereads.iter().enumerate() {
+                let o = containment(r.page_bbox, bbox);
+                if o >= 0.5 && best[ri].is_none_or(|(_, _, bo, ba)| o > bo + 1e-9 || ((o - bo).abs() <= 1e-9 && area > ba)) {
+                    best[ri] = Some((pi, mi, o, area));
+                }
+            }
+        }
+    }
+    let mut assigned: BTreeMap<(usize, usize), (usize, f64)> = BTreeMap::new();
+    for (ri, b) in best.iter().enumerate() {
+        let Some((pi, mi, o, _)) = *b else { continue };
+        if assigned.get(&(pi, mi)).is_none_or(|(_, prev)| o > *prev) {
+            assigned.insert((pi, mi), (ri, o));
+        }
+    }
+    let mut applied = Vec::new();
+    for (pi, rp) in kept.iter_mut().enumerate() {
+        let proposal_text = rp.proposal.text.clone();
+        let texts = rp.members.iter().filter(|m| matches!(m.refined, Shape::TextBox { .. })).count();
+        let mut new_text: Option<String> = None;
+        for (mi, m) in rp.members.iter_mut().enumerate() {
+            let Some(&(ri, o)) = assigned.get(&(pi, mi)) else { continue };
+            let r = &rereads[ri];
+            let old = m.text.clone().unwrap_or_else(|| proposal_text.clone());
+            m.text = Some(r.text.clone());
+            m.adjustments.push(format!("reread:L1D:{}:{}:{} -> {}", r.file, r.image_sha256, old, r.text));
+            if normalise_key(&old) == normalise_key(&proposal_text) || texts == 1 {
+                new_text = Some(r.text.clone());
+            }
+            applied.push(json!({"file": r.file, "level": "L1D", "image": r.image, "image_sha256": r.image_sha256,
+                "second_image": r.second_image, "second_image_sha256": r.second_image_sha256, "model": r.model,
+                "prompt_sha256": r.prompt_sha256, "role": m.role, "before": old, "after": r.text, "overlap": fin(o),
+                "proposal": format!("{}#{}:{}", rp.proposal.provenance.tile, rp.proposal.provenance.level, rp.proposal.provenance.item_index)}));
+        }
+        if let Some(t) = new_text {
+            rp.proposal.notes.push(format!("text re-read: {} -> {}", rp.proposal.text, t));
+            rp.proposal.text = t;
+        }
+    }
+    applied
+}
+
 /// Expression kind, family, label and qualifiers of a proposal (design §3).
 fn expression_identity(p: &Proposal) -> (&'static str, &'static str, String, Vec<String>) {
     let label = text_form(&p.text).label;
@@ -140,7 +259,22 @@ fn expression_identity(p: &Proposal) -> (&'static str, &'static str, String, Vec
             (kind, family, if label.is_empty() { "尺寸".into() } else { label }, q)
         }
         Category::SurfaceTexture => ("surface_roughness", "surface", if label.is_empty() { "粗糙度".into() } else { label }, vec![]),
-        Category::GdtFrame => ("geometric_tolerance", "tolerance", if label.is_empty() { "形位公差框".into() } else { label }, vec![]),
+        Category::GdtFrame => {
+            let cells: Vec<String> = p.text.split('|').map(|c| normalise_symbols(c.trim())).collect();
+            let kind = gdt_kind(cells.first().map_or("", String::as_str));
+            let mut label = cells.first().cloned().unwrap_or_default();
+            if let Some(tol) = cells.get(1).filter(|t| !t.is_empty()) {
+                label = format!("{label} {tol}");
+            }
+            for d in cells.iter().skip(2).filter(|d| !d.is_empty()) {
+                label = format!("{label} | {d}");
+            }
+            let mut q = Vec::new();
+            if kind == "gps_position" && cells.get(1).is_some_and(|t| t.starts_with('Ø')) {
+                q.push("tolerance_zone:cylindrical_or_circular".to_owned());
+            }
+            (kind, "tolerance", if label.trim().is_empty() { "形位公差框".into() } else { label }, q)
+        }
         Category::Datum => ("datum_symbol", "tolerance", if label.is_empty() { "基准".into() } else { label }, vec![]),
         Category::CentreLine => ("center_axis", "geometry", "中心线".into(), vec![]),
         Category::Hatch => {
@@ -231,6 +365,13 @@ struct Builder<'a> {
     label_texts: Vec<(P, String)>,
     /// Line entities of annotation strokes: id, pixel endpoints, line type (for shared members).
     line_index: Vec<(String, P, P, String)>,
+    /// Pieces of leader polylines: id, pixel endpoints, line type (shared as whole entities).
+    poly_index: Vec<(String, P, P, String)>,
+    /// The centre-axis expression of each view.
+    centre_by_view: BTreeMap<String, String>,
+    /// Texts that label each view (titles), by entity id.
+    view_labels: BTreeMap<String, Vec<String>>,
+    callout_counts: BTreeMap<String, usize>,
     shared_uses: BTreeMap<String, Vec<Value>>,
     width_contrast: Value,
     /// Tolerance around an L0 view box: one text height, at least 2 mm.
@@ -331,6 +472,10 @@ impl<'a> Builder<'a> {
             thin_reference: None,
             label_texts: Vec::new(),
             line_index: Vec::new(),
+            poly_index: Vec::new(),
+            centre_by_view: BTreeMap::new(),
+            view_labels: BTreeMap::new(),
+            callout_counts: BTreeMap::new(),
             shared_uses: BTreeMap::new(),
             width_contrast: Value::Null,
             view_margin_px: 2.0 * 300.0 / 25.4,
@@ -666,6 +811,19 @@ impl<'a> Builder<'a> {
                 self.overlay.polyline(&self.frame, &id, "break_line", &pts, false);
                 (id, "wavy".into(), [0.0, 1.0])
             }
+            Shape::Circle { c, r } => {
+                let cu = self.to_drawing(*c);
+                let ru = r / self.s;
+                let lt = stroke_line_type(m.pattern.or(Some(Pattern::Continuous)), false);
+                let id = self.add_entity("CIRCLE", vec![cu.0, cu.1, ru], "circle", None, lt, None, ("observed_pattern", "continuous", vec![support]));
+                let wdt = m.width_px.max(2.0) + 1.0;
+                for k in 0..48 {
+                    let (a0, a1) = (k as f64 * std::f64::consts::TAU / 48.0, (k + 1) as f64 * std::f64::consts::TAU / 48.0);
+                    self.erase_segments.push(((c.0 + r * a0.cos(), c.1 + r * a0.sin()), (c.0 + r * a1.cos(), c.1 + r * a1.sin()), wdt));
+                }
+                self.overlay.arc(&self.frame, &id, overlay_class, cu, ru, 0.0, 360.0);
+                (id, lt.to_owned(), [0.0, 1.0])
+            }
             Shape::Hatch { polygon, angle_deg, spacing_px } => {
                 let id = self.add_entity(
                     "HATCH",
@@ -727,7 +885,7 @@ impl<'a> Builder<'a> {
         }
         for rp in kept {
             let p = &rp.proposal;
-            if p.category == Category::CentreLine {
+            if matches!(p.category, Category::CentreLine | Category::Label) {
                 continue;
             }
             let (mut kind, mut family, label, qualifiers) = expression_identity(p);
@@ -738,6 +896,37 @@ impl<'a> Builder<'a> {
             let origin = format!("{}#{}:{}", p.provenance.tile, p.provenance.level, p.provenance.item_index);
             let is_text = |m: &RefinedMember| matches!(m.refined, Shape::TextBox { .. });
             let unread_text = |m: &RefinedMember| is_text(m) && m.text.as_deref().unwrap_or(&p.text).contains('?');
+            // A roughness reading whose value is unread and where no glyphs stand in the value box (its
+            // refined box under 6 px or 15 % of the symbol across) is not a roughness symbol: its strokes
+            // are left to the outline.
+            if p.category == Category::SurfaceTexture && p.text.contains('?') {
+                let strokes: Vec<P> = rp
+                    .members
+                    .iter()
+                    .filter(|m| m.supported && m.role.starts_with("roughness_symbol"))
+                    .flat_map(|m| m.refined.points())
+                    .collect();
+                let size = if strokes.is_empty() {
+                    0.0
+                } else {
+                    let (xs, ys): (Vec<f64>, Vec<f64>) = strokes.iter().copied().unzip();
+                    let span = |v: &[f64]| v.iter().copied().fold(f64::NEG_INFINITY, f64::max) - v.iter().copied().fold(f64::INFINITY, f64::min);
+                    span(&xs).max(span(&ys))
+                };
+                let glyphs = rp.members.iter().any(|m| {
+                    m.role == "roughness_value"
+                        && m.supported
+                        && matches!(m.refined, Shape::TextBox { bbox, .. } if (bbox[2] - bbox[0]).min(bbox[3] - bbox[1]) >= (0.15 * size).max(6.0))
+                });
+                if !glyphs {
+                    self.unplaced_proposals += 1;
+                    self.unknowns.push(format!("surface texture reading '{}' ({origin}) has no value glyphs: not a roughness symbol, its strokes left to the outline", p.text));
+                    for m in &rp.members {
+                        self.record_member(rp, m, None, None);
+                    }
+                    continue;
+                }
+            }
             // Members that enter the graph: supported, and not a text the observer could not read.
             let emit: Vec<&RefinedMember> = rp.members.iter().filter(|m| m.supported && !unread_text(m)).collect();
             let mut expr_unknowns = Vec::new();
@@ -884,7 +1073,7 @@ impl<'a> Builder<'a> {
                     (Some(r), true) => r,
                     _ => m.role.as_str(),
                 };
-                let (entity, lt, interval) = self.member_entity(m, &p.text, doubtful, overlay_class, &used);
+                for (entity, lt, interval) in self.member_entities(m, &p.text, doubtful, overlay_class, &used) {
                 used.push(entity.clone());
                 let shared = interval != [0.0, 1.0] || self.shared_uses.contains_key(&entity) || self.provenance.contains_key(&entity);
                 let mut member_evidence = vec![
@@ -921,7 +1110,437 @@ impl<'a> Builder<'a> {
                 } else {
                     self.provenance.insert(entity.clone(), record);
                 }
+                }
             }
+        }
+    }
+
+    /// The innermost L0 view containing a point, else the view whose box is nearest: centre lines and
+    /// callouts belong to a view even when drawn just outside the region the layout observer gave.
+    fn nearest_view(&self, p: P) -> String {
+        let v = self.view_of(p);
+        if v != "view:sheet" {
+            return v;
+        }
+        self.views
+            .iter()
+            .map(|r| (r, box_distance(r.bbox_px, p)))
+            .min_by(|a, b| a.1.total_cmp(&b.1))
+            .map_or_else(|| "view:sheet".to_owned(), |(r, _)| r.id.clone())
+    }
+
+    /// The one centre-axis expression of a view, created on first use.
+    fn centre_expression(&mut self, view: &str) -> String {
+        if let Some(e) = self.centre_by_view.get(view) {
+            return e.clone();
+        }
+        let vl = self.view_label(view);
+        let eid = self.add_expression(
+            "center_axis",
+            "geometry",
+            &format!("{vl} · 轴线与中心线"),
+            "observed",
+            view,
+            vec!["Part feature identity of each axis requires projection evidence".to_owned()],
+            vec![],
+            vec!["rule:centre_lines_by_view".to_owned()],
+        );
+        self.centre_by_view.insert(view.to_owned(), eid.clone());
+        eid
+    }
+
+    /// Pieces of leader polylines another leader may lie on: the whole polyline is referenced.
+    fn shared_poly(&self, p: P, q: P, deny: &[String]) -> Option<(String, String, [f64; 2])> {
+        let d = unit(sub(q, p))?;
+        for (id, a, b, line_type) in &self.poly_index {
+            if deny.contains(id) {
+                continue;
+            }
+            let Some(e) = unit(sub(*b, *a)) else { continue };
+            if dot(d, e).abs() < 0.998_63 {
+                continue;
+            }
+            let n = (-e.1, e.0);
+            if dot(sub(p, *a), n).abs() > 3.0 || dot(sub(q, *a), n).abs() > 3.0 {
+                continue;
+            }
+            let len = dist(*a, *b);
+            let (tp, tq) = (dot(sub(p, *a), e), dot(sub(q, *a), e));
+            if tp.min(tq) < -5.0 || tp.max(tq) > len + 5.0 {
+                continue;
+            }
+            return Some((id.clone(), line_type.clone(), [0.0, 1.0]));
+        }
+        None
+    }
+
+    /// One LWPOLYLINE entity of a leader run.
+    fn own_polyline(&mut self, run: &[P], lt: &str, width: f64, evidence: Vec<String>) -> String {
+        let pts: Vec<P> = run.iter().map(|p| self.to_drawing(*p)).collect();
+        let mut coords = Vec::with_capacity(pts.len() * 2);
+        for p in &pts {
+            coords.push(p.0);
+            coords.push(p.1);
+        }
+        let id = self.add_entity("LWPOLYLINE", coords, "unqualified", Some("polyline_vertices_only"), lt, None, ("observed_pattern", "continuous", evidence));
+        for w in run.windows(2) {
+            self.erase_segments.push((w[0], w[1], width.max(1.0)));
+            self.poly_index.push((id.clone(), w[0], w[1], lt.to_owned()));
+        }
+        self.overlay.polyline(&self.frame, &id, "annotation", &pts, false);
+        id
+    }
+
+    /// Entities of a leader polyline: pieces lying on a line or leader already drawn are references
+    /// to it (a line over its own interval, a polyline whole); the other runs are polylines of their own.
+    fn leader_entities(&mut self, m: &RefinedMember, deny: &[String]) -> Vec<(String, String, [f64; 2])> {
+        let Shape::Polyline(v) = &m.refined else {
+            return Vec::new();
+        };
+        let thick = self.thin_reference.is_some_and(|t| m.width_px >= 1.6 * t && m.width_px > 0.0);
+        let lt = stroke_line_type(m.pattern.or(Some(Pattern::Continuous)), thick).to_owned();
+        let evidence = vec![format!("support:{:.2}", m.support_after), format!("width_px:{:.2}", m.width_px)];
+        let mut out: Vec<(String, String, [f64; 2])> = Vec::new();
+        let mut run: Vec<P> = vec![v[0]];
+        for k in 0..v.len().saturating_sub(1) {
+            let (a, b) = (v[k], v[k + 1]);
+            let mut denied: Vec<String> = deny.to_vec();
+            denied.extend(out.iter().map(|o| o.0.clone()));
+            match self.shared_line(a, b, &denied).or_else(|| self.shared_poly(a, b, &denied)) {
+                Some((id, slt, interval)) => {
+                    if run.len() >= 2 {
+                        let own = self.own_polyline(&run, &lt, m.width_px, evidence.clone());
+                        out.push((own, lt.clone(), [0.0, 1.0]));
+                    }
+                    run = vec![b];
+                    self.shared_members += 1;
+                    if !out.iter().any(|o| o.0 == id) {
+                        out.push((id, slt, interval));
+                    }
+                }
+                None => run.push(b),
+            }
+        }
+        if run.len() >= 2 {
+            let own = self.own_polyline(&run, &lt, m.width_px, evidence);
+            out.push((own, lt, [0.0, 1.0]));
+        }
+        out
+    }
+
+    /// Entities of a refined member: a leader polyline may give several, any other member one.
+    fn member_entities(&mut self, m: &RefinedMember, fallback_text: &str, doubtful: bool, overlay_class: &str, deny: &[String]) -> Vec<(String, String, [f64; 2])> {
+        if m.role == "leader_line" && matches!(m.refined, Shape::Polyline(_)) {
+            return self.leader_entities(m, deny);
+        }
+        vec![self.member_entity(m, fallback_text, doubtful, overlay_class, deny)]
+    }
+
+    /// One member of a callout expression from a derived member (a part of a label's text box, a bar,
+    /// an arrow or a circle found on the ink), with the label's provenance.
+    #[allow(clippy::too_many_arguments)]
+    fn callout_member(&mut self, rp: &RefinedProposal, m: &RefinedMember, eid: &str, view: &str, derived: &str) -> String {
+        let p = &rp.proposal;
+        let mut first: Option<String> = None;
+        for (entity, lt, interval) in self.member_entities(m, &p.text, false, "annotation", &[]) {
+            let shared = interval != [0.0, 1.0] || self.provenance.contains_key(&entity);
+            let mut evidence = vec![
+                format!("observation:{}#{}", p.provenance.file, p.provenance.item_index),
+                format!("callout:{derived}"),
+            ];
+            if shared {
+                evidence.push("shared_stroke".into());
+            }
+            let mid = self.add_member_at(eid, &entity, &m.role, &lt, "observed", view, evidence, vec![], interval);
+            let record = json!({
+                "expression_id": eid, "member_id": mid, "role": m.role, "category": p.category.name(), "kind": p.kind,
+                "text": m.text, "label": p.text, "tile": p.provenance.tile, "tile_sha256": p.provenance.tile_sha256,
+                "level": p.provenance.level, "model": p.provenance.model, "prompt_sha256": p.provenance.prompt_sha256,
+                "file": p.provenance.file, "item_index": p.provenance.item_index, "derived": derived,
+                "proposed_px": shape_json(&m.proposed), "refined_px": shape_json(&m.refined),
+                "support_after": fin(m.support_after), "width_px": fin(m.width_px), "adjustments": m.adjustments,
+                "interval": interval,
+            });
+            if shared {
+                self.shared_uses.entry(entity.clone()).or_default().push(record);
+            } else {
+                self.provenance.insert(entity.clone(), record);
+            }
+            first.get_or_insert(entity);
+        }
+        self.record_member(rp, m, first.as_deref(), Some(eid));
+        first.unwrap_or_default()
+    }
+
+    /// View callouts from the observed labels, grouped as the DXF route groups them: a direction-view
+    /// title "X向" as a view letter and a 向 text; a detail-view title as its letter, the bar under it and
+    /// the scale below; a callout letter with the projection arrow or the detail circle found beside it
+    /// on the ink. Scale texts and other labels in the title block or another sheet region are table
+    /// texts; other labels are notes.
+    fn callouts(&mut self, kept: &[RefinedProposal]) {
+        struct Label<'a> {
+            rp: &'a RefinedProposal,
+            m: &'a RefinedMember,
+            text: String,
+            b: [f64; 4],
+            used: bool,
+        }
+        let mut labels: Vec<Label> = Vec::new();
+        for rp in kept.iter().filter(|rp| rp.proposal.category == Category::Label) {
+            let origin = format!("{}#{}:{}", rp.proposal.provenance.tile, rp.proposal.provenance.level, rp.proposal.provenance.item_index);
+            let text_member = rp.members.iter().find(|m| m.supported && matches!(m.refined, Shape::TextBox { .. }));
+            match text_member {
+                Some(m) => {
+                    let Shape::TextBox { bbox, .. } = m.refined else { continue };
+                    let text = normalise_symbols(m.text.as_deref().unwrap_or(&rp.proposal.text));
+                    if text.contains('?') {
+                        self.unread_members_omitted += 1;
+                        self.unknowns.push(format!("unread label '{text}' ({origin}) left out"));
+                        for x in &rp.members {
+                            self.record_member(rp, x, None, None);
+                        }
+                        continue;
+                    }
+                    labels.push(Label { rp, m, text, b: bbox, used: false });
+                }
+                None => {
+                    self.unplaced_proposals += 1;
+                    self.unknowns.push(format!("no member kept: label '{}' ({origin})", rp.proposal.text));
+                    for x in &rp.members {
+                        self.unsupported += 1;
+                        self.record_member(rp, x, None, None);
+                    }
+                }
+            }
+        }
+        let sw = self.thin_reference.unwrap_or(3.0);
+        let views = self.views.clone();
+        let squash = |t: &str| t.chars().filter(|c| !c.is_whitespace()).collect::<String>();
+        let mut kinds_by_letter: BTreeMap<String, &'static str> = BTreeMap::new();
+        // Direction-view titles.
+        for label in labels.iter_mut() {
+            let t = squash(&label.text);
+            let Some(letter) = t.strip_suffix('向').and_then(view_letter_text) else { continue };
+            let (rp, m, b) = (label.rp, label.m, label.b);
+            let wl = text_measure(&letter).width;
+            let (lb, rb) = split_title(self.ink, b, wl / (wl + 1.0));
+            let view = views
+                .iter()
+                .find(|v| squash(&v.name) == t || squash(&v.label) == t)
+                .map_or_else(|| self.view_of(centre_of(b)), |v| v.id.clone());
+            let eid = self.add_expression("view_callout", "view", &t, "observed", &view, vec![], vec!["view_title".into()], vec!["rule:direction_view_title".into()]);
+            let mut letter_m = m.clone();
+            letter_m.role = "view_letter".into();
+            letter_m.text = Some(letter.clone());
+            letter_m.refined = Shape::TextBox { bbox: lb, vertical: false };
+            let mut suffix_m = m.clone();
+            suffix_m.role = "view_title".into();
+            suffix_m.text = Some("向".into());
+            suffix_m.refined = Shape::TextBox { bbox: rb, vertical: false };
+            let e1 = self.callout_member(rp, &letter_m, &eid, &view, "title_letter_part");
+            let e2 = self.callout_member(rp, &suffix_m, &eid, &view, "title_suffix_part");
+            self.view_labels.entry(view).or_default().extend([e1, e2]);
+            kinds_by_letter.insert(letter, "direction");
+            label.used = true;
+            *self.callout_counts.entry("direction_view_title".into()).or_insert(0) += 1;
+        }
+        // Detail-view titles: a letter with a scale below it.
+        let mut scale_used = vec![false; labels.len()];
+        for li in 0..labels.len() {
+            if labels[li].used {
+                continue;
+            }
+            let Some(letter) = view_letter_text(&labels[li].text) else { continue };
+            let lb = labels[li].b;
+            let h = lb[3] - lb[1] + 1.0;
+            let below = (0..labels.len())
+                .filter(|&si| si != li && !labels[si].used && !scale_used[si] && scale_text(&labels[si].text))
+                .filter(|&si| {
+                    let sb = labels[si].b;
+                    let gap = sb[1] - lb[3];
+                    let dx = (centre_of(sb).0 - centre_of(lb).0).abs();
+                    gap >= -2.0 && gap <= 2.5 * h && dx <= (sb[2] - sb[0]).max(lb[2] - lb[0])
+                })
+                .min_by(|&a, &b| (labels[a].b[1] - lb[3]).total_cmp(&(labels[b].b[1] - lb[3])));
+            let Some(si) = below else { continue };
+            scale_used[si] = true;
+            let (rp, m) = (labels[li].rp, labels[li].m);
+            let (srp, sm, sb) = (labels[si].rp, labels[si].m, labels[si].b);
+            let scale = squash(&labels[si].text);
+            let view = views
+                .iter()
+                .filter(|v| v.kind == "detail_view")
+                .find(|v| squash(&v.label).starts_with(&letter) && squash(&v.label)[letter.len()..].chars().next().is_none_or(|c| !c.is_ascii_uppercase()))
+                .or_else(|| views.iter().filter(|v| v.kind == "detail_view").min_by(|a, b| box_distance(a.bbox_px, centre_of(lb)).total_cmp(&box_distance(b.bbox_px, centre_of(lb)))))
+                .map_or_else(|| self.view_of(centre_of(lb)), |v| v.id.clone());
+            let label = format!("{letter} {scale}");
+            let eid = self.add_expression("view_callout", "view", &label, "observed", &view, vec![], vec!["detail_title".into()], vec!["rule:detail_view_title".into()]);
+            let bar = find_title_bar(self.ink, lb, sb);
+            let mut letter_m = m.clone();
+            letter_m.role = if bar.is_some() { "view_letter".into() } else { "view_title".into() };
+            letter_m.text = Some(letter.clone());
+            let e1 = self.callout_member(rp, &letter_m, &eid, &view, "detail_title_letter");
+            let mut entities = vec![e1];
+            if let Some((p, q)) = bar {
+                let mut bar_m = m.clone();
+                bar_m.role = "view_title".into();
+                bar_m.text = None;
+                bar_m.refined = Shape::Segment(p, q);
+                bar_m.proposed = Shape::Segment(p, q);
+                bar_m.pattern = Some(Pattern::Continuous);
+                bar_m.width_px = sw;
+                bar_m.support_after = 1.0;
+                entities.push(self.callout_member(rp, &bar_m, &eid, &view, "detail_title_bar"));
+            } else {
+                self.unknowns.push(format!("detail title '{label}': no bar found between the letter and the scale; the letter is the title"));
+            }
+            let mut scale_m = sm.clone();
+            scale_m.role = "scale_text".into();
+            scale_m.text = Some(scale.clone());
+            entities.push(self.callout_member(srp, &scale_m, &eid, &view, "detail_title_scale"));
+            self.view_labels.entry(view).or_default().extend(entities);
+            kinds_by_letter.insert(letter, "detail");
+            labels[li].used = true;
+            labels[si].used = true;
+            *self.callout_counts.entry("detail_view_title".into()).or_insert(0) += 1;
+            let _ = sb;
+        }
+        // Callout letters with their projection arrow or detail circle: labels the observer read as callout,
+        // section or view letters, outside the title block and the other sheet regions.
+        let title_box = self.layout.and_then(|l| l.title_block);
+        let sheet_regions: Vec<[f64; 4]> = self.layout.map(|l| l.other_regions.iter().map(|r| r.1).collect()).unwrap_or_default();
+        let in_sheet = |b: [f64; 4]| {
+            let c = centre_of(b);
+            let inside = |r: [f64; 4]| c.0 >= r[0] && c.0 <= r[2] && c.1 >= r[1] && c.1 <= r[3];
+            title_box.is_some_and(inside) || sheet_regions.iter().any(|r| inside(*r))
+        };
+        for label in labels.iter_mut() {
+            if label.used || !matches!(label.rp.proposal.kind.as_str(), "callout_letter" | "section_letter" | "view_name") || in_sheet(label.b) {
+                continue;
+            }
+            let Some(letter) = view_letter_text(&label.text) else { continue };
+            let (rp, m, b) = (label.rp, label.m, label.b);
+            let h = (b[3] - b[1] + 1.0).max(12.0);
+            // A letter whose view has a detail title calls out a detail (circle); one whose view has a
+            // direction title ("X向") a projection (arrow); any other letter either.
+            let arrow = || find_view_arrow(self.ink, b, h, sw);
+            let circle = || find_detail_circle(self.ink, b, h);
+            let (arrow, circle) = match kinds_by_letter.get(&letter).copied() {
+                Some("detail") => (None, circle()),
+                Some("direction") => (arrow(), None),
+                _ => {
+                    let a = arrow();
+                    (a, if a.is_none() { circle() } else { None })
+                }
+            };
+            let view = self.nearest_view(centre_of(b));
+            let mut letter_m = m.clone();
+            letter_m.role = "view_letter".into();
+            letter_m.text = Some(letter.clone());
+            if let Some(a) = arrow {
+                let mut rules = vec!["rule:projection_arrow_with_letter".to_owned()];
+                if a.cutting.is_some() {
+                    rules.push("rule:cutting_plane_stroke".into());
+                }
+                let eid = self.add_expression("view_callout", "view", &letter, "observed", &view, vec![], vec!["view_direction".into()], rules);
+                self.callout_member(rp, &letter_m, &eid, &view, "callout_letter");
+                let mut shaft = m.clone();
+                shaft.role = "view_arrow".into();
+                shaft.text = None;
+                shaft.proposed = Shape::Segment(a.tail, a.base);
+                shaft.refined = Shape::Segment(a.tail, a.base);
+                shaft.pattern = Some(Pattern::Continuous);
+                shaft.width_px = sw;
+                shaft.support_after = 1.0;
+                self.callout_member(rp, &shaft, &eid, &view, "projection_arrow_shaft");
+                let mut head = m.clone();
+                head.role = "arrowhead".into();
+                head.text = None;
+                head.refined = Shape::Tip { approx: a.tip, along: unit(sub(a.tip, a.base)).unwrap_or((0.0, 0.0)) };
+                head.proposed = head.refined.clone();
+                head.arrow_base = Some(a.base);
+                head.arrow_length_px = Some(dist(a.tip, a.base));
+                self.callout_member(rp, &head, &eid, &view, "projection_arrow_head");
+                *self.callout_counts.entry("projection_arrow".into()).or_insert(0) += 1;
+                if let Some((p0, p1)) = a.cutting {
+                    let mut stroke = m.clone();
+                    stroke.role = "cutting_stroke".into();
+                    stroke.text = None;
+                    stroke.proposed = Shape::Segment(p0, p1);
+                    stroke.refined = Shape::Segment(p0, p1);
+                    stroke.pattern = Some(Pattern::Continuous);
+                    stroke.width_px = robust_width(self.ink, p0, p1, (2.0 * sw).max(4.0), 0.0, 0.0);
+                    stroke.support_after = 1.0;
+                    self.callout_member(rp, &stroke, &eid, &view, "cutting_plane_stroke");
+                    *self.callout_counts.entry("cutting_stroke".into()).or_insert(0) += 1;
+                }
+            } else if let Some(dc) = circle {
+                let mut rules = vec!["rule:detail_circle_with_letter".to_owned()];
+                if dc.leader.len() >= 2 {
+                    rules.push("rule:leader_shelf_to_detail_circle".into());
+                }
+                let eid = self.add_expression("view_callout", "view", &letter, "observed", &view, vec![], vec!["detail_indicator".into()], rules);
+                self.callout_member(rp, &letter_m, &eid, &view, "callout_letter");
+                let mut ring = m.clone();
+                ring.role = "detail_circle".into();
+                ring.text = None;
+                ring.proposed = Shape::Circle { c: dc.c, r: dc.r };
+                ring.refined = Shape::Circle { c: dc.c, r: dc.r };
+                ring.pattern = Some(Pattern::Continuous);
+                ring.width_px = sw;
+                ring.support_after = 1.0;
+                self.callout_member(rp, &ring, &eid, &view, "detail_circle");
+                *self.callout_counts.entry("detail_indicator".into()).or_insert(0) += 1;
+                if dc.leader.len() >= 2 {
+                    let mut leader = m.clone();
+                    leader.role = "leader_line".into();
+                    leader.text = None;
+                    leader.proposed = Shape::Polyline(dc.leader.clone());
+                    leader.refined = Shape::Polyline(dc.leader.clone());
+                    leader.pattern = Some(Pattern::Continuous);
+                    leader.width_px = sw;
+                    leader.support_after = 1.0;
+                    self.callout_member(rp, &leader, &eid, &view, "detail_leader");
+                    *self.callout_counts.entry("detail_leader".into()).or_insert(0) += 1;
+                }
+            } else {
+                let eid = self.add_expression(
+                    "view_callout",
+                    "view",
+                    &letter,
+                    "candidate",
+                    &view,
+                    vec!["Callout symbol (projection arrow or detail circle) not found on the ink beside the letter".into()],
+                    vec!["callout_letter".into()],
+                    vec!["rule:callout_letter".into()],
+                );
+                self.callout_member(rp, &letter_m, &eid, &view, "callout_letter");
+                *self.callout_counts.entry("lone_callout_letter".into()).or_insert(0) += 1;
+            }
+            label.used = true;
+        }
+        // The rest: scale and other texts in the sheet regions are table texts, elsewhere notes.
+        let title_block = self.layout.and_then(|l| l.title_block);
+        let regions: Vec<[f64; 4]> = self.layout.map(|l| l.other_regions.iter().map(|r| r.1).collect()).unwrap_or_default();
+        for label in labels.iter().filter(|l| !l.used) {
+            let c = centre_of(label.b);
+            let in_box = |b: [f64; 4]| c.0 >= b[0] - 12.0 && c.0 <= b[2] + 12.0 && c.1 >= b[1] - 12.0 && c.1 <= b[3] + 12.0;
+            let view = self.view_of(c);
+            let in_title = title_block.is_some_and(in_box);
+            let sheet = view == "view:sheet" || in_title || regions.iter().any(|r| in_box(*r));
+            let (kind, family, role) = if sheet {
+                (if in_title { "title_block" } else { "sheet_frame" }, "sheet", "table_text")
+            } else if scale_text(&label.text) {
+                ("view_callout", "view", "scale_text")
+            } else {
+                ("technical_general", "note", "note_text")
+            };
+            let eid = self.add_expression(kind, family, &label.text, "candidate", if sheet { "view:sheet" } else { &view }, vec![], vec![], vec!["rule:label_text".into()]);
+            let mut t = label.m.clone();
+            t.role = role.into();
+            t.text = Some(label.text.clone());
+            self.callout_member(label.rp, &t, &eid, if sheet { "view:sheet" } else { &view }, "label_text");
+            *self.callout_counts.entry(format!("label_{role}")).or_insert(0) += 1;
         }
     }
 
@@ -976,20 +1595,11 @@ impl<'a> Builder<'a> {
             let pattern = measure_pattern(self.ink, a, b);
             let thick = self.thin_reference.is_some_and(|t| width >= 1.6 * t && width > 0.0);
             let lt = stroke_line_type(Some(pattern), thick);
+            let (a, b) = crate::lines::snap_axis(a, b).map_or((a, b), |(s, _)| s);
             let mid = ((a.0 + b.0) * 0.5, (a.1 + b.1) * 0.5);
-            let view = self.view_of(mid);
-            let vl = self.view_label(&view);
+            let view = self.nearest_view(mid);
             self.centre_axes_count += 1;
-            let eid = self.add_expression(
-                "center_axis",
-                "geometry",
-                &format!("{vl} · 中心线 {}", self.centre_axes_count),
-                "observed",
-                &view,
-                vec![],
-                vec![],
-                vec!["rule:collinear_centre_pieces".to_owned(), format!("pieces:{}", members.len())],
-            );
+            let eid = self.centre_expression(&view);
             let (au, bu) = (self.to_drawing(a), self.to_drawing(b));
             let support = members.iter().map(|x| x.m.support_after).fold(1.0, f64::min);
             let id = self.add_entity(
@@ -1051,6 +1661,7 @@ impl<'a> Builder<'a> {
         let erased = erased_strokes(&self.erase_segments, &self.arrows);
         let (classified, thin, remnants) =
             vectorise_remainder(&rest, self.ink, &erased, self.thin_reference, &self.centre_segments, params);
+        let classified = crate::structure::merge_cocircular_axes(classified);
         self.thin_reference = Some(thin);
         self.stroke_counts.insert("remnants_of_erased_members".into(), remnants);
         let title_block = self.layout.and_then(|l| l.title_block);
@@ -1097,7 +1708,7 @@ impl<'a> Builder<'a> {
                 StrokeClass::ThinUnresolved if by_elimination && view != "view:sheet" => "visible_contour_by_elimination",
                 StrokeClass::ThinUnresolved => "unresolved",
             };
-            let view = view.clone();
+            let view = if class_name == "center_axis" { self.nearest_view(mid) } else { view.clone() };
             let (kind, family, role, state, label, overlay_class) = if view == "view:sheet" {
                 // Sheet ink is frame or table structure, never outline: table lines inside the title
                 // block or the technical-requirements block, frame lines elsewhere.
@@ -1123,6 +1734,7 @@ impl<'a> Builder<'a> {
             let key = (view.clone(), if view == "view:sheet" { role } else { class_name });
             let eid = match groups.get(&key) {
                 Some(id) => id.clone(),
+                None if class_name == "center_axis" && view != "view:sheet" => self.centre_expression(&view),
                 None => {
                     let unknowns = match class_name {
                         "visible_contour" | "hidden_contour" => vec!["Part feature identity of each piece requires projection evidence".to_owned()],
@@ -1148,6 +1760,7 @@ impl<'a> Builder<'a> {
             ];
             let (entity, prov) = match c.stroke.primitive {
                 Primitive::Line { p, q } => {
+                    let (p, q) = crate::lines::snap_axis(p, q).map_or((p, q), |(s, _)| s);
                     let (a, b) = (self.to_drawing(p), self.to_drawing(q));
                     let id = self.add_entity("LINE", vec![a.0, a.1, b.0, b.1], "line", None, lt, None,
                         ("observed_pattern", pattern_name(Some(c.stroke.pattern)), evidence.clone()));
@@ -1181,7 +1794,10 @@ impl<'a> Builder<'a> {
             if kind == "visible_contour" || kind == "hidden_contour" {
                 let class: &'static str = if kind == "visible_contour" { "visible_outline" } else { "hidden_outline" };
                 match c.stroke.primitive {
-                    Primitive::Line { p, q } => pieces.push(Piece { entity, member: mid_id, p, q, view, class }),
+                    Primitive::Line { p, q } => {
+                        let (p, q) = crate::lines::snap_axis(p, q).map_or((p, q), |(s, _)| s);
+                        pieces.push(Piece { entity, member: mid_id, p, q, view, class });
+                    }
                     Primitive::Arc { c: centre, r, start_rad, sweep_rad } => {
                         self.arc_structural_line(&entity, &mid_id, &view, class, kind, centre, r, start_rad, sweep_rad);
                     }
@@ -1396,12 +2012,15 @@ impl<'a> Builder<'a> {
             let lo = self.to_drawing((b[0], b[3]));
             let hi = self.to_drawing((b[2], b[1]));
             let reach = 80.0;
-            let labels: Vec<&String> = self
-                .label_texts
-                .iter()
-                .filter(|(c, _)| c.0 >= b[0] - reach && c.0 <= b[2] + reach && c.1 >= b[1] - reach && c.1 <= b[3] + reach)
-                .map(|(_, id)| id)
-                .collect();
+            let labels: Vec<&String> = match self.view_labels.get(&v.id) {
+                Some(ids) => ids.iter().collect(),
+                None => self
+                    .label_texts
+                    .iter()
+                    .filter(|(c, _)| c.0 >= b[0] - reach && c.0 <= b[2] + reach && c.1 >= b[1] - reach && c.1 <= b[3] + reach)
+                    .map(|(_, id)| id)
+                    .collect(),
+            };
             out.push(json!({
                 "bbox": [fin(lo.0), fin(lo.1), fin(hi.0), fin(hi.1)], "evidence_ids": ["l0_layout", format!("name:{}", v.name)], "id": v.id,
                 "kind": v.kind, "label": v.label, "label_source_ids": labels, "scale_text": v.scale_text, "state": "candidate",
@@ -1479,6 +2098,8 @@ impl<'a> Builder<'a> {
             "shared_members": self.shared_members,
             "table_texts_from_dimension_readings": self.table_texts,
             "centre_axes": self.centre_axes_count,
+            "centre_axis_expressions": self.centre_by_view.len(),
+            "callouts": self.callout_counts,
             "view_margin_px": self.view_margin_px,
             "proposals_without_support": self.unplaced_proposals,
             "strokes": self.stroke_counts,
@@ -1510,7 +2131,7 @@ fn trim_extension_spans(ink: &Ink, kept: &mut [RefinedProposal]) -> usize {
             continue;
         }
         let Some(dimension) = rp.members.iter().find_map(|m| match m.refined {
-            Shape::Segment(p, q) if m.supported && m.role == "dimension_line" => Some((p, q)),
+            Shape::Segment(p, q) if m.supported && m.role == "dimension_line" => Some(m.span_px.unwrap_or((p, q))),
             _ => None,
         }) else {
             continue;
@@ -1591,7 +2212,7 @@ pub fn synthesize_page(input: &PageInput) -> Result<SynthesisOutput> {
         files.push(load_observation(bytes, path)?);
     }
     files.sort_by(|a, b| a.path.cmp(&b.path));
-    let obs = page_observations(input.page, tiles, &files, input.tile_pngs)?;
+    let obs = page_observations(input.page, tiles, &files, input.tile_pngs, input.crops)?;
     let refine_params = RefineParams::default();
     let refined: Vec<RefinedProposal> = obs
         .proposals
@@ -1601,6 +2222,23 @@ pub fn synthesize_page(input: &PageInput) -> Result<SynthesisOutput> {
     let proposed = refined.len();
     let (mut kept, merges) = dedupe(refined, &DedupeParams::default());
     let extension_spans = trim_extension_spans(&ink, &mut kept);
+    let leader_chains = chain_leaders(&mut kept);
+    let rereads_applied = apply_rereads(&mut kept, &obs.rereads);
+    let arrows_from_ink = kept
+        .iter()
+        .flat_map(|rp| rp.members.iter())
+        .filter(|m| m.adjustments.iter().any(|a| a.starts_with("arrow_from_ink")))
+        .count();
+    let arrows_not_proposed = kept
+        .iter()
+        .flat_map(|rp| rp.members.iter())
+        .filter(|m| m.adjustments.iter().any(|a| a == "arrow_not_proposed"))
+        .count();
+    let axis_snaps = kept
+        .iter()
+        .flat_map(|rp| rp.members.iter())
+        .filter(|m| m.adjustments.iter().any(|a| a.starts_with("axis_snap")))
+        .count();
     let note = input
         .scale_note
         .map(str::to_owned)
@@ -1608,6 +2246,7 @@ pub fn synthesize_page(input: &PageInput) -> Result<SynthesisOutput> {
     let cal = calibrate(&kept, note.as_deref(), index.dpi);
     let mut b = Builder::new(&ink, &cal, tiles.page_px, obs.layout.as_ref());
     b.annotations(&kept);
+    b.callouts(&kept);
     b.centre_axes(&kept);
     b.structure(&StructureParams::default());
     let (graph, provenance, refined_records, overlay, frame, counts) = b.finish(&page_sha256);
@@ -1630,7 +2269,10 @@ pub fn synthesize_page(input: &PageInput) -> Result<SynthesisOutput> {
             "image_sha256": f.image_sha256, "prompt_sha256": f.prompt_sha256, "parse_error": f.parse_error, "items": f.items})).collect::<Vec<_>>(),
         "tiles_verified": input.tile_pngs.len(),
         "warnings": obs.warnings,
-        "proposals": {"observed": proposed, "kept": kept.len(), "merges": merges.len(), "extension_spans_rederived": extension_spans},
+        "proposals": {"observed": proposed, "kept": kept.len(), "merges": merges.len(), "extension_spans_rederived": extension_spans,
+            "leader_chains": leader_chains, "arrows_from_ink": arrows_from_ink, "arrows_not_proposed": arrows_not_proposed,
+            "axis_snaps": axis_snaps, "rereads_applied": rereads_applied.len()},
+        "layout_image": obs.layout.as_ref().map(|l| json!({"px": [l.model_image_px.0, l.model_image_px.1], "basis": l.model_image_basis})),
         "calibration": {"basis": cal.basis, "px_per_unit": cal.px_per_unit, "dimension_px_per_unit": cal.dimension_px_per_unit,
             "residual": cal.residual, "sample_count": cal.samples.len(), "scale_note": cal.scale_note,
             "scale_note_px_per_unit": cal.scale_note_px_per_unit, "deviation_percent": cal.deviation_percent},
@@ -1655,6 +2297,7 @@ pub fn synthesize_page(input: &PageInput) -> Result<SynthesisOutput> {
             "frame_px": l.frame, "title_block_px": l.title_block, "views": l.views.iter().map(|v| json!({"name": v.name, "label_text": v.label_text, "scale_note": v.scale_note, "bbox_px": v.bbox})).collect::<Vec<_>>()})),
         "observation_files": summary["observation_files"],
         "merges": merges_json(&merges),
+        "rereads": rereads_applied,
         "entities": Value::Object(provenance),
     });
     let refined_doc = json!({
@@ -1705,6 +2348,74 @@ mod tests {
             view: "view:principal".into(),
             class: "visible_outline",
         }
+    }
+
+    fn note(text: &str, bbox: [f64; 4], tile: &str) -> RefinedProposal {
+        let m = RefinedMember {
+            role: "note_text".into(),
+            text: Some(text.into()),
+            proposed: Shape::TextBox { bbox, vertical: false },
+            refined: Shape::TextBox { bbox, vertical: false },
+            support_before: 1.0,
+            support_after: 1.0,
+            moved_px: 0.0,
+            width_px: 0.0,
+            pattern: None,
+            supported: true,
+            merged_from: None,
+            arrow_base: None,
+            arrow_length_px: None,
+            discarded_components: 0,
+            adjustments: vec![],
+            span_px: None,
+        };
+        RefinedProposal {
+            proposal: Proposal {
+                category: Category::Note,
+                kind: String::new(),
+                text: text.into(),
+                centre: ((bbox[0] + bbox[2]) * 0.5, (bbox[1] + bbox[3]) * 0.5),
+                edge_distance: 100.0,
+                members: vec![],
+                provenance: crate::observe::Provenance {
+                    tile: tile.into(),
+                    tile_sha256: String::new(),
+                    level: "L1B".into(),
+                    model: "m".into(),
+                    prompt_sha256: String::new(),
+                    file: "f".into(),
+                    item_index: 0,
+                    verification: None,
+                },
+                notes: vec![],
+                bbox: Some(bbox),
+            },
+            members: vec![m],
+        }
+    }
+
+    #[test]
+    fn a_reread_goes_to_the_one_unread_text_it_covers_best() {
+        // The whole line read with an unread end, and its right part read from the next tile.
+        let mut kept = vec![note("3. ABC?", [100.0, 50.0, 500.0, 90.0], "a"), note("?C;", [330.0, 52.0, 520.0, 90.0], "b")];
+        let reread = Reread {
+            file: "observations-l1d/L1D-001.json".into(),
+            page_bbox: [95.0, 45.0, 505.0, 95.0],
+            proposal_text: "3. ABC?".into(),
+            role: "note_text".into(),
+            text: "3. ABC;".into(),
+            image: "crop.png".into(),
+            image_sha256: "00".into(),
+            second_image: None,
+            second_image_sha256: None,
+            model: "m".into(),
+            prompt_sha256: String::new(),
+        };
+        let applied = apply_rereads(&mut kept, &[reread]);
+        assert_eq!(applied.len(), 1, "{applied:?}");
+        assert_eq!(kept[0].members[0].text.as_deref(), Some("3. ABC;"));
+        assert_eq!(kept[0].proposal.text, "3. ABC;");
+        assert_eq!(kept[1].members[0].text.as_deref(), Some("?C;"), "the partial read keeps its '?'");
     }
 
     #[test]
@@ -1761,6 +2472,8 @@ mod tests {
             ..calibration()
         };
         let layout = Layout {
+            model_image_px: (1000.0, 800.0),
+            model_image_basis: "thumbnail".into(),
             file: "L0".into(),
             image_sha256: String::new(),
             model: "m".into(),

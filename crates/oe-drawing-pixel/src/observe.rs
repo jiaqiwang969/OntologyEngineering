@@ -248,6 +248,8 @@ pub enum Shape {
     Point(P),
     Polyline(Vec<P>),
     Hatch { polygon: Vec<P>, angle_deg: f64, spacing_px: f64 },
+    /// A circle (a datum frame, a detail circle), centre and radius.
+    Circle { c: P, r: f64 },
 }
 
 impl Shape {
@@ -260,6 +262,7 @@ impl Shape {
             Shape::Point(p) => *p,
             Shape::Polyline(v) => centroid(v),
             Shape::Hatch { polygon, .. } => centroid(polygon),
+            Shape::Circle { c, .. } => *c,
         }
     }
 
@@ -271,6 +274,7 @@ impl Shape {
             Shape::TextBox { bbox, .. } => vec![(bbox[0], bbox[1]), (bbox[2], bbox[3])],
             Shape::Polyline(v) => v.clone(),
             Shape::Hatch { polygon, .. } => polygon.clone(),
+            Shape::Circle { c, r } => vec![(c.0 - r, c.1 - r), (c.0 + r, c.1 + r)],
         }
     }
 }
@@ -343,6 +347,8 @@ pub struct Proposal {
     pub members: Vec<ProposedMember>,
     pub provenance: Provenance,
     pub notes: Vec<String>,
+    /// Box of the observed object (symbol, frame, label), page pixels, when the observer gave one.
+    pub bbox: Option<[f64; 4]>,
 }
 
 /// One view region of the L0 layout, page pixels.
@@ -357,6 +363,10 @@ pub struct L0View {
 /// The L0 page layout, page pixels.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Layout {
+    /// The image size the layout model worked in and where that size comes from (`reported`,
+    /// `assumed_2048` for the model service's downscale of the thumbnail, `thumbnail`).
+    pub model_image_px: (f64, f64),
+    pub model_image_basis: String,
     pub file: String,
     pub image_sha256: String,
     pub model: String,
@@ -383,6 +393,23 @@ pub struct FileRecord {
     pub items: usize,
 }
 
+/// An accepted re-read of an unreadable text (level L1D): the zoomed crops read twice alike, free
+/// of `?` and compatible with what the original proposal read (acceptance decided by orchestration).
+#[derive(Clone, Debug, PartialEq)]
+pub struct Reread {
+    pub file: String,
+    pub page_bbox: [f64; 4],
+    pub proposal_text: String,
+    pub role: String,
+    pub text: String,
+    pub image: String,
+    pub image_sha256: String,
+    pub second_image: Option<String>,
+    pub second_image_sha256: Option<String>,
+    pub model: String,
+    pub prompt_sha256: String,
+}
+
 /// All proposals of one page with the layout and the records of what was read.
 #[derive(Clone, Debug)]
 pub struct PageObservations {
@@ -392,6 +419,7 @@ pub struct PageObservations {
     pub proposals: Vec<Proposal>,
     pub files: Vec<FileRecord>,
     pub warnings: Vec<String>,
+    pub rereads: Vec<Reread>,
 }
 
 fn num(v: &Value) -> Option<f64> {
@@ -483,6 +511,7 @@ impl TileFrame<'_> {
                 angle_deg: *angle_deg,
                 spacing_px: *spacing_px,
             },
+            Shape::Circle { c, r } => Shape::Circle { c: self.to_page(*c), r: *r },
         }
     }
 }
@@ -568,11 +597,67 @@ fn role_static(role: &str) -> &'static str {
 /// `tile_pngs` are the tile images available for verification by name; every provided image must
 /// match the index digest, and every tile-level observation must name a tile whose index digest
 /// equals its own `image_sha256`.
+/// The accepted re-read of an L1D file, its crops verified against the bytes given in `crops` (by
+/// their `image` paths). `Ok(None)` for a re-read that was not accepted or whose crops were not given;
+/// an error when a given crop's digest differs from the file's.
+fn reread_from(f: &ObservationFile, crops: &BTreeMap<String, Vec<u8>>, warnings: &mut Vec<String>) -> Result<Option<Reread>> {
+    let v = &f.raw;
+    if v["accepted"].as_bool() != Some(true) || f.parse_error.is_some() {
+        return Ok(None);
+    }
+    let text = string(&v["parsed"]["text"]);
+    let Some(page_bbox) = bbox(&v["target"]["page_bbox_px"]) else {
+        warnings.push(format!("{}: re-read without target box, unused", f.path));
+        return Ok(None);
+    };
+    if text.is_empty() || text.contains('?') {
+        return Ok(None);
+    }
+    let mut verify = |image: &str, sha: &str| -> Result<bool> {
+        match crops.get(image) {
+            Some(bytes) => {
+                ensure!(sha256_hex(bytes) == sha.to_ascii_lowercase(), "pixel_crop_identity:{}:{image}", f.path);
+                Ok(true)
+            }
+            None => {
+                warnings.push(format!("{}: crop {image} not provided, re-read unused", f.path));
+                Ok(false)
+            }
+        }
+    };
+    let image = string(&v["image"]);
+    let image_sha256 = string(&v["image_sha256"]);
+    if image.is_empty() || !verify(&image, &image_sha256)? {
+        return Ok(None);
+    }
+    let second_image = Some(string(&v["second_read"]["image"])).filter(|s| !s.is_empty());
+    let second_image_sha256 = Some(string(&v["second_read"]["image_sha256"])).filter(|s| !s.is_empty());
+    if let (Some(img), Some(sha)) = (&second_image, &second_image_sha256)
+        && !verify(img, sha)?
+    {
+        return Ok(None);
+    }
+    Ok(Some(Reread {
+        file: f.path.clone(),
+        page_bbox,
+        proposal_text: string(&v["target"]["proposal_text"]),
+        role: string(&v["target"]["role"]),
+        text,
+        image,
+        image_sha256: image_sha256.to_ascii_lowercase(),
+        second_image,
+        second_image_sha256,
+        model: f.model.clone(),
+        prompt_sha256: f.prompt_sha256.clone(),
+    }))
+}
+
 pub fn page_observations(
     page: &str,
     tiles: &PageTiles,
     files: &[ObservationFile],
     tile_pngs: &BTreeMap<String, Vec<u8>>,
+    crops: &BTreeMap<String, Vec<u8>>,
 ) -> Result<PageObservations> {
     for (name, png) in tile_pngs {
         tiles.verify_tile_png(name, png)?;
@@ -584,7 +669,22 @@ pub fn page_observations(
         proposals: Vec::new(),
         files: Vec::new(),
         warnings: Vec::new(),
+        rereads: Vec::new(),
     };
+    for f in files.iter().filter(|f| f.level == "L1D") {
+        let reread = reread_from(f, crops, &mut out.warnings)?;
+        out.files.push(FileRecord {
+            path: f.path.clone(),
+            level: f.level.clone(),
+            tile: None,
+            model: f.model.clone(),
+            image_sha256: f.image_sha256.clone(),
+            prompt_sha256: f.prompt_sha256.clone(),
+            parse_error: f.parse_error.clone(),
+            items: usize::from(reread.is_some()),
+        });
+        out.rereads.extend(reread);
+    }
     // Verifications by (tile, item index), read before the L1A files are converted.
     let mut verifications: BTreeMap<(String, usize), Verification> = BTreeMap::new();
     for f in files.iter().filter(|f| f.level == "L1C") {
@@ -653,7 +753,7 @@ pub fn page_observations(
             items: count,
         });
     }
-    for f in files.iter().filter(|f| f.level != "L1C") {
+    for f in files.iter().filter(|f| f.level != "L1C" && f.level != "L1D") {
         let mut record = FileRecord {
             path: f.path.clone(),
             level: f.level.clone(),
@@ -711,6 +811,14 @@ pub fn page_observations(
     Ok(out)
 }
 
+/// The proposal with the observed object box (tile pixels) moved into the page.
+fn with_box(p: Option<Proposal>, frame: &TileFrame, b: [f64; 4]) -> Option<Proposal> {
+    p.map(|mut p| {
+        p.bbox = Some(frame.bbox(b));
+        p
+    })
+}
+
 fn provenance(f: &ObservationFile, frame: &TileFrame, index: usize) -> Provenance {
     Provenance {
         tile: frame.entry.name.clone(),
@@ -766,6 +874,7 @@ fn finish(
         centre: frame.to_page(centre_local),
         edge_distance: if edge_distance.is_finite() { edge_distance } else { 0.0 },
         members,
+        bbox: None,
         provenance,
         notes,
     })
@@ -926,7 +1035,7 @@ fn objects_from(f: &ObservationFile, frame: &TileFrame, out: &mut PageObservatio
             });
         }
         let notes = vec![format!("attached_to: {}", string(&s["attached_to"]))];
-        if let Some(pr) = finish(Category::SurfaceTexture, "", &value, members, frame, provenance(f, frame, i), notes) {
+        if let Some(pr) = with_box(finish(Category::SurfaceTexture, "", &value, members, frame, provenance(f, frame, i), notes), frame, b) {
             out.proposals.push(pr);
         }
     }
@@ -996,7 +1105,7 @@ fn objects_from(f: &ObservationFile, frame: &TileFrame, out: &mut PageObservatio
             });
         }
         let text = cells.join(" | ");
-        if let Some(pr) = finish(Category::GdtFrame, "", &text, members, frame, provenance(f, frame, i), vec![]) {
+        if let Some(pr) = with_box(finish(Category::GdtFrame, "", &text, members, frame, provenance(f, frame, i), vec![]), frame, b) {
             out.proposals.push(pr);
         }
     }
@@ -1006,9 +1115,11 @@ fn objects_from(f: &ObservationFile, frame: &TileFrame, out: &mut PageObservatio
             out.warnings.push(format!("{}#datums:{i}: box missing", f.path));
             continue;
         };
+        // The datum symbol: the letter in a frame (circle or square, decided on the ink), a leader from
+        // the frame to the terminal (the triangle or bar on the feature, the observer's base line).
         let mut members = Vec::new();
+        let (w, h) = (b[2] - b[0], b[3] - b[1]);
         if !letter.is_empty() {
-            let (w, h) = (b[2] - b[0], b[3] - b[1]);
             members.push(ProposedMember {
                 role: "datum_letter".into(),
                 shape: Shape::TextBox {
@@ -1018,19 +1129,37 @@ fn objects_from(f: &ObservationFile, frame: &TileFrame, out: &mut PageObservatio
                 text: Some(letter.clone()),
             });
         }
-        if let Some((p, q)) = segment(&d["base_line"]) {
+        let corners = [(b[0], b[1]), (b[2], b[1]), (b[2], b[3]), (b[0], b[3])];
+        for k in 0..4 {
             members.push(ProposedMember {
-                role: "datum_frame".into(),
-                shape: Shape::Segment(p, q),
-                text: None,
-            });
-            members.push(ProposedMember {
-                role: "datum_terminal".into(),
-                shape: Shape::Point(((p.0 + q.0) * 0.5, (p.1 + q.1) * 0.5)),
+                role: "datum_frame#".into(),
+                shape: Shape::Segment(corners[k], corners[(k + 1) % 4]),
                 text: None,
             });
         }
-        if let Some(pr) = finish(Category::Datum, "", &letter, members, frame, provenance(f, frame, i), vec![]) {
+        if let Some((p, q)) = segment(&d["base_line"]) {
+            let centre = ((b[0] + b[2]) * 0.5, (b[1] + b[3]) * 0.5);
+            let foot = ((p.0 + q.0) * 0.5, (p.1 + q.1) * 0.5);
+            let u = unit((foot.0 - centre.0, foot.1 - centre.1));
+            if u != (0.0, 0.0) {
+                // The frame edge towards the foot: the box half-extent along the direction.
+                let half = if u.0.abs() > u.1.abs() { w * 0.5 } else { h * 0.5 };
+                let start = (centre.0 + u.0 * half, centre.1 + u.1 * half);
+                if dist(start, foot) > 4.0 {
+                    members.push(ProposedMember {
+                        role: "leader_line".into(),
+                        shape: Shape::Segment(start, foot),
+                        text: None,
+                    });
+                }
+                members.push(ProposedMember {
+                    role: "datum_terminal".into(),
+                    shape: Shape::Tip { approx: foot, along: u },
+                    text: None,
+                });
+            }
+        }
+        if let Some(pr) = with_box(finish(Category::Datum, "", &letter, members, frame, provenance(f, frame, i), vec![]), frame, b) {
             out.proposals.push(pr);
         }
     }
@@ -1087,7 +1216,7 @@ fn objects_from(f: &ObservationFile, frame: &TileFrame, out: &mut PageObservatio
             },
             text: Some(text.clone()),
         }];
-        if let Some(pr) = finish(Category::Label, kind, &text, members, frame, provenance(f, frame, i), vec![]) {
+        if let Some(pr) = with_box(finish(Category::Label, kind, &text, members, frame, provenance(f, frame, i), vec![]), frame, b) {
             out.proposals.push(pr);
         }
     }
@@ -1125,7 +1254,7 @@ fn objects_from(f: &ObservationFile, frame: &TileFrame, out: &mut PageObservatio
                 text: None,
             });
         }
-        if let Some(pr) = finish(Category::Note, "", &text, members, frame, provenance(f, frame, i), vec![]) {
+        if let Some(pr) = with_box(finish(Category::Note, "", &text, members, frame, provenance(f, frame, i), vec![]), frame, b) {
             out.proposals.push(pr);
         }
     }
@@ -1145,7 +1274,7 @@ fn objects_from(f: &ObservationFile, frame: &TileFrame, out: &mut PageObservatio
             },
             text: Some(text.clone()),
         }];
-        if let Some(pr) = finish(Category::Mark, "", &text, members, frame, provenance(f, frame, i), vec![]) {
+        if let Some(pr) = with_box(finish(Category::Mark, "", &text, members, frame, provenance(f, frame, i), vec![]), frame, b) {
             out.proposals.push(pr);
         }
     }
@@ -1166,10 +1295,32 @@ fn objects_from(f: &ObservationFile, frame: &TileFrame, out: &mut PageObservatio
 }
 
 /// The L0 layout in page pixels, and the technical-requirement lines as page-level proposals.
+/// The image size the page-layout model worked in: the size it reports (`image_size`, or `width`
+/// and `height`), else the thumbnail downscaled to a 2048-px longest side as the model service does
+/// with larger images, else the thumbnail itself.
+fn layout_image_size(p: &Value, tiles: &PageTiles) -> ((f64, f64), &'static str) {
+    let reported = p["image_size"]
+        .as_array()
+        .and_then(|a| Some((num(a.first()?)?, num(a.get(1)?)?)))
+        .or_else(|| Some((num(&p["width"])?, num(&p["height"])?)))
+        .filter(|(w, h)| (100.0..=20000.0).contains(w) && (100.0..=20000.0).contains(h));
+    if let Some(size) = reported {
+        return (size, "reported");
+    }
+    let (w, h) = (f64::from(tiles.small_px.0.max(1)), f64::from(tiles.small_px.1.max(1)));
+    let long = w.max(h);
+    if long > 2048.0 {
+        ((w * 2048.0 / long, h * 2048.0 / long), "assumed_2048")
+    } else {
+        ((w, h), "thumbnail")
+    }
+}
+
 fn layout_from(f: &ObservationFile, tiles: &PageTiles) -> (Layout, Vec<Proposal>) {
     let p = &f.parsed;
-    let sx = f64::from(tiles.page_px.0) / f64::from(tiles.small_px.0.max(1));
-    let sy = f64::from(tiles.page_px.1) / f64::from(tiles.small_px.1.max(1));
+    let ((mw, mh), basis) = layout_image_size(p, tiles);
+    let sx = f64::from(tiles.page_px.0) / mw;
+    let sy = f64::from(tiles.page_px.1) / mh;
     let scale = |b: [f64; 4]| -> [f64; 4] {
         let w = f64::from(tiles.page_px.0) - 1.0;
         let h = f64::from(tiles.page_px.1) - 1.0;
@@ -1207,6 +1358,8 @@ fn layout_from(f: &ObservationFile, tiles: &PageTiles) -> (Layout, Vec<Proposal>
     });
     let scale_note = Some(string(&p["scale_in_title_block"])).filter(|s| !s.is_empty());
     let layout = Layout {
+        model_image_px: (mw, mh),
+        model_image_basis: basis.to_owned(),
         file: f.path.clone(),
         image_sha256: f.image_sha256.clone(),
         model: f.model.clone(),
@@ -1254,6 +1407,7 @@ fn layout_from(f: &ObservationFile, tiles: &PageTiles) -> (Layout, Vec<Proposal>
                     item_index: i,
                     verification: None,
                 },
+                bbox: Some([b[0], y0, b[2], y0 + row]),
                 notes: vec!["row box split evenly from the technical-requirements block".into()],
             });
         }
@@ -1294,7 +1448,7 @@ mod tests {
              "extension_lines": [[[50, 100], [50, 150]], [[250, 100], [250, 150]]], "leader": []},
             {"text": "odd", "kind": "linear", "text_bbox": "nope", "dimension_line": null, "arrowheads": [], "extension_lines": [], "leader": []}
         ]}));
-        let obs = page_observations("p", &tiles(), &[a], &BTreeMap::new()).unwrap();
+        let obs = page_observations("p", &tiles(), &[a], &BTreeMap::new(), &BTreeMap::new()).unwrap();
         assert_eq!(obs.proposals.len(), 1, "{:?}", obs.warnings);
         let p = &obs.proposals[0];
         assert_eq!(p.category, Category::Dimension);
@@ -1313,7 +1467,7 @@ mod tests {
     #[test]
     fn identity_mismatch_is_fatal_and_verification_is_attached_by_index() {
         let bad = file("L1A", "t_0_0.png", &"c".repeat(64), json!({"dimensions": []}));
-        assert!(page_observations("p", &tiles(), &[bad], &BTreeMap::new()).is_err());
+        assert!(page_observations("p", &tiles(), &[bad], &BTreeMap::new(), &BTreeMap::new()).is_err());
         let a = file("L1A", "t_0_0.png", &"a".repeat(64), json!({"dimensions": [
             {"text": "30", "kind": "linear", "text_bbox": [10, 10, 40, 20], "dimension_line": [[0, 30], [100, 30]], "arrowheads": [], "extension_lines": [], "leader": []},
             {"text": "Ø19 +0.05/+0.02", "kind": "diameter", "text_bbox": [200, 10, 300, 20], "dimension_line": [[200, 30], [300, 30]], "arrowheads": [], "extension_lines": [], "leader": []}
@@ -1323,11 +1477,44 @@ mod tests {
             "response": {"answers": [{"type": "predicate", "probability": 0.1},
                 {"type": "choice", "choice": "Ø19 +0.05/+0.02", "probabilities": [{"value": "Ø19 +0.05/+0.02", "probability": 0.7}, {"value": "Ø19 +0.05/+0.03", "probability": 0.3}]}]}});
         let c = load_observation(&serde_json::to_vec(&c).unwrap(), "obs/L1C-t_0_0.json").unwrap();
-        let obs = page_observations("p", &tiles(), &[a, c], &BTreeMap::new()).unwrap();
+        let obs = page_observations("p", &tiles(), &[a, c], &BTreeMap::new(), &BTreeMap::new()).unwrap();
         assert!(obs.proposals[0].provenance.verification.is_none());
         let v = obs.proposals[1].provenance.verification.as_ref().unwrap();
         assert!((v.p_proposal - 0.7).abs() < 1e-9 && v.verified());
         assert_eq!(v.predicate_p, Some(0.1));
+    }
+
+    #[test]
+    fn the_layout_is_scaled_from_the_image_the_model_saw_and_rereads_are_verified() {
+        let mut t = tiles();
+        t.small_px = (2400, 1600);
+        // No size reported: the service's 2048-px downscale of the 2400-px thumbnail.
+        let l0 = json!({"level": "L0", "parsed": {"views": [{"name": "A向", "bbox": [1024, 0, 2048, 512]}]}});
+        let l0 = load_observation(&serde_json::to_vec(&l0).unwrap(), "obs/L0-page.json").unwrap();
+        let obs = page_observations("p", &t, &[l0], &BTreeMap::new(), &BTreeMap::new()).unwrap();
+        let layout = obs.layout.unwrap();
+        assert_eq!(layout.model_image_basis, "assumed_2048");
+        assert!((layout.views[0].bbox[0] - 1500.0).abs() < 1e-9 && (layout.views[0].bbox[2] - 2999.0).abs() < 1e-9, "{:?}", layout.views[0].bbox);
+        // A reported size wins.
+        let l0 = json!({"level": "L0", "parsed": {"image_size": [1500, 1000], "views": [{"name": "A向", "bbox": [750, 0, 1500, 500]}]}});
+        let l0 = load_observation(&serde_json::to_vec(&l0).unwrap(), "obs/L0-page.json").unwrap();
+        let layout = page_observations("p", &t, &[l0], &BTreeMap::new(), &BTreeMap::new()).unwrap().layout.unwrap();
+        assert_eq!(layout.model_image_basis, "reported");
+        assert!((layout.views[0].bbox[0] - 1500.0).abs() < 1e-9);
+        // An accepted re-read is used only with its crops verified; a wrong crop is an error.
+        let crop = b"crop bytes".to_vec();
+        let l1d = json!({"level": "L1D", "accepted": true, "image": "work/p/L1D-000.png", "image_sha256": sha256_hex(&crop),
+            "target": {"page_bbox_px": [10, 10, 50, 30], "proposal_text": "?0", "role": "dimension_text"}, "parsed": {"text": "20"}});
+        let l1d = load_observation(&serde_json::to_vec(&l1d).unwrap(), "obs-l1d/L1D-000.json").unwrap();
+        let mut crops = BTreeMap::new();
+        let obs = page_observations("p", &t, std::slice::from_ref(&l1d), &BTreeMap::new(), &crops).unwrap();
+        assert!(obs.rereads.is_empty() && obs.warnings.len() == 1);
+        crops.insert("work/p/L1D-000.png".to_owned(), crop);
+        let obs = page_observations("p", &t, std::slice::from_ref(&l1d), &BTreeMap::new(), &crops).unwrap();
+        assert_eq!(obs.rereads.len(), 1);
+        assert_eq!(obs.rereads[0].text, "20");
+        crops.insert("work/p/L1D-000.png".to_owned(), b"other".to_vec());
+        assert!(page_observations("p", &t, &[l1d], &BTreeMap::new(), &crops).is_err());
     }
 
     #[test]
@@ -1339,7 +1526,7 @@ mod tests {
         let l0 = load_observation(&serde_json::to_vec(&l0).unwrap(), "obs/L0-page.json").unwrap();
         assert_eq!(l0.level, "L0");
         assert!(l0.tile.is_none());
-        let obs = page_observations("p", &tiles(), &[l0], &BTreeMap::new()).unwrap();
+        let obs = page_observations("p", &tiles(), &[l0], &BTreeMap::new(), &BTreeMap::new()).unwrap();
         let layout = obs.layout.unwrap();
         assert_eq!(layout.frame, Some([20.0, 20.0, 2800.0, 1800.0]));
         assert_eq!(layout.views[0].bbox, [200.0, 200.0, 1400.0, 1000.0]);
@@ -1348,6 +1535,6 @@ mod tests {
         assert_eq!(obs.proposals[1].category, Category::TechnicalLine);
         let mut pngs = BTreeMap::new();
         pngs.insert("t_0_0.png".to_owned(), b"not the tile".to_vec());
-        assert!(page_observations("p", &tiles(), &[], &pngs).is_err());
+        assert!(page_observations("p", &tiles(), &[], &pngs, &BTreeMap::new()).is_err());
     }
 }

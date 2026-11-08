@@ -11,7 +11,8 @@ use std::collections::BTreeMap;
 
 use crate::geom::{add, dist, dist_point_segment, dot, median, mul, perp, sub, unit};
 use crate::members::{arrow_tip, fit_segment, segment_support, snap_point};
-use crate::observe::{Category, P, Proposal, Shape};
+use crate::lines;
+use crate::observe::{Category, P, Proposal, ProposedMember, Shape};
 use crate::stroke::Pattern;
 use crate::structure::point_in_polygon;
 use crate::{Ink, Segment};
@@ -89,6 +90,8 @@ pub struct RefinedMember {
     pub discarded_components: usize,
     /// What later steps did to the member (extension span re-derived, hatch measured, ...).
     pub adjustments: Vec<String>,
+    /// A dimension line's extent from arrow tip to arrow tip, before it was cut at the arrow bases.
+    pub span_px: Option<(P, P)>,
 }
 
 /// A proposal with its refined members.
@@ -571,6 +574,7 @@ fn blank(role: &str, text: Option<&String>, shape: &Shape) -> RefinedMember {
         arrow_length_px: None,
         discarded_components: 0,
         adjustments: Vec::new(),
+        span_px: None,
     }
 }
 
@@ -835,11 +839,30 @@ fn refine_member(ink: &Ink, category: Category, role: &str, shape: &Shape, text:
             } else {
                 fit.width_px
             };
+            let (rp, rq) = match lines::snap_axis(rp, rq) {
+                Some(((sp, sq), off)) => {
+                    out.adjustments.push(format!("axis_snap:{off:.3}deg"));
+                    (sp, sq)
+                }
+                None => (rp, rq),
+            };
             out.refined = Shape::Segment(rp, rq);
             out.supported = out.support_after >= params.support_min && dist(rp, rq) >= 2.0;
             if out.supported {
                 out.pattern = Some(measure_pattern(ink, rp, rq));
             }
+        }
+        Shape::Circle { c, r } => {
+            let inked = (0..72)
+                .filter(|k| {
+                    let a = *k as f64 * std::f64::consts::TAU / 72.0;
+                    ink.has_dark_within(c.0 + r * a.cos(), c.1 + r * a.sin(), 1.5)
+                })
+                .count() as f64
+                / 72.0;
+            out.support_before = inked;
+            out.support_after = inked;
+            out.supported = inked >= params.support_min;
         }
         Shape::Point(p) => {
             out.support_before = f64::from(u8::from(ink.has_dark_within(p.0, p.1, 1.5)));
@@ -1006,91 +1029,267 @@ fn trim_to_arrow_bases(ink: &Ink, members: &mut [Option<RefinedMember>]) {
     }
 }
 
-/// Cut a dimension line at its own extension lines where no arrowhead was found: the ink of a chain
-/// runs on through the shared extension line into the neighbour's arrowhead, and the fitted line
-/// follows it. An end that reaches more than 1 px past the nearest crossing is moved back to the
-/// crossing; an end an arrow tip was found near (within `ARROW_END_SLACK_PX`) is left alone, since the
-/// arrow trimming decides it (outside arrows keep their stubs).
-fn trim_to_extension_crossings(ink: &Ink, members: &mut [Option<RefinedMember>]) {
-    let extensions: Vec<(P, P)> = members
+/// A refined arrowhead found on the ink: tip, base, the direction it points, from where.
+fn arrow_member(role: &str, proposed: &Shape, tip: P, base: P, how: &str) -> RefinedMember {
+    let along = unit(sub(tip, base)).unwrap_or((0.0, 0.0));
+    let mut m = blank(role, None, proposed);
+    m.refined = Shape::Tip { approx: tip, along };
+    m.support_before = 1.0;
+    m.support_after = 1.0;
+    m.supported = true;
+    m.moved_px = dist(proposed.reference(), tip);
+    m.arrow_base = Some(base);
+    m.arrow_length_px = Some(dist(tip, base));
+    m.adjustments.push(format!("arrow_from_ink:{how}"));
+    m
+}
+
+/// The proposed arrow tip nearest `tip` within 30 px that is still unrefined.
+fn claim_tip(shapes: &[ProposedMember], slots: &[Option<RefinedMember>], dropped: &[bool], tip: P) -> Option<usize> {
+    shapes
         .iter()
-        .flatten()
-        .filter(|m| m.supported && m.role == "extension_line")
-        .filter_map(|m| match m.refined {
-            Shape::Segment(p, q) => Some((p, q)),
-            _ => None,
-        })
-        .collect();
-    let tips: Vec<P> = members
-        .iter()
-        .flatten()
-        .filter(|m| m.supported)
-        .filter_map(|m| match m.refined {
-            Shape::Tip { approx, .. } => Some(approx),
-            _ => None,
-        })
-        .collect();
-    if extensions.is_empty() {
-        return;
-    }
-    for m in members.iter_mut().flatten() {
-        if !m.supported || m.role != "dimension_line" {
-            continue;
+        .enumerate()
+        .filter(|(i, m)| slots[*i].is_none() && !dropped[*i] && matches!(m.shape, Shape::Tip { .. }) && m.role == "arrowhead")
+        .map(|(i, m)| (i, dist(m.shape.reference(), tip)))
+        .filter(|(_, d)| *d <= 30.0)
+        .min_by(|a, b| a.1.total_cmp(&b.1))
+        .map(|(i, _)| i)
+}
+
+/// Place a found arrowhead: on the proposed tip it matches, or as a new member.
+fn place_arrow(
+    shapes: &mut Vec<ProposedMember>,
+    slots: &mut Vec<Option<RefinedMember>>,
+    dropped: &mut Vec<bool>,
+    tip: P,
+    base: P,
+    how: &str,
+) {
+    match claim_tip(shapes, slots, dropped, tip) {
+        Some(i) => slots[i] = Some(arrow_member("arrowhead", &shapes[i].shape, tip, base, how)),
+        None => {
+            let shape = Shape::Tip { approx: tip, along: unit(sub(tip, base)).unwrap_or((0.0, 0.0)) };
+            let mut m = arrow_member("arrowhead", &shape, tip, base, how);
+            m.adjustments.push("arrow_not_proposed".into());
+            shapes.push(ProposedMember { role: "arrowhead".into(), shape, text: None });
+            slots.push(Some(m));
+            dropped.push(false);
         }
-        let Shape::Segment(p, q) = m.refined else { continue };
-        let Some(d) = unit(sub(q, p)) else { continue };
-        let len = dist(p, q);
-        // Parameters along the line where the extension lines cross it.
-        let crossings: Vec<f64> = extensions
-            .iter()
-            .filter_map(|&(a, b)| {
-                let e = sub(b, a);
-                let denom = d.0 * e.1 - d.1 * e.0;
-                if denom.abs() < 1e-9 {
-                    return None;
-                }
-                let w = sub(a, p);
-                let t = (w.0 * e.1 - w.1 * e.0) / denom;
-                let u = (w.0 * d.1 - w.1 * d.0) / denom;
-                (-0.1..=1.1).contains(&u).then_some(t)
-            })
-            .collect();
-        if crossings.is_empty() {
-            continue;
-        }
-        let (mut t0, mut t1) = (0.0, len);
-        let first = crossings.iter().copied().fold(f64::INFINITY, f64::min);
-        let last = crossings.iter().copied().fold(f64::NEG_INFINITY, f64::max);
-        let tip_near = |t: f64| tips.iter().any(|tip| dist(*tip, add(p, mul(d, t))) <= ARROW_END_SLACK_PX);
-        if first > 1.0 && first < len - 1.0 && !tip_near(0.0) && !tip_near(first) {
-            t0 = first;
-        }
-        if last < len - 1.0 && last > 1.0 && !tip_near(len) && !tip_near(last) {
-            t1 = last;
-        }
-        if t0 == 0.0 && t1 == len {
-            continue;
-        }
-        let (np, nq) = (add(p, mul(d, t0)), add(p, mul(d, t1)));
-        if dist(np, nq) < 2.0 {
-            continue;
-        }
-        m.refined = Shape::Segment(np, nq);
-        m.support_after = segment_support(ink, np, nq);
-        m.supported = m.support_after >= 0.8;
     }
 }
 
-/// Refine every member of a proposal in phases: strokes, then arrow tips (along the fitted dimension
-/// line, with the arrowhead base measured and the terminated line cut back to it), then text boxes
-/// fitted to glyphs with the proposal's own strokes excluded. For a surface texture symbol, the two
-/// leg chiralities proposed are both fitted and only the better supported pair is kept, as
-/// `roughness_symbol`.
+/// Supported refined segments of a role.
+fn segments_with(slots: &[Option<RefinedMember>], dropped: &[bool], role: &str) -> Vec<(usize, P, P)> {
+    slots
+        .iter()
+        .enumerate()
+        .filter(|(i, _)| !dropped[*i])
+        .filter_map(|(i, m)| match m {
+            Some(m) if m.supported && m.role == role => match m.refined {
+                Shape::Segment(p, q) => Some((i, p, q)),
+                _ => None,
+            },
+            _ => None,
+        })
+        .collect()
+}
+
+/// The frame of a datum symbol: a circle when the ring of ink around the letter fits one (radius
+/// within 0.7–1.3 of the observed half-size, RMS ≤ 1.6 px, 70 % of the circumference inked), else the
+/// square of the four refined sides.
+fn datum_frame(ink: &Ink, shapes: &mut Vec<ProposedMember>, slots: &mut Vec<Option<RefinedMember>>, dropped: &mut Vec<bool>) {
+    let sides: Vec<usize> = (0..shapes.len()).filter(|i| shapes[*i].role == "datum_frame#").collect();
+    if sides.is_empty() {
+        return;
+    }
+    let pts: Vec<P> = sides.iter().flat_map(|i| shapes[*i].shape.points()).collect();
+    let (mut x0, mut y0, mut x1, mut y1) = (f64::INFINITY, f64::INFINITY, f64::NEG_INFINITY, f64::NEG_INFINITY);
+    for p in &pts {
+        x0 = x0.min(p.0);
+        y0 = y0.min(p.1);
+        x1 = x1.max(p.0);
+        y1 = y1.max(p.1);
+    }
+    let c = ((x0 + x1) * 0.5, (y0 + y1) * 0.5);
+    let r0 = 0.5 * (x1 - x0).min(y1 - y0);
+    let letter = shapes.iter().find_map(|m| match (&m.shape, m.role.as_str()) {
+        (Shape::TextBox { bbox, .. }, "datum_letter") => Some(*bbox),
+        _ => None,
+    });
+    let mut ring: Vec<P> = Vec::new();
+    if r0 >= 6.0 {
+        let (ax0, ay0) = ((c.0 - 1.4 * r0).floor() as i64, (c.1 - 1.4 * r0).floor() as i64);
+        let (ax1, ay1) = ((c.0 + 1.4 * r0).ceil() as i64, (c.1 + 1.4 * r0).ceil() as i64);
+        for y in ay0.max(0)..=ay1.min(ink.height as i64 - 1) {
+            for x in ax0.max(0)..=ax1.min(ink.width as i64 - 1) {
+                if !ink.is_dark(x, y) {
+                    continue;
+                }
+                let pt = (x as f64, y as f64);
+                let rr = dist(pt, c);
+                let in_letter = letter.is_some_and(|b| pt.0 >= b[0] - 2.0 && pt.0 <= b[2] + 2.0 && pt.1 >= b[1] - 2.0 && pt.1 <= b[3] + 2.0);
+                if rr >= 0.6 * r0 && rr <= 1.35 * r0 && !in_letter {
+                    ring.push(pt);
+                }
+            }
+        }
+    }
+    let circle = (ring.len() >= 30).then(|| crate::geom::fit_circle(&ring)).flatten().filter(|cf| {
+        cf.rms <= 1.6 && cf.r >= 0.7 * r0 && cf.r <= 1.3 * r0 && dist(cf.c, c) <= 0.3 * r0 && {
+            let inked = (0..72)
+                .filter(|k| {
+                    let a = *k as f64 * std::f64::consts::TAU / 72.0;
+                    ink.has_dark_within(cf.c.0 + cf.r * a.cos(), cf.c.1 + cf.r * a.sin(), 1.5)
+                })
+                .count();
+            inked as f64 / 72.0 >= 0.7
+        }
+    });
+    match circle {
+        Some(cf) => {
+            for i in &sides {
+                dropped[*i] = true;
+            }
+            let proposed = Shape::Circle { c, r: r0 };
+            let mut m = blank("datum_frame", None, &proposed);
+            m.refined = Shape::Circle { c: cf.c, r: cf.r };
+            m.support_before = 1.0;
+            m.support_after = 1.0;
+            m.supported = true;
+            m.moved_px = dist(cf.c, c).max((cf.r - r0).abs());
+            m.width_px = 2.0 * cf.rms.max(1.0);
+            m.pattern = Some(Pattern::Continuous);
+            m.adjustments.push(format!("datum_frame:circle,rms={:.2}", cf.rms));
+            shapes.push(ProposedMember { role: "datum_frame".into(), shape: proposed, text: None });
+            slots.push(Some(m));
+            dropped.push(false);
+        }
+        None => {
+            for i in &sides {
+                shapes[*i].role = "datum_frame".into();
+                if let Some(m) = slots[*i].as_mut() {
+                    m.role = "datum_frame".into();
+                    m.adjustments.push("datum_frame:square".into());
+                }
+            }
+        }
+    }
+}
+
+/// The cells of a tolerance frame: interior vertical dividers are columns inked over at least 90 %
+/// of the frame's inner height; each divider becomes a frame cell line, and the cell texts of the
+/// observation (symbol, tolerance value, datum references) are placed in the cells found, replacing
+/// the observer's evenly divided boxes. Nothing changes when fewer cells are found than texts.
+fn gdt_cells(ink: &Ink, proposal: &Proposal, shapes: &mut Vec<ProposedMember>, slots: &mut Vec<Option<RefinedMember>>, dropped: &mut Vec<bool>) {
+    let frame = segments_with(slots, dropped, "frame_cell");
+    if frame.len() < 3 {
+        return;
+    }
+    let (mut x0, mut y0, mut x1, mut y1) = (f64::INFINITY, f64::INFINITY, f64::NEG_INFINITY, f64::NEG_INFINITY);
+    let mut widths: Vec<f64> = Vec::new();
+    for (i, p, q) in &frame {
+        for e in [p, q] {
+            x0 = x0.min(e.0);
+            y0 = y0.min(e.1);
+            x1 = x1.max(e.0);
+            y1 = y1.max(e.1);
+        }
+        if let Some(m) = &slots[*i] {
+            widths.push(m.width_px);
+        }
+    }
+    let sw = median(&mut widths).unwrap_or(3.0).clamp(1.5, 6.0);
+    if x1 - x0 < 20.0 || y1 - y0 < 12.0 {
+        return;
+    }
+    let rows: Vec<i64> = ((y0 + sw + 2.0).ceil() as i64..=(y1 - sw - 2.0).floor() as i64).collect();
+    if rows.len() < 5 {
+        return;
+    }
+    let mut dividers: Vec<f64> = Vec::new();
+    let mut group: Vec<f64> = Vec::new();
+    let flush = |group: &mut Vec<f64>, dividers: &mut Vec<f64>| {
+        if !group.is_empty() {
+            dividers.push(group.iter().sum::<f64>() / group.len() as f64);
+            group.clear();
+        }
+    };
+    for x in (x0 + sw + 4.0).ceil() as i64..=(x1 - sw - 4.0).floor() as i64 {
+        let covered = rows.iter().filter(|&&y| ink.is_dark(x, y)).count() as f64 / rows.len() as f64;
+        if covered >= 0.9 {
+            if group.last().is_some_and(|last| x as f64 - last > 1.5) {
+                flush(&mut group, &mut dividers);
+            }
+            group.push(x as f64);
+        } else {
+            flush(&mut group, &mut dividers);
+        }
+    }
+    flush(&mut group, &mut dividers);
+    if dividers.is_empty() {
+        return;
+    }
+    for d in &dividers {
+        let (p, q) = ((*d, y0), (*d, y1));
+        let mut m = blank("frame_cell", None, &Shape::Segment(p, q));
+        m.support_after = segment_support(ink, p, q);
+        m.support_before = m.support_after;
+        m.supported = m.support_after >= 0.8;
+        m.width_px = sw;
+        m.pattern = Some(Pattern::Continuous);
+        m.adjustments.push("gdt_divider_from_ink".into());
+        shapes.push(ProposedMember { role: "frame_cell".into(), shape: Shape::Segment(p, q), text: None });
+        slots.push(Some(m));
+        dropped.push(false);
+    }
+    let mut edges = vec![x0];
+    edges.extend(dividers.iter().copied());
+    edges.push(x1);
+    let texts: Vec<String> = proposal.text.split('|').map(|t| t.trim().to_owned()).collect();
+    if texts.len() > edges.len() - 1 {
+        return;
+    }
+    for i in 0..shapes.len() {
+        if matches!(shapes[i].shape, Shape::TextBox { .. })
+            && matches!(shapes[i].role.as_str(), "symbol_glyph" | "tolerance_value" | "datum_reference")
+        {
+            dropped[i] = true;
+        }
+    }
+    for (k, text) in texts.iter().enumerate() {
+        if text.is_empty() {
+            continue;
+        }
+        let role = match k {
+            0 => "symbol_glyph",
+            1 => "tolerance_value",
+            _ => "datum_reference",
+        };
+        let bbox = [edges[k] + sw + 2.0, y0 + sw + 2.0, edges[k + 1] - sw - 2.0, y1 - sw - 2.0];
+        shapes.push(ProposedMember {
+            role: role.into(),
+            shape: Shape::TextBox { bbox, vertical: false },
+            text: Some(text.clone()),
+        });
+        slots.push(None);
+        dropped.push(false);
+    }
+}
+
+/// Refine every member of a proposal in phases: strokes (snapped to an axis within 0.3°), the frame
+/// of a datum symbol and the cells of a tolerance frame from the ink; then each dimension line
+/// followed on the ink run by run to its own arrowheads (found from the width profile, proposed or
+/// not) and cut at their bases, arrowheads at the free ends of leaders, the remaining proposed tips,
+/// stroke widths robust to arrows and junctions; finally text boxes fitted to glyphs with the
+/// proposal's own strokes excluded. For a surface texture symbol, the two leg chiralities proposed
+/// are both fitted and only the better supported pair is kept, as `roughness_symbol`.
 pub fn refine(ink: &Ink, proposal: &Proposal, params: &RefineParams) -> RefinedProposal {
-    let n = proposal.members.len();
+    let mut shapes: Vec<ProposedMember> = proposal.members.clone();
+    let n = shapes.len();
     let mut slots: Vec<Option<RefinedMember>> = vec![None; n];
+    let mut dropped: Vec<bool> = vec![false; n];
     // Phase 1: strokes, points, polylines, hatch regions.
-    for (i, m) in proposal.members.iter().enumerate() {
+    for (i, m) in shapes.iter().enumerate() {
         if !matches!(m.shape, Shape::Tip { .. } | Shape::TextBox { .. }) {
             slots[i] = Some(refine_member(ink, proposal.category, &m.role, &m.shape, m.text.as_ref(), params));
         }
@@ -1109,6 +1308,7 @@ pub fn refine(ink: &Ink, proposal: &Proposal, params: &RefineParams) -> RefinedP
             }
             let drop = if b.support_after > a.support_after + 1e-9 { i } else { j };
             slots[drop] = None;
+            dropped[drop] = true;
         }
     }
     // The better supported leg chirality of a surface texture symbol.
@@ -1122,12 +1322,13 @@ pub fn refine(ink: &Ink, proposal: &Proposal, params: &RefineParams) -> RefinedP
                 .sum()
         };
         let keep = if score('1') > score('0') + 1e-9 { '1' } else { '0' };
-        for slot in slots.iter_mut() {
+        for (i, slot) in slots.iter_mut().enumerate() {
             let drop = slot
                 .as_ref()
                 .is_some_and(|m| m.role.starts_with("roughness_symbol#") && m.role.chars().nth(17) != Some(keep));
             if drop {
                 *slot = None;
+                dropped[i] = true;
             } else if let Some(m) = slot.as_mut()
                 && m.role.starts_with("roughness_symbol#")
             {
@@ -1135,11 +1336,102 @@ pub fn refine(ink: &Ink, proposal: &Proposal, params: &RefineParams) -> RefinedP
             }
         }
     }
-    // Phase 2: arrow tips along the fitted dimension line, with their bases.
-    let dimension = slots.iter().flatten().find_map(|m| match (&m.refined, m.role.as_str(), m.supported) {
-        (Shape::Segment(p, q), "dimension_line", true) => Some((*p, *q)),
-        _ => None,
-    });
+    match proposal.category {
+        Category::Datum => datum_frame(ink, &mut shapes, &mut slots, &mut dropped),
+        Category::GdtFrame => gdt_cells(ink, proposal, &mut shapes, &mut slots, &mut dropped),
+        _ => {}
+    }
+    // Phase 2a: dimension lines followed on the ink, with their own arrowheads.
+    let text_height = shapes
+        .iter()
+        .find_map(|m| match (&m.shape, m.role.as_str()) {
+            (Shape::TextBox { bbox, .. }, "dimension_text") => Some((bbox[2] - bbox[0]).min(bbox[3] - bbox[1])),
+            _ => None,
+        })
+        .unwrap_or(40.0)
+        .clamp(20.0, 120.0);
+    let mut followed: Vec<usize> = Vec::new();
+    for (i, p, q) in segments_with(&slots, &dropped, "dimension_line") {
+        let Shape::Segment(pp, pq) = shapes[i].shape else { continue };
+        let own: Vec<(P, P)> = segments_with(&slots, &dropped, "extension_line").into_iter().map(|(_, a, b)| (a, b)).collect();
+        let sw = slots[i].as_ref().map_or(3.0, |m| if m.width_px > 0.0 { m.width_px } else { 3.0 }).clamp(1.5, 6.0);
+        let Some(ext) = lines::dimension_extent(ink, (p, q), (pp, pq), sw, text_height, &own) else { continue };
+        let cut = |e: &lines::LineEnd| match e.arrow {
+            Some((_, base)) if e.how != "outside_arrow" => base,
+            _ => e.t,
+        };
+        let (t0, t1) = (cut(&ext.start), cut(&ext.end));
+        let (np, nq) = (ext.at(t0), ext.at(t1));
+        if dist(np, nq) < 2.0 {
+            continue;
+        }
+        followed.push(i);
+        if let Some(m) = slots[i].as_mut() {
+            m.refined = Shape::Segment(np, nq);
+            m.span_px = Some((ext.at(ext.start.t), ext.at(ext.end.t)));
+            m.support_after = segment_support(ink, np, nq);
+            m.supported = m.support_after >= params.support_min;
+            m.moved_px = dist(pp, np).max(dist(pq, nq));
+            m.adjustments.push(format!("line_extent:start={},end={}", ext.start.how, ext.end.how));
+        }
+        for e in [&ext.start, &ext.end] {
+            if let Some((tip, base)) = e.arrow {
+                place_arrow(&mut shapes, &mut slots, &mut dropped, ext.at(tip), ext.at(base), e.how);
+            }
+        }
+        // The line running on beyond an own extension line out to a text placed outside: a second
+        // dimension-line member from the crossing.
+        for &(ta, tb) in &ext.outer {
+            let (op, oq) = (ext.at(ta), ext.at(tb));
+            let shape = Shape::Segment(op, oq);
+            let mut m = blank("dimension_line", None, &shape);
+            m.refined = shape.clone();
+            m.support_before = 1.0;
+            m.support_after = segment_support(ink, op, oq);
+            m.supported = m.support_after >= params.support_min;
+            m.width_px = sw;
+            m.pattern = slots[i].as_ref().and_then(|x| x.pattern);
+            m.span_px = Some((op, oq));
+            m.adjustments.push("dimension_line_beyond_extension_line".into());
+            shapes.push(ProposedMember { role: "dimension_line".into(), shape, text: None });
+            slots.push(Some(m));
+            dropped.push(false);
+            followed.push(slots.len() - 1);
+        }
+    }
+    // Phase 2b: arrowheads at the free ends of leaders (an end no other leader piece meets).
+    let leaders = segments_with(&slots, &dropped, "leader_line");
+    for &(i, p, q) in &leaders {
+        let others: Vec<P> = leaders.iter().filter(|(j, ..)| *j != i).flat_map(|(_, a, b)| [*a, *b]).collect();
+        let sw = slots[i].as_ref().map_or(3.0, |m| if m.width_px > 0.0 { m.width_px } else { 3.0 }).clamp(1.5, 6.0);
+        let len = dist(p, q);
+        let mut ends = (p, q);
+        for at_p in [true, false] {
+            let (end, other) = if at_p { (ends.0, ends.1) } else { (ends.1, ends.0) };
+            if others.iter().any(|o| dist(*o, end) <= 12.0) {
+                continue;
+            }
+            let Some((tip, base)) = lines::wedge_at_end(ink, end, sub(other, end), sw, (0.7 * len).min(200.0)) else { continue };
+            let Some(d) = unit(sub(other, end)) else { continue };
+            let tb = dot(sub(base, end), d);
+            if tb > 1.0 && tb < dist(end, other) - 2.0 {
+                let nb = add(end, mul(d, tb));
+                ends = if at_p { (nb, ends.1) } else { (ends.0, nb) };
+            }
+            place_arrow(&mut shapes, &mut slots, &mut dropped, tip, base, "leader_end");
+        }
+        if ends != (p, q)
+            && let Some(m) = slots[i].as_mut()
+        {
+            m.refined = Shape::Segment(ends.0, ends.1);
+            m.support_after = segment_support(ink, ends.0, ends.1);
+            m.supported = m.support_after >= params.support_min;
+            m.adjustments.push("cut_at_arrow_base".into());
+        }
+    }
+    // Phase 2c: the remaining proposed tips along the dimension line, with their bases; a leader or
+    // an unfollowed dimension line they terminate is cut back to the base.
+    let dimension = segments_with(&slots, &dropped, "dimension_line").first().map(|(_, p, q)| (*p, *q));
     let line_width = slots
         .iter()
         .flatten()
@@ -1147,24 +1439,74 @@ pub fn refine(ink: &Ink, proposal: &Proposal, params: &RefineParams) -> RefinedP
         .map(|m| m.width_px)
         .fold(0.0, f64::max)
         .max(2.0);
-    for (i, m) in proposal.members.iter().enumerate() {
-        if let Shape::Tip { approx, along } = m.shape {
-            slots[i] = Some(refine_tip(ink, &m.role, approx, along, dimension, line_width, params));
+    let mut tipped: Vec<usize> = Vec::new();
+    for i in 0..shapes.len() {
+        if slots[i].is_some() || dropped[i] {
+            continue;
+        }
+        if let Shape::Tip { approx, along } = shapes[i].shape {
+            slots[i] = Some(refine_tip(ink, &shapes[i].role, approx, along, dimension, line_width, params));
+            tipped.push(i);
         }
     }
-    trim_to_arrow_bases(ink, &mut slots);
-    trim_to_extension_crossings(ink, &mut slots);
+    if !tipped.is_empty() {
+        let mut view: Vec<Option<RefinedMember>> = slots
+            .iter()
+            .enumerate()
+            .map(|(i, m)| match m {
+                Some(m) if !dropped[i] && (tipped.contains(&i) || (m.role == "leader_line") || (m.role == "dimension_line" && !followed.contains(&i))) => Some(m.clone()),
+                _ => None,
+            })
+            .collect();
+        trim_to_arrow_bases(ink, &mut view);
+        for (i, m) in view.into_iter().enumerate() {
+            if let Some(m) = m
+                && matches!(m.role.as_str(), "leader_line" | "dimension_line")
+            {
+                slots[i] = Some(m);
+            }
+        }
+    }
+    // Phase 2d: stroke widths away from arrowheads and junctions.
+    for i in 0..slots.len() {
+        if dropped[i] {
+            continue;
+        }
+        if let Some(m) = slots[i].as_mut()
+            && m.supported
+            && matches!(m.role.as_str(), "dimension_line" | "extension_line" | "leader_line")
+            && let Shape::Segment(p, q) = m.refined
+        {
+            let w = lines::robust_width(ink, p, q, params.corridor_px * 0.5, 2.0, 2.0);
+            if w > 0.0 {
+                m.width_px = w;
+            }
+        }
+    }
     // Phase 3: text boxes, with the proposal's own strokes excluded.
-    let exclude: Vec<Segment> = slots
-        .iter()
-        .flatten()
-        .filter(|m| m.supported)
-        .filter_map(|m| match m.refined {
-            Shape::Segment(p, q) => Some((p, q, m.width_px.max(1.0))),
-            _ => None,
-        })
-        .collect();
-    for (i, m) in proposal.members.iter().enumerate() {
+    let mut exclude: Vec<Segment> = Vec::new();
+    for (i, m) in slots.iter().enumerate() {
+        let Some(m) = m else { continue };
+        if dropped[i] || !m.supported {
+            continue;
+        }
+        match m.refined {
+            Shape::Segment(p, q) => exclude.push((p, q, m.width_px.max(1.0))),
+            Shape::Circle { c, r } => {
+                for k in 0..24 {
+                    let a0 = k as f64 * std::f64::consts::TAU / 24.0;
+                    let a1 = (k + 1) as f64 * std::f64::consts::TAU / 24.0;
+                    exclude.push(((c.0 + r * a0.cos(), c.1 + r * a0.sin()), (c.0 + r * a1.cos(), c.1 + r * a1.sin()), m.width_px.max(2.0) + 1.0));
+                }
+            }
+            _ => {}
+        }
+    }
+    for i in 0..shapes.len() {
+        if dropped[i] || slots[i].is_some() {
+            continue;
+        }
+        let m = &shapes[i];
         if let Shape::TextBox { bbox, vertical } = m.shape {
             let mut out = blank(&m.role, m.text.as_ref(), &m.shape);
             out.support_before = f64::from(u8::from(dark_in_box(ink, bbox) >= 3));
@@ -1183,7 +1525,11 @@ pub fn refine(ink: &Ink, proposal: &Proposal, params: &RefineParams) -> RefinedP
     }
     RefinedProposal {
         proposal: proposal.clone(),
-        members: slots.into_iter().flatten().collect(),
+        members: slots
+            .into_iter()
+            .zip(dropped)
+            .filter_map(|(m, d)| if d { None } else { m })
+            .collect(),
     }
 }
 
@@ -1221,6 +1567,7 @@ mod tests {
                 verification: None,
             },
             notes: vec![],
+            bbox: None,
         }
     }
 

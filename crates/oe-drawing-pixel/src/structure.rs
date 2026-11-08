@@ -296,6 +296,101 @@ pub fn vectorise_remainder(
     (out, thin, remnants)
 }
 
+/// Co-circular centre-axis arcs (the dashes of a dash-dot circle, a bolt circle) merged into one arc
+/// per circle: centres within 3 % of the radius (at least 3 px), radii within 3 % (at least 2 px); the
+/// merged arc spans the covered angles, a full circle when they cover at least 330°.
+pub fn merge_cocircular_axes(classified: Vec<Classified>) -> Vec<Classified> {
+    let arcs: Vec<usize> = (0..classified.len())
+        .filter(|i| classified[*i].class == StrokeClass::CentreAxis && matches!(classified[*i].stroke.primitive, Primitive::Arc { .. }))
+        .collect();
+    if arcs.len() < 2 {
+        return classified;
+    }
+    let geo = |i: usize| match classified[i].stroke.primitive {
+        Primitive::Arc { c, r, start_rad, sweep_rad } => (c, r, start_rad, sweep_rad),
+        Primitive::Line { .. } => unreachable!("filtered to arcs"),
+    };
+    let mut dsu = crate::pattern::Dsu::new(arcs.len());
+    for a in 0..arcs.len() {
+        for b in a + 1..arcs.len() {
+            let (ca, ra, ..) = geo(arcs[a]);
+            let (cb, rb, ..) = geo(arcs[b]);
+            let r = ra.max(rb);
+            if dist(ca, cb) <= (0.03 * r).max(3.0) && (ra - rb).abs() <= (0.03 * r).max(2.0) {
+                dsu.union(a, b);
+            }
+        }
+    }
+    let mut groups: BTreeMap<usize, Vec<usize>> = BTreeMap::new();
+    for (k, &arc) in arcs.iter().enumerate() {
+        groups.entry(dsu.find(k)).or_default().push(arc);
+    }
+    let mut merged: BTreeMap<usize, Classified> = BTreeMap::new();
+    let mut drop: Vec<usize> = Vec::new();
+    for members in groups.values().filter(|m| m.len() > 1) {
+        let mut bins = [false; 360];
+        let (mut wsum, mut cx, mut cy, mut rr, mut width, mut support, mut pixels) = (0.0, 0.0, 0.0, 0.0, 0.0f64, 0.0, 0usize);
+        for &i in members {
+            let (c, r, start, sweep) = geo(i);
+            let steps = (sweep.abs().to_degrees().ceil() as usize).max(1);
+            for k in 0..=steps {
+                let a = start + sweep * k as f64 / steps as f64;
+                bins[(a.to_degrees().rem_euclid(360.0) as usize).min(359)] = true;
+            }
+            let wgt = r * sweep.abs();
+            wsum += wgt;
+            cx += c.0 * wgt;
+            cy += c.1 * wgt;
+            rr += r * wgt;
+            width = width.max(classified[i].stroke.width_px);
+            support += classified[i].stroke.support * wgt;
+            pixels += classified[i].stroke.pixels;
+        }
+        if wsum <= 0.0 {
+            continue;
+        }
+        let covered = bins.iter().filter(|b| **b).count();
+        // The covered span: the longest run of covered bins around the circle.
+        let (start_deg, sweep_deg) = if covered >= 330 {
+            (0.0, 360.0)
+        } else {
+            let mut best = (0usize, 0usize);
+            for s0 in 0..360 {
+                if !bins[s0] || bins[(s0 + 359) % 360] {
+                    continue;
+                }
+                let mut len = 0;
+                while len < 360 && bins[(s0 + len) % 360] {
+                    len += 1;
+                }
+                if len > best.1 {
+                    best = (s0, len);
+                }
+            }
+            (best.0 as f64, best.1 as f64)
+        };
+        let first = members[0];
+        let mut c = classified[first].clone();
+        c.stroke.primitive = Primitive::Arc {
+            c: (cx / wsum, cy / wsum),
+            r: rr / wsum,
+            start_rad: start_deg.to_radians(),
+            sweep_rad: if sweep_deg >= 360.0 { std::f64::consts::TAU } else { sweep_deg.to_radians() },
+        };
+        c.stroke.width_px = width;
+        c.stroke.support = support / wsum;
+        c.stroke.pixels = pixels;
+        merged.insert(first, c);
+        drop.extend(members.iter().skip(1).copied());
+    }
+    classified
+        .into_iter()
+        .enumerate()
+        .filter(|(i, _)| !drop.contains(i))
+        .map(|(i, c)| merged.remove(&i).unwrap_or(c))
+        .collect()
+}
+
 /// Group collinear line pieces `(p, q)` with union–find. Two pieces group when their directions are
 /// within `angle_tol`, both endpoints of the shorter lie within `offset_tol` of the longer one's line
 /// and their extents overlap or are at most `gap_tol` apart; or, up to `explained_gap_tol`, when

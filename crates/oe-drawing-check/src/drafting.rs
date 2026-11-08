@@ -912,7 +912,9 @@ fn is_pixel_graph(g: &Value) -> bool {
 /// Synthetic records of a pixel graph (profile `pixel-expression-rules/1`): every entity of `source.entities` becomes
 /// one record with the group codes the DXF reader expects, so that objects, relations, facts and shapes are those of
 /// the DXF path. LINE `[x0, y0, x1, y1]` gives 10/20/11/21; ARC `[cx, cy, r, start°, sweep°]` gives 10/20/40/50/51
-/// (a negative sweep is the same arc run the other way); CIRCLE `[cx, cy, r, …]` gives 10/20/40; a text (`text` and
+/// (a negative sweep is the same arc run the other way); CIRCLE `[cx, cy, r, …]` gives 10/20/40; LWPOLYLINE
+/// `[x0, y0, x1, y1, …]`, an open polyline of at least two vertices without bulges (a wavy break line, a leader with
+/// its shelf), gives 90/70 and one 10/20 pair per vertex, read into one chain; a text (`text` and
 /// coordinates `[x, y, height, rotation°, width factor]`, x and y the baseline-left insertion point) gives a TEXT
 /// record with 1/10/20/40/50/41/7 whatever its kind, since a recovered text has no MTEXT formatting or attachment,
 /// and a text with fewer than three coordinates has no height and no box, like a DXF text without a height; HATCH
@@ -956,6 +958,15 @@ pub fn records_from_pixel_graph(g: &Value) -> Result<Vec<dxf::Record>> {
                 need(3)?;
                 tags.extend([num(10, c[0]), num(20, c[1]), num(40, c[2])]);
                 "CIRCLE"
+            }
+            "LWPOLYLINE" => {
+                // Vertices in order, x and y alternating: no bulge and no closing flag follow them.
+                ensure!(c.len() >= 4 && c.len() % 2 == 0, "drafting_pixel_coordinates:{kind}:{id}");
+                tags.extend([(90, (c.len() / 2).to_string()), (70, "0".to_owned())]);
+                for p in c.chunks(2) {
+                    tags.extend([num(10, p[0]), num(20, p[1])]);
+                }
+                "LWPOLYLINE"
             }
             "TEXT" | "MTEXT" | "ATTRIB" => {
                 tags.push((1, optional_text(e, "text").unwrap_or_default()));
@@ -2718,6 +2729,8 @@ mod tests {
                 {"id": "P5", "kind": "SOLID", "layer": "0", "coordinates": []},
                 {"id": "P6", "kind": "TEXT", "layer": "0", "coordinates": [1.0, 2.0], "text": null},
                 {"id": "P7", "kind": "TEXT", "layer": "0", "coordinates": [0.0, 0.0, 2.5], "text": "A"},
+                {"id": "PX-POLY-0001", "kind": "LWPOLYLINE", "layer": "0", "line_type": "thin_continuous",
+                 "coordinates": [0.0, 0.0, 10.0, 10.0, 25.0, 10.0]},
             ]}
         });
         let records = records_from_pixel_graph(&g).unwrap();
@@ -2752,10 +2765,23 @@ mod tests {
         // An arrowhead and a text with only an insertion point carry no geometry; the text has no box.
         assert!(d.chains(d.by_handle["P5"], (0., 0.)).unwrap().0.is_empty());
         assert!(d.text_box(d.by_handle["P6"], (0., 0.)).unwrap().is_none());
-        // Only a pixel graph has synthetic records; a line needs its four coordinates.
+        // An open polyline is one chain through its vertices in order, with no arc.
+        let r = d.by_handle["PX-POLY-0001"];
+        assert_eq!((r.kind.as_str(), r.tag(90), r.tag(70)), ("LWPOLYLINE", Some("3"), Some("0")));
+        let (chains, arcs) = d.chains(r, (0., 0.)).unwrap();
+        assert_eq!(chains, vec![vec![(0., 0.), (10., 10.), (25., 10.)]]);
+        assert!(arcs.is_empty());
+        // Only a pixel graph has synthetic records; a line needs its four coordinates, a polyline two vertices given
+        // as whole x, y pairs.
         assert!(records_from_pixel_graph(&json!({"profile": DXF_PROFILE, "source": {"entities": []}})).is_err());
-        let short = json!({"profile": PIXEL_PROFILE, "source": {"entities": [{"id": "P7", "kind": "LINE", "coordinates": [0.0, 0.0]}]}});
-        assert!(records_from_pixel_graph(&short).is_err());
+        for (kind, coordinates) in [
+            ("LINE", json!([0.0, 0.0])),
+            ("LWPOLYLINE", json!([0.0, 0.0])),
+            ("LWPOLYLINE", json!([0.0, 0.0, 10.0, 10.0, 1.0])),
+        ] {
+            let bad = json!({"profile": PIXEL_PROFILE, "source": {"entities": [{"id": "P8", "kind": kind, "coordinates": coordinates}]}});
+            assert!(records_from_pixel_graph(&bad).is_err(), "{bad}");
+        }
     }
     #[test]
     fn a_chord_through_a_rotated_box_is_measured() {

@@ -26,9 +26,12 @@
 //! provenance and an overlay rendering. Its only I/O is still bytes in, bytes out.
 
 pub mod calibrate;
+mod callouts;
+mod chains;
 pub mod dedupe;
 mod geom;
 mod ink;
+mod lines;
 mod members;
 pub mod observe;
 pub mod overlay;

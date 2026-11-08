@@ -72,7 +72,7 @@ fn the_ontology_the_fact_contract_and_the_exporter_declare_the_same_vocabulary()
 struct Drawing {
     entities: Vec<String>,
     kinds: Vec<(String, String)>,
-    /// The same entities as a pixel graph carries them, geometry included; null for one without a pixel form.
+    /// The same entities as a pixel graph carries them, geometry included.
     pixel: Vec<Value>,
     members: Vec<Value>,
     expressions: Vec<Value>,
@@ -136,7 +136,8 @@ impl Drawing {
             body.push_str(&format!("10\n{}\n20\n{}\n", p[0], p[1]));
         }
         let h = self.entity("LWPOLYLINE", &body);
-        self.pixel.push(Value::Null);
+        let flat: Vec<f64> = points.iter().flatten().copied().collect();
+        self.pixel(&h, "LWPOLYLINE", json!({"coordinates": flat}));
         h
     }
     fn hatch(&mut self, angle: f64) -> String {
@@ -200,15 +201,12 @@ impl Drawing {
         })
     }
     /// The same drawing as a pixel graph: members, expressions and structure unchanged, the geometry in the
-    /// entities; none when an entity (a polyline) has no pixel form.
-    fn pixel_graph(&self) -> Option<Value> {
-        if self.pixel.iter().any(Value::is_null) {
-            return None;
-        }
+    /// entities.
+    fn pixel_graph(&self) -> Value {
         let mut g = self.graph();
         g["profile"] = json!(drafting::PIXEL_PROFILE);
         g["source"]["entities"] = json!(self.pixel);
-        Some(g)
+        g
     }
     fn findings(&self) -> BTreeMap<String, Vec<oe_contracts::MdDraftingFinding>> {
         drafting::evaluate_bytes(&self.dxf(), &self.graph()).unwrap()
@@ -596,26 +594,26 @@ fn collinear_pieces_are_measured_as_one_line() {
     assert!(f["source"].is_empty(), "{f:#?}");
 }
 
-/// A pixel graph, whose geometry is its own entities, is evaluated like the DXF of the same drawing: every fixture
-/// drawn with lines, arcs, circles, texts and hatches gives the same findings both ways, and a graph written by
-/// hand with the coordinates of the dimension-text fixture gives the fixture's finding.
+/// A pixel graph, whose geometry is its own entities, is evaluated like the DXF of the same drawing: every fixture,
+/// drawn with lines, arcs, circles, polylines, texts and hatches, gives the same findings both ways, and a graph
+/// written by hand with the coordinates of the dimension-text fixture gives the fixture's finding.
 #[test]
 fn a_pixel_graph_yields_the_findings_of_the_dxf_path() {
     let k = drafting::knowledge().unwrap();
     let rules = drafting::rules(&k.shapes).unwrap();
-    let mut compared = 0;
+    let mut with_polylines = 0;
     for r in &rules {
         for violating in [true, false] {
             let d = fixture(&r.id, violating);
-            let Some(pixel) = d.pixel_graph() else {
-                continue;
-            };
+            let pixel = d.pixel_graph();
+            let entities = pixel["source"]["entities"].as_array().unwrap();
+            with_polylines += usize::from(entities.iter().any(|e| e["kind"] == "LWPOLYLINE"));
             let by_pixel = drafting::evaluate_pixel_graph(&pixel).unwrap();
             assert_eq!(d.findings(), by_pixel, "{} violating={violating}", r.id);
-            compared += 1;
         }
     }
-    assert!(compared >= 50, "{compared} fixtures compared");
+    // Wavy break lines and the section boundary are polylines: both fixtures of G1-032 (two rules) and of G2-023.
+    assert!(with_polylines >= 6, "{with_polylines} fixtures with polylines");
     // By hand: the violating fixture of G4-001 (a diameter text crossed by a centre line) as a pixel graph, with the
     // fixture's coordinates as entity coordinates; the text's height, rotation and width factor follow its point.
     let d = fixture("G4-001-dimension-text-not-crossed", true);
@@ -693,6 +691,79 @@ fn a_stacked_pixel_text_is_crossed_through_its_stack_box() {
     }
     let flat = drafting::evaluate_pixel_graph(&graph("%%C19+0.05+0.02")).unwrap();
     assert!(flat.values().all(Vec::is_empty), "{flat:#?}");
+}
+
+/// A leader recovered from the page as one polyline (arrow tip, knee, shelf along the bottom of its text's box)
+/// crosses nothing: the shelf lies on the edge of the box, not through the text. The same leader recovered as two
+/// strokes that run one unit past each other at the knee is two leader lines crossing there (G1-028), whether the
+/// leader carries a note or a dimension text: the synthesizer has to emit a leader as one polyline. The DXF path
+/// reads both forms alike.
+#[test]
+fn a_leader_polyline_crosses_nothing_where_overshooting_strokes_cross() {
+    // The text, 3.5 high, has its box's lower-left corner at (12, 10) on the shelf line y = 10; the knee is (10, 10).
+    let graph = |kind: &str, role: &str, label: &str, leader: &Value| -> Value {
+        let mut entities = vec![json!({"id": "PX-TEXT-0001", "kind": "TEXT", "layer": "0", "line_type": "text",
+            "coordinates": [12.0, 10.0, 3.5, 0.0, 1.0], "text": label})];
+        let mut members = vec![json!({"id": "expression:0:m0", "source_handle": "PX-TEXT-0001", "member_role": role,
+            "line_type": "text", "expression_id": "expression:0", "interval": [0.0, 1.0], "view_id": "view:main"})];
+        for (n, e) in leader.as_array().unwrap().iter().enumerate() {
+            members.push(json!({"id": format!("expression:0:m{}", n + 1), "source_handle": e["id"],
+                "member_role": "leader_line", "line_type": "thin_continuous", "expression_id": "expression:0",
+                "interval": [0.0, 1.0], "view_id": "view:main"}));
+            entities.push(e.clone());
+        }
+        json!({
+            "profile": drafting::PIXEL_PROFILE,
+            "expressions": [{"id": "expression:0", "kind": kind, "label": label}],
+            "members": members,
+            "structural_lines": [],
+            "implied_spans": [],
+            "views": [],
+            "source": {"entities": entities},
+        })
+    };
+    let polyline = json!([{"id": "PX-POLY-0001", "kind": "LWPOLYLINE", "layer": "0", "line_type": "thin_continuous",
+        "coordinates": [0.0, 0.0, 10.0, 10.0, 25.0, 10.0]}]);
+    // Each stroke runs one unit past the knee: the slanted one on to (10.707, 10.707), the shelf back to x = 9.
+    let k = 10.0 + std::f64::consts::FRAC_1_SQRT_2;
+    let strokes = json!([
+        {"id": "PX-LINE-0001", "kind": "LINE", "layer": "0", "line_type": "thin_continuous", "coordinates": [0.0, 0.0, k, k]},
+        {"id": "PX-LINE-0002", "kind": "LINE", "layer": "0", "line_type": "thin_continuous", "coordinates": [9.0, 10.0, 25.0, 10.0]}
+    ]);
+    // A note, which G1-028 forbids a leader to cross, and a dimension text, which G4-001 forbids any line to cross.
+    for (kind, role, label) in [("technical_general", "note_text", "4×M6"), ("dimension_chamfer", "dimension_text", "C1")] {
+        let one = drafting::evaluate_pixel_graph(&graph(kind, role, label, &polyline)).unwrap();
+        assert!(one.values().all(Vec::is_empty), "{role}: {one:#?}");
+        let two = drafting::evaluate_pixel_graph(&graph(kind, role, label, &strokes)).unwrap();
+        for layer in LAYERS {
+            let (m1, m2) = (format!("{layer}:expression:0:m1"), format!("{layer}:expression:0:m2"));
+            let found: BTreeSet<(&str, &str)> = two[layer].iter().map(|f| (f.rule_id.as_str(), f.focus.as_str())).collect();
+            let rule = "G1-028-leader-not-crossing-text-or-leader";
+            assert_eq!(found, BTreeSet::from([(rule, m1.as_str()), (rule, m2.as_str())]), "{role}: {two:#?}");
+            for f in &two[layer] {
+                let other = if f.focus == m1 { &m2 } else { &m1 };
+                assert!(f.value.as_deref().is_some_and(|v| v.contains(other.as_str())), "{f:#?}");
+            }
+        }
+    }
+    // The DXF path: the leader as one DXF polyline and as two DXF lines gives the findings of the pixel path.
+    for overshooting in [false, true] {
+        let mut d = Drawing::default();
+        let e = d.expression("technical_general", "4×M6");
+        let t = d.text("4×M6", [12.0, 10.0], 3.5, 0.0);
+        d.member_in(&e, &t, "note_text", "text");
+        let pieces = if overshooting {
+            vec![d.line([0.0, 0.0], [k, k]), d.line([9.0, 10.0], [25.0, 10.0])]
+        } else {
+            vec![d.polyline(&[[0.0, 0.0], [10.0, 10.0], [25.0, 10.0]])]
+        };
+        for p in &pieces {
+            d.member_in(&e, p, "leader_line", "thin_continuous");
+        }
+        let by_dxf = d.findings();
+        assert_eq!(by_dxf, drafting::evaluate_pixel_graph(&d.pixel_graph()).unwrap());
+        assert_eq!(by_dxf["source"].len(), if overshooting { 2 } else { 0 }, "{by_dxf:#?}");
+    }
 }
 
 #[test]

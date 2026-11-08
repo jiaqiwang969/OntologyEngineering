@@ -150,6 +150,33 @@ impl Calibration {
     }
 }
 
+/// Robust scale from the samples: gross misreadings (ratio outside 0.67–1.5 of the median ratio, a
+/// count or a feature letter read as the value) are left out before the median/MAD fit, which is
+/// then refitted on the samples within 3 % of its result. `None` with fewer than three samples.
+fn robust_fit(samples: &[Sample]) -> Option<(f64, f64)> {
+    if samples.len() < 3 {
+        return None;
+    }
+    let mut ratios: Vec<f64> = samples.iter().map(|s| s.ratio).filter(|r| r.is_finite() && *r > 0.0).collect();
+    ratios.sort_by(|a, b| a.total_cmp(b));
+    let med = *ratios.get(ratios.len() / 2)?;
+    let pairs: Vec<(f64, f64)> = samples
+        .iter()
+        .filter(|s| s.ratio >= 0.67 * med && s.ratio <= 1.5 * med)
+        .map(|s| (s.nominal, s.px))
+        .collect();
+    if pairs.len() < 3 {
+        return None;
+    }
+    let first = calibrate_scale(&pairs)?;
+    let near: Vec<(f64, f64)> = pairs.iter().copied().filter(|(n, m)| (m / n / first.0 - 1.0).abs() <= 0.03).collect();
+    if near.len() >= 3 {
+        calibrate_scale(&near).or(Some(first))
+    } else {
+        Some(first)
+    }
+}
+
 /// Calibrate the page: dimensions when at least three samples agree, else the scale note, else one
 /// drawing unit per paper millimetre.
 pub fn calibrate(proposals: &[RefinedProposal], scale_note: Option<&str>, dpi: f64) -> Calibration {
@@ -174,8 +201,7 @@ pub fn calibrate(proposals: &[RefinedProposal], scale_note: Option<&str>, dpi: f
             origin: format!("{}#{}", p.proposal.provenance.tile, p.proposal.provenance.item_index),
         });
     }
-    let pairs: Vec<(f64, f64)> = samples.iter().map(|s| (s.nominal, s.px)).collect();
-    let fitted = if pairs.len() >= 3 { calibrate_scale(&pairs) } else { None };
+    let fitted = robust_fit(&samples);
     let note_px = scale_note
         .and_then(parse_scale_note)
         .map(|paper_mm_per_unit| px_per_paper_mm(dpi) * paper_mm_per_unit);
@@ -243,6 +269,7 @@ mod tests {
             arrow_length_px: None,
             discarded_components: 0,
             adjustments: Vec::new(),
+            span_px: None,
         };
         let mut dl = seg((x0, y), (x1, y));
         dl.role = "dimension_line".into();
@@ -273,6 +300,7 @@ mod tests {
                     verification: None,
                 },
                 notes: vec![],
+                bbox: None,
             },
             members,
         }

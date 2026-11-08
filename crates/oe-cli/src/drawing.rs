@@ -111,9 +111,11 @@ pub enum DrawingCommand {
         /// Tile index (terra-parity.tiles/1).
         #[arg(long)]
         tiles: PathBuf,
-        /// Directory of the L0-, L1A-, L1B- and L1C- observation files.
-        #[arg(long)]
-        observations: PathBuf,
+        /// Directory of observation files (L0-, L1A-, L1B-, L1C-, L1D- prefixes); repeat for several
+        /// directories (round-1 observations plus re-read L1D files). Re-read crops are found by their
+        /// `image` paths relative to a parent of the directory (the stage directory) and verified.
+        #[arg(long, required = true)]
+        observations: Vec<PathBuf>,
         /// New directory for the outputs.
         #[arg(long)]
         output_directory: PathBuf,
@@ -142,10 +144,27 @@ fn read_named(dir: &Path, prefixes: &[&str], extension: &str, limit: usize) -> R
         .collect()
 }
 
+/// The crop images an L1D re-read names (`image` and `second_read.image`), resolved against the
+/// observation directory and its parents (the paths are relative to the stage directory), by the
+/// path string as written.
+fn reread_crops(dir: &Path, bytes: &[u8], limit: usize, crops: &mut std::collections::BTreeMap<String, Vec<u8>>) -> Result<()> {
+    let v: serde_json::Value = serde_json::from_slice(bytes).unwrap_or(serde_json::Value::Null);
+    for image in [&v["image"], &v["second_read"]["image"]] {
+        let Some(rel) = image.as_str().filter(|r| !r.is_empty() && !Path::new(r).is_absolute()) else { continue };
+        if crops.contains_key(rel) {
+            continue;
+        }
+        if let Some(path) = dir.ancestors().take(6).map(|a| a.join(rel)).find(|p| p.is_file()) {
+            crops.insert(rel.to_owned(), oe_core::read_regular_bytes(&path, limit)?);
+        }
+    }
+    Ok(())
+}
+
 fn pixel_synthesize(
     page: &Path,
     tiles: &Path,
-    observations: &Path,
+    observations: &[PathBuf],
     output_directory: &Path,
     scale_note: Option<String>,
     page_name: Option<String>,
@@ -161,7 +180,17 @@ fn pixel_synthesize(
             .map(|n| n.to_string_lossy().into_owned())
             .context("pixel_page_name")?,
     };
-    let files = read_named(observations, &["L0-", "L1A-", "L1B-", "L1C-"], ".json", LIMIT)?;
+    let mut files: Vec<(String, Vec<u8>)> = Vec::new();
+    let mut crops: std::collections::BTreeMap<String, Vec<u8>> = std::collections::BTreeMap::new();
+    for dir in observations {
+        let label = dir.file_name().map_or_else(|| text(dir), |n| n.to_string_lossy().into_owned());
+        for (name, bytes) in read_named(dir, &["L0-", "L1A-", "L1B-", "L1C-", "L1D-"], ".json", LIMIT)? {
+            if name.starts_with("L1D-") {
+                reread_crops(dir, &bytes, LIMIT, &mut crops)?;
+            }
+            files.push((format!("{label}/{name}"), bytes));
+        }
+    }
     let tile_dir = page.parent().map(|p| p.join("tiles"));
     let tile_pngs: std::collections::BTreeMap<String, Vec<u8>> = match tile_dir.filter(|d| d.is_dir()) {
         Some(d) => read_named(&d, &["t_"], ".png", LIMIT)?.into_iter().collect(),
@@ -173,6 +202,7 @@ fn pixel_synthesize(
         tile_index: &tile_index,
         observations: &files,
         tile_pngs: &tile_pngs,
+        crops: &crops,
         scale_note: scale_note.as_deref(),
         threshold: 128,
     })?;

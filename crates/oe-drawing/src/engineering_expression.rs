@@ -1158,6 +1158,114 @@ fn measurement(r: &Record, dtype: i32, brecs: &[&Record]) -> Option<String> {
     v.filter(|v| v.is_finite()).map(fmt_num)
 }
 
+/// An affine map of block coordinates: `x' = a·x + b·y + c`, `y' = d·x + e·y + f`.
+type Affine = [f64; 6];
+
+fn apply(m: &Affine, p: P) -> P {
+    [m[0] * p[0] + m[1] * p[1] + m[2], m[3] * p[0] + m[4] * p[1] + m[5]]
+}
+
+fn num_or(r: &Record, code: i32, default: f64) -> f64 {
+    r.get(code)
+        .and_then(|v| v.trim().parse::<f64>().ok())
+        .filter(|v| v.is_finite())
+        .unwrap_or(default)
+}
+
+/// Text pieces of the block a reference names, placed by `m` (the parent's frame): position,
+/// reading direction and raw text. References nested deeper are followed up to 4 levels.
+fn nested_pieces(cx: &Ctx, ins: &Record, m: &Affine, depth: usize, out: &mut Vec<(P, P, String)>) {
+    let Some(name) = ins.get(2).filter(|_| depth < 4) else {
+        return;
+    };
+    let recs: Vec<&Record> =
+        cx.d.records
+            .iter()
+            .filter(|x| x.section == "BLOCKS" && x.block == name)
+            .collect();
+    let base = recs
+        .iter()
+        .find(|x| x.kind == "BLOCK")
+        .and_then(|x| x.xy(10).ok())
+        .unwrap_or([0., 0.]);
+    let at = ins.xy(10).unwrap_or([0., 0.]);
+    let (sx, sy) = (num_or(ins, 41, 1.), num_or(ins, 42, 1.));
+    let (sin, cos) = num_or(ins, 50, 0.).to_radians().sin_cos();
+    // Parent ∘ translate(at) ∘ rotate ∘ scale ∘ translate(-base).
+    let local: Affine = [
+        cos * sx,
+        -sin * sy,
+        at[0] - cos * sx * base[0] + sin * sy * base[1],
+        sin * sx,
+        cos * sy,
+        at[1] - sin * sx * base[0] - cos * sy * base[1],
+    ];
+    let next: Affine = [
+        m[0] * local[0] + m[1] * local[3],
+        m[0] * local[1] + m[1] * local[4],
+        m[0] * local[2] + m[1] * local[5] + m[2],
+        m[3] * local[0] + m[4] * local[3],
+        m[3] * local[1] + m[4] * local[4],
+        m[3] * local[2] + m[4] * local[5] + m[5],
+    ];
+    for x in &recs {
+        match x.kind.as_str() {
+            "TEXT" | "MTEXT" => {
+                let Ok(p) = x.xy(10) else { continue };
+                // TEXT gives its rotation in degrees, MTEXT in radians (DXF Reference).
+                let t = num_or(x, 50, 0.);
+                let t = if x.kind == "TEXT" { t.to_radians() } else { t };
+                let d = [next[0] * t.cos() + next[1] * t.sin(), next[3] * t.cos() + next[4] * t.sin()];
+                out.push((apply(&next, p), d, dd::raw_text(x)));
+            }
+            "INSERT" => nested_pieces(cx, x, &next, depth + 1, out),
+            _ => {}
+        }
+    }
+}
+
+/// The text a dimension block draws only through nested block references (CAXA nests a
+/// toleranced value: "%%C55(", the deviations "+0.03" over "0", ")"), in drawn order: pieces
+/// along the reading direction, and two pieces at one place along it written as a stacked
+/// tolerance (upper ^ lower), as MTEXT stacks one. Empty when the block draws none.
+fn nested_dimension_text(cx: &Ctx, brecs: &[&Record]) -> String {
+    let mut pieces = Vec::new();
+    let identity: Affine = [1., 0., 0., 0., 1., 0.];
+    for ins in brecs.iter().filter(|x| x.kind == "INSERT") {
+        nested_pieces(cx, ins, &identity, 0, &mut pieces);
+    }
+    let Some(&(_, d, _)) = pieces.first() else {
+        return String::new();
+    };
+    let n = (d[0] * d[0] + d[1] * d[1]).sqrt();
+    let dir = if n > 1e-12 { [d[0] / n, d[1] / n] } else { [1., 0.] };
+    let up = [-dir[1], dir[0]];
+    let mut order: Vec<(f64, f64, String)> = pieces
+        .into_iter()
+        .map(|(p, _, t)| (dot(p, dir), dot(p, up), t))
+        .collect();
+    order.sort_by(|a, b| a.0.total_cmp(&b.0).then(b.1.total_cmp(&a.1)));
+    let mut out = String::new();
+    let mut i = 0;
+    while let Some((along, _, upper)) = order.get(i) {
+        match order.get(i + 1) {
+            Some((next, _, lower)) if (next - along).abs() < 1e-6 => {
+                out.push_str(&format!(
+                    "{{\\S{}^{};}}",
+                    dd::plain(upper).trim(),
+                    dd::plain(lower).trim()
+                ));
+                i += 2;
+            }
+            _ => {
+                out.push_str(upper);
+                i += 1;
+            }
+        }
+    }
+    out
+}
+
 /// Native DIMENSION roots: kind from the displayed text, native enum as fallback.
 /// The anonymous dimension block is placed at the DIMENSION's clone insertion
 /// point (group 12), so block geometry is shifted by it before any comparison.
@@ -1183,12 +1291,25 @@ fn native_dimensions(
                 })
                 .collect();
         let measured = measurement(r, dtype, &brecs);
-        let block_text = brecs
+        let direct_text = brecs
             .iter()
             .filter(|x| matches!(x.kind.as_str(), "MTEXT" | "TEXT"))
             .map(|x| dd::raw_text(x))
             .collect::<Vec<_>>()
             .join(" ");
+        // CAXA draws some dimension texts only through block references nested in the
+        // dimension's block; they are read only when the block holds no text of its own.
+        let nested_text = if direct_text.trim().is_empty() {
+            nested_dimension_text(cx, &brecs)
+        } else {
+            String::new()
+        };
+        let block_text = if nested_text.is_empty() {
+            direct_text
+        } else {
+            nested_text.clone()
+        };
+        let overridden = r.get(1).is_some_and(|s| !s.trim().is_empty());
         let label_raw = match r.get(1).filter(|s| !s.trim().is_empty()) {
             Some(o) => o.replace("<>", &measured.clone().unwrap_or_default()),
             None if !block_text.trim().is_empty() => block_text.clone(),
@@ -1216,6 +1337,9 @@ fn native_dimensions(
         ];
         if Some(kind) != native_kind {
             ev.push("display_text_semantics_override_native_enum".into());
+        }
+        if !overridden && !nested_text.is_empty() {
+            ev.push("display_text_nested_blocks".into());
         }
         if off != [0., 0.] {
             ev.push(format!("block_offset_group12:{:.4},{:.4}", off[0], off[1]));

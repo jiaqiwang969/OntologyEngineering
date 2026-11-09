@@ -479,6 +479,24 @@ kind = ""
 ids = ["DC-G3-001", "DC-G3-094"]
 
 [[rules]]
+rule = "card:thread_representation/internal_thread_in_section"
+function = "line_evidence::thread_sections"
+piece = false
+kinds = ["thread_convention"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G3-005", "DC-G1-048", "DC-G1-049"]
+
+[[rules]]
+rule = "card:thread_representation/blind_tapped_hole_in_section"
+function = "line_evidence::thread_sections"
+piece = false
+kinds = ["thread_convention"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G3-005", "DC-G3-002", "DC-G3-094"]
+
+[[rules]]
 rule = "piece:alternating_turns_close_to_chord"
 function = "break_lines"
 piece = true
@@ -649,13 +667,13 @@ by = ["card:visible_edge_line", "piece:bounded_span_between_structural_junctions
 [[concepts]]
 id = "DC-G1-015"
 level = "full"
-by = ["card:visible_edge_line", "grouped_line_type_pieces_by_view", "piece:actual_linetype_pattern", "piece:bounded_span_between_structural_junctions", "piece:closed_or_connected_curve", "piece:thin_line_between_structural_junctions"]
+by = ["card:outline_joins", "card:visible_edge_line", "grouped_line_type_pieces_by_view", "piece:actual_linetype_pattern", "piece:bounded_span_between_structural_junctions", "piece:closed_or_connected_curve", "piece:thin_line_between_structural_junctions"]
 
 [[concepts]]
 id = "DC-G1-016"
 level = "partial"
-by = ["convention:member_line_width_class"]
-missing = "粗细由图层约定与成员作用推出，未读取实际线宽值"
+by = ["card:line_width_evidence", "convention:member_line_width_class"]
+missing = "实体与图层线宽成两档时按线宽判定粗细；只在识别轮廓时使用，线型表（line_styles）仍按图层约定报告，线宽组别本身未核对"
 
 [[concepts]]
 id = "DC-G1-018"
@@ -695,8 +713,8 @@ missing = "多段线、线段串画的波浪线已识别（围住填充或散线
 [[concepts]]
 id = "DC-G1-038"
 level = "partial"
-by = ["grouped_line_type_pieces_by_view"]
-missing = "粗细由图层约定与成员作用推出；图层不合 GB/T 14665 约定时不读实际线宽，粗实线无法确认"
+by = ["card:line_width_evidence", "grouped_line_type_pieces_by_view"]
+missing = "线宽成两档时按线宽、按颜色出图时按粗线颜色确认粗实线；多段线全局宽度画的粗线与打印样式中的线宽未读取"
 
 [[concepts]]
 id = "DC-G1-042"
@@ -724,14 +742,14 @@ missing = "用线型画的细虚线已识别；炸开成一段段短线的虚线
 [[concepts]]
 id = "DC-G1-048"
 level = "partial"
-by = ["piece:three_quarter_thin_circle_concentric_with_full_circle"]
-missing = "只在端视图的 3/4 圆中识别牙底线；侧视图的牙底细实线未识别"
+by = ["card:thread_representation", "card:thread_representation/internal_thread_in_section", "piece:three_quarter_thin_circle_concentric_with_full_circle"]
+missing = "端视图的 3/4 圆与剖视中内螺纹的大径细实线已识别；外螺纹视图中的牙底细实线未识别"
 
 [[concepts]]
 id = "DC-G1-049"
 level = "partial"
-by = ["piece:full_circle_of_three_quarter_thread_convention"]
-missing = "只在端视图中识别牙顶圆；侧视图的牙顶粗实线未单独识别"
+by = ["card:thread_representation", "card:thread_representation/internal_thread_in_section", "piece:full_circle_of_three_quarter_thread_convention"]
+missing = "端视图的牙顶圆与剖视中内螺纹的小径粗实线已识别；外螺纹视图中的牙顶粗实线未单独识别"
 
 [[concepts]]
 id = "DC-G1-052"
@@ -753,6 +771,12 @@ by = ["card:technical_note"]
 id = "DC-G1-071"
 level = "full"
 by = ["card:technical_note"]
+
+[[concepts]]
+id = "DC-G1-079"
+level = "partial"
+by = ["card:line_width_evidence"]
+missing = "只在图层约定已核对、按颜色出图时以粗实线层颜色区分粗细；颜色—线型—线宽共现表未完整统计，企业自定义颜色映射未重建"
 
 [[concepts]]
 id = "DC-G1-085"
@@ -838,6 +862,12 @@ by = ["piece:coaxial_hidden_major_minor_pairs_with_thread_end"]
 missing = "只识别成对的虚线大小径与螺纹端；不可见螺纹终止线未单独识别"
 
 [[concepts]]
+id = "DC-G3-002"
+level = "partial"
+by = ["card:thread_representation", "card:thread_representation/blind_tapped_hole_in_section"]
+missing = "剖视中的不穿通螺孔（大小径、终止线、钻孔底与锥顶）已识别；装配图中只画有效螺纹深度的简化画法与端视图未区分"
+
+[[concepts]]
 id = "DC-G3-003"
 level = "partial"
 by = ["card:center_hole_symbol", "card:center_hole_symbol/keep", "card:center_hole_symbol/not_allowed"]
@@ -846,8 +876,8 @@ missing = "“可以保留”（只注标记不画符号）的中心孔未识别
 [[concepts]]
 id = "DC-G3-005"
 level = "partial"
-by = ["piece:full_circle_of_three_quarter_thread_convention", "piece:three_quarter_thin_circle_concentric_with_full_circle"]
-missing = "同上：内螺纹的剖视画法（大径细实线、小径粗实线）未单独识别"
+by = ["card:thread_representation", "card:thread_representation/blind_tapped_hole_in_section", "card:thread_representation/internal_thread_in_section", "piece:full_circle_of_three_quarter_thread_convention", "piece:three_quarter_thin_circle_concentric_with_full_circle"]
+missing = "端视图与剖视画法已识别；不可见内螺纹（虚线）只按成对虚线识别，螺纹标记与画出的孔径不符时只记录不纠正"
 
 [[concepts]]
 id = "DC-G3-024"
@@ -880,8 +910,14 @@ by = ["card:dimension_text"]
 [[concepts]]
 id = "DC-G3-094"
 level = "partial"
-by = ["piece:coaxial_hidden_major_minor_pairs_with_thread_end"]
-missing = "只作为不可见螺纹对的端部识别；可见螺纹终止线未识别"
+by = ["card:thread_representation", "card:thread_representation/blind_tapped_hole_in_section", "piece:coaxial_hidden_major_minor_pairs_with_thread_end"]
+missing = "不可见螺纹对的端部与剖视螺孔的终止线已识别；外螺纹视图中的终止线未识别"
+
+[[concepts]]
+id = "DC-G3-111"
+level = "partial"
+by = ["card:hole_pattern"]
+missing = "被“n×Øx”标注横跨的等径圆及与之均布在同一分布圆上的圆读作孔；只画出部分孔、其余以中心线表示的简化画法未识别"
 
 [[concepts]]
 id = "DC-G3-112"
@@ -908,6 +944,12 @@ by = ["card:dimension_text"]
 id = "DC-G3-232"
 level = "full"
 by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-001"
+level = "partial"
+by = ["card:annotation_break"]
+missing = "轮廓在注写文字或图块符号处断开时按推断连接；中心线、剖面线在数字处断开和剖面区域内的留白未单独识别"
 
 [[concepts]]
 id = "DC-G4-006"

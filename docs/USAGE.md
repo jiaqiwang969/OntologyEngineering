@@ -1,6 +1,6 @@
 # 构建与实际使用
 
-工程方法从[主入口](../SKILL.md)进入，工具选择见[能力索引](CAPABILITIES.md)。本页对应统一候选 `2.0.0-rc.10`；具体通过范围见[验证记录](UNIFIED-VERIFICATION.md)。
+工程方法从[主入口](../SKILL.md)进入，工具选择见[能力索引](CAPABILITIES.md)。本页对应统一候选 `2.0.0-rc.11`；具体通过范围见[验证记录](UNIFIED-VERIFICATION.md)。
 
 ## 源码安装与运行身份
 

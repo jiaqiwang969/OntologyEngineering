@@ -1,6 +1,6 @@
 # 统一 RC 的范围与验收
 
-当前源码候选为 **2.0.0-rc.10，重构中**。工程本体与 engineering-memory 共用 workspace、Cargo.lock 和语义实现，通过同一安装的 `oev2` 与 `oev2 memory` 使用。当前实际验证见 [UNIFIED-VERIFICATION.md](UNIFIED-VERIFICATION.md)。
+当前源码候选为 **2.0.0-rc.11，重构中**。工程本体与 engineering-memory 共用 workspace、Cargo.lock 和语义实现，通过同一安装的 `oev2` 与 `oev2 memory` 使用。当前实际验证见 [UNIFIED-VERIFICATION.md](UNIFIED-VERIFICATION.md)。
 
 本轮按用户要求移除 Jev 及相关专用判断服务的客户端、配置与自动调度。当前 Agent 承担开放式任务组织和资料审阅，Rust 执行明确检查。其余工程、语义、来源与采用判据保持；不能把已取消的服务目标重新列为必须恢复的依赖。
 
@@ -19,7 +19,7 @@
 | 六工具关联 | 固定上游与依赖快照、四份完整 Skill diff、两份完整本地 Skill、共享接续脚本和 REA 启动器 | 每工具分别核版本、输入、结果与覆盖；旧机结果不授予新安装通过，缺工具时明确缺项 |
 | 第七项电子设计 | electronics-design 单一入口与五个内部模块 | 运行工具按需安装；模块接入、仿真、EDA 与实物各自核验，不继承旧机器回执 |
 | Anatomy 图示模块 | 固定上游图示工具树、v2 Project/source/evidence 边界及 native presentation 默认路径 | SVG/WebGL/3D、浏览器检查和 PDF 只支持各自的展示或观察主张；不授予 native CAD、BOM、制造或工程采用 |
-| 读懂已有图纸（源码候选） | `oev2 drawing route/discover/check/page/check-page`、锁定的 CADCraft fork 与公开 I1 案例、制图概念目录（987 个概念）、21 张识别知识卡与逐概念覆盖表；见[读懂已有图纸](DRAWING-UNDERSTANDING.md) | macOS 隔离 worker；规则与知识卡在两张开发图纸上校准，未见图纸上的效果未验证；已识别概念只占目录的一部分，覆盖表逐项写明；分类正确、零件要素绑定与工程采用另行验收 |
+| 读懂已有图纸（源码候选） | `oev2 drawing route/discover/check/page/check-page`、锁定的 CADCraft fork 与公开 I1 案例、制图概念目录（987 个概念）、21 张识别知识卡与逐概念覆盖表；见[读懂已有图纸](DRAWING-UNDERSTANDING.md) | macOS 隔离 worker；规则与知识卡在两张开发图纸上校准，另用四张图（两张由 CAXA 绘制）修正了转换器与嵌套尺寸文字；未见图纸上的效果未验证；已识别概念只占目录的一部分，覆盖表逐项写明；分类正确、零件要素绑定与工程采用另行验收 |
 | 可选模型、浏览器与CAD | 通用chat/embedding、显式模型辅助、原生观察、NX/SW 自有执行及 [SolidCraft 原生 CLI/MCP 接续](SOLIDCRAFT-CAD.md) | 需实际资产、服务或SDK；SolidCraft 复用既有 Rust tool-result/decide，无新增专用 worker/投影或生成合同。程序接入、操作范围、平台、图纸/制造与工程采用分别验收 |
 
 发布源码不包含私人书籍、session、记忆库、原生原件、客户项目、设备配置、凭据或编译缓存。公开合成及有源推导 fixture 保留；冻结历史输入只作字节/来源回归，不能作为旧服务的执行入口。纯DOM观察算法保留合法上游署名和许可证，其来源名称不代表依赖模型服务。
@@ -32,7 +32,7 @@
 
 历史D85与D86记录保持原版本、来源及输入身份。旧 `dist release` 的Mac /1、Windows /2仍是本体七程序发行格式，保留用于其历史范围；它们不代表本候选已完成统一八程序安装。全局旧 `oe` 不被替换。
 
-本候选的 CLI 经 kernel 编入 `source-session-local-v1` 和 `rdflib760-nullable-internal`，独立库无默认 feature。历史 `oev2.rc5-local-source/1` 同时固定 rc.5 版本与 feature 集合，不能用于 rc.7、rc.8、rc.9 或当前 rc.10 接收；当前版本调用它应拒绝。统一八程序身份按 `oev2.installation/1` 核验，本轮未扩大旧正式发行 profile 的适用范围。公共接口版本及支持格式按[来源会话](SEMANTIC-SOURCE-SESSION.md)与其后续显式合同核验。
+本候选的 CLI 经 kernel 编入 `source-session-local-v1` 和 `rdflib760-nullable-internal`，独立库无默认 feature。历史 `oev2.rc5-local-source/1` 同时固定 rc.5 版本与 feature 集合，不能用于 rc.7、rc.8、rc.9、rc.10 或当前 rc.11 接收；当前版本调用它应拒绝。统一八程序身份按 `oev2.installation/1` 核验，本轮未扩大旧正式发行 profile 的适用范围。公共接口版本及支持格式按[来源会话](SEMANTIC-SOURCE-SESSION.md)与其后续显式合同核验。
 
 ## 仍未闭合的工程范围
 

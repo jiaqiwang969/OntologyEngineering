@@ -873,3 +873,172 @@ fn gap_without_annotation_is_not_bridged() {
     let g = broken_edge(false);
     assert!(g.implied_spans.is_empty(), "{:?}", g.implied_spans);
 }
+
+// ---------------------------------------------------------------- dimension_line_parts: pieces and copies
+
+/// The native dimension of `dimension_along` with its left extension line drawn as a root line
+/// from the outline at y = 50, and a second piece below it on the same carrier ending `gap`
+/// short of it, starting on an outline at y = 30.
+fn split_extension(gap: f64) -> MdEngineeringExpressionGraph {
+    let (x, y) = (100., 50.);
+    let children = [
+        line("D1", "0", [x, y + 10.], [x + 30., y + 10.]),
+        line("D2", "0", [x, y], [x, y + 12.]),
+        line("D3", "0", [x + 30., y], [x + 30., y + 12.]),
+        solid("D4", "0", [x, y + 10.], [x + 2., y + 10.]),
+        solid("D5", "0", [x + 30., y + 10.], [x + 28., y + 10.]),
+    ];
+    let blk = format!(
+        "0\nSECTION\n2\nBLOCKS\n0\nBLOCK\n2\n*D8\n10\n0\n20\n0\n{}0\nENDBLK\n0\nENDSEC\n",
+        children.concat()
+    );
+    let dim = ent(
+        "DIMENSION",
+        "DN",
+        "08",
+        &format!(
+            "2\n*D8\n10\n{}\n20\n{}\n11\n{}\n21\n{}\n70\n160\n1\n<>\n13\n{x}\n23\n{y}\n14\n{}\n24\n{y}\n42\n30\n50\n0\n",
+            x + 30.,
+            y + 10.,
+            x + 15.,
+            y + 11.,
+            x + 30.
+        ),
+    );
+    run_full(
+        "",
+        GB,
+        &blk,
+        &[
+            dim,
+            line("E1", "02", [x, y], [x, y + 12.]),
+            line("E2", "02", [x, 30.], [x, y - gap]),
+            line("BX", "01", [x - 10., 30.], [x + 40., 30.]),
+        ],
+    )
+}
+
+#[test]
+fn extension_line_split_for_a_symbol_is_one_extension_line() {
+    let g = split_extension(7.);
+    let e = exprs_of(&g, "E1")
+        .into_iter()
+        .find(|e| e.kind.starts_with("dimension_"))
+        .unwrap_or_else(|| panic!("{:?}", kinds(&g, "E1")));
+    assert!(
+        role(&g, e, "E2").contains("extension_line"),
+        "{:?}",
+        kinds(&g, "E2")
+    );
+    assert!(
+        names(e, "dimension_line_parts", "split_extension_line"),
+        "{:?}",
+        e.evidence_ids
+    );
+}
+
+#[test]
+fn collinear_line_far_from_an_extension_line_is_not_absorbed() {
+    let g = split_extension(16.);
+    assert!(
+        !kinds(&g, "E2").iter().any(|k| k.starts_with("dimension_")),
+        "{:?}",
+        kinds(&g, "E2")
+    );
+}
+
+#[test]
+fn dimension_parts_drawn_twice_join_the_dimension() {
+    // a hole diameter drawn with loose parts; its terminator and dimension line drawn again
+    let ents = vec![
+        solid("A1", "08", [0., 0.], [3., 0.]),
+        solid("A2", "08", [40., 0.], [37., 0.]),
+        line("DL", "08", [3., 0.], [37., 0.]),
+        line("LD", "08", [40., 0.], [50., 0.]),
+        line("SH", "08", [50., 0.], [64., 0.]),
+        text("VT", "11", "%%c47", [52., 1.2], 3.5),
+        solid("A3", "08", [0., 0.01], [3., 0.01]),
+        line("DR", "08", [5., 0.], [30., 0.]),
+    ];
+    let g = run(&ents);
+    let e = expr_with(&g, "VT", "dimension_diameter")
+        .unwrap_or_else(|| panic!("{:?}", kinds(&g, "VT")));
+    assert!(
+        role(&g, e, "A3").contains("arrowhead"),
+        "{:?}",
+        kinds(&g, "A3")
+    );
+    assert!(
+        role(&g, e, "DR").contains("dimension_line"),
+        "{:?}",
+        kinds(&g, "DR")
+    );
+    assert!(
+        names(e, "dimension_line_parts", "drawn_twice"),
+        "{:?}",
+        e.evidence_ids
+    );
+}
+
+// ---------------------------------------------------------------- local_section_boundary: a chain of lines
+
+/// A block outline with a U-shaped chain of five straight thin lines hanging from its top edge
+/// (each end just past the edge); `hatched` adds the section hatch inside the U.
+fn chain_section(hatched: bool) -> MdEngineeringExpressionGraph {
+    let pts = [
+        [10., 40.4],
+        [14., 30.],
+        [20., 24.],
+        [30., 22.],
+        [40., 26.],
+        [46., 40.4],
+    ];
+    let mut ents = vec![
+        line("BT", "01", [0., 40.], [60., 40.]),
+        line("BR", "01", [60., 40.], [60., 0.]),
+        line("BB", "01", [60., 0.], [0., 0.]),
+        line("BL", "01", [0., 0.], [0., 40.]),
+    ];
+    for (i, w) in pts.windows(2).enumerate() {
+        ents.push(line(&format!("U{i}"), "02", w[0], w[1]));
+    }
+    if hatched {
+        ents.push(hatch_edges(
+            "UH",
+            "10",
+            &[
+                [14., 40.],
+                [16., 29.],
+                [22., 26.],
+                [30., 25.],
+                [38., 28.],
+                [43., 40.],
+            ],
+            45.,
+        ));
+    }
+    run(&ents)
+}
+
+#[test]
+fn chain_of_short_lines_around_a_section_is_a_local_section_boundary() {
+    let g = chain_section(true);
+    for h in ["U0", "U1", "U2", "U3", "U4"] {
+        let e = expr_with(&g, h, "break_line").unwrap_or_else(|| panic!("{h}: {:?}", kinds(&g, h)));
+        assert!(
+            names(e, "local_section_boundary", "line_chain"),
+            "{:?}",
+            e.evidence_ids
+        );
+    }
+}
+
+#[test]
+fn chain_of_lines_without_a_section_is_not_a_boundary() {
+    let g = chain_section(false);
+    assert!(
+        !kinds(&g, "U2").contains("break_line"),
+        "{:?}",
+        kinds(&g, "U2")
+    );
+}

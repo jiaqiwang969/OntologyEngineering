@@ -2446,6 +2446,27 @@ tests = ["local_section_boundary_around_loose_section_lines"]
 statement = "没有剖面线的细徒手曲线也不作为可见轮廓"
 test = "thin_free_curve_without_section_lines_is_not_an_outline"
 
+[[cards.variants]]
+id = "line_chain"
+title = "用一串短直线画的局部剖视边界"
+distinguishing = "几段未使用的直线首尾相接、开口，每处转角在给定上限内且整体弯曲，两端落在轮廓上（或略越过），与轮廓一起围住一块剖面区域；可跨图层"
+encodings = ["loose"]
+tests = ["chain_of_short_lines_around_a_section_is_a_local_section_boundary"]
+
+[[cards.counter_examples]]
+statement = "一串首尾相接的短直线不围住剖面区域时（如细线画的台阶），不作局部剖视边界"
+test = "chain_of_lines_without_a_section_is_not_a_boundary"
+
+[[cards.parameters]]
+name = "line_chain_max_turn_deg"
+value = 50.0
+meaning = "直线串画的边界每处转角上限（度；段少时转角大于徒手曲线）"
+
+[[cards.parameters]]
+name = "line_chain_min_lines"
+value = 3.0
+meaning = "直线串画的边界最少段数"
+
 [[cards.parameters]]
 name = "free_curve_min_vertices"
 value = 5.0
@@ -2531,6 +2552,34 @@ tests = ["centre_line_used_as_extension_line_stays_a_centre_line"]
 [[cards.counter_examples]]
 statement = "细实线画的尺寸界线不因与轴线共线而成为中心线：线型由这条线自己的图案决定"
 test = "continuous_extension_line_on_an_axis_is_not_a_centre_line"
+
+[[cards.variants]]
+id = "split_extension_line"
+title = "尺寸界线断成两段"
+distinguishing = "未使用的细线与某尺寸的尺寸界线共线，两者之间只隔不超过给定倍数字高的缺口（为符号、引线或文字让位），是这条界线的另一段"
+encodings = ["loose"]
+tests = ["extension_line_split_for_a_symbol_is_one_extension_line"]
+
+[[cards.variants]]
+id = "drawn_twice"
+title = "尺寸线、界线或终端画了两遍"
+distinguishing = "一段线落在已认领的尺寸线或尺寸界线上并被它覆盖，或一个终端与已认领的终端同尖同向：同一部分画了两次（重合图线只画一次）；不打印层上的一份让位于打印的一份"
+encodings = ["loose"]
+tests = ["dimension_parts_drawn_twice_join_the_dimension"]
+
+[[cards.counter_examples]]
+statement = "与界线共线但隔得较远的细线不并入界线"
+test = "collinear_line_far_from_an_extension_line_is_not_absorbed"
+
+[[cards.parameters]]
+name = "split_gap_max"
+value = 3.0
+meaning = "界线两段之间缺口的上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "coincident_tolerance"
+value = 0.05
+meaning = "两次画出的同一部分之间的距离容差 = 该值 × 字高"
 
 [[cards.parameters]]
 name = "end_piece_max"

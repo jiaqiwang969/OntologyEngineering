@@ -6836,6 +6836,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     thread_lines(&cx, &mut b);
     break_lines(&cx, &mut b);
     lines::loose_hatch_boundaries(&cx, &mut b)?;
+    line_evidence::line_chain_boundaries(&cx, &mut b)?;
     hatch_lines(&cx, &mut b);
     line_evidence::section_lines_by_spacing(&cx, &mut b)?;
     line_evidence::hatch_remnants(&cx, &mut b)?;
@@ -6852,6 +6853,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     symbols::frame_content(&mut b)?;
     symbols::texture_concepts(&cx, &mut b)?;
     symbols::callout_concepts(&mut b)?;
+    line_evidence::dimension_pieces(&cx, &mut b)?;
     let (regions, vmap, refs) = views(&cx, &b, &titles, &anchors);
     let mut nb = finalize(&b, &vmap, &regions, &refs);
     unresolved(&cx, &mut nb, &regions);

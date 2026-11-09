@@ -303,9 +303,12 @@ pub(super) fn outline_candidates(
             joined_ends.insert((to, end_key(t)));
         }
     }
+    // Only lines in the outline colour are continued across such a gap: a thin-coloured line
+    // facing another one across a symbol is an extension line broken for it.
+    let outline_coloured = |h: &str| pool.get(h) == Some(&"outline_colour_on_thin_layer");
     let partners: Vec<topology::Partner> = cand
         .keys()
-        .chain(pool.keys())
+        .chain(pool.keys().filter(|h| outline_coloured(h)))
         .filter_map(|h| {
             let (a, c) = cx.lines.get(h)?;
             Some(topology::Partner {
@@ -321,6 +324,7 @@ pub(super) fn outline_candidates(
         .collect();
     let explained: BTreeMap<&str, Vec<f64>> = pool
         .keys()
+        .filter(|h| outline_coloured(h))
         .filter_map(|h| {
             let (a, c) = cx.lines.get(h)?;
             let v: Vec<f64> = [(0., *a, unit(sub(*a, *c))), (1., *c, unit(sub(*c, *a)))]
@@ -1454,6 +1458,404 @@ pub(super) fn thread_sections(cx: &Ctx, b: &mut Builder) -> Result<()> {
             {
                 taken.insert(h.clone());
             }
+        }
+    }
+    Ok(())
+}
+
+// ---------------------------------------------------------------- dimension parts drawn in pieces or twice
+
+/// Parts of a dimension drawn in pieces or twice (card `dimension_line_parts`):
+/// * `split_extension_line` — a thin line on the carrier of a dimension's extension line, short
+///   of it by no more than a few text heights (the drafter left the gap for a symbol, a leader or
+///   a text), is the rest of that extension line;
+/// * `drawn_twice` — a piece of a line lying on a dimension line or extension line already
+///   claimed, and a terminator drawn again on a claimed terminator (same tip, same direction), are
+///   that dimension's part drawn twice (GB/T 14665-2012 4.3: coincident lines are drawn once).
+///   A copy on a layer that is never plotted defers to the printed one.
+pub(super) fn dimension_pieces(cx: &Ctx, b: &mut Builder) -> Result<()> {
+    let c = representation::card_ref("dimension_line_parts")?;
+    let s = cx.scale.max(1e-6);
+    let gap_max = representation::param(c, "split_gap_max")? * s;
+    let tol = representation::param(c, "coincident_tolerance")? * s;
+    let w = Widths::of(cx);
+    let dims: BTreeSet<usize> = b
+        .exprs
+        .iter()
+        .enumerate()
+        .filter(|(_, e)| e.kind.starts_with("dimension_") || e.kind == "thread_note")
+        .map(|(i, _)| i)
+        .collect();
+    let index: BTreeMap<String, usize> = b
+        .exprs
+        .iter()
+        .enumerate()
+        .map(|(i, e)| (e.id.clone(), i))
+        .collect();
+    // claimed straight parts: (expression, role, handle, ends of the claimed interval)
+    let parts: Vec<(usize, String, String, P, P)> = b
+        .members
+        .iter()
+        .filter(|m| matches!(m.member_role.as_str(), "extension_line" | "dimension_line"))
+        .filter_map(|m| {
+            let e = *index.get(&m.expression_id)?;
+            let (a, z) = cx.lines.get(&m.source_handle)?;
+            dims.contains(&e).then(|| {
+                (
+                    e,
+                    m.member_role.clone(),
+                    m.source_handle.clone(),
+                    lerp(*a, *z, m.interval[0]),
+                    lerp(*a, *z, m.interval[1]),
+                )
+            })
+        })
+        .filter(|x| dist(x.3, x.4) > tol)
+        .collect();
+    let on_carrier = |p: P, a: P, z: P| project(p, a, z).1 <= tol;
+    let mut add: Vec<PartToAdd> = Vec::new();
+    for (h, (a, z)) in &cx.lines {
+        if dist(*a, *z) <= tol {
+            continue;
+        }
+        let free = lines_uncovered(b, h);
+        if free.is_empty() {
+            continue;
+        }
+        let whole = free.len() == 1 && free[0][0] < 1e-9 && free[0][1] > 1. - 1e-9;
+        // drawn twice: an uncovered piece on a claimed part that covers it
+        for iv in &free {
+            let (p, q) = (lerp(*a, *z, iv[0]), lerp(*a, *z, iv[1]));
+            if dist(p, q) <= tol {
+                continue;
+            }
+            // the claimed parts of one dimension and role on this carrier, together covering it
+            let v = unit(sub(q, p));
+            let mut by_part: BTreeMap<(usize, &str), Vec<Extent>> = BTreeMap::new();
+            for (e, role, k, pa, pz) in &parts {
+                if k != h && on_carrier(*pa, p, q) && on_carrier(*pz, p, q) {
+                    let (sa, sz) = (dot(sub(*pa, p), v), dot(sub(*pz, p), v));
+                    by_part.entry((*e, role.as_str())).or_default().push((
+                        sa.min(sz),
+                        sa.max(sz),
+                        k,
+                    ));
+                }
+            }
+            let len = dist(p, q);
+            let hit = by_part.iter_mut().find_map(|((e, role), spans)| {
+                spans.sort_by(|x, y| x.0.total_cmp(&y.0));
+                let mut cursor = 0.;
+                for (lo, hi, _) in spans.iter() {
+                    if *lo <= cursor + tol {
+                        cursor = f64::max(cursor, *hi);
+                    }
+                }
+                (spans[0].0 <= tol && cursor >= len - tol)
+                    .then(|| (*e, role.to_string(), spans[0].2.clone()))
+            });
+            if let Some((e, role, k)) = hit {
+                add.push((
+                    e,
+                    h.clone(),
+                    *iv,
+                    role,
+                    "drawn_twice",
+                    format!("duplicate_of:{k}"),
+                ));
+            }
+        }
+        // split extension line: the whole line unused, thin, beyond an extension line's end
+        if !whole || !thin_line(cx, &w, h) || add.iter().any(|x| &x.1 == h) {
+            continue;
+        }
+        let u = unit(sub(*z, *a));
+        let hit = parts
+            .iter()
+            .filter(|(_, role, k, pa, pz)| {
+                role == "extension_line"
+                    && k != h
+                    && cross(unit(sub(*pz, *pa)), u).abs() < 1e-3
+                    && on_carrier(*a, *pa, *pz)
+                    && on_carrier(*z, *pa, *pz)
+            })
+            .filter_map(|(e, _, k, pa, pz)| {
+                // gap along the carrier between the two pieces
+                let (s0, s1) = (dot(*a, u), dot(*z, u));
+                let (r0, r1) = (dot(*pa, u), dot(*pz, u));
+                let gap = (s0.min(s1) - r0.max(r1)).max(r0.min(r1) - s0.max(s1));
+                (gap > tol && gap <= gap_max).then(|| (gap, *e, k.clone()))
+            })
+            .min_by(|x, y| x.0.total_cmp(&y.0));
+        if let Some((gap, e, k)) = hit {
+            add.push((
+                e,
+                h.clone(),
+                [0., 1.],
+                "extension_line".into(),
+                "split_extension_line",
+                format!("continues:{k}:{gap:.3}"),
+            ));
+        }
+    }
+    // terminators drawn again on a claimed terminator
+    let heads: Vec<(usize, String, Arrow)> = b
+        .members
+        .iter()
+        .filter(|m| m.member_role == "arrowhead")
+        .filter_map(|m| {
+            let e = *index.get(&m.expression_id)?;
+            let a = cx.arrow(&m.source_handle)?;
+            dims.contains(&e)
+                .then(|| (e, m.source_handle.clone(), a.clone()))
+        })
+        .collect();
+    for (h, a) in &cx.arrows {
+        if b.used(h) {
+            continue;
+        }
+        if let Some((e, k, _)) = heads
+            .iter()
+            .find(|(_, k, x)| k != h && dist(x.tip, a.tip) <= tol && dot(x.dir, a.dir) > 0.99)
+        {
+            let mut ev = format!("duplicate_of:{k}");
+            if not_plotted(cx, &cx.style[k].layer) {
+                ev = format!("printed_copy_of:{k}");
+            }
+            add.push((
+                *e,
+                h.clone(),
+                [0., 1.],
+                "arrowhead".into(),
+                "drawn_twice",
+                ev,
+            ));
+        }
+    }
+    for (e, h, iv, role, variant, ev) in add {
+        b.member(
+            e,
+            &h,
+            None,
+            iv,
+            &role,
+            member_line_type(cx.lt(&h), &role),
+            "candidate",
+            vec![],
+            vec![
+                "card:dimension_line_parts".into(),
+                format!("variant:{variant}"),
+                ev,
+            ],
+        );
+        for x in [
+            "card:dimension_line_parts".to_string(),
+            format!("variant:{variant}"),
+            "concept:DC-G4-058".to_string(),
+        ] {
+            if !b.exprs[e].evidence_ids.contains(&x) {
+                b.exprs[e].evidence_ids.push(x);
+            }
+        }
+    }
+    Ok(())
+}
+
+/// A part to add to a dimension: expression, source, interval, role, variant, evidence.
+type PartToAdd = (usize, String, [f64; 2], String, &'static str, String);
+/// Extent of a claimed part along a carrier: from, to, source.
+type Extent<'a> = (f64, f64, &'a String);
+
+/// Uncovered parameter intervals of a source.
+fn lines_uncovered(b: &Builder, src: &str) -> Vec<[f64; 2]> {
+    let mut out = Vec::new();
+    let mut at = 0.;
+    for iv in b.covered(src) {
+        if iv[0] > at + 1e-9 {
+            out.push([at, iv[0]]);
+        }
+        at = f64::max(at, iv[1]);
+    }
+    if at < 1. - 1e-9 {
+        out.push([at, 1.]);
+    }
+    out
+}
+
+// ---------------------------------------------------------------- local section boundary drawn as a chain of lines
+
+/// A local-section boundary drawn as a chain of short straight lines (card
+/// `local_section_boundary`, variant `line_chain`): unused lines joined end to end, open, each
+/// turn within the card's limit and bending overall, both ends on the outline (or just past
+/// it), and enclosing with the outline a hatched section region.
+pub(super) fn line_chain_boundaries(cx: &Ctx, b: &mut Builder) -> Result<()> {
+    let c = representation::card_ref("local_section_boundary")?;
+    let max_turn = representation::param(c, "line_chain_max_turn_deg")?;
+    let min_lines = representation::param(c, "line_chain_min_lines")? as usize;
+    let reach = representation::param(c, "line_end_on_curve")? * cx.scale.max(1e-6);
+    let key = |p: P| ((p[0] * 1e5).round() as i64, (p[1] * 1e5).round() as i64);
+    let free: BTreeMap<&String, (P, P)> = cx
+        .lines
+        .iter()
+        .filter(|(h, (a, z))| {
+            dist(*a, *z) > 1e-6
+                && !b.used(h)
+                && cx.style[*h].pattern == Pattern::Continuous
+                && !cx.style[*h].byblock
+        })
+        .map(|(h, l)| (h, *l))
+        .collect();
+    // ends of every root line, to see which joints only the chain uses
+    let mut at: BTreeMap<(i64, i64), Vec<&String>> = BTreeMap::new();
+    for (h, (a, z)) in &cx.lines {
+        at.entry(key(*a)).or_default().push(h);
+        at.entry(key(*z)).or_default().push(h);
+    }
+    let hatches: Vec<Vec<P>> = cx
+        .rec
+        .iter()
+        .filter(|(_, r)| r.kind == "HATCH")
+        .map(|(h, _)| cx.points(h))
+        .filter(|v| v.len() >= 3)
+        .collect();
+    let structural: Vec<String> = b
+        .members
+        .iter()
+        .filter(|m| m.member_role == "contour_segment")
+        .map(|m| m.source_handle.clone())
+        .chain(cx.rec.keys().filter(|h| cx.structural_style(h)).cloned())
+        .collect();
+    let mut seen: BTreeSet<&String> = BTreeSet::new();
+    for start in free.keys() {
+        if seen.contains(start) {
+            continue;
+        }
+        // grow the chain through joints shared by exactly two free lines
+        let mut comp: Vec<&String> = vec![start];
+        seen.insert(start);
+        let mut i = 0;
+        while i < comp.len() {
+            let (a, z) = free[comp[i]];
+            for p in [a, z] {
+                let here = &at[&key(p)];
+                if here.len() == 2 && here.iter().all(|x| free.contains_key(x)) {
+                    for n in here {
+                        if seen.insert(n) {
+                            comp.push(n);
+                        }
+                    }
+                }
+            }
+            i += 1;
+        }
+        if comp.len() < min_lines {
+            continue;
+        }
+        // order from an end and collect the points
+        let end_of = |h: &String| {
+            let (a, z) = free[h];
+            [a, z].into_iter().find(|p| {
+                let here = &at[&key(*p)];
+                !(here.len() == 2 && here.iter().all(|x| comp.contains(x)))
+            })
+        };
+        let Some(first) = comp.iter().find(|h| end_of(h).is_some()).copied() else {
+            continue;
+        };
+        let mut pts = vec![end_of(first).unwrap()];
+        let mut order: Vec<&String> = Vec::new();
+        let mut cur = first;
+        loop {
+            order.push(cur);
+            let (a, z) = free[cur];
+            let next_p = if key(a) == key(*pts.last().unwrap()) {
+                z
+            } else {
+                a
+            };
+            pts.push(next_p);
+            let here = &at[&key(next_p)];
+            match here
+                .iter()
+                .find(|x| **x != cur && comp.contains(x) && !order.contains(x))
+            {
+                Some(n) if here.len() == 2 => cur = n,
+                _ => break,
+            }
+        }
+        if order.len() != comp.len() || key(pts[0]) == key(*pts.last().unwrap()) {
+            continue;
+        }
+        let mut total = 0.;
+        let mut ok = true;
+        for w in pts.windows(3) {
+            let (u, v) = (unit(sub(w[1], w[0])), unit(sub(w[2], w[1])));
+            let turn = cross(u, v).atan2(dot(u, v)).to_degrees();
+            if turn.abs() > max_turn {
+                ok = false;
+            }
+            total += turn;
+        }
+        if !ok || total.abs() <= max_turn {
+            continue;
+        }
+        // both ends on the outline, or past it by a little
+        let end_on = |p: P| {
+            structural.iter().any(|k| {
+                !comp.contains(&k)
+                    && (cx
+                        .lines
+                        .get(k)
+                        .is_some_and(|(a, z)| lines_seg_dist(p, *a, *z) <= reach)
+                        || cx.arc(k).is_some_and(|(c0, r0, s0, sw, full)| {
+                            on_arc(p, c0, r0, s0, sw, full, reach)
+                        }))
+            })
+        };
+        if !end_on(pts[0]) || !end_on(*pts.last().unwrap()) {
+            continue;
+        }
+        // with the outline the chain encloses a hatched region (closing the chain by its chord)
+        let polygon: Vec<(P, P)> = pts
+            .windows(2)
+            .map(|w| (w[0], w[1]))
+            .chain(std::iter::once((*pts.last().unwrap(), pts[0])))
+            .collect();
+        let encloses = hatches.iter().any(|v| {
+            let centre = mul(
+                v.iter().fold([0., 0.], |s, p| add(s, *p)),
+                1. / v.len() as f64,
+            );
+            representation::inside_segments(centre, &polygon)
+        });
+        if !encloses {
+            continue;
+        }
+        let e = b.expr(
+            "break_line",
+            order[0],
+            "piece:free_curve_bounding_hatched_local_section",
+            "candidate",
+            vec![],
+            vec![
+                "card:local_section_boundary".into(),
+                "variant:line_chain".into(),
+                format!("segments:{}", order.len()),
+            ],
+            vec!["Local section boundary; its occluded continuation is not reconstructed".into()],
+        );
+        for h in order {
+            b.member(
+                e,
+                h,
+                None,
+                [0., 1.],
+                "break_curve",
+                member_line_type(cx.lt(h), "break_curve"),
+                "candidate",
+                vec![],
+                vec![],
+            );
         }
     }
     Ok(())

@@ -669,7 +669,7 @@ ids = ["DC-G9-002"]
 
 [[rules]]
 rule = "card:surface_texture_symbol/most_surfaces"
-function = "annotation_blocks::read"
+function = "annotation_blocks::read, blocks"
 piece = false
 kinds = ["surface_roughness"]
 [[rules.concepts]]
@@ -781,6 +781,51 @@ kinds = ["sheet_frame"]
 kind = ""
 ids = ["DC-G1-085"]
 
+[[rules]]
+rule = "card:callout_rows/bounded_requirement"
+function = "callouts"
+piece = false
+kinds = ["process_requirement", "technical_general", "material_heat", "protection_requirement"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-067"]
+
+[[rules]]
+rule = "card:leader_note/arrow_terminator"
+function = "leader_notes"
+piece = false
+kinds = ["leader_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-028", "DC-G1-018", "DC-G1-096", "DC-G1-111"]
+
+[[rules]]
+rule = "card:leader_note/no_terminator"
+function = "leader_notes"
+piece = false
+kinds = ["leader_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-028", "DC-G1-018", "DC-G1-098", "DC-G1-111"]
+
+[[rules]]
+rule = "card:title_block_field/margin_note"
+function = "margin_notes"
+piece = false
+kinds = ["title_block"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-085"]
+
+[[rules]]
+rule = "card:title_block_field/revision_note"
+function = "margin_notes"
+piece = false
+kinds = ["title_block"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G9-023"]
+
 [[conventions]]
 name = "coincident_line_precedence"
 applies_to = "member evidence coincident_higher_precedence; line type of shared source intervals (GB/T 14665-2012 4.3)"
@@ -837,7 +882,7 @@ missing = "粗细由图层约定与成员作用推出，未读取实际线宽值
 [[concepts]]
 id = "DC-G1-018"
 level = "full"
-by = ["text_on_leader_shoulder"]
+by = ["card:leader_note/arrow_terminator", "card:leader_note/no_terminator", "text_on_leader_shoulder"]
 
 [[concepts]]
 id = "DC-G1-019"
@@ -854,8 +899,8 @@ missing = "对称中心线与轴线归在一起，未单独判断对称"
 [[concepts]]
 id = "DC-G1-028"
 level = "partial"
-by = ["card:leader_note", "card:leader_note/block_object", "single_terminator_leader_and_text", "text_on_leader_shoulder"]
-missing = "图块中的引出说明、零件序号与放大部位的指引线已识别；散线画的圆点终端、无终端的指引线及 MLEADER 未区分"
+by = ["card:leader_note", "card:leader_note/block_object", "single_terminator_leader_and_text", "text_on_leader_shoulder", "card:leader_note/arrow_terminator", "card:leader_note/no_terminator"]
+missing = "图块中的引出说明、零件序号与放大部位的指引线，以及散线画的带箭头或无终端的引出说明已识别；散线画的圆点终端、序号指引线及 MLEADER 未区分；指引线只在注写、框格与引出说明规则用到时识别"
 
 [[concepts]]
 id = "DC-G1-029"
@@ -919,7 +964,7 @@ missing = "轴线与本视图的中心线归在一起，未与对称中心线、
 [[concepts]]
 id = "DC-G1-055"
 level = "full"
-by = ["convention:coincident_line_precedence"]
+by = ["card:coincident_redraw", "convention:coincident_line_precedence"]
 
 [[concepts]]
 id = "DC-G1-070"
@@ -934,14 +979,14 @@ by = ["card:technical_note"]
 [[concepts]]
 id = "DC-G1-085"
 level = "partial"
-by = ["binding_margin_registration_table", "card:drawing_sheet", "sheet_size_rectangular_border", "card:sheet_frame_border", "card:sheet_frame_border/border_with_margin_columns"]
-missing = "图框图块（矩形边框、装订边登记栏、文字全在装订边内的附加栏）已识别；一个模型空间中带标题栏的几个图框分为几张图纸；散线画的图框、纸边界线与对中符号未区分；图框须占全图范围的四分之一以上，并排四张以上的图纸会漏读"
+by = ["binding_margin_registration_table", "card:drawing_sheet", "sheet_size_rectangular_border", "card:sheet_frame_border", "card:sheet_frame_border/border_with_margin_columns", "card:title_block_field/margin_note"]
+missing = "图框图块（矩形边框、装订边登记栏、文字全在装订边内的附加栏）与图框线外、纸边内的注写已识别；一个模型空间中带标题栏的几个图框分为几张图纸；散线画的图框、纸边界线与对中符号未区分；图框须占全图范围的四分之一以上，并排四张以上的图纸会漏读"
 
 [[concepts]]
 id = "DC-G1-096"
 level = "partial"
-by = ["card:leader_note", "single_terminator_leader_and_text"]
-missing = "实心三角终端在单箭头指引线规则与引出说明、公差框格、剖切符号的图块中识别；其他终端形式未区分"
+by = ["card:leader_note", "single_terminator_leader_and_text", "card:leader_note/arrow_terminator"]
+missing = "实心三角终端在单箭头尺寸与指引线、框格指引线、散线与图块中的引出说明、公差框格和剖切符号图块中识别；斜线、圆点等其他终端未区分"
 
 [[concepts]]
 id = "DC-G1-101"
@@ -1067,8 +1112,8 @@ by = ["card:dimension_text", "card:leader_note/block_object", "dimension_line_of
 [[concepts]]
 id = "DC-G3-089"
 level = "partial"
-by = ["card:dimension_text"]
-missing = "以普通线性尺寸注出的螺纹长度未与其他长度区分"
+by = ["card:callout_rows", "card:dimension_text"]
+missing = "以普通线性尺寸注出的螺纹长度未与其他长度区分；旁注中的攻深按附注行并入，未与图形中的螺纹终止线核对"
 
 [[concepts]]
 id = "DC-G3-091"
@@ -1138,7 +1183,7 @@ by = ["single_terminator_leader_and_text", "terminators_across_feature_with_lead
 id = "DC-G4-029"
 level = "partial"
 by = ["card:theoretically_exact_dimension"]
-missing = "用直线画的方框（含与引线台共用的底边）和原生尺寸文字外的方框已识别；多段线或图块画的方框、角度与延伸长度的方框未单独核对"
+missing = "用直线画的方框（含与引线台共用的底边）、原生尺寸文字外的方框和随数值旋转的闭合多段线方框已识别；图块画的方框与延伸长度的方框未单独核对"
 
 [[concepts]]
 id = "DC-G4-030"
@@ -1194,13 +1239,13 @@ by = ["card:technical_note"]
 [[concepts]]
 id = "DC-G4-088"
 level = "partial"
-by = ["card:dimension_text"]
-missing = "旧式旁注（无深度、沉孔符号的“n-Ø”）未与“数量-直径”尺寸区分"
+by = ["card:callout_rows", "card:dimension_text"]
+missing = "旧式旁注（无深度、沉孔符号的“n-Ø”）未与“数量-直径”尺寸区分；第二行的深度、贯通、分布词按附注行并入，未核对与孔深尺寸的一致"
 
 [[concepts]]
 id = "DC-G4-094"
 level = "full"
-by = ["card:dimension_text"]
+by = ["card:callout_rows", "card:dimension_text"]
 
 [[concepts]]
 id = "DC-G4-098"
@@ -1529,7 +1574,7 @@ missing = "列出前缀以外的铝合金、铜合金等牌号（如 2A12、6061
 [[concepts]]
 id = "DC-G9-023"
 level = "full"
-by = ["card:title_block_field"]
+by = ["card:title_block_field", "card:title_block_field/revision_note"]
 
 [[concepts]]
 id = "DC-G9-024"
@@ -1599,3 +1644,45 @@ id = "DC-G8-025"
 level = "partial"
 by = ["card:parts_list", "card:parts_list/block_table"]
 missing = "整块明细栏（表头行与连续序号列）已识别；散线表格、每行一个属性块的明细表、ACAD_TABLE 与续页未识别"
+[[concepts]]
+id = "DC-G1-047"
+level = "partial"
+by = ["card:callout_rows"]
+missing = "只识别尺寸终端所落、与零件同心的短弧作为以该尺寸为界的要求的分界线；横跨轮廓的分界细实线未识别"
+
+[[concepts]]
+id = "DC-G1-098"
+level = "partial"
+by = ["card:leader_note", "card:leader_note/no_terminator"]
+missing = "只在引出说明中识别无终端的指引线（末端贴近图线）；末端落在面内而不靠近图线时未识别"
+
+[[concepts]]
+id = "DC-G1-111"
+level = "partial"
+by = ["card:callout_rows", "card:leader_note/arrow_terminator", "card:leader_note/no_terminator"]
+missing = "注释说明归属到基准线（文字站在线上、下一行附注词）与尺寸数值正下方的附注已识别；文字与指引线端点同高、不用基准线的写法未识别"
+
+[[concepts]]
+id = "DC-G4-043"
+level = "partial"
+by = ["card:callout_rows"]
+missing = "EQS 按词并入所属尺寸；被指圆的个数与等分角未核对"
+
+[[concepts]]
+id = "DC-G4-066"
+level = "partial"
+by = ["card:callout_rows"]
+missing = "均布注语按词并入所属尺寸或引出说明；被指圆的个数与等分角未核对"
+
+[[concepts]]
+id = "DC-G4-067"
+level = "partial"
+by = ["card:callout_rows", "card:callout_rows/bounded_requirement"]
+missing = "只识别作用范围词（两侧、一周等）与以尺寸为界的指代说明句；参考、典型等性质限定词未识别"
+
+[[concepts]]
+id = "DC-G9-026"
+level = "partial"
+by = ["card:title_block_field"]
+missing = "只识别图框外注写中带质量词的文字；标题栏内质量栏的填写值未单独定栏"
+

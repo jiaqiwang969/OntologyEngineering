@@ -48,6 +48,9 @@ mod symbols;
 #[path = "lines.rs"]
 mod lines;
 
+#[path = "loose_annotations.rs"]
+mod loose_annotations;
+
 #[path = "coverage.rs"]
 mod coverage;
 pub use coverage::{concept_status, recognizer_coverage};
@@ -2388,6 +2391,18 @@ fn blocks(cx: &Ctx, b: &mut Builder, def: &mut Deferred) {
             def.cells.push((vec![h.clone()], rects[0]));
         } else if s.texts.is_empty() && s.lines.len() <= 6 {
             def.boxes.push(h.clone());
+        } else if let Some(label) = symbols::most_surfaces_block(s) {
+            // the word for most surfaces and a symbol without a value in one block
+            let e = b.expr(
+                "surface_roughness",
+                &label,
+                "card:surface_texture_symbol/most_surfaces",
+                "candidate",
+                vec!["general_requirement".into()],
+                vec![format!("source:{h}"), "card:surface_texture_symbol".into(), "variant:most_surfaces".into()],
+                vec!["Applies to the surfaces without an indication of their own".into()],
+            );
+            b.member(e, h, None, [0., 1.], "roughness_symbol", "block", "candidate", vec![], vec![]);
         }
     }
 }
@@ -2686,6 +2701,7 @@ fn exploded_frames(
     anchors: &mut BTreeMap<usize, P>,
     loose: &[(Vec<String>, &'static str, [f64; 4])],
     divided: &[(Vec<String>, [f64; 4])],
+    lined: &[(Vec<String>, [f64; 4])],
 ) {
     let mut cells: Vec<(Vec<String>, [f64; 4])> = def.cells.clone();
     for (h, (pts, _, bulged)) in &cx.polys {
@@ -2706,6 +2722,12 @@ fn exploded_frames(
     // One outline divided by full-height lines (card gdt_frame_content).
     for (ids, r) in divided {
         if !cells.iter().any(|c| c.1 == *r) {
+            cells.push((ids.clone(), *r));
+        }
+    }
+    // One outline drawn with separate lines, divided by full-height lines (card gdt_frame_content).
+    for (ids, r) in lined {
+        if !cells.iter().any(|c| loose_annotations::same_rect(c.1, *r)) {
             cells.push((ids.clone(), *r));
         }
     }
@@ -2756,12 +2778,15 @@ fn exploded_frames(
         }
         let fb = chain.iter().map(|c| c.1).reduce(bbox_union).unwrap();
         let mut fields: Vec<(String, &'static str, String)> = Vec::new();
+        // each cell reads as one field, its texts in reading order
+        let mut cell_fields: Vec<String> = Vec::new();
         for (i, (_, r)) in chain.iter().enumerate().skip(1) {
-            for t in cx
+            let ts: Vec<&TextFact> = cx
                 .texts
                 .values()
                 .filter(|t| !b.used(&t.id) && inside(t.center, *r, tol))
-            {
+                .collect();
+            for t in &ts {
                 fields.push((
                     t.id.clone(),
                     if i == 1 {
@@ -2772,16 +2797,11 @@ fn exploded_frames(
                     t.dec.text.clone(),
                 ));
             }
+            if !ts.is_empty() {
+                cell_fields.push(loose_annotations::cell_text(&ts));
+            }
         }
-        let label = format!(
-            "{} {}",
-            glyph_label(kind),
-            fields
-                .iter()
-                .map(|f| f.2.as_str())
-                .collect::<Vec<_>>()
-                .join(" | ")
-        );
+        let label = format!("{} {}", glyph_label(kind), cell_fields.join(" | "));
         let e = b.expr(
             kind,
             &label,
@@ -2795,6 +2815,8 @@ fn exploded_frames(
                 format!("variant:{}", if *is_loose { "loose_glyph" } else { "block_glyph" }),
                 if chain.iter().any(|c| divided.iter().any(|d| d.0 == c.0)) {
                     "variant:outline_dividers".into()
+                } else if chain.iter().any(|c| lined.iter().any(|d| d.0 == c.0)) {
+                    "variant:line_outline_dividers".into()
                 } else {
                     "cells:separate".into()
                 },
@@ -2864,7 +2886,12 @@ fn exploded_frames(
         });
         if let Some((sid, far, prev)) = start {
             let mut taken = BTreeSet::from([sid.clone()]);
-            let (mut segs, mut arrows, ends) = branches(cx, b, &[(far, prev)], &mut taken, 4);
+            // pieces may overlap or miss by a little at a join (card gdt_frame_content, leader_pieces)
+            let (mut segs, mut arrows, ends, pieces) =
+                loose_annotations::frame_leader(cx, b, &sid, &[(far, prev)], &mut taken, 4, h);
+            if pieces {
+                loose_annotations::name_variant(&mut b.exprs[e], "gdt_frame_content", "leader_pieces");
+            }
             segs.insert(0, sid);
             // GB/T 1182: a leader aligned with the dimension line of a feature of size
             // ends on that dimension line; its terminators and the line between them
@@ -3571,7 +3598,9 @@ fn attached_dimension(
         .values()
         .filter(|t| {
             !b.used(&t.id)
-                && (is_dim_text(t.lex) || t.lex == Lex::Thread)
+                && (is_dim_text(t.lex)
+                    || t.lex == Lex::Thread
+                    || loose_annotations::value_with_words(t).is_some())
                 && t.dir[0] > 0.99
                 && t.center[0] > fb[0] - 2. * t.height
                 && t.center[0] < fb[2] + 2. * t.height
@@ -3590,6 +3619,10 @@ fn attached_dimension(
         })
         .collect();
     stacked.sort_by(|x, y| x.0.total_cmp(&y.0));
+    // deviations written as their own small texts beside the value are not the value
+    if stacked.iter().any(|x| !loose_annotations::deviation_text(&x.1)) {
+        stacked.retain(|x| !loose_annotations::deviation_text(&x.1));
+    }
     let seed = stacked.first().map(|x| x.0).and_then(|g0| {
         let row: Vec<&TextFact> = stacked
             .iter()
@@ -3605,7 +3638,8 @@ fn attached_dimension(
     let (kind, group) = match &seed {
         Some(t) if t.lex == Lex::Thread => ("thread_note", note_block(cx, b, t, &frames)),
         Some(t) => (
-            tx::dimension_kind(&t.dec.text).unwrap_or("dimension_linear"),
+            tx::dimension_kind(&loose_annotations::value_with_words(t).unwrap_or(t.dec.text.clone()))
+                .unwrap_or("dimension_linear"),
             vec![t.id.clone()],
         ),
         None => ("dimension_linear", vec![]),
@@ -4348,6 +4382,13 @@ fn boxed_values(cx: &Ctx, b: &mut Builder, native_texts: &BTreeMap<usize, TextFa
         }
     }
     for (e, t) in facts {
+        // a closed polyline drawn round the value (card theoretically_exact_dimension)
+        if let Some(pid) = notation::closed_box_around(cx, b, &t) {
+            let lt = member_line_type(cx.lt(&pid), "frame_cell");
+            b.member(e, &pid, None, [0., 1.], "frame_cell", lt, "candidate", vec![], vec!["box_around_dimension_value".into()]);
+            notation::mark_ted(b, e, "closed_polyline_box");
+            continue;
+        }
         let n = [-t.dir[1], t.dir[0]];
         let h = t.height;
         let tol = 0.25 * h;
@@ -4814,6 +4855,8 @@ fn detail_circles(cx: &Ctx, b: &mut Builder) {
 }
 
 fn technical_notes(cx: &Ctx, b: &mut Builder, topics: &oe_contracts::MdRepresentationCard) {
+    // texts in a ruled table belong to the table, not to the requirement items (card technical_note)
+    let tables = notation::ruled_tables(cx, b);
     let heads: Vec<TextFact> = cx
         .texts
         .values()
@@ -4851,6 +4894,7 @@ fn technical_notes(cx: &Ctx, b: &mut Builder, topics: &oe_contracts::MdRepresent
                     && t.center[1] < hd.center[1] - 0.5 * h
                     && t.center[0] > hd.center[0] - hd.width - 6. * h
                     && t.center[0] < hd.center[0] + 40. * h
+                    && !tables.iter().any(|r| inside(t.center, *r, 0.))
             })
             .cloned()
             .collect();
@@ -4879,7 +4923,11 @@ fn technical_notes(cx: &Ctx, b: &mut Builder, topics: &oe_contracts::MdRepresent
         }
         let mut items: Vec<Vec<TextFact>> = Vec::new();
         for r in kept {
-            if r[0].lex == Lex::ListNumber || items.is_empty() {
+            // a new item starts at its number, written alone or at the head of the item text
+            if r[0].lex == Lex::ListNumber
+                || items.is_empty()
+                || notation::numbered_item(&r[0].dec.text, items.len() + 1)
+            {
                 items.push(r);
             } else {
                 items.last_mut().unwrap().extend(r);
@@ -4926,6 +4974,13 @@ fn technical_notes(cx: &Ctx, b: &mut Builder, topics: &oe_contracts::MdRepresent
                 .collect();
             let rh = item.iter().map(|t| t.height).fold(0., f64::max);
             if let Some(rb) = bbox_of(&pts) {
+                // a dash runs along the writing, on one of the item's rows
+                let on_row = |p: P, u: P| {
+                    item.iter().any(|t| {
+                        cross(t.dir, u).abs() < 0.1
+                            && cross(t.dir, sub(p, t.center)).abs() < 0.6 * t.height
+                    })
+                };
                 let strokes: Vec<String> = cx
                     .lines
                     .iter()
@@ -4934,6 +4989,7 @@ fn technical_notes(cx: &Ctx, b: &mut Builder, topics: &oe_contracts::MdRepresent
                             && cx.annotation_style(id)
                             && dist(*a, *c) < 1.5 * rh
                             && inside(mid(*a, *c), rb, 0.6 * rh)
+                            && on_row(mid(*a, *c), unit(sub(*c, *a)))
                     })
                     .map(|(id, _)| id.clone())
                     .collect();
@@ -6652,10 +6708,13 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     representation::section_lines(&cx, &mut b)?;
     exploded_dimensions(&cx, &mut b, &mut anchors);
     exploded_angles(&cx, &mut b);
-    let mut loose = representation::loose_glyphs(&cx, &b)?;
+    let lined = loose_annotations::line_frames(&cx, &b)?;
+    let mut loose = representation::loose_glyphs(&cx, &b, &lined)?;
     loose.extend(symbols::text_glyphs(&cx, &b)?);
     let divided = symbols::divided_frames(&cx, &b)?;
-    exploded_frames(&cx, &mut b, &def, &mut anchors, &loose, &divided);
+    exploded_frames(&cx, &mut b, &def, &mut anchors, &loose, &divided, &lined);
+    loose_annotations::numbered_datums(&cx, &mut b)?;
+    loose_annotations::name_drawn_heads(&cx, &mut b)?;
     let ted = notation::ted_boxes(&cx, &b)?;
     extended_pair_dimensions(&cx, &mut b, &mut anchors, &ted);
     let mut titles = view_titles(&cx, &mut b);
@@ -6666,6 +6725,8 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     leader_annotations(&cx, &mut b, &text_anchor, &mut anchors);
     thread_texts(&cx, &mut b);
     boxed_values(&cx, &mut b, &native_texts);
+    loose_annotations::leader_notes(&cx, &mut b, &mut anchors)?;
+    loose_annotations::callouts(&cx, &mut b, &native_texts)?;
     representation::special_marks(&cx, &mut b, &native_texts)?;
     representation::angle_units(&mut b)?;
     detail_circles(&cx, &mut b);
@@ -6701,6 +6762,8 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     symbols::frame_content(&mut b)?;
     symbols::texture_concepts(&cx, &mut b)?;
     symbols::callout_concepts(&mut b)?;
+    loose_annotations::redrawn_copies(&cx, &mut b)?;
+    loose_annotations::margin_notes(&cx, &mut b)?;
     view_layout::detail_boundaries(&cx, &mut b, &titles)?;
     annotation_blocks::masks(&cx, &mut b)?;
     let (regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;

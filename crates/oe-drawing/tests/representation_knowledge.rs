@@ -696,6 +696,7 @@ fn every_card_is_used_and_every_named_test_exists() {
         include_str!("recognition_corrections.rs"),
         include_str!("view_layout.rs"),
         include_str!("annotation_blocks.rs"),
+        include_str!("loose_annotations.rs"),
     ]
     .concat();
     for c in &k.cards {

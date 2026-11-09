@@ -194,7 +194,9 @@ pub(crate) fn dimension_concepts(
             add("DC-G4-040", "size_symbols");
         }
     }
-    if thread.is_some() || has(&thread_words) {
+    // unified inch threads written as inch size, inch mark, dash and threads per inch
+    let inch = !values(c, "DC-G3-088", "inch_size").is_empty() && tx::is_inch_thread(&t);
+    if thread.is_some() || has(&thread_words) || inch {
         add("DC-G3-088", "thread_designation");
         if thread == Some(&"M") {
             add("DC-G3-223", "thread_designation");
@@ -409,7 +411,17 @@ pub(crate) fn note_concepts(
 
 /// Technical-requirement topic from the card (`topic` entries); general when no topic matches.
 pub(crate) fn note_topic(c: &MdRepresentationCard, raw: &str) -> &'static str {
-    let t = tx::decode(raw).text;
+    // the title of a cited document (in book-title marks) does not set the item's topic
+    let mut t = String::new();
+    let mut depth = 0usize;
+    for ch in tx::decode(raw).text.chars() {
+        match ch {
+            '《' => depth += 1,
+            '》' => depth = depth.saturating_sub(1),
+            _ if depth == 0 => t.push(ch),
+            _ => {}
+        }
+    }
     for (kind, label) in [
         ("material_heat", "topic:material_heat"),
         ("protection_requirement", "topic:protection_requirement"),
@@ -525,8 +537,18 @@ pub(crate) fn title_field_concepts(
         return out;
     }
     let unit_words = values(c, "DC-G9-017", "word");
+    // a mass value with its unit (the bare number is decided only by the label of its field)
+    let mass = values(c, "DC-G9-026", "value_form").iter().any(|f| {
+        f.strip_prefix("<number>").is_some_and(|unit| {
+            t.strip_suffix(unit).is_some_and(|n| {
+                !n.is_empty() && n.chars().all(|ch| ch.is_ascii_digit() || ch == '.') && n.chars().any(|ch| ch.is_ascii_digit())
+            })
+        })
+    });
     let fields: &[&str] = if is_scale_form(&t) {
         &["DC-G9-025", "DC-G1-114"]
+    } else if mass {
+        &["DC-G9-026"]
     } else if unit_words.iter().any(|w| t.contains(w)) {
         &["DC-G9-017"]
     } else if material_form(c, &text) {
@@ -609,8 +631,8 @@ pub(super) fn technical_items(b: &mut Builder) -> Result<()> {
     let d = representation::card_ref("dimension_text")?;
     for i in 0..b.exprs.len() {
         let e = &b.exprs[i];
-        // a leader note is a note on a feature, not an item of the technical requirements
-        if e.family != "note" || e.kind == "leader_note" {
+        // leader notes and requirements bounded by a dimension are not items of the technical requirements
+        if e.family != "note" || e.kind == "leader_note" || e.rule.starts_with("card:callout_rows") {
             continue;
         }
         let found = if e.rule == "technical_requirement_heading" {
@@ -931,6 +953,78 @@ pub(super) fn series_tables(cx: &Ctx, b: &mut Builder) -> Result<()> {
     Ok(())
 }
 
+/// Ruled tables drawn with free thin lines (card series_table geometry: at least the card's rows and
+/// columns, columns spanning the full height): their rectangles. Texts inside belong to the table,
+/// not to the technical requirements written beside it (card technical_note).
+pub(super) fn ruled_tables(cx: &Ctx, b: &Builder) -> Vec<[f64; 4]> {
+    let Ok(c) = representation::card_ref("series_table") else {
+        return vec![];
+    };
+    let (Ok(rows_min), Ok(cols_min), Ok(tol_k)) = (
+        representation::param(c, "min_rows"),
+        representation::param(c, "min_columns"),
+        representation::param(c, "join_tolerance"),
+    ) else {
+        return vec![];
+    };
+    let tol = tol_k * cx.scale.max(1e-6);
+    let mut hs: Vec<(f64, f64, f64)> = Vec::new();
+    let mut vs: Vec<(f64, f64, f64)> = Vec::new();
+    for (id, (a, q)) in &cx.lines {
+        let l = dist(*a, *q);
+        if b.used(id) || l < 1e-6 {
+            continue;
+        }
+        if (a[1] - q[1]).abs() < 1e-6 * l.max(1.) {
+            hs.push((a[0].min(q[0]), a[0].max(q[0]), a[1]));
+        } else if (a[0] - q[0]).abs() < 1e-6 * l.max(1.) {
+            vs.push((a[1].min(q[1]), a[1].max(q[1]), a[0]));
+        }
+    }
+    let mut out: Vec<[f64; 4]> = Vec::new();
+    for h0 in &hs {
+        let mut ys: Vec<f64> = hs
+            .iter()
+            .filter(|h| (h.0 - h0.0).abs() < tol && (h.1 - h0.1).abs() < tol)
+            .map(|h| h.2)
+            .collect();
+        ys.sort_by(f64::total_cmp);
+        ys.dedup_by(|a, z| (*a - *z).abs() < tol);
+        if ys.len() < rows_min as usize + 1 {
+            continue;
+        }
+        let (ylo, yhi) = (ys[0], ys[ys.len() - 1]);
+        let mut xs: Vec<f64> = vs
+            .iter()
+            .filter(|v| v.2 > h0.0 - tol && v.2 < h0.1 + tol && (v.0 - ylo).abs() < tol && (v.1 - yhi).abs() < tol)
+            .map(|v| v.2)
+            .collect();
+        xs.sort_by(f64::total_cmp);
+        xs.dedup_by(|a, z| (*a - *z).abs() < tol);
+        if xs.len() < cols_min as usize + 1 || (xs[0] - h0.0).abs() > tol || (xs[xs.len() - 1] - h0.1).abs() > tol {
+            continue;
+        }
+        let r = [h0.0, ylo, h0.1, yhi];
+        if !out.iter().any(|o| (0..4).all(|k| (o[k] - r[k]).abs() < tol)) {
+            out.push(r);
+        }
+    }
+    out
+}
+
+/// A requirement row that starts with the item's number written at the head of its text (`2、…`,
+/// `2.…`, `2．…`), the number following the previous item's (card technical_note,
+/// variant numbered_in_text).
+pub(super) fn numbered_item(text: &str, n: usize) -> bool {
+    let t = compact(text);
+    let digits: String = t.chars().take_while(|c| c.is_ascii_digit()).collect();
+    let rest = &t[digits.len()..];
+    let mut cs = rest.chars();
+    digits.parse::<usize>().is_ok_and(|k| k == n)
+        && cs.next().is_some_and(|c| matches!(c, '、' | '.' | '．'))
+        && cs.next().is_some_and(|c| !c.is_ascii_digit())
+}
+
 // ---------------------------------------------------------------- theoretically exact dimensions
 
 /// A box around a dimension value (card theoretically_exact_dimension): a line above the value,
@@ -1010,6 +1104,58 @@ fn seg_dist(p: P, a: P, z: P) -> f64 {
     }
     let t = (dot(sub(p, a), v) / n).clamp(0., 1.);
     dist(p, add(a, mul(v, t)))
+}
+
+/// A closed four-vertex polyline boxing the value `t` (card theoretically_exact_dimension, variant
+/// closed_polyline_box): a rectangle whose long sides run along the value (the box turns with a
+/// rotated value), lie above and below it within the card's offsets and span it, and which holds
+/// only this value.
+pub(super) fn closed_box_around(cx: &Ctx, b: &Builder, t: &TextFact) -> Option<String> {
+    let c = representation::card_ref("theoretically_exact_dimension").ok()?;
+    let (omin, omax) = (
+        representation::param(c, "top_offset_min").ok()?,
+        representation::param(c, "top_offset_max").ok()?,
+    );
+    let extra = representation::param(c, "box_width_extra").ok()?;
+    let h = t.height;
+    let n = [-t.dir[1], t.dir[0]];
+    let local = |p: P| (dot(sub(p, t.center), t.dir), dot(sub(p, t.center), n));
+    cx.polys
+        .iter()
+        .find(|(id, (pts, closed, bulged))| {
+            let mut v = pts.clone();
+            if v.len() == 5 && dist(v[0], v[4]) < 1e-9 {
+                v.pop();
+            }
+            if b.used(id) || *bulged || !(*closed || pts.len() == 5) || v.len() != 4 {
+                return false;
+            }
+            // a rectangle: right angles at every corner, sides along and across the value
+            let right = (0..4).all(|i| {
+                let (p, q, r) = (v[i], v[(i + 1) % 4], v[(i + 2) % 4]);
+                dot(unit(sub(q, p)), unit(sub(r, q))).abs() < 0.02
+            });
+            let edge_along = (0..4).any(|i| cross(unit(sub(v[(i + 1) % 4], v[i])), t.dir).abs() < 0.03);
+            let lv: Vec<(f64, f64)> = v.iter().map(|p| local(*p)).collect();
+            let a0 = lv.iter().map(|x| x.0).fold(f64::INFINITY, f64::min);
+            let a1 = lv.iter().map(|x| x.0).fold(f64::NEG_INFINITY, f64::max);
+            let c0 = lv.iter().map(|x| x.1).fold(f64::INFINITY, f64::min);
+            let c1 = lv.iter().map(|x| x.1).fold(f64::NEG_INFINITY, f64::max);
+            // only this value inside the box
+            let alone = !cx.texts.values().any(|o| {
+                let (oa, oc) = local(o.center);
+                o.id != t.id && oa > a0 && oa < a1 && oc > c0 && oc < c1
+            });
+            right
+                && edge_along
+                && alone
+                && (omin * h..omax * h).contains(&c1)
+                && (omin * h..omax * h).contains(&-c0)
+                && a1 - a0 < t.width + extra * h
+                && a0 < -0.4 * t.width
+                && a1 > 0.4 * t.width
+        })
+        .map(|(id, _)| id.clone())
 }
 
 /// Name a boxed value as a theoretically exact dimension (qualifier, card, variant, concept).

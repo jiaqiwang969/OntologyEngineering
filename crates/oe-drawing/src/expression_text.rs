@@ -282,11 +282,31 @@ pub fn scale_text(s: &str) -> String {
         .collect()
 }
 
-/// Thread designation: metric M.., unified ..UNC/UNF/UNEF, pipe G/Rc, trapezoid Tr.
+/// Unified inch thread written as nominal size in inches (a fraction or whole inches), the inch mark,
+/// a dash and the threads per inch (`7/16"-14`, `1"-8 UNC`); an optional count prefix `n-` before it.
+pub fn is_inch_thread(s: &str) -> bool {
+    let t = strip_marks(s);
+    t.match_indices("\"-").any(|(i, _)| {
+        // the size is the run of digits, fraction bar and point just before the inch mark
+        let size: String = t[..i]
+            .chars()
+            .rev()
+            .take_while(|c| c.is_ascii_digit() || *c == '/' || *c == '.')
+            .collect();
+        size.chars().any(|c| c.is_ascii_digit())
+            && size.matches('/').count() <= 1
+            && !size.ends_with('/')
+            && !size.starts_with('/')
+            && t[i + 2..].chars().next().is_some_and(|c| c.is_ascii_digit())
+    })
+}
+
+/// Thread designation: metric M.., unified ..UNC/UNF/UNEF or inch size with threads per inch, pipe
+/// G/Rc, trapezoid Tr.
 pub fn is_thread(s: &str) -> bool {
     let t = strip_marks(s);
     let u = t.to_uppercase();
-    if u.contains("UNF") || u.contains("UNC") || u.contains("UNEF") || u.contains("NPT") {
+    if u.contains("UNF") || u.contains("UNC") || u.contains("UNEF") || u.contains("NPT") || is_inch_thread(&t) {
         return true;
     }
     let mut it = t

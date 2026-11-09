@@ -15,7 +15,7 @@ const SOURCE: &str = include_str!("../knowledge/drawing-representation.toml");
 const SCHEMA_K: &str = "oev2.drawing-representation-knowledge/1";
 
 /// Cards that recognition uses; a test checks this list against the file both ways.
-pub const USED_CARDS: [&str; 30] = [
+pub const USED_CARDS: [&str; 32] = [
     "datum_feature_symbol",
     "center_hole_symbol",
     "gdt_frame_symbol",
@@ -46,6 +46,8 @@ pub const USED_CARDS: [&str; 30] = [
     "standard_part",
     "annotation_mask",
     "sheet_frame_border",
+    "coincident_redraw",
+    "callout_rows",
 ];
 
 /// Concept catalogue: one card per drafting representation concept, by group.
@@ -252,12 +254,20 @@ fn solid_points(cx: &Ctx, id: &str) -> Option<Vec<P>> {
 
 enum Boundary {
     Circle(String, P, f64),
-    Square(String, [f64; 4]),
+    /// A closed polyline, or four separate lines (card datum_feature_symbol, variant line_square).
+    Square(Vec<String>, [f64; 4]),
 }
 impl Boundary {
-    fn id(&self) -> &str {
+    fn ids(&self) -> Vec<String> {
         match self {
-            Boundary::Circle(h, ..) | Boundary::Square(h, _) => h,
+            Boundary::Circle(h, ..) => vec![h.clone()],
+            Boundary::Square(hs, _) => hs.clone(),
+        }
+    }
+    fn owns(&self, h: &str) -> bool {
+        match self {
+            Boundary::Circle(x, ..) => x == h,
+            Boundary::Square(hs, _) => hs.iter().any(|x| x == h),
         }
     }
     fn center(&self) -> P {
@@ -290,6 +300,21 @@ impl Boundary {
 /// `blocks()`; this rule names the card on them too.
 pub(super) fn datum_symbols(cx: &Ctx, b: &mut Builder) -> Result<()> {
     let c = card("datum_feature_symbol")?;
+    // Name the card on block symbols (variant old_circle_bar, block encoding).
+    for e in b.exprs.iter_mut().filter(|e| e.kind == "datum_symbol") {
+        if !e.evidence_ids.contains(&tag(c)) {
+            e.evidence_ids.push(tag(c));
+            e.evidence_ids.push(variant_tag("old_circle_bar"));
+            e.evidence_ids.push("encoding:block".into());
+        }
+    }
+    loose_datums(cx, b, &is_letter, None)
+}
+
+/// Loose datum feature symbols whose letter text `accept`s; `extra` names one more variant of the
+/// card (a numbered letter confirmed by a tolerance frame).
+pub(super) fn loose_datums(cx: &Ctx, b: &mut Builder, accept: &dyn Fn(&str) -> bool, extra: Option<&str>) -> Result<()> {
+    let c = card("datum_feature_symbol")?;
     let off = param(c, "letter_offset_max")?;
     let (bmin, bmax) = (
         param(c, "boundary_to_text_height_min")?,
@@ -303,18 +328,10 @@ pub(super) fn datum_symbols(cx: &Ctx, b: &mut Builder) -> Result<()> {
     let ttouch = param(c, "triangle_touch")?;
     let aspect = param(c, "triangle_aspect_max")?;
     let cells = frame_rectangles(cx, b);
-    // Name the card on block symbols (variant old_circle_bar, block encoding).
-    for e in b.exprs.iter_mut().filter(|e| e.kind == "datum_symbol") {
-        if !e.evidence_ids.contains(&tag(c)) {
-            e.evidence_ids.push(tag(c));
-            e.evidence_ids.push(variant_tag("old_circle_bar"));
-            e.evidence_ids.push("encoding:block".into());
-        }
-    }
     let letters: Vec<TextFact> = cx
         .texts
         .values()
-        .filter(|t| !b.used(&t.id) && is_letter(&t.dec.text))
+        .filter(|t| !b.used(&t.id) && accept(&t.dec.text))
         .cloned()
         .collect();
     for t in letters {
@@ -354,15 +371,37 @@ pub(super) fn datum_symbols(cx: &Ctx, b: &mut Builder) -> Result<()> {
                     && half <= bmax * t.height
                     && dist(mid([rb[0], rb[1]], [rb[2], rb[3]]), t.center) <= off * half
                 {
-                    bounds.push(Boundary::Square(h.clone(), rb));
+                    bounds.push(Boundary::Square(vec![h.clone()], rb));
                 }
+            }
+        }
+        // A square drawn with four separate lines (variant line_square), not sharing a side with
+        // another cell.
+        for (ids, rb) in &cells {
+            let (w, hh) = (rb[2] - rb[0], rb[3] - rb[1]);
+            let half = 0.5 * w.max(hh);
+            let adjacent = cells.iter().any(|(o, r)| {
+                o != ids
+                    && ((r[0] - rb[2]).abs() < 1e-3 * w || (r[2] - rb[0]).abs() < 1e-3 * w)
+                    && (r[1] - rb[1]).abs() < 1e-3 * hh
+                    && (r[3] - rb[3]).abs() < 1e-3 * hh
+            });
+            if ids.len() == 4
+                && ids.iter().all(|h| cx.lines.contains_key(h) && !b.used(h))
+                && !adjacent
+                && (w - hh).abs() <= 0.2 * w.max(hh)
+                && half >= bmin * t.height
+                && half <= bmax * t.height
+                && dist(mid([rb[0], rb[1]], [rb[2], rb[3]]), t.center) <= off * half
+            {
+                bounds.push(Boundary::Square(ids.clone(), *rb));
             }
         }
         bounds.sort_by(|x, y| dist(x.center(), t.center).total_cmp(&dist(y.center(), t.center)));
         'bound: for bd in &bounds {
             let r = bd.half();
             for (cid, (p, q)) in &cx.lines {
-                if b.used(cid) || *cid == bd.id() || dist(*p, *q) > lmax * r || dist(*p, *q) < 0.2 * r {
+                if b.used(cid) || bd.owns(cid) || dist(*p, *q) > lmax * r || dist(*p, *q) < 0.2 * r {
                     continue;
                 }
                 for (near, far) in [(*p, *q), (*q, *p)] {
@@ -375,7 +414,7 @@ pub(super) fn datum_symbols(cx: &Ctx, b: &mut Builder) -> Result<()> {
                         .lines
                         .keys()
                         .chain(cx.polys.keys())
-                        .filter(|h| !b.used(h) && *h != cid && *h != bd.id())
+                        .filter(|h| !b.used(h) && *h != cid && !bd.owns(h))
                         .filter_map(|h| straight(cx, h).map(|s| (h.clone(), s)))
                         .find(|(_, (a, z))| {
                             let l = dist(*a, *z);
@@ -401,18 +440,27 @@ pub(super) fn datum_symbols(cx: &Ctx, b: &mut Builder) -> Result<()> {
                     } else {
                         continue;
                     };
+                    let mut evidence = vec![tag(c), variant_tag(variant), "encoding:loose".into()];
+                    if let Some(x) = extra {
+                        evidence.push(variant_tag(x));
+                    }
+                    if matches!(bd, Boundary::Square(hs, _) if hs.len() == 4) {
+                        evidence.push(variant_tag("line_square"));
+                    }
                     let e = b.expr(
                         "datum_symbol",
                         t.dec.text.trim(),
                         &format!("{}/{variant}", tag(c)),
                         "candidate",
                         vec![],
-                        vec![tag(c), variant_tag(variant), "encoding:loose".into()],
+                        evidence,
                         vec!["Datum feature requires the attached feature".into()],
                     );
                     let ev = vec![tag(c)];
                     b.member(e, &t.id, None, [0., 1.], "datum_letter", "text", "candidate", vec![], ev.clone());
-                    b.member(e, bd.id(), None, [0., 1.], "datum_frame", "thin_continuous", "candidate", vec![], ev.clone());
+                    for h in bd.ids() {
+                        b.member(e, &h, None, [0., 1.], "datum_frame", "thin_continuous", "candidate", vec![], ev.clone());
+                    }
                     b.member(e, cid, None, [0., 1.], "leader_line", "thin_continuous", "candidate", vec![], ev.clone());
                     b.member(e, &term, None, [0., 1.], "datum_terminal", term_lt, "candidate", vec![], ev);
                     break 'bound;
@@ -654,8 +702,14 @@ pub(super) fn frame_rectangles(cx: &Ctx, b: &Builder) -> Vec<(Vec<String>, [f64;
     out
 }
 
-/// Characteristic symbols drawn with loose lines and circles inside a frame cell.
-pub(super) fn loose_glyphs(cx: &Ctx, b: &Builder) -> Result<Vec<(Vec<String>, &'static str, [f64; 4])>> {
+/// Characteristic symbols drawn with loose lines and circles inside a frame cell (and their closed
+/// heads drawn as filled triangles); `extra` are cells of frames drawn as one outline of lines.
+#[allow(clippy::type_complexity)]
+pub(super) fn loose_glyphs(
+    cx: &Ctx,
+    b: &Builder,
+    extra: &[(Vec<String>, [f64; 4])],
+) -> Result<Vec<(Vec<String>, &'static str, [f64; 4])>> {
     let c = card("gdt_frame_symbol")?;
     let inset = param(c, "cell_inset")?;
     let mut cells: Vec<[f64; 4]> = cx
@@ -665,6 +719,7 @@ pub(super) fn loose_glyphs(cx: &Ctx, b: &Builder) -> Result<Vec<(Vec<String>, &'
         .filter_map(|(_, (pts, _, _))| cell_rect(pts))
         .collect();
     cells.extend(frame_rectangles(cx, b).into_iter().map(|x| x.1));
+    cells.extend(extra.iter().map(|x| x.1));
     let mut out: Vec<(Vec<String>, &'static str, [f64; 4])> = Vec::new();
     for cell in cells {
         let h = cell[3] - cell[1];
@@ -689,6 +744,20 @@ pub(super) fn loose_glyphs(cx: &Ctx, b: &Builder) -> Result<Vec<(Vec<String>, &'
             {
                 ids.push(id.clone());
                 shape.circles.push((ctr, rad));
+            }
+        }
+        // A filled triangle in the cell is the closed head of an arrow stroke (card
+        // gdt_characteristic, variant drawn_arrow_head); it is kept as a closed path.
+        for id in cx.rec.keys() {
+            if !b.used(id)
+                && let Some(tri) = solid_points(cx, id)
+                && tri.iter().all(|p| inside(*p, shrink, 0.))
+                && !shape.lines.is_empty()
+            {
+                ids.push(id.clone());
+                let mut path = tri.clone();
+                path.push(tri[0]);
+                shape.paths.push(path);
             }
         }
         if ids.is_empty() || out.iter().any(|o| o.0.iter().any(|x| ids.contains(x))) {

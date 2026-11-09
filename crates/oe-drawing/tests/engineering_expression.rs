@@ -1770,3 +1770,83 @@ fn coordinates_printed_with_fewer_digits_change_nothing() {
     covered(&a);
     covered(&b);
 }
+
+/// Writer-to-reader round trip of arc geometry on the DWG route. The graph's arcs (entities, structural lines,
+/// implied spans) follow the contract — radians, counter-clockwise with y up, start in [0, TAU), sweep in (0, TAU] —
+/// and the checker samples every structural arc over the span the writer meant: an arc whose start is away from
+/// zero, and a circle assembled from two halves, whose start is not zero either.
+#[test]
+fn dwg_route_arcs_follow_the_contract_and_the_checker_reads_them_as_written() {
+    use std::f64::consts::TAU;
+    let at = |c: [f64; 2], r: f64, deg: f64| [c[0] + r * deg.to_radians().cos(), c[1] + r * deg.to_radians().sin()];
+    let ents = vec![
+        // A sector: the visible arc from 200° to 290° closed by two radii.
+        ent("ARC", "QA", "01", "10\n50\n20\n50\n40\n10\n50\n200\n51\n290\n"),
+        line("QL1", "01", [50., 50.], at([50., 50.], 10., 200.)),
+        line("QL2", "01", [50., 50.], at([50., 50.], 10., 290.)),
+        // A circle drawn as two halves, the first starting at 90°.
+        ent("ARC", "H1", "01", "10\n100\n20\n50\n40\n6\n50\n90\n51\n270\n"),
+        ent("ARC", "H2", "01", "10\n100\n20\n50\n40\n6\n50\n270\n51\n90\n"),
+        ent("CIRCLE", "CC", "01", "10\n140\n20\n50\n40\n4\n"),
+        text("TT", "08", "R10", [70., 70.], 3.5, 30.),
+    ];
+    let bytes = drawing(&tables(&convention_layers()), &ents);
+    let g = discover(&bytes).unwrap();
+    let in_contract = |a: &[f64], what: &str| {
+        assert_eq!(a.len(), 5, "{what}: {a:?}");
+        assert!(a[3] >= 0. && a[3] < TAU, "{what} start {a:?}");
+        assert!(a[4] > 0. && a[4] <= TAU + 1e-12, "{what} sweep {a:?}");
+    };
+    for e in g.source.entities.iter().filter(|e| matches!(e.geometry_kind.as_str(), "arc" | "circle")) {
+        in_contract(&e.coordinates, &e.id);
+        if e.geometry_kind == "circle" {
+            assert!((e.coordinates[4] - TAU).abs() < 1e-12, "{:?}", e.coordinates);
+        }
+    }
+    let arcs: Vec<(usize, Vec<f64>)> = g
+        .structural_lines
+        .iter()
+        .enumerate()
+        .filter_map(|(i, l)| l.arc.clone().map(|a| (i, a)))
+        .collect();
+    for (i, a) in &arcs {
+        in_contract(a, &format!("line:{i}"));
+    }
+    for s in &g.implied_spans {
+        if let Some(a) = &s.arc {
+            in_contract(a, &s.id);
+        }
+    }
+    // The checker's presentation layer: every structural arc sampled from start through start + sweep.
+    let value = serde_json::to_value(&g).unwrap();
+    let objects = oe_drawing_check::drafting::layer_geometry(&value, Some(&bytes), "presentation").unwrap();
+    let mut seen_quarter = false;
+    let mut seen_halves = false;
+    for (i, a) in &arcs {
+        let o = objects
+            .iter()
+            .find(|o| o.id == format!("presentation:line:{i}"))
+            .unwrap_or_else(|| panic!("no object for line:{i}"));
+        let chain = &o.chains[0];
+        for p in chain {
+            let r = ((p.0 - a[0]).powi(2) + (p.1 - a[1]).powi(2)).sqrt();
+            assert!((r - a[2]).abs() < 0.01, "line:{i} radius {r} for {a:?}");
+            let rel = ((p.1 - a[1]).atan2(p.0 - a[0]) - a[3]).rem_euclid(TAU);
+            assert!(rel <= a[4] + 1e-6 || rel >= TAU - 1e-6, "line:{i}: a point {rel} rad past the start, sweep {}", a[4]);
+        }
+        let (first, last) = (chain[0], chain[chain.len() - 1]);
+        let end = (a[0] + a[2] * (a[3] + a[4]).cos(), a[1] + a[2] * (a[3] + a[4]).sin());
+        assert!(((last.0 - end.0).powi(2) + (last.1 - end.1).powi(2)).sqrt() < 0.01, "line:{i} ends at {last:?}, written end {end:?}");
+        if (a[0] - 50.).abs() < 1e-9 {
+            seen_quarter = true;
+            assert!((a[3] - 200f64.to_radians()).abs() < 1e-6 && (a[4] - 90f64.to_radians()).abs() < 1e-6, "{a:?}");
+        }
+        if (a[0] - 100.).abs() < 1e-9 {
+            seen_halves = true;
+            if (a[4] - TAU).abs() < 1e-9 {
+                assert!(((first.0 - last.0).powi(2) + (first.1 - last.1).powi(2)).sqrt() < 1e-9, "the circle closes");
+            }
+        }
+    }
+    assert!(seen_quarter && seen_halves, "{arcs:?}");
+}

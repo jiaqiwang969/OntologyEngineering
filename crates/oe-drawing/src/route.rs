@@ -15,7 +15,7 @@ use oe_core::process::{
 };
 use oe_core::{SkillRoot, read_regular_bytes, sha256};
 use serde_json::{Value, json};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
@@ -874,6 +874,14 @@ impl Run<'_> {
                 .map(|l| (l.layer.clone(), json!(l.finding_count)))
                 .collect::<serde_json::Map<_, _>>()
         );
+        // Where the rules applied: targets, measured, not applicable (with the conditions behind it).
+        s.facts["application"] = json!({
+            "targets": report.application.iter().map(|a| a.targets).sum::<u64>(),
+            "measured": report.application.iter().filter_map(|a| a.measured).sum::<u64>(),
+            "not_applicable": report.application.iter().map(|a| a.not_applicable).sum::<u64>(),
+            "rules_not_applicable": report.application.iter().filter(|a| a.not_applicable > 0).map(|a| a.rule_id.clone()).collect::<BTreeSet<_>>(),
+        });
+        s.facts["conditions"] = json!(report.conditions.iter().map(|c| (c.id.clone(), json!({"state": c.state, "value": c.value, "basis": c.basis}))).collect::<serde_json::Map<_, _>>());
         s.outputs.push(self.file(&output)?);
         for layer in &report.layers {
             s.outputs

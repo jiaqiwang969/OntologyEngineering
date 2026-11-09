@@ -53,6 +53,24 @@ impl Canvas {
         }
     }
 
+    /// Every pixel centre within `w / 2` of the arc of radius `r` about `c` between the drawing angles `from` and
+    /// `to` (degrees, counter-clockwise with y up, i.e. clockwise on the y-down page).
+    fn thick_arc(&mut self, c: (f64, f64), r: f64, from: f64, to: f64, w: f64) {
+        let h = w * 0.5;
+        let (x0, x1) = ((c.0 - r - h).floor() as i64, (c.0 + r + h).ceil() as i64);
+        let (y0, y1) = ((c.1 - r - h).floor() as i64, (c.1 + r + h).ceil() as i64);
+        for y in y0..=y1 {
+            for x in x0..=x1 {
+                let (dx, dy) = (x as f64 - c.0, y as f64 - c.1);
+                let deg = (-dy).atan2(dx).to_degrees().rem_euclid(360.0);
+                let inside = if from <= to { deg >= from && deg <= to } else { deg >= from || deg <= to };
+                if inside && ((dx * dx + dy * dy).sqrt() - r).abs() <= h {
+                    self.set(x, y);
+                }
+            }
+        }
+    }
+
     fn rect_fill(&mut self, x0: i64, y0: i64, x1: i64, y1: i64) {
         for y in y0..=y1 {
             for x in x0..=x1 {
@@ -297,7 +315,7 @@ fn an_authored_page_becomes_a_checked_graph_with_its_page() {
     let (ylo, yhi) = (c[1].min(c[3]), c[1].max(c[3]));
     assert!((ylo - 33.0).abs() <= 0.5 && (yhi - 67.0).abs() <= 0.5, "dimension line {c:?}");
 
-    // The vertical text: five coordinates, rotation 90, a height near 1.5 units (15 px of glyph ink).
+    // The vertical text: five coordinates, rotation a quarter turn (radians), a height near 1.5 units (15 px of glyph ink).
     let t40 = members
         .iter()
         .find(|m| m["expression_id"] == e40["id"] && m["member_role"] == "dimension_text")
@@ -305,7 +323,7 @@ fn an_authored_page_becomes_a_checked_graph_with_its_page() {
     let text = entities.iter().find(|e| e["id"] == t40["source_handle"]).unwrap();
     let c: Vec<f64> = text["coordinates"].as_array().unwrap().iter().map(|x| x.as_f64().unwrap()).collect();
     assert_eq!(c.len(), 5);
-    assert_eq!(c[3], 90.0);
+    assert!((c[3] - std::f64::consts::FRAC_PI_2).abs() < 1e-12, "rotation in radians: {}", c[3]);
     assert!((c[2] - 1.6).abs() < 0.3, "height {}", c[2]);
     assert_eq!(text["text"], "40");
     assert_eq!(text["geometry_kind"], "unqualified");
@@ -376,4 +394,117 @@ fn an_authored_page_becomes_a_checked_graph_with_its_page() {
     assert_eq!(p["tile_sha256"], json!(sha));
     let refined: Value = serde_json::from_slice(&out.refined_members).unwrap();
     assert!(refined["members"].as_array().unwrap().len() >= 19);
+}
+
+/// Writer-to-reader round trip of arc geometry on the pixel route. A page with a thick circle and a thick sector whose
+/// arc runs from 200° to 290° (a start away from zero): every ARC and CIRCLE entity and every structural arc follows the
+/// graph contract (radians, counter-clockwise with y up, start in [0, TAU), sweep in (0, TAU]), the checker samples
+/// each over the span written, and the structural arcs on the sector's circle cover the drawn span.
+#[test]
+fn pixel_route_arcs_follow_the_contract_and_the_checker_reads_them_as_written() {
+    use std::f64::consts::TAU;
+    let mut canvas = Canvas::new(700, 600);
+    canvas.thick_arc((200.0, 250.0), 80.0, 0.0, 360.0, 6.0);
+    canvas.thick_arc((450.0, 250.0), 70.0, 200.0, 290.0, 6.0);
+    let end = |deg: f64| (450.0 + 70.0 * deg.to_radians().cos(), 250.0 - 70.0 * deg.to_radians().sin());
+    canvas.thick_line((450.0, 250.0), end(200.0), 6.0);
+    canvas.thick_line((450.0, 250.0), end(290.0), 6.0);
+    let png = canvas.png();
+    let sha = oe_core::sha256(&png);
+    let tiles = serde_json::to_vec(&json!({
+        "schema": "terra-parity.tiles/1", "dpi": 300, "tile": 1600, "stride": 1400,
+        "pages": {"fixture": {"page_px": [700, 600], "small_px": [700, 600], "page_sha256": sha,
+            "tiles": [{"name": "t_0_0.png", "x": 0, "y": 0, "sha256": sha}]}}
+    }))
+    .unwrap();
+    let l0 = observation("L0", "page-small.png", &sha, json!({
+        "frame": [10, 10, 690, 590], "title_block": [450, 480, 690, 590], "drawing_number": "fixture", "part_name": "盘",
+        "scale_in_title_block": "1:1", "technical_requirements": null,
+        "views": [{"name": "主视图", "label_text": "", "scale_note": "", "bbox": [40, 40, 640, 460]}], "other_regions": []
+    }));
+    let observations = vec![("observations/L0-page.json".to_owned(), l0)];
+    let mut tile_pngs = BTreeMap::new();
+    tile_pngs.insert("t_0_0.png".to_owned(), png.clone());
+    let out = synthesize_page(&PageInput {
+        page: "fixture",
+        page_png: &png,
+        tile_index: &tiles,
+        observations: &observations,
+        tile_pngs: &tile_pngs,
+        crops: &BTreeMap::new(),
+        scale_note: None,
+        threshold: 128,
+    })
+    .unwrap();
+    checked(&out.graph).unwrap();
+    let g: Value = serde_json::from_slice(&out.graph).unwrap();
+    let nums = |v: &Value| -> Vec<f64> { v.as_array().unwrap().iter().map(|x| x.as_f64().unwrap()).collect() };
+    let in_contract = |a: &[f64], what: &str| {
+        assert_eq!(a.len(), 5, "{what}: {a:?}");
+        assert!(a[3] >= 0.0 && a[3] < TAU, "{what} start {a:?}");
+        assert!(a[4] > 0.0 && a[4] <= TAU + 1e-12, "{what} sweep {a:?}");
+    };
+    let entities = g["source"]["entities"].as_array().unwrap();
+    let curves: Vec<&Value> = entities.iter().filter(|e| matches!(e["kind"].as_str(), Some("ARC" | "CIRCLE"))).collect();
+    assert!(!curves.is_empty(), "no arc or circle entity");
+    for e in &curves {
+        let c = nums(&e["coordinates"]);
+        in_contract(&c, e["id"].as_str().unwrap());
+        if e["kind"] == "CIRCLE" {
+            assert!((c[4] - TAU).abs() < 1e-12, "{c:?}");
+        }
+    }
+    let lines = g["structural_lines"].as_array().unwrap();
+    let arcs: Vec<(usize, Vec<f64>)> = lines
+        .iter()
+        .enumerate()
+        .filter(|(_, l)| l["arc"].is_array())
+        .map(|(i, l)| (i, nums(&l["arc"])))
+        .collect();
+    assert!(!arcs.is_empty(), "no structural arc");
+    for (i, a) in &arcs {
+        in_contract(a, &format!("line:{i}"));
+    }
+    // The checker's presentation layer: every structural arc sampled from start through start + sweep.
+    let objects = oe_drawing_check::drafting::layer_geometry(&g, None, "presentation").unwrap();
+    for (i, a) in &arcs {
+        let o = objects.iter().find(|o| o.id == format!("presentation:line:{i}")).unwrap_or_else(|| panic!("line:{i}"));
+        let chain = &o.chains[0];
+        for p in chain {
+            let r = ((p.0 - a[0]).powi(2) + (p.1 - a[1]).powi(2)).sqrt();
+            assert!((r - a[2]).abs() < 0.01, "line:{i} radius {r} for {a:?}");
+            let rel = ((p.1 - a[1]).atan2(p.0 - a[0]) - a[3]).rem_euclid(TAU);
+            assert!(rel <= a[4] + 1e-6 || rel >= TAU - 1e-6, "line:{i}: {rel} rad past the start, sweep {}", a[4]);
+        }
+        let last = chain[chain.len() - 1];
+        let end = (a[0] + a[2] * (a[3] + a[4]).cos(), a[1] + a[2] * (a[3] + a[4]).sin());
+        assert!(((last.0 - end.0).powi(2) + (last.1 - end.1).powi(2)).sqrt() < 0.01, "line:{i} ends at {last:?}, written {end:?}");
+    }
+    // The source layer reads every ARC entity over its own span too.
+    let source = oe_drawing_check::drafting::layer_geometry(&g, None, "source").unwrap();
+    for e in curves.iter().filter(|e| e["kind"] == "ARC") {
+        let c = nums(&e["coordinates"]);
+        let o = source.iter().find(|o| o.source_handles.iter().any(|h| h == e["id"].as_str().unwrap())).unwrap();
+        for p in &o.chains[0] {
+            let rel = ((p.1 - c[1]).atan2(p.0 - c[0]) - c[3]).rem_euclid(TAU);
+            assert!(rel <= c[4] + 1e-6 || rel >= TAU - 1e-6, "{}: {rel} past the start, sweep {}", e["id"], c[4]);
+        }
+    }
+    // What the writer meant is the ink: the structural arcs on the sector's circle lie within 200°–290° and cover
+    // most of it, wherever the vectorizer started tracing.
+    let s = serde_json::from_slice::<Value>(&out.calibration).unwrap()["px_per_unit"].as_f64().unwrap();
+    let (cx, cy, r) = (450.0 / s, (600.0 - 250.0) / s, 70.0 / s);
+    let on_sector: Vec<&Vec<f64>> = arcs
+        .iter()
+        .map(|(_, a)| a)
+        .filter(|a| ((a[0] - cx).powi(2) + (a[1] - cy).powi(2)).sqrt() < 0.3 && (a[2] - r).abs() < 0.3)
+        .collect();
+    assert!(!on_sector.is_empty(), "no structural arc on the sector: {arcs:?}");
+    let mut covered = 0.0;
+    for a in &on_sector {
+        let (from, to) = (a[3].to_degrees(), (a[3] + a[4]).to_degrees());
+        assert!(from >= 197.0 && to <= 293.0, "arc {from}°–{to}° outside the drawn 200°–290°");
+        covered += a[4].to_degrees();
+    }
+    assert!(covered >= 75.0, "the structural arcs cover {covered}° of the drawn 90°");
 }

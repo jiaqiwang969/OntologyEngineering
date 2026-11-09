@@ -44394,8 +44394,8 @@
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"endOnOutline\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"expressionId\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"expressionKind\"" .
-<urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"extensionBeyondUnits\"" .
-<urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"extentUnits\"" .
+<urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"extensionBeyondPaperMm\"" .
+<urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"extentPaperMm\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"hatchDirectionDiffersFrom\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"hatchSpacingDiffersFrom\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"heightUnits\"" .
@@ -44404,7 +44404,7 @@
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"lineType\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"memberId\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"onExtensionOf\"" .
-<urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"overshootUnits\"" .
+<urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"overshootPaperMm\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"radialTo\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"rotationDeg\"" .
 <urn:oev2:design:field_MdDraftingRelation_predicate> <urn:oev2:design:allowedValueRust> "\"sameLetterAs\"" .
@@ -44440,6 +44440,21 @@
 <urn:oev2:design:field_MdDraftingRelation_subject> <urn:oev2:design:rustType> "String" .
 <urn:oev2:design:field_MdDraftingRelation_subject> <urn:oev2:design:unit> "Identifiers, counts, text and class names; drawing units only inside the facts files" .
 <urn:oev2:design:field_MdDraftingRelation_subject> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:acceptance> "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:meaning> "Per rule and layer: targets, measured, findings and not applicable" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:name> "application" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:owner> <urn:oev2:design:type_MdDraftingRuleReport> .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:precision> "Exact identities and counts" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:referencedType> <urn:oev2:design:type_MdRuleApplication> .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:rustType> "Vec<MdRuleApplication>" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:unit> "Counts" .
+<urn:oev2:design:field_MdDraftingRuleReport_application> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
 <urn:oev2:design:field_MdDraftingRuleReport_by_rule> <urn:oev2:design:acceptance> "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph" .
 <urn:oev2:design:field_MdDraftingRuleReport_by_rule> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input" .
 <urn:oev2:design:field_MdDraftingRuleReport_by_rule> <urn:oev2:design:format> "typed" .
@@ -44454,6 +44469,21 @@
 <urn:oev2:design:field_MdDraftingRuleReport_by_rule> <urn:oev2:design:rustType> "std::collections::BTreeMap<String, u64>" .
 <urn:oev2:design:field_MdDraftingRuleReport_by_rule> <urn:oev2:design:unit> "Identifiers, counts, text and class names; drawing units only inside the facts files" .
 <urn:oev2:design:field_MdDraftingRuleReport_by_rule> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:acceptance> "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:meaning> "The graph's conditions as the check read them" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:name> "conditions" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:owner> <urn:oev2:design:type_MdDraftingRuleReport> .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:precision> "Exact identities and counts" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:referencedType> <urn:oev2:design:type_MdDrawingCondition> .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:rustType> "Vec<MdDrawingCondition>" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:unit> "As each condition states" .
+<urn:oev2:design:field_MdDraftingRuleReport_conditions> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
 <urn:oev2:design:field_MdDraftingRuleReport_findings> <urn:oev2:design:acceptance> "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph" .
 <urn:oev2:design:field_MdDraftingRuleReport_findings> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input" .
 <urn:oev2:design:field_MdDraftingRuleReport_findings> <urn:oev2:design:format> "typed" .
@@ -45133,6 +45163,114 @@
 <urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:rustType> "Vec<String>" .
 <urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:unit> "Card text; page numbers refer to the physical page of the library copy" .
 <urn:oev2:design:field_MdDrawingConcept_variants> <urn:oev2:design:write> "Authored knowledge reviewed with its sources; parsed and validated by oe-drawing tests; never derived from a real drawing" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:allowedValueRust> "\"annotation_scale\"" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:allowedValueRust> "\"none\"" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:allowedValueRust> "\"stroke_widths\"" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:allowedValueRust> "\"title_block_scale_text\"" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:meaning> "Where the value comes from" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:name> "basis" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:unit> "Identifier" .
+<urn:oev2:design:field_MdDrawingCondition_basis> <urn:oev2:design:write> "ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:meaning> "Source handles, header variables or observation fields the value rests on" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:name> "evidence" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:unit> "Identifiers and quoted source text" .
+<urn:oev2:design:field_MdDrawingCondition_evidence> <urn:oev2:design:write> "ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:allowedValueRust> "\"line_width_contrast\"" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:allowedValueRust> "\"sheet_scale\"" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:meaning> "Condition: sheet_scale (paper millimetres of the nominal sheet per drawing unit) or line_width_contrast (whether thick and thin lines can be told apart on the page)" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:name> "id" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:unit> "Identifier" .
+<urn:oev2:design:field_MdDrawingCondition_id> <urn:oev2:design:write> "ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:meaning> "One sentence for a reader; the typed fields are what programs read" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:name> "note" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:unit> "Text" .
+<urn:oev2:design:field_MdDrawingCondition_note> <urn:oev2:design:write> "ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:allowedValueRust> "\"absent\"" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:allowedValueRust> "\"conflict\"" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:allowedValueRust> "\"known\"" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:allowedValueRust> "\"unknown\"" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:meaning> "known: measured or declared and consistent; absent: measured and not there (one line width only); unknown: no source; conflict: sources disagree, the value is the preferred source's" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:name> "state" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:unit> "Identifier" .
+<urn:oev2:design:field_MdDrawingCondition_state> <urn:oev2:design:write> "ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:meaning> "sheet_scale: paper millimetres per drawing unit; line_width_contrast: thick to thin width ratio; absent when unknown" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:name> "value" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:rustType> "Option<f64>" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:unit> "Paper millimetres per drawing unit, or a ratio" .
+<urn:oev2:design:field_MdDrawingCondition_value> <urn:oev2:design:write> "ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:meaning> "Supporting numbers in the order the basis names them (title-block ratio then annotation scale; thick then thin width in page pixels)" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:name> "values" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:owner> <urn:oev2:design:type_MdDrawingCondition> .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:rustType> "Vec<f64>" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:unit> "As named by the basis" .
+<urn:oev2:design:field_MdDrawingCondition_values> <urn:oev2:design:write> "ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input" .
 <urn:oev2:design:field_MdDrawingRouteFile_bytes> <urn:oev2:design:acceptance> "Route execution, source conservation and output-contract checks only; not engineering acceptance of the classification" .
 <urn:oev2:design:field_MdDrawingRouteFile_bytes> <urn:oev2:design:applicability> "One drawing per run through the pinned converter and the current oev2 executable; no reference answers, regions, feedback or paired models as input" .
 <urn:oev2:design:field_MdDrawingRouteFile_bytes> <urn:oev2:design:format> "typed" .
@@ -45726,6 +45864,21 @@
 <urn:oev2:design:field_MdDrawingView_unknowns> <urn:oev2:design:rustType> "Vec<String>" .
 <urn:oev2:design:field_MdDrawingView_unknowns> <urn:oev2:design:unit> "Original drawing coordinates and normalized source parameters; no unverified mm conversion" .
 <urn:oev2:design:field_MdDrawingView_unknowns> <urn:oev2:design:write> "ggen contract; Rust expression assembler from source bytes only; no old answer input" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:acceptance> "Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:applicability> "Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:meaning> "Conditions of the drawing that decide which knowledge applies: the sheet scale in every graph, the line-width contrast in pixel graphs" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:name> "conditions" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:owner> <urn:oev2:design:type_MdEngineeringExpressionGraph> .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:referencedType> <urn:oev2:design:type_MdDrawingCondition> .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:rustType> "Vec<MdDrawingCondition>" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:unit> "As each condition states" .
+<urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> <urn:oev2:design:write> "ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input" .
 <urn:oev2:design:field_MdEngineeringExpressionGraph_expressions> <urn:oev2:design:acceptance> "Source coverage, bounded intervals, explicit unknowns and independent evaluation" .
 <urn:oev2:design:field_MdEngineeringExpressionGraph_expressions> <urn:oev2:design:applicability> "DXF source expression candidates under the finite dxf-expression-rules/2 profile" .
 <urn:oev2:design:field_MdEngineeringExpressionGraph_expressions> <urn:oev2:design:format> "typed" .
@@ -46617,13 +46770,13 @@
 <urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:jsonIdentity> "ordinary" .
 <urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:jsonOptional> "true" .
 <urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:kind> "Field" .
-<urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:meaning> "Circular carrier (centre x, centre y, radius, start angle, sweep) of an arc or circle; absent for straight geometry" .
+<urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:meaning> "Circular carrier [centre x, centre y, radius, start, sweep] of an arc or circle, the layout of an ARC entity; a circle has sweep 2pi and its start at its first point; absent for straight geometry" .
 <urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:name> "arc" .
 <urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:owner> <urn:oev2:design:type_MdImpliedSpan> .
 <urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
 <urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:required> "false" .
 <urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:rustType> "Option<Vec<f64>>" .
-<urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:unit> "Original drawing coordinates and normalized source parameters; no unverified mm conversion" .
+<urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:unit> "Lengths in drawing units, angles in radians counter-clockwise with y up; start in [0, 2pi), sweep in (0, 2pi]; no unverified mm conversion" .
 <urn:oev2:design:field_MdImpliedSpan_arc> <urn:oev2:design:write> "ggen contract; Rust expression assembler from source bytes only; no old answer input" .
 <urn:oev2:design:field_MdImpliedSpan_cause> <urn:oev2:design:acceptance> "Source coverage, bounded intervals, explicit unknowns and independent evaluation" .
 <urn:oev2:design:field_MdImpliedSpan_cause> <urn:oev2:design:allowedValueRust> "\"detail_circle_crossing\"" .
@@ -48174,6 +48327,107 @@
 <urn:oev2:design:field_MdReviewPage_svg_sha256> <urn:oev2:design:rustType> "String" .
 <urn:oev2:design:field_MdReviewPage_svg_sha256> <urn:oev2:design:unit> "Files by path and SHA-256, byte counts, seconds and UTC times; drawing coordinates only inside the graph" .
 <urn:oev2:design:field_MdReviewPage_svg_sha256> <urn:oev2:design:write> "ggen contract; Rust route, page and independent checks; external programs only through the bounded process runner with retained evidence" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:acceptance> "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:meaning> "Findings of the rule on the layer" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:name> "findings" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:owner> <urn:oev2:design:type_MdRuleApplication> .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:precision> "Exact identities and counts" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:rustType> "u64" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:unit> "Count" .
+<urn:oev2:design:field_MdRuleApplication_findings> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:acceptance> "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:allowedValueRust> "\"presentation\"" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:allowedValueRust> "\"recognition\"" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:allowedValueRust> "\"source\"" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:meaning> "Fact layer" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:name> "layer" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:owner> <urn:oev2:design:type_MdRuleApplication> .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:precision> "Exact identities and counts" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:unit> "Identifier" .
+<urn:oev2:design:field_MdRuleApplication_layer> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:acceptance> "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:jsonOptional> "true" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:meaning> "For a rule constraining a measured quantity: targets with that quantity; the others meet none of what the quantity is measured against and are not judged" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:name> "measured" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:owner> <urn:oev2:design:type_MdRuleApplication> .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:precision> "Exact identities and counts" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:required> "false" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:rustType> "Option<u64>" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:unit> "Count" .
+<urn:oev2:design:field_MdRuleApplication_measured> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:acceptance> "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:meaning> "Targets the rule could not apply to because a condition it needs is unknown" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:name> "not_applicable" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:owner> <urn:oev2:design:type_MdRuleApplication> .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:precision> "Exact identities and counts" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:rustType> "u64" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:unit> "Count" .
+<urn:oev2:design:field_MdRuleApplication_not_applicable> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:acceptance> "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:meaning> "Why targets were not applicable (condition ids and states), empty when all applied" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:name> "reasons" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:owner> <urn:oev2:design:type_MdRuleApplication> .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:precision> "Exact identities and counts" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:rustType> "Vec<String>" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:unit> "Identifiers" .
+<urn:oev2:design:field_MdRuleApplication_reasons> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:acceptance> "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:meaning> "Rule id" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:name> "rule_id" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:owner> <urn:oev2:design:type_MdRuleApplication> .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:precision> "Exact identities and counts" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:rustType> "String" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:unit> "Identifier" .
+<urn:oev2:design:field_MdRuleApplication_rule_id> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:acceptance> "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:applicability> "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:format> "typed" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:jsonIdentity> "ordinary" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:jsonOptional> "false" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:kind> "Field" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:meaning> "Objects of the rule's target classes on the layer" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:name> "targets" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:owner> <urn:oev2:design:type_MdRuleApplication> .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:precision> "Exact identities and counts" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:required> "true" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:rustType> "u64" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:unit> "Count" .
+<urn:oev2:design:field_MdRuleApplication_targets> <urn:oev2:design:write> "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program" .
 <urn:oev2:design:field_MdStructuralEnd_cause> <urn:oev2:design:acceptance> "Source coverage, bounded intervals, explicit unknowns and independent evaluation" .
 <urn:oev2:design:field_MdStructuralEnd_cause> <urn:oev2:design:allowedValueRust> "\"detail_circle_crossing\"" .
 <urn:oev2:design:field_MdStructuralEnd_cause> <urn:oev2:design:allowedValueRust> "\"drafting_gap\"" .
@@ -48343,13 +48597,13 @@
 <urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:jsonIdentity> "ordinary" .
 <urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:jsonOptional> "true" .
 <urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:kind> "Field" .
-<urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:meaning> "Circular carrier (centre x, centre y, radius, start angle, sweep) of an arc or circle; absent for straight geometry" .
+<urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:meaning> "Circular carrier [centre x, centre y, radius, start, sweep] of an arc or circle, the layout of an ARC entity; a circle has sweep 2pi and its start at its first point; absent for straight geometry" .
 <urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:name> "arc" .
 <urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:owner> <urn:oev2:design:type_MdStructuralLine> .
 <urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:precision> "Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance" .
 <urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:required> "false" .
 <urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:rustType> "Option<Vec<f64>>" .
-<urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:unit> "Original drawing coordinates and normalized source parameters; no unverified mm conversion" .
+<urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:unit> "Lengths in drawing units, angles in radians counter-clockwise with y up; start in [0, 2pi), sweep in (0, 2pi]; no unverified mm conversion" .
 <urn:oev2:design:field_MdStructuralLine_arc> <urn:oev2:design:write> "ggen contract; Rust expression assembler from source bytes only; no old answer input" .
 <urn:oev2:design:field_MdStructuralLine_coincident> <urn:oev2:design:acceptance> "Source coverage, bounded intervals, explicit unknowns and independent evaluation" .
 <urn:oev2:design:field_MdStructuralLine_coincident> <urn:oev2:design:applicability> "DXF source expression candidates under the finite dxf-expression-rules/2 profile" .
@@ -48781,13 +49035,13 @@
 <urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:jsonIdentity> "ordinary" .
 <urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:jsonOptional> "false" .
 <urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:kind> "Field" .
-<urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:meaning> "Original drawing-unit curve coordinates" .
+<urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:meaning> "Coordinates by entity kind, the same in every route: LINE [x0, y0, x1, y1]; ARC [cx, cy, r, start, sweep]; CIRCLE [cx, cy, r, start, 2pi]; LWPOLYLINE [x0, y0, x1, y1, ...] in vertex order without bulges; a recovered TEXT [x, y, height, rotation, width factor] with (x, y) the baseline-left insertion; a recovered HATCH [pattern angle, spacing]; a recovered SOLID arrowhead [tip x, tip y, base x, base y]; empty where the source bytes carry the geometry (DXF texts, hatches, solids, inserts)" .
 <urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:name> "coordinates" .
 <urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:owner> <urn:oev2:design:type_MdUsageEntity> .
 <urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:precision> "Fixed 1e-7 drawing-unit numerical incidence, not product tolerance; no endpoint snapping or forced closure" .
 <urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:required> "true" .
 <urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:rustType> "Vec<f64>" .
-<urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:unit> "Original drawing coordinate units, normalized source parameters and unitless identities; no unverified mm conversion" .
+<urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:unit> "Lengths in drawing units, angles in radians counter-clockwise with y up; an arc's start in [0, 2pi) and its sweep in (0, 2pi], a circle's sweep 2pi; no unverified mm conversion" .
 <urn:oev2:design:field_MdUsageEntity_coordinates> <urn:oev2:design:write> "Formal spec through locked ggen; Rust derives generic source-only relations; presentation consumes results without inference" .
 <urn:oev2:design:field_MdUsageEntity_geometry_kind> <urn:oev2:design:acceptance> "Source conservation, interval union, provenance, explicit unknowns and isolated synthetic/actual checks; engineering role completeness separate" .
 <urn:oev2:design:field_MdUsageEntity_geometry_kind> <urn:oev2:design:applicability> "No old assignments, corrected drawings, manually named source ranges, images or paired models in discovery input" .
@@ -126223,7 +126477,9 @@
 <urn:oev2:design:type_MdDraftingRule> <urn:oev2:design:meaning> "One drafting rule of the shapes document with its concept, clause and message" .
 <urn:oev2:design:type_MdDraftingRule> <urn:oev2:design:name> "MdDraftingRule" .
 <urn:oev2:design:type_MdDraftingRuleReport> <urn:oev2:design:contractGroup> "engineering" .
+<urn:oev2:design:type_MdDraftingRuleReport> <urn:oev2:design:field> <urn:oev2:design:field_MdDraftingRuleReport_application> .
 <urn:oev2:design:type_MdDraftingRuleReport> <urn:oev2:design:field> <urn:oev2:design:field_MdDraftingRuleReport_by_rule> .
+<urn:oev2:design:type_MdDraftingRuleReport> <urn:oev2:design:field> <urn:oev2:design:field_MdDraftingRuleReport_conditions> .
 <urn:oev2:design:type_MdDraftingRuleReport> <urn:oev2:design:field> <urn:oev2:design:field_MdDraftingRuleReport_findings> .
 <urn:oev2:design:type_MdDraftingRuleReport> <urn:oev2:design:field> <urn:oev2:design:field_MdDraftingRuleReport_graph_sha256> .
 <urn:oev2:design:type_MdDraftingRuleReport> <urn:oev2:design:field> <urn:oev2:design:field_MdDraftingRuleReport_layers> .
@@ -126281,6 +126537,18 @@
 <urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:kind> "Type" .
 <urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:meaning> "One group of the drafting concept catalogue: every representation concept a reader of two-dimensional mechanical drawings must recognise" .
 <urn:oev2:design:type_MdDrawingConceptGroup> <urn:oev2:design:name> "MdDrawingConceptGroup" .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:contractGroup> "engineering" .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingCondition_basis> .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingCondition_evidence> .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingCondition_id> .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingCondition_note> .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingCondition_state> .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingCondition_value> .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingCondition_values> .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:identity> "Condition id within one graph" .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:kind> "Type" .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:meaning> "A condition of one drawing that decides which knowledge applies to it, with its value, basis and evidence" .
+<urn:oev2:design:type_MdDrawingCondition> <urn:oev2:design:name> "MdDrawingCondition" .
 <urn:oev2:design:type_MdDrawingRouteFile> <urn:oev2:design:contractGroup> "engineering" .
 <urn:oev2:design:type_MdDrawingRouteFile> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingRouteFile_bytes> .
 <urn:oev2:design:type_MdDrawingRouteFile> <urn:oev2:design:field> <urn:oev2:design:field_MdDrawingRouteFile_path> .
@@ -126366,6 +126634,7 @@
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:meaning> "Complete mechanical drawing expression independent of native primitive type" .
 <urn:oev2:design:type_MdEngineeringExpression> <urn:oev2:design:name> "MdEngineeringExpression" .
 <urn:oev2:design:type_MdEngineeringExpressionGraph> <urn:oev2:design:contractGroup> "engineering" .
+<urn:oev2:design:type_MdEngineeringExpressionGraph> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpressionGraph_conditions> .
 <urn:oev2:design:type_MdEngineeringExpressionGraph> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpressionGraph_expressions> .
 <urn:oev2:design:type_MdEngineeringExpressionGraph> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpressionGraph_implied_spans> .
 <urn:oev2:design:type_MdEngineeringExpressionGraph> <urn:oev2:design:field> <urn:oev2:design:field_MdEngineeringExpressionGraph_layer_convention> .
@@ -126617,6 +126886,18 @@
 <urn:oev2:design:type_MdReviewPageRequest> <urn:oev2:design:kind> "Type" .
 <urn:oev2:design:type_MdReviewPageRequest> <urn:oev2:design:meaning> "Review page of a frozen expression graph over its neutral rendering" .
 <urn:oev2:design:type_MdReviewPageRequest> <urn:oev2:design:name> "MdReviewPageRequest" .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:contractGroup> "engineering" .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:field> <urn:oev2:design:field_MdRuleApplication_findings> .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:field> <urn:oev2:design:field_MdRuleApplication_layer> .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:field> <urn:oev2:design:field_MdRuleApplication_measured> .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:field> <urn:oev2:design:field_MdRuleApplication_not_applicable> .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:field> <urn:oev2:design:field_MdRuleApplication_reasons> .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:field> <urn:oev2:design:field_MdRuleApplication_rule_id> .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:field> <urn:oev2:design:field_MdRuleApplication_targets> .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:identity> "Rule id and layer" .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:kind> "Type" .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:meaning> "Where one rule applied on one fact layer: its targets, how many were measured, its findings and the targets it could not apply to" .
+<urn:oev2:design:type_MdRuleApplication> <urn:oev2:design:name> "MdRuleApplication" .
 <urn:oev2:design:type_MdStructuralEnd> <urn:oev2:design:contractGroup> "engineering" .
 <urn:oev2:design:type_MdStructuralEnd> <urn:oev2:design:field> <urn:oev2:design:field_MdStructuralEnd_cause> .
 <urn:oev2:design:type_MdStructuralEnd> <urn:oev2:design:field> <urn:oev2:design:field_MdStructuralEnd_evidence_ids> .
@@ -171476,7 +171757,7 @@
 <urn:oev2:design:build_021a73787499d5637138af89488fd399c16cd3efd582dcf045d36275d9fb8d1f> sp:sha256 "1a7d6eac74ccd9055d21c1c922ee541d9444e4d6907962521dd4931188554be2" .
 <urn:oev2:design:build_02536ac1bcb638a2b0ffb1720f8bbe37624b7469b3d60c0b49b9e7c3688ec1df> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_02536ac1bcb638a2b0ffb1720f8bbe37624b7469b3d60c0b49b9e7c3688ec1df> sp:path "crates/oe-drawing-check/assets/review-page-checks.js" .
-<urn:oev2:design:build_02536ac1bcb638a2b0ffb1720f8bbe37624b7469b3d60c0b49b9e7c3688ec1df> sp:sha256 "4e54302b7ec12fe546135d67d640c5a1a6c23e2ad736f295afd45333b11d9758" .
+<urn:oev2:design:build_02536ac1bcb638a2b0ffb1720f8bbe37624b7469b3d60c0b49b9e7c3688ec1df> sp:sha256 "ca76e7d5903003977094d777cd5b66b020fb6e96e5fd2bbe40537a8e4ed662e1" .
 <urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:path "crates/oe-drawing/knowledge/concepts/G1.toml" .
 <urn:oev2:design:build_03a24bbeebaa445813f076806856c5f633769faa1aa80120bc567970798c53a8> sp:sha256 "9ef2e8dabe9ee2d7f8cef5f5bd39b1b7f14788fc1c48975bd899fc9c8940953f" .
@@ -172385,7 +172666,7 @@
 <urn:oev2:design:build_d3309a79fea622caab76db1137c378942944db1192515a8f7de4090c5529c558> sp:sha256 "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2" .
 <urn:oev2:design:build_d3b5f643dc47ca1fb6c589d22c24a4b3e63ac94457a648469f75d56e9796154f> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_d3b5f643dc47ca1fb6c589d22c24a4b3e63ac94457a648469f75d56e9796154f> sp:path "crates/oe-drawing-check/knowledge/drafting-ontology.toml" .
-<urn:oev2:design:build_d3b5f643dc47ca1fb6c589d22c24a4b3e63ac94457a648469f75d56e9796154f> sp:sha256 "d89ffb080e8d92b09717145de9ab33f4b2d57e26d7d567ed9434bc1b9be38901" .
+<urn:oev2:design:build_d3b5f643dc47ca1fb6c589d22c24a4b3e63ac94457a648469f75d56e9796154f> sp:sha256 "17b169e67eef1cb8502db308a420b1c4760163081edc4651e474ee1bc3ee272a" .
 <urn:oev2:design:build_d407d86e7a91306439afaa5df2e6ee86d186d59d08f0295c01e20ff96968f173> sp:kind "RustBuildInput" .
 <urn:oev2:design:build_d407d86e7a91306439afaa5df2e6ee86d186d59d08f0295c01e20ff96968f173> sp:path "vendor/sparopt/OE-PATCH.md" .
 <urn:oev2:design:build_d407d86e7a91306439afaa5df2e6ee86d186d59d08f0295c01e20ff96968f173> sp:sha256 "15cfc5134b57c5679cd7803167369ae1512fe562c8ae3199dd6590239bbe89dd" .
@@ -178088,7 +178369,7 @@ code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:kind "R
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:module <urn:oev2:design:drawing_understanding> .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:path "crates/oe-drawing/tests/engineering_expression.rs" .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:production false .
-code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:sha256 "8b4c90fafec6006bc3419f53a9d543889907d1ec522719327fdd498e01658d1e" .
+code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:sha256 "ef587057adc5f88beef5e9d88e3502d40cebe275a1c61682d570ffbbd1babe24" .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "a_circle_broken_for_texts_is_bridged_along_the_circle_and_is_one_circle" .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "a_hidden_line_broken_for_a_text_is_one_dashed_line" .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "a_line_meeting_only_section_profile_is_cut_at_the_inferred_outline" .
@@ -178104,6 +178385,7 @@ code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "c
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "coordinates_printed_with_fewer_digits_change_nothing" .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "display_text_decides_dimension_kind_over_native_enum" .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "duplicate_incidence_keeps_thick_lines_whole_and_open_ends_and_axes_join" .
+code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "dwg_route_arcs_follow_the_contract_and_the_checker_reads_them_as_written" .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "exploded_dimensions_reassemble_split_lines_texts_and_extensions" .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "exploded_symmetry_frame_collects_glyph_cells_value_datum_and_leader" .
 code:23b6d946022a6d0b9faff2c1f5f31bd9c7dc1ece74ed73f93f29eea69676cc7e sp:test "extension_line_from_the_virtual_corner_of_a_fillet_names_the_filleted_outline" .
@@ -178680,7 +178962,7 @@ code:274c608c7df42d6add873db31422730f218f5a79e0c45cdea6b3c52b8327c3c9 sp:kind "R
 code:274c608c7df42d6add873db31422730f218f5a79e0c45cdea6b3c52b8327c3c9 sp:module <urn:oev2:design:drawing_understanding_check> .
 code:274c608c7df42d6add873db31422730f218f5a79e0c45cdea6b3c52b8327c3c9 sp:path "crates/oe-drawing-check/tests/drafting_rules.rs" .
 code:274c608c7df42d6add873db31422730f218f5a79e0c45cdea6b3c52b8327c3c9 sp:production false .
-code:274c608c7df42d6add873db31422730f218f5a79e0c45cdea6b3c52b8327c3c9 sp:sha256 "0266f9f144542259378e6f72a1c39ad97e35e5814cc85c7dff9195b9e586da58" .
+code:274c608c7df42d6add873db31422730f218f5a79e0c45cdea6b3c52b8327c3c9 sp:sha256 "bf849db48e869aca93212a4aef601ddce8d7a51596dc7e28a7f20b5cc4739936" .
 code:274c608c7df42d6add873db31422730f218f5a79e0c45cdea6b3c52b8327c3c9 sp:test "a_leader_polyline_crosses_nothing_where_overshooting_strokes_cross" .
 code:274c608c7df42d6add873db31422730f218f5a79e0c45cdea6b3c52b8327c3c9 sp:test "a_pixel_graph_yields_the_findings_of_the_dxf_path" .
 code:274c608c7df42d6add873db31422730f218f5a79e0c45cdea6b3c52b8327c3c9 sp:test "a_stacked_pixel_text_is_crossed_through_its_stack_box" .
@@ -184446,7 +184728,8 @@ code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:calls "
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:kind "RustCodeFile" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:path "crates/oe-drawing-pixel/src/pattern.rs" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:production true .
-code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:sha256 "980e3e1e465219263d79ea00b32f54cf2d4935e4293e12e2cfc8d203cb1816cb" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:sha256 "eecb2758736eba5e884d11bbe4116b089947f16a19318aa3ec5351a4dc39d387" .
+code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:test "a_line_cut_by_crossings_is_not_dashed" .
 code:4a99d7b357a3659485dd1a01305f88939505603d1bd2e9a2dc2b5ac59aa6a718 sp:test "dash_statistics" .
 code:4aafd1316567cc25613d57a36fc449803380724e869b69c3c2d5c7cc9a4dcbe6 sp:calls "Map::new" .
 code:4aafd1316567cc25613d57a36fc449803380724e869b69c3c2d5c7cc9a4dcbe6 sp:calls "Ok" .
@@ -186450,6 +186733,7 @@ code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "Path::new" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "Relation::node" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "Relation::number" .
+code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "Sheet::of" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "Some" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "String::new" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "String::with_capacity" .
@@ -186457,6 +186741,7 @@ code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "along" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "angle_between" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "angle_deg" .
+code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "apply" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "bulge_arc" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "chain_coincident" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "chains_cross" .
@@ -186523,6 +186808,7 @@ code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "segments_coincident" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "semantica_runtime::graph::load" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "semantica_runtime::shacl::validate_dataset" .
+code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "serde_json::from_value" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "serde_json::to_vec_pretty" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "sha256" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:calls "source_records" .
@@ -186543,8 +186829,9 @@ code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:path "c
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:production true .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:publicType "DraftingRuleChecker" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:publicType "Knowledge" .
+code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:publicType "ObjectGeometry" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:publicType "Rule" .
-code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:sha256 "e874af1941f346ff86cbe48cdb6d7fdbc6158830c412762b23ae4fd10cc981c5" .
+code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:sha256 "0c61d5b6b916351779ae5d6fca1a5a56bd91887fd80043c5fe0112a9d3d01646" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:test "a_chord_through_a_rotated_box_is_measured" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:test "a_stacked_text_has_a_main_box_and_a_stack_box" .
 code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d sp:test "an_extension_line_without_a_measure_is_not_a_finding" .
@@ -199900,7 +200187,7 @@ code:a57a994826196b5f57f3da64050928d0b13daca4a84c098d39ed86a58b9e7157 sp:module 
 code:a57a994826196b5f57f3da64050928d0b13daca4a84c098d39ed86a58b9e7157 sp:path "crates/oe-drawing/src/route.rs" .
 code:a57a994826196b5f57f3da64050928d0b13daca4a84c098d39ed86a58b9e7157 sp:production true .
 code:a57a994826196b5f57f3da64050928d0b13daca4a84c098d39ed86a58b9e7157 sp:publicType "DrawingRoute" .
-code:a57a994826196b5f57f3da64050928d0b13daca4a84c098d39ed86a58b9e7157 sp:sha256 "81349dc6f407d408a2e2fcf7fefa741a9d70cf56a8a570571d7808db3eb3d049" .
+code:a57a994826196b5f57f3da64050928d0b13daca4a84c098d39ed86a58b9e7157 sp:sha256 "411a645816443d56bb8a94a5fa1c687d8def56908f8acf3f08361e599e7eafec" .
 code:a57a994826196b5f57f3da64050928d0b13daca4a84c098d39ed86a58b9e7157 sp:test "entities_are_counted_in_the_entities_section_only" .
 code:a57a994826196b5f57f3da64050928d0b13daca4a84c098d39ed86a58b9e7157 sp:test "utc_now_is_an_iso_timestamp" .
 code:a57f7d5106d5db32c6fa6cde2d8f73add626dc44e08eccc5da8eb3833ec760f0 sp:calls "BTreeSet::from" .
@@ -202561,11 +202848,13 @@ code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "circle" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "containment" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "count_by" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::geom::median" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::lines::snap_axis" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "crate::structure::merge_cocircular_axes" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "dedupe" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "dist" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "dot" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "drawing_arc" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "erased_strokes" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "expression_identity" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:calls "extension_span" .
@@ -202618,8 +202907,9 @@ code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:path "c
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:production true .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:publicType "PageInput" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:publicType "SynthesisOutput" .
-code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:sha256 "ca10b07d7ebff20048810be664d008a469f3140c8f92995a407fb55fd1b6f3f0" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:sha256 "e15f9756fb999ef8ad61d1f7bb82fbe042c2170bd42d90e22cd90969e0aa976a" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:test "a_reread_goes_to_the_one_unread_text_it_covers_best" .
+code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:test "a_structural_arc_is_written_in_radians_counter_clockwise_as_the_dwg_route_writes_it" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:test "collinear_pieces_join_across_a_text_and_split_at_a_drafting_gap" .
 code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 sp:test "views_and_text_geometry_follow_the_layout_and_the_text_model" .
 code:b90a60f4697b3ef7444e24f5d09218067ed5f2aaaeb489639c826f57da08c16e sp:calls "Ok" .
@@ -207380,8 +207670,9 @@ code:d9f7b5bbf3ca2c35515e1308888d58092d1ce4659024ace1a20f91772c504eb1 sp:kind "R
 code:d9f7b5bbf3ca2c35515e1308888d58092d1ce4659024ace1a20f91772c504eb1 sp:module <urn:oev2:design:drawing_understanding> .
 code:d9f7b5bbf3ca2c35515e1308888d58092d1ce4659024ace1a20f91772c504eb1 sp:path "crates/oe-drawing/tests/pixel_synthesis.rs" .
 code:d9f7b5bbf3ca2c35515e1308888d58092d1ce4659024ace1a20f91772c504eb1 sp:production false .
-code:d9f7b5bbf3ca2c35515e1308888d58092d1ce4659024ace1a20f91772c504eb1 sp:sha256 "67a1836888e1c2b74c87fcca4b74b175d6b459f0ae456148ebd609369b7f310e" .
+code:d9f7b5bbf3ca2c35515e1308888d58092d1ce4659024ace1a20f91772c504eb1 sp:sha256 "214d97be19fc51e5d95d00de1e63cd685c67c3e8c17e0f1f5c3d5965df960a9e" .
 code:d9f7b5bbf3ca2c35515e1308888d58092d1ce4659024ace1a20f91772c504eb1 sp:test "an_authored_page_becomes_a_checked_graph_with_its_page" .
+code:d9f7b5bbf3ca2c35515e1308888d58092d1ce4659024ace1a20f91772c504eb1 sp:test "pixel_route_arcs_follow_the_contract_and_the_checker_reads_them_as_written" .
 code:da2889a4c1a4300c99f7b86cfeefcf5a8629d7ff5fc369ffbe8e09c41103cc73 sp:calls "AtomicU64::new" .
 code:da2889a4c1a4300c99f7b86cfeefcf5a8629d7ff5fc369ffbe8e09c41103cc73 sp:calls "Self" .
 code:da2889a4c1a4300c99f7b86cfeefcf5a8629d7ff5fc369ffbe8e09c41103cc73 sp:calls "fs::create_dir" .
@@ -208124,6 +208415,7 @@ code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "Vec::new" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "add" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "arrow_base" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "arrow_head" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "arrow_member" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "arrow_tip" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "at" .
@@ -208139,12 +208431,15 @@ code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "dist" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "dist_point_segment" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "dot" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "evaluate" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "f64::from" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "fall" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "fit_segment" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "flush" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "gdt_cells" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "histogram" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "idx" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "is_wide" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "lines::dimension_extent" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "lines::robust_width" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "lines::snap_axis" .
@@ -208163,9 +208458,11 @@ code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "place_arrow" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "point_in_polygon" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "probe" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "profile" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "refine_member" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "refine_tip" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "restrain_overrun" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "runs" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "same_stroke" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "score" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:calls "segment_support" .
@@ -208184,11 +208481,12 @@ code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:product
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:publicType "RefineParams" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:publicType "RefinedMember" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:publicType "RefinedProposal" .
-code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:sha256 "abcdb616e783a319ab7c8d55c6666d9cee036d858ab002378556e4fa66d3cfea" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:sha256 "3d447cc4d3d9556e586758a1ea3b6a9bbcca45d1ee11c6e13065689ee6476b42" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "a_fitted_extension_line_stops_at_the_gap_before_a_collinear_contour" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "an_extension_line_stops_at_the_outline_it_touches_but_passes_a_crossing" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "an_extension_span_runs_from_the_crossing_to_the_first_junction" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "arrowhead_base_is_measured_and_the_line_is_cut_back_to_it" .
+code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "arrowhead_is_read_from_its_taper_whatever_the_proposed_sense_and_through_a_continuing_line" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "hatch_angle_and_spacing_are_measured_on_the_ink" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "patterns_are_read_from_ink_runs" .
 code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 sp:test "text_boxes_keep_glyphs_and_drop_crossing_strokes" .
@@ -211868,6 +212166,7 @@ code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "glyph_kind" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "hatch_and_points" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "hatch_lines" .
+code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "header" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "in_frame" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "inline_arrow" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "inside" .
@@ -211934,6 +212233,7 @@ code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "roots_of" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "row_ok" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "same_interval" .
+code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "scale_ratio" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "seg_hit" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "sheet_texts" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:calls "side" .
@@ -211990,7 +212290,7 @@ code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:module 
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:path "crates/oe-drawing/src/engineering_expression.rs" .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:production true .
 code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:publicType "Pattern" .
-code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:sha256 "38d726d1a254a9a7fa62c67cf38e9c60568c89f71bca103cbe26813ddca493c5" .
+code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 sp:sha256 "640363c93acbfd1e3d69e436d13d548f98314e738919a08a331fa1b9ada6ed7b" .
 code:fb1fa1cb393e1e754d3a4117a427a1829c9a485b74d8d59ccf2536ec9b047653 sp:calls "Duration::from_millis" .
 code:fb1fa1cb393e1e754d3a4117a427a1829c9a485b74d8d59ccf2536ec9b047653 sp:calls "Duration::from_secs" .
 code:fb1fa1cb393e1e754d3a4117a427a1829c9a485b74d8d59ccf2536ec9b047653 sp:calls "Err" .
@@ -216460,6 +216760,9 @@ function:140d8faa4276b666b2d91aa6275bdfd4f7a68be1531cc993c7ca0e19d9b7ab48 sp:nam
 function:14105b5cef2c5e857a16f4c7b1068b72c91b374b9c62c52d09b2983a28a1dc9a sp:file code:2233e3441be2b3bf84cacf9a6d0c55a264ef9d218bc6cd86f80ea41287007a93 .
 function:14105b5cef2c5e857a16f4c7b1068b72c91b374b9c62c52d09b2983a28a1dc9a sp:kind "RustFunction" .
 function:14105b5cef2c5e857a16f4c7b1068b72c91b374b9c62c52d09b2983a28a1dc9a sp:name "chrono_now" .
+function:141e03a160ab09dc0c59ba397c01fbfae13d98b3d0815d21dd8554319886f8fa sp:file code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d .
+function:141e03a160ab09dc0c59ba397c01fbfae13d98b3d0815d21dd8554319886f8fa sp:kind "RustFunction" .
+function:141e03a160ab09dc0c59ba397c01fbfae13d98b3d0815d21dd8554319886f8fa sp:name "of" .
 function:14244dfb76cb08fff0803b551d3a5aba92bcedb37487894ec7264ad2edec0c54 sp:file code:e7d841ce9186d1e0808592c69a5c46a7440510b0abe9d3e5fffe8335ee156e18 .
 function:14244dfb76cb08fff0803b551d3a5aba92bcedb37487894ec7264ad2edec0c54 sp:kind "RustFunction" .
 function:14244dfb76cb08fff0803b551d3a5aba92bcedb37487894ec7264ad2edec0c54 sp:name "insert" .
@@ -221225,6 +221528,9 @@ function:32fc663abf0c2db3e40cefc58de27555eef606bba613c0cec6ed5c2e4163b04f sp:nam
 function:32fda656a6bb4bab6fef9f0a7a0b5dc642125110acb5ed261abccdf647b79691 sp:file code:06788f690ba94647e29a1a3a2ec9791bd29b40fc442613ae802da2e8f6b71564 .
 function:32fda656a6bb4bab6fef9f0a7a0b5dc642125110acb5ed261abccdf647b79691 sp:kind "RustFunction" .
 function:32fda656a6bb4bab6fef9f0a7a0b5dc642125110acb5ed261abccdf647b79691 sp:name "check_assembly" .
+function:330218b23abd4c32f3161169617639c8a7be054b08776d3f98c3c97f446af99c sp:file code:d9f7b5bbf3ca2c35515e1308888d58092d1ce4659024ace1a20f91772c504eb1 .
+function:330218b23abd4c32f3161169617639c8a7be054b08776d3f98c3c97f446af99c sp:kind "RustFunction" .
+function:330218b23abd4c32f3161169617639c8a7be054b08776d3f98c3c97f446af99c sp:name "thick_arc" .
 function:330a3bfa29034e77b30a203ea5cea7c0ff9713fbef2997b6f08c7b6aa18d8653 sp:file code:294197655869eb4ac3f813ab8d9abc901e3b457ec4989334867284aceb543627 .
 function:330a3bfa29034e77b30a203ea5cea7c0ff9713fbef2997b6f08c7b6aa18d8653 sp:kind "RustFunction" .
 function:330a3bfa29034e77b30a203ea5cea7c0ff9713fbef2997b6f08c7b6aa18d8653 sp:name "add_component" .
@@ -225724,6 +226030,9 @@ function:5018d167db4af49b5c75dbae88c19442440002e58d4f38b6dd0aeab10dd2e011 sp:nam
 function:501e2b2dcd3ab7712d4eaa64ba2369d9c305688888c0b52b9213072480a4bd66 sp:file code:cd74ae3bb9a3ca86a2e8126247a142aabf8db57278e8213e0bb215786e743e11 .
 function:501e2b2dcd3ab7712d4eaa64ba2369d9c305688888c0b52b9213072480a4bd66 sp:kind "RustFunction" .
 function:501e2b2dcd3ab7712d4eaa64ba2369d9c305688888c0b52b9213072480a4bd66 sp:name "value" .
+function:5029d0fb8a181cda3c76e350547ea0ebee4d222c57d1ce58563463b4e507bc90 sp:file code:df6a107be6ae0cca5ba3e5ffba17bacb2ae06ba8c93d45069f572b2bb70b2718 .
+function:5029d0fb8a181cda3c76e350547ea0ebee4d222c57d1ce58563463b4e507bc90 sp:kind "RustFunction" .
+function:5029d0fb8a181cda3c76e350547ea0ebee4d222c57d1ce58563463b4e507bc90 sp:name "arrow_head" .
 function:502d29f4356ddb3453248df6cf013e50108be867eac9b86ce3155f2c156998cc sp:file code:0b391076ec7b7a3c5cd377a5aa44fc8f980f72f713c17e257939d7162e2dfae6 .
 function:502d29f4356ddb3453248df6cf013e50108be867eac9b86ce3155f2c156998cc sp:kind "RustFunction" .
 function:502d29f4356ddb3453248df6cf013e50108be867eac9b86ce3155f2c156998cc sp:name "encode" .
@@ -228956,6 +229265,9 @@ function:64b186ba89c4535637041351c284ef26f8ad631009401c610603d550f486ccdd sp:nam
 function:64b7948bef14aa903b7264c35a858d2af1e81264f3814f730c94909549056f51 sp:file code:61af72b33bbf74e846bb7b3bd2bb175bc15f853030af3db6f75be8db82f0d6c5 .
 function:64b7948bef14aa903b7264c35a858d2af1e81264f3814f730c94909549056f51 sp:kind "RustFunction" .
 function:64b7948bef14aa903b7264c35a858d2af1e81264f3814f730c94909549056f51 sp:name "with_default_handler" .
+function:64ba71eb90f57f0671a2efef557fd28659ed59a23fae99d3b9254dcdc038f13c sp:file code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d .
+function:64ba71eb90f57f0671a2efef557fd28659ed59a23fae99d3b9254dcdc038f13c sp:kind "RustFunction" .
+function:64ba71eb90f57f0671a2efef557fd28659ed59a23fae99d3b9254dcdc038f13c sp:name "usable" .
 function:64bad3cfa1ad9f7fa7fdd8b7c69227f3db41778b0834d90ae51acb76d29fcb76 sp:file code:6c63c55233e2c4a3d57d7a087fad9cb78ad358ffa0cc0947d9970c84b2c0f4de .
 function:64bad3cfa1ad9f7fa7fdd8b7c69227f3db41778b0834d90ae51acb76d29fcb76 sp:kind "RustFunction" .
 function:64bad3cfa1ad9f7fa7fdd8b7c69227f3db41778b0834d90ae51acb76d29fcb76 sp:name "exchange" .
@@ -229114,6 +229426,9 @@ function:66403c599dcf4c81f082a2a60dc7106ed23cb1fbcdd29bc199a42df623d6a1cc sp:exe
 function:66403c599dcf4c81f082a2a60dc7106ed23cb1fbcdd29bc199a42df623d6a1cc sp:file code:0d279ac18093d2e5f716f5040afe8d7a72ca73359f97d24f712cfe7e88d0c22c .
 function:66403c599dcf4c81f082a2a60dc7106ed23cb1fbcdd29bc199a42df623d6a1cc sp:kind "RustFunction" .
 function:66403c599dcf4c81f082a2a60dc7106ed23cb1fbcdd29bc199a42df623d6a1cc sp:name "plan" .
+function:6654fb277d67595e42f42777ab2b1201c4f88c519afd97c015be709cf128ac65 sp:file code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d .
+function:6654fb277d67595e42f42777ab2b1201c4f88c519afd97c015be709cf128ac65 sp:kind "RustFunction" .
+function:6654fb277d67595e42f42777ab2b1201c4f88c519afd97c015be709cf128ac65 sp:name "state" .
 function:6656a89130f052cc33d83ebd5bfb97206ee2d28acee8715586016a14d4ccbcdd sp:file code:d4af7a9d1b23d3dce0f0a47abb49fae9498043deed5dd3947c158825e77d94be .
 function:6656a89130f052cc33d83ebd5bfb97206ee2d28acee8715586016a14d4ccbcdd sp:kind "RustFunction" .
 function:6656a89130f052cc33d83ebd5bfb97206ee2d28acee8715586016a14d4ccbcdd sp:name "thin" .
@@ -236620,6 +236935,9 @@ function:9693a33a63b0812a8e25f13b7b19dcaa88429f6e94dfc1043bdc97ac56dc555b sp:nam
 function:969ede1264f2307f37d85b1ba0e4e2a421b663bd81cd93f44a977afe348f126e sp:file code:91775dfac11766fcde65ef04c736b32cad7e39cbcbacd5f80e2a3b40a7ef085f .
 function:969ede1264f2307f37d85b1ba0e4e2a421b663bd81cd93f44a977afe348f126e sp:kind "RustFunction" .
 function:969ede1264f2307f37d85b1ba0e4e2a421b663bd81cd93f44a977afe348f126e sp:name "module" .
+function:96a91d541dae630029161ecc74b47f8223604c57dbaf8bd59674fe5d36269947 sp:file code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 .
+function:96a91d541dae630029161ecc74b47f8223604c57dbaf8bd59674fe5d36269947 sp:kind "RustFunction" .
+function:96a91d541dae630029161ecc74b47f8223604c57dbaf8bd59674fe5d36269947 sp:name "scale_ratio" .
 function:96ab00d1ac1a7b880929804eec84eea58dc9500fbd97d89a9541879f0ad90a41 sp:file code:d6534a4af6ddb640102cc56ff10ecbefb09c8a473aca8942640c2436fa32046f .
 function:96ab00d1ac1a7b880929804eec84eea58dc9500fbd97d89a9541879f0ad90a41 sp:kind "RustFunction" .
 function:96ab00d1ac1a7b880929804eec84eea58dc9500fbd97d89a9541879f0ad90a41 sp:name "iri" .
@@ -237211,6 +237529,9 @@ function:9ae5e28f6f06b023939c241a8a51a10636430e6cce585b988740f616e2340f55 sp:nam
 function:9ae82ec5ae0d3d5b339c19d400eae5c9d76fd115aa053edf3cfb7498814b49a6 sp:file code:5fda24aaae49def3b35459ffdd5f75fb5ba6c51d934677f38149a0afaf5ccb25 .
 function:9ae82ec5ae0d3d5b339c19d400eae5c9d76fd115aa053edf3cfb7498814b49a6 sp:kind "RustFunction" .
 function:9ae82ec5ae0d3d5b339c19d400eae5c9d76fd115aa053edf3cfb7498814b49a6 sp:name "source_dataset" .
+function:9ae96efe937cfe22070a5df8e7f47e8aca2e086e2d2b9b1d1e9a63ad85037e77 sp:file code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d .
+function:9ae96efe937cfe22070a5df8e7f47e8aca2e086e2d2b9b1d1e9a63ad85037e77 sp:kind "RustFunction" .
+function:9ae96efe937cfe22070a5df8e7f47e8aca2e086e2d2b9b1d1e9a63ad85037e77 sp:name "paper" .
 function:9af3fde4efcd9d4841235a65a8ebccbb10fba3112c3ac4d43c001a1c353de36c sp:file code:58a2c44ee4eb5b22feb0f38f64734c30294ec4522e1caa09cd68e96c1e89089a .
 function:9af3fde4efcd9d4841235a65a8ebccbb10fba3112c3ac4d43c001a1c353de36c sp:kind "RustFunction" .
 function:9af3fde4efcd9d4841235a65a8ebccbb10fba3112c3ac4d43c001a1c353de36c sp:name "row_cell" .
@@ -241712,6 +242033,9 @@ function:b835f86af54bea73bfdab5852d24a148129841c40d491ea611674d164d30d594 sp:nam
 function:b837923398df9587c41d6475eb7da8ba11867d9155df1c4db84441df7f75d143 sp:file code:da354e084605794946059ae07490872c29022706345440723050bafa2a20af03 .
 function:b837923398df9587c41d6475eb7da8ba11867d9155df1c4db84441df7f75d143 sp:kind "RustFunction" .
 function:b837923398df9587c41d6475eb7da8ba11867d9155df1c4db84441df7f75d143 sp:name "records" .
+function:b83c71979f13d2680a2015ca36bdd1c36854bfd90df826e1faf7896d2f751e32 sp:file code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 .
+function:b83c71979f13d2680a2015ca36bdd1c36854bfd90df826e1faf7896d2f751e32 sp:kind "RustFunction" .
+function:b83c71979f13d2680a2015ca36bdd1c36854bfd90df826e1faf7896d2f751e32 sp:name "drawing_arc" .
 function:b83f1e56bc19cc58a06d2cf6a6b3d9d5e122970b3f0951c9911c43ee0ce0abb1 sp:file code:8a31e43f17aaf28bcb6ebff7099b47ae5c57fa871109580bbcc4437ac4e5db55 .
 function:b83f1e56bc19cc58a06d2cf6a6b3d9d5e122970b3f0951c9911c43ee0ce0abb1 sp:kind "RustFunction" .
 function:b83f1e56bc19cc58a06d2cf6a6b3d9d5e122970b3f0951c9911c43ee0ce0abb1 sp:name "shrink_data" .
@@ -241838,6 +242162,9 @@ function:b947260a4b0704154e34907c8a7ee56ce5945b2ba11f1b148e964fa54e1028d6 sp:nam
 function:b95b3629f9b98cb905b2a22393da42d297bc7e18e9f3982355eccb9e3d8d2858 sp:file code:10ce6c0327e0b20a4ece1b73dec985253ee5a29b7c83f86d09e5bad64e9bdbdc .
 function:b95b3629f9b98cb905b2a22393da42d297bc7e18e9f3982355eccb9e3d8d2858 sp:kind "RustFunction" .
 function:b95b3629f9b98cb905b2a22393da42d297bc7e18e9f3982355eccb9e3d8d2858 sp:name "lock" .
+function:b9612d7b3a57be75357caa9379271439ac08f4dca58d42b43d7448bb8b31a2bf sp:file code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d .
+function:b9612d7b3a57be75357caa9379271439ac08f4dca58d42b43d7448bb8b31a2bf sp:kind "RustFunction" .
+function:b9612d7b3a57be75357caa9379271439ac08f4dca58d42b43d7448bb8b31a2bf sp:name "apply" .
 function:b96891404f410ac2be771c82102932a4d82bb92a3690a162d69fcb6822d079fe sp:executes <urn:oev2:design:semantic_source_memory_scan> .
 function:b96891404f410ac2be771c82102932a4d82bb92a3690a162d69fcb6822d079fe sp:file code:fb936e49b69478be55615de1bce57cbefceb39d5378f96ea078879039cbcf3d1 .
 function:b96891404f410ac2be771c82102932a4d82bb92a3690a162d69fcb6822d079fe sp:kind "RustFunction" .
@@ -244106,6 +244433,9 @@ function:c73bf9fc91f123dc51735c89047b33325cf44af67ee0d4ca2db34683e1b04422 sp:nam
 function:c73c96d0592f016e3c4200d439e70b731123120d81e4e48643d90afd45e3e074 sp:file code:ae3c3cb7248671766b9aaad6bb573cf815dd080cc4c053041cfb38072eaace71 .
 function:c73c96d0592f016e3c4200d439e70b731123120d81e4e48643d90afd45e3e074 sp:kind "RustFunction" .
 function:c73c96d0592f016e3c4200d439e70b731123120d81e4e48643d90afd45e3e074 sp:name "nodes" .
+function:c754df933f5886bd7941c19f996520bc55aa8447463733e70d0394f488290ed9 sp:file code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d .
+function:c754df933f5886bd7941c19f996520bc55aa8447463733e70d0394f488290ed9 sp:kind "RustFunction" .
+function:c754df933f5886bd7941c19f996520bc55aa8447463733e70d0394f488290ed9 sp:name "layer_geometry" .
 function:c756c854990800e45db7152d084c81827d7805ff61d6d82f38b595ee08d1d7c3 sp:file code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 .
 function:c756c854990800e45db7152d084c81827d7805ff61d6d82f38b595ee08d1d7c3 sp:kind "RustFunction" .
 function:c756c854990800e45db7152d084c81827d7805ff61d6d82f38b595ee08d1d7c3 sp:name "dist" .
@@ -250258,6 +250588,9 @@ function:ef5b7e3c5c426adc7e4f8b1e52b02a2cd82ee065120aa7dd3eadd1a169e8ea96 sp:nam
 function:ef62f57e8011db6c2a8820425a8468f9bb87844be24c03d200c864350876d38f sp:file code:ccf513cfe76369df1087d1b56fbb7b6444cddbb9ca87bf12798ae5f998087436 .
 function:ef62f57e8011db6c2a8820425a8468f9bb87844be24c03d200c864350876d38f sp:kind "RustFunction" .
 function:ef62f57e8011db6c2a8820425a8468f9bb87844be24c03d200c864350876d38f sp:name "is_utf8" .
+function:ef63d98d8b29606efd04fdf64775fb1d5f3d5b08754b149bd4612944c0d7af03 sp:file code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 .
+function:ef63d98d8b29606efd04fdf64775fb1d5f3d5b08754b149bd4612944c0d7af03 sp:kind "RustFunction" .
+function:ef63d98d8b29606efd04fdf64775fb1d5f3d5b08754b149bd4612944c0d7af03 sp:name "sheet_scale_condition" .
 function:ef6ca0635b2d089968cdcac0a19e26928c496b7965866b2ecb88e971fa2fd2d9 sp:file code:cea71d6c015d9a256854db0816bc60447a8d4381295f8c1f1d5aa4d883b8962a .
 function:ef6ca0635b2d089968cdcac0a19e26928c496b7965866b2ecb88e971fa2fd2d9 sp:kind "RustFunction" .
 function:ef6ca0635b2d089968cdcac0a19e26928c496b7965866b2ecb88e971fa2fd2d9 sp:name "execute" .
@@ -250323,6 +250656,9 @@ function:efb0cb699446e8794dd8ea83008bbac1a9005999b04367d5d4cd488b233c62bc sp:nam
 function:efbe2aba3951de8118724387881e21e5c5e0f4243a77642ab5e959707df08f38 sp:file code:81fec9a60a566815da02a81faab3488502d896f945055f7019def18a182a9d82 .
 function:efbe2aba3951de8118724387881e21e5c5e0f4243a77642ab5e959707df08f38 sp:kind "RustFunction" .
 function:efbe2aba3951de8118724387881e21e5c5e0f4243a77642ab5e959707df08f38 sp:name "observer" .
+function:efbee259c661b8ab794c06ce0ee3d47d7f00e406292936dd5aabe9afd8f699f1 sp:file code:fb11c193584fba22a591abe7577c56aeaf2af2d682c8a6e8c58e550f09197277 .
+function:efbee259c661b8ab794c06ce0ee3d47d7f00e406292936dd5aabe9afd8f699f1 sp:kind "RustFunction" .
+function:efbee259c661b8ab794c06ce0ee3d47d7f00e406292936dd5aabe9afd8f699f1 sp:name "sheet_scale" .
 function:efc78a475eb279645a4c15e7a2f80f71d901f43409148c4bfad3b95c1b515def sp:file code:61d162a64bdb6c560c009cf3b121c53875f18ccb606710251d3b37150bae354f .
 function:efc78a475eb279645a4c15e7a2f80f71d901f43409148c4bfad3b95c1b515def sp:kind "RustFunction" .
 function:efc78a475eb279645a4c15e7a2f80f71d901f43409148c4bfad3b95c1b515def sp:name "handshake" .
@@ -250878,6 +251214,9 @@ function:f30abc9f356d4211ac4471e12692e0ada885191f771f821abc2c9edb916fc39e sp:nam
 function:f30d6515eb2f5d822c80bb409226a4f7925b1c6ae86273a54097607a82e87532 sp:file code:e0dec2215b172e950f626aaffab82e73e6c64bf94495ae584999bf8be1ca3c3f .
 function:f30d6515eb2f5d822c80bb409226a4f7925b1c6ae86273a54097607a82e87532 sp:kind "RustFunction" .
 function:f30d6515eb2f5d822c80bb409226a4f7925b1c6ae86273a54097607a82e87532 sp:name "new" .
+function:f3109b26e608aca39686f13979517c961ef5185964b3bfc8976ae4241ea42f16 sp:file code:575fdc150378b19c1669af124ec576b1f0c70fcbd3523c415adf88dc48d4fe7d .
+function:f3109b26e608aca39686f13979517c961ef5185964b3bfc8976ae4241ea42f16 sp:kind "RustFunction" .
+function:f3109b26e608aca39686f13979517c961ef5185964b3bfc8976ae4241ea42f16 sp:name "units" .
 function:f3128e0929d02975dbb638783fcfd16cb6ba4cea9b4decc25e236df21dace54c sp:file code:7e37057745d22bdbb4b01f8205916d5c1588713466bfe5b11d8b2fc0632d231e .
 function:f3128e0929d02975dbb638783fcfd16cb6ba4cea9b4decc25e236df21dace54c sp:kind "RustFunction" .
 function:f3128e0929d02975dbb638783fcfd16cb6ba4cea9b4decc25e236df21dace54c sp:name "project_bytes" .
@@ -251967,6 +252306,9 @@ function:fa3cecbe05ae380016366dcbe1bc0ef990a9e28767210d7b64892c9fdc1604f5 sp:nam
 function:fa498a4f95ac4223ec689d9e8bd643c6071a0f4219f96db8df9f3cdf0406c28e sp:file code:8cd0f6386d6e876dcb39832e3a6ba33b0975da69138bb2c0174d6300b8fee619 .
 function:fa498a4f95ac4223ec689d9e8bd643c6071a0f4219f96db8df9f3cdf0406c28e sp:kind "RustFunction" .
 function:fa498a4f95ac4223ec689d9e8bd643c6071a0f4219f96db8df9f3cdf0406c28e sp:name "is_cjk" .
+function:fa4fe68d09543dd0edc8d6ba4e344bbc66f69431c41f3dad93e59de538d9476c sp:file code:b8e92b5aa3a0fdf59d7575ae745ee9e4f163950897cc0f086eade1f5e8b3cc02 .
+function:fa4fe68d09543dd0edc8d6ba4e344bbc66f69431c41f3dad93e59de538d9476c sp:kind "RustFunction" .
+function:fa4fe68d09543dd0edc8d6ba4e344bbc66f69431c41f3dad93e59de538d9476c sp:name "width_contrast_condition" .
 function:fa50ed7967fe925e988b7efb3f07c45f09aa9677929ce2ffeb6fc549da2a1724 sp:file code:41c47010b2a9e9f730585bdb0cb64798855e71f7774278fc9c0cf53ec7652827 .
 function:fa50ed7967fe925e988b7efb3f07c45f09aa9677929ce2ffeb6fc549da2a1724 sp:kind "RustFunction" .
 function:fa50ed7967fe925e988b7efb3f07c45f09aa9677929ce2ffeb6fc549da2a1724 sp:name "validate" .

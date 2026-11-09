@@ -25,10 +25,23 @@ const drawnLines=()=>{const nodes=[...d.querySelectorAll('#canvas svg [data-line
   for(const id of (n.dataset.inferred||'').split(' ').filter(Boolean)){inferred.push(id);const s=IMP.find(x=>x.id===id),pts=[[s.points[0]-ox0,ty0-s.points[1]],[s.points[2]-ox0,ty0-s.points[3]]];
    for(const q of pts){let dd;if(n.tagName==='line')dd=segD(q,[+n.getAttribute('x1'),+n.getAttribute('y1')],[+n.getAttribute('x2'),+n.getAttribute('y2')]);else if(l.arc)dd=Math.abs(Math.hypot(q[0]-(l.arc[0]-ox0),q[1]-(ty0-l.arc[1]))-l.arc[2]);else dd=Infinity;maxEnd=Math.max(maxEnd,dd);if(!(dd<=0.02+1e-9))endsOk=false}}}
  return {nodes:nodes.length,ids,once,solid,dashed,inferred,inferredOnce:new Set(inferred).size===inferred.length,endsOk,maxEnd,overlay:d.querySelectorAll('#canvas svg [data-implied]').length}};
+// Every structural arc and circle is drawn on its carrier: a circle element at the carrier's centre and radius, an
+// arc path from the line's start point to its end point with the large-arc flag of the carrier's sweep, within half a
+// screen pixel (the writer-to-page round trip of the graph contract's arcs).
+const drawnArcs=()=>{const svg=d.querySelector('#canvas svg'),byId=new Map(LINES.map(l=>[l.id,l]));let checked=0,good=true,maxPx=0;
+ const scr=(n,x,y)=>{const p=svg.createSVGPoint();p.x=x;p.y=y;return p.matrixTransform(n.getScreenCTM())};
+ const px=(n,a,b)=>{const p=scr(n,a[0],a[1]),q=scr(n,b[0],b[1]);return Math.hypot(p.x-q.x,p.y-q.y)};
+ for(const n of d.querySelectorAll('#canvas svg [data-line]')){const l=byId.get(n.dataset.line);if(!l||!l.arc)continue;checked++;const [cx,cy,r,,w]=l.arc;let dd;
+  if(n.tagName==='circle'){const c=[+n.getAttribute('cx'),+n.getAttribute('cy')],rr=+n.getAttribute('r');dd=Math.max(px(n,c,[cx-ox0,ty0-cy]),px(n,[c[0]+rr,c[1]],[cx-ox0+r,ty0-cy]))}
+  else{const m=(n.getAttribute('d')||'').match(/^\s*M\s*([-+\d.eE]+)[\s,]+([-+\d.eE]+)\s*A\s*([-+\d.eE]+)[\s,]+([-+\d.eE]+)[\s,]+([-+\d.eE]+)[\s,]+([01])[\s,]+([01])[\s,]+([-+\d.eE]+)[\s,]+([-+\d.eE]+)/);
+   if(!m){good=false;continue}const v=m.slice(1).map(Number),p=l.points;dd=Math.max(px(n,[v[0],v[1]],[p[0]-ox0,ty0-p[1]]),px(n,[v[7],v[8]],[p[2]-ox0,ty0-p[3]]));if(v[5]!==(w>Math.PI?1:0))good=false}
+  maxPx=Math.max(maxPx,dd);if(!(dd<=0.5))good=false}
+ return {checked,ok:good,max_end_distance_px:maxPx}};
 const carriedHidden=()=>{const shown=new Set(drawnLines().ids);return G.members.every(m=>{const l=a.memberLine.get(m.id);if(!l||!shown.has(l.id))return true;return !(a.visible.get(m.source_handle)||[]).some(r=>Math.min(r[1],m.interval[1])-Math.max(r[0],m.interval[0])>1e-9)})};
 ok($('complete').checked,'Complete structure is the default');const dl=drawnLines(),dImp=dl.inferred.length;
 ok(dl.nodes===LINES.length&&dl.once,'Default view draws every structural line once as one element');ok(dl.solid,'Visible-outline lines are drawn solid');ok(dl.dashed,'Hidden-outline lines are drawn dashed');
 ok(dl.overlay===0,'No separate overlay for inferred spans');ok(dImp===IMP.length&&dl.inferredOnce,'Default view draws every inferred span inside one structural line');ok(dl.endsOk,'Inferred spans lie on their drawn lines at their source end points');
+const da=drawnArcs();ok(da.ok,'Structural arcs and circles are drawn on their carriers (start, end, circle)');facts.structural_arcs=da;
 ok(carriedHidden(),'Source spans carried by a structural line are not drawn again');ok(sourceNodes()===baseNodes,'Complete structure keeps the source inventory');
 ok(secOnly.every(h=>!(a.visible.get(h)||[]).length),'Default view hides section-only sources');
 facts.default_view={complete_checked:$('complete').checked,implied_drawn:dImp,section_profile_sources:SEC,section_only_hidden:secOnly.filter(h=>!(a.visible.get(h)||[]).length).length};

@@ -100,10 +100,10 @@ pub const PREDICATES: [&str; 30] = [
     "colourIndex",
     "layerColourIndex",
     "endOnOutline",
-    "overshootUnits",
-    "extensionBeyondUnits",
+    "overshootPaperMm",
+    "extensionBeyondPaperMm",
     "angleToDimensionLineDeg",
-    "extentUnits",
+    "extentPaperMm",
     "crossedBy",
     "coincidentWith",
     "radialTo",
@@ -207,6 +207,8 @@ pub struct Rule {
     pub target_classes: Vec<String>,
     pub property_shapes: Vec<String>,
     pub referenced: BTreeSet<String>,
+    /// Conditions of the drawing the rule needs (`md:requiresCondition`); with one unknown the rule does not apply.
+    pub requires: Vec<String>,
 }
 
 /// Rules of the shapes document, read from the shapes graph; every IRI under the drafting namespace that the
@@ -317,6 +319,7 @@ pub fn rules(shapes: &str) -> Result<Vec<Rule>> {
                 all
             },
             referenced,
+            requires: values(&format!("{NS}requiresCondition")),
         });
     }
     rules.sort_by(|a, b| a.id.cmp(&b.id));
@@ -338,13 +341,61 @@ const STACK_HEIGHT: f64 = 1.3;
 const STACK_DROP: f64 = 0.15;
 /// Two directions are parallel within this angle (alignment of a text with its line, collinearity, chaining).
 const PARALLEL_DEG: f64 = 1.5;
-/// A line lies on the extension of another when collinear and separated along the line by at most this gap.
-const EXTENSION_GAP: f64 = 10.0;
-/// A radial dimension line passes an arc's centre within this distance and ends on the arc within ARROW_REACH.
+/// A line lies on the extension of another when collinear and separated along the line by at most this gap on paper.
+const EXTENSION_GAP_PAPER_MM: f64 = 10.0;
+/// A radial dimension line passes an arc's centre within this distance and ends on the arc within the arrow reach.
 const RADIAL_EPS: f64 = 0.3;
 /// Native dimension lines stop where their arrowheads begin and a small radius's line stops outside the arc behind
-/// its arrow: a line reaches another within this distance (two arrow lengths at scale 1).
-const ARROW_REACH: f64 = 6.0;
+/// its arrow: a line reaches another within this distance on paper (two arrowheads of about 3 mm, GB/T 4458.4).
+const ARROW_REACH_PAPER_MM: f64 = 6.0;
+/// The reach in drawing units where the sheet scale is unknown, only for what no paper rule reads (which dimension
+/// line an extension line meets, for the angle between them); the paper measures are then not taken.
+const ARROW_REACH_UNKNOWN_SCALE: f64 = 6.0;
+/// Measured quantities in paper millimetres: a rule constraining one is counted as measured on the targets that have it.
+const PAPER_MEASURES: [&str; 3] = ["overshootPaperMm", "extensionBeyondPaperMm", "extentPaperMm"];
+
+/// The conditions of a graph as the check reads them, and the sheet scale (paper millimetres per drawing unit) that
+/// turns the paper lengths of the rules into drawing units and the measures into paper millimetres.
+#[derive(Debug, Clone, Default)]
+struct Sheet {
+    conditions: Vec<MdDrawingCondition>,
+    mm_per_unit: Option<f64>,
+}
+impl Sheet {
+    /// The graph's `conditions` (absent in graphs written before they were part of the contract: every condition
+    /// is then unknown).
+    fn of(g: &Value) -> Result<Sheet> {
+        let conditions: Vec<MdDrawingCondition> = match g.get("conditions") {
+            Some(v) if !v.is_null() => serde_json::from_value(v.clone()).context("drafting_graph_conditions")?,
+            _ => Vec::new(),
+        };
+        let mm_per_unit = conditions
+            .iter()
+            .find(|c| c.id == "sheet_scale" && matches!(c.state.as_str(), "known" | "conflict"))
+            .and_then(|c| c.value)
+            .filter(|v| v.is_finite() && *v > 0.);
+        Ok(Sheet { conditions, mm_per_unit })
+    }
+    /// A paper length in drawing units.
+    fn units(&self, paper_mm: f64) -> Option<f64> {
+        self.mm_per_unit.map(|s| paper_mm / s)
+    }
+    /// A drawing-unit length on paper.
+    fn paper(&self, units: f64) -> Option<f64> {
+        self.mm_per_unit.map(|s| units * s)
+    }
+    /// The state of a condition, `unknown` when the graph does not state it.
+    fn state(&self, id: &str) -> &str {
+        self.conditions.iter().find(|c| c.id == id).map_or("unknown", |c| c.state.as_str())
+    }
+    /// Whether a rule's required condition holds a value the rule can use.
+    fn usable(&self, id: &str) -> bool {
+        match id {
+            "sheet_scale" => self.mm_per_unit.is_some(),
+            other => matches!(self.state(other), "known" | "conflict"),
+        }
+    }
+}
 /// Two hatch regions differ when their directions differ by more than this angle or their spacings by this ratio.
 const HATCH_ANGLE_DEG: f64 = 3.0;
 const HATCH_SPACING_RATIO: f64 = 1.3;
@@ -911,19 +962,23 @@ fn is_pixel_graph(g: &Value) -> bool {
 
 /// Synthetic records of a pixel graph (profile `pixel-expression-rules/1`): every entity of `source.entities` becomes
 /// one record with the group codes the DXF reader expects, so that objects, relations, facts and shapes are those of
-/// the DXF path. LINE `[x0, y0, x1, y1]` gives 10/20/11/21; ARC `[cx, cy, r, start°, sweep°]` gives 10/20/40/50/51
-/// (a negative sweep is the same arc run the other way); CIRCLE `[cx, cy, r, …]` gives 10/20/40; LWPOLYLINE
-/// `[x0, y0, x1, y1, …]`, an open polyline of at least two vertices without bulges (a wavy break line, a leader with
-/// its shelf), gives 90/70 and one 10/20 pair per vertex, read into one chain; a text (`text` and
-/// coordinates `[x, y, height, rotation°, width factor]`, x and y the baseline-left insertion point) gives a TEXT
-/// record with 1/10/20/40/50/41/7 whatever its kind, since a recovered text has no MTEXT formatting or attachment,
-/// and a text with fewer than three coordinates has no height and no box, like a DXF text without a height; HATCH
-/// `[angle°, spacing]` gives the pattern line 53 and the row offset 45/46 perpendicular to it; SOLID (an arrowhead)
-/// and every other kind carry no geometry, as in the DXF path. The entity's `line_type` (the pattern measured on the
+/// the DXF path. Coordinates follow the graph contract: lengths in drawing units, angles in radians counter-clockwise
+/// with y up. LINE `[x0, y0, x1, y1]` gives 10/20/11/21; ARC `[cx, cy, r, start, sweep]` gives 10/20/40 and the
+/// start and end angles 50/51 in degrees (a negative sweep, outside the contract, is read as the same arc run the
+/// other way); CIRCLE `[cx, cy, r, …]` gives 10/20/40; LWPOLYLINE `[x0, y0, x1, y1, …]`, an open polyline of at least
+/// two vertices without bulges (a wavy break line, a leader with its shelf), gives 90/70 and one 10/20 pair per
+/// vertex, read into one chain; a text (`text` and coordinates `[x, y, height, rotation, width factor]`, x and y the
+/// baseline-left insertion point) gives a TEXT record with 1/10/20/40/50/41/7 (rotation in degrees) whatever its
+/// kind, since a recovered text has no MTEXT formatting or attachment, and a text with fewer than three coordinates
+/// has no height and no box, like a DXF text without a height; HATCH `[angle, spacing]` gives the pattern line 53 in
+/// degrees and the row offset 45/46 perpendicular to it; SOLID (an arrowhead) and every other kind carry no geometry,
+/// as in the DXF path. The entity's `line_type` (the pattern measured on the
 /// page) is carried as group 6; the checker takes line types from the members, as it does for a DXF.
 pub fn records_from_pixel_graph(g: &Value) -> Result<Vec<dxf::Record>> {
     ensure!(is_pixel_graph(g), "drafting_pixel_profile");
     let num = |code: i64, value: f64| (code, format!("{value}"));
+    // Degrees for the DXF group codes, rounded to 1e-9 so that a radian round trip gives the DXF path's own value.
+    let deg = |radians: f64| (radians.to_degrees() * 1e9).round() / 1e9;
     let mut out = Vec::new();
     for e in list(get(g, "source")?, "entities")? {
         let id = text(e, "id")?;
@@ -951,7 +1006,8 @@ pub fn records_from_pixel_graph(g: &Value) -> Result<Vec<dxf::Record>> {
             "ARC" => {
                 need(5)?;
                 let (start, sweep) = if c[4] < 0. { (c[3] + c[4], -c[4]) } else { (c[3], c[4]) };
-                tags.extend([num(10, c[0]), num(20, c[1]), num(40, c[2]), num(50, start), num(51, start + sweep)]);
+                let (start, end) = (deg(start), deg(start + sweep));
+                tags.extend([num(10, c[0]), num(20, c[1]), num(40, c[2]), num(50, start), num(51, end)]);
                 "ARC"
             }
             "CIRCLE" => {
@@ -973,7 +1029,7 @@ pub fn records_from_pixel_graph(g: &Value) -> Result<Vec<dxf::Record>> {
                 if c.len() >= 3 {
                     tags.extend([num(10, c[0]), num(20, c[1]), num(40, c[2])]);
                     if let Some(rotation) = c.get(3) {
-                        tags.push(num(50, *rotation));
+                        tags.push(num(50, deg(*rotation)));
                     }
                     if let Some(factor) = c.get(4) {
                         tags.push(num(41, *factor));
@@ -984,9 +1040,9 @@ pub fn records_from_pixel_graph(g: &Value) -> Result<Vec<dxf::Record>> {
             }
             "HATCH" => {
                 need(1)?;
-                tags.push(num(53, c[0]));
+                tags.push(num(53, deg(c[0])));
                 if let Some(spacing) = c.get(1).copied().filter(|s| *s > 0.) {
-                    let t = c[0].to_radians();
+                    let t = c[0];
                     tags.extend([num(45, -spacing * t.sin()), num(46, spacing * t.cos())]);
                 }
                 "HATCH"
@@ -1857,6 +1913,8 @@ fn merge_boundaries(objects: &mut Vec<Object>) {
 
 /// Points of a structural line or implied span: `points` [x0,y0,x1,y1] for a line, `arc` [cx,cy,r,a0,a1] otherwise;
 /// with the arc's centre and radius when it is one.
+/// Chain of a structural line: an arc or circle `[cx, cy, r, start, sweep]` (radians, counter-clockwise, the
+/// contract's carrier) sampled from start through start + sweep, else its two points.
 fn structural_chain(v: &Value) -> Result<(Vec<P>, Vec<(P, f64)>)> {
     if let Some(arc) = v.get("arc").and_then(Value::as_array)
         && arc.len() == 5
@@ -1865,7 +1923,9 @@ fn structural_chain(v: &Value) -> Result<(Vec<P>, Vec<(P, f64)>)> {
             .iter()
             .map(|x| x.as_f64().context("drafting_arc_number"))
             .collect::<Result<_>>()?;
-        return Ok((sample_arc((a[0], a[1]), a[2], a[3], a[4]), vec![((a[0], a[1]), a[2])]));
+        // A negative sweep is outside the contract; read it as the same arc run the other way.
+        let (start, sweep) = if a[4] < 0. { (a[3] + a[4], -a[4]) } else { (a[3], a[4]) };
+        return Ok((sample_arc((a[0], a[1]), a[2], start, start + sweep), vec![((a[0], a[1]), a[2])]));
     }
     let p = numbers(v, "points")?;
     ensure!(p.len() == 4, "drafting_structural_points");
@@ -1952,8 +2012,10 @@ fn view_letter(text: &str) -> String {
 }
 
 /// Relations between the objects of one layer from the generic geometry predicates.
-fn relations(objects: &[Object]) -> Vec<Relation> {
+fn relations(objects: &[Object], sheet: &Sheet) -> Vec<Relation> {
     let mut out = Vec::new();
+    let reach = sheet.units(ARROW_REACH_PAPER_MM);
+    let reach_or = reach.unwrap_or(ARROW_REACH_UNKNOWN_SCALE);
     let lines: Vec<usize> = (0..objects.len())
         .filter(|i| objects[*i].is_line() && !objects[*i].geometry.chains.is_empty())
         .collect();
@@ -2026,7 +2088,7 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
                 && let (Some((a0, a1)), Some((b0, b1))) = (a.segment(), b.segment())
                 && let Some(gap) = collinear_gap(a0, a1, b0, b1)
                 && gap > 0.
-                && gap <= EXTENSION_GAP
+                && sheet.units(EXTENSION_GAP_PAPER_MM).is_some_and(|g| gap <= g)
             {
                 for (s, o) in [(i, j), (j, i)] {
                     if objects[s].is("DimensionLine") && objects[o].is("VisibleOutline") {
@@ -2085,7 +2147,7 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
         let outside = |t: f64| if t < 0. { -t } else if t > 1. { t - 1. } else { 0. };
         let own_crossings: Vec<(f64, f64)> = own
             .iter()
-            .filter_map(|(_, c, d)| crossing(a, b, *c, *d, ARROW_REACH).map(|t| (t, angle_between(angle_deg(a, b), angle_deg(*c, *d)))))
+            .filter_map(|(_, c, d)| crossing(a, b, *c, *d, reach_or).map(|t| (t, angle_between(angle_deg(a, b), angle_deg(*c, *d)))))
             .collect();
         let Some(&(t_own, angle)) = own_crossings
             .iter()
@@ -2103,7 +2165,7 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             let all: Vec<f64> = dimension_segments
                 .iter()
                 .filter(|(di, _, _)| !group.contains(di))
-                .filter_map(|(_, c, d)| crossing(a, b, *c, *d, ARROW_REACH))
+                .filter_map(|(_, c, d)| crossing(a, b, *c, *d, reach_or))
                 .filter(|t| (-slack..=1. + slack).contains(t))
                 .map(|t| t.clamp(0., 1.))
                 .collect();
@@ -2115,7 +2177,7 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
                 // beyond the dimension line (a native dimension draws it as its own line), a long one stops there.
                 let far = from_a.max(from_b);
                 let end = if from_a > from_b { a } else { b };
-                (piece_at(objects, &group, end), if far <= ARROW_REACH { far } else { 0. })
+                (piece_at(objects, &group, end), if far <= reach_or { far } else { 0. })
             } else if from_a <= from_b {
                 (piece_at(objects, &group, a), from_a)
             } else {
@@ -2123,7 +2185,9 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             }
         };
         out.push(Relation::number(piece, "angleToDimensionLineDeg", angle));
-        out.push(Relation::number(piece, "extensionBeyondUnits", beyond));
+        if let Some(mm) = sheet.paper(beyond) {
+            out.push(Relation::number(piece, "extensionBeyondPaperMm", mm));
+        }
     }
     // Centre lines (collinear pieces of one expression as one line): how far each end runs past the edge of the
     // figure it crosses — visible outlines, or the break boundary of a partial or detail view.
@@ -2163,8 +2227,10 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             params.iter().copied().reduce(f64::min),
             params.iter().copied().reduce(f64::max),
         ) {
-            out.push(Relation::number(piece_at(objects, &group, a), "overshootUnits", min * length));
-            out.push(Relation::number(piece_at(objects, &group, b), "overshootUnits", (1. - max) * length));
+            if let (Some(at_a), Some(at_b)) = (sheet.paper(min * length), sheet.paper((1. - max) * length)) {
+                out.push(Relation::number(piece_at(objects, &group, a), "overshootPaperMm", at_a));
+                out.push(Relation::number(piece_at(objects, &group, b), "overshootPaperMm", at_b));
+            }
         }
     }
     // A radial dimension line (all its collinear pieces) passes through the centre of an arc and reaches it. A
@@ -2185,7 +2251,7 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             }
             let radial = objects[oi].geometry.arcs.iter().any(|(centre, radius)| {
                 point_line(*centre, a, b).0 <= RADIAL_EPS
-                    && ends.iter().any(|e| (dist(*e, *centre) - radius).abs() <= ARROW_REACH)
+                    && reach.is_some_and(|r| ends.iter().any(|e| (dist(*e, *centre) - radius).abs() <= r))
             });
             if radial {
                 radial_to.entry(ri).or_default().push(oi);
@@ -2232,8 +2298,10 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
         if let (Some(min), Some(max)) = (params.iter().copied().reduce(f64::min), params.iter().copied().reduce(f64::max))
             && max - min > 1e-9
         {
-            for &g in &group {
-                out.push(Relation::number(g, "extentUnits", (max - min) * length));
+            if let Some(mm) = sheet.paper((max - min) * length) {
+                for &g in &group {
+                    out.push(Relation::number(g, "extentPaperMm", mm));
+                }
             }
         }
     }
@@ -2318,7 +2386,8 @@ fn relations(objects: &[Object]) -> Vec<Relation> {
             if a.expression_id.is_none() || a.expression_id == b.expression_id || collinear_gap(a0, a1, b0, b1).is_none() {
                 continue;
             }
-            let (sa, sb) = (stretch(a0, a1, ARROW_REACH), stretch(b0, b1, ARROW_REACH));
+            let Some(reach) = reach else { continue };
+            let (sa, sb) = (stretch(a0, a1, reach), stretch(b0, b1, reach));
             let joined = extension_segments.iter().any(|(_, e0, e1)| {
                 let (e0, e1) = stretch(*e0, *e1, 1.0);
                 segment_intersection(e0, e1, sa.0, sa.1).is_some() && segment_intersection(e0, e1, sb.0, sb.1).is_some()
@@ -2588,6 +2657,42 @@ fn evaluate(
     Ok((findings, focus_count))
 }
 
+/// The findings of one layer that stand, and where every rule applied: a rule needing a condition the drawing leaves
+/// unknown does not apply (its findings are dropped and its targets counted as not applicable with the reason); a
+/// rule constraining a paper measure counts the targets that have one (the others meet nothing to measure against).
+fn apply(layer: &str, objects: &[Object], relations: &[Relation], found: Vec<MdDraftingFinding>, rules: &[Rule], sheet: &Sheet) -> (Vec<MdDraftingFinding>, Vec<MdRuleApplication>) {
+    let blocked: BTreeMap<&str, Vec<String>> = rules
+        .iter()
+        .map(|r| {
+            let reasons: Vec<String> = r.requires.iter().filter(|c| !sheet.usable(c)).map(|c| format!("{c}:{}", sheet.state(c))).collect();
+            (r.id.as_str(), reasons)
+        })
+        .collect();
+    let kept: Vec<MdDraftingFinding> = found.into_iter().filter(|f| blocked.get(f.rule_id.as_str()).is_none_or(Vec::is_empty)).collect();
+    let mut application = Vec::new();
+    for r in rules {
+        let targets: Vec<usize> = (0..objects.len())
+            .filter(|i| objects[*i].classes.iter().any(|c| r.target_classes.iter().any(|t| t == c)))
+            .collect();
+        let reasons = blocked.get(r.id.as_str()).cloned().unwrap_or_default();
+        let measures: Vec<&str> = PAPER_MEASURES.iter().copied().filter(|m| r.referenced.contains(*m)).collect();
+        let measured = (!measures.is_empty()).then(|| {
+            let with: BTreeSet<usize> = relations.iter().filter(|x| measures.contains(&x.predicate) && x.number.is_some()).map(|x| x.subject).collect();
+            targets.iter().filter(|i| with.contains(i)).count() as u64
+        });
+        application.push(MdRuleApplication {
+            rule_id: r.id.clone(),
+            layer: layer.into(),
+            targets: targets.len() as u64,
+            measured,
+            findings: kept.iter().filter(|f| f.rule_id == r.id).count() as u64,
+            not_applicable: if reasons.is_empty() { 0 } else { targets.len() as u64 },
+            reasons,
+        });
+    }
+    (kept, application)
+}
+
 /// The check: facts of the three layers, the shapes on each, one report and the facts files beside it.
 pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraftingRuleReport> {
     ensure!(
@@ -2614,15 +2719,19 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
     let d = Dxf::new(&records)?;
     let output = root.private_path(Path::new(&q.output))?;
     let directory = output.parent().context("drafting_output_directory")?;
+    let sheet = Sheet::of(&g)?;
     let mut layers = Vec::new();
     let mut findings = Vec::new();
+    let mut application = Vec::new();
     for layer in LAYERS {
         let objs = objects(layer, &g, &d)?;
-        let rels = relations(&objs);
+        let rels = relations(&objs, &sheet);
         let (ttl, triple_count, rows, relation_rows) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
         let (found, focus_count) = evaluate(layer, &ttl, &k.shapes, &rules, &by_iri, &related)?;
+        let (found, applied) = apply(layer, &objs, &rels, found, &rules, &sheet);
+        application.extend(applied);
         let facts_path = directory.join(format!("drafting-facts-{layer}.ttl"));
         oe_core::write_new_bytes(&facts_path, ttl.as_bytes())?;
         layers.push(MdDraftingLayer {
@@ -2665,6 +2774,8 @@ pub fn check_rules(root: &SkillRoot, q: &MdDraftingRuleRequest) -> Result<MdDraf
         findings,
         by_rule,
         scope: SCOPE.into(),
+        conditions: sheet.conditions.clone(),
+        application,
     };
     ensure!(report.validate().is_ok(), "drafting_rules_report_contract");
     oe_core::write_new_bytes(&output, &serde_json::to_vec_pretty(&report)?)?;
@@ -2696,21 +2807,75 @@ pub fn evaluate_graph(graph: &Value, dxf_bytes: Option<&[u8]>) -> Result<BTreeMa
     evaluate_bytes(dxf_bytes.context("drafting_dxf_bytes_required")?, graph)
 }
 
+/// The geometry the rules evaluate one object of a layer with, as the checker reads it from the graph (and the DXF
+/// bytes for a DXF-route graph): its identity, classes, source handles, sampled chains and the arcs among them. A
+/// readback for writer-to-reader round trips and for evaluation, so that both read the drawing as the rules do.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ObjectGeometry {
+    pub id: String,
+    pub classes: Vec<String>,
+    pub source_handles: Vec<String>,
+    pub member_ids: Vec<String>,
+    pub chains: Vec<Vec<(f64, f64)>>,
+    pub arcs: Vec<((f64, f64), f64)>,
+}
+
+/// Objects of one layer (`source`, `recognition` or `presentation`) with the geometry the rules use.
+pub fn layer_geometry(graph: &Value, dxf_bytes: Option<&[u8]>, layer: &str) -> Result<Vec<ObjectGeometry>> {
+    ensure!(LAYERS.contains(&layer), "drafting_layer_unknown:{layer}");
+    let records = if is_pixel_graph(graph) {
+        records_from_pixel_graph(graph)?
+    } else {
+        dxf::records(&dxf::decode(dxf_bytes.context("drafting_dxf_bytes_required")?)?)?
+    };
+    let d = Dxf::new(&records)?;
+    Ok(objects(layer, graph, &d)?
+        .into_iter()
+        .map(|o| ObjectGeometry {
+            id: o.id,
+            classes: o.classes.iter().map(|c| (*c).to_owned()).collect(),
+            source_handles: o.source_handles,
+            member_ids: o.member_ids,
+            chains: o.geometry.chains,
+            arcs: o.geometry.arcs,
+        })
+        .collect())
+}
+
+/// Findings of a graph of either profile and where every rule applied (targets, measured, not applicable), as the
+/// report gives them; no files are written.
+pub fn evaluate_with_application(graph: &Value, dxf_bytes: Option<&[u8]>) -> Result<(BTreeMap<String, Vec<MdDraftingFinding>>, Vec<MdRuleApplication>)> {
+    let records = if is_pixel_graph(graph) {
+        records_from_pixel_graph(graph)?
+    } else {
+        dxf::records(&dxf::decode(dxf_bytes.context("drafting_dxf_bytes_required")?)?)?
+    };
+    evaluate_records_applied(&records, graph)
+}
+
 fn evaluate_records(records: &[dxf::Record], graph: &Value) -> Result<BTreeMap<String, Vec<MdDraftingFinding>>> {
+    Ok(evaluate_records_applied(records, graph)?.0)
+}
+
+fn evaluate_records_applied(records: &[dxf::Record], graph: &Value) -> Result<(BTreeMap<String, Vec<MdDraftingFinding>>, Vec<MdRuleApplication>)> {
     let k = knowledge()?;
     let rules = rules(&k.shapes)?;
     let d = Dxf::new(records)?;
+    let sheet = Sheet::of(graph)?;
     let mut out = BTreeMap::new();
+    let mut application = Vec::new();
     for layer in LAYERS {
         let objs = objects(layer, graph, &d)?;
-        let rels = relations(&objs);
+        let rels = relations(&objs, &sheet);
         let (ttl, _, _, _) = facts(layer, &objs, &rels)?;
         let by_iri: HashMap<String, &Object> = objs.iter().map(|o| (node_iri(&o.id), o)).collect();
         let related = related_facts(&objs, &rels);
         let (found, _) = evaluate(layer, &ttl, &k.shapes, &rules, &by_iri, &related)?;
+        let (found, applied) = apply(layer, &objs, &rels, found, &rules, &sheet);
         out.insert(layer.to_owned(), found);
+        application.extend(applied);
     }
-    Ok(out)
+    Ok((out, application))
 }
 
 #[cfg(test)]
@@ -2723,9 +2888,9 @@ mod tests {
             "profile": PIXEL_PROFILE,
             "source": {"entities": [
                 {"id": "P1", "kind": "LINE", "layer": "0", "coordinates": [0.0, 0.0, 10.0, 5.0]},
-                {"id": "P2", "kind": "ARC", "layer": "0", "coordinates": [0.0, 0.0, 10.0, 90.0, -90.0]},
-                {"id": "P3", "kind": "MTEXT", "layer": "0", "line_type": "text", "coordinates": [10.0, 10.0, 3.5, 90.0, 0.7], "text": "%%c40"},
-                {"id": "P4", "kind": "HATCH", "layer": "0", "coordinates": [45.0, 3.0]},
+                {"id": "P2", "kind": "ARC", "layer": "0", "coordinates": [0.0, 0.0, 10.0, std::f64::consts::FRAC_PI_2, -std::f64::consts::FRAC_PI_2]},
+                {"id": "P3", "kind": "MTEXT", "layer": "0", "line_type": "text", "coordinates": [10.0, 10.0, 3.5, std::f64::consts::FRAC_PI_2, 0.7], "text": "%%c40"},
+                {"id": "P4", "kind": "HATCH", "layer": "0", "coordinates": [std::f64::consts::FRAC_PI_4, 3.0]},
                 {"id": "P5", "kind": "SOLID", "layer": "0", "coordinates": []},
                 {"id": "P6", "kind": "TEXT", "layer": "0", "coordinates": [1.0, 2.0], "text": null},
                 {"id": "P7", "kind": "TEXT", "layer": "0", "coordinates": [0.0, 0.0, 2.5], "text": "A"},
@@ -2750,7 +2915,7 @@ mod tests {
         let (main, stack, text, rotation) = d.text_box(r, (0., 0.)).unwrap().unwrap();
         assert_eq!(text, "Ø40");
         assert!(stack.is_none());
-        assert_eq!(rotation, 90.);
+        assert!((rotation - 90.).abs() < 1e-9, "{rotation}");
         assert!(dist(main.origin, (10., 10.)) < 1e-9 && (main.height - 3.5).abs() < 1e-9);
         assert!((main.width - 2.6 * 3.5 * 0.7).abs() < 1e-9, "{}", main.width);
         // Height alone: no rotation and a width factor of one.
@@ -2759,7 +2924,7 @@ mod tests {
         assert!((main.height - 2.5).abs() < 1e-9 && (main.width - 0.8 * 2.5).abs() < 1e-9, "{}", main.width);
         // A hatch carries its pattern angle and a row offset perpendicular to it, of the given spacing.
         let h = d.by_handle["P4"];
-        assert_eq!(h.float(53).unwrap(), 45.);
+        assert!((h.float(53).unwrap() - 45.).abs() < 1e-9);
         let t = 45f64.to_radians();
         assert!((-t.sin() * h.float(45).unwrap() + t.cos() * h.float(46).unwrap() - 3.).abs() < 1e-9);
         // An arrowhead and a text with only an insertion point carry no geometry; the text has no box.

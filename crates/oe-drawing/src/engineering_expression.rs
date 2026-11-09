@@ -6696,9 +6696,84 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
             "Nested members of INSERT roots are represented through their whole block root; DIMENSION members are listed individually".into(),
             "Rule thresholds and view heuristics were calibrated on development drawings; results on another drawing need independent evaluation".into(),
         ],
+        conditions: vec![],
     };
+    let mut graph = graph;
+    graph.conditions = vec![sheet_scale(&d, &graph)];
     check(&graph)?;
     Ok(graph)
+}
+
+/// A scale text "a:b" (paper : part), full-width colon allowed; `None` for anything else.
+pub(crate) fn scale_ratio(text: &str) -> Option<f64> {
+    let t = text.trim().replace('：', ":");
+    let (a, b) = t.split_once(':')?;
+    let (a, b) = (a.trim().parse::<f64>().ok()?, b.trim().parse::<f64>().ok()?);
+    (a > 0. && b > 0. && a.is_finite() && b.is_finite()).then_some(a / b)
+}
+
+/// The sheet scale of a DWG-route drawing: paper millimetres of the nominal sheet per drawing unit. The title block's
+/// scale text (a ratio among the members of a title-block expression) gives paper over part, and `$DIMLFAC` part
+/// millimetres per drawing unit; the annotation scale `$DIMSCALE`, which draws arrows and texts that much larger so
+/// that they plot at their paper size, gives 1 / `$DIMSCALE` on its own. Both present and more than 2 % apart is a
+/// conflict, stated with the title block's value preferred; neither present leaves the scale unknown.
+fn sheet_scale(d: &Drawing, g: &MdEngineeringExpressionGraph) -> MdDrawingCondition {
+    let header = |key: &str| d.header(key, 40).ok().and_then(|v| v.trim().parse::<f64>().ok()).filter(|v| v.is_finite());
+    let title_blocks: BTreeSet<&str> = g.expressions.iter().filter(|e| e.kind == "title_block").map(|e| e.id.as_str()).collect();
+    let texts: BTreeMap<&str, &str> = g
+        .source
+        .entities
+        .iter()
+        .filter_map(|e| e.text.as_deref().map(|t| (e.id.as_str(), t)))
+        .collect();
+    let mut declared: Vec<(String, f64)> = g
+        .members
+        .iter()
+        .filter(|m| title_blocks.contains(m.expression_id.as_str()))
+        .filter_map(|m| texts.get(m.source_handle.as_str()).and_then(|t| scale_ratio(t).map(|r| (format!("text:{} '{}'", m.source_handle, t.trim()), r))))
+        .collect();
+    declared.sort_by(|a, b| a.0.cmp(&b.0));
+    declared.dedup();
+    let lfac = header("$DIMLFAC").filter(|v| *v > 0.).unwrap_or(1.0);
+    let annotation = header("$DIMSCALE").filter(|v| *v > 0.);
+    let mut evidence: Vec<String> = declared.iter().map(|(e, _)| e.clone()).collect();
+    if let Some(a) = annotation {
+        evidence.push(format!("header:$DIMSCALE={a}"));
+    }
+    evidence.push(format!("header:$DIMLFAC={lfac}"));
+    let title = match declared.as_slice() {
+        [(_, r)] => Some(r * lfac),
+        _ => None,
+    };
+    let by_annotation = annotation.map(|a| 1.0 / a);
+    let (state, value, basis, note) = match (title, by_annotation) {
+        (Some(t), Some(a)) if ((t - a) / t).abs() > 0.02 => (
+            "conflict",
+            Some(t),
+            "title_block_scale_text",
+            format!("The title block declares {t:.4} paper mm per drawing unit, the annotation scale gives {a:.4}; the title block is taken"),
+        ),
+        (Some(t), _) => ("known", Some(t), "title_block_scale_text", format!("{t:.4} paper mm per drawing unit from the title block's scale text")),
+        (None, Some(a)) if declared.len() > 1 => (
+            "conflict",
+            Some(a),
+            "annotation_scale",
+            format!("The title block holds {} different scale texts; {a:.4} paper mm per drawing unit from the annotation scale is taken", declared.len()),
+        ),
+        (None, Some(a)) => ("known", Some(a), "annotation_scale", format!("No scale text in a title block; {a:.4} paper mm per drawing unit from the annotation scale")),
+        (None, None) => ("unknown", None, "none", "No title-block scale text and no annotation scale: rules stated in paper millimetres cannot apply".into()),
+    };
+    let mut values: Vec<f64> = title.into_iter().collect();
+    values.extend(by_annotation);
+    MdDrawingCondition {
+        id: "sheet_scale".into(),
+        state: state.into(),
+        value,
+        values,
+        basis: basis.into(),
+        evidence,
+        note,
+    }
 }
 
 /// Every outline member outside a section profile and every inferred span is in

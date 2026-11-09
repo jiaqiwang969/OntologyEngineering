@@ -2817,7 +2817,9 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDraftingRule", "message", "String"),
     ("MdDraftingRule", "severity", "String"),
     ("MdDraftingRule", "target_classes", "Vec<String>"),
+    ("MdDraftingRuleReport", "application", "Vec<MdRuleApplication>"),
     ("MdDraftingRuleReport", "by_rule", "std::collections::BTreeMap<String, u64>"),
+    ("MdDraftingRuleReport", "conditions", "Vec<MdDrawingCondition>"),
     ("MdDraftingRuleReport", "findings", "Vec<MdDraftingFinding>"),
     ("MdDraftingRuleReport", "graph_sha256", "String"),
     ("MdDraftingRuleReport", "layers", "Vec<MdDraftingLayer>"),
@@ -2856,6 +2858,13 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdDrawingConceptGroup", "group", "String"),
     ("MdDrawingConceptGroup", "label", "String"),
     ("MdDrawingConceptGroup", "schema", "String"),
+    ("MdDrawingCondition", "basis", "String"),
+    ("MdDrawingCondition", "evidence", "Vec<String>"),
+    ("MdDrawingCondition", "id", "String"),
+    ("MdDrawingCondition", "note", "String"),
+    ("MdDrawingCondition", "state", "String"),
+    ("MdDrawingCondition", "value", "Option<f64>"),
+    ("MdDrawingCondition", "values", "Vec<f64>"),
     ("MdDrawingRouteFile", "bytes", "u64"),
     ("MdDrawingRouteFile", "path", "String"),
     ("MdDrawingRouteFile", "sha256", "String"),
@@ -2910,6 +2919,7 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdEngineeringExpression", "state", "String"),
     ("MdEngineeringExpression", "unknowns", "Vec<String>"),
     ("MdEngineeringExpression", "view_id", "Option<String>"),
+    ("MdEngineeringExpressionGraph", "conditions", "Vec<MdDrawingCondition>"),
     ("MdEngineeringExpressionGraph", "expressions", "Vec<MdEngineeringExpression>"),
     ("MdEngineeringExpressionGraph", "implied_spans", "Vec<MdImpliedSpan>"),
     ("MdEngineeringExpressionGraph", "layer_convention", "String"),
@@ -3057,6 +3067,13 @@ pub const CONTRACT_FIELDS: &[(&str, &str, &str)] = &[
     ("MdReviewPageRequest", "svg", "String"),
     ("MdReviewPageRequest", "title", "String"),
     ("MdReviewPageRequest", "version", "String"),
+    ("MdRuleApplication", "findings", "u64"),
+    ("MdRuleApplication", "layer", "String"),
+    ("MdRuleApplication", "measured", "Option<u64>"),
+    ("MdRuleApplication", "not_applicable", "u64"),
+    ("MdRuleApplication", "reasons", "Vec<String>"),
+    ("MdRuleApplication", "rule_id", "String"),
+    ("MdRuleApplication", "targets", "u64"),
     ("MdStructuralEnd", "cause", "String"),
     ("MdStructuralEnd", "evidence_ids", "Vec<String>"),
     ("MdStructuralEnd", "id", "String"),
@@ -5707,8 +5724,8 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "endOnOutline"),
     ("MdDraftingRelation", "predicate", "expressionId"),
     ("MdDraftingRelation", "predicate", "expressionKind"),
-    ("MdDraftingRelation", "predicate", "extensionBeyondUnits"),
-    ("MdDraftingRelation", "predicate", "extentUnits"),
+    ("MdDraftingRelation", "predicate", "extensionBeyondPaperMm"),
+    ("MdDraftingRelation", "predicate", "extentPaperMm"),
     ("MdDraftingRelation", "predicate", "hatchDirectionDiffersFrom"),
     ("MdDraftingRelation", "predicate", "hatchSpacingDiffersFrom"),
     ("MdDraftingRelation", "predicate", "heightUnits"),
@@ -5717,7 +5734,7 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDraftingRelation", "predicate", "lineType"),
     ("MdDraftingRelation", "predicate", "memberId"),
     ("MdDraftingRelation", "predicate", "onExtensionOf"),
-    ("MdDraftingRelation", "predicate", "overshootUnits"),
+    ("MdDraftingRelation", "predicate", "overshootPaperMm"),
     ("MdDraftingRelation", "predicate", "radialTo"),
     ("MdDraftingRelation", "predicate", "rotationDeg"),
     ("MdDraftingRelation", "predicate", "sameLetterAs"),
@@ -5756,6 +5773,16 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdDrawingConceptGroup", "group", "G7"),
     ("MdDrawingConceptGroup", "group", "G8"),
     ("MdDrawingConceptGroup", "group", "G9"),
+    ("MdDrawingCondition", "basis", "annotation_scale"),
+    ("MdDrawingCondition", "basis", "none"),
+    ("MdDrawingCondition", "basis", "stroke_widths"),
+    ("MdDrawingCondition", "basis", "title_block_scale_text"),
+    ("MdDrawingCondition", "id", "line_width_contrast"),
+    ("MdDrawingCondition", "id", "sheet_scale"),
+    ("MdDrawingCondition", "state", "absent"),
+    ("MdDrawingCondition", "state", "conflict"),
+    ("MdDrawingCondition", "state", "known"),
+    ("MdDrawingCondition", "state", "unknown"),
     ("MdDrawingRouteReceipt", "status", "failed"),
     ("MdDrawingRouteReceipt", "status", "page_not_checked"),
     ("MdDrawingRouteReceipt", "status", "passed"),
@@ -5956,6 +5983,9 @@ pub const CONTRACT_ALLOWED: &[(&str, &str, &str)] = &[
     ("MdReviewPageCheckRequest", "mode", "kind"),
     ("MdReviewPageCheckRequest", "mode", "line"),
     ("MdReviewPageCheckRequest", "mode", "view"),
+    ("MdRuleApplication", "layer", "presentation"),
+    ("MdRuleApplication", "layer", "recognition"),
+    ("MdRuleApplication", "layer", "source"),
     ("MdStructuralEnd", "cause", "detail_circle_crossing"),
     ("MdStructuralEnd", "cause", "drafting_gap"),
     ("MdStructuralEnd", "cause", "local_section"),
@@ -20590,7 +20620,7 @@ impl MdDraftingRelation {
 
         if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdDraftingRelation.layer:allowed_values".into()); }
         if !["node","number","text",].contains(&self.object_kind.as_str()) { failures.push("MdDraftingRelation.object_kind:allowed_values".into()); }
-        if !["alignedWith","angleDeg","angleToDimensionLineDeg","chainedWith","coincidentWith","colourIndex","crossedBy","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondUnits","extentUnits","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootUnits","radialTo","rotationDeg","sameLetterAs","scaledBy","sourceHandle","spacingUnits","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
+        if !["alignedWith","angleDeg","angleToDimensionLineDeg","chainedWith","coincidentWith","colourIndex","crossedBy","dxfLayer","endOnOutline","expressionId","expressionKind","extensionBeyondPaperMm","extentPaperMm","hatchDirectionDiffersFrom","hatchSpacingDiffersFrom","heightUnits","layer","layerColourIndex","lineType","memberId","onExtensionOf","overshootPaperMm","radialTo","rotationDeg","sameLetterAs","scaledBy","sourceHandle","spacingUnits","text","view",].contains(&self.predicate.as_str()) { failures.push("MdDraftingRelation.predicate:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -20636,8 +20666,12 @@ impl MdDraftingRule {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MdDraftingRuleReport {
+    /// Per rule and layer: targets, measured, findings and not applicable
+    pub application: Vec<MdRuleApplication>,
     /// Findings per rule id over all layers, zero for rules without findings
     pub by_rule: std::collections::BTreeMap<String, u64>,
+    /// The graph's conditions as the check read them
+    pub conditions: Vec<MdDrawingCondition>,
     /// Every finding of every layer
     pub findings: Vec<MdDraftingFinding>,
     /// SHA-256 of the expression graph file
@@ -20787,6 +20821,41 @@ impl MdDrawingConceptGroup {
         if self.schema.trim().is_empty() { failures.push("MdDrawingConceptGroup.schema:required".into()); }
 
         if !["G1","G2","G3","G4","G5","G6","G7","G8","G9",].contains(&self.group.as_str()) { failures.push("MdDrawingConceptGroup.group:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
+/// A condition of one drawing that decides which knowledge applies to it, with its value, basis and evidence
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdDrawingCondition {
+    /// Where the value comes from
+    pub basis: String,
+    /// Source handles, header variables or observation fields the value rests on
+    pub evidence: Vec<String>,
+    /// Condition: sheet_scale (paper millimetres of the nominal sheet per drawing unit) or line_width_contrast (whether thick and thin lines can be told apart on the page)
+    pub id: String,
+    /// One sentence for a reader; the typed fields are what programs read
+    pub note: String,
+    /// known: measured or declared and consistent; absent: measured and not there (one line width only); unknown: no source; conflict: sources disagree, the value is the preferred source's
+    pub state: String,
+    /// sheet_scale: paper millimetres per drawing unit; line_width_contrast: thick to thin width ratio; absent when unknown
+    pub value: Option<f64>,
+    /// Supporting numbers in the order the basis names them (title-block ratio then annotation scale; thick then thin width in page pixels)
+    pub values: Vec<f64>,
+}
+impl MdDrawingCondition {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.basis.trim().is_empty() { failures.push("MdDrawingCondition.basis:required".into()); }
+        if self.id.trim().is_empty() { failures.push("MdDrawingCondition.id:required".into()); }
+        if self.note.trim().is_empty() { failures.push("MdDrawingCondition.note:required".into()); }
+        if self.state.trim().is_empty() { failures.push("MdDrawingCondition.state:required".into()); }
+
+        if !["annotation_scale","none","stroke_widths","title_block_scale_text",].contains(&self.basis.as_str()) { failures.push("MdDrawingCondition.basis:allowed_values".into()); }
+        if !["line_width_contrast","sheet_scale",].contains(&self.id.as_str()) { failures.push("MdDrawingCondition.id:allowed_values".into()); }
+        if !["absent","conflict","known","unknown",].contains(&self.state.as_str()) { failures.push("MdDrawingCondition.state:allowed_values".into()); }
         if failures.is_empty() { Ok(()) } else { Err(failures) }
     }
 }
@@ -21025,6 +21094,8 @@ impl MdEngineeringExpression {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MdEngineeringExpressionGraph {
+    /// Conditions of the drawing that decide which knowledge applies: the sheet scale in every graph, the line-width contrast in pixel graphs
+    pub conditions: Vec<MdDrawingCondition>,
     /// All expressions
     pub expressions: Vec<MdEngineeringExpression>,
     /// Outline inferred across explained interruptions (complete structure only)
@@ -21188,7 +21259,7 @@ impl MdExpressionMember {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MdImpliedSpan {
-    /// Circular carrier (centre x, centre y, radius, start angle, sweep) of an arc or circle; absent for straight geometry
+    /// Circular carrier [centre x, centre y, radius, start, sweep] of an arc or circle, the layout of an ARC entity; a circle has sweep 2pi and its start at its first point; absent for straight geometry
     pub arc: Option<Vec<f64>>,
     /// Interruption cause: a dimension or note text the line is broken for (GB/T 4458.4), a local section region, a drafting gap to other outline (imprecise joint, reported and never bridged), or unexplained
     pub cause: String,
@@ -21716,6 +21787,37 @@ impl MdReviewPageRequest {
     }
 }
 
+/// Where one rule applied on one fact layer: its targets, how many were measured, its findings and the targets it could not apply to
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MdRuleApplication {
+    /// Findings of the rule on the layer
+    pub findings: u64,
+    /// Fact layer
+    pub layer: String,
+    /// For a rule constraining a measured quantity: targets with that quantity; the others meet none of what the quantity is measured against and are not judged
+    pub measured: Option<u64>,
+    /// Targets the rule could not apply to because a condition it needs is unknown
+    pub not_applicable: u64,
+    /// Why targets were not applicable (condition ids and states), empty when all applied
+    pub reasons: Vec<String>,
+    /// Rule id
+    pub rule_id: String,
+    /// Objects of the rule's target classes on the layer
+    pub targets: u64,
+}
+impl MdRuleApplication {
+    pub fn validate(&self) -> Result<(), Vec<String>> {
+        #[allow(unused_mut)]
+        let mut failures = Vec::new();
+        if self.layer.trim().is_empty() { failures.push("MdRuleApplication.layer:required".into()); }
+        if self.rule_id.trim().is_empty() { failures.push("MdRuleApplication.rule_id:required".into()); }
+
+        if !["presentation","recognition","source",].contains(&self.layer.as_str()) { failures.push("MdRuleApplication.layer:allowed_values".into()); }
+        if failures.is_empty() { Ok(()) } else { Err(failures) }
+    }
+}
+
 /// Free end of a visible or hidden outline span with its typed interruption cause; an obligation of the structure topology audit
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -21765,7 +21867,7 @@ impl MdStructuralEnd {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MdStructuralLine {
-    /// Circular carrier (centre x, centre y, radius, start angle, sweep) of an arc or circle; absent for straight geometry
+    /// Circular carrier [centre x, centre y, radius, start, sweep] of an arc or circle, the layout of an ARC entity; a circle has sweep 2pi and its start at its first point; absent for straight geometry
     pub arc: Option<Vec<f64>>,
     /// Members lying on the line and covered by its pieces (drawn again)
     pub coincident: Vec<String>,
@@ -21881,7 +21983,7 @@ impl MdUsageDiscoveryReview {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct MdUsageEntity {
-    /// Original drawing-unit curve coordinates
+    /// Coordinates by entity kind, the same in every route: LINE [x0, y0, x1, y1]; ARC [cx, cy, r, start, sweep]; CIRCLE [cx, cy, r, start, 2pi]; LWPOLYLINE [x0, y0, x1, y1, ...] in vertex order without bulges; a recovered TEXT [x, y, height, rotation, width factor] with (x, y) the baseline-left insertion; a recovered HATCH [pattern angle, spacing]; a recovered SOLID arrowhead [tip x, tip y, base x, base y]; empty where the source bytes carry the geometry (DXF texts, hatches, solids, inserts)
     pub coordinates: Vec<f64>,
     /// line, arc, circle or unqualified
     pub geometry_kind: String,

@@ -4,6 +4,7 @@
 use oe_drawing_check::drafting::{self, CLASSES, LAYERS, PREDICATES};
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
+use std::f64::consts::TAU;
 
 fn spec_allowed(type_name: &str, field: &str) -> BTreeSet<String> {
     let spec: toml::Value = toml::from_str(
@@ -80,6 +81,10 @@ struct Drawing {
     structural: Vec<Value>,
     views: Vec<Value>,
     n: usize,
+    /// Paper millimetres per drawing unit of the sheet; `None` is one (the fixtures are drawn at paper size).
+    sheet: Option<f64>,
+    /// The sheet scale left unknown, as on a drawing without a scale text or an annotation scale.
+    sheet_unknown: bool,
 }
 impl Drawing {
     fn id(&mut self) -> String {
@@ -114,12 +119,14 @@ impl Drawing {
             "ARC",
             &format!("10\n{}\n20\n{}\n40\n{r}\n50\n{a0}\n51\n{a1}\n", c[0], c[1]),
         );
-        self.pixel(&h, "ARC", json!({"coordinates": [c[0], c[1], r, a0, a1 - a0]}));
+        // The graph contract: radians, counter-clockwise, start in [0, TAU), positive sweep (DXF runs a0 to a1 CCW).
+        let (start, sweep) = (a0.to_radians().rem_euclid(TAU), (a1 - a0).rem_euclid(360.).to_radians());
+        self.pixel(&h, "ARC", json!({"coordinates": [c[0], c[1], r, start, sweep]}));
         h
     }
     fn circle(&mut self, c: [f64; 2], r: f64) -> String {
         let h = self.entity("CIRCLE", &format!("10\n{}\n20\n{}\n40\n{r}\n", c[0], c[1]));
-        self.pixel(&h, "CIRCLE", json!({"coordinates": [c[0], c[1], r]}));
+        self.pixel(&h, "CIRCLE", json!({"coordinates": [c[0], c[1], r, 0.0, TAU]}));
         h
     }
     fn text(&mut self, s: &str, p: [f64; 2], height: f64, rotation: f64) -> String {
@@ -127,7 +134,7 @@ impl Drawing {
             "TEXT",
             &format!("10\n{}\n20\n{}\n40\n{height}\n50\n{rotation}\n1\n{s}\n", p[0], p[1]),
         );
-        self.pixel(&h, "TEXT", json!({"coordinates": [p[0], p[1], height, rotation, 1.0], "text": s}));
+        self.pixel(&h, "TEXT", json!({"coordinates": [p[0], p[1], height, rotation.to_radians(), 1.0], "text": s}));
         h
     }
     fn polyline(&mut self, points: &[[f64; 2]]) -> String {
@@ -142,7 +149,7 @@ impl Drawing {
     }
     fn hatch(&mut self, angle: f64) -> String {
         let h = self.entity("HATCH", &format!("2\nANSI31\n70\n0\n52\n{angle}\n91\n0\n"));
-        self.pixel(&h, "HATCH", json!({"coordinates": [angle]}));
+        self.pixel(&h, "HATCH", json!({"coordinates": [angle.to_radians()]}));
         h
     }
     /// A hatch with pattern data: one pattern line at `angle` whose rows are `spacing` apart.
@@ -153,7 +160,7 @@ impl Drawing {
             "HATCH",
             &format!("2\nANSI31\n70\n0\n91\n0\n52\n{angle}\n78\n1\n53\n{angle}\n43\n0\n44\n0\n45\n{dx}\n46\n{dy}\n79\n0\n"),
         );
-        self.pixel(&h, "HATCH", json!({"coordinates": [angle, spacing]}));
+        self.pixel(&h, "HATCH", json!({"coordinates": [angle.to_radians(), spacing]}));
         h
     }
     /// An expression without members yet; members join it with `member_in`.
@@ -192,6 +199,12 @@ impl Drawing {
     }
     fn graph(&self) -> Value {
         json!({
+            "conditions": [if self.sheet_unknown {
+                json!({"id": "sheet_scale", "state": "unknown", "value": null, "values": [], "basis": "none", "evidence": [], "note": "fixture"})
+            } else {
+                let s = self.sheet.unwrap_or(1.0);
+                json!({"id": "sheet_scale", "state": "known", "value": s, "values": [s], "basis": "title_block_scale_text", "evidence": [], "note": "fixture"})
+            }],
             "expressions": self.expressions,
             "members": self.members,
             "structural_lines": self.structural,
@@ -796,4 +809,63 @@ fn the_same_shapes_are_evaluated_on_the_three_layers() {
         assert_eq!(f[layer][0].rule_id, "G4-032-angle-unit-written");
         assert_eq!(f[layer][0].layer, layer);
     }
+}
+
+/// Paper lengths go through the sheet scale. The centre line of the G1-021 fixtures runs 0.3 units (violating) or
+/// 3 units (conforming) past the outline; on a sheet enlarged five times the 0.3 units are 1.5 mm of paper and
+/// conform, on a sheet reduced to a quarter the 3 units are 0.75 mm and do not. With the scale unknown the rule does
+/// not apply: no finding, its targets counted as not applicable with the reason.
+#[test]
+fn paper_lengths_go_through_the_sheet_scale_and_an_unknown_scale_leaves_the_rule_not_applicable() {
+    let rule = "G1-021-centre-line-beyond-outline";
+    let fired = |d: &Drawing| d.rule_ids().contains(rule);
+    let mut d = fixture(rule, true);
+    assert!(fired(&d), "0.3 units at one paper millimetre per unit");
+    d.sheet = Some(5.0);
+    assert!(!fired(&d), "0.3 units on a sheet enlarged five times are 1.5 mm of paper");
+    let mut d = fixture(rule, false);
+    assert!(!fired(&d), "3 units at one paper millimetre per unit");
+    d.sheet = Some(0.25);
+    assert!(fired(&d), "3 units on a sheet reduced to a quarter are 0.75 mm of paper");
+    for violating in [true, false] {
+        let mut d = fixture(rule, violating);
+        d.sheet_unknown = true;
+        let (found, application) = drafting::evaluate_with_application(&d.graph(), Some(&d.dxf())).unwrap();
+        assert!(found.values().flatten().all(|f| f.rule_id != rule), "{found:?}");
+        let rows: Vec<_> = application.iter().filter(|a| a.rule_id == rule).collect();
+        assert_eq!(rows.len(), LAYERS.len());
+        for a in rows {
+            assert!(a.targets > 0, "{a:?}");
+            assert_eq!(a.not_applicable, a.targets, "{a:?}");
+            assert_eq!(a.reasons, vec!["sheet_scale:unknown".to_owned()]);
+            assert_eq!(a.findings, 0);
+            assert_eq!(a.measured, Some(0), "no paper measure is taken without the scale");
+        }
+        // Rules needing no condition still apply on the same drawing.
+        assert!(application.iter().filter(|a| a.rule_id != rule && !a.reasons.is_empty()).all(|a| {
+            drafting::rules(&drafting::knowledge().unwrap().shapes).unwrap().iter().any(|r| r.id == a.rule_id && !r.requires.is_empty())
+        }));
+    }
+}
+
+/// The counts never claim more than happened: findings are at most the measured targets, measured at most the
+/// targets, and a centre line that meets no outline is a target without a measure instead of a silent pass.
+#[test]
+fn application_counts_are_consistent_and_show_targets_without_a_measure() {
+    let rule = "G1-021-centre-line-beyond-outline";
+    let mut d = fixture(rule, false);
+    // A second centre line far from every outline.
+    let c = d.line([100.0, 50.0], [140.0, 50.0]);
+    d.member(&c, "center_line", "thin_dash_dot", "center_axis", "");
+    let (_, application) = drafting::evaluate_with_application(&d.graph(), Some(&d.dxf())).unwrap();
+    for a in &application {
+        assert!(a.findings <= a.targets && a.not_applicable <= a.targets, "{a:?}");
+        if let Some(m) = a.measured {
+            assert!(m <= a.targets && (a.findings <= m || a.rule_id != rule), "{a:?}");
+        }
+    }
+    let source = application.iter().find(|a| a.rule_id == rule && a.layer == "source").unwrap();
+    assert_eq!(source.targets, 2, "{source:?}");
+    assert_eq!(source.measured, Some(1), "the far centre line meets no outline: {source:?}");
+    assert_eq!(source.findings, 0);
 }

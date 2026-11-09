@@ -74,6 +74,16 @@ fn fin(x: f64) -> f64 {
     if x.is_finite() { x } else { 0.0 }
 }
 
+/// An image-frame arc (angles of a y-down page, sweep of either sign) as the graph contract writes arcs: start and
+/// sweep in radians, counter-clockwise with y up, start in [0, TAU) and a positive sweep.
+fn drawing_arc(start_rad: f64, sweep_rad: f64) -> (f64, f64) {
+    // Image angles turn the other way once y points up.
+    match (-start_rad, -sweep_rad) {
+        (s, w) if w < 0. => ((s + w).rem_euclid(std::f64::consts::TAU), -w),
+        (s, w) => (s.rem_euclid(std::f64::consts::TAU), w),
+    }
+}
+
 fn shape_json(s: &Shape) -> Value {
     let pt = |p: &P| json!([fin(p.0), fin(p.1)]);
     match s {
@@ -779,7 +789,7 @@ impl<'a> Builder<'a> {
                 let (origin, h, rot, wf, width) = self.text_geometry(*bbox, *vertical, &measure);
                 let id = self.add_entity(
                     "TEXT",
-                    vec![origin.0, origin.1, h, rot, wf],
+                    vec![origin.0, origin.1, h, rot.to_radians(), wf],
                     "unqualified",
                     Some("text_box_from_ink"),
                     "text",
@@ -820,7 +830,7 @@ impl<'a> Builder<'a> {
                 let cu = self.to_drawing(*c);
                 let ru = r / self.s;
                 let lt = stroke_line_type(m.pattern.or(Some(Pattern::Continuous)), false);
-                let id = self.add_entity("CIRCLE", vec![cu.0, cu.1, ru], "circle", None, lt, None, ("observed_pattern", "continuous", vec![support]));
+                let id = self.add_entity("CIRCLE", vec![cu.0, cu.1, ru, 0.0, std::f64::consts::TAU], "circle", None, lt, None, ("observed_pattern", "continuous", vec![support]));
                 let wdt = m.width_px.max(2.0) + 1.0;
                 for k in 0..48 {
                     let (a0, a1) = (k as f64 * std::f64::consts::TAU / 48.0, (k + 1) as f64 * std::f64::consts::TAU / 48.0);
@@ -832,7 +842,7 @@ impl<'a> Builder<'a> {
             Shape::Hatch { polygon, angle_deg, spacing_px } => {
                 let id = self.add_entity(
                     "HATCH",
-                    vec![*angle_deg, spacing_px / self.s],
+                    vec![angle_deg.to_radians(), spacing_px / self.s],
                     "unqualified",
                     Some("pattern_only"),
                     "fill",
@@ -1675,18 +1685,21 @@ impl<'a> Builder<'a> {
         // elimination (every annotation line was proposed and erased), as candidates.
         let views: Vec<String> = classified.iter().map(|c| self.view_of(c.stroke.primitive.mid())).collect();
         let (mut continuous_in_view, mut thick_in_view) = (0usize, 0usize);
+        let mut thick_widths: Vec<f64> = Vec::new();
         for (c, view) in classified.iter().zip(&views) {
             if view != "view:sheet" && matches!(c.stroke.pattern, Pattern::Continuous | Pattern::Unknown) {
                 continuous_in_view += 1;
                 if c.thick {
                     thick_in_view += 1;
+                    thick_widths.push(c.stroke.width_px);
                 }
             }
         }
+        let thick_median = crate::geom::median(&mut thick_widths);
         // Fewer than one in twenty in-view continuous strokes thick: the print draws outlines thin.
         let by_elimination = continuous_in_view > 0 && thick_in_view * 20 < continuous_in_view;
         self.width_contrast = json!({"in_view_continuous_strokes": continuous_in_view, "in_view_thick_strokes": thick_in_view,
-            "thin_reference_px": thin, "contour_by_elimination": by_elimination});
+            "thin_reference_px": thin, "thick_median_px": thick_median.map(fin), "contour_by_elimination": by_elimination});
         if by_elimination {
             self.unknowns.push(format!(
                 "No width contrast inside the views ({thick_in_view} thick of {continuous_in_view} continuous strokes at thin reference {thin:.2} px): continuous unexplained ink in the views is taken as visible outline by elimination, as candidates"
@@ -1776,14 +1789,15 @@ impl<'a> Builder<'a> {
                     let cu = self.to_drawing(centre);
                     let ru = r / self.s;
                     let full = sweep_rad.abs() >= std::f64::consts::TAU - 1e-6;
-                    // Image angles turn the other way once y points up.
+                    // The overlay draws in degrees on the image's own turn; the graph takes the contract's arc.
                     let start = (-start_rad).to_degrees().rem_euclid(360.0);
                     let sweep = -sweep_rad.to_degrees();
+                    let (a0, w) = drawing_arc(start_rad, sweep_rad);
                     let id = if full {
-                        self.add_entity("CIRCLE", vec![cu.0, cu.1, ru], "circle", None, lt, None,
+                        self.add_entity("CIRCLE", vec![cu.0, cu.1, ru, 0.0, std::f64::consts::TAU], "circle", None, lt, None,
                             ("observed_pattern", pattern_name(Some(c.stroke.pattern)), evidence.clone()))
                     } else {
-                        self.add_entity("ARC", vec![cu.0, cu.1, ru, start, sweep], "arc", None, lt, None,
+                        self.add_entity("ARC", vec![cu.0, cu.1, ru, a0, w], "arc", None, lt, None,
                             ("observed_pattern", pattern_name(Some(c.stroke.pattern)), evidence.clone()))
                     };
                     self.overlay.arc(&self.frame, &id, overlay_class, cu, ru, start, if full { 360.0 } else { sweep });
@@ -1817,13 +1831,9 @@ impl<'a> Builder<'a> {
         let cu = self.to_drawing(centre);
         let ru = r / self.s;
         let full = sweep_rad.abs() >= std::f64::consts::TAU - 1e-6;
-        // A structural arc is written as the DWG route writes it, which the review page and the checker read:
-        // [cx, cy, r, start, sweep] in radians, counter-clockwise with y up and a positive sweep; a circle is
-        // [cx, cy, r, start, TAU] with its start point. Image angles turn the other way once y points up.
-        let (start, sweep) = match (-start_rad, -sweep_rad) {
-            (s, w) if w < 0. => ((s + w).rem_euclid(std::f64::consts::TAU), -w),
-            (s, w) => (s.rem_euclid(std::f64::consts::TAU), w),
-        };
+        // A structural arc is written as the graph contract writes arcs (the DWG route's way), which the review page
+        // and the checker read; a circle is [cx, cy, r, start, TAU] with its start point.
+        let (start, sweep) = drawing_arc(start_rad, sweep_rad);
         let id = format!("line:{}", self.structural_lines.len());
         let line_type = if kind == "visible_contour" { "thick_continuous" } else { "thin_dashed" };
         let at = |a: f64| (cu.0 + ru * a.cos(), cu.1 + ru * a.sin());
@@ -1840,6 +1850,47 @@ impl<'a> Builder<'a> {
             "points": points.iter().map(|x| fin(*x)).collect::<Vec<_>>(), "state": "observed", "trimmed": [], "unknowns": [], "view_id": view,
         }));
         let _ = entity;
+    }
+
+    /// The sheet scale as the graph contract's condition: paper millimetres of the nominal sheet per drawing unit. The
+    /// title block's scale text gives paper over part; the drawing unit is a part millimetre when the scale comes
+    /// from the dimensions or from that note. The page's own millimetres per unit (a print may be enlarged or reduced
+    /// from the nominal sheet) are a supporting value, not the scale.
+    fn sheet_scale_condition(&self) -> Value {
+        let page_mm = self.s / (self.cal.dpi / 25.4);
+        let ratio = self.cal.scale_note.as_deref().and_then(crate::calibrate::parse_scale_note);
+        let part_units = matches!(self.cal.basis.as_str(), "dimensions" | "scale_note");
+        let mut evidence = vec![format!("calibration:basis={} px_per_unit={:.4} dpi={}", self.cal.basis, self.s, self.cal.dpi)];
+        if let Some(n) = &self.cal.scale_note {
+            evidence.insert(0, format!("scale_note:'{n}'"));
+        }
+        match ratio.filter(|_| part_units) {
+            Some(r) => json!({"id": "sheet_scale", "state": "known", "value": fin(r), "values": [fin(r), fin(page_mm)],
+                "basis": "title_block_scale_text", "evidence": evidence,
+                "note": format!("{r:.4} paper mm per drawing unit from the title block's scale text; the page itself has {page_mm:.4} mm per unit ({:.2} times the nominal sheet)", page_mm / r)}),
+            None => json!({"id": "sheet_scale", "state": "unknown", "value": null, "values": [fin(page_mm)], "basis": "none", "evidence": evidence,
+                "note": format!("No title-block scale text read: rules stated in paper millimetres cannot apply; the page has {page_mm:.4} mm per drawing unit")}),
+        }
+    }
+
+    /// Line-width contrast as the graph contract's condition: whether thick and thin lines differ on this print.
+    fn width_contrast_condition(&self) -> Value {
+        let w = &self.width_contrast;
+        let thin = w["thin_reference_px"].as_f64();
+        let thick = w["thick_median_px"].as_f64();
+        let evidence = vec![format!(
+            "in_view_strokes:continuous={},thick={}",
+            w["in_view_continuous_strokes"].as_u64().unwrap_or(0),
+            w["in_view_thick_strokes"].as_u64().unwrap_or(0)
+        )];
+        match (thin, thick, w["contour_by_elimination"].as_bool()) {
+            (Some(t), Some(k), Some(false)) if t > 0. => json!({"id": "line_width_contrast", "state": "known", "value": fin(k / t), "values": [fin(k), fin(t)],
+                "basis": "stroke_widths", "evidence": evidence, "note": format!("Thick lines {k:.2} px and thin lines {t:.2} px on the page")}),
+            (Some(t), _, Some(true)) => json!({"id": "line_width_contrast", "state": "absent", "value": null, "values": [fin(t)],
+                "basis": "stroke_widths", "evidence": evidence, "note": format!("One line width ({t:.2} px) inside the views: thick and thin lines cannot be told apart; outlines are taken by elimination")}),
+            _ => json!({"id": "line_width_contrast", "state": "unknown", "value": null, "values": [], "basis": "none", "evidence": evidence,
+                "note": "No in-view strokes to measure line widths on".to_owned()}),
+        }
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -2097,6 +2148,7 @@ impl<'a> Builder<'a> {
             "structure_ends": self.structure_ends,
             "unknowns": unknowns,
             "views": self.views_json(),
+            "conditions": [self.sheet_scale_condition(), self.width_contrast_condition()],
         });
         let counts = json!({
             "unsupported_members": self.unsupported,

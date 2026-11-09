@@ -258,8 +258,8 @@ name = "coordinates"
 rust_type = "Vec<f64>"
 required = true
 format = "typed"
-meaning = "Original drawing-unit curve coordinates"
-unit = "Original drawing coordinate units, normalized source parameters and unitless identities; no unverified mm conversion"
+meaning = "Coordinates by entity kind, the same in every route: LINE [x0, y0, x1, y1]; ARC [cx, cy, r, start, sweep]; CIRCLE [cx, cy, r, start, 2pi]; LWPOLYLINE [x0, y0, x1, y1, ...] in vertex order without bulges; a recovered TEXT [x, y, height, rotation, width factor] with (x, y) the baseline-left insertion; a recovered HATCH [pattern angle, spacing]; a recovered SOLID arrowhead [tip x, tip y, base x, base y]; empty where the source bytes carry the geometry (DXF texts, hatches, solids, inserts)"
+unit = "Lengths in drawing units, angles in radians counter-clockwise with y up; an arc's start in [0, 2pi) and its sweep in (0, 2pi], a circle's sweep 2pi; no unverified mm conversion"
 precision = "Fixed 1e-7 drawing-unit numerical incidence, not product tolerance; no endpoint snapping or forced closure"
 write = "Formal spec through locked ggen; Rust derives generic source-only relations; presentation consumes results without inference"
 applicability = "No old assignments, corrected drawings, manually named source ranges, images or paired models in discovery input"
@@ -2520,8 +2520,8 @@ name="arc"
 rust_type="Option<Vec<f64>>"
 required=false
 format="typed"
-meaning = "Circular carrier (centre x, centre y, radius, start angle, sweep) of an arc or circle; absent for straight geometry"
-unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
+meaning = "Circular carrier [centre x, centre y, radius, start, sweep] of an arc or circle, the layout of an ARC entity; a circle has sweep 2pi and its start at its first point; absent for straight geometry"
+unit="Lengths in drawing units, angles in radians counter-clockwise with y up; start in [0, 2pi), sweep in (0, 2pi]; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
@@ -2650,8 +2650,8 @@ name="arc"
 rust_type="Option<Vec<f64>>"
 required=false
 format="typed"
-meaning = "Circular carrier (centre x, centre y, radius, start angle, sweep) of an arc or circle; absent for straight geometry"
-unit="Original drawing coordinates and normalized source parameters; no unverified mm conversion"
+meaning = "Circular carrier [centre x, centre y, radius, start, sweep] of an arc or circle, the layout of an ARC entity; a circle has sweep 2pi and its start at its first point; absent for straight geometry"
+unit="Lengths in drawing units, angles in radians counter-clockwise with y up; start in [0, 2pi), sweep in (0, 2pi]; no unverified mm conversion"
 precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
@@ -2729,6 +2729,99 @@ precision="Exact source identity; numeric incidence uses fixed drawing-domain to
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
+
+[[types]]
+name="MdDrawingCondition"
+contract_group="engineering"
+meaning="A condition of one drawing that decides which knowledge applies to it, with its value, basis and evidence"
+identity="Condition id within one graph"
+
+[[types.fields]]
+name="id"
+rust_type="String"
+required=true
+format="typed"
+meaning="Condition: sheet_scale (paper millimetres of the nominal sheet per drawing unit) or line_width_contrast (whether thick and thin lines can be told apart on the page)"
+unit="Identifier"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input"
+applicability="Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles"
+acceptance="Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed"
+allowed_values=["sheet_scale", "line_width_contrast"]
+
+[[types.fields]]
+name="state"
+rust_type="String"
+required=true
+format="typed"
+meaning="known: measured or declared and consistent; absent: measured and not there (one line width only); unknown: no source; conflict: sources disagree, the value is the preferred source's"
+unit="Identifier"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input"
+applicability="Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles"
+acceptance="Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed"
+allowed_values=["known", "absent", "unknown", "conflict"]
+
+[[types.fields]]
+name="value"
+rust_type="Option<f64>"
+required=false
+format="typed"
+meaning="sheet_scale: paper millimetres per drawing unit; line_width_contrast: thick to thin width ratio; absent when unknown"
+unit="Paper millimetres per drawing unit, or a ratio"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input"
+applicability="Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles"
+acceptance="Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed"
+
+[[types.fields]]
+name="values"
+rust_type="Vec<f64>"
+required=true
+format="typed"
+meaning="Supporting numbers in the order the basis names them (title-block ratio then annotation scale; thick then thin width in page pixels)"
+unit="As named by the basis"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input"
+applicability="Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles"
+acceptance="Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed"
+
+[[types.fields]]
+name="basis"
+rust_type="String"
+required=true
+format="typed"
+meaning="Where the value comes from"
+unit="Identifier"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input"
+applicability="Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles"
+acceptance="Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed"
+allowed_values=["title_block_scale_text", "annotation_scale", "stroke_widths", "none"]
+
+[[types.fields]]
+name="evidence"
+rust_type="Vec<String>"
+required=true
+format="typed"
+meaning="Source handles, header variables or observation fields the value rests on"
+unit="Identifiers and quoted source text"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input"
+applicability="Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles"
+acceptance="Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed"
+
+[[types.fields]]
+name="note"
+rust_type="String"
+required=true
+format="typed"
+meaning="One sentence for a reader; the typed fields are what programs read"
+unit="Text"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input"
+applicability="Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles"
+acceptance="Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed"
 
 [[types]]
 name="MdEngineeringExpressionGraph"
@@ -2906,6 +2999,18 @@ precision="Exact source identity; numeric incidence uses fixed drawing-domain to
 write="ggen contract; Rust expression assembler from source bytes only; no old answer input"
 applicability="DXF source expression candidates under the finite dxf-expression-rules/2 profile"
 acceptance="Source coverage, bounded intervals, explicit unknowns and independent evaluation"
+
+[[types.fields]]
+name="conditions"
+rust_type="Vec<MdDrawingCondition>"
+required=true
+format="typed"
+meaning="Conditions of the drawing that decide which knowledge applies: the sheet scale in every graph, the line-width contrast in pixel graphs"
+unit="As each condition states"
+precision="Exact source identity; numeric incidence uses fixed drawing-domain tolerances, never product tolerance"
+write="ggen contract; Rust expression assembler (DWG route from source bytes, pixel route from recorded observations and the page); no old answer input"
+applicability="Expression graphs of the dxf-expression-rules/2 and pixel-expression-rules/1 profiles"
+acceptance="Typed values with basis and evidence; an unknown or conflicting condition is stated, never guessed"
 
 [[interfaces]]
 name="MdEngineeringExpressionPort"
@@ -5433,7 +5538,7 @@ precision = "Exact identities and counts; relations by the stated tolerances (0.
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
-allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootUnits", "extensionBeyondUnits", "angleToDimensionLineDeg", "extentUnits", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith"]
+allowed_values = ["layer", "sourceHandle", "memberId", "expressionId", "expressionKind", "view", "lineType", "text", "rotationDeg", "angleDeg", "heightUnits", "spacingUnits", "dxfLayer", "colourIndex", "layerColourIndex", "endOnOutline", "overshootPaperMm", "extensionBeyondPaperMm", "angleToDimensionLineDeg", "extentPaperMm", "crossedBy", "coincidentWith", "radialTo", "onExtensionOf", "alignedWith", "sameLetterAs", "scaledBy", "hatchDirectionDiffersFrom", "hatchSpacingDiffersFrom", "chainedWith"]
 
 [[types.fields]]
 name = "object"
@@ -5771,6 +5876,97 @@ acceptance = "Rule findings are deviations to review on the named layer; not eng
 allowed_values = ["violation", "warning", "info"]
 
 [[types]]
+name = "MdRuleApplication"
+contract_group = "engineering"
+meaning = "Where one rule applied on one fact layer: its targets, how many were measured, its findings and the targets it could not apply to"
+identity = "Rule id and layer"
+
+[[types.fields]]
+name = "rule_id"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Rule id"
+unit = "Identifier"
+precision = "Exact identities and counts"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming"
+
+[[types.fields]]
+name = "layer"
+rust_type = "String"
+required = true
+format = "typed"
+meaning = "Fact layer"
+unit = "Identifier"
+precision = "Exact identities and counts"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming"
+allowed_values = ["source", "recognition", "presentation"]
+
+[[types.fields]]
+name = "targets"
+rust_type = "u64"
+required = true
+format = "typed"
+meaning = "Objects of the rule's target classes on the layer"
+unit = "Count"
+precision = "Exact identities and counts"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming"
+
+[[types.fields]]
+name = "measured"
+rust_type = "Option<u64>"
+required = false
+format = "typed"
+meaning = "For a rule constraining a measured quantity: targets with that quantity; the others meet none of what the quantity is measured against and are not judged"
+unit = "Count"
+precision = "Exact identities and counts"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming"
+
+[[types.fields]]
+name = "findings"
+rust_type = "u64"
+required = true
+format = "typed"
+meaning = "Findings of the rule on the layer"
+unit = "Count"
+precision = "Exact identities and counts"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming"
+
+[[types.fields]]
+name = "not_applicable"
+rust_type = "u64"
+required = true
+format = "typed"
+meaning = "Targets the rule could not apply to because a condition it needs is unknown"
+unit = "Count"
+precision = "Exact identities and counts"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming"
+
+[[types.fields]]
+name = "reasons"
+rust_type = "Vec<String>"
+required = true
+format = "typed"
+meaning = "Why targets were not applicable (condition ids and states), empty when all applied"
+unit = "Identifiers"
+precision = "Exact identities and counts"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming"
+
+[[types]]
 name = "MdDraftingRuleReport"
 contract_group = "engineering"
 meaning = "Result of the drafting-rule check: the rules, the layers and every finding"
@@ -5908,6 +6104,30 @@ precision = "Exact identities and counts; relations by the stated tolerances (0.
 write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
 applicability = "One discovery result (frozen graph and its source DXF) per check; no reference answers, regions, feedback or paired models as input"
 acceptance = "Rule findings are deviations to review on the named layer; not engineering acceptance and not a correction of the graph"
+
+[[types.fields]]
+name = "conditions"
+rust_type = "Vec<MdDrawingCondition>"
+required = true
+format = "typed"
+meaning = "The graph's conditions as the check read them"
+unit = "As each condition states"
+precision = "Exact identities and counts"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming"
+
+[[types.fields]]
+name = "application"
+rust_type = "Vec<MdRuleApplication>"
+required = true
+format = "typed"
+meaning = "Per rule and layer: targets, measured, findings and not applicable"
+unit = "Counts"
+precision = "Exact identities and counts"
+write = "ggen contract; Rust independent check; facts written as Turtle beside the report; the ontology and shapes compiled into the program"
+applicability = "One discovery result (frozen graph and its source DXF, or a pixel graph) per check; no reference answers, regions, feedback or paired models as input"
+acceptance = "Counts show where a rule applied, was measured and did not apply; a rule that could not apply is never counted as conforming"
 
 [[interfaces]]
 name = "MdDraftingRulePort"

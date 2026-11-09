@@ -74,6 +74,34 @@ fn fin(x: f64) -> f64 {
     if x.is_finite() { x } else { 0.0 }
 }
 
+/// Least-squares circle through points (Kåsa): centre and radius, `None` when they are collinear or too few.
+fn fit_circle(points: &[P]) -> Option<(P, f64)> {
+    let n = points.len();
+    if n < 3 {
+        return None;
+    }
+    let (mx, my) = points.iter().fold((0.0, 0.0), |a, p| (a.0 + p.0 / n as f64, a.1 + p.1 / n as f64));
+    let (mut suu, mut svv, mut suv, mut suuu, mut svvv, mut suvv, mut svuu) = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    for p in points {
+        let (u, v) = (p.0 - mx, p.1 - my);
+        suu += u * u;
+        svv += v * v;
+        suv += u * v;
+        suuu += u * u * u;
+        svvv += v * v * v;
+        suvv += u * v * v;
+        svuu += v * u * u;
+    }
+    let det = suu * svv - suv * suv;
+    if det.abs() < 1e-9 {
+        return None;
+    }
+    let uc = ((suuu + suvv) * svv - (svvv + svuu) * suv) / (2.0 * det);
+    let vc = ((svvv + svuu) * suu - (suuu + suvv) * suv) / (2.0 * det);
+    let r = (uc * uc + vc * vc + (suu + svv) / n as f64).sqrt();
+    r.is_finite().then_some(((mx + uc, my + vc), r))
+}
+
 /// An image-frame arc (angles of a y-down page, sweep of either sign) as the graph contract writes arcs: start and
 /// sweep in radians, counter-clockwise with y up, start in [0, TAU) and a positive sweep.
 fn drawing_arc(start_rad: f64, sweep_rad: f64) -> (f64, f64) {
@@ -1839,19 +1867,35 @@ impl<'a> Builder<'a> {
         self.arc_structural_lines(arc_pieces, params);
     }
 
-    /// Structural lines of the arc pieces, as the DWG route forms them: pieces on one circle (centre within 2 px or
-    /// 2 % of the radius, radius within 1.5 px or 2 %) of one view and class are one line, joined across a gap that
-    /// touches (within the touch gap) or that the original page inks along the circle (a crossing erased before
-    /// vectorizing). With every gap joined the line is a circle; otherwise each run between open gaps is one arc.
+    /// Structural lines of the arc pieces, as the DWG route forms them: pieces on one circle in one view and class are
+    /// one line, joined across a gap that touches (within the touch gap) or that the original page inks along the
+    /// circle (a crossing erased before vectorizing). Two pieces are on one circle when one circle fitted to the
+    /// points of both carries every point within 2.5 px or 1.2 % of its radius: a short piece's fitted centre may be
+    /// several pixels off while its points are not, and pieces of two close concentric circles fit no single circle.
+    /// The line's circle is fitted to the points of all its pieces. With every gap joined the line is a circle;
+    /// otherwise each run between open gaps is one arc.
     fn arc_structural_lines(&mut self, pieces: Vec<ArcPiece>, params: &StructureParams) {
         use std::f64::consts::TAU;
         let n = pieces.len();
+        // Points of a piece every 4 px along it (at least five).
+        let points = |p: &ArcPiece| -> Vec<P> {
+            let k = ((p.sweep_rad.abs() * p.r) / 4.0).ceil().max(4.0) as usize;
+            (0..=k).map(|j| { let t = p.start_rad + p.sweep_rad * j as f64 / k as f64; (p.c.0 + p.r * t.cos(), p.c.1 + p.r * t.sin()) }).collect()
+        };
+        let pts: Vec<Vec<P>> = pieces.iter().map(points).collect();
+        let together = |a: usize, b: usize| -> bool {
+            let both: Vec<P> = pts[a].iter().chain(pts[b].iter()).copied().collect();
+            let Some((c, r)) = fit_circle(&both) else { return false };
+            let tol = 2.5f64.max(0.012 * r);
+            both.iter().all(|p| (dist(*p, c) - r).abs() <= tol)
+        };
         let mut dsu = crate::pattern::Dsu::new(n);
         for a in 0..n {
             for b in a + 1..n {
                 let (x, y) = (&pieces[a], &pieces[b]);
-                let r = x.r.max(y.r);
-                if x.view == y.view && x.class == y.class && dist(x.c, y.c) <= 2.0f64.max(0.02 * r) && (x.r - y.r).abs() <= 1.5f64.max(0.02 * r) {
+                let rr = x.r.max(y.r);
+                // Only pieces whose fitted circles are roughly alike are tried (15 % of the radius).
+                if x.view == y.view && x.class == y.class && dist(x.c, y.c) <= 0.15 * rr && (x.r - y.r).abs() <= 0.15 * rr && together(a, b) {
                     dsu.union(a, b);
                 }
             }
@@ -1861,11 +1905,13 @@ impl<'a> Builder<'a> {
             groups.entry(dsu.find(k)).or_default().push(k);
         }
         for members in groups.into_values() {
-            let weight = |k: usize| (pieces[k].sweep_rad.abs() * pieces[k].r).max(1e-9);
-            let total: f64 = members.iter().map(|&k| weight(k)).sum();
-            let c = members.iter().fold((0.0, 0.0), |acc, &k| (acc.0 + pieces[k].c.0 * weight(k) / total, acc.1 + pieces[k].c.1 * weight(k) / total));
-            let r = members.iter().map(|&k| pieces[k].r * weight(k) / total).sum::<f64>();
-            // Intervals with y up (the contract's turn), sorted by start.
+            let all: Vec<P> = members.iter().flat_map(|&k| pts[k].iter().copied()).collect();
+            let (c, r) = if members.len() > 1 {
+                fit_circle(&all).unwrap_or((pieces[members[0]].c, pieces[members[0]].r))
+            } else {
+                (pieces[members[0]].c, pieces[members[0]].r)
+            };
+            // Intervals with y up (the contract's turn) about the line's circle, sorted by start.
             let mut items: Vec<(f64, f64, &str)> = members
                 .iter()
                 .map(|&k| {
@@ -1873,8 +1919,18 @@ impl<'a> Builder<'a> {
                     if p.sweep_rad.abs() >= TAU - 1e-6 {
                         (0.0, TAU, p.member.as_str())
                     } else {
-                        let (s, w) = drawing_arc(p.start_rad, p.sweep_rad);
-                        (s, w, p.member.as_str())
+                        // The piece's points as angles about the circle (y up), unwrapped from its first point.
+                        let angles: Vec<f64> = pts[k].iter().map(|q| (c.1 - q.1).atan2(q.0 - c.0)).collect();
+                        let mut unwrapped = vec![angles[0]];
+                        for a in &angles[1..] {
+                            let prev = *unwrapped.last().expect("a point");
+                            let mut d = a - prev;
+                            while d > std::f64::consts::PI { d -= TAU; }
+                            while d < -std::f64::consts::PI { d += TAU; }
+                            unwrapped.push(prev + d);
+                        }
+                        let (lo, hi) = unwrapped.iter().fold((f64::MAX, f64::MIN), |acc, a| (acc.0.min(*a), acc.1.max(*a)));
+                        (lo.rem_euclid(TAU), (hi - lo).min(TAU), p.member.as_str())
                     }
                 })
                 .collect();
@@ -2663,6 +2719,43 @@ mod tests {
         let a = b.structural_lines[0]["arc"].as_array().unwrap().iter().map(|x| x.as_f64().unwrap()).collect::<Vec<_>>();
         assert!((a[4] - (TAU - rad(40.0))).abs() < 0.02, "the arc spans all but the 40° opening: {a:?}");
         assert_eq!(b.structural_lines[0]["pieces"].as_array().unwrap().len(), 4);
+    }
+
+    #[test]
+    fn short_pieces_with_scattered_fitted_centres_join_by_their_points() {
+        // The I1 inner circle: eight short pieces (40°, gaps of 5° where crossings were erased) of an ink circle of
+        // radius 170 px about (250, 250), each fitted with its centre up to 6 px off along its own mid direction and
+        // its radius changed with it, so that its points stay on the ink while the fitted centres scatter.
+        let (w, h) = (500usize, 500usize);
+        let mut m = vec![false; w * h];
+        for y in 0..h {
+            for x in 0..w {
+                let (dx, dy) = (x as f64 - 250.0, y as f64 - 250.0);
+                m[y * w + x] = ((dx * dx + dy * dy).sqrt() - 170.0).abs() <= 1.5;
+            }
+        }
+        let ink = Ink::from_mask(w, h, m);
+        let cal = calibration();
+        let shifts = [6.0, -5.0, 4.0, -6.0, 5.0, -4.0, 6.0, -5.0];
+        let pieces: Vec<ArcPiece> = (0..8)
+            .map(|k| {
+                let (from, to) = (45.0 * k as f64 + 2.5, 45.0 * k as f64 + 42.5);
+                let mid = ((from + to) / 2.0f64).to_radians();
+                let shift = shifts[k];
+                ArcPiece { member: format!("e:0:m{k}"), view: "view:0".into(), class: "visible_outline",
+                    c: (250.0 - shift * mid.cos(), 250.0 - shift * mid.sin()), r: 170.0 + shift,
+                    start_rad: from.to_radians(), sweep_rad: (to - from).to_radians() }
+            })
+            .collect();
+        let mut b = Builder::new(&ink, &cal, (w as u32, h as u32), None);
+        b.arc_structural_lines(pieces, &StructureParams::default());
+        assert_eq!(b.structural_lines.len(), 1, "{:?}", b.structural_lines);
+        let l = &b.structural_lines[0];
+        assert_eq!(l["geometry"], "circle");
+        assert_eq!(l["pieces"].as_array().unwrap().len(), 8);
+        // Drawing coordinates (1 px per unit, y up from the page bottom at 500).
+        let a = l["arc"].as_array().unwrap().iter().map(|x| x.as_f64().unwrap()).collect::<Vec<_>>();
+        assert!((a[0] - 250.0).abs() < 1.0 && (a[1] - 250.0).abs() < 1.0 && (a[2] - 170.0).abs() < 1.0, "{a:?}");
     }
 
     #[test]

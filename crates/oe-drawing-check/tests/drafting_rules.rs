@@ -894,6 +894,22 @@ fn a_centre_line_is_measured_from_its_own_figure_not_from_another_circle_it_reac
     let r = d.circle([50.0, 0.0], 6.5);
     d.member(&r, "contour_segment", "thick_continuous", "visible_contour", "");
     assert!(d.rule_ids().contains(rule), "a concentric ring 0.5 units short of the line's ends is its figure");
+    // Two opposite bolt holes on one diameter, their radial centre lines collinear in one expression and 86 units
+    // apart; the flange circle about the view centre between them is no edge of either, though the view centre
+    // lies on their common line.
+    let mut d = Drawing::default();
+    let e = d.expression("center_axis", "");
+    for x in [50.0, -50.0] {
+        let h = d.circle([x, 0.0], 4.0);
+        d.member(&h, "contour_segment", "thick_continuous", "visible_contour", "");
+    }
+    for (x0, x1) in [(43.0, 57.0), (-57.0, -43.0)] {
+        let c = d.line([x0, 0.0], [x1, 0.0]);
+        d.member_in(&e, &c, "center_line", "thin_dash_dot");
+    }
+    let f = d.circle([0.0, 0.0], 56.5);
+    d.member(&f, "contour_segment", "thick_continuous", "visible_contour", "");
+    assert!(!d.rule_ids().contains(rule), "two centre lines of two holes, each measured against its own hole");
 }
 
 /// G1-028: the shelf of a note's own leader carries its text written above and below it (one box on a page for

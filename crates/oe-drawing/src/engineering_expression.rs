@@ -52,6 +52,9 @@ mod lines;
 mod coverage;
 pub use coverage::{concept_status, recognizer_coverage};
 
+#[path = "view_layout.rs"]
+mod view_layout;
+
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
 type P = [f64; 2];
@@ -1667,7 +1670,8 @@ fn native_dimensions(
 
 /// Member roles that consume a source exclusively for annotation; such sources
 /// are not visible-outline evidence.
-const EXCLUSIVE: [&str; 16] = [
+const EXCLUSIVE: [&str; 17] = [
+    "cutting_stroke",
     "datum_terminal",
     "hatch_fill",
     "dimension_line",
@@ -3022,11 +3026,12 @@ struct Pair {
 fn arrow_pairs(cx: &Ctx, b: &Builder) -> Vec<Pair> {
     let free: Vec<(&String, &Arrow)> = cx.arrows.iter().filter(|(id, _)| !b.used(id)).collect();
     let tol = 1e-3 * cx.scale.max(1.);
+    let sheets = view_layout::sheet_frames(cx, b);
     let mut out = Vec::new();
     for (i, (ia, x)) in free.iter().enumerate() {
         for (ib, y) in free.iter().skip(i + 1) {
             let alen = x.len.max(y.len);
-            if dot(x.dir, y.dir) > -0.985 {
+            if dot(x.dir, y.dir) > -0.985 || !view_layout::same_sheet(&sheets, x.tip, y.tip) {
                 continue;
             }
             let span = dist(x.tip, y.tip);
@@ -4682,7 +4687,7 @@ fn view_titles(cx: &Ctx, b: &mut Builder) -> Vec<ViewTitle> {
             })
             .min_by(|x, y| dist(x.center, r.center).total_cmp(&dist(y.center, r.center)));
         let Some(s) = sc else { continue };
-        let label = format!("{} {}", r.dec.text, s.dec.text);
+        let label = format!("{} {}", r.dec.text, tx::scale_text(&s.dec.text));
         let e = b.expr(
             "view_callout",
             &label,
@@ -4740,7 +4745,7 @@ fn view_titles(cx: &Ctx, b: &mut Builder) -> Vec<ViewTitle> {
             center: mid(r.center, s.center),
             height: r.height.max(s.height),
             kind: "detail_view",
-            scale: Some(s.dec.text.clone()),
+            scale: Some(tx::scale_text(&s.dec.text)),
             sources: vec![r.id.clone(), s.id.clone()],
         });
     }
@@ -6076,17 +6081,19 @@ fn expr_bbox(cx: &Ctx, b: &Builder, e: usize) -> Option<[f64; 4]> {
 }
 
 /// Cluster geometry pieces by incidence and proximity; attach view titles to the
-/// region directly below them; the largest untitled region is the principal view.
+/// region directly below them; the principal view and the basic views follow the
+/// first-angle arrangement of each sheet (module `view_layout`).
+#[allow(clippy::type_complexity)]
 fn views(
     cx: &Ctx,
     b: &Builder,
     titles: &[ViewTitle],
     anchors: &BTreeMap<usize, P>,
-) -> (
+) -> Result<(
     Vec<Region>,
     BTreeMap<usize, String>,
     BTreeMap<usize, String>,
-) {
+)> {
     let mut nodes: Vec<(String, [f64; 4])> = Vec::new();
     let mut seen = BTreeSet::new();
     for (i, e) in b.exprs.iter().enumerate() {
@@ -6121,9 +6128,11 @@ fn views(
         r
     }
     let g = 1.2 * cx.scale;
+    // a detail-view boundary joins the view it encloses, not what lies near its box
+    let bound = view_layout::boundary_nodes(b, &nodes);
     for i in 0..n {
         for j in i + 1..n {
-            if bbox_gap(nodes[i].1, nodes[j].1) <= g {
+            if bbox_gap(nodes[i].1, nodes[j].1) <= g && !bound.contains(&i) && !bound.contains(&j) {
                 let (a, c) = (find(&mut parent, i), find(&mut parent, j));
                 if a != c {
                     parent[a] = c;
@@ -6140,19 +6149,24 @@ fn views(
         entry.1 = bbox_union(entry.1, nodes[i].1);
     }
     let mut cl: Vec<(Vec<usize>, [f64; 4])> = clusters.into_values().collect();
+    let sheets = view_layout::sheet_frames(cx, b);
     // Merge stray fragments (fewer than three pieces) into the nearest region
     // within four proximity gaps; each merge reduces the region count.
     loop {
         let mut merged = false;
         for k in 0..cl.len() {
-            if cl[k].0.len() >= 3 {
+            if cl[k].0.len() >= 3 || cl[k].0.iter().all(|i| bound.contains(i)) {
                 continue;
             }
             let small = cl[k].1;
             let target = cl
                 .iter()
                 .enumerate()
-                .filter(|(i, _)| *i != k)
+                .filter(|(i, c)| {
+                    *i != k
+                        && view_layout::same_sheet_boxes(&sheets, c.1, small)
+                        && !c.0.iter().all(|i| bound.contains(i))
+                })
                 .map(|(i, c)| (i, bbox_gap(c.1, small)))
                 .min_by(|x, y| x.1.total_cmp(&y.1));
             if let Some((t, gap)) = target.filter(|x| x.1 <= 4. * g) {
@@ -6169,96 +6183,7 @@ fn views(
             break;
         }
     }
-    #[allow(clippy::unnecessary_sort_by)]
-    cl.sort_by(|a, c| c.0.len().cmp(&a.0.len()));
-    let mut regions: Vec<Region> = Vec::new();
-    let mut taken = BTreeSet::new();
-    let mut title_of: BTreeMap<usize, usize> = BTreeMap::new();
-    for (ti, t) in titles.iter().enumerate() {
-        let h = t.height;
-        let best = cl
-            .iter()
-            .enumerate()
-            .filter(|(i, c)| {
-                !taken.contains(i)
-                    && t.center[0] >= c.1[0] - 3. * h
-                    && t.center[0] <= c.1[2] + 3. * h
-                    && t.center[1] >= c.1[3] - 0.5 * h
-                    && t.center[1] - c.1[3] <= 12. * h
-            })
-            .min_by(|x, y| (t.center[1] - x.1.1[3]).total_cmp(&(t.center[1] - y.1.1[3])))
-            .map(|(i, _)| i);
-        if let Some(i) = best {
-            taken.insert(i);
-            title_of.insert(i, ti);
-        }
-    }
-    let mut extra = 0;
-    let principal = (0..cl.len()).find(|i| !title_of.contains_key(i));
-    for (i, (members, bb)) in cl.iter().enumerate() {
-        let has_break = members
-            .iter()
-            .any(|&k| b.kinds_of(&nodes[k].0).contains("break_line"));
-        let (id, kind, label, scale, sources, state, evidence) = if let Some(&ti) = title_of.get(&i)
-        {
-            let t = &titles[ti];
-            let kind = if t.kind == "detail_view" || t.kind == "section_view" {
-                t.kind
-            } else if has_break {
-                "partial_view"
-            } else {
-                "direction_view"
-            };
-            (
-                format!("view:{}", t.label.replace(' ', "")),
-                kind,
-                t.label.clone(),
-                t.scale.clone(),
-                t.sources.clone(),
-                "candidate",
-                vec!["title_directly_above_region".to_string()],
-            )
-        } else if Some(i) == principal {
-            (
-                "view:principal".to_string(),
-                "principal",
-                "主视图".to_string(),
-                None,
-                vec![],
-                "candidate",
-                vec!["largest_untitled_region".to_string()],
-            )
-        } else {
-            extra += 1;
-            (
-                format!("view:untitled-{extra}"),
-                "partial_view",
-                format!("未命名视图 {extra}"),
-                None,
-                vec![],
-                "unknown",
-                vec!["untitled_region".to_string()],
-            )
-        };
-        regions.push(Region {
-            id,
-            kind,
-            label,
-            bbox: *bb,
-            scale,
-            label_sources: sources,
-            state,
-            evidence,
-            nodes: members.len(),
-        });
-    }
-    let nodes_ref = &nodes;
-    let node_view: BTreeMap<String, String> = cl
-        .iter()
-        .enumerate()
-        .flat_map(|(i, (ms, _))| ms.iter().map(move |&k| (nodes_ref[k].0.clone(), i)))
-        .map(|(s, i)| (s, regions[i].id.clone()))
-        .collect();
+    let (mut regions, node_view) = view_layout::regions(cx, b, &nodes, cl, titles, &sheets)?;
     let nearest = |p: [f64; 4]| -> Option<String> {
         regions
             .iter()
@@ -6297,7 +6222,13 @@ fn views(
     for (i, e) in b.exprs.iter().enumerate() {
         let general = e.qualifiers.iter().any(|q| q == "general_requirement");
         let v = if SHEET.contains(&e.kind.as_str()) || general {
-            Some("view:sheet".to_string())
+            let pts: Vec<P> = b
+                .members
+                .iter()
+                .filter(|m| m.expression_id == e.id)
+                .flat_map(|m| member_points(cx, m))
+                .collect();
+            Some(view_layout::sheet_view(&sheets, &pts))
         } else if GEOMETRY.contains(&e.kind.as_str()) {
             b.members
                 .iter()
@@ -6329,26 +6260,7 @@ fn views(
         }
     }
     // A callout refers to the view its letter or numeral names.
-    let mut refs = BTreeMap::new();
-    for (i, e) in b.exprs.iter().enumerate() {
-        if e.kind != "view_callout"
-            || e.qualifiers
-                .iter()
-                .any(|q| q == "view_title" || q == "detail_title")
-        {
-            continue;
-        }
-        let key = e.label.split_whitespace().next().unwrap_or("");
-        if key.is_empty() {
-            continue;
-        }
-        if let Some(r) = regions.iter().find(|r| {
-            r.kind != "sheet"
-                && (r.label == format!("{key}向") || r.label.starts_with(&format!("{key} ")))
-        }) {
-            refs.insert(i, r.id.clone());
-        }
-    }
+    let mut refs = view_layout::refs(b, &regions, &map, &sheets);
     // One letterless viewing arrow and one lettered direction view no arrow names:
     // the arrow is that view's indication by elimination (kept as a candidate).
     let unlabeled: Vec<usize> = b
@@ -6366,18 +6278,8 @@ fn views(
     if let ([i], [r]) = (unlabeled.as_slice(), open.as_slice()) {
         refs.insert(*i, format!("{}:by_elimination", r.id));
     }
-    regions.push(Region {
-        id: "view:sheet".into(),
-        kind: "sheet",
-        label: "图纸".into(),
-        bbox: cx.extent,
-        scale: None,
-        label_sources: vec![],
-        state: "observed",
-        evidence: vec!["drawing_extent".into()],
-        nodes: 0,
-    });
-    (regions, map, refs)
+    regions.extend(view_layout::sheet_regions(cx, b, &sheets));
+    Ok((regions, map, refs))
 }
 
 // ---------------------------------------------------------------- finalize
@@ -6729,6 +6631,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     let mut anchors = BTreeMap::new();
     native_dimensions(&cx, &mut b, &mut text_anchor, &mut native_texts);
     blocks(&cx, &mut b, &mut def);
+    view_layout::arrows_and_letters(&cx, &mut b)?;
     representation::datum_symbols(&cx, &mut b)?;
     representation::center_holes(&cx, &mut b)?;
     hatch_and_points(&cx, &mut b);
@@ -6743,6 +6646,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     extended_pair_dimensions(&cx, &mut b, &mut anchors, &ted);
     let mut titles = view_titles(&cx, &mut b);
     titles.extend(symbols::section_titles(&cx, &mut b)?);
+    view_layout::titles(&cx, &mut b, &mut titles)?;
     representation::visible_edges(&cx, &mut b)?;
     leader_annotations(&cx, &mut b, &text_anchor, &mut anchors);
     thread_texts(&cx, &mut b);
@@ -6763,6 +6667,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     notation::series_tables(&cx, &mut b)?;
     symbols::surface_textures(&cx, &mut b, &def.textures)?;
     symbols::cutting_strokes(&cx, &mut b)?;
+    view_layout::cutting_paths(&cx, &mut b)?;
     line_kinds(&cx, &mut b);
     thread_arcs(&cx, &mut b);
     thread_lines(&cx, &mut b);
@@ -6781,7 +6686,8 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     symbols::frame_content(&mut b)?;
     symbols::texture_concepts(&cx, &mut b)?;
     symbols::callout_concepts(&mut b)?;
-    let (regions, vmap, refs) = views(&cx, &b, &titles, &anchors);
+    view_layout::detail_boundaries(&cx, &mut b, &titles)?;
+    let (regions, vmap, refs) = views(&cx, &b, &titles, &anchors)?;
     let mut nb = finalize(&b, &vmap, &regions, &refs);
     unresolved(&cx, &mut nb, &regions);
     coverage::assign(&mut nb)?;

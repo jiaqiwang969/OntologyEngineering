@@ -1985,6 +1985,18 @@ entry = "separator"
 values = ["—", "–", "-", "－"]
 meaning = "剖视名称中两字母之间的横线"
 
+[[cards.lexicon]]
+concept = "DC-G2-075"
+entry = "roman_numeral"
+values = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ", "Ⅺ", "Ⅻ"]
+meaning = "局部放大图的罗马数字编号：拉丁字母写法或 Unicode 罗马数字，数值相同即同一编号（Ⅰ 与 I 相同）"
+
+[[cards.lexicon]]
+concept = "DC-G1-114"
+entry = "scale_separator"
+values = [":", "：", "∶"]
+meaning = "比例两数之间的冒号：半角、全角或比号写法相同"
+
 [[cards.variants]]
 id = "arrow_block"
 title = "视向箭头做成一个图块"
@@ -1993,13 +2005,85 @@ encodings = ["block"]
 tests = ["view_arrow_drawn_as_one_block"]
 
 [[cards.counter_examples]]
-statement = "图块中只有箭杆和箭头而没有字母，不作为视向箭头"
+statement = "图块中只有箭杆和箭头、图块内外都没有字母，不作为视向箭头"
 test = "arrow_block_without_letter_is_not_a_view_arrow"
 
 [[cards.parameters]]
 name = "letter_reach"
 value = 3.0
 meaning = "字母到箭杆的距离上限 = 该值 × 字高"
+
+[[cards.variants]]
+id = "section_name_split"
+title = "剖视名称分开写：字母、横线、字母"
+distinguishing = "两个相同的大写字母在同一基线上，中间一条在字母半高处的短横线（或一个横线文字）"
+encodings = ["loose"]
+tests = ["section_name_written_as_two_letters_and_a_dash"]
+
+[[cards.variants]]
+id = "section_name_on_leader"
+title = "写在引线横线上的“X—X”是局部剖视（或断面）的名称"
+distinguishing = "名称立在一条横线上，横线另接一条引线指向图内；横线下方可有附注；它不是下方整个视图的名称"
+encodings = ["loose", "text"]
+tests = ["section_name_on_a_leader_shoulder_names_a_local_section"]
+
+[[cards.variants]]
+id = "arrow_and_letter_apart"
+title = "箭头与字母分开画：箭头图块配散字母，散箭头配字母图块"
+distinguishing = "没有字母的箭头图块旁有一个大写字母文字；或散画的箭头与箭杆旁有一个只含一个大写字母的图块"
+encodings = ["block", "loose"]
+tests = ["arrow_block_takes_a_loose_letter_beside_it", "loose_arrow_takes_a_letter_block"]
+
+[[cards.variants]]
+id = "strokes_without_arrows"
+title = "剖切符号省略箭头：两段共线短画各带同一字母"
+distinguishing = "两段共线的短画，外端各有同一字母，该字母另以“X—X”命名一个剖视或断面；没有箭头（按投影关系配置时可省略）"
+encodings = ["loose"]
+tests = ["cutting_strokes_without_arrows_with_letters"]
+
+[[cards.variants]]
+id = "cutting_path"
+title = "完整的剖切路径：转折处短画与字母、终点短画与箭头"
+distinguishing = "从起点短画沿剖切面方向找下一段短画：两段在一点以非直线相接为转折（注同一字母），之后的短画外端有垂直箭头为终点（字母可省）"
+encodings = ["loose", "block"]
+tests = ["cutting_path_keeps_its_turn_letter_and_end_arrow", "stroke_at_the_tail_of_an_arrow_block"]
+
+[[cards.counter_examples]]
+statement = "字母旁的短线若字母没有在任何“X—X”名称中出现，不作为剖切短画"
+test = "lettered_strokes_without_a_section_name_are_not_a_cutting_plane"
+
+[[cards.counter_examples]]
+statement = "不在剖切面方向上的短线不接入剖切路径"
+test = "stroke_off_the_cutting_plane_is_not_taken"
+
+[[cards.counter_examples]]
+statement = "立在没有引线的横线上的“X—X”仍是下方视图的名称"
+test = "section_name_on_a_plain_line_still_titles_the_view"
+
+[[cards.parameters]]
+name = "split_name_gap"
+value = 4.0
+meaning = "分开写的剖视名称中两字母之间的空隙上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "stroke_letter_reach"
+value = 1.5
+meaning = "无箭头剖切短画的外端到其字母中心的距离上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "stroke_collinear"
+value = 0.2
+meaning = "两段无箭头剖切短画共线的偏差上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "unarrowed_stroke_min"
+value = 0.5
+meaning = "无箭头剖切短画的长度下限 = 该值 × 字高（成对、各带字母且字母另有剖视名称，比单段短画的证据强，长度可放宽）"
+
+[[cards.parameters]]
+name = "path_angle_deg"
+value = 5.0
+meaning = "剖切路径上下一段短画与当前方向的夹角上限（度）"
 
 [[cards]]
 id = "theoretically_exact_dimension"
@@ -2197,3 +2281,272 @@ meaning = "终端箭尖落在共用界线上的容差 = 该值 × 字高"
 name = "perpendicular_cos_max"
 value = 0.1
 meaning = "箭头方向与共用界线夹角余弦的绝对值上限"
+
+[[cards]]
+id = "view_arrangement"
+expression_kind = "view"
+title = "基本视图的配置与主视图"
+meaning = "零件图的基本视图按第一角画法配置（我国优先采用）：主视图是布局中心，俯视图在它下方、仰视图在上方、左视图在右方、右视图在左方、后视图在左视图之右；它们与主视图长对正（上下）或高平齐（左右），按此配置时不注视图名称。向视图、局部放大图等带名称的视图可自由配置，不构成这种配置；剖视图配置在基本视图位置时仍是基本视图，盘盖类零件的主视图常取轴向全剖，这时注有“X—X”的剖视图也可以是布局中心。主视图由配置决定，而不是由图形大小决定。落在另一视图外框以内、本身没有名称的碎块（被尺寸或孔打断的轮廓、孔圆、台阶）是那个视图的一部分。"
+sources = [
+  "GB/T 14692-2008 技术制图 投影法 5.2.1 第一角画法（图4）",
+  "GB/T 4458.1-2002 机械制图 图样画法 视图 4.1 基本视图",
+  "GB/T 13361-2012 技术制图 通用术语 5.11（第一角画法）",
+  "机械制图（第7版）§7-1 一 基本视图（图7-1）、§9-2 零件图的视图选择（盘盖类常用全剖的主视图加一个表达外形与均布孔的视图）",
+]
+knowledge_units = ["K03", "K52", "K55", "K11"]
+recognition = "在同一张图纸内比较各视图可见轮廓的外形范围：两视图在公共方向上外形范围的重合长度除以较长者不小于给定值，即为对齐（左右为高平齐，上下为长对正）。只有没有名称的视图作为对齐的邻视图；候选的布局中心是没有名称的视图和剖视名称“X—X”的视图。左右两侧（或上下两侧）都有对齐邻视图的视图，或行与列上都有对齐邻视图的视图，是主视图；只有两个视图对齐时，取左边（行）或上边（列）的一个；都没有时退回最大的无名称视图。主视图确定后，与它对齐的无名称视图按第一角方位命名：右为左视图，再往右为后视图，左为右视图，下为俯视图，上为仰视图。第三角画法须有投影识别符号，本规则不读该符号，按第一角配置。外框落在另一视图外框以内（含余量）、没有名称也没有放大图边界的区块并入该视图。"
+markers = []
+concepts = ["DC-G2-073", "DC-G2-084"]
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "CIRCLE", "LWPOLYLINE"]
+requirement = "各视图的可见轮廓，定出视图的外形范围"
+
+[[cards.components]]
+role = "view_title"
+primitives = ["TEXT", "MTEXT"]
+requirement = "视图名称：有名称的视图自由配置，不作为对齐的邻视图"
+
+[[cards.variants]]
+id = "flanked"
+title = "左右（或上下）两侧都有对齐的无名称视图"
+distinguishing = "同一行的左、右（或同一列的上、下）各有一个外形范围与它重合的无名称视图"
+encodings = ["inferred"]
+tests = ["principal_view_is_flanked_by_aligned_views"]
+
+[[cards.variants]]
+id = "row_and_column"
+title = "行与列上都有对齐的无名称视图"
+distinguishing = "右侧或左侧有高平齐的视图，上方或下方有长对正的视图"
+encodings = ["inferred"]
+tests = ["principal_view_aligned_in_row_and_column"]
+
+[[cards.variants]]
+id = "section_principal"
+title = "注有“X—X”的轴向剖视图是布局中心"
+distinguishing = "剖视图左右两侧是对齐的无名称端视图（盘盖类零件）"
+encodings = ["inferred"]
+tests = ["titled_axial_section_between_end_views_is_principal"]
+
+[[cards.variants]]
+id = "two_aligned_views"
+title = "只有两个视图对齐"
+distinguishing = "左视图在主视图右方、俯视图在主视图下方：取行中左边、列中上边的一个"
+encodings = ["inferred"]
+tests = ["two_aligned_views_principal_is_the_left_one"]
+
+[[cards.variants]]
+id = "basic_view_names"
+title = "其余基本视图按方位命名"
+distinguishing = "与主视图对齐的无名称视图：右为左视图（再右为后视图），左为右视图，下为俯视图，上为仰视图"
+encodings = ["inferred"]
+tests = ["principal_view_aligned_in_row_and_column", "principal_view_is_flanked_by_aligned_views"]
+
+[[cards.variants]]
+id = "contained_region"
+title = "落在另一视图外框内的碎块并入该视图"
+distinguishing = "无名称、无放大图边界，外框在另一区块外框以内"
+encodings = ["inferred"]
+tests = ["fragment_inside_a_view_box_joins_that_view"]
+
+[[cards.counter_examples]]
+statement = "带名称的向视图、剖视图不作为对齐的邻视图：一排对齐的移出剖视中间的那个不是主视图"
+test = "titled_views_in_a_row_do_not_make_a_principal"
+
+[[cards.counter_examples]]
+statement = "外形范围不一致的视图不算对齐（只有部分重叠）"
+test = "views_overlapping_only_in_part_are_not_aligned"
+
+[[cards.counter_examples]]
+statement = "有自己名称的视图即使落在另一视图的外框内也不并入"
+test = "titled_view_inside_a_view_box_stays_a_view"
+
+[[cards.parameters]]
+name = "alignment_min"
+value = 0.85
+meaning = "对齐：两视图在公共方向上可见轮廓外形范围的重合长度 ÷ 较长者的下限"
+
+[[cards.parameters]]
+name = "min_pieces"
+value = 3.0
+meaning = "参与配置的视图最少的几何片数（更少的是碎块）"
+
+[[cards.parameters]]
+name = "containment_margin"
+value = 1.2
+meaning = "判断落在另一视图外框以内的余量 = 该值 × 字高（与视图聚类间距相同）"
+
+[[cards]]
+id = "drawing_sheet"
+expression_kind = "sheet_frame"
+title = "一张图纸：图框与其中的标题栏"
+meaning = "每张图样都有自己的图框，标题栏在图框右下角；一个模型空间可以并排放几张图纸。视图、视图编号、尺寸终端的配对都在一张图纸之内，不跨图纸。图号相同的两张图纸是同一图样的两个版本：标题栏日期较晚、并有同一日期的更改说明（常写在图框外）的一张是现行版本，取代日期较早的一张。"
+sources = [
+  "GB/T 14689-2008 技术制图 图纸幅面和格式 4 图框格式",
+  "GB/T 10609.1-2008 技术制图 标题栏（标题栏位于图框右下角；签字区的年月日）",
+  "机械制图（第7版）§1-1 图纸幅面、图框格式和标题栏",
+]
+knowledge_units = ["K03", "K61"]
+recognition = "以图幅边框图块为锚（规则 sheet_size_rectangular_border 所读的图框）：其中有标题栏的图框是一张图纸。模型空间里有两张以上时，每个视图、每个图纸级表达归它所在的图纸，视图编号前加“sheet-n:”；只有一张时不加前缀。尺寸的两个终端不在同一张图纸时不配对。各图纸标题栏中的图号与日期（八位数字年月日，或以分隔符分开的年、月、日）相同图号时，日期较晚、且图框外有写同一日期的说明的图纸取代较早的图纸，记为图纸的依据。"
+markers = []
+concepts = ["DC-G1-085", "DC-G9-028"]
+
+[[cards.components]]
+role = "frame_border"
+primitives = ["INSERT"]
+requirement = "图幅边框（纸边与图框）图块"
+
+[[cards.components]]
+role = "native_block"
+primitives = ["INSERT"]
+requirement = "图框内的标题栏图块"
+
+[[cards.variants]]
+id = "frame_with_title_block"
+title = "一个模型空间中的几张图纸"
+distinguishing = "每个图框中有自己的标题栏"
+encodings = ["block"]
+tests = ["two_sheets_in_one_model_space_keep_their_views_apart"]
+
+[[cards.variants]]
+id = "later_revision"
+title = "同一图号的较晚版本取代较早版本"
+distinguishing = "标题栏日期较晚，图框外有同一日期的更改说明"
+encodings = ["block", "text"]
+tests = ["later_dated_sheet_with_a_revision_note_supersedes_the_earlier"]
+
+[[cards.counter_examples]]
+statement = "只有一张图纸时视图编号不加图纸前缀"
+test = "one_sheet_keeps_plain_view_ids"
+
+[[cards.counter_examples]]
+statement = "两张图纸上的两个箭头不配成一个尺寸"
+test = "two_sheets_in_one_model_space_keep_their_views_apart"
+
+[[cards.counter_examples]]
+statement = "没有标题栏的大矩形图框不单独成为一张图纸"
+test = "frame_without_a_title_block_is_not_a_sheet"
+
+[[cards.lexicon]]
+concept = "DC-G9-028"
+entry = "date_separator"
+values = [".", "-", "/", "年", "月", "日"]
+meaning = "标题栏与更改说明中日期的年、月、日分隔写法（不分隔时为八位数字）"
+
+[[cards.parameters]]
+name = "title_block_inside"
+value = 0.0
+meaning = "标题栏中心落在图框以内的余量 = 该值 × 字高"
+
+[[cards]]
+id = "detail_view"
+expression_kind = "view"
+title = "局部放大图的名称与边界"
+meaning = "局部放大图把机件的一部分放大画出：在原视图上用细实线圈出部位，放大图上方注同一编号与比例（罗马数字在上、比例在下，中间一条短横线；只有一处时可只注比例）；常见的写法还有大写字母编号（“A 2:1”），Unicode 罗马数字（Ⅰ），全角冒号（2：1），以及旧版图样在旋转配置的放大图名称后写“旋转”二字（现行标准用旋转符号）。放大图的边界在 GB 中是波浪线；CAD 图上常画成细实线圆，或细实线圆弧加波浪线，名称可写在边界之内、图形之上。"
+sources = [
+  "GB/T 4458.1-2002 机械制图 图样画法 视图 5.7 局部放大图",
+  "GB/T 14690-1993 技术制图 比例 5.2（视图名称处的比例）",
+  "GB/T 4458.6-2002 7.3（图28，旋转配置的标注用旋转符号）；机械制图（第7版）§7-1 四（旋转符号）；旋转配置时在名称后写“旋转”二字是旧版图样的写法",
+  "机械制图（第7版）§7-4 一 局部放大图（图7-25、7-26）",
+]
+knowledge_units = ["K11", "K13"]
+recognition = "名称：上方文字为罗马数字（拉丁字母或 Unicode 写法）或一个大写字母，其后可接“旋转”，下方（中心竖距在给定倍数字高之间、横向偏差小于给定倍数字高）为比例，比例的冒号可为半角或全角；名称与比例也可写在一行。边界：细实线圆，或两端落在已识别波浪线上的细实线圆弧，圆内几何构成一个完整视图（与圆相交的几何几乎都在圆内，指示放大部位的圈则被视图轮廓穿过），并有放大图名称写在圆内上部或圆顶上方不远处；边界读为断裂与局部边界，与放大图几何同属一个视图，圆内的名称挂到这个视图。"
+markers = ["旋转"]
+concepts = ["DC-G2-075", "DC-G2-048"]
+
+[[cards.components]]
+role = "view_letter"
+primitives = ["TEXT", "MTEXT"]
+requirement = "放大图编号：罗马数字或大写字母，可接“旋转”"
+
+[[cards.components]]
+role = "scale_text"
+primitives = ["TEXT", "MTEXT"]
+requirement = "放大图比例"
+
+[[cards.components]]
+role = "break_curve"
+primitives = ["ARC", "CIRCLE"]
+requirement = "放大图边界：细实线圆，或由波浪线封口的细实线圆弧"
+
+[[cards.variants]]
+id = "title_forms"
+title = "放大图名称的写法：字母编号、Unicode 罗马数字、全角冒号、“旋转”"
+distinguishing = "编号为大写字母或带“旋转”，比例冒号可为全角；编号在上比例在下，或写在一行"
+encodings = ["text"]
+tests = ["detail_name_with_rotation_word_and_full_width_colon", "letter_detail_name_over_a_scale"]
+
+[[cards.variants]]
+id = "boundary_arc"
+title = "细实线圆弧加波浪线围成的边界"
+distinguishing = "圆弧两端落在波浪线上，圆内是完整的放大图形"
+encodings = ["loose"]
+tests = ["detail_view_bounded_by_an_arc_and_a_wavy_line_takes_its_title"]
+
+[[cards.variants]]
+id = "boundary_circle"
+title = "细实线整圆边界"
+distinguishing = "整圆围住完整的放大图形，名称在圆内上部或圆顶上方"
+encodings = ["loose"]
+tests = ["detail_view_inside_a_boundary_circle"]
+
+[[cards.variants]]
+id = "title_inside_boundary"
+title = "名称写在边界之内、图形之上"
+distinguishing = "名称中心在边界圆内且在圆心之上；先于“名称在视图正上方”的规则挂接"
+encodings = ["loose"]
+tests = ["detail_view_bounded_by_an_arc_and_a_wavy_line_takes_its_title"]
+
+[[cards.counter_examples]]
+statement = "原视图上被视图轮廓穿过的放大部位圈不是放大图边界"
+test = "indicator_circle_crossed_by_the_view_is_not_a_boundary"
+
+[[cards.counter_examples]]
+statement = "附近没有放大图名称的细实线圆不作为放大图边界"
+test = "thin_circle_without_a_detail_name_is_not_a_boundary"
+
+[[cards.counter_examples]]
+statement = "单独的大写字母（下方没有比例）是向视图字母，不是放大图名称"
+test = "letter_without_a_scale_is_not_a_detail_name"
+
+[[cards.lexicon]]
+concept = "DC-G2-048"
+entry = "rotation_word"
+values = ["旋转"]
+meaning = "旧版图样中旋转配置的视图名称后加注的字样（现行标准改用旋转符号）"
+
+[[cards.parameters]]
+name = "title_gap_min"
+value = 0.5
+meaning = "编号中心在比例中心之上的竖距下限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "title_gap_max"
+value = 3.2
+meaning = "编号中心在比例中心之上的竖距上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "title_dx_max"
+value = 2.0
+meaning = "编号与比例中心的横向偏差上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "boundary_min_radius"
+value = 2.0
+meaning = "放大图边界圆（弧）的半径下限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "break_end_tolerance"
+value = 0.05
+meaning = "边界圆弧端点落在波浪线上、几何落在圆内的距离容差 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "enclosed_min"
+value = 0.9
+meaning = "与边界圆相交的几何片中整片在圆内者所占比例的下限"
+
+[[cards.parameters]]
+name = "title_above_max"
+value = 6.0
+meaning = "名称写在边界圆顶上方时，名称中心到圆顶的距离上限 = 该值 × 字高"

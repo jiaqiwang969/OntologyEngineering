@@ -296,6 +296,29 @@ fn frame_leader_drawn_in_overlapping_pieces() {
 }
 
 #[test]
+fn value_and_callout_words_in_one_text_over_a_frame() {
+    let mut ents = staggered_frame();
+    ents.extend([
+        text("DV", "11", "6-%%c7 均布", [101., 209.], 3.5, 0.),
+        line("P1", "02", [146., 203.5], [157., 203.5]),
+        solid("A1", "08", [160., 203.5], [157., 203.5]),
+        solid("A2", "08", [167., 203.5], [170., 203.5]),
+        line("DL", "08", [160., 203.5], [167., 203.5]),
+        line("TL", "08", [170., 203.5], [175., 203.5]),
+    ]);
+    let g = run("", &ents);
+    let d = expr_with(&g, "DV", "dimension_diameter")
+        .unwrap_or_else(|| panic!("{:?}", kinds(&g, "DV")));
+    assert_eq!(d.label, "6-Ø7 均布");
+    assert!(role(&g, d, "DV").contains("dimension_text"));
+    let f = expr_with(&g, "GC", "gps_position").expect("frame");
+    assert!(
+        !role(&g, f, "DV").contains("note_text"),
+        "the value is not a scope note of the frame"
+    );
+}
+
+#[test]
 fn table_rows_are_not_a_line_drawn_frame() {
     let mut ents = Vec::new();
     for (i, y) in [0., 7., 14., 21.].iter().enumerate() {

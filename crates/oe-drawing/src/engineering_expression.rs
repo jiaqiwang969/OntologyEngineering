@@ -3586,7 +3586,9 @@ fn attached_dimension(
         .values()
         .filter(|t| {
             !b.used(&t.id)
-                && (is_dim_text(t.lex) || t.lex == Lex::Thread)
+                && (is_dim_text(t.lex)
+                    || t.lex == Lex::Thread
+                    || loose_annotations::value_with_words(t).is_some())
                 && t.dir[0] > 0.99
                 && t.center[0] > fb[0] - 2. * t.height
                 && t.center[0] < fb[2] + 2. * t.height
@@ -3624,7 +3626,8 @@ fn attached_dimension(
     let (kind, group) = match &seed {
         Some(t) if t.lex == Lex::Thread => ("thread_note", note_block(cx, b, t, &frames)),
         Some(t) => (
-            tx::dimension_kind(&t.dec.text).unwrap_or("dimension_linear"),
+            tx::dimension_kind(&loose_annotations::value_with_words(t).unwrap_or(t.dec.text.clone()))
+                .unwrap_or("dimension_linear"),
             vec![t.id.clone()],
         ),
         None => ("dimension_linear", vec![]),

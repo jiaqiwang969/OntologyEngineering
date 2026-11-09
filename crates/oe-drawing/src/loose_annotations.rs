@@ -466,6 +466,22 @@ pub(super) fn frame_leader(
     (res.0, res.1, res.2, pieces)
 }
 
+/// A dimension value followed in the same text by callout words (`4-Ø9 均布`, card callout_rows):
+/// the value part.
+pub(super) fn value_with_words(t: &TextFact) -> Option<String> {
+    let lx = callout_lex(representation::card_ref("callout_rows").ok()?);
+    let mut parts = t.dec.text.split_whitespace();
+    let first = parts.next()?;
+    let rest: Vec<&str> = parts.collect();
+    (!rest.is_empty()
+        && rest.iter().all(|w| callout_words(&lx, w))
+        && matches!(
+            tx::lex(first),
+            Lex::Diameter | Lex::Radius | Lex::Thread | Lex::Number | Lex::Chamfer
+        ))
+    .then(|| first.to_string())
+}
+
 /// A deviation written as its own small text: a signed number or zero.
 pub(super) fn deviation_text(t: &TextFact) -> bool {
     let s: String = t.dec.text.chars().filter(|c| !c.is_whitespace()).collect();

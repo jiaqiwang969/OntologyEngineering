@@ -986,6 +986,10 @@ pub(super) fn section_profile(
         let label = format!("section_profile:{label}");
         for (i, m) in b.members.iter().enumerate() {
             let kind = kind_of.get(m.expression_id.as_str()).copied().unwrap_or("");
+            // A contour drawn twice is shown by its primary, which takes the mark.
+            if m.evidence_ids.iter().any(|x| x.starts_with("duplicate_of:")) {
+                continue;
+            }
             let pts = member_points(m);
             if pts.is_empty() || !pts.iter().all(|q| inside(*q)) {
                 continue;

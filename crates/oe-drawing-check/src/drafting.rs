@@ -352,9 +352,6 @@ const ARROW_REACH_PAPER_MM: f64 = 6.0;
 /// The reach in drawing units where the sheet scale is unknown, only for what no paper rule reads (which dimension
 /// line an extension line meets, for the angle between them); the paper measures are then not taken.
 const ARROW_REACH_UNKNOWN_SCALE: f64 = 6.0;
-/// A centre line broken by text or its own pattern is one line across gaps up to this on paper; collinear centre-line
-/// pieces further apart belong to separate features. Drawing units where the sheet scale is unknown.
-const CENTRE_GAP_PAPER_MM: f64 = 10.0;
 /// Measured quantities in paper millimetres: a rule constraining one is counted as measured on the targets that have it.
 const PAPER_MEASURES: [&str; 3] = ["overshootPaperMm", "extensionBeyondPaperMm", "extentPaperMm"];
 
@@ -650,39 +647,6 @@ fn collinear_gap(a: P, b: P, c: P, d: P) -> Option<f64> {
     let (c0, c1) = (along(c).min(along(d)), along(c).max(along(d)));
     Some(-(c1.min(la) - c0.max(0.)))
 }
-/// The collinear pieces of one line (from `collinear_pieces`, spanning a0..b0) cut into runs where they are more than
-/// `max_gap` apart along the line, each run with its own extreme points.
-fn collinear_runs(objects: &[Object], group: &[usize], a0: P, b0: P, max_gap: f64) -> Vec<(Vec<usize>, (P, P))> {
-    let l = dist(a0, b0).max(1e-9);
-    let u = ((b0.0 - a0.0) / l, (b0.1 - a0.1) / l);
-    let along = |p: P| (p.0 - a0.0) * u.0 + (p.1 - a0.1) * u.1;
-    let mut spans: Vec<(f64, f64, usize)> = group
-        .iter()
-        .filter_map(|&i| objects[i].segment().map(|(c, d)| (along(c).min(along(d)), along(c).max(along(d)), i)))
-        .collect();
-    spans.sort_by(|x, y| x.0.total_cmp(&y.0).then(x.2.cmp(&y.2)));
-    let at = |t: f64| (a0.0 + u.0 * t, a0.1 + u.1 * t);
-    let mut runs: Vec<(Vec<usize>, (P, P))> = Vec::new();
-    let mut current: Option<(Vec<usize>, f64, f64)> = None;
-    for (t0, t1, i) in spans {
-        current = match current {
-            Some((mut pieces, lo, hi)) if t0 - hi <= max_gap => {
-                pieces.push(i);
-                Some((pieces, lo, hi.max(t1)))
-            }
-            Some((pieces, lo, hi)) => {
-                runs.push((pieces, (at(lo), at(hi))));
-                Some((vec![i], t0, t1))
-            }
-            None => Some((vec![i], t0, t1)),
-        };
-    }
-    if let Some((pieces, lo, hi)) = current {
-        runs.push((pieces, (at(lo), at(hi))));
-    }
-    runs
-}
-
 /// The segment lengthened by `by` at both ends.
 fn stretch(a: P, b: P, by: f64) -> (P, P) {
     let l = dist(a, b).max(1e-9);
@@ -2252,56 +2216,59 @@ fn relations(objects: &[Object], sheet: &Sheet) -> Vec<Relation> {
         if done.contains(&ci) || !straight(ci, "CentreLine") {
             continue;
         }
-        let (all, (a0, b0)) = collinear_pieces(objects, ci, "CentreLine");
-        done.extend(all.iter().copied());
-        // Collinear pieces further apart than a centre line's own breaks are separate centre lines (the radial centre
-        // lines of two opposite bolt holes on one diameter), each measured against its own figure.
-        let max_gap = sheet.units(CENTRE_GAP_PAPER_MM).unwrap_or(CENTRE_GAP_PAPER_MM);
-        for (group, (a, b)) in collinear_runs(objects, &all, a0, b0, max_gap) {
-            let length = dist(a, b);
-            if length < 1e-9 {
+        let (group, (a, b)) = collinear_pieces(objects, ci, "CentreLine");
+        done.extend(group.iter().copied());
+        let length = dist(a, b);
+        if length < 1e-9 {
+            continue;
+        }
+        let handles: BTreeSet<&str> = group
+            .iter()
+            .flat_map(|g| objects[*g].source_handles.iter().map(String::as_str))
+            .collect();
+        // The drawn pieces of the line: a centre (of an arc) on the line counts only where the line is drawn, not in a
+        // gap between pieces (the radial centre lines of two opposite bolt holes on one diameter pass the view centre
+        // in their gap).
+        let pieces: Vec<(P, P)> = group.iter().filter_map(|g| objects[*g].segment()).collect();
+        let mut params: Vec<f64> = Vec::new();
+        for &oi in &lines {
+            let o = &objects[oi];
+            if group.contains(&oi)
+                || !(o.is("VisibleOutline") || o.is("BreakBoundary"))
+                || o.source_handles.iter().any(|h| handles.contains(h.as_str()))
+            {
                 continue;
             }
-            let handles: BTreeSet<&str> = group
-                .iter()
-                .flat_map(|g| objects[*g].source_handles.iter().map(String::as_str))
-                .collect();
-            let mut params: Vec<f64> = Vec::new();
-            for &oi in &lines {
-                let o = &objects[oi];
-                if group.contains(&oi)
-                    || !(o.is("VisibleOutline") || o.is("BreakBoundary"))
-                    || o.source_handles.iter().any(|h| handles.contains(h.as_str()))
-                {
-                    continue;
-                }
-                // An arc or circle is an edge of the centre line's figure only when it is centred on the centre line within
-                // its extent (a hole's circles for the hole's centre line); a circle of another feature the line happens to
-                // reach (a flange circle beyond a bolt hole's radial centre line) is not.
-                if !o.geometry.arcs.is_empty()
-                    && !o.geometry.arcs.iter().any(|(centre, radius)| {
-                        let (d, t) = point_line(*centre, a, b);
-                        d <= RADIAL_EPS.max(0.05 * radius) && (-1e-9..=1. + 1e-9).contains(&t)
+            // An arc or circle is an edge of the centre line's figure only when it is centred on a drawn piece of the
+            // centre line (a hole's circles for the hole's centre line); a circle of another feature the line happens
+            // to reach (a flange circle beyond a bolt hole's radial centre line) is not.
+            if !o.geometry.arcs.is_empty()
+                && !o.geometry.arcs.iter().any(|(centre, radius)| {
+                    let tol = RADIAL_EPS.max(0.05 * radius);
+                    pieces.iter().any(|&(p, q)| {
+                        let (d, t) = point_line(*centre, p, q);
+                        let slack = tol / dist(p, q).max(1e-9);
+                        d <= tol && (-slack..=1. + slack).contains(&t)
                     })
-                {
-                    continue;
-                }
-                for chain in &o.geometry.chains {
-                    for w in chain.windows(2) {
-                        if let Some(p) = segment_intersection(a, b, w[0], w[1]) {
-                            params.push(point_line(p, a, b).1);
-                        }
+                })
+            {
+                continue;
+            }
+            for chain in &o.geometry.chains {
+                for w in chain.windows(2) {
+                    if let Some(p) = segment_intersection(a, b, w[0], w[1]) {
+                        params.push(point_line(p, a, b).1);
                     }
                 }
             }
-            if let (Some(min), Some(max)) = (
-                params.iter().copied().reduce(f64::min),
-                params.iter().copied().reduce(f64::max),
-            ) && let (Some(at_a), Some(at_b)) = (sheet.paper(min * length), sheet.paper((1. - max) * length))
-            {
-                out.push(Relation::number(piece_at(objects, &group, a), "overshootPaperMm", at_a));
-                out.push(Relation::number(piece_at(objects, &group, b), "overshootPaperMm", at_b));
-            }
+        }
+        if let (Some(min), Some(max)) = (
+            params.iter().copied().reduce(f64::min),
+            params.iter().copied().reduce(f64::max),
+        ) && let (Some(at_a), Some(at_b)) = (sheet.paper(min * length), sheet.paper((1. - max) * length))
+        {
+            out.push(Relation::number(piece_at(objects, &group, a), "overshootPaperMm", at_a));
+            out.push(Relation::number(piece_at(objects, &group, b), "overshootPaperMm", at_b));
         }
     }
     // A radial dimension line (all its collinear pieces) passes through the centre of an arc and reaches it. A

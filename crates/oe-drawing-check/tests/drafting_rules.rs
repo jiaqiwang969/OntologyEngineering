@@ -895,8 +895,8 @@ fn a_centre_line_is_measured_from_its_own_figure_not_from_another_circle_it_reac
     d.member(&r, "contour_segment", "thick_continuous", "visible_contour", "");
     assert!(d.rule_ids().contains(rule), "a concentric ring 0.5 units short of the line's ends is its figure");
     // Two opposite bolt holes on one diameter, their radial centre lines collinear in one expression and 86 units
-    // apart; the flange circle about the view centre between them is no edge of either, though the view centre
-    // lies on their common line.
+    // apart; the flange circle about the view centre in the gap between them is no edge of their figure, though the
+    // view centre lies on their common line.
     let mut d = Drawing::default();
     let e = d.expression("center_axis", "");
     for x in [50.0, -50.0] {
@@ -909,7 +909,18 @@ fn a_centre_line_is_measured_from_its_own_figure_not_from_another_circle_it_reac
     }
     let f = d.circle([0.0, 0.0], 56.5);
     d.member(&f, "contour_segment", "thick_continuous", "visible_contour", "");
-    assert!(!d.rule_ids().contains(rule), "two centre lines of two holes, each measured against its own hole");
+    assert!(!d.rule_ids().contains(rule), "the flange circle is centred in the gap between the drawn pieces");
+    // A main axis drawn as separate collinear pieces (a hand-drawn dash-dot line, gaps of 10 to 57 units) is one line:
+    // it runs 3 units past the outline at both ends.
+    let mut d = Drawing::default();
+    let e = d.expression("center_axis", "");
+    outline(&mut d, [0.0, -10.0], [0.0, 10.0]);
+    outline(&mut d, [200.0, -10.0], [200.0, 10.0]);
+    for (x0, x1) in [(-3.0, 40.0), (50.0, 100.0), (157.0, 190.0), (200.0 - 6.0, 203.0)] {
+        let c = d.line([x0, 0.0], [x1, 0.0]);
+        d.member_in(&e, &c, "center_line", "thin_dash_dot");
+    }
+    assert!(!d.rule_ids().contains(rule), "one axis in pieces, 3 units past both outlines");
 }
 
 /// G1-028: the shelf of a note's own leader carries its text written above and below it (one box on a page for

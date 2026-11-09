@@ -57,11 +57,110 @@ fn closed_triangles(s: &dd::Shape) -> Vec<Vec<P>> {
         .collect()
 }
 
+/// Closed triangles drawn as three separate lines joined end to end (an arrowhead drawn with
+/// loose lines, card gdt_characteristic variant drawn_arrow_head), with the indices of their sides.
+pub(super) fn line_triangles(lines: &[(P, P)], join: f64) -> Vec<(Vec<P>, [usize; 3])> {
+    let mut out = Vec::new();
+    let n = lines.len();
+    for i in 0..n {
+        for j in i + 1..n {
+            for k in j + 1..n {
+                let sides = [lines[i], lines[j], lines[k]];
+                let longest = sides.iter().map(|(a, b)| dist(*a, *b)).fold(0., f64::max);
+                if longest < 1e-9 {
+                    continue;
+                }
+                let tol = join * longest;
+                let ends: Vec<P> = sides.iter().flat_map(|(a, b)| [*a, *b]).collect();
+                // every end meets exactly one end of another side
+                let closed = (0..6).all(|x| {
+                    (0..6)
+                        .filter(|y| *y / 2 != x / 2 && dist(ends[x], ends[*y]) <= tol)
+                        .count()
+                        == 1
+                });
+                if !closed {
+                    continue;
+                }
+                let mut verts: Vec<P> = Vec::new();
+                for p in &ends {
+                    if !verts.iter().any(|v| dist(*v, *p) <= tol) {
+                        verts.push(*p);
+                    }
+                }
+                if verts.len() == 3 && cross(sub(verts[1], verts[0]), sub(verts[2], verts[0])).abs() > 1e-12 {
+                    out.push((verts, [i, j, k]));
+                }
+            }
+        }
+    }
+    out
+}
+
+/// Arrow signatures of strokes with closed heads (the heads' own sides excluded): one oblique
+/// arrow is circular run-out, two parallel oblique arrows total run-out.
+fn arrow_signature(strokes: &[(P, P)], tris: &[Vec<P>]) -> Option<&'static str> {
+    let lens: Vec<f64> = strokes.iter().map(|(a, b)| dist(*a, *b)).collect();
+    let maxl = lens.iter().copied().fold(0., f64::max);
+    let dir = |l: &(P, P)| unit(sub(l.1, l.0));
+    let heads = |l: &(P, P)| -> bool {
+        let len = dist(l.0, l.1);
+        tris.iter().any(|t| {
+            let centroid = [(t[0][0] + t[1][0] + t[2][0]) / 3., (t[0][1] + t[1][1] + t[2][1]) / 3.];
+            [(l.0, l.1), (l.1, l.0)].iter().any(|(tip, other)| {
+                t.iter().any(|v| dist(*v, *tip) < 0.05 * len)
+                    && dist(centroid, *tip) < 0.8 * len
+                    && dot(unit(sub(centroid, *tip)), unit(sub(*other, *tip))) > 0.7
+            })
+        })
+    };
+    let oblique = |l: &(P, P)| {
+        let u = dir(l);
+        u[0].abs() > 0.2 && u[1].abs() > 0.2
+    };
+    let arrows: Vec<&(P, P)> = strokes
+        .iter()
+        .filter(|l| oblique(l) && dist(l.0, l.1) > 0.5 * maxl && heads(l))
+        .collect();
+    if arrows.len() >= 2 && cross(dir(arrows[0]), dir(arrows[1])).abs() < 0.03 {
+        return Some("two_oblique_arrows_on_base");
+    }
+    let (i, _) = lens.iter().enumerate().max_by(|a, b| a.1.total_cmp(b.1))?;
+    (oblique(&strokes[i]) && heads(&strokes[i])).then_some("single_oblique_arrow")
+}
+
 /// Stroke signature of a characteristic symbol drawn with lines, circles and arcs (`arcs`
 /// counts arcs, which block shapes only flag).
 pub(super) fn signature(s: &dd::Shape, arcs: usize) -> Option<&'static str> {
     if !s.texts.is_empty() {
         return None;
+    }
+    // A stroke ending in a closed head is an arrow whatever the head is drawn with: a polyline or
+    // filled triangle, or three lines joined end to end (card gdt_characteristic, variant
+    // drawn_arrow_head); the head's sides are not strokes of their own.
+    if s.circles.is_empty() && arcs == 0 {
+        let join = representation::card_ref("gdt_characteristic")
+            .and_then(|c| representation::param(c, "head_join"))
+            .unwrap_or(0.04);
+        let all: Vec<(P, P)> = s.lines.iter().copied().filter(|(a, b)| dist(*a, *b) > 1e-9).collect();
+        let drawn = line_triangles(&all, join);
+        let mut tris: Vec<Vec<P>> = closed_triangles(s);
+        tris.extend(drawn.iter().map(|x| x.0.clone()));
+        let sides: BTreeSet<usize> = drawn.iter().flat_map(|x| x.1).collect();
+        let strokes: Vec<(P, P)> = all
+            .iter()
+            .enumerate()
+            .filter(|(i, l)| {
+                !sides.contains(i) && !tris.iter().any(|t| t.iter().any(|v| dist(*v, l.0) < 1e-9) && t.iter().any(|v| dist(*v, l.1) < 1e-9))
+            })
+            .map(|x| *x.1)
+            .collect();
+        if !tris.is_empty()
+            && !strokes.is_empty()
+            && let Some(sig) = arrow_signature(&strokes, &tris)
+        {
+            return Some(sig);
+        }
     }
     let lines: Vec<(P, P)> = s
         .lines
@@ -416,10 +515,20 @@ pub(super) fn frame_content(b: &mut Builder) -> Result<()> {
             concepts.push("DC-G5-089");
         }
         let datums: Vec<&str> = fields.filter(|f| !f.is_empty()).collect();
-        if datums.len() >= 2 {
+        // datum names in separate cells, or separated by a space in one cell, form a datum system
+        let named: usize = datums
+            .iter()
+            .map(|d| {
+                d.split_whitespace()
+                    .filter(|w| w.chars().next().is_some_and(|c| c.is_ascii_uppercase()))
+                    .count()
+                    .max(1)
+            })
+            .sum();
+        if named >= 2 {
             concepts.push("DC-G5-004");
         }
-        for d in &datums {
+        for d in datums.iter().flat_map(|d| d.split_whitespace()) {
             let letters: Vec<&str> = d.split(['-', '—']).map(str::trim).collect();
             if letters.len() >= 2
                 && letters.iter().all(|l| {
@@ -449,6 +558,8 @@ pub(super) fn frame_content(b: &mut Builder) -> Result<()> {
         }
         let variant = if ev.iter().any(|x| x == "variant:outline_dividers") {
             "outline_dividers"
+        } else if ev.iter().any(|x| x == "variant:line_outline_dividers") {
+            "line_outline_dividers"
         } else {
             "fields_and_datums"
         };
@@ -572,6 +683,29 @@ pub(super) fn texture_block(s: &dd::Shape) -> bool {
     s.texts.is_empty() && s.lines.len() <= 6 && texture_of(&s.lines, &s.circles).is_some()
 }
 
+/// Words of the simplified indication for most surfaces (card surface_texture_symbol).
+fn most_surfaces_words() -> Vec<String> {
+    representation::card_ref("surface_texture_symbol")
+        .map(|c| values(c, "DC-G6-006", "most_surfaces_word").iter().map(|w| w.to_string()).collect())
+        .unwrap_or_default()
+}
+fn is_most_surfaces_word(words: &[String], t: &str) -> bool {
+    let s: String = t.chars().filter(|c| !c.is_whitespace()).collect();
+    words.contains(&s)
+}
+
+/// A block holding only the words of the indication for most surfaces and a texture symbol without
+/// a value (card surface_texture_symbol, variant most_surfaces): the label of the requirement.
+pub(super) fn most_surfaces_block(s: &dd::Shape) -> Option<String> {
+    let words = most_surfaces_words();
+    if s.texts.is_empty() || s.lines.len() > 8 || !s.texts.iter().all(|t| is_most_surfaces_word(&words, &t.0)) {
+        return None;
+    }
+    texture_of(&s.lines, &s.circles)?;
+    let word: String = s.texts[0].0.chars().filter(|c| !c.is_whitespace()).collect();
+    Some(format!("{word} √"))
+}
+
 fn parameter_code(c: &MdRepresentationCard, t: &str) -> bool {
     let codes = values(c, "DC-G6-075", "parameter_code");
     let s: String = t.chars().filter(|c| !c.is_whitespace()).collect();
@@ -595,6 +729,7 @@ pub(super) fn surface_textures(cx: &Ctx, b: &mut Builder, blocks: &[String]) -> 
     let reach = representation::param(c, "value_reach")?;
     let arm_min = representation::param(c, "arm_min")?;
     let arm_max = representation::param(c, "arm_max")?;
+    let most_reach = representation::param(c, "most_surfaces_reach")?;
     let place = |b: &mut Builder,
                  members: Vec<(String, &'static str)>,
                  tex: &Texture,
@@ -608,22 +743,47 @@ pub(super) fn surface_textures(cx: &Ctx, b: &mut Builder, blocks: &[String]) -> 
             })
             .min_by(|x, y| dist(x.center, opening).total_cmp(&dist(y.center, opening)))
             .cloned();
-        // a symbol without a value is labelled with the symbol itself
-        let label = value
-            .as_ref()
-            .map_or("√".to_string(), |t| t.dec.text.clone());
+        // a symbol without a value is labelled with the symbol itself; the word of the indication for
+        // most surfaces written just before it makes it the requirement for the other surfaces
+        let general = if value.is_none() {
+            let words = most_surfaces_words();
+            let pts: Vec<P> = members.iter().flat_map(|(id, _)| cx.points(id)).collect();
+            bbox_of(&pts).and_then(|bb| {
+                cx.texts
+                    .values()
+                    .filter(|t| !b.used(&t.id) && is_most_surfaces_word(&words, &t.dec.text) && t.dir[0] > 0.99)
+                    .find(|t| {
+                        let right = t.center[0] + 0.5 * t.width;
+                        right <= bb[0] + 0.5 * t.height
+                            && right >= bb[0] - most_reach * t.height
+                            && t.center[1] >= bb[1] - t.height
+                            && t.center[1] <= bb[3] + t.height
+                    })
+                    .cloned()
+            })
+        } else {
+            None
+        };
+        let label = match (&value, &general) {
+            (Some(t), _) => t.dec.text.clone(),
+            (None, Some(g)) => format!("{} √", g.dec.text.trim()),
+            (None, None) => "√".to_string(),
+        };
         let e = b.expr(
             "surface_roughness",
             &label,
             &format!("card:surface_texture_symbol/{variant}"),
             "candidate",
-            vec![],
+            if general.is_some() { vec!["general_requirement".into()] } else { vec![] },
             vec![
                 "card:surface_texture_symbol".into(),
                 format!("variant:{variant}"),
             ],
             vec!["Controlled surface requires the indicated feature".into()],
         );
+        if let Some(g) = &general {
+            b.member(e, &g.id, None, [0., 1.], "note_text", "text", "candidate", vec![], vec!["most_surfaces_word_before_symbol".into()]);
+        }
         for (id, role) in members {
             let lt = if role == "roughness_symbol" && cx.shapes.contains_key(&id) {
                 "block"

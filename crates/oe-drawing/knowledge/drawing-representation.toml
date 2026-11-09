@@ -23,18 +23,18 @@ sources = [
   "专家纠正 E-2026-11-06-10：需要理解构成基准符号的要素",
 ]
 knowledge_units = ["K24", "K25"]
-recognition = "以单个大写字母为锚：字母居中于一个大小与字高相称的圆圈或方框；一条细线一端落在边框上、向外伸出；另一端是终端——旧版为与连线垂直、连线落在其中部的粗短横线，现行为三角形。四部分齐全才成立；图块与散线同样处理。"
+recognition = "以单个大写字母为锚：字母居中于一个大小与字高相称的圆圈或方框（闭合多段线或四条直线）；一条细线一端落在边框上、向外伸出；另一端是终端——旧版为与连线垂直、连线落在其中部的粗短横线，现行为三角形。四部分齐全才成立；图块与散线同样处理。字母后带一到两位序号（如 A1）时，只有某个公差框格的基准格写着同一基准才作为基准符号。"
 markers = []
 concepts = ["DC-G5-009"]
 
 [[cards.components]]
 role = "datum_letter"
 primitives = ["TEXT", "MTEXT"]
-requirement = "一个大写拉丁字母"
+requirement = "一个大写拉丁字母；带一到两位序号（字母加数字）时须有公差框格的基准格写同一基准"
 [[cards.components]]
 role = "datum_frame"
-primitives = ["CIRCLE", "LWPOLYLINE"]
-requirement = "圆圈（旧版）或闭合方框（现行），字母中心在边框中心附近"
+primitives = ["CIRCLE", "LWPOLYLINE", "LINE"]
+requirement = "圆圈（旧版）或方框（现行，闭合多段线或四条直线），字母中心在边框中心附近"
 [[cards.components]]
 role = "leader_line"
 primitives = ["LINE"]
@@ -56,10 +56,25 @@ title = "现行：方框字母 + 连线 + 基准三角形"
 distinguishing = "边框是方框，终端是三角形"
 encodings = ["loose"]
 tests = ["datum_new_square_triangle_loose_is_one_symbol"]
+[[cards.variants]]
+id = "numbered_letter"
+title = "带序号的基准字母（字母加一到两位数字）"
+distinguishing = "边框里的字母后跟序号；同一名称写在某个公差框格的基准格里（单独、公共基准或基准体系），以框格为独立旁证"
+encodings = ["loose"]
+tests = ["numbered_datum_named_by_a_frame_is_a_datum"]
+[[cards.variants]]
+id = "line_square"
+title = "方框由四条直线画成"
+distinguishing = "边框是四条单独的直线围成的近似正方形，不与其他格共边"
+encodings = ["loose"]
+tests = ["datum_square_of_four_lines_is_one_symbol"]
 
 [[cards.counter_examples]]
 statement = "圆圈里的字母没有连线和终端，不是基准符号（可能是视图或放大标识）"
 test = "circled_letter_without_connector_is_not_a_datum"
+[[cards.counter_examples]]
+statement = "带序号的字母没有任何框格把它当基准时不作基准（基准目标的标注、分区代号也写成字母加数字）"
+test = "numbered_letter_without_a_frame_is_not_a_datum"
 [[cards.counter_examples]]
 statement = "几何公差框格中写基准字母的格子与框格指引线箭头不是基准符号"
 test = "datum_letter_cell_of_a_frame_is_not_a_datum_symbol"
@@ -207,7 +222,7 @@ sources = [
   "专家纠正 E-2026-11-06-7：位置度框格用散线画出时须按框格读出",
 ]
 knowledge_units = ["K23", "K25", "K26"]
-recognition = "一串等高相邻的矩形格；第一格内只有组成特征符号的笔画（块内或散线），由笔画构成判定特征；第二格文字为公差值，其后为基准字母；从框格边线伸出的细线为指引线。"
+recognition = "一串等高相邻的矩形格（各格单独画出，或一个外框被贯通全高的竖线分格；外框可用多段线，也可用直线，每边可由共线的几段拼成）；第一格内只有组成特征符号的笔画（块内或散线，含实心三角形箭头），由笔画构成判定特征；第二格文字为公差值，其后为基准字母；从框格边线伸出的细线为指引线，可分几段画、段间共线重叠或略有缝隙。"
 markers = []
 concepts = ["DC-G5-090"]
 
@@ -631,16 +646,16 @@ tests = ["dimension_text_tolerance_classes"]
 [[cards.variants]]
 id = "deviations"
 title = "极限偏差：叠写、±、零偏差、代号加括号偏差"
-distinguishing = "成对的带符号数值或 ±"
-encodings = ["text", "stacked_mtext"]
-tests = ["dimension_text_deviations_stacked_symmetric_and_zero", "stacked_mtext_deviation_dimension_names_deviation_concepts"]
+distinguishing = "成对的带符号数值或 ±；也可写成数值后一上一下两段较小的单独文字"
+encodings = ["text", "stacked_mtext", "separate_texts"]
+tests = ["dimension_text_deviations_stacked_symmetric_and_zero", "stacked_mtext_deviation_dimension_names_deviation_concepts", "deviations_written_as_two_small_texts_join_the_value"]
 
 [[cards.variants]]
 id = "thread_designation"
 title = "螺纹标记及螺纹公差带"
-distinguishing = "牙型代号接直径，等级数字在前、位置字母在后"
+distinguishing = "牙型代号接直径，等级数字在前、位置字母在后；统一螺纹也写作英寸尺寸加每英寸牙数"
 encodings = ["text"]
-tests = ["dimension_text_thread_designations"]
+tests = ["dimension_text_thread_designations", "inch_thread_designation_is_a_thread"]
 
 [[cards.variants]]
 id = "hole_callout"
@@ -739,6 +754,12 @@ concept = "DC-G3-088"
 entry = "word"
 values = ["UNC", "UNF", "UNEF", "NPT"]
 meaning = "统一螺纹与美制锥管螺纹（通用实践）"
+
+[[cards.lexicon]]
+concept = "DC-G3-088"
+entry = "inch_size"
+values = ["<a>/<b>\"-<n>", "<a>\"-<n>"]
+meaning = "统一螺纹的英寸写法：公称尺寸（分数或整数英寸）、英寸记号、短横、每英寸牙数，可再接 UNC/UNF（ASME B1.1 通用实践）"
 
 [[cards.lexicon]]
 concept = "DC-G3-223"
@@ -882,9 +903,20 @@ distinguishing = "处理名称、硬度值、硬化层深度"
 encodings = ["text"]
 tests = ["technical_note_heat_treatment_and_hardness"]
 
+[[cards.variants]]
+id = "numbered_in_text"
+title = "条目编号写在条目文字开头"
+distinguishing = "一行文字以“n、”“n.”“n．”开头，n 接着上一条的编号，开始新的一条；不带编号的行是上一条的续行"
+encodings = ["text"]
+tests = ["requirement_items_numbered_at_the_head_of_their_text"]
+
 [[cards.counter_examples]]
 statement = "只有标题“技术要求”时不说明任何未注要求"
 test = "heading_alone_is_not_an_untoleranced_note"
+
+[[cards.counter_examples]]
+statement = "画线表格（如表格图的变量表）格内的文字属于表格，不是技术要求条目，即使表格写在技术要求旁边"
+test = "ruled_table_texts_are_not_requirement_items"
 
 [[cards.counter_examples]]
 statement = "线性尺寸一般公差注语不是未注几何公差注语"
@@ -1007,8 +1039,8 @@ meaning = "条目主题：清洁与防护"
 [[cards.lexicon]]
 concept = "DC-G9-002"
 entry = "topic:process_requirement"
-values = ["钻", "铣", "车削", "磨削", "加工", "装配", "配作", "相对位置", "键槽"]
-meaning = "条目主题：加工与装配"
+values = ["钻", "铣", "车削", "磨削", "加工", "装配", "配作", "相对位置", "键槽", "工艺"]
+meaning = "条目主题：加工与装配（含铸造等工艺性结构的处理）；书名号内引用文件的名称不决定主题"
 
 [[cards.outside_forms]]
 concept = "DC-G3-112"
@@ -1035,7 +1067,7 @@ knowledge_units = ["K01", "K61"]
 recognition = "在已识别的标题栏内：栏目名按本卡词表定区（签字区、更改区、其他区）；所填文字按左侧同行或正上方的栏目名定栏，无栏目名的按值的形式定栏——比例为“数:数”，材料为牌号（两位数字碳钢、数字加合金元素、HT/QT/ZG/Q 等前缀），图样代号为字母数字加分隔符，单位名称含公司、厂等词，图样名称为不带栏目名的短中文。图框角上与图样代号相同的倒写文字是重复的代号；代号中的“~”与“-”同表示序号范围（企业常用写法，非标准条文）。"
 markers = ["设计", "审核", "比例", "材料", "共", "张"]
 parameters = []
-concepts = ["DC-G9-028", "DC-G9-017", "DC-G9-018", "DC-G9-019", "DC-G9-022", "DC-G9-023", "DC-G9-024", "DC-G9-025", "DC-G1-114"]
+concepts = ["DC-G9-028", "DC-G9-017", "DC-G9-018", "DC-G9-019", "DC-G9-022", "DC-G9-023", "DC-G9-024", "DC-G9-025", "DC-G1-114", "DC-G9-026"]
 
 [[cards.components]]
 role = "zone_label"
@@ -1073,9 +1105,27 @@ distinguishing = "倒写的代号与标题栏代号相同（序号范围分隔�
 encodings = ["text"]
 tests = ["repeated_drawing_code_with_range_separator_is_recognised"]
 
+[[cards.variants]]
+id = "margin_note"
+title = "图框外、纸边内的注写"
+distinguishing = "写在纸边界与图框线之间（多为装订边内竖写）的文字：质量、编码、日期，属于这张图样的标题信息"
+encodings = ["text"]
+tests = ["text_in_the_binding_margin_is_a_sheet_note"]
+
+[[cards.variants]]
+id = "revision_note"
+title = "图纸以外的更改说明"
+distinguishing = "写在所有图纸纸边以外、含更改动词和八位日期的句子，是图样的更改说明"
+encodings = ["text"]
+tests = ["dated_change_sentence_outside_the_sheets_is_a_revision_note"]
+
 [[cards.counter_examples]]
 statement = "八位日期与单个数字不是图样代号"
 test = "date_and_count_are_not_drawing_codes"
+
+[[cards.counter_examples]]
+statement = "图框线以内的文字（视图中的注写、技术要求）不是图框外注写"
+test = "text_inside_the_frame_is_not_a_margin_note"
 
 [[cards.lexicon]]
 concept = "DC-G9-024"
@@ -1174,10 +1224,39 @@ values = ["<short Chinese name>"]
 meaning = "图样名称：不带栏目名的短中文"
 
 [[cards.lexicon]]
+concept = "DC-G9-026"
+entry = "value_form"
+values = ["<number>kg"]
+meaning = "质量值带单位 kg；不带单位的数值只能由所在栏的栏目名定栏"
+
+[[cards.lexicon]]
+concept = "DC-G9-026"
+entry = "weight_word"
+values = ["毛重", "净重", "重量", "质量"]
+meaning = "质量（重量）的写法，后接数值与 kg"
+
+[[cards.lexicon]]
+concept = "DC-G9-023"
+entry = "change_verb"
+values = ["增加", "修改", "更改", "取消", "删除"]
+meaning = "更改说明中的动词"
+
+[[cards.lexicon]]
+concept = "DC-G9-023"
+entry = "date_form"
+values = ["<yyyymmdd>"]
+meaning = "八位日期（年月日），更改说明与标题栏日期的写法"
+
+[[cards.lexicon]]
 concept = "DC-G9-018"
 entry = "code_range_separator"
 values = ["~", "～", "-", "—"]
 meaning = "代号中序号范围的分隔符（企业常用写法，非标准条文）"
+
+[[cards.outside_forms]]
+concept = "DC-G9-026"
+form = "1.25"
+reason = "不带单位的质量值与其他数值形式相同，只能由所在栏的栏目名“质量”定栏"
 
 [[cards.outside_forms]]
 concept = "DC-G9-017"
@@ -1280,9 +1359,8 @@ sources = [
   "互换性与测量技术 表3.1",
 ]
 knowledge_units = ["K23", "K24", "K25"]
-recognition = "在框格第一格中按笔画特征识别：一条横线为直线度，平行四边形为平面度，一个圆为圆度，圆加两条平行切线为圆柱度，开口圆弧为线轮廓度，圆弧加弦为面轮廓度，两条平行斜线为平行度，竖线立在横线中点为垂直度，横线与斜线成锐角为倾斜度，圆加十字为位置度，两个同心圆为同轴度，三条平行线中间最长为对称度，一支斜箭头为圆跳动，两支斜箭头立在底线上为全跳动。也可写成 Unicode 字符或 GD&T 字体字母（字体对应为通用 CAD 实践）。笔画特征与种类的对应从本卡读取。"
+recognition = "在框格第一格中按笔画特征识别（先认闭合箭头：多段线、实心三角形或三条首尾相接的直线画的箭头，其边不算笔画）：一条横线为直线度，平行四边形为平面度，一个圆为圆度，圆加两条平行切线为圆柱度，开口圆弧为线轮廓度，圆弧加弦为面轮廓度，两条平行斜线为平行度，竖线立在横线中点为垂直度，横线与斜线成锐角为倾斜度，圆加十字为位置度，两个同心圆为同轴度，三条平行线中间最长为对称度，一支斜箭头为圆跳动，两支斜箭头立在底线上为全跳动。也可写成 Unicode 字符或 GD&T 字体字母（字体对应为通用 CAD 实践）。笔画特征与种类的对应从本卡读取。"
 markers = ["⏤", "⏥", "○", "⌭", "⌒", "⌓", "∥", "⊥", "∠", "⌖", "◎", "⌯", "↗", "⌰"]
-parameters = []
 concepts = ["DC-G5-076", "DC-G5-061", "DC-G5-055", "DC-G5-056", "DC-G5-077", "DC-G5-082", "DC-G5-060", "DC-G5-058", "DC-G5-042", "DC-G5-041", "DC-G5-054", "DC-G5-059", "DC-G5-057", "DC-G5-045"]
 
 [[cards.components]]
@@ -1304,6 +1382,13 @@ distinguishing = "Unicode 字符或 GD&T 字体字母"
 encodings = ["text"]
 tests = ["characteristic_written_as_text_glyph"]
 
+[[cards.variants]]
+id = "drawn_arrow_head"
+title = "箭头画成三条直线或实心三角形"
+distinguishing = "斜线一端的闭合箭头由三条首尾相接的直线或一个实心三角形（SOLID）画成；箭头的三条边不算笔画，先认箭头再判别：带箭头的一条斜线是圆跳动，不是直线度"
+encodings = ["loose", "block"]
+tests = ["runout_glyph_with_a_head_of_three_lines", "runout_glyph_with_a_filled_head_in_a_line_frame"]
+
 [[cards.counter_examples]]
 statement = "直角矩形不是平面度的平行四边形"
 test = "right_angle_rectangle_is_not_flatness"
@@ -1311,6 +1396,15 @@ test = "right_angle_rectangle_is_not_flatness"
 [[cards.counter_examples]]
 statement = "表面结构符号的 60° 折线不是倾斜度"
 test = "roughness_v_is_not_angularity"
+
+[[cards.counter_examples]]
+statement = "框格第一格中没有闭合箭头的一条斜线不是圆跳动（三条线不首尾相接时不是箭头）"
+test = "oblique_stroke_without_a_head_is_not_runout"
+
+[[cards.parameters]]
+name = "head_join"
+value = 0.04
+meaning = "三条直线首尾相接成闭合箭头时端点之间的距离上限 = 该值 × 最长边"
 
 [[cards.lexicon]]
 concept = "DC-G5-076"
@@ -1704,9 +1798,27 @@ distinguishing = "一个闭合外框与贯通全高的竖线"
 encodings = ["loose", "block"]
 tests = ["frame_drawn_as_outline_with_dividers"]
 
+[[cards.variants]]
+id = "line_outline_dividers"
+title = "直线画的外框加竖线分格"
+distinguishing = "外框四边是单独的直线，每边可由共线的几段拼成（相互重叠、相接或沿边错位），竖线贯通全高把外框分成格；公差值格按阅读顺序拼读：单独写的公差带符号 Ø 与其后的数值合为一个公差值，一个基准格内以空格分开的字母是几个基准"
+encodings = ["loose"]
+tests = ["frame_outline_drawn_in_staggered_line_pieces"]
+
+[[cards.variants]]
+id = "leader_pieces"
+title = "分段画的指引线"
+distinguishing = "指引线由几段直线画成：段与段共线而相互重叠，或在接头处留有很小的缝隙（相对框高）"
+encodings = ["loose"]
+tests = ["frame_leader_drawn_in_overlapping_pieces"]
+
 [[cards.counter_examples]]
 statement = "只有一个基准格的框格不是基准体系"
 test = "single_datum_frame_is_not_a_datum_system"
+
+[[cards.counter_examples]]
+statement = "表格的一行（竖线越过这一行通到别的行）不是直线画的公差框格外框"
+test = "table_rows_are_not_a_line_drawn_frame"
 
 [[cards.parameters]]
 name = "outline_aspect_min"
@@ -1717,6 +1829,36 @@ meaning = "外框宽高比下限（单格方框不再分格）"
 name = "divider_join"
 value = 0.06
 meaning = "分格竖线两端到外框上下边的容差 = 该值 × 框高"
+
+[[cards.parameters]]
+name = "piece_offset_max"
+value = 0.02
+meaning = "同一边的共线段之间的横向偏差上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "piece_gap_max"
+value = 0.1
+meaning = "同一边的共线段之间的缝隙上限 = 该值 × 字高（重叠不限）"
+
+[[cards.parameters]]
+name = "outline_height_min"
+value = 0.8
+meaning = "直线画的外框高度下限 = 该值 × 字高（框格高约为字高的两倍）"
+
+[[cards.parameters]]
+name = "outline_height_max"
+value = 4.0
+meaning = "直线画的外框高度上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "leader_join"
+value = 0.15
+meaning = "指引线两段在接头处端点之间的缝隙上限 = 该值 × 框高"
+
+[[cards.parameters]]
+name = "leader_offset"
+value = 0.04
+meaning = "分段指引线的共线段之间的横向偏差上限 = 该值 × 框高"
 
 [[cards.lexicon]]
 concept = "DC-G5-089"
@@ -1829,9 +1971,9 @@ tests = ["texture_tip_on_outline_and_extension_line", "texture_symbol_takes_the_
 [[cards.variants]]
 id = "most_surfaces"
 title = "大多数表面相同要求的统一注法"
-distinguishing = "“其余”或位于标题栏附近"
-encodings = ["block"]
-tests = ["remaining_surfaces_texture_note"]
+distinguishing = "“其余”或位于标题栏附近；旧版把“其余”二字写在符号前（同一图块内或单独文字），符号可不带数值（如不允许去除材料的符号）"
+encodings = ["block", "text"]
+tests = ["remaining_surfaces_texture_note", "most_surfaces_word_and_valueless_symbol_in_one_block", "most_surfaces_word_written_before_a_symbol_block"]
 
 [[cards.variants]]
 id = "symbol_only"
@@ -1878,6 +2020,17 @@ meaning = "散线符号长臂下限 = 该值 × 字高"
 name = "arm_max"
 value = 6.0
 meaning = "散线符号长臂上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "most_surfaces_reach"
+value = 1.5
+meaning = "“其余”文字末端到符号的距离上限 = 该值 × “其余”字高"
+
+[[cards.lexicon]]
+concept = "DC-G6-006"
+entry = "most_surfaces_word"
+values = ["其余"]
+meaning = "其余表面的统一要求（GB/T 131-1993 写在符号前）"
 
 [[cards.lexicon]]
 concept = "DC-G6-075"
@@ -2012,7 +2165,7 @@ sources = [
   "机械制图（第7版）§9-5",
 ]
 knowledge_units = ["K17", "K23", "K26"]
-recognition = "以尺寸数值为锚：数值上方有一条平行线，其两端各有一条垂直边下到数值下方；底边常就是数值所立的引线台或尺寸线。方框内的数值即理论正确尺寸；方框的线是框，不是引出线。数值可写在尺寸线延长后的引线台上。"
+recognition = "以尺寸数值为锚：数值上方有一条平行线，其两端各有一条垂直边下到数值下方；底边常就是数值所立的引线台或尺寸线。也可以是一个闭合的四顶点多段线，长边与数值方向平行（随数值旋转），框内只有这一个数值。方框内的数值即理论正确尺寸；方框的线是框，不是引出线。数值可写在尺寸线延长后的引线台上。"
 markers = ["□"]
 concepts = ["DC-G4-029"]
 
@@ -2023,8 +2176,8 @@ requirement = "尺寸数值"
 
 [[cards.components]]
 role = "frame"
-primitives = ["LINE"]
-requirement = "围住数值的矩形方框（上边、两侧边、底边）"
+primitives = ["LINE", "LWPOLYLINE"]
+requirement = "围住数值的矩形方框（上边、两侧边、底边），或一个闭合四顶点多段线（随数值转向）"
 
 [[cards.variants]]
 id = "native_value_box"
@@ -2040,9 +2193,20 @@ distinguishing = "方框由三到四条直线组成，底边可与引线台共�
 encodings = ["loose"]
 tests = ["boxed_loose_value_is_theoretically_exact", "boxed_value_on_extended_dimension_line_is_one_dimension"]
 
+[[cards.variants]]
+id = "closed_polyline_box"
+title = "闭合多段线方框"
+distinguishing = "一个闭合的四顶点多段线围住尺寸数值，长边与数值方向平行（数值旋转时方框一起旋转），框内只有这一个数值"
+encodings = ["loose"]
+tests = ["closed_polyline_box_around_a_rotated_value_is_theoretically_exact"]
+
 [[cards.counter_examples]]
 statement = "公差框格的格子围住的公差值不是理论正确尺寸"
 test = "frame_cell_value_is_not_a_theoretically_exact_dimension"
+
+[[cards.counter_examples]]
+statement = "闭合方框里除尺寸数值外还有别的文字（表格单格、栏目格），不是理论正确尺寸的方框"
+test = "closed_box_holding_two_texts_is_not_a_ted_box"
 
 [[cards.parameters]]
 name = "top_offset_min"
@@ -2197,3 +2361,261 @@ meaning = "终端箭尖落在共用界线上的容差 = 该值 × 字高"
 name = "perpendicular_cos_max"
 value = 0.1
 meaning = "箭头方向与共用界线夹角余弦的绝对值上限"
+
+[[cards]]
+id = "coincident_redraw"
+expression_kind = "any"
+title = "重画的重合图线"
+meaning = "同一对象在同一位置画了两遍：散线和文字与一个已读图块（标题栏、登记栏、图框、符号块）按插入变换后的内容逐条重合。重合的图线只表示一次，重画的一份是该图块表达的重合来源，不是另外的要素，也不另成表达。"
+sources = [
+  "GB/T 14665-2012 机械工程 CAD 制图规则 4.3 重合图线的优先顺序",
+  "GB/T 4457.4-2002 机械制图 图样画法 图线 4.1（图线重合时只画其中一种）",
+]
+knowledge_units = ["K03", "K61"]
+recognition = "对每个已读出的图块，按插入变换算出块内直线与文字的位置：未被其他规则读出的散线，两端点与块内某条直线的两端点重合；未读出的文字，内容与块内文字相同、插入点重合；散线副本至少占块内直线的给定比例才算重画（偶然一条线重合不算）。副本作为该图块表达的重合来源。"
+markers = []
+concepts = ["DC-G1-055"]
+
+[[cards.components]]
+role = "coincident_source"
+primitives = ["LINE", "TEXT", "MTEXT"]
+requirement = "与已读图块的直线或文字逐条重合的散线或文字"
+
+[[cards.variants]]
+id = "block_redrawn_loose"
+title = "图块内容用散线和文字原样重画"
+distinguishing = "散线与文字逐条落在已读图块的直线与文字上（含按比例插入的图块）"
+encodings = ["loose"]
+tests = ["loose_copy_of_a_read_block_is_coincident"]
+
+[[cards.counter_examples]]
+statement = "只有个别散线碰巧与图块内的一条线重合（如零件轮廓与图框线相接），不是重画的副本"
+test = "single_line_on_a_block_line_is_not_a_copy"
+
+[[cards.parameters]]
+name = "coincidence_tolerance"
+value = 0.002
+meaning = "端点或插入点重合的距离容差 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "copy_share_min"
+value = 0.5
+meaning = "散线副本至少占块内直线条数的比例"
+
+[[cards]]
+id = "callout_rows"
+expression_kind = "dimension"
+title = "标注的附注行"
+meaning = "尺寸和孔的旁注常写成两行：基准线（指引线的水平折线）上方一行写数量、要素和尺寸，下方一行写深度、贯通、分布或作用范围；没有基准线的尺寸，这些附注词写在数值正下方。附注词属于该尺寸，说明数量、分布和作用范围，不另成注写。沿数值方向紧挨着写、用“此直径”等指代该尺寸的说明句，是以该尺寸为界的要求；尺寸终端所落的同心短弧是这一要求的分界线（范围线）。"
+sources = [
+  "GB/T 16675.2-2012 技术制图 简化表示法 第2部分：尺寸注法 表1（孔的旁注法）、4.2（均布与 EQS）",
+  "GB/T 4458.4-2003 机械制图 尺寸注法 4.1（尺寸数字的注写位置）",
+  "GB/T 4457.4-2002 机械制图 图样画法 图线 表1 细实线（范围线及分界线）",
+  "机械制图（第7版）§8-1 螺纹的标注、§9-1 零件图的尺寸注法（旁注法）",
+]
+knowledge_units = ["K17", "K39", "K55"]
+recognition = "以尺寸的数值文字为锚：与之平行、字高相称的文字，在同一行内相邻（缝隙小于给定倍数字高），或在其正下方一到两行（行距按字高），并且全部由本卡词表中的词组成（数量 n-、n×、n处，要素、大小、分布、贯通、深度加数值、作用范围）时，并入该尺寸，标签按行序拼读；不全由词表词组成的文字不并入。数值后紧跟的一上一下两段较小的带符号数字是它的上下偏差（dimension_text 卡）。沿数值方向写在其下、含指代词的说明句，作为以该尺寸为界的要求另成一个表达并共享该尺寸的成员，尺寸终端落在其上的同心短弧是分界线。"
+markers = ["均布", "两侧", "一周"]
+concepts = ["DC-G1-111", "DC-G4-066", "DC-G4-043", "DC-G4-067", "DC-G1-047", "DC-G4-094", "DC-G4-088", "DC-G3-089"]
+
+[[cards.components]]
+role = "note_text"
+primitives = ["TEXT", "MTEXT"]
+requirement = "数值同一行或其下一到两行、全由附注词组成的文字；或含指代词的说明句"
+
+[[cards.components]]
+role = "tolerance_text"
+primitives = ["TEXT", "MTEXT"]
+requirement = "数值后一上一下两段较小的带符号数字（上下偏差）"
+
+[[cards.components]]
+role = "extension_line"
+primitives = ["ARC"]
+requirement = "尺寸终端所落、与零件同心的短弧（要求的分界线）"
+
+[[cards.variants]]
+id = "rows_on_reference_line"
+title = "附注词写在基准线上下或数值正下方"
+distinguishing = "同一行相邻的数量、要素词，下一行的深度、贯通、分布、范围词"
+encodings = ["text"]
+tests = ["callout_words_under_the_value_join_the_dimension", "hole_callout_rows_on_and_under_the_reference_line"]
+
+[[cards.variants]]
+id = "bounded_requirement"
+title = "以尺寸为界的要求"
+distinguishing = "沿数值方向写的说明句含“此直径”等指代词；尺寸终端落在一段同心短弧上"
+encodings = ["text"]
+tests = ["sentence_referring_to_a_diameter_is_a_bounded_requirement"]
+
+[[cards.counter_examples]]
+statement = "数值下方的文字不全由附注词组成（另一个尺寸的数值、一句技术要求）时不并入该尺寸"
+test = "other_text_under_a_value_is_not_a_callout_row"
+
+[[cards.parameters]]
+name = "row_step_min"
+value = 0.8
+meaning = "下一行文字中心到上一行中心的距离下限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "row_step_max"
+value = 2.8
+meaning = "下一行文字中心到上一行中心的距离上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "row_gap_max"
+value = 1.5
+meaning = "同一行相邻两段文字之间的缝隙上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "height_ratio_min"
+value = 0.5
+meaning = "附注文字字高与数值字高之比下限"
+
+[[cards.parameters]]
+name = "height_ratio_max"
+value = 2.0
+meaning = "附注文字字高与数值字高之比上限"
+
+[[cards.parameters]]
+name = "direction_cos_min"
+value = 0.99
+meaning = "附注文字与数值方向夹角余弦下限（平行书写）"
+
+[[cards.parameters]]
+name = "deviation_height_min"
+value = 0.5
+meaning = "分开写的偏差字高 ≥ 该值 × 数值字高"
+
+[[cards.parameters]]
+name = "deviation_height_max"
+value = 0.9
+meaning = "分开写的偏差字高 ≤ 该值 × 数值字高"
+
+[[cards.lexicon]]
+concept = "DC-G4-094"
+entry = "count_separator"
+values = ["-", "×", "x", "X", "*"]
+meaning = "数量与其后要素之间的分隔（n× 或旧式 n-）"
+
+[[cards.lexicon]]
+concept = "DC-G4-094"
+entry = "numeral"
+values = ["一", "二", "两", "三", "四", "五", "六", "七", "八", "九", "十"]
+meaning = "汉字数目字"
+
+[[cards.lexicon]]
+concept = "DC-G4-066"
+entry = "place_counter"
+values = ["处"]
+meaning = "“n处”表示同样的要素有 n 处"
+
+[[cards.lexicon]]
+concept = "DC-G4-066"
+entry = "distribution"
+values = ["均布"]
+meaning = "均布注语（GB/T 16675.2 4.2）"
+
+[[cards.lexicon]]
+concept = "DC-G4-043"
+entry = "distribution"
+values = ["EQS"]
+meaning = "均布的缩写"
+
+[[cards.lexicon]]
+concept = "DC-G4-088"
+entry = "through"
+values = ["通孔", "通"]
+meaning = "贯通（孔的旁注）"
+
+[[cards.lexicon]]
+concept = "DC-G4-088"
+entry = "feature"
+values = ["螺孔", "沉孔", "孔", "肋", "筋", "凸台", "槽"]
+meaning = "被注要素的名称"
+
+[[cards.lexicon]]
+concept = "DC-G4-088"
+entry = "size_word"
+values = ["小", "大"]
+meaning = "同名要素按大小区分时写在要素名前"
+
+[[cards.lexicon]]
+concept = "DC-G3-089"
+entry = "depth"
+values = ["攻深", "孔深", "深"]
+meaning = "螺纹深度或孔深，后接数值"
+
+[[cards.lexicon]]
+concept = "DC-G4-067"
+entry = "scope"
+values = ["两侧", "两端", "一周", "全周"]
+meaning = "尺寸的作用范围（两侧同样、绕一周同样）"
+
+[[cards.lexicon]]
+concept = "DC-G1-047"
+entry = "pronoun"
+values = ["此直径", "此尺寸", "此处"]
+meaning = "说明句用以指代所写的尺寸，句子是以该尺寸为界的要求"
+
+[[cards]]
+id = "leader_note"
+expression_kind = "leader_note"
+title = "引出说明"
+meaning = "用指引线从图形引出、写在基准线（水平折线）上的文字说明：文字站在基准线上方，第二行可写在其下方；指引线从基准线一端折出，末端用箭头指在轮廓或图线上，或不画终端（末端在面内、贴近所指的线）。它说明所指部位，不是尺寸，也不是技术要求条目。"
+sources = [
+  "GB/T 4457.2-2003 技术制图 图样画法 指引线和基准线的基本规定 3、4",
+  "GB/T 16675.2-2012 技术制图 简化表示法 第2部分：尺寸注法",
+  "机械制图（第7版）§9-1 零件图的尺寸注法（引出说明）",
+]
+knowledge_units = ["K14", "K55"]
+recognition = "以含汉字的文字为锚：其下有一条尚未读出的细线，文字站在线上（基准线）；从基准线两端沿细线追踪（精确相接，或共线重叠、略有缝隙），其中要有一段与基准线成角折出；末端是箭头，或没有终端但末端贴近一条图线。基准线下方紧接的一行附注词（见 callout_rows 卡词表）一并归入。"
+markers = []
+concepts = ["DC-G1-028", "DC-G1-096", "DC-G1-098"]
+
+[[cards.components]]
+role = "note_text"
+primitives = ["TEXT", "MTEXT"]
+requirement = "站在基准线上的说明文字及其下一行附注"
+
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE"]
+requirement = "基准线与折出的指引线"
+
+[[cards.components]]
+role = "arrowhead"
+primitives = ["SOLID"]
+requirement = "指引线末端的实心箭头（可无）"
+
+[[cards.variants]]
+id = "arrow_terminator"
+title = "末端为实心箭头"
+distinguishing = "指引线末端接实心箭头，指在轮廓、剖面区域或图线上"
+encodings = ["loose"]
+tests = ["leader_note_with_an_arrow_on_the_outline"]
+
+[[cards.variants]]
+id = "no_terminator"
+title = "末端无终端"
+distinguishing = "指引线末端没有箭头，落在所指的面内或贴近所指的线"
+encodings = ["loose"]
+tests = ["leader_note_without_terminator_ending_at_a_line"]
+
+[[cards.counter_examples]]
+statement = "文字下有一条横线但没有折出的指引线（下划线、表格线），不是引出说明"
+test = "underlined_text_without_a_leader_is_not_a_leader_note"
+
+[[cards.parameters]]
+name = "end_reach"
+value = 0.4
+meaning = "无终端时末端到最近图线的距离上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "bend_sin_min"
+value = 0.26
+meaning = "指引线与基准线夹角的正弦下限（约 15°）"
+
+[[cards.parameters]]
+name = "shoulder_extra"
+value = 6.0
+meaning = "基准线长度上限 = 文字宽 + 该值 × 字高"

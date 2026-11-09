@@ -604,6 +604,60 @@ kinds = ["view_callout"]
 kind = ""
 ids = ["DC-G2-072"]
 
+[[rules]]
+rule = "card:callout_rows/bounded_requirement"
+function = "callouts"
+piece = false
+kinds = ["process_requirement", "technical_general", "material_heat", "protection_requirement"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G4-067"]
+
+[[rules]]
+rule = "card:leader_note/arrow_terminator"
+function = "leader_notes"
+piece = false
+kinds = ["leader_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-028", "DC-G1-018", "DC-G1-096", "DC-G1-111"]
+
+[[rules]]
+rule = "card:leader_note/no_terminator"
+function = "leader_notes"
+piece = false
+kinds = ["leader_note"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-028", "DC-G1-018", "DC-G1-098", "DC-G1-111"]
+
+[[rules]]
+rule = "card:surface_texture_symbol/most_surfaces"
+function = "blocks"
+piece = false
+kinds = ["surface_roughness"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G6-071", "DC-G6-006"]
+
+[[rules]]
+rule = "card:title_block_field/margin_note"
+function = "margin_notes"
+piece = false
+kinds = ["title_block"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-085"]
+
+[[rules]]
+rule = "card:title_block_field/revision_note"
+function = "margin_notes"
+piece = false
+kinds = ["title_block"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G9-023"]
+
 [[conventions]]
 name = "coincident_line_precedence"
 applies_to = "member evidence coincident_higher_precedence; line type of shared source intervals (GB/T 14665-2012 4.3)"
@@ -660,7 +714,7 @@ missing = "粗细由图层约定与成员作用推出，未读取实际线宽值
 [[concepts]]
 id = "DC-G1-018"
 level = "full"
-by = ["text_on_leader_shoulder"]
+by = ["card:leader_note/arrow_terminator", "card:leader_note/no_terminator", "text_on_leader_shoulder"]
 
 [[concepts]]
 id = "DC-G1-019"
@@ -677,8 +731,8 @@ missing = "对称中心线与轴线归在一起，未单独判断对称"
 [[concepts]]
 id = "DC-G1-028"
 level = "partial"
-by = ["single_terminator_leader_and_text", "text_on_leader_shoulder"]
-missing = "只在注写规则用到时识别指引线；圆点终端、无终端的指引线及序号指引线未区分"
+by = ["card:leader_note", "card:leader_note/arrow_terminator", "card:leader_note/no_terminator", "single_terminator_leader_and_text", "text_on_leader_shoulder"]
+missing = "圆点终端与序号指引线未区分；指引线只在注写、框格与引出说明规则用到时识别"
 
 [[concepts]]
 id = "DC-G1-029"
@@ -722,6 +776,12 @@ by = ["grouped_line_type_pieces_by_view", "piece:actual_linetype_pattern"]
 missing = "用线型画的细虚线已识别；炸开成一段段短线的虚线未识别"
 
 [[concepts]]
+id = "DC-G1-047"
+level = "partial"
+by = ["card:callout_rows"]
+missing = "只识别尺寸终端所落、与零件同心的短弧作为以该尺寸为界的要求的分界线；横跨轮廓的分界细实线未识别"
+
+[[concepts]]
 id = "DC-G1-048"
 level = "partial"
 by = ["piece:three_quarter_thin_circle_concentric_with_full_circle"]
@@ -742,7 +802,7 @@ missing = "轴线与本视图的中心线归在一起，未与对称中心线、
 [[concepts]]
 id = "DC-G1-055"
 level = "full"
-by = ["convention:coincident_line_precedence"]
+by = ["card:coincident_redraw", "convention:coincident_line_precedence"]
 
 [[concepts]]
 id = "DC-G1-070"
@@ -757,19 +817,31 @@ by = ["card:technical_note"]
 [[concepts]]
 id = "DC-G1-085"
 level = "partial"
-by = ["binding_margin_registration_table", "sheet_size_rectangular_border"]
-missing = "只识别整块的图框图块（矩形边框或装订边登记栏）；散线画的图框、纸边界线与对中符号未区分"
+by = ["binding_margin_registration_table", "card:title_block_field/margin_note", "sheet_size_rectangular_border"]
+missing = "只识别整块的图框图块（矩形边框或装订边登记栏）与图框线外、纸边内的注写；散线画的图框、纸边界线与对中符号未区分"
 
 [[concepts]]
 id = "DC-G1-096"
 level = "partial"
-by = ["single_terminator_leader_and_text"]
-missing = "实心箭头终端只在单箭头指引线规则中识别；其他终端形式未区分"
+by = ["card:leader_note", "card:leader_note/arrow_terminator", "single_terminator_leader_and_text"]
+missing = "实心箭头终端在单箭头尺寸、框格指引线与引出说明中识别；斜线、圆点等其他终端未区分"
+
+[[concepts]]
+id = "DC-G1-098"
+level = "partial"
+by = ["card:leader_note", "card:leader_note/no_terminator"]
+missing = "只在引出说明中识别无终端的指引线（末端贴近图线）；末端落在面内而不靠近图线时未识别"
 
 [[concepts]]
 id = "DC-G1-101"
 level = "full"
 by = ["convention:layer_convention_table6"]
+
+[[concepts]]
+id = "DC-G1-111"
+level = "partial"
+by = ["card:callout_rows", "card:leader_note/arrow_terminator", "card:leader_note/no_terminator"]
+missing = "注释说明归属到基准线（文字站在线上、下一行附注词）与尺寸数值正下方的附注已识别；文字与指引线端点同高、不用基准线的写法未识别"
 
 [[concepts]]
 id = "DC-G1-114"
@@ -869,8 +941,8 @@ by = ["card:dimension_text", "dimension_line_of_feature_of_size_with_attached_fr
 [[concepts]]
 id = "DC-G3-089"
 level = "partial"
-by = ["card:dimension_text"]
-missing = "以普通线性尺寸注出的螺纹长度未与其他长度区分"
+by = ["card:callout_rows", "card:dimension_text"]
+missing = "以普通线性尺寸注出的螺纹长度未与其他长度区分；旁注中的攻深按附注行并入，未与图形中的螺纹终止线核对"
 
 [[concepts]]
 id = "DC-G3-091"
@@ -939,7 +1011,7 @@ by = ["single_terminator_leader_and_text", "terminators_across_feature_with_lead
 id = "DC-G4-029"
 level = "partial"
 by = ["card:theoretically_exact_dimension"]
-missing = "用直线画的方框（含与引线台共用的底边）和原生尺寸文字外的方框已识别；多段线或图块画的方框、角度与延伸长度的方框未单独核对"
+missing = "用直线画的方框（含与引线台共用的底边）、原生尺寸文字外的方框和随数值旋转的闭合多段线方框已识别；图块画的方框与延伸长度的方框未单独核对"
 
 [[concepts]]
 id = "DC-G4-030"
@@ -960,6 +1032,12 @@ by = ["card:dimension_text", "dimension_line_of_feature_of_size_with_attached_fr
 id = "DC-G4-041"
 level = "full"
 by = ["card:dimension_text"]
+
+[[concepts]]
+id = "DC-G4-043"
+level = "partial"
+by = ["card:callout_rows"]
+missing = "EQS 按词并入所属尺寸；被指圆的个数与等分角未核对"
 
 [[concepts]]
 id = "DC-G4-055"
@@ -983,6 +1061,18 @@ level = "full"
 by = ["card:technical_note"]
 
 [[concepts]]
+id = "DC-G4-066"
+level = "partial"
+by = ["card:callout_rows"]
+missing = "均布注语按词并入所属尺寸或引出说明；被指圆的个数与等分角未核对"
+
+[[concepts]]
+id = "DC-G4-067"
+level = "partial"
+by = ["card:callout_rows", "card:callout_rows/bounded_requirement"]
+missing = "只识别作用范围词（两侧、一周等）与以尺寸为界的指代说明句；参考、典型等性质限定词未识别"
+
+[[concepts]]
 id = "DC-G4-068"
 level = "full"
 by = ["card:technical_note"]
@@ -995,13 +1085,13 @@ by = ["card:technical_note"]
 [[concepts]]
 id = "DC-G4-088"
 level = "partial"
-by = ["card:dimension_text"]
-missing = "旧式旁注（无深度、沉孔符号的“n-Ø”）未与“数量-直径”尺寸区分"
+by = ["card:callout_rows", "card:dimension_text"]
+missing = "旧式旁注（无深度、沉孔符号的“n-Ø”）未与“数量-直径”尺寸区分；第二行的深度、贯通、分布词按附注行并入，未核对与孔深尺寸的一致"
 
 [[concepts]]
 id = "DC-G4-094"
 level = "full"
-by = ["card:dimension_text"]
+by = ["card:callout_rows", "card:dimension_text"]
 
 [[concepts]]
 id = "DC-G4-098"
@@ -1189,7 +1279,7 @@ by = ["card:technical_note"]
 [[concepts]]
 id = "DC-G6-006"
 level = "partial"
-by = ["card:surface_texture_symbol"]
+by = ["card:surface_texture_symbol", "card:surface_texture_symbol/most_surfaces"]
 missing = "统一注法后括号中的基本符号未读出"
 
 [[concepts]]
@@ -1245,7 +1335,7 @@ by = ["card:surface_texture_symbol"]
 [[concepts]]
 id = "DC-G6-071"
 level = "full"
-by = ["basic_texture_symbol_with_value", "card:surface_texture_symbol", "card:surface_texture_symbol/block_value_apart", "card:surface_texture_symbol/block_with_parameter_value", "card:surface_texture_symbol/loose_strokes"]
+by = ["basic_texture_symbol_with_value", "card:surface_texture_symbol", "card:surface_texture_symbol/block_value_apart", "card:surface_texture_symbol/block_with_parameter_value", "card:surface_texture_symbol/loose_strokes", "card:surface_texture_symbol/most_surfaces"]
 
 [[concepts]]
 id = "DC-G6-072"
@@ -1328,7 +1418,7 @@ missing = "列出前缀以外的铝合金、铜合金等牌号（如 2A12、6061
 [[concepts]]
 id = "DC-G9-023"
 level = "full"
-by = ["card:title_block_field"]
+by = ["card:title_block_field", "card:title_block_field/revision_note"]
 
 [[concepts]]
 id = "DC-G9-024"
@@ -1339,6 +1429,12 @@ by = ["card:title_block_field"]
 id = "DC-G9-025"
 level = "full"
 by = ["card:title_block_field"]
+
+[[concepts]]
+id = "DC-G9-026"
+level = "partial"
+by = ["card:title_block_field"]
+missing = "只识别图框外注写中带质量词的文字；标题栏内质量栏的填写值未单独定栏"
 
 [[concepts]]
 id = "DC-G9-028"

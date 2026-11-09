@@ -473,6 +473,7 @@ struct Arrangement {
 }
 
 fn arrange(
+    scale: f64,
     b: &Builder,
     nodes: &[(String, [f64; 4])],
     cl: &[Cl],
@@ -486,12 +487,18 @@ fn arrange(
         .iter()
         .map(|&i| (i, outline(b, nodes, &cl[i])))
         .collect();
-    let untitled = |i: usize| !title_of.contains_key(&i) && cl[i].nodes.len() >= pieces;
+    // a view of the arrangement has pieces enough and an extent of a few text heights
+    let extent = param("view_arrangement", "min_extent")? * scale;
+    let sized = |i: usize| {
+        let o = out[&i];
+        cl[i].nodes.len() >= pieces && (o[2] - o[0]).max(o[3] - o[1]) >= extent
+    };
+    let untitled = |i: usize| !title_of.contains_key(&i) && sized(i);
     let section = |i: usize| {
         title_of
             .get(&i)
             .is_some_and(|&t| titles[t].kind == "section_view")
-            && cl[i].nodes.len() >= pieces
+            && sized(i)
     };
     // aligned untitled neighbours of each candidate: (axis, side, index)
     let partners = |h: usize| -> Vec<(usize, i32, usize)> {
@@ -676,7 +683,7 @@ pub(super) fn regions(
     let mut principal = BTreeMap::new();
     let mut names = BTreeMap::new();
     for g in groups.values() {
-        let a = arrange(b, nodes, &cl, g, &title_of, titles)?;
+        let a = arrange(cx.scale, b, nodes, &cl, g, &title_of, titles)?;
         if let Some(p) = a.principal {
             principal.insert(p, a.evidence);
         }

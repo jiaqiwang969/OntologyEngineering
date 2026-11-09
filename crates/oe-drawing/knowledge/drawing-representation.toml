@@ -57,6 +57,13 @@ distinguishing = "边框是方框，终端是三角形"
 encodings = ["loose"]
 tests = ["datum_new_square_triangle_loose_is_one_symbol"]
 
+[[cards.variants]]
+id = "aligned_with_dimension_line"
+title = "连线与尺寸线对齐：基准是该尺寸要素的导出要素"
+distinguishing = "连线在一条尺寸线的延长线上（容差见 gdt_frame_content 的 dimension_alignment）；符号随该尺寸所在视图，而不是最近的视图"
+encodings = ["block"]
+tests = ["datum_block_aligned_with_a_dimension_line_takes_its_view"]
+
 [[cards.counter_examples]]
 statement = "圆圈里的字母没有连线和终端，不是基准符号（可能是视图或放大标识）"
 test = "circled_letter_without_connector_is_not_a_datum"
@@ -1777,6 +1784,11 @@ meaning = "外框宽高比下限（单格方框不再分格）"
 name = "divider_join"
 value = 0.06
 meaning = "分格竖线两端到外框上下边的容差 = 该值 × 框高"
+
+[[cards.parameters]]
+name = "dimension_alignment"
+value = 0.3
+meaning = "指引线箭头（或基准符号连线）与尺寸线对齐的横向容差 = 该值 × 字高：对齐时所指的是尺寸要素的导出要素，框格与基准符号随该尺寸所在视图（GB/T 1182 8.2）"
 
 [[cards.lexicon]]
 concept = "DC-G5-089"

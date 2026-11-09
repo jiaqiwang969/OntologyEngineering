@@ -772,6 +772,8 @@ struct Frame {
     cell_lines: Vec<usize>,
     bbox: [f64; 4],
     height: f64,
+    /// Height of the characteristic text.
+    text: f64,
     font: String,
 }
 
@@ -1522,6 +1524,7 @@ fn frame(bl: &Block) -> Result<Option<Frame>> {
         cell_lines: cell_lines.into_iter().collect(),
         bbox,
         height,
+        text: glyphs[0].1.height,
         font: glyphs[0].3.to_string(),
     }))
 }
@@ -2094,6 +2097,7 @@ pub(super) fn read(
             }
         }
     }
+    datum_anchors(cx, b, anchors);
     // item numbers checked against the rows of the parts list; library parts identified by them
     for (e, rows) in &lists {
         let set: BTreeSet<&str> = rows.iter().filter_map(|r| r.item.as_deref()).collect();
@@ -2666,7 +2670,7 @@ fn emit_frame(
             .collect();
         let mut feature: Option<P> = None;
         for (tip, dir) in &tips {
-            if let Some((d, origin)) = along_dimension_line(cx, *tip, *dir, f.height) {
+            if let Some((d, origin)) = along_dimension_line(cx, *tip, *dir, f.text) {
                 ev.push(format!("leader_along_dimension_line:{d}"));
                 feature = feature.or(Some(origin));
             }
@@ -2785,11 +2789,61 @@ fn emit_frame(
     }))
 }
 
+/// Datum symbols drawn as one block are placed with the feature their connector is aligned with:
+/// a connector in line with a dimension line names the dimensioned feature (GB/T 1182 8.2,
+/// GB/T 17851), so the symbol belongs to that dimension's view.
+fn datum_anchors(cx: &Ctx, b: &mut Builder, anchors: &mut BTreeMap<usize, P>) {
+    for i in 0..b.exprs.len() {
+        let e = &b.exprs[i];
+        if e.kind != "datum_symbol" || anchors.contains_key(&i) {
+            continue;
+        }
+        let roots: BTreeSet<&str> = b
+            .members
+            .iter()
+            .filter(|m| m.expression_id == e.id && m.native_member_id.is_none())
+            .map(|m| m.source_handle.as_str())
+            .collect();
+        let [root] = roots.into_iter().collect::<Vec<_>>()[..] else {
+            continue;
+        };
+        let Some(bl) = cx.blocks.roots.get(root) else {
+            continue;
+        };
+        let [(_, c, r)] = bl.circles()[..] else {
+            continue;
+        };
+        // the connector leaves the circle; its far end is the terminal
+        let connector = bl.lines().into_iter().find_map(|(_, p, q)| {
+            if (dist(p, c) - r).abs() < 0.1 * r && dist(q, c) > dist(p, c) {
+                Some((p, q))
+            } else if (dist(q, c) - r).abs() < 0.1 * r && dist(p, c) > dist(q, c) {
+                Some((q, p))
+            } else {
+                None
+            }
+        });
+        let Some((near, far)) = connector else {
+            continue;
+        };
+        if let Some((d, origin)) = along_dimension_line(cx, far, unit(sub(far, near)), r) {
+            anchors.insert(i, origin);
+            let ev = &mut b.exprs[i].evidence_ids;
+            ev.push(format!("connector_along_dimension_line:{d}"));
+            ev.push("card:datum_feature_symbol".into());
+            ev.push("variant:aligned_with_dimension_line".into());
+        }
+    }
+}
+
 /// The native dimension whose dimension line a leader's head ends on, pointing along it (the
 /// frame then concerns the feature of size, GB/T 1182 8.2), with the origin of its first
 /// extension line (a point of the dimensioned feature).
 fn along_dimension_line(cx: &Ctx, tip: P, dir: P, h: f64) -> Option<(String, P)> {
-    let tol = 0.3 * h;
+    let tol = card("gdt_frame_content")
+        .and_then(|c| param(c, "dimension_alignment"))
+        .ok()?
+        * h;
     cx.rec
         .iter()
         .filter(|(_, r)| r.kind == "DIMENSION")

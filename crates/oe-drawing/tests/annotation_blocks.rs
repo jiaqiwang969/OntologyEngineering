@@ -1228,3 +1228,53 @@ fn frame_block_holding_a_title_grid_stays_a_title_block() {
     assert_eq!(e[0].kind, "title_block");
     assert!(by_rule(&g, "card:sheet_frame_border/border_with_margin_columns").is_empty());
 }
+
+// ---------------------------------------------------------------- attachment to a dimension
+
+#[test]
+fn datum_block_aligned_with_a_dimension_line_takes_its_view() {
+    // a vertical size of the left view, its dimension line drawn far to the right, nearer the
+    // right view; the datum symbol's connector continues that dimension line
+    let dim_block = vec![
+        line("DL1", "08", [120., 0.], [120., 60.]),
+        line("DL2", "08", [40., 0.], [123., 0.]),
+        line("DL3", "08", [40., 60.], [123., 60.]),
+        mtext("DL4", "08", "60", [125., 30.], 3.5, 5),
+    ];
+    let dim = ent(
+        "DIMENSION",
+        "DM",
+        "08",
+        "2\n*D9\n10\n120\n20\n60\n11\n125\n21\n30\n70\n32\n13\n40\n23\n0\n14\n40\n24\n60\n42\n60\n50\n90\n",
+    );
+    let datum = vec![
+        circle("Z1", "08", [0., -20.], 5.),
+        mtext("Z2", "08", "S", [0., -20.], 5., 5),
+        line("Z3", "08", [0., -15.], [0., 0.]),
+        line_w("Z4", "08", 50, [-5., 0.], [5., 0.]),
+    ];
+    let mut ents = outline("PL", 0., 0., 40., 60.);
+    ents.push(line("PL5", "01", [0., 30.], [40., 30.]));
+    ents.extend(outline("PR", 150., 0., 210., 60.));
+    ents.push(dim);
+    ents.push(insert("ZB", "08", "*Z9", [120., -10.], 1.));
+    let g = run(&[("*D9", dim_block), ("*Z9", datum)], &ents);
+    let e = exprs(&g, "ZB");
+    assert_eq!(e[0].kind, "datum_symbol");
+    assert!(
+        ev(e[0], "connector_along_dimension_line:DM"),
+        "{:?}",
+        e[0].evidence_ids
+    );
+    let d = exprs(&g, "DM");
+    assert_eq!(
+        e[0].view_id, d[0].view_id,
+        "the datum takes the view of the dimensioned feature"
+    );
+    let left = g
+        .views
+        .iter()
+        .find(|v| v.bbox[0] < 1. && v.bbox[2] < 50.)
+        .expect("left view");
+    assert_eq!(e[0].view_id.as_deref(), Some(left.id.as_str()));
+}

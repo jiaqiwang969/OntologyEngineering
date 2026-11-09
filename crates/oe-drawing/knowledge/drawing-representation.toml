@@ -530,6 +530,53 @@ tests = ["section_line_drawn_by_hand_on_the_hatch_boundary"]
 statement = "填充边界上与图案平行的倒角线：两端处轮廓在此转折，是可见轮廓，不是剖面线"
 test = "chamfer_edge_on_the_hatch_boundary_stays_outline"
 
+[[cards.variants]]
+id = "loose_lines_by_own_spacing"
+title = "一根根画出的剖面线，按自身间距成组"
+distinguishing = "同一方向的细斜线，横向偏移按同一间距递进（一根剖面线可被孔或空腔截成几段），至少三档，相邻两根沿线方向互相重叠；间距与长度取自这组线本身，不按字高（放大图里间距随之放大）"
+encodings = ["loose"]
+tests = ["section_lines_with_enlarged_spacing_are_one_hatch", "section_lines_on_one_lattice_across_a_void_are_one_hatch"]
+
+[[cards.variants]]
+id = "remnant_stroke"
+title = "剖面区域内沿图案方向的残段"
+distinguishing = "填充区域内部、与图案方向平行的短线（不超过给定长度），两端都在区域内"
+encodings = ["loose"]
+tests = ["short_stroke_inside_a_hatch_along_its_pattern_joins_it"]
+
+[[cards.counter_examples]]
+statement = "间距不均匀的平行细斜线不按剖面线成组"
+test = "parallel_lines_with_uneven_spacing_are_not_section_lines"
+
+[[cards.counter_examples]]
+statement = "填充区域内连接两段轮廓、两端都是轮廓角点的单根斜线是倒角棱线，不是剖面线（填充边界未沿倒角选取）"
+test = "corner_line_inside_a_hatch_is_a_chamfer_edge"
+
+[[cards.parameters]]
+name = "parallel_deg"
+value = 1.0
+meaning = "散画剖面线互相平行的角度容差（度）"
+
+[[cards.parameters]]
+name = "spacing_tolerance"
+value = 0.05
+meaning = "相邻剖面线横向偏移之差与间距的相对容差"
+
+[[cards.parameters]]
+name = "min_lines"
+value = 3.0
+meaning = "按间距成组的剖面线最少档数"
+
+[[cards.parameters]]
+name = "remnant_length_max"
+value = 0.5
+meaning = "剖面区域内残段长度上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "lattice_gap_max"
+value = 10.0
+meaning = "同一零件被孔或空腔隔开的几组散画剖面线，在同一间距网格上、彼此相距不超过该值 × 间距时合为一处剖面线"
+
 [[cards]]
 id = "detail_circle_interruption"
 expression_kind = "visible_contour"
@@ -607,6 +654,312 @@ meaning = "端点与轮廓角点重合的距离容差 × 字高"
 name = "min_length"
 value = 0.8
 meaning = "棱线长度 ≥ 该值 × 字高"
+
+[[cards]]
+id = "line_width_evidence"
+expression_kind = "visible_contour"
+title = "图线粗细的本图证据"
+meaning = "机械图样只用粗、细两种线宽，粗细约为 2:1。哪条线是粗线，先看本图自己的证据：实体或图层声明的线宽分成两档、粗档约为细档 2 倍时按线宽；没有线宽而按颜色出图时，与粗实线层同色的线出图为粗线，与细实线层同色的线为细线；图层约定（GB/T 14665 表 6）只在与这些证据一致时采用，各图的分层与颜色因图而异。画在表 6 细线层上却用粗线颜色的连续线，或画在粗线层上却显式改成细线颜色的连续线，由它与轮廓的连接决定：两端都接到轮廓（角点、T 形交点、相切连接）的是可见轮廓，按粗实线读；只有一端在轮廓上、另一端越过尺寸线伸出的是尺寸界线，仍是细线。按线宽为细线的连续线不作可见轮廓的候选，两端接在轮廓上时是细实线结构线。"
+sources = [
+  "GB/T 4457.4-2002 机械制图 图样画法 图线 4.1：机械图样采用粗、细两种线宽，比例 2:1",
+  "GB/T 14665-2012 机械工程 CAD 制图规则 4.2 图线宽度、表 2 图线颜色、表 6 图层标识",
+  "GB/T 17450-1998 技术制图 图线：线宽数系",
+  "GB/T 14665-2012 4.3：重合图线只画一次，可见轮廓优先于尺寸界线",
+]
+knowledge_units = ["K03", "K09"]
+recognition = "先读线宽：实体线宽，随层时取图层线宽；有效值分成细档与不小于其给定倍数的粗档，且点画线、虚线大多在细档时，粗档的连续线是粗线（不需要结点即为轮廓），细档的连续线是细线。没有线宽时，若图层约定已核对且按颜色出图，以粗实线层的颜色为粗线颜色（不得与细实线层、点画线层同色）。细线层上的粗线颜色连续线、粗线层上的细线颜色连续线进入候选，按连接关系确认：两端都接到轮廓或已确认的此类线（未被注写使用时也可是任意两处结点）才是可见轮廓；被尺寸用作界线的线必须两端都接到轮廓。图层名和颜色本身不决定。"
+markers = []
+concepts = ["DC-G1-016", "DC-G1-038", "DC-G1-079"]
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC", "LWPOLYLINE", "POLYLINE"]
+requirement = "连续线；粗细按本图线宽或颜色，或按两端与轮廓的连接确认"
+
+[[cards.variants]]
+id = "lineweight_classes"
+title = "线宽分成粗细两档"
+distinguishing = "图层或实体线宽有两档，粗档不小于细档的给定倍数；粗档连续线是轮廓线，细档连续线不是"
+encodings = ["loose"]
+tests = ["thick_lineweight_arc_is_outline_without_junctions", "thin_lineweight_line_is_not_a_thick_outline"]
+
+[[cards.variants]]
+id = "outline_colour_on_thin_layer"
+title = "细线层上用粗线颜色画的轮廓"
+distinguishing = "表 6 的 08–12 层上、颜色与粗实线层相同的连续线，两端接在轮廓上"
+encodings = ["loose"]
+tests = ["outline_colour_line_on_a_thin_layer_joined_at_both_ends_is_outline"]
+
+[[cards.variants]]
+id = "outline_in_thin_colour"
+title = "粗线层上改成细线颜色的轮廓"
+distinguishing = "粗实线层或未约定的层上显式改成细线颜色的连续线，两端接在轮廓上"
+encodings = ["loose"]
+tests = ["thin_colour_outline_joined_at_both_ends_is_outline"]
+
+[[cards.variants]]
+id = "thin_line_joined_at_both_ends"
+title = "细线层上两端接轮廓的细实线"
+distinguishing = "按约定或线宽为细实线、未被注写使用、两端都接在轮廓上（过渡线、牙底线等结构细线），不限于 02 层"
+encodings = ["loose"]
+tests = ["thin_layer_line_between_outline_ends_is_a_thin_structural_line"]
+
+[[cards.counter_examples]]
+statement = "粗线层上改成细线颜色的尺寸界线：一端在轮廓上，另一端越过尺寸线伸出，不是轮廓"
+test = "thin_colour_extension_line_stays_annotation"
+[[cards.counter_examples]]
+statement = "细线层上用粗线颜色画的线只有一端接在轮廓上（引线、界线），不作轮廓"
+test = "outline_colour_line_on_a_thin_layer_with_a_free_end_is_not_outline"
+[[cards.counter_examples]]
+statement = "全图线宽只有一档时，线宽不作粗细证据"
+test = "one_lineweight_class_does_not_decide"
+
+[[cards.counter_examples]]
+statement = "永不打印的层上的线不属于图面表达，即使两端接在轮廓上也不按细线颜色的轮廓读出"
+test = "thin_colour_arc_on_a_layer_never_plotted_is_no_evidence"
+
+[[cards.parameters]]
+name = "weight_ratio_min"
+value = 1.5
+meaning = "粗档线宽 ≥ 该值 × 细档线宽（标准粗细比 2:1，旧图约 3:1）"
+
+[[cards.lexicon]]
+concept = "DC-G1-101"
+entry = "not_plotted_layer"
+values = ["Defpoints"]
+meaning = "永不打印的层（AutoCAD 定义点层；另有图层表中打印开关关闭的层）：其上的线不属于图面表达，不作粗细证据"
+
+[[cards]]
+id = "outline_joins"
+expression_kind = "visible_contour"
+title = "轮廓的连接与绘图缝隙"
+meaning = "可见轮廓由首尾相接的直线和圆弧组成，在角点、T 形交点和相切处连接。CAD 作图时相接两段的端点常差一点，相切连接的两段圆弧尤其如此；差距只有字高的一小部分时，出图后小于线宽，看不出缝隙，仍是连接。轮廓线止于螺孔端视图的 3/4 细实线圆弧时，是被孔打断，这一端也是连接。"
+sources = [
+  "GB/T 4457.4-2002 机械制图 图样画法 图线：粗线宽度 0.5～0.7 mm，两平行线最小间隙 0.7 mm",
+  "GB/T 14665-2012 机械工程 CAD 制图规则 4.2 图线宽度",
+  "GB/T 4459.1-1995 机械制图 螺纹及螺纹紧固件表示法：螺孔端视图中大径用约 3/4 圈细实线圆弧",
+]
+knowledge_units = ["K03", "K09"]
+recognition = "轮廓候选的端点不在别的轮廓上时，在绘图缝隙（字高的给定比例）内找另一轮廓候选：直线、圆弧的任一处都可；圆弧端点同样适用，包括相切相接的两段圆弧。端点落在已识别的螺纹 3/4 细圆弧上时，按被孔打断计为结点。"
+markers = []
+concepts = ["DC-G1-015"]
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC"]
+requirement = "相接的轮廓段，端点间差距不超过绘图缝隙"
+
+[[cards.variants]]
+id = "arc_to_arc_gap"
+title = "相切相接的两段圆弧端点差一点"
+distinguishing = "圆弧端点到另一轮廓圆弧的距离在绘图缝隙内"
+encodings = ["loose"]
+tests = ["arcs_meeting_within_the_drafting_gap_are_joined"]
+
+[[cards.variants]]
+id = "end_on_thread_circle"
+title = "轮廓止于螺孔的 3/4 细圆"
+distinguishing = "端点落在螺纹端视图的 3/4 细实线圆弧上"
+encodings = ["loose"]
+tests = ["outline_arc_ending_on_a_thread_circle_is_joined"]
+
+[[cards.counter_examples]]
+statement = "端点间差距超过绘图缝隙的两段不按连接处理"
+test = "arcs_apart_beyond_the_drafting_gap_are_not_joined"
+
+[[cards.parameters]]
+name = "join_gap"
+value = 0.04
+meaning = "绘图缝隙 = 该值 × 字高（3.5 号字时约 0.14 mm，小于粗线宽度的一半）"
+
+[[cards]]
+id = "annotation_break"
+expression_kind = "visible_contour"
+title = "图线在注写处断开"
+meaning = "尺寸数字、符号不得被图线穿过；轮廓线、中心线经过数字或符号（表面结构符号、基准符号、框格等）时在该处断开。断开处两侧共线的两段仍是同一条图线，按完整结构连起来；补出的部分是推断，不是来源线。"
+sources = [
+  "GB/T 4458.4-2003 机械制图 尺寸注法：尺寸数字不可被任何图线所通过，否则应将该图线断开",
+  "GB/T 131-2006 产品几何技术规范 表面结构的表示法：符号注在轮廓线上或其延长线上",
+  "GB/T 16675.2-2012 技术制图 简化表示法 第2部分：尺寸注法",
+]
+knowledge_units = ["K13", "K17"]
+recognition = "一段轮廓的自由端与另一段共线轮廓的自由端隔一个缺口相对；缺口被注写文字（及其尺寸线、终端）覆盖，或被一个以图块画出的注写符号的笔画横穿、缺口不长于符号尺寸的给定倍数时，两段是同一条线，原因记为“为注写断开”，按推断连成一条结构线。"
+markers = []
+concepts = ["DC-G4-001"]
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE"]
+requirement = "缺口两侧共线的同类轮廓段，相对的两端都是自由端"
+
+[[cards.variants]]
+id = "broken_for_symbol"
+title = "轮廓在表面结构符号等处断开"
+distinguishing = "缺口被图块符号的笔画横穿，缺口长度不超过符号尺寸的给定倍数"
+encodings = ["block"]
+tests = ["outline_broken_for_a_texture_symbol_is_one_line"]
+
+[[cards.counter_examples]]
+statement = "缺口处没有注写符号或文字时，两段不按断开连起来"
+test = "gap_without_annotation_is_not_bridged"
+
+[[cards.parameters]]
+name = "gap_to_symbol_max"
+value = 1.5
+meaning = "缺口长度 ≤ 该值 × 符号外框对角线"
+
+[[cards]]
+id = "hole_pattern"
+expression_kind = "visible_contour"
+title = "均布孔组"
+meaning = "法兰、端盖等零件上均匀分布的一组相同孔，在投影为圆的视图中画成分布圆上等角距排列的等径粗实线圆，用“n×Øx”（旧式“n-Øx”，常加“均布”）注出孔数与孔径，尺寸线或指引线落在其中一个孔上。被这样的标注指到的等径圆就是孔的可见轮廓，不论画在哪个图层；同一组孔在另一圆形视图中按同样的分布再画一次时，那一组也是这些孔。"
+sources = [
+  "GB/T 4458.4-2003 机械制图 尺寸注法：相同要素的尺寸注法（数量×尺寸）",
+  "GB/T 16675.2-2012 技术制图 简化表示法 第2部分：尺寸注法 表2（n×Ø，旧式 n-Ø）",
+  "GB/T 4458.1-2002 机械制图 图样画法 视图：圆柱形法兰上均布孔的画法",
+]
+knowledge_units = ["K17", "K19"]
+recognition = "以“数量 + 分隔符 + Ø + 直径”的标注为锚：它的两个终端在一个直径等于标注值的圆上、位于圆心两侧，这个圆被它横跨。取该圆与离它最近的另外 n−1 个等径圆，圆心等距分布在一个分布圆上、相邻角距相等时，这 n 个圆都是孔；其余等径圆中按同一分布圆半径与角距再组成 n 个的一组，也是这些孔（另一圆形视图）。凑不成均布的一组时只认被横跨的那个圆。"
+markers = []
+concepts = ["DC-G3-111"]
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["CIRCLE"]
+requirement = "直径等于标注值的圆，被标注横跨或与被横跨的圆均布在同一分布圆上"
+
+[[cards.variants]]
+id = "count_diameter_callout"
+title = "数量×孔径标注横跨的均布孔"
+distinguishing = "标注的两个终端在一个等径圆上、在圆心两侧；与它均布在同一分布圆上的另外 n−1 个等径圆"
+encodings = ["loose"]
+tests = ["circles_named_by_a_count_diameter_callout_are_holes"]
+
+[[cards.variants]]
+id = "same_pattern_in_another_view"
+title = "同一组孔在另一圆形视图中"
+distinguishing = "另一处 n 个等径圆按同一分布圆半径、相同角距排列"
+encodings = ["loose"]
+tests = ["circles_named_by_a_count_diameter_callout_are_holes"]
+
+[[cards.counter_examples]]
+statement = "直径与标注值不等的圆不是被标注的孔"
+test = "circle_of_another_diameter_is_not_a_named_hole"
+
+[[cards.parameters]]
+name = "diameter_tolerance"
+value = 0.01
+meaning = "圆半径与标注直径一半的相对差上限"
+
+[[cards.parameters]]
+name = "pitch_tolerance"
+value = 0.01
+meaning = "各孔心到分布圆圆心的距离相对差上限"
+
+[[cards.parameters]]
+name = "spacing_tolerance_deg"
+value = 1.0
+meaning = "相邻孔角距与 360°/n 之差上限（度）"
+
+[[cards.parameters]]
+name = "terminator_on_circle"
+value = 0.05
+meaning = "终端尖到圆周的距离容差 = 该值 × 字高"
+
+[[cards]]
+id = "thread_representation"
+expression_kind = "thread_convention"
+title = "螺纹的规定画法"
+meaning = "螺纹按规定画法表示，不画真实牙型。内螺纹（螺孔）在投影为圆的视图中，小径画粗实线整圆，大径画约 3/4 圈的细实线圆弧；作图时小径常取大径的约 0.85 倍，但图上画得小些、比例在 0.55～0.70 之间的也很常见，细的约 3/4 圆弧与同心粗圆在制图中没有别的含义。横跨孔的螺纹标注是旁证；横跨孔的是普通直径尺寸时则是光孔。在平行于轴线的剖视中，小径是一对粗实线（孔的轮廓），大径是其外侧一对细实线，剖面线画到粗实线为止；有效螺纹的终点画粗实线的螺纹终止线，横跨大径。不穿通的螺孔另画钻孔：粗实线比螺纹更深，以钻孔底线和约 120° 的锥顶结束。终止线若用点画线类线型画、长度又短于出图时的第一划，打印出来就是实线。"
+sources = [
+  "GB/T 4459.1-1995 机械制图 螺纹及螺纹紧固件表示法 4.1、4.2",
+  "机械制图（第7版）螺纹的规定画法：小径近似取大径的 0.85 倍",
+]
+knowledge_units = ["K13", "K34"]
+recognition = "端视图：一段细实线圆弧，包角在给定范围内（约 3/4 圈），与一个整圆同心；两者半径比在常用窗口内时直接读出（现有规则）；比值低于常用窗口而不低于宽窗口下限时，弧须按本图证据为细线，且没有横跨该孔的普通直径尺寸；横跨该孔、写有螺纹标记的标注记作旁证。整圆按螺纹约定为粗实线轮廓，不论图层与颜色。剖视：一对按本图证据为细线的平行线，其内侧一对粗线关于同一中线对称、沿中线互相重叠，粗细间距比在给定范围内；中线上有孔的轴线、或细线对的一端有横跨大径的粗终止线、或剖面线边界沿粗线，三者有一即读出。粗线对比细线对更深时，为不穿通螺孔，钻孔底线与锥顶线并入。"
+markers = []
+concepts = ["DC-G3-005", "DC-G3-002", "DC-G3-094", "DC-G1-048", "DC-G1-049"]
+
+[[cards.components]]
+role = "thread_line"
+primitives = ["ARC"]
+requirement = "细实线圆弧，包角约 3/4 圈（大径，内螺纹）"
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["CIRCLE"]
+requirement = "同心的粗实线整圆（小径，内螺纹）"
+
+[[cards.variants]]
+id = "end_view_wide_ratio"
+title = "端视图小径画得偏小"
+distinguishing = "整圆与 3/4 细弧的半径比低于常用窗口、不低于宽窗口下限"
+encodings = ["loose"]
+tests = ["thread_end_view_drawn_with_a_small_minor_circle"]
+
+[[cards.counter_examples]]
+statement = "横跨该孔的是普通直径尺寸（光孔）时，比值低于常用窗口的同心弧与圆不读成螺纹"
+test = "end_view_with_a_plain_diameter_across_it_is_not_a_thread"
+
+[[cards.components]]
+role = "thread_line"
+primitives = ["LINE"]
+requirement = "剖视中大径的一对细实线（内螺纹）"
+
+[[cards.variants]]
+id = "internal_thread_in_section"
+title = "剖视中的内螺纹"
+distinguishing = "细线对在外、粗线对在内，关于同一中线对称，沿中线重叠；有轴线、终止线或剖面线边界佐证"
+encodings = ["loose"]
+tests = ["internal_thread_in_section_is_a_thread"]
+
+[[cards.variants]]
+id = "blind_tapped_hole_in_section"
+title = "剖视中的不穿通螺孔"
+distinguishing = "粗线对比细线对更深，以钻孔底线和锥顶线结束"
+encodings = ["loose"]
+tests = ["blind_tapped_hole_in_section_with_drill_point"]
+
+[[cards.variants]]
+id = "thread_end_line_printed_solid"
+title = "用点画线类线型画、短于第一划的螺纹终止线"
+distinguishing = "横跨大径的短线，线长短于线型第一划乘线型比例，出图为实线"
+encodings = ["loose"]
+tests = ["blind_tapped_hole_in_section_with_drill_point"]
+
+[[cards.counter_examples]]
+statement = "同为粗实线的两对平行线（阶梯孔、沉孔）不是螺纹"
+test = "two_thick_pairs_are_a_stepped_hole_not_a_thread"
+
+[[cards.parameters]]
+name = "end_view_ratio_min"
+value = 0.70
+meaning = "常用窗口下限：整圆半径 / 细弧半径（内螺纹）"
+
+[[cards.parameters]]
+name = "end_view_ratio_wide_min"
+value = 0.55
+meaning = "宽窗口下限：整圆半径 / 细弧半径（内螺纹）"
+
+[[cards.parameters]]
+name = "section_ratio_min"
+value = 0.55
+meaning = "剖视中粗线对间距 / 细线对间距（小径 / 大径）下限"
+
+[[cards.parameters]]
+name = "section_ratio_max"
+value = 0.97
+meaning = "剖视中粗线对间距 / 细线对间距（小径 / 大径）上限"
+
+[[cards.parameters]]
+name = "drill_point_cos_min"
+value = 0.3
+meaning = "钻孔锥顶线与轴线夹角余弦的下限（锥顶角约 145°）"
+
+[[cards.parameters]]
+name = "drill_point_cos_max"
+value = 0.7
+meaning = "钻孔锥顶线与轴线夹角余弦的上限（锥顶角约 90°；标准约 118°～120°，余弦约 0.5）"
 
 [[cards]]
 id = "dimension_text"
@@ -2405,6 +2758,27 @@ tests = ["local_section_boundary_around_loose_section_lines"]
 statement = "没有剖面线的细徒手曲线也不作为可见轮廓"
 test = "thin_free_curve_without_section_lines_is_not_an_outline"
 
+[[cards.variants]]
+id = "line_chain"
+title = "用一串短直线画的局部剖视边界"
+distinguishing = "几段未使用的直线首尾相接、开口，每处转角在给定上限内且整体弯曲，两端落在轮廓上（或略越过），与轮廓一起围住一块剖面区域；可跨图层"
+encodings = ["loose"]
+tests = ["chain_of_short_lines_around_a_section_is_a_local_section_boundary"]
+
+[[cards.counter_examples]]
+statement = "一串首尾相接的短直线不围住剖面区域时（如细线画的台阶），不作局部剖视边界"
+test = "chain_of_lines_without_a_section_is_not_a_boundary"
+
+[[cards.parameters]]
+name = "line_chain_max_turn_deg"
+value = 50.0
+meaning = "直线串画的边界每处转角上限（度；段少时转角大于徒手曲线）"
+
+[[cards.parameters]]
+name = "line_chain_min_lines"
+value = 3.0
+meaning = "直线串画的边界最少段数"
+
 [[cards.parameters]]
 name = "free_curve_min_vertices"
 value = 5.0
@@ -2479,6 +2853,45 @@ tests = ["dimension_line_continues_past_the_terminator_to_the_value", "boxed_val
 [[cards.counter_examples]]
 statement = "界线上较长的未解释段若没有别的尺寸落在其上，不并入尺寸"
 test = "long_free_piece_of_an_extension_line_is_not_absorbed"
+
+[[cards.variants]]
+id = "axis_as_extension_line"
+title = "轴线、对称中心线兼作尺寸界线"
+distinguishing = "点画线（或虚线、双点画线）被尺寸借作尺寸界线：线型属于这条线本身，它整条仍是中心线（或不可见轮廓），尺寸只借用它"
+encodings = ["loose", "native"]
+tests = ["centre_line_used_as_extension_line_stays_a_centre_line"]
+
+[[cards.counter_examples]]
+statement = "细实线画的尺寸界线不因与轴线共线而成为中心线：线型由这条线自己的图案决定"
+test = "continuous_extension_line_on_an_axis_is_not_a_centre_line"
+
+[[cards.variants]]
+id = "split_extension_line"
+title = "尺寸界线断成两段"
+distinguishing = "未使用的细线与某尺寸的尺寸界线共线，两者之间只隔不超过给定倍数字高的缺口（为符号、引线或文字让位），是这条界线的另一段"
+encodings = ["loose"]
+tests = ["extension_line_split_for_a_symbol_is_one_extension_line"]
+
+[[cards.variants]]
+id = "drawn_twice"
+title = "尺寸线、界线或终端画了两遍"
+distinguishing = "一段线落在已认领的尺寸线或尺寸界线上并被它覆盖，或一个终端与已认领的终端同尖同向：同一部分画了两次（重合图线只画一次）；不打印层上的一份让位于打印的一份"
+encodings = ["loose"]
+tests = ["dimension_parts_drawn_twice_join_the_dimension"]
+
+[[cards.counter_examples]]
+statement = "与界线共线但隔得较远的细线不并入界线"
+test = "collinear_line_far_from_an_extension_line_is_not_absorbed"
+
+[[cards.parameters]]
+name = "split_gap_max"
+value = 3.0
+meaning = "界线两段之间缺口的上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "coincident_tolerance"
+value = 0.05
+meaning = "两次画出的同一部分之间的距离容差 = 该值 × 字高"
 
 [[cards.parameters]]
 name = "end_piece_max"

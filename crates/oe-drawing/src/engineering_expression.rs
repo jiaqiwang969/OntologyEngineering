@@ -50,6 +50,8 @@ mod lines;
 
 #[path = "loose_annotations.rs"]
 mod loose_annotations;
+#[path = "line_evidence.rs"]
+mod line_evidence;
 
 #[path = "coverage.rs"]
 mod coverage;
@@ -5121,7 +5123,10 @@ fn sheet_texts(cx: &Ctx, b: &mut Builder, def: &Deferred, range_seps: &[&str]) {
 
 fn line_kinds(cx: &Ctx, b: &mut Builder) {
     for (h, r) in &cx.rec {
-        if !is_curve_kind(&r.kind) || b.used(h) {
+        // A centre line lent to a dimension as its extension line is still the centre line
+        // (card dimension_line_parts, variant axis_as_extension_line).
+        let lent = line_evidence::lent_to_dimension(b, h);
+        if !is_curve_kind(&r.kind) || b.used(h) && !lent {
             continue;
         }
         let st = &cx.style[h];
@@ -5137,6 +5142,12 @@ fn line_kinds(cx: &Ctx, b: &mut Builder) {
         ];
         if let Some(rule) = &cx.base[h].2 {
             ev.push(rule.clone());
+        }
+        if lent {
+            ev.extend([
+                "card:dimension_line_parts".to_string(),
+                "variant:axis_as_extension_line".to_string(),
+            ]);
         }
         let e = b.expr(
             kind,
@@ -5185,6 +5196,12 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                     && ((0.70..=0.95).contains(&q) || (0.75..=0.95).contains(&(1. / q))))
                 .then(|| k.clone())
             });
+        // Below the usual ratio window (card thread_representation, variant end_view_wide_ratio).
+        let (partner, wide) = match partner {
+            Some(p) => (Some(p), vec![]),
+            None => line_evidence::wide_thread_partner(cx, b, h, c, rad)
+                .map_or((None, vec![]), |(p, ev)| (Some(p), ev)),
+        };
         if let Some(p) = partner {
             let e = b.expr(
                 "thread_convention",
@@ -5192,7 +5209,10 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 "piece:three_quarter_thin_circle_concentric_with_full_circle",
                 "candidate",
                 vec![],
-                vec![format!("partner:{p}"), "GB/T 4459.1".into()],
+                [format!("partner:{p}"), "GB/T 4459.1".into()]
+                    .into_iter()
+                    .chain(wide.iter().cloned())
+                    .collect(),
                 vec![],
             );
             b.member(
@@ -5213,21 +5233,43 @@ fn thread_arcs(cx: &Ctx, b: &mut Builder) {
                 "piece:full_circle_of_three_quarter_thread_convention",
                 "candidate",
                 vec![],
-                vec![format!("partner:{h}"), "GB/T 4459.1".into()],
+                [format!("partner:{h}"), "GB/T 4459.1".into()]
+                    .into_iter()
+                    .chain(wide.iter().take(2).cloned())
+                    .collect(),
                 vec![],
             );
-            // Shared with the visible contour: the full circle is also the visible edge.
+            // Shared with the visible contour: the full circle is also the visible edge, a thick
+            // line by the thread convention whatever layer or colour it was drawn in.
             b.member(
                 e2,
                 &p,
                 None,
                 [0., 1.],
                 "contour_segment",
-                member_line_type(cx.lt(&p), "contour_segment"),
+                if cx.lt(&p) == "thin_continuous" {
+                    "thick_continuous"
+                } else {
+                    member_line_type(cx.lt(&p), "contour_segment")
+                },
                 "candidate",
                 vec![],
                 vec![format!("concentric:{h}")],
             );
+            // the same circle drawn again is the same thread diameter
+            for d in line_evidence::same_circles(cx, &p) {
+                b.member(
+                    e2,
+                    &d,
+                    None,
+                    [0., 1.],
+                    "contour_segment",
+                    "thick_continuous",
+                    "candidate",
+                    vec![],
+                    vec![format!("duplicate_of:{p}")],
+                );
+            }
         }
     }
 }
@@ -5646,7 +5688,16 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
         .filter(|m| m.member_role == "break_curve")
         .map(|m| m.source_handle.clone())
         .collect();
-    let partner = |id: &str| cand.contains_key(id) || breaks.contains(id);
+    // Thick and thin from the drawing's own evidence (card line_width_evidence).
+    let evidence = line_evidence::outline_candidates(cx, b, &mut cand, &breaks, cover);
+    // An outline ending on a thread's three-quarter circle is interrupted by the hole (card outline_joins).
+    let threads: BTreeSet<String> = b
+        .members
+        .iter()
+        .filter(|m| m.member_role == "thread_line" && cx.arc(&m.source_handle).is_some())
+        .map(|m| m.source_handle.clone())
+        .collect();
+    let partner = |id: &str| cand.contains_key(id) || breaks.contains(id) || threads.contains(id);
     // A contour ending on a centre line (half view, end face up to the axis) is joined there.
     let axis = |id: &str| {
         cx.style
@@ -5745,8 +5796,8 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
             }
         }
     }
-    // A free end within a small drafting gap of another candidate counts once.
-    let gap = 0.05 * (cx.scale / 3.5).max(1.);
+    // A free end within a small drafting gap of another candidate counts once (card outline_joins).
+    let gap = line_evidence::join_gap(cx);
     for (h, (a, c)) in cx.lines.iter().filter(|(h, _)| cand.contains_key(*h)) {
         let js: Vec<f64> = junctions
             .get(h)
@@ -5794,7 +5845,8 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
             }
         }
     }
-    // Arc ends within the same drafting gap of a candidate line end or line.
+    // Arc ends within the same drafting gap of a candidate line end or line, or of another
+    // candidate arc's end (card outline_joins, variant arc_to_arc_gap).
     for h in cand.keys().filter(|h| cx.kind(h) == "ARC") {
         let Some((c0, r0, s0, sw, _)) = cx.arc(h) else {
             continue;
@@ -5818,18 +5870,19 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
                     .entry(h.clone())
                     .or_default()
                     .push((t, format!("near_endpoint_gap:{k}")));
+            } else if let Some(k) = line_evidence::arc_end_near_arc(cx, &cand, h, p, gap) {
+                junctions
+                    .entry(h.clone())
+                    .or_default()
+                    .push((t, format!("near_arc_end_gap:{k}")));
             }
         }
     }
-    // Thin continuous lines (by the checked convention) joined to structure at
-    // both ends, not used by any annotation, are structural thin lines
-    // (GB/T 4457.4: transition lines, thread roots and similar).
+    // Thin continuous lines (by the checked convention on any of its thin layers, or by the
+    // drawing's lineweights) joined to structure at both ends, not used by any annotation, are
+    // structural thin lines (GB/T 4457.4: transition lines, thread roots and similar).
     for h in cx.lines.keys() {
-        if cand.contains_key(h)
-            || b.used(h)
-            || cx.lt(h) != "thin_continuous"
-            || cx.style[h].layer != "02"
-        {
+        if cand.contains_key(h) || b.used(h) || !line_evidence::thin_structural(cx, &evidence, h) {
             continue;
         }
         let mut ends = [false, false];
@@ -5847,13 +5900,17 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
             }
         }
         if ends == [true, true] {
+            let mut ev = vec!["GB/T 4457.4 thin continuous structural line".to_string()];
+            if cx.style[h].layer != "02" {
+                ev.extend(line_evidence::naming("thin_line_joined_at_both_ends"));
+            }
             let e = b.expr(
                 "visible_contour",
                 h,
                 "piece:thin_line_between_structural_junctions",
                 "candidate",
                 vec![],
-                vec!["GB/T 4457.4 thin continuous structural line".into()],
+                ev,
                 vec![
                     "Thin structural role (transition, thread root, boundary) not further resolved"
                         .into(),
@@ -5879,6 +5936,23 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
         let mut ev = vec![format!("junctions:{}", js.len())];
         if let Some(rule) = &cx.base[h].2 {
             ev.push(rule.clone());
+        }
+        // Outline admitted by the drawing's own evidence is drawn thick (GB/T 4457.4).
+        let admitted = evidence.admitted.get(h).copied();
+        if let Some(v) = admitted {
+            ev.extend(line_evidence::naming(v));
+        }
+        let line_type = if admitted.is_some() {
+            "thick_continuous"
+        } else {
+            member_line_type(cx.lt(h), "contour_segment")
+        };
+        let by_weight = evidence.thick_by_weight.contains(h);
+        if js.iter().any(|x| x.1.starts_with("near_arc_end_gap:")) {
+            ev.extend(line_evidence::naming("arc_to_arc_gap"));
+        }
+        if line_evidence::ends_on_thread(cx, h, &threads) {
+            ev.extend(line_evidence::naming("end_on_thread_circle"));
         }
         if kind == "LINE" {
             // Distinct junction parameters: incidence is reported from both sources.
@@ -5908,6 +5982,9 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
             let mut spans: Vec<[f64; 2]> = if ts.len() >= 2 {
                 vec![[ts[0], ts[ts.len() - 1]]]
             } else if *prec == 2 {
+                if by_weight {
+                    ev.extend(line_evidence::naming("lineweight_classes"));
+                }
                 vec![[0., 1.]]
             } else if ts.len() == 1
                 && !b.used(h)
@@ -5972,7 +6049,7 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
                     None,
                     s,
                     "contour_segment",
-                    member_line_type(cx.lt(h), "contour_segment"),
+                    line_type,
                     "candidate",
                     rels.clone(),
                     vec![],
@@ -5980,6 +6057,9 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
             }
         } else {
             let closed = kind == "CIRCLE" || cx.polys.get(h).is_some_and(|p| p.1);
+            if !closed && js.is_empty() && by_weight {
+                ev.extend(line_evidence::naming("lineweight_classes"));
+            }
             if closed
                 || !js.is_empty()
                 || *prec == 2
@@ -6012,7 +6092,7 @@ fn structure(cx: &Ctx, b: &mut Builder, cover: &topology::Cover) {
                     None,
                     [0., 1.],
                     "contour_segment",
-                    member_line_type(cx.lt(h), "contour_segment"),
+                    line_type,
                     "candidate",
                     js.iter().map(|x| x.1.clone()).collect(),
                     vec![],
@@ -6744,12 +6824,17 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     symbols::surface_textures(&cx, &mut b, &def.textures)?;
     symbols::cutting_strokes(&cx, &mut b)?;
     view_layout::cutting_paths(&cx, &mut b)?;
+    line_evidence::thread_sections(&cx, &mut b)?;
     line_kinds(&cx, &mut b);
     thread_arcs(&cx, &mut b);
     thread_lines(&cx, &mut b);
     break_lines(&cx, &mut b);
     lines::loose_hatch_boundaries(&cx, &mut b)?;
+    line_evidence::line_chain_boundaries(&cx, &mut b)?;
     hatch_lines(&cx, &mut b);
+    line_evidence::section_lines_by_spacing(&cx, &mut b)?;
+    line_evidence::hatch_remnants(&cx, &mut b)?;
+    line_evidence::hole_patterns(&cx, &mut b)?;
     let cover = topology::cover(&cx, &b);
     structure(&cx, &mut b, &cover);
     duplicate_spans(&cx, &mut b);
@@ -6764,6 +6849,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     symbols::callout_concepts(&mut b)?;
     loose_annotations::redrawn_copies(&cx, &mut b)?;
     loose_annotations::margin_notes(&cx, &mut b)?;
+    line_evidence::dimension_pieces(&cx, &mut b)?;
     view_layout::detail_boundaries(&cx, &mut b, &titles)?;
     annotation_blocks::masks(&cx, &mut b)?;
     let (regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors)?;

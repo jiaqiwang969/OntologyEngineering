@@ -31,6 +31,8 @@ use oe_contracts::{MdImpliedSpan, MdStructuralEnd, MdStructuralLine};
 
 /// Text box: centre, unit direction, half width, half height, height, handle.
 type TextBox = (P, P, f64, f64, f64, String);
+/// Annotation symbol drawn as a block: strokes, extent and handle.
+pub(super) type Symbol = (Vec<(P, P)>, f64, String);
 
 /// Evidence that can explain an interruption of an outline line.
 pub(super) struct Cover {
@@ -43,6 +45,9 @@ pub(super) struct Cover {
     sections: Vec<([f64; 4], Vec<String>, Vec<String>)>,
     /// Detail circles: centre, radius and source handle.
     circles: Vec<(P, f64, String)>,
+    /// Annotation symbols drawn as blocks (texture, datum, frame, view symbols): strokes in
+    /// drawing coordinates, extent and source handle (card `annotation_break`).
+    symbols: Vec<Symbol>,
 }
 
 /// A collinear outline piece that may continue a line across a gap.
@@ -204,7 +209,36 @@ pub(super) fn cover(cx: &Ctx, b: &Builder) -> Cover {
         strips,
         sections,
         circles,
+        symbols: super::line_evidence::annotation_symbols(cx, b),
     }
+}
+
+/// The gap from `p` along `d` of length `len` is crossed by the strokes of an annotation symbol
+/// no smaller than the gap: the outline was broken so the symbol stays legible (GB/T 4458.4; card
+/// `annotation_break`, variant `broken_for_symbol`).
+fn symbol_break(cov: &Cover, p: P, d: P, len: f64) -> Option<Vec<String>> {
+    let q = add(p, mul(d, len));
+    let crosses = |a: P, b: P| {
+        let (r, s) = (sub(q, p), sub(b, a));
+        let den = cross(r, s);
+        if den.abs() < 1e-12 {
+            return false;
+        }
+        let t = cross(sub(a, p), s) / den;
+        let u = cross(sub(a, p), r) / den;
+        (0. ..=1.).contains(&t) && (0. ..=1.).contains(&u)
+    };
+    let k = representation::card_ref("annotation_break")
+        .ok()
+        .and_then(|c| representation::param(c, "gap_to_symbol_max").ok())?;
+    let hit = cov.symbols.iter().find(|(strokes, size, _)| {
+        k * size >= len && strokes.iter().any(|(a, b)| crosses(*a, *b))
+    })?;
+    Some(vec![
+        format!("symbol:{}", hit.2),
+        "card:annotation_break".into(),
+        "variant:broken_for_symbol".into(),
+    ])
 }
 
 /// The gap from `p` along `d` of length `len` is covered by text boxes, with
@@ -286,7 +320,7 @@ pub(super) fn interruption(
     let facing = |k: &Partner, i: usize| (k.handle.clone(), k.t[i], k.ends[i], k.free[i]);
     if let Some((len, k, i)) = best
         && k.free[i]
-        && let Some(ev) = text_break(cov, p, d, len)
+        && let Some(ev) = text_break(cov, p, d, len).or_else(|| symbol_break(cov, p, d, len))
     {
         return Some(Cause {
             kind: "text_break",
@@ -578,7 +612,7 @@ pub(super) fn audit(
         }
     }
     // Pass 1: free ends, with the nearest other outline, centre or boundary curve.
-    let gap = 0.05 * (s / 3.5).max(1.);
+    let gap = super::line_evidence::join_gap(cx);
     let mut free: BTreeMap<(usize, usize), bool> = BTreeMap::new();
     let mut nearest: BTreeMap<(usize, usize), (f64, usize)> = BTreeMap::new();
     for sp in &spans {

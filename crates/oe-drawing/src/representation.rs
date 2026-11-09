@@ -15,7 +15,7 @@ const SOURCE: &str = include_str!("../knowledge/drawing-representation.toml");
 const SCHEMA_K: &str = "oev2.drawing-representation-knowledge/1";
 
 /// Cards that recognition uses; a test checks this list against the file both ways.
-pub const USED_CARDS: [&str; 32] = [
+pub const USED_CARDS: [&str; 37] = [
     "datum_feature_symbol",
     "center_hole_symbol",
     "gdt_frame_symbol",
@@ -48,6 +48,11 @@ pub const USED_CARDS: [&str; 32] = [
     "sheet_frame_border",
     "coincident_redraw",
     "callout_rows",
+    "line_width_evidence",
+    "outline_joins",
+    "hole_pattern",
+    "thread_representation",
+    "annotation_break",
 ];
 
 /// Concept catalogue: one card per drafting representation concept, by group.
@@ -937,7 +942,7 @@ pub(super) fn angle_units(b: &mut Builder) -> Result<()> {
 // ---------------------------------------------------------------- section lines
 
 /// Boundary segments of a HATCH record (line edges, polyline paths, arcs as chords).
-fn hatch_boundary(r: &Record) -> Vec<(P, P)> {
+pub(super) fn hatch_boundary(r: &Record) -> Vec<(P, P)> {
     let t = &r.tags;
     let num = |i: usize| t.get(i).and_then(|x| x.1.trim().parse::<f64>().ok());
     let int_at = |i: usize| t.get(i).and_then(|x| x.1.trim().parse::<i64>().ok());
@@ -1038,7 +1043,7 @@ fn hatch_boundary(r: &Record) -> Vec<(P, P)> {
     segs
 }
 
-fn inside_segments(p: P, segs: &[(P, P)]) -> bool {
+pub(super) fn inside_segments(p: P, segs: &[(P, P)]) -> bool {
     let mut c = false;
     for (a, z) in segs {
         if (a[1] > p[1]) != (z[1] > p[1]) {
@@ -1089,6 +1094,7 @@ pub(super) fn section_lines(cx: &Ctx, b: &mut Builder) -> Result<()> {
                     && on_boundary(*q)
                     && !on_boundary(mid(*p, *q))
                     && inside_segments(mid(*p, *q), &segs)
+                    && !super::line_evidence::corner_to_corner(cx, h)
             })
             .map(|(h, _)| h.clone())
             .collect();

@@ -609,7 +609,8 @@ pub(super) fn technical_items(b: &mut Builder) -> Result<()> {
     let d = representation::card_ref("dimension_text")?;
     for i in 0..b.exprs.len() {
         let e = &b.exprs[i];
-        if e.family != "note" {
+        // a leader note is a note on a feature, not an item of the technical requirements
+        if e.family != "note" || e.kind == "leader_note" {
             continue;
         }
         let found = if e.rule == "technical_requirement_heading" {

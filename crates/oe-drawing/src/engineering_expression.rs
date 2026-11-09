@@ -52,6 +52,9 @@ mod lines;
 mod coverage;
 pub use coverage::{concept_status, recognizer_coverage};
 
+#[path = "annotation_blocks.rs"]
+mod annotation_blocks;
+
 pub const PROFILE: &str = "dxf-expression-rules/2";
 pub const SCHEMA: &str = "oev2.drawing-expression-graph/1";
 type P = [f64; 2];
@@ -965,6 +968,8 @@ struct Ctx<'a> {
     lines: BTreeMap<String, (P, P)>,
     polys: BTreeMap<String, (Vec<P>, bool, bool)>,
     shapes: BTreeMap<String, dd::Shape>,
+    /// Parts of every block reference, for objects stored as one block (`annotation_blocks`).
+    blocks: annotation_blocks::Blocks,
     scale: f64,
     thin_colors: BTreeSet<i32>,
     extent: [f64; 4],
@@ -2162,6 +2167,9 @@ struct Deferred {
 fn blocks(cx: &Ctx, b: &mut Builder, def: &mut Deferred) {
     let area = (cx.extent[2] - cx.extent[0]).max(1e-9) * (cx.extent[3] - cx.extent[1]).max(1e-9);
     for (h, s) in &cx.shapes {
+        if annotation_blocks::claimed_first(cx, b, h) {
+            continue;
+        }
         let txt = s
             .texts
             .iter()
@@ -6036,9 +6044,10 @@ const GEOMETRY: [&str; 7] = [
     "break_line",
     "section_hatch",
 ];
-const SHEET: [&str; 6] = [
+const SHEET: [&str; 7] = [
     "title_block",
     "sheet_frame",
+    "parts_list",
     "technical_general",
     "material_heat",
     "process_requirement",
@@ -6058,6 +6067,9 @@ struct Region {
 }
 
 fn member_points(cx: &Ctx, m: &MdExpressionMember) -> Vec<P> {
+    if let Some(p) = annotation_blocks::member_points(cx, m) {
+        return p;
+    }
     if let Some((a, c)) = cx.lines.get(&m.source_handle) {
         return vec![lerp(*a, *c, m.interval[0]), lerp(*a, *c, m.interval[1])];
     }
@@ -6098,7 +6110,7 @@ fn views(
             .iter()
             .filter(|m| m.expression_id == b.exprs[i].id)
         {
-            if seen.insert(m.source_handle.clone())
+            if seen.insert((m.source_handle.clone(), m.native_member_id.clone()))
                 && let Some(bb) = bbox_of(&member_points(cx, m))
             {
                 nodes.push((m.source_handle.clone(), bb));
@@ -6701,6 +6713,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
             .collect::<Vec<_>>()
     }));
     let extent = bbox_of(&all_pts).unwrap_or([0., 0., 1., 1.]);
+    let block_parts = annotation_blocks::parse(&d, &rec, &patterns);
     let cx = Ctx {
         d: &d,
         src: &src,
@@ -6715,6 +6728,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
         lines,
         polys,
         shapes,
+        blocks: block_parts,
         scale,
         thin_colors,
         extent,
@@ -6729,6 +6743,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     let mut anchors = BTreeMap::new();
     native_dimensions(&cx, &mut b, &mut text_anchor, &mut native_texts);
     blocks(&cx, &mut b, &mut def);
+    let block_titles = annotation_blocks::read(&cx, &mut b, &def, &mut anchors)?;
     representation::datum_symbols(&cx, &mut b)?;
     representation::center_holes(&cx, &mut b)?;
     hatch_and_points(&cx, &mut b);
@@ -6743,6 +6758,7 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     extended_pair_dimensions(&cx, &mut b, &mut anchors, &ted);
     let mut titles = view_titles(&cx, &mut b);
     titles.extend(symbols::section_titles(&cx, &mut b)?);
+    titles.extend(block_titles);
     representation::visible_edges(&cx, &mut b)?;
     leader_annotations(&cx, &mut b, &text_anchor, &mut anchors);
     thread_texts(&cx, &mut b);
@@ -6781,7 +6797,9 @@ pub fn discover(bytes: &[u8]) -> Result<MdEngineeringExpressionGraph> {
     symbols::frame_content(&mut b)?;
     symbols::texture_concepts(&cx, &mut b)?;
     symbols::callout_concepts(&mut b)?;
-    let (regions, vmap, refs) = views(&cx, &b, &titles, &anchors);
+    annotation_blocks::masks(&cx, &mut b)?;
+    let (regions, vmap, mut refs) = views(&cx, &b, &titles, &anchors);
+    annotation_blocks::references(&b, &regions, &mut refs)?;
     let mut nb = finalize(&b, &vmap, &regions, &refs);
     unresolved(&cx, &mut nb, &regions);
     coverage::assign(&mut nb)?;

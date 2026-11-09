@@ -690,7 +690,13 @@ fn every_card_is_used_and_every_named_test_exists() {
     let ids: BTreeSet<&str> = k.cards.iter().map(|c| c.id.as_str()).collect();
     let used: BTreeSet<&str> = USED_CARDS.iter().copied().collect();
     assert_eq!(ids, used, "every card is used by recognition and every used card exists");
-    let src = [include_str!("representation_knowledge.rs"), include_str!("recognition_wave1.rs"), include_str!("recognition_corrections.rs")].concat();
+    let src = [
+        include_str!("representation_knowledge.rs"),
+        include_str!("recognition_wave1.rs"),
+        include_str!("recognition_corrections.rs"),
+        include_str!("annotation_blocks.rs"),
+    ]
+    .concat();
     for c in &k.cards {
         assert!(!c.meaning.is_empty() && !c.components.is_empty() && !c.counter_examples.is_empty() && !c.sources.is_empty(), "{}", c.id);
         let named: Vec<&str> = c

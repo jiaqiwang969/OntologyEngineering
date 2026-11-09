@@ -604,6 +604,129 @@ kinds = ["view_callout"]
 kind = ""
 ids = ["DC-G2-072"]
 
+[[rules]]
+rule = "card:technical_note/requirement_block"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["technical_general", "material_heat", "process_requirement", "protection_requirement"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G9-002"]
+
+[[rules]]
+rule = "card:surface_texture_symbol/most_surfaces"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["surface_roughness"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G6-071", "DC-G6-006"]
+
+[[rules]]
+rule = "card:leader_note/block_object"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["leader_note", "thread_note", "dimension_chamfer", "dimension_diameter", "dimension_radius"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-028"]
+[[rules.concepts]]
+kind = "thread_note"
+ids = ["DC-G3-088"]
+[[rules.concepts]]
+kind = "dimension_chamfer"
+ids = ["DC-G3-091"]
+
+[[rules]]
+rule = "card:view_callout/cutting_plane_group"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-043", "DC-G1-007"]
+
+[[rules]]
+rule = "card:view_callout/detail_indicator"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-075"]
+
+[[rules]]
+rule = "card:view_callout/name_with_scale"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-068", "DC-G1-115"]
+
+[[rules]]
+rule = "card:detail_view/block_view"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["visible_contour", "hidden_contour", "center_axis", "phantom_line", "section_hatch", "view_callout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G2-075"]
+
+[[rules]]
+rule = "card:gdt_frame_symbol/line_grid_font_glyph"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["geometric_tolerance", "gps_direction", "gps_perpendicularity", "gps_parallelism", "gps_runout", "gps_symmetry", "gps_position", "gps_straightness", "gps_flatness", "gps_circularity", "gps_cylindricity", "gps_line_profile", "gps_surface_profile", "gps_angularity", "gps_coaxiality", "gps_total_runout"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G5-090"]
+
+[[rules]]
+rule = "card:item_number/underline"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["item_number"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G8-024", "DC-G8-009", "DC-G1-095"]
+
+[[rules]]
+rule = "card:item_number/circle"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["item_number"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G8-024", "DC-G8-009", "DC-G1-095"]
+
+[[rules]]
+rule = "card:parts_list/block_table"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["parts_list"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G8-025"]
+
+[[rules]]
+rule = "card:standard_part/library_block"
+function = "annotation_blocks::read"
+piece = false
+kinds = ["standard_part"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G8-003", "DC-G3-060"]
+
+[[rules]]
+rule = "card:sheet_frame_border/border_with_margin_columns"
+function = "annotation_blocks::claimed_first"
+piece = false
+kinds = ["sheet_frame"]
+[[rules.concepts]]
+kind = ""
+ids = ["DC-G1-085"]
+
 [[conventions]]
 name = "coincident_line_precedence"
 applies_to = "member evidence coincident_higher_precedence; line type of shared source intervals (GB/T 14665-2012 4.3)"
@@ -633,8 +756,8 @@ missing = "用线型画的虚线已识别；炸开成一段段短线的虚线未
 [[concepts]]
 id = "DC-G1-007"
 level = "partial"
-by = ["card:view_callout"]
-missing = "同上：转折处剖切线与连接用的细点画线未识别"
+by = ["card:view_callout", "card:view_callout/cutting_plane_group"]
+missing = "整块剖切符号（粗短画、箭头、字母与转折）已识别；散线画的转折处短画、连接用的细点画线与无箭头的短画未识别"
 
 [[concepts]]
 id = "DC-G1-010"
@@ -677,8 +800,8 @@ missing = "对称中心线与轴线归在一起，未单独判断对称"
 [[concepts]]
 id = "DC-G1-028"
 level = "partial"
-by = ["single_terminator_leader_and_text", "text_on_leader_shoulder"]
-missing = "只在注写规则用到时识别指引线；圆点终端、无终端的指引线及序号指引线未区分"
+by = ["card:leader_note", "card:leader_note/block_object", "single_terminator_leader_and_text", "text_on_leader_shoulder"]
+missing = "图块中的引出说明、零件序号与放大部位的指引线已识别；散线画的圆点终端、无终端的指引线及 MLEADER 未区分"
 
 [[concepts]]
 id = "DC-G1-029"
@@ -757,14 +880,14 @@ by = ["card:technical_note"]
 [[concepts]]
 id = "DC-G1-085"
 level = "partial"
-by = ["binding_margin_registration_table", "sheet_size_rectangular_border"]
-missing = "只识别整块的图框图块（矩形边框或装订边登记栏）；散线画的图框、纸边界线与对中符号未区分"
+by = ["binding_margin_registration_table", "card:sheet_frame_border", "card:sheet_frame_border/border_with_margin_columns", "sheet_size_rectangular_border"]
+missing = "图框图块（矩形边框、装订边登记栏、文字全在装订边内的附加栏）已识别；散线画的图框、纸边界线与对中符号未区分"
 
 [[concepts]]
 id = "DC-G1-096"
 level = "partial"
-by = ["single_terminator_leader_and_text"]
-missing = "实心箭头终端只在单箭头指引线规则中识别；其他终端形式未区分"
+by = ["card:leader_note", "single_terminator_leader_and_text"]
+missing = "实心三角终端在单箭头指引线规则与引出说明、公差框格、剖切符号的图块中识别；其他终端形式未区分"
 
 [[concepts]]
 id = "DC-G1-101"
@@ -778,8 +901,9 @@ by = ["card:title_block_field"]
 
 [[concepts]]
 id = "DC-G1-115"
-level = "full"
-by = ["card:view_callout"]
+level = "partial"
+by = ["card:view_callout", "card:view_callout/name_with_scale"]
+missing = "名称在上、比例在下的两段文字已识别（散线为罗马数字，图块为罗马数字或字母）；散线的字母名称与比例、MTEXT 叠写形式未识别"
 
 [[concepts]]
 id = "DC-G2-019"
@@ -796,8 +920,8 @@ missing = "只通过包围剖面线的波浪线发现局部剖，局部剖视图
 [[concepts]]
 id = "DC-G2-043"
 level = "partial"
-by = ["card:view_callout"]
-missing = "阶梯剖、旋转剖转折处的短画及无箭头的短画未识别"
+by = ["card:view_callout", "card:view_callout/cutting_plane_group"]
+missing = "整块剖切符号（含转折）与散线箭头尾部的短画已识别；散线画的转折处短画与无箭头的短画未识别"
 
 [[concepts]]
 id = "DC-G2-061"
@@ -817,8 +941,9 @@ missing = "识别轮廓处无字母的投射箭头；整个剖切标注省略的
 
 [[concepts]]
 id = "DC-G2-068"
-level = "full"
-by = ["card:view_callout"]
+level = "partial"
+by = ["card:view_callout", "card:view_callout/name_with_scale"]
+missing = "名称在上、比例在下的两段文字已识别（散线为罗马数字，图块为罗马数字或字母）；散线的字母名称与比例、MTEXT 叠写形式未识别"
 
 [[concepts]]
 id = "DC-G2-072"
@@ -828,8 +953,9 @@ missing = "箭头加字母（散线或图块）和“X向”名称已识别；�
 
 [[concepts]]
 id = "DC-G2-075"
-level = "full"
-by = ["card:detail_circle_interruption", "detail_circle_leader_and_numeral", "detail_circle_with_numeral", "detail_numeral_over_scale"]
+level = "partial"
+by = ["card:detail_circle_interruption", "card:detail_view", "card:detail_view/block_view", "card:view_callout/detail_indicator", "detail_circle_leader_and_numeral", "detail_circle_with_numeral", "detail_numeral_over_scale"]
+missing = "放大部位圈与标题（罗马数字或字母）及整块放大图已识别；散线画的放大图（以波浪线为界的副本）不单独成为视图，标题比例与几何放大倍数只记证据、未与图纸比例核对"
 
 [[concepts]]
 id = "DC-G3-001"
@@ -864,7 +990,7 @@ missing = "仅凭文字不能区分倒圆与其他圆弧的半径"
 [[concepts]]
 id = "DC-G3-088"
 level = "full"
-by = ["card:dimension_text", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "opposed_terminators_dimension_line_and_text", "single_terminator_leader_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder", "thread_designation_text_block"]
+by = ["card:dimension_text", "card:leader_note/block_object", "dimension_line_of_feature_of_size_with_attached_frame", "native_dimension_display_text_and_construction", "opposed_terminators_dimension_line_and_text", "single_terminator_leader_and_text", "terminators_across_feature_with_leader_to_text", "text_on_leader_shoulder", "thread_designation_text_block"]
 
 [[concepts]]
 id = "DC-G3-089"
@@ -875,7 +1001,7 @@ missing = "以普通线性尺寸注出的螺纹长度未与其他长度区分"
 [[concepts]]
 id = "DC-G3-091"
 level = "full"
-by = ["card:dimension_text"]
+by = ["card:dimension_text", "card:leader_note/block_object"]
 
 [[concepts]]
 id = "DC-G3-094"
@@ -922,8 +1048,9 @@ missing = "一端箭头的尺寸能识别，但不检查它是否越过对称线
 
 [[concepts]]
 id = "DC-G4-017"
-level = "full"
+level = "partial"
 by = ["card:dimension_text"]
+missing = "原生尺寸的替代显示文字（group 1 不含 <>）未与测量值核对，文字中的不明记号未报告"
 
 [[concepts]]
 id = "DC-G4-019"
@@ -1157,8 +1284,9 @@ by = ["card:gdt_frame_content"]
 
 [[concepts]]
 id = "DC-G5-090"
-level = "full"
-by = ["card:gdt_frame_content", "card:gdt_frame_symbol", "exploded_tolerance_frame_glyph_cells_fields", "tolerance_frame_block_glyph_and_fields"]
+level = "partial"
+by = ["card:gdt_frame_content", "card:gdt_frame_symbol", "card:gdt_frame_symbol/line_grid_font_glyph", "exploded_tolerance_frame_glyph_cells_fields", "tolerance_frame_block_glyph_and_fields"]
+missing = "整块框格（多段线格或直线格、笔画或 GD&T 字体符号、叠放行、多条指引线）与散线框格已识别；外框加分隔线的手画框格与手画箭头的指引线未完全识别，TOLERANCE 原生对象未读"
 
 [[concepts]]
 id = "DC-G5-091"
@@ -1189,7 +1317,7 @@ by = ["card:technical_note"]
 [[concepts]]
 id = "DC-G6-006"
 level = "partial"
-by = ["card:surface_texture_symbol"]
+by = ["card:surface_texture_symbol", "card:surface_texture_symbol/most_surfaces"]
 missing = "统一注法后括号中的基本符号未读出"
 
 [[concepts]]
@@ -1245,7 +1373,7 @@ by = ["card:surface_texture_symbol"]
 [[concepts]]
 id = "DC-G6-071"
 level = "full"
-by = ["basic_texture_symbol_with_value", "card:surface_texture_symbol", "card:surface_texture_symbol/block_value_apart", "card:surface_texture_symbol/block_with_parameter_value", "card:surface_texture_symbol/loose_strokes"]
+by = ["basic_texture_symbol_with_value", "card:surface_texture_symbol", "card:surface_texture_symbol/block_value_apart", "card:surface_texture_symbol/block_with_parameter_value", "card:surface_texture_symbol/loose_strokes", "card:surface_texture_symbol/most_surfaces"]
 
 [[concepts]]
 id = "DC-G6-072"
@@ -1274,8 +1402,9 @@ by = ["card:technical_note"]
 
 [[concepts]]
 id = "DC-G9-002"
-level = "full"
-by = ["card:technical_note", "numbered_technical_requirement_item", "technical_requirement_heading"]
+level = "partial"
+by = ["card:technical_note", "card:technical_note/requirement_block", "numbered_technical_requirement_item", "technical_requirement_heading"]
+missing = "整块技术要求按行首编号（含连写的“n.”）分条；散写文字中连写编号的条目未分开，条目主题只按词表判断"
 
 [[concepts]]
 id = "DC-G9-003"
@@ -1345,3 +1474,57 @@ id = "DC-G9-028"
 level = "partial"
 by = ["card:title_block_field", "table_grid_with_title_vocabulary"]
 missing = "作为图块插入的标题栏已识别；用散线画（不是图块）的标题栏未识别"
+
+[[concepts]]
+id = "DC-G1-095"
+level = "partial"
+by = ["card:item_number", "card:item_number/circle", "card:item_number/underline"]
+missing = "只在零件序号图块中识别实心填充圆点；散线的 DONUT 圆点与 MLEADER 圆点终端未识别"
+
+[[concepts]]
+id = "DC-G2-001"
+level = "partial"
+by = ["card:annotation_mask"]
+missing = "只把遮罩对象（WIPEOUT）并入其注写对象；剖面线与轮廓线在文字处的断开本身未识别"
+
+[[concepts]]
+id = "DC-G2-015"
+level = "partial"
+by = ["card:view_callout"]
+missing = "只从整块剖切符号的直角转折识别；阶梯剖视图本身未分类"
+
+[[concepts]]
+id = "DC-G2-016"
+level = "partial"
+by = ["card:view_callout"]
+missing = "只从整块剖切符号在视图中心的斜角转折识别；旋转剖视图本身（转到剖切面上的结构）未分类"
+
+[[concepts]]
+id = "DC-G3-060"
+level = "partial"
+by = ["card:standard_part", "card:standard_part/library_block"]
+missing = "只把有序号与明细栏标准编号对应的图库图块读成标准件；散线画的螺纹紧固件及其连接画法未识别"
+
+[[concepts]]
+id = "DC-G8-003"
+level = "partial"
+by = ["card:standard_part", "card:standard_part/library_block"]
+missing = "只识别由序号与明细栏标准编号指认的图库标准件图块；剖视中实心件、紧固件按不剖绘制的判断未做"
+
+[[concepts]]
+id = "DC-G8-009"
+level = "partial"
+by = ["card:item_number", "card:item_number/circle", "card:item_number/underline"]
+missing = "只在零件序号图块中识别；散线与 LEADER/MLEADER 的序号指引线未识别"
+
+[[concepts]]
+id = "DC-G8-024"
+level = "partial"
+by = ["card:item_number", "card:item_number/circle", "card:item_number/underline"]
+missing = "横线式与圆圈式的序号图块已识别；散线与 MLEADER 序号、无框式序号及排列规律未识别"
+
+[[concepts]]
+id = "DC-G8-025"
+level = "partial"
+by = ["card:parts_list", "card:parts_list/block_table"]
+missing = "整块明细栏（表头行与连续序号列）已识别；散线表格、每行一个属性块的明细表、ACAD_TABLE 与续页未识别"

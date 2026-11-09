@@ -241,14 +241,49 @@ distinguishing = "第一格内是若干未归属的直线与圆，按笔画构�
 encodings = ["loose"]
 tests = ["frame_with_loose_position_glyph_is_read"]
 
+[[cards.variants]]
+id = "line_grid_font_glyph"
+title = "格线为单独直线、特征符号为 GD&T 字体字母（整块框格）"
+distinguishing = "一个图块中框格由共边的细直线画出（列线可贯通叠放的几行），第一格是一个字符，其字体（文字样式或行内 \\f 字体切换）名含 GD&T 字体词；字符按 gdt_characteristic 的字体字母表对应特征"
+encodings = ["block"]
+tests = ["frame_block_with_line_grid_and_font_glyph"]
+
+[[cards.variants]]
+id = "stacked_rows"
+title = "上下叠放的几行框格"
+distinguishing = "几行框格共用左右边线（GB/T 1182 允许），每行是一个完整的公差（特征、公差值、基准），各行共用框格的指引线"
+encodings = ["block"]
+tests = ["stacked_frame_rows_are_two_tolerances"]
+
+[[cards.variants]]
+id = "multiple_leaders"
+title = "一个框格的几条指引线"
+distinguishing = "指引线从框格侧边（行中线或叠放框格的行分界处）引出，可以是另一个只有指引线和箭头的图块；同一要求适用于每个被指的要素"
+encodings = ["block"]
+tests = ["stacked_frame_rows_are_two_tolerances"]
+
 [[cards.counter_examples]]
 statement = "一排相邻方格第一格内没有特征符号笔画（如表格、理论正确尺寸框）不是几何公差框格"
 test = "cells_without_a_glyph_are_not_a_frame"
+
+[[cards.counter_examples]]
+statement = "非 GD&T 字体中的字母（如普通字体的 g）只是字母，不是特征符号；字体是必要条件"
+test = "font_letter_in_an_ordinary_font_is_not_a_glyph"
 
 [[cards.parameters]]
 name = "cell_inset"
 value = 0.06
 meaning = "判定笔画在第一格内时向内收缩的距离 × 格高"
+
+[[cards.parameters]]
+name = "glyph_cell_aspect_max"
+value = 1.4
+meaning = "第一格（特征符号格）长边与短边之比上限：符号格近于正方形"
+
+[[cards.parameters]]
+name = "leader_on_border"
+value = 0.12
+meaning = "指引线起点到框格边线的距离上限 = 该值 × 行高"
 
 [[cards]]
 id = "tolerance_zone_modifier"
@@ -855,7 +890,6 @@ sources = [
 knowledge_units = ["K14", "K21", "K33", "K40", "K41"]
 recognition = "以技术要求标题下的编号条目为锚，按本卡词表判断条目说的是哪类要求；硬度以“数值+硬度标尺”识别，硬化层深度以 CHD、CD 接数值识别；条目中出现的 C1、R4 等尺寸记号同时按尺寸注写文法命名。条目主题（材料热处理、防护、工艺）的词也来自本卡。"
 markers = ["技术要求", "未注", "GB/T 1804", "GB/T 1184", "HRC", "HBW"]
-parameters = []
 concepts = ["DC-G9-002", "DC-G1-070", "DC-G9-003", "DC-G1-071", "DC-G9-004", "DC-G3-112", "DC-G4-068", "DC-G4-061", "DC-G4-070", "DC-G5-025", "DC-G5-026", "DC-G9-010", "DC-G7-025", "DC-G7-026", "DC-G7-089", "DC-G6-001", "DC-G9-009"]
 
 [[cards.components]]
@@ -882,6 +916,13 @@ distinguishing = "处理名称、硬度值、硬化层深度"
 encodings = ["text"]
 tests = ["technical_note_heat_treatment_and_hardness"]
 
+[[cards.variants]]
+id = "requirement_block"
+title = "整块技术要求：标题、条目与其余表面的结构要求在一个图块中"
+distinguishing = "一个图块（CAD 的技术要求对象）中有标题“技术要求”与其下的条目；行首“n.”“n、”开始新的一条（同一文字可连写条目内容），续行并入上一条；块内（常为嵌套子块）的表面结构符号与“其余”是其余表面的统一要求，单独读成表面结构代号，不并入条目，也不让整块被当成粗糙度符号"
+encodings = ["block"]
+tests = ["requirement_block_items_split_at_inline_numbers", "requirement_block_with_general_roughness_is_partitioned"]
+
 [[cards.counter_examples]]
 statement = "只有标题“技术要求”时不说明任何未注要求"
 test = "heading_alone_is_not_an_untoleranced_note"
@@ -889,6 +930,25 @@ test = "heading_alone_is_not_an_untoleranced_note"
 [[cards.counter_examples]]
 statement = "线性尺寸一般公差注语不是未注几何公差注语"
 test = "general_tolerance_note_is_not_a_geometric_one"
+
+[[cards.counter_examples]]
+statement = "行首的小数（如 1.5）不是条目编号：编号后的分隔符不能紧跟数字"
+test = "decimal_at_line_start_is_not_an_item_number"
+
+[[cards.counter_examples]]
+statement = "只有表面结构符号与“其余”而没有“技术要求”标题的图块仍是表面结构代号"
+test = "remaining_roughness_block_without_heading_stays_roughness"
+
+[[cards.parameters]]
+name = "row_join"
+value = 0.5
+meaning = "两段文字中心的纵向距离小于该值 × 字高时属于同一行"
+
+[[cards.lexicon]]
+concept = "DC-G9-002"
+entry = "item_separator"
+values = [".", "、", "．"]
+meaning = "条目编号后的分隔符：行首“数字 + 分隔符”开始一条（分隔符后不能紧跟数字）"
 
 [[cards.lexicon]]
 concept = "DC-G1-070"
@@ -1829,9 +1889,9 @@ tests = ["texture_tip_on_outline_and_extension_line", "texture_symbol_takes_the_
 [[cards.variants]]
 id = "most_surfaces"
 title = "大多数表面相同要求的统一注法"
-distinguishing = "“其余”或位于标题栏附近"
+distinguishing = "“其余”或位于标题栏附近；也可写在技术要求图块中（嵌套的符号子块带“其余”与数值）"
 encodings = ["block"]
-tests = ["remaining_surfaces_texture_note"]
+tests = ["remaining_surfaces_texture_note", "requirement_block_with_general_roughness_is_partitioned"]
 
 [[cards.variants]]
 id = "symbol_only"
@@ -1880,6 +1940,12 @@ value = 6.0
 meaning = "散线符号长臂上限 = 该值 × 字高"
 
 [[cards.lexicon]]
+concept = "DC-G6-006"
+entry = "general_word"
+values = ["其余"]
+meaning = "大多数表面相同要求的统一注法所用的词（GB/T 131-1993 注在图样右上角的“其余”）"
+
+[[cards.lexicon]]
 concept = "DC-G6-075"
 entry = "parameter_code"
 values = ["Ra", "Rz", "Rq", "Rt", "Rp", "Rv", "Rsk", "RSm", "Rmr", "Ry", "Wz", "Wa", "Pt", "Pa", "Sm"]
@@ -1910,7 +1976,7 @@ sources = [
 knowledge_units = ["K11", "K13"]
 recognition = "剖切符号：在已识别的“箭头+字母”投射方向标注的箭尾处，找一条与箭杆垂直、长约 1～4 倍字高的短线，即剖切位置的短画。剖视名称：一行文字为“字母—字母”（两字母相同），可再接比例。视图名称带比例时比例写在名称之下或之后。"
 markers = ["—", "-", "向"]
-concepts = ["DC-G2-043", "DC-G1-007", "DC-G2-072", "DC-G2-065", "DC-G2-068", "DC-G1-115"]
+concepts = ["DC-G2-043", "DC-G1-007", "DC-G2-072", "DC-G2-065", "DC-G2-068", "DC-G1-115", "DC-G2-015", "DC-G2-016"]
 
 [[cards.components]]
 role = "cutting_stroke"
@@ -1956,9 +2022,76 @@ tests = ["direction_view_names_are_tagged"]
 [[cards.variants]]
 id = "name_with_scale"
 title = "视图名称与比例组合"
-distinguishing = "名称下方或旁边的比例"
-encodings = ["text"]
-tests = ["section_name_titles_a_section_view"]
+distinguishing = "名称下方或旁边的比例；名称可以是罗马数字或大写字母（企业与 CAD 常用字母），两段文字间可有一条短横线，也可做成一个图块"
+encodings = ["text", "block"]
+tests = ["section_name_titles_a_section_view", "detail_label_and_view_drawn_as_blocks"]
+
+[[cards.variants]]
+id = "cutting_plane_group"
+title = "剖切符号整组：粗短画、垂直箭头与相同字母（含转折）"
+distinguishing = "两条以上粗短画（线宽明显大于箭杆）在同一剖切路径上（共线，或在转折处共一端点）；起讫短画外端各有一支垂直于短画的箭头；各端（及转折处）注同一大写字母。转折成直角为几个平行剖切面（阶梯剖），在视图中心转成斜角为几个相交剖切面（旋转剖）。可以是一个图块，箭头可为实心三角或填充"
+encodings = ["block"]
+tests = ["cutting_plane_symbol_block_names_its_section", "aligned_cutting_plane_block_with_a_turn"]
+
+[[cards.variants]]
+id = "detail_indicator"
+title = "局部放大部位的细实线圈与标号"
+distinguishing = "一个细实线圆圈住被放大的部位，从圆上引出的指引线（可带水平基准线）末端注罗马数字或大写字母；同一标号再出现在局部放大图的名称中"
+encodings = ["block"]
+tests = ["detail_label_and_view_drawn_as_blocks"]
+
+[[cards.counter_examples]]
+statement = "字母在圆内或贴着圆（距圆心不超过约 1.2 倍半径）是基准符号，不是放大部位标号"
+test = "circled_letter_with_leader_is_a_datum_not_a_detail"
+
+[[cards.counter_examples]]
+statement = "只有箭头和字母而没有粗短画的图块是向视图箭头，不是剖切符号"
+test = "arrow_block_without_strokes_is_not_a_cutting_plane"
+
+[[cards.parameters]]
+name = "thick_ratio_min"
+value = 1.5
+meaning = "粗短画线宽与同组细线线宽之比下限（GB/T 4457.4 粗细线宽比 2:1）"
+
+[[cards.parameters]]
+name = "perpendicular_cos_max"
+value = 0.1
+meaning = "箭杆与短画夹角余弦的绝对值上限"
+
+[[cards.parameters]]
+name = "join"
+value = 0.05
+meaning = "两段相接的端点距离容差 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "circle_leader_on"
+value = 0.08
+meaning = "指引线起点到放大部位圆的距离上限 = 该值 × 圆半径"
+
+[[cards.parameters]]
+name = "label_reach"
+value = 1.5
+meaning = "标号中心到指引线末端（或基准线）的距离上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "datum_letter_reach"
+value = 1.2
+meaning = "字母中心距圆心不超过该值 × 半径时是基准符号"
+
+[[cards.parameters]]
+name = "title_gap_min"
+value = 0.5
+meaning = "视图名称在比例上方的距离下限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "title_gap_max"
+value = 3.2
+meaning = "视图名称在比例上方的距离上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "title_offset_max"
+value = 2.0
+meaning = "名称与比例的横向偏移上限 = 该值 × 字高"
 
 [[cards.counter_examples]]
 statement = "远离箭尾的短线不并入剖切符号"
@@ -2197,3 +2330,428 @@ meaning = "终端箭尖落在共用界线上的容差 = 该值 × 字高"
 name = "perpendicular_cos_max"
 value = 0.1
 meaning = "箭头方向与共用界线夹角余弦的绝对值上限"
+
+[[cards]]
+id = "leader_note"
+expression_kind = "leader_note"
+title = "引出说明"
+meaning = "用指引线从要素引出、写在基准线（水平参考线）上的说明或标记。指引线是细实线，一般一段或折一次，在要素一端画终端：落在轮廓或可见边上用箭头，落在面内用圆点，倒角注写可不画终端而沿倒角边延长引出；另一端接水平基准线，文字写在基准线上方。文字的文法决定它是什么：螺纹标记是螺纹标注，倒角“a×b°”是倒角尺寸，其他文字是引出说明。CAD 常把一条引出说明（引线、终端、基准线、文字）存成一个图块。"
+sources = [
+  "GB/T 4457.2-2003 机械制图 图样画法 指引线和基准线的基本规定 3、4（指引线、基准线与终端）",
+  "GB/T 4458.4-2003 机械制图 尺寸注法 4.1.5（尺寸数字可注在指引线引出的基准线上）",
+  "GB/T 4459.1-1995 螺纹及螺纹紧固件表示法 4.6（螺纹标记注在大径的尺寸线或其引出线上）",
+  "GB/T 16675.2-2012 技术制图 简化表示法 第2部分：尺寸注法 4.2",
+]
+knowledge_units = ["K14", "K55"]
+recognition = "一个图块中：文字立在一条水平基准线上方（文字中心在基准线以上、不超过约一个字高，横向在基准线范围内）；从基准线一端接出一到两段细线，末端有实心三角箭头、圆点或无终端；块中没有别的东西。文字按尺寸注写文法分类：螺纹标记→螺纹标注，倒角→倒角尺寸，直径、半径→相应尺寸，其余→引出说明。终端所在的轮廓或边线记为被指要素。"
+markers = []
+concepts = ["DC-G1-028", "DC-G1-096"]
+
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE", "LWPOLYLINE"]
+requirement = "细实线指引线（一到两段）与水平基准线"
+
+[[cards.components]]
+role = "arrowhead"
+primitives = ["SOLID", "HATCH"]
+requirement = "实心三角箭头（实心填充三角形）、圆点，或无终端"
+
+[[cards.components]]
+role = "note_text"
+primitives = ["TEXT", "MTEXT"]
+requirement = "写在基准线上方的说明或标记"
+
+[[cards.variants]]
+id = "block_object"
+title = "一个图块中的引出说明"
+distinguishing = "引线、终端、基准线与文字是同一图块的全部内容"
+encodings = ["block"]
+tests = ["leader_note_block_with_thread_designation", "leader_note_block_with_plain_words", "chamfer_note_block_without_terminator"]
+
+[[cards.counter_examples]]
+statement = "指引线从细实线圆上引出、末端只有一个字母或罗马数字，是局部放大部位标号，不是引出说明"
+test = "detail_label_and_view_drawn_as_blocks"
+
+[[cards.counter_examples]]
+statement = "基准线上是整数且终端为圆点，是零件序号，不是引出说明"
+test = "item_number_block_with_dot_is_not_a_note"
+
+[[cards.parameters]]
+name = "shelf_text_offset_max"
+value = 1.2
+meaning = "文字中心高出基准线的距离上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "shelf_margin"
+value = 0.6
+meaning = "文字中心超出基准线两端的距离上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "join"
+value = 0.05
+meaning = "引线各段端点相接的容差 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "leader_segments_max"
+value = 2.0
+meaning = "指引线最多段数（GB/T 4457.2：一般一段，必要时折一次）"
+
+[[cards.parameters]]
+name = "head_reach"
+value = 0.25
+meaning = "引线末端到箭头尖端或底边的距离上限 = 该值 × 箭头长"
+
+[[cards]]
+id = "detail_view"
+expression_kind = "view"
+title = "局部放大图（视图本身）"
+meaning = "把机件上细小部位用大于原图的比例画出的图形。它重复被放大部位的结构（轮廓、轴线、剖面线照原样画出，剖面线方向与间隔同原图），边界在 GB 中用波浪线，CAD 常画成放大后的圆；上方注同一标号与比例。CAD 的局部放大对象常把整个放大图（原部位的缩放副本加边界圆）存成一个图块，图块中的线仍是机件的结构线，要按各自的线型读出并组成一个视图。"
+sources = [
+  "GB/T 4458.1-2002 机械制图 图样画法 视图 5.7（局部放大图）",
+  "GB/T 13361-2012 技术制图 通用术语 5.20",
+  "GB/T 14690-1993 技术制图 比例 5.2",
+  "机械制图（第7版）§7-4 一、图7-25",
+]
+knowledge_units = ["K11", "K13"]
+recognition = "一个没有文字的图块：一个圆包住其余全部图线；其余图线按自身线型分类——点画线为轴线，虚线为不可见轮廓，连续线中线宽粗的一类为可见轮廓，细的、互相平行等距且倾斜的三条以上为剖面线。它必须与一个放大部位标号配对：边界圆半径 ÷ 标号圆半径 = 放大倍数 k ≥ 1，并且把块中可见轮廓线按 (p − 边界圆心)/k + 标号圆心 映回后，至少一半落在原图的直线上（放大图是原部位的副本）。测得的 k 记作证据；与标题比例 ÷ 图纸比例 不符时只报告，不否定配对。"
+markers = []
+concepts = ["DC-G2-075"]
+
+[[cards.components]]
+role = "detail_circle"
+primitives = ["CIRCLE", "SPLINE"]
+requirement = "放大图的边界（CAD 画成圆，GB 为波浪线）"
+
+[[cards.components]]
+role = "native_member"
+primitives = ["LINE", "ARC"]
+requirement = "放大图中的结构线：可见轮廓、轴线、剖面线"
+
+[[cards.variants]]
+id = "block_view"
+title = "整块放大图（缩放副本加边界圆）"
+distinguishing = "块中只有图线，无文字，边界圆包住全部；与放大部位标号按半径比和副本重合配对"
+encodings = ["block"]
+tests = ["detail_label_and_view_drawn_as_blocks"]
+
+[[cards.counter_examples]]
+statement = "圆中的图线映回标号部位后不落在原图线上（不是那个部位的副本），不读成放大图"
+test = "block_inside_a_circle_that_copies_nothing_is_not_a_detail_view"
+
+[[cards.parameters]]
+name = "enclose_tolerance"
+value = 0.03
+meaning = "块中图线到边界圆心的距离上限 = 半径 × (1 + 该值)"
+
+[[cards.parameters]]
+name = "ratio_min"
+value = 1.0
+meaning = "放大倍数下限"
+
+[[cards.parameters]]
+name = "map_tolerance"
+value = 0.02
+meaning = "映回的线端到原图直线的距离容差 = 该值 × 标号圆半径"
+
+[[cards.parameters]]
+name = "matched_fraction_min"
+value = 0.5
+meaning = "映回后落在原图直线上的可见轮廓线比例下限"
+
+[[cards.parameters]]
+name = "hatch_lines_min"
+value = 3.0
+meaning = "认作剖面线的平行等距细线最少条数"
+
+[[cards.parameters]]
+name = "hatch_spacing_tolerance"
+value = 0.15
+meaning = "剖面线相对等距格的偏差上限 = 该值 × 间距"
+
+[[cards.parameters]]
+name = "parallel_sin_max"
+value = 0.02
+meaning = "剖面线互相平行的方向夹角正弦上限"
+
+[[cards]]
+id = "item_number"
+expression_kind = "item_number"
+title = "零件序号"
+meaning = "装配图（含部件图）中给每种零件、部件编的号，与明细栏的序号一一对应。序号是整数，字高比尺寸数字大一号或两号，写在指引线末端的水平细实线上方（横线式）、细实线圆内（圆圈式）或直接写在指引线末端附近；指引线从所指零件的可见轮廓内引出，起点画实心小圆点（薄件或涂黑断面用箭头），最多折一次。"
+sources = [
+  "GB/T 4458.2-2003 机械制图 装配图中零、部件序号及其编排方法 4.1、4.4、4.5",
+  "GB/T 4457.2-2003 机械制图 图样画法 指引线和基准线的基本规定 4（圆点终端）",
+  "机械制图（第7版）§10-2 二、图10-3",
+]
+knowledge_units = ["K15"]
+recognition = "一个图块中只有：一个整数；其下的一条水平细线（长约 1～4 倍字高，数字中心在其上方且在其两端之间），或圆心与数字重合的细实线圆；从横线一端（或圆上）引出、最多两段的细线；末端一个实心小圆点（半径不超过约 0.4 倍字高）或箭头。圆点所在的零件区域就是这个序号所指的零件；明细栏存在时，序号集合与其行号核对。"
+markers = []
+concepts = ["DC-G8-024", "DC-G8-009", "DC-G1-095"]
+
+[[cards.components]]
+role = "note_text"
+primitives = ["TEXT", "MTEXT", "ATTRIB"]
+requirement = "整数序号"
+
+[[cards.components]]
+role = "leader_line"
+primitives = ["LINE", "CIRCLE"]
+requirement = "序号下的横线或外圈，以及序号指引线"
+
+[[cards.components]]
+role = "arrowhead"
+primitives = ["HATCH", "SOLID", "LWPOLYLINE"]
+requirement = "零件内的实心圆点，薄件为箭头"
+
+[[cards.variants]]
+id = "underline"
+title = "横线式：数字写在指引线末端的水平细线上方"
+distinguishing = "数字下有水平细线，指引线接在横线一端"
+encodings = ["block"]
+tests = ["item_number_block_with_dot_is_not_a_note", "parts_list_block_rows_match_item_numbers"]
+
+[[cards.variants]]
+id = "circle"
+title = "圆圈式：数字写在细实线圆内"
+distinguishing = "数字居中于细实线圆，指引线从圆上引出"
+encodings = ["block"]
+tests = ["item_number_in_a_circle"]
+
+[[cards.counter_examples]]
+statement = "60° 折线上的数值（旧版粗糙度可为整数）是表面结构代号，不是序号"
+test = "texture_symbol_with_integer_value_is_not_an_item_number"
+
+[[cards.counter_examples]]
+statement = "基准线上是说明文字或标记（非整数）的是引出说明，不是序号"
+test = "leader_note_block_with_plain_words"
+
+[[cards.parameters]]
+name = "underline_min"
+value = 0.8
+meaning = "序号横线长度下限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "underline_max"
+value = 4.0
+meaning = "序号横线长度上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "text_above_line_max"
+value = 1.2
+meaning = "数字中心高出横线的距离上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "dot_radius_max"
+value = 0.4
+meaning = "圆点半径上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "circle_radius_min"
+value = 0.6
+meaning = "圆圈式序号圆半径下限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "circle_radius_max"
+value = 1.6
+meaning = "圆圈式序号圆半径上限 = 该值 × 字高"
+
+[[cards.parameters]]
+name = "join"
+value = 0.05
+meaning = "指引线与横线、圆点相接的容差 = 该值 × 字高"
+
+[[cards]]
+id = "parts_list"
+expression_kind = "parts_list"
+title = "明细栏"
+meaning = "装配图中列出全部零件、部件的表，画在标题栏上方并与之相接：表头行在最下面（序号、代号、名称、数量、材料、质量、备注等），序号自下而上填写；放不下时在标题栏左边延续，或作为续页由上而下填写（表头在上）。序号列是连续的整数，代号列填零件图号或标准件的标准编号。"
+sources = [
+  "GB/T 10609.2-2009 技术制图 明细栏 3.2、3.5、图A.1、图A.2",
+  "GB/T 18229-2000 CAD工程制图规则 4.7",
+  "GB/T 4458.2-2003 机械制图 装配图中零、部件序号及其编排方法 4.5（序号与明细栏一致）",
+  "机械制图（第7版）§10-1 一、4",
+]
+knowledge_units = ["K03", "K55", "K15"]
+recognition = "一个图块中由直线组成表格：同一行文字中至少两个是表头词；表头的竖线把表分成列；其余各行在序号列是连续整数，表头在下时自下而上递增，表头在上时自上而下递增。整张表读成一个明细栏，各行按列名记为行内容。区别：标题栏没有序号列和表头词行；表格图的行是尺寸系列，没有连续的序号列；技术要求没有格线。"
+markers = []
+concepts = ["DC-G8-025"]
+
+[[cards.components]]
+role = "table_line"
+primitives = ["LINE", "LWPOLYLINE"]
+requirement = "表格的横线与竖线"
+
+[[cards.components]]
+role = "table_text"
+primitives = ["TEXT", "MTEXT", "ATTRIB"]
+requirement = "表头词与各行内容"
+
+[[cards.variants]]
+id = "block_table"
+title = "整块明细栏（格线与文字在一个图块中）"
+distinguishing = "表头行有两个以上表头词，序号列连续递增"
+encodings = ["block"]
+tests = ["parts_list_block_rows_match_item_numbers"]
+
+[[cards.counter_examples]]
+statement = "没有连续序号列的格子（如标题栏、表格图）不是明细栏"
+test = "table_block_without_item_column_is_not_a_parts_list"
+
+[[cards.parameters]]
+name = "header_words_min"
+value = 2.0
+meaning = "表头行至少含有的表头词个数"
+
+[[cards.parameters]]
+name = "row_join"
+value = 0.5
+meaning = "文字中心纵向距离小于该值 × 字高时属于同一行"
+
+[[cards.lexicon]]
+concept = "DC-G8-025"
+entry = "header_word"
+values = ["序号", "代号", "名称", "数量", "材料", "质量", "重量", "单件", "总计", "备注", "分区"]
+meaning = "明细栏表头的栏目名（GB/T 10609.2；旧版质量写作“重量”）"
+
+[[cards.lexicon]]
+concept = "DC-G8-025"
+entry = "item_column"
+values = ["序号", "件号"]
+meaning = "填零件序号的列"
+
+[[cards.lexicon]]
+concept = "DC-G8-025"
+entry = "name_column"
+values = ["名称"]
+meaning = "填零件名称的列"
+
+[[cards]]
+id = "standard_part"
+expression_kind = "standard_part"
+title = "标准件的简化画法（库零件图块）"
+meaning = "装配图中的螺钉、螺母、销等标准件按 GB 规定的简化画法画出，剖切平面通过其轴线时按不剖绘制（不画剖面线）；CAD 常从图库插入一个图块，块中只有结构线：粗实线轮廓、细实线（如螺纹小径）、点画线轴线、虚线（如内六角）。它的身份由所指的零件序号和明细栏中该行的标准编号给出；常有一个与其外形相同的遮罩挡住后面的线。"
+sources = [
+  "GB/T 4458.6-2002 机械制图 图样画法 剖视图和断面图 4.4（紧固件按不剖绘制）",
+  "GB/T 16675.1-2012 技术制图 简化表示法 第1部分：图样画法 A.7",
+  "GB/T 4459.1-1995 螺纹及螺纹紧固件表示法 6.1",
+  "GB/T 4458.2-2003 机械制图 装配图中零、部件序号及其编排方法 4.1",
+]
+knowledge_units = ["K34", "K13", "K15"]
+recognition = "一个没有文字、只有直线和圆弧的图块；一个零件序号的圆点落在它的范围内，而明细栏中这个序号的行在代号（或名称）中写有标准编号（本卡词表）。块中各线按自身线型读：点画线为轴线，虚线为不可见轮廓，连续线中粗的一类为轮廓。没有序号和明细栏对应时不当作标准件（重复要素的图块同样只有结构线）。"
+markers = []
+concepts = ["DC-G8-003", "DC-G3-060"]
+
+[[cards.components]]
+role = "contour_segment"
+primitives = ["LINE", "ARC"]
+requirement = "粗实线轮廓"
+
+[[cards.components]]
+role = "center_line"
+primitives = ["LINE"]
+requirement = "点画线轴线"
+
+[[cards.components]]
+role = "hidden_segment"
+primitives = ["LINE", "ARC"]
+requirement = "虚线（不可见结构）"
+
+[[cards.variants]]
+id = "library_block"
+title = "图库插入的标准件图块"
+distinguishing = "序号圆点在块内，明细栏该行有标准编号"
+encodings = ["block"]
+tests = ["parts_list_block_rows_match_item_numbers"]
+
+[[cards.counter_examples]]
+statement = "没有序号指着、或明细栏该行没有标准编号的结构线图块不当作标准件"
+test = "structure_block_without_a_standard_row_is_not_a_standard_part"
+
+[[cards.parameters]]
+name = "dot_margin"
+value = 0.05
+meaning = "序号圆点可超出图块范围的距离 = 该值 × 图块尺寸"
+
+[[cards.lexicon]]
+concept = "DC-G8-003"
+entry = "standard_code"
+values = ["GB/T", "GB", "JB/T", "JB", "ISO", "DIN"]
+meaning = "标准编号的前缀：明细栏代号列中以此开头的是标准件"
+
+[[cards]]
+id = "annotation_mask"
+expression_kind = "mask"
+title = "注写处的遮罩"
+meaning = "图样上文字、符号与框格处的图线和剖面线应断开（注写处不画线）。CAD 用遮罩对象（WIPEOUT，或文字的背景遮罩）实现：遮罩不是图线，它挡住先画的线，属于其轮廓与之相同的那个对象（框格的矩形、基准符号的圆、粗糙度符号的三角、零件块的外形），通常紧接在该对象之前写入。"
+sources = [
+  "GB/T 17453-2005 技术制图 图样画法 剖面区域的表示法 图5（剖面区域内注写时剖面线断开）",
+  "GB/T 4458.4-2003 机械制图 尺寸注法 3.2（尺寸数字不可被任何图线通过，否则须将图线断开）",
+  "GB/T 4458.6-2002 机械制图 图样画法 剖视图和断面图 4.4（标准件按不剖绘制，其轮廓挡住被剖零件的剖面线）",
+]
+knowledge_units = ["K14", "K55"]
+recognition = "遮罩的多边形顶点至少九成落在某个已识别对象（图块）的线、圆或弧上（容差为遮罩尺寸的 2%）：它就是那个对象的遮罩，并入其表达；优先取紧接在遮罩之后写入的对象。"
+markers = []
+concepts = ["DC-G2-001"]
+
+[[cards.components]]
+role = "native_member"
+primitives = ["WIPEOUT"]
+requirement = "遮罩多边形"
+
+[[cards.variants]]
+id = "outline_mask"
+title = "轮廓与对象相同的遮罩"
+distinguishing = "矩形（框格）、多边形近似的圆（基准、序号）、三角（粗糙度符号）或零件外形"
+encodings = ["loose"]
+tests = ["mask_joins_the_frame_it_follows"]
+
+[[cards.counter_examples]]
+statement = "顶点不落在任何对象轮廓上的遮罩不并入对象，保持未解释"
+test = "mask_following_no_object_stays_unresolved"
+
+[[cards.parameters]]
+name = "outline_tolerance"
+value = 0.02
+meaning = "遮罩顶点到对象图线的距离容差 = 该值 × 遮罩外接框对角线"
+
+[[cards.parameters]]
+name = "vertex_fraction_min"
+value = 0.9
+meaning = "落在对象轮廓上的遮罩顶点比例下限"
+
+[[cards]]
+id = "sheet_frame_border"
+expression_kind = "sheet_frame"
+title = "图框与装订边附加栏"
+meaning = "图纸边界线（细实线）内用粗实线画图框；留装订边的格式在左边留出装订边。装订边内常有会签栏、附加栏（签字、日期等）和倒写的图样代号框，它们属于图框，不是标题栏；标题栏在图框内的右下角。CAD 常把图框与这些栏做成一个图块。"
+sources = [
+  "GB/T 14689-2008 技术制图 图纸幅面和格式 4.1、4.2（图框格式与装订边）、5（标题栏方位）",
+  "GB/T 10609.1-2008 技术制图 标题栏（位于图框右下角）",
+  "机械制图（第7版）§1-1 一、图纸幅面和格式",
+]
+knowledge_units = ["K03", "K52", "K55"]
+recognition = "一个图块中有两个面积都不小于全图范围四分之一的矩形（四条直线或一条闭合多段线），小的四边都缩在大的里面：大的是纸边界，小的是图框；块中的文字全部在两者之间（装订边内），则整块是带装订边附加栏的图框，不是标题栏。文字在图框之内（如右下角的标题栏格）时不归此卡；表格的行线与外框围成的矩形共用边，不是一内一外。"
+markers = []
+concepts = ["DC-G1-085"]
+
+[[cards.components]]
+role = "frame_border"
+primitives = ["LINE", "LWPOLYLINE", "INSERT"]
+requirement = "图纸边界线、图框线与装订边附加栏的格线和文字"
+
+[[cards.variants]]
+id = "border_with_margin_columns"
+title = "图框块中装订边内有附加栏文字"
+distinguishing = "文字全在图框外的装订边内"
+encodings = ["block"]
+tests = ["frame_block_with_margin_columns_is_not_a_title_block"]
+
+[[cards.counter_examples]]
+statement = "文字在图框之内（标题栏格）的图块不归为附加栏图框，仍按标题栏判断"
+test = "frame_block_holding_a_title_grid_stays_a_title_block"
+
+[[cards.parameters]]
+name = "border_area_min"
+value = 0.25
+meaning = "图框矩形面积下限 = 该值 × 全图范围面积"

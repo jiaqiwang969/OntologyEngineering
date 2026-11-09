@@ -3483,7 +3483,7 @@ kind = "tolerance_indication"
 meaning = "几何公差的载体：细实线矩形框格自左向右分为特征符号格、公差带/要素/特征格和可选的基准格（一至三格），由参照线和指引线连到被测要素；形状公差两格，方向、位置、跳动公差三至五格。"
 components = ["外形：一行等高的相邻矩形，高 H 约为字高的 2 倍；第一格为边长 H 的正方形，第二格宽度随内容，基准格宽度适合字母", "第一格：几何特征符号；第二格：公差值及修饰符；第三至五格：基准字母（第一、第二、第三基准）", "参照线从框格左侧或右侧中点引出（有辅助平面框格时从最后一个辅助框格右侧中点引出），再经指引线到被测要素", "可附：右侧的相交平面、定向平面、方向要素、组合平面框格；上下或水平相邻的补充标注；多个框格上下叠放", "旧版（GB/T 1182-1996、GB/T 17773-1999）称“形状和位置公差（形位公差）”，框格画法基本相同"]
 variants = ["two-part frame without datum (形状公差)", "three- to five-compartment frame with datums", "auxiliary plane/feature indicators appended on the right", "stacked frames (多层公差标注)", "older editions (GB/T 1182-1996, GB/T 17773-1999) call the content 形状和位置公差/形位公差", "两格（形状公差）", "三至五格（含基准）", "可附辅助平面/要素框格及相邻标注（图3.2c）"]
-dxf_forms = ["AutoCAD TOLERANCE entity (AcDbFcf): code-1 string with cells separated by %%v, glyphs as {\\Fgdt;x}, second frame row after ^J; linked from a LEADER (code 340) or placed alone", "INSERT of a plugin frame block (often anonymous *U…) with ATTRIB values for value and datums", "exploded: closed LWPOLYLINE or 4 LINE outer rectangle + vertical LINE separators + glyph strokes (LINE/CIRCLE/ARC) + TEXT/MTEXT per cell, typically on layer 08", "TEXT/MTEXT with Unicode GD&T glyphs (⌖ ◎ ⏤ ⏥ ○ ⌭ ⌒ ⌓ ∥ ⊥ ∠ ⌯ ↗ ⌰) inside drawn cells", "custom objects of mechanical add-ons saved as proxy entities with proxy graphics (uncertain)"]
+dxf_forms = ["AutoCAD TOLERANCE entity (AcDbFcf): code-1 string with cells separated by %%v, glyphs as {\\Fgdt;x}, second frame row after ^J; linked from a LEADER (code 340) or placed alone", "INSERT of a plugin frame block (often anonymous *U…) with ATTRIB values for value and datums", "exploded: closed LWPOLYLINE or 4 LINE outer rectangle + vertical LINE separators + glyph strokes (LINE/CIRCLE/ARC) + TEXT/MTEXT per cell, typically on layer 08", "TEXT/MTEXT with Unicode GD&T glyphs (⌖ ◎ ⏤ ⏥ ○ ⌭ ⌒ ⌓ ∥ ⊥ ∠ ⌯ ↗ ⌰) inside drawn cells", "custom objects of mechanical add-ons saved as proxy entities with proxy graphics (uncertain)", "one INSERT holding the frame: cells as separate LINEs (column lines through stacked rows), the characteristic as MTEXT with an inline GD&T font switch (\\fgdt…;), value and datum MTEXT, leader LINEs with solid-HATCH heads; a second leader may be a block of its own"]
 recognition = "以一串等高相邻矩形为锚：高 H≈2h（h 为格内字高），第一格近似正方形且只含组成特征符号的笔画（块内或散线），由笔画构成判定特征（如圆+十字为位置度）；第二格文字为公差值（可带 φ、Sφ 和修饰符）；其后各格为基准字母串；从左或右侧边中点伸出的细线是参照线或指引线。第一格没有符号笔画的一排方格（表格、标题栏、带框 TED）不是公差框格。"
 confusions = ["标题栏、明细栏、参数表的格子：多行、格内为汉字或数字，第一格无特征符号", "带框理论正确尺寸：单个方框，只含数值", "基准方框：单个方框加连线和三角形", "表面结构或焊缝符号的尾部框", "相交平面等辅助框格：带尖端、箭头或圆圈，只有两格，位于框格右侧"]
 related = ["DC-G5-091", "DC-G5-095", "DC-G5-104", "DC-G5-112", "DC-G5-003", "DC-G5-004", "DC-G5-103", "DC-G5-097", "DC-G5-100", "DC-G5-105", "DC-G4-029", "DC-G1-018"]
@@ -3491,7 +3491,7 @@ priority = "high"
 text_forms = ["⌖ Ø0.05 A B C", "◎ Ø0.02 A-B", "⏥ 0.05", "⊥ 0.03 A", "↗ 0.02 A-B"]
 knowledge_units = ["K23", "K24", "K25"]
 recognition_cards = ["gdt_frame_content", "gdt_frame_symbol"]
-recognizer = "card"
+recognizer = "partial"
 seen_on_drawing = ["second"]
 expert_checked = false
 notes = "Linked recognition card gdt_frame_symbol, seen on the second drawing (frame drawn as loose lines). Proportions per GB/T 39645 5.2 and 表1/表2 (H = 2h; gap from cell lines ≥ 2 line widths and ≥ 0.7 mm) and the drawing textbook (frame height twice the letter height, thin lines). DXF forms are general CAD practice (AutoCAD/GstarCAD/CAXA with GB templates), not from the cited sources."
